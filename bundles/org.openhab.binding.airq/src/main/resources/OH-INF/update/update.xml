@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
-
 	<thing-type uid="airq:airq">
 		<instruction-set targetVersion="1">
 			<add-channel id="h2s">
@@ -23,7 +22,6 @@
 				<type>airq:performance_index</type>
 				<label>Performance Index</label>
 			</add-channel>
-
 			<update-channel id="co">
 				<type>airq:co</type>
 				<label>Carbon Monoxide (CO)</label>
@@ -36,7 +34,6 @@
 				<type>airq:o3</type>
 				<label>Ozone (O₃)</label>
 			</update-channel>
-
 			<update-channel id="fineDustConc01">
 				<type>airq:pm1</type>
 				<label>Fine Dust 1μm</label>
@@ -49,7 +46,6 @@
 				<type>airq:pm10</type>
 				<label>Fine Dust 10μm</label>
 			</update-channel>
-
 			<update-channel id="fineDustCnt00_3">
 				<type>airq:cnt0_3</type>
 				<label>Fine Dust Count 0.3μm</label>
@@ -101,6 +97,553 @@
 				<label>Radon</label>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="5">
+			<add-channel id="c2h4o" groupIds="advanced-measurements">
+				<type>airq:c2h4o</type>
+				<label>Acetaldehyde (C2H4O)</label>
+			</add-channel>
+			<add-channel id="nh3-mr100" groupIds="advanced-measurements">
+				<type>airq:nh3-mr100</type>
+				<label>Ammonia (NH3)</label>
+			</add-channel>
+			<add-channel id="ash3" groupIds="advanced-measurements">
+				<type>airq:ash3</type>
+				<label>Arsine (AsH3)</label>
+			</add-channel>
+			<add-channel id="br2" groupIds="advanced-measurements">
+				<type>airq:br2</type>
+				<label>Bromine (Br2)</label>
+			</add-channel>
+			<add-channel id="ch4s" groupIds="advanced-measurements">
+				<type>airq:ch4s</type>
+				<label>Methanethiol (CH4S)</label>
+			</add-channel>
+			<add-channel id="cl2-m20" groupIds="advanced-measurements">
+				<type>airq:cl2-m20</type>
+				<label>Chlorine (Cl2)</label>
+			</add-channel>
+			<add-channel id="clo2" groupIds="advanced-measurements">
+				<type>airq:clo2</type>
+				<label>Chlorine Dioxide (ClO2)</label>
+			</add-channel>
+			<add-channel id="cs2" groupIds="advanced-measurements">
+				<type>airq:cs2</type>
+				<label>Carbon Disulfide (CS2)</label>
+			</add-channel>
+			<add-channel id="ethanol" groupIds="advanced-measurements">
+				<type>airq:ethanol</type>
+				<label>Ethanol</label>
+			</add-channel>
+			<add-channel id="c2h4" groupIds="advanced-measurements">
+				<type>airq:c2h4</type>
+				<label>Ethylene (C2H4)</label>
+			</add-channel>
+			<add-channel id="ch2o-m10" groupIds="advanced-measurements">
+				<type>airq:ch2o-m10</type>
+				<label>Formaldehyde (CH2O)</label>
+			</add-channel>
+			<add-channel id="f2" groupIds="advanced-measurements">
+				<type>airq:f2</type>
+				<label>Fluorine (F2)</label>
+			</add-channel>
+			<add-channel id="hcl" groupIds="advanced-measurements">
+				<type>airq:hcl</type>
+				<label>Hydrochloric Acid (HCl)</label>
+			</add-channel>
+			<add-channel id="hcn" groupIds="advanced-measurements">
+				<type>airq:hcn</type>
+				<label>Hydrogen Cyanide (HCN)</label>
+			</add-channel>
+			<add-channel id="hf" groupIds="advanced-measurements">
+				<type>airq:hf</type>
+				<label>Hydrogen Fluoride (HF)</label>
+			</add-channel>
+			<add-channel id="h2-m1000" groupIds="advanced-measurements">
+				<type>airq:h2-m1000</type>
+				<label>Hydrogen (H2)</label>
+			</add-channel>
+			<add-channel id="h2o2" groupIds="advanced-measurements">
+				<type>airq:h2o2</type>
+				<label>Hydrogen Peroxide (H2O2)</label>
+			</add-channel>
+			<add-channel id="n2o" groupIds="advanced-measurements">
+				<type>airq:n2o</type>
+				<label>Nitrous Oxide (N2O)</label>
+			</add-channel>
+			<add-channel id="no-m250" groupIds="advanced-measurements">
+				<type>airq:no-m250</type>
+				<label>Nitrogen Monoxide (NO)</label>
+			</add-channel>
+			<add-channel id="acid-m100" groupIds="advanced-measurements">
+				<type>airq:acid-m100</type>
+				<label>Organic Acid</label>
+			</add-channel>
+			<add-channel id="ph3" groupIds="advanced-measurements">
+				<type>airq:ph3</type>
+				<label>Hydrogen Phosphide (PH3)</label>
+			</add-channel>
+			<add-channel id="sih4" groupIds="advanced-measurements">
+				<type>airq:sih4</type>
+				<label>Silane (SiH4)</label>
+			</add-channel>
+			<add-channel id="tvoc-ionsc" groupIds="advanced-measurements">
+				<type>airq:tvoc-ionsc</type>
+				<label>Industrial VOC</label>
+			</add-channel>
+			<add-channel id="pressure-rel" groupIds="advanced-measurements">
+				<type>airq:pressure-rel</type>
+				<label>Relative Barometric Pressure</label>
+			</add-channel>
+			<add-channel id="sound-max" groupIds="advanced-measurements">
+				<type>airq:sound-max</type>
+				<label>Maximum Noise</label>
+			</add-channel>
+			<add-channel id="ch4-mipex" groupIds="advanced-measurements">
+				<type>airq:ch4-mipex</type>
+				<label>Methane (CH4)</label>
+			</add-channel>
+			<add-channel id="c3h8-mipex" groupIds="advanced-measurements">
+				<type>airq:c3h8-mipex</type>
+				<label>Propane (C3H8)</label>
+			</add-channel>
+			<add-channel id="r32" groupIds="advanced-measurements">
+				<type>airq:r32</type>
+				<label>Refrigerant R32</label>
+			</add-channel>
+			<add-channel id="r454b" groupIds="advanced-measurements">
+				<type>airq:r454b</type>
+				<label>Refrigerant R454B</label>
+			</add-channel>
+			<add-channel id="r454c" groupIds="advanced-measurements">
+				<type>airq:r454c</type>
+				<label>Refrigerant R454C</label>
+			</add-channel>
+			<add-channel id="c2h4o-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Acetaldehyde</label>
+			</add-channel>
+			<add-channel id="nh3-mr100-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Ammonia</label>
+			</add-channel>
+			<add-channel id="ash3-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Arsine</label>
+			</add-channel>
+			<add-channel id="br2-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Bromine</label>
+			</add-channel>
+			<add-channel id="ch4s-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Methanethiol</label>
+			</add-channel>
+			<add-channel id="cl2-m20-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Chlorine</label>
+			</add-channel>
+			<add-channel id="clo2-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Chlorine Dioxide</label>
+			</add-channel>
+			<add-channel id="cs2-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Carbon Disulfide</label>
+			</add-channel>
+			<add-channel id="ethanol-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Ethanol</label>
+			</add-channel>
+			<add-channel id="c2h4-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Ethylene</label>
+			</add-channel>
+			<add-channel id="ch2o-m10-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Formaldehyde</label>
+			</add-channel>
+			<add-channel id="f2-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Fluorine</label>
+			</add-channel>
+			<add-channel id="hcl-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Hydrochloric Acid</label>
+			</add-channel>
+			<add-channel id="hcn-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Hydrogen Cyanide</label>
+			</add-channel>
+			<add-channel id="hf-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Hydrogen Fluoride</label>
+			</add-channel>
+			<add-channel id="h2-m1000-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Hydrogen</label>
+			</add-channel>
+			<add-channel id="h2o2-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Hydrogen Peroxide</label>
+			</add-channel>
+			<add-channel id="n2o-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Nitrous Oxide</label>
+			</add-channel>
+			<add-channel id="no-m250-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Nitrogen Monoxide</label>
+			</add-channel>
+			<add-channel id="acid-m100-maxerr" groupIds="advanced-maxerr">
+				<type>airq:ppb-maxerr</type>
+				<label>Max. Error Organic Acid</label>
+			</add-channel>
+			<add-channel id="ph3-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Hydrogen Phosphide</label>
+			</add-channel>
+			<add-channel id="sih4-maxerr" groupIds="advanced-maxerr">
+				<type>airq:density-maxerr</type>
+				<label>Max. Error Silane</label>
+			</add-channel>
+			<add-channel id="tvoc-ionsc-maxerr" groupIds="advanced-maxerr">
+				<type>airq:ppb-maxerr</type>
+				<label>Max. Error Industrial VOC</label>
+			</add-channel>
+			<add-channel id="pressure-rel-maxerr" groupIds="advanced-maxerr">
+				<type>airq:pressure-rel-maxerr</type>
+				<label>Max. Error Relative Barometric Pressure</label>
+			</add-channel>
+			<add-channel id="sound-max-maxerr" groupIds="advanced-maxerr">
+				<type>airq:sound-max-maxerr</type>
+				<label>Max. Error Maximum Noise</label>
+			</add-channel>
+			<add-channel id="ch4-mipex-maxerr" groupIds="advanced-maxerr">
+				<type>airq:percent-maxerr</type>
+				<label>Max. Error Methane</label>
+			</add-channel>
+			<add-channel id="c3h8-mipex-maxerr" groupIds="advanced-maxerr">
+				<type>airq:percent-maxerr</type>
+				<label>Max. Error Propane</label>
+			</add-channel>
+			<add-channel id="r32-maxerr" groupIds="advanced-maxerr">
+				<type>airq:percent-maxerr</type>
+				<label>Max. Error Refrigerant R32</label>
+			</add-channel>
+			<add-channel id="r454b-maxerr" groupIds="advanced-maxerr">
+				<type>airq:percent-maxerr</type>
+				<label>Max. Error Refrigerant R454B</label>
+			</add-channel>
+			<add-channel id="r454c-maxerr" groupIds="advanced-maxerr">
+				<type>airq:percent-maxerr</type>
+				<label>Max. Error Refrigerant R454C</label>
+			</add-channel>
+			<add-channel id="radon_maxerr" groupIds="maxerr">
+				<type>airq:radon_maxerr</type>
+			</add-channel>
+			<update-channel id="status" groupIds="general">
+				<type>airq:status</type>
+			</update-channel>
+			<update-channel id="wifi" groupIds="general">
+				<type>airq:Wifi</type>
+			</update-channel>
+			<update-channel id="ssid" groupIds="general">
+				<type>airq:WLANssid</type>
+			</update-channel>
+			<update-channel id="password" groupIds="general">
+				<type>airq:pass</type>
+			</update-channel>
+			<update-channel id="wifiInfo" groupIds="general">
+				<type>airq:WifiInfo</type>
+			</update-channel>
+			<update-channel id="timeServer" groupIds="general">
+				<type>airq:TimeServer</type>
+			</update-channel>
+			<update-channel id="location" groupIds="general">
+				<type>airq:geopos</type>
+			</update-channel>
+			<update-channel id="nightModeStartDay" groupIds="general">
+				<type>airq:nightmodeStartDay</type>
+			</update-channel>
+			<update-channel id="nightModeStartNight" groupIds="general">
+				<type>airq:nightmodeStartNight</type>
+			</update-channel>
+			<update-channel id="nightModeBrightnessDay" groupIds="general">
+				<type>airq:nightmodeBrightnessDay</type>
+			</update-channel>
+			<update-channel id="nightModeBrightnessNight" groupIds="general">
+				<type>airq:nightmodeBrightnessNight</type>
+			</update-channel>
+			<update-channel id="nightModeFanNightOff" groupIds="general">
+				<type>airq:nightmodeFanNightOff</type>
+			</update-channel>
+			<update-channel id="nightModeWifiNightOff" groupIds="general">
+				<type>airq:nightmodeWifiNightOff</type>
+			</update-channel>
+			<update-channel id="deviceName" groupIds="general">
+				<type>airq:deviceName</type>
+			</update-channel>
+			<update-channel id="roomType" groupIds="general">
+				<type>airq:RoomType</type>
+			</update-channel>
+			<update-channel id="logLevel" groupIds="general">
+				<type>airq:Logging</type>
+			</update-channel>
+			<update-channel id="deleteKey" groupIds="general">
+				<type>airq:DeleteKey</type>
+			</update-channel>
+			<update-channel id="fireAlarm" groupIds="general">
+				<type>airq:FireAlarm</type>
+			</update-channel>
+			<update-channel id="wlanConfigGateway" groupIds="general">
+				<type>airq:WLAN_config_Gateway</type>
+			</update-channel>
+			<update-channel id="wlanConfigMac" groupIds="general">
+				<type>airq:WLAN_config_MAC</type>
+			</update-channel>
+			<update-channel id="wlanConfigSsid" groupIds="general">
+				<type>airq:WLAN_config_SSID</type>
+			</update-channel>
+			<update-channel id="wlanConfigIPAddress" groupIds="general">
+				<type>airq:WLAN_config_IPAddress</type>
+			</update-channel>
+			<update-channel id="wlanConfigNetMask" groupIds="general">
+				<type>airq:WLAN_config_NetMask</type>
+			</update-channel>
+			<update-channel id="wlanConfigBssid" groupIds="general">
+				<type>airq:WLAN_config_BSSID</type>
+			</update-channel>
+			<update-channel id="cloudUpload" groupIds="general">
+				<type>airq:cloudUpload</type>
+			</update-channel>
+			<update-channel id="averagingRhythm" groupIds="general">
+				<type>airq:SecondsMeasurementDelay</type>
+			</update-channel>
+			<update-channel id="powerFreqSuppression" groupIds="general">
+				<type>airq:Rejection</type>
+			</update-channel>
+			<update-channel id="autoDriftCompensation" groupIds="general">
+				<type>airq:AutoDriftCompensation</type>
+			</update-channel>
+			<update-channel id="autoUpdate" groupIds="general">
+				<type>airq:AutoUpdate</type>
+			</update-channel>
+			<update-channel id="advancedDataProcessing" groupIds="general">
+				<type>airq:AdvancedDataProcessing</type>
+			</update-channel>
+			<update-channel id="ppm_and_ppb" groupIds="general">
+				<type>airq:ppm_and_ppb</type>
+			</update-channel>
+			<update-channel id="gasAlarm" groupIds="general">
+				<type>airq:GasAlarm</type>
+			</update-channel>
+			<update-channel id="soundPressure" groupIds="general">
+				<type>airq:SoundInfo</type>
+			</update-channel>
+			<update-channel id="alarmForwarding" groupIds="general">
+				<type>airq:AlarmForwarding</type>
+			</update-channel>
+			<update-channel id="userCalib" groupIds="general">
+				<type>airq:usercalib</type>
+			</update-channel>
+			<update-channel id="initialCalFinished" groupIds="general">
+				<type>airq:InitialCalFinished</type>
+			</update-channel>
+			<update-channel id="averaging" groupIds="general">
+				<type>airq:Averaging</type>
+			</update-channel>
+			<update-channel id="errorBars" groupIds="general">
+				<type>airq:ErrorBars</type>
+			</update-channel>
+			<update-channel id="warmupPhase" groupIds="general">
+				<type>airq:WarmupPhase</type>
+			</update-channel>
+			<update-channel id="avgFineDustSize" groupIds="measurements">
+				<type>airq:typps</type>
+			</update-channel>
+			<update-channel id="fineDustCnt00_3" groupIds="measurements">
+				<type>airq:cnt0_3</type>
+			</update-channel>
+			<update-channel id="fineDustCnt00_5" groupIds="measurements">
+				<type>airq:cnt0_5</type>
+			</update-channel>
+			<update-channel id="fineDustCnt01" groupIds="measurements">
+				<type>airq:cnt1</type>
+			</update-channel>
+			<update-channel id="fineDustCnt02_5" groupIds="measurements">
+				<type>airq:cnt2_5</type>
+			</update-channel>
+			<update-channel id="fineDustCnt05" groupIds="measurements">
+				<type>airq:cnt5</type>
+			</update-channel>
+			<update-channel id="fineDustCnt10" groupIds="measurements">
+				<type>airq:cnt10</type>
+			</update-channel>
+			<update-channel id="co" groupIds="measurements">
+				<type>airq:co</type>
+			</update-channel>
+			<update-channel id="co2" groupIds="measurements">
+				<type>airq:co2</type>
+			</update-channel>
+			<update-channel id="dCO2dt" groupIds="measurements">
+				<type>airq:dco2dt</type>
+			</update-channel>
+			<update-channel id="dHdt" groupIds="measurements">
+				<type>airq:dhdt</type>
+			</update-channel>
+			<update-channel id="dewpt" groupIds="measurements">
+				<type>airq:dewpt</type>
+			</update-channel>
+			<update-channel id="doorEvent" groupIds="measurements">
+				<type>airq:door</type>
+			</update-channel>
+			<update-channel id="h2s" groupIds="measurements">
+				<type>airq:h2s</type>
+			</update-channel>
+			<update-channel id="healthIndex" groupIds="measurements">
+				<type>airq:health_index</type>
+			</update-channel>
+			<update-channel id="health" groupIds="measurements">
+				<type>airq:health</type>
+			</update-channel>
+			<update-channel id="humidityRelative" groupIds="measurements">
+				<type>airq:humidity</type>
+			</update-channel>
+			<update-channel id="humidityAbsolute" groupIds="measurements">
+				<type>airq:humidity_abs</type>
+			</update-channel>
+			<update-channel id="measureTime" groupIds="measurements">
+				<type>airq:mtime</type>
+			</update-channel>
+			<update-channel id="no2" groupIds="measurements">
+				<type>airq:no2</type>
+			</update-channel>
+			<update-channel id="o3" groupIds="measurements">
+				<type>airq:o3</type>
+			</update-channel>
+			<update-channel id="o2" groupIds="measurements">
+				<type>airq:oxygen</type>
+			</update-channel>
+			<update-channel id="performanceIndex" groupIds="measurements">
+				<type>airq:performance_index</type>
+			</update-channel>
+			<update-channel id="performance" groupIds="measurements">
+				<type>airq:performance</type>
+			</update-channel>
+			<update-channel id="fineDustConc01" groupIds="measurements">
+				<type>airq:pm1</type>
+			</update-channel>
+			<update-channel id="fineDustConc02_5" groupIds="measurements">
+				<type>airq:pm2_5</type>
+			</update-channel>
+			<update-channel id="fineDustConc10" groupIds="measurements">
+				<type>airq:pm10</type>
+			</update-channel>
+			<update-channel id="pressure" groupIds="measurements">
+				<type>airq:pressure</type>
+			</update-channel>
+			<update-channel id="radon" groupIds="measurements">
+				<type>airq:radon</type>
+			</update-channel>
+			<update-channel id="so2" groupIds="measurements">
+				<type>airq:so2</type>
+			</update-channel>
+			<update-channel id="sound" groupIds="measurements">
+				<type>airq:sound</type>
+			</update-channel>
+			<update-channel id="temperature" groupIds="measurements">
+				<type>airq:temperature</type>
+			</update-channel>
+			<update-channel id="timestamp" groupIds="measurements">
+				<type>airq:timestamp</type>
+			</update-channel>
+			<update-channel id="tvoc" groupIds="measurements">
+				<type>airq:tvoc</type>
+			</update-channel>
+			<update-channel id="uptime" groupIds="general">
+				<type>airq:uptime</type>
+			</update-channel>
+			<update-channel id="virus_free" groupIds="measurements">
+				<type>airq:virus_free</type>
+			</update-channel>
+			<update-channel id="mold_free" groupIds="measurements">
+				<type>airq:mold_free</type>
+			</update-channel>
+			<update-channel id="fineDustCnt00_3_maxerr" groupIds="maxerr">
+				<type>airq:cnt0_3_maxerr</type>
+			</update-channel>
+			<update-channel id="fineDustCnt00_5_maxerr" groupIds="maxerr">
+				<type>airq:cnt0_5_maxerr</type>
+			</update-channel>
+			<update-channel id="fineDustCnt01_maxerr" groupIds="maxerr">
+				<type>airq:cnt1_maxerr</type>
+			</update-channel>
+			<update-channel id="fineDustCnt02_5_maxerr" groupIds="maxerr">
+				<type>airq:cnt2_5_maxerr</type>
+			</update-channel>
+			<update-channel id="fineDustCnt05_maxerr" groupIds="maxerr">
+				<type>airq:cnt5_maxerr</type>
+			</update-channel>
+			<update-channel id="fineDustCnt10_maxerr" groupIds="maxerr">
+				<type>airq:cnt10_maxerr</type>
+			</update-channel>
+			<update-channel id="co_maxerr" groupIds="maxerr">
+				<type>airq:co_maxerr</type>
+			</update-channel>
+			<update-channel id="co2_maxerr" groupIds="maxerr">
+				<type>airq:co2_maxerr</type>
+			</update-channel>
+			<update-channel id="dewpt_maxerr" groupIds="maxerr">
+				<type>airq:dewpt_maxerr</type>
+			</update-channel>
+			<update-channel id="h2s_maxerr" groupIds="maxerr">
+				<type>airq:h2s_maxerr</type>
+			</update-channel>
+			<update-channel id="humidityRelative_maxerr" groupIds="maxerr">
+				<type>airq:humidity_maxerr</type>
+			</update-channel>
+			<update-channel id="humidityAbsolute_maxerr" groupIds="maxerr">
+				<type>airq:humidity_abs_maxerr</type>
+			</update-channel>
+			<update-channel id="no2_maxerr" groupIds="maxerr">
+				<type>airq:no2_maxerr</type>
+			</update-channel>
+			<update-channel id="o3_maxerr" groupIds="maxerr">
+				<type>airq:o3_maxerr</type>
+			</update-channel>
+			<update-channel id="o2_maxerr" groupIds="maxerr">
+				<type>airq:oxygen_maxerr</type>
+			</update-channel>
+			<update-channel id="fineDustConc01_maxerr" groupIds="maxerr">
+				<type>airq:pm1_maxerr</type>
+			</update-channel>
+			<update-channel id="fineDustConc02_5_maxerr" groupIds="maxerr">
+				<type>airq:pm2_5_maxerr</type>
+			</update-channel>
+			<update-channel id="fineDustConc10_maxerr" groupIds="maxerr">
+				<type>airq:pm10_maxerr</type>
+			</update-channel>
+			<update-channel id="pressure_maxerr" groupIds="maxerr">
+				<type>airq:pressure_maxerr</type>
+			</update-channel>
+			<update-channel id="so2_maxerr" groupIds="maxerr">
+				<type>airq:so2_maxerr</type>
+			</update-channel>
+			<update-channel id="sound_maxerr" groupIds="maxerr">
+				<type>airq:sound_maxerr</type>
+			</update-channel>
+			<update-channel id="temperature_maxerr" groupIds="maxerr">
+				<type>airq:temperature_maxerr</type>
+			</update-channel>
+			<update-channel id="tvoc_maxerr" groupIds="maxerr">
+				<type>airq:tvoc_maxerr</type>
+			</update-channel>
+			<update-channel id="virus_free_maxerr" groupIds="maxerr">
+				<type>airq:virus_free_maxerr</type>
+			</update-channel>
+			<update-channel id="mold_free_maxerr" groupIds="maxerr">
+				<type>airq:mold_free_maxerr</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
-
 </update:update-descriptions>
