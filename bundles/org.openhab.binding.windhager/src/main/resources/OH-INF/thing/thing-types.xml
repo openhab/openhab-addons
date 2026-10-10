@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="windhager"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- BioWin 2 Thing Type -->
+	<thing-type id="biowin2" extensible="biowin-value">
+		<label>BioWin 2</label>
+		<description>Windhager BioWin 2 heating system</description>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the BioWin webserver</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>Port of the BioWin webserver. Defaults to 80.</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username for authenticating to the BioWin webserver</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for authenticating to the BioWin webserver</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- BioWin value channel types -->
+	<channel-type id="biowin-value">
+		<item-type>Number</item-type>
+		<label>BioWin Value</label>
+		<description>Reads a numeric value from the BioWin webserver using a configured OID.</description>
+		<config-description>
+			<parameter name="oid" type="text" required="true">
+				<label>OID</label>
+				<description>BioWin OID, for example 1/60/0/23/103/0.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="true" min="1" unit="s">
+				<label>Refresh Interval</label>
+				<description>How often this value is refreshed from the BioWin webserver.</description>
+				<default>60</default>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
