@@ -49,6 +49,8 @@ In addition to periodic polling, the binding also receives event-triggered notif
 
 - mowerZoneId (optional): Time zone of the Automower® (e.g. Europe/Berlin).
     Default is the time zone of the system.
+- minCuttingHeightCm (optional, advanced): Minimum cutting height in cm used to convert the raw mower and work-area values. Leave empty to keep the raw values as the only active state.
+- maxCuttingHeightCm (optional, advanced): Maximum cutting height in cm used to convert the raw mower and work-area values. If both values are configured, the calculated cm channels are updated and the work-area range is inherited from the mower.
 
 `work-area:`
 
@@ -97,6 +99,8 @@ These channels hold Automower® settings.
 |------------------------------------------------------|----------|-----------------|---------------------------------------------------------------------------|--------------|
 | setting#cutting-height                               | Number   | R/W             | Prescaled cutting height, Range: 1-9                                      | false        |
 | setting#headlight-mode<sup id="a1">[1](#f1)</sup>    | String   | R/W             | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT)   | false        |
+
+The advanced read-only `setting#cutting-height-cm` channel reports the calculated cutting height in cm when both mower height limits are configured.
 
 The absolute cutting height can be calculated from the prescaled cutting height using the following formula:
 
@@ -156,6 +160,7 @@ These channels hold the different Work Area configurations.
 | channel                                                     | type                      | access mode     | description                                                                         | advanced     |
 |-------------------------------------------------------------|---------------------------|-----------------|-------------------------------------------------------------------------------------|--------------|
 | work-area#name                                              | String                    | R/W             | Name of the Work Area                                                               | false        |
+| work-area#id                                                | Number                    | R               | Unique numeric ID of the Work Area                                                  | true         |
 | work-area#type                                              | String                    | R               | The type of the Work Area, e.g. RANDOM                                              | true         |
 | work-area#cutting-height                                    | Number:Dimensionless      | R/W             | Cutting height of the Work Area in percent. 0-100                                   | false        |
 | work-area#use-global-cutting-height                         | Switch                    | R               | If the Work Area uses the global cutting height instead of its own                  | true         |
@@ -166,6 +171,8 @@ These channels hold the different Work Area configurations.
 | work-area#last-time-abandoned                               | DateTime                  | R               | Timestamp when the Work Area was last abandoned                                     | true         |
 | work-area#orientation                                       | Number:Angle              | R/W             | Orientation of the mowing pattern in degrees. Pattern based Work Areas only         | true         |
 | work-area#orientation-shift                                 | Number:Angle              | R/W             | Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only   | true         |
+
+The advanced read-only `work-area#cutting-height-cm` channel reports the calculated height using the limits inherited from the mower. The inherited minimum and maximum are also visible as work-area properties.
 
 #### Calendar Tasks Channels (Work Area)
 

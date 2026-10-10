@@ -16,6 +16,7 @@ import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +32,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -275,6 +278,7 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
     }
 
     private void updateWorkAreaChannels(WorkArea workArea, AutomowerHandler mowerHandler) {
+        updateState(CHANNEL_WORKAREA_ID, new DecimalType(workArea.getWorkAreaId()));
         if (workArea.getWorkAreaId() == 0L && workArea.getName().isBlank()) {
             updateState(CHANNEL_WORKAREA_NAME, new StringType("main area"));
         } else {
@@ -283,6 +287,21 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         updateState(CHANNEL_WORKAREA_TYPE,
                 workArea.getType() != null ? new StringType(workArea.getType()) : UnDefType.NULL);
         updateState(CHANNEL_WORKAREA_CUTTING_HEIGHT, new QuantityType<>(workArea.getCuttingHeight(), Units.PERCENT));
+        Double calculatedWorkAreaCuttingHeightCm = mowerHandler
+                .calculateCuttingHeightCmForWorkArea(workArea.getCuttingHeight());
+        if (calculatedWorkAreaCuttingHeightCm != null) {
+            updateState(CHANNEL_WORKAREA_CUTTING_HEIGHT_CM,
+                    new QuantityType<>(calculatedWorkAreaCuttingHeightCm, MetricPrefix.CENTI(SIUnits.METRE)));
+        }
+
+        Map<String, String> properties = editProperties();
+        Double minCuttingHeightCm = mowerHandler.getMinCuttingHeightCm();
+        Double maxCuttingHeightCm = mowerHandler.getMaxCuttingHeightCm();
+        properties.put(AUTOMOWER_MIN_CUTTING_HEIGHT_CM,
+                minCuttingHeightCm != null ? String.valueOf(minCuttingHeightCm) : "N/A");
+        properties.put(AUTOMOWER_MAX_CUTTING_HEIGHT_CM,
+                maxCuttingHeightCm != null ? String.valueOf(maxCuttingHeightCm) : "N/A");
+        updateProperties(properties);
         updateState(CHANNEL_WORKAREA_USE_GLOBAL_CUTTING_HEIGHT, OnOffType.from(workArea.isUseGlobalCuttingHeight()));
         updateState(CHANNEL_WORKAREA_ENABLED, OnOffType.from(workArea.isEnabled()));
         updateState(CHANNEL_WORKAREA_SCHEDULABLE, OnOffType.from(workArea.isSchedulable()));

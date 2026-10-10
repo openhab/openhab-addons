@@ -19,6 +19,9 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_WORKAREA_ID;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_WORKAREA;
 
 import java.lang.reflect.Field;
 import java.time.ZoneId;
@@ -55,13 +58,46 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Stay
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.WorkArea;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 
 @SuppressWarnings("all")
 class AutomowerHandlerCacheTest {
+    @Test
+    void workAreaIdChannelPublishesNumericApiId() {
+        assertWorkAreaIdPublished(17746L);
+    }
+
+    @Test
+    void workAreaIdChannelPublishesMainAreaZeroId() {
+        assertWorkAreaIdPublished(0L);
+    }
+
+    private void assertWorkAreaIdPublished(long workAreaId) {
+        ThingUID bridgeUID = new ThingUID(THING_TYPE_BRIDGE, "bridge-1");
+        ThingUID thingUID = new ThingUID(THING_TYPE_WORKAREA, bridgeUID, "mower-1-" + workAreaId);
+        Thing thing = ThingBuilder.create(THING_TYPE_WORKAREA, thingUID).withBridge(bridgeUID).withChannel(
+                ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_WORKAREA_ID), CoreItemFactory.NUMBER).build())
+                .build();
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        AutomowerWorkAreaHandler handler = new AutomowerWorkAreaHandler(thing);
+        handler.setCallback(callback);
+        WorkArea workArea = new WorkArea();
+        workArea.setWorkAreaId(workAreaId);
+        workArea.setName(workAreaId == 0L ? "" : "Test Area");
+
+        handler.updateChannels(workArea, List.of(), mock(AutomowerHandler.class));
+
+        verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_WORKAREA_ID), new DecimalType(workAreaId));
+    }
+
     @Test
     void successfulCalendarUpdateReplacesOnlyTargetWorkAreaTasks() throws Exception {
         TestContext context = createContext(true, false);
