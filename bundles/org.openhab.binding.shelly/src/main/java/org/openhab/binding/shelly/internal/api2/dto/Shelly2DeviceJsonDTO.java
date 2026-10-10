@@ -15,13 +15,13 @@ package org.openhab.binding.shelly.internal.api2.dto;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * {@link ShellyDebugLogJsonDTO} includes constants and structures used for the Gen2+ real-time debug log, which is
- * streamed over a dedicated WebSocket endpoint (separate from the regular RPC socket) once armed via
- * {@code Sys.SetConfig}'s {@code debug.websocket.enable}.
+ * {@link Shelly2DeviceJsonDTO} includes constants and structures of the Gen2+ device-level (Sys) configuration and
+ * services, e.g. the real-time debug log streamed over the {@code /debug/log} WebSocket.
  *
  * @author Markus Michels - Initial contribution
  */
-public class ShellyDebugLogJsonDTO {
+public class Shelly2DeviceJsonDTO {
+    public static final String SHELLYRPC_METHOD_SYS_SETCONFIG = "Sys.SetConfig";
 
     public static final String SHELLY2_DEBUGLOG_ENDPOINT = "/debug/log";
 
@@ -31,12 +31,20 @@ public class ShellyDebugLogJsonDTO {
     public static final int SHELLY2_DEBUGLOG_LEVEL_DEBUG = 3;
     public static final int SHELLY2_DEBUGLOG_LEVEL_VERBOSE = 4;
 
-    public static class Shelly2ConfigParmsDebug {
-        public static class Shelly2ConfigParmsDebugWebSocket {
-            public Boolean enable;
-        }
+    public static class Shelly2SysSetConfigParams {
+        public Shelly2SysConfig config;
+    }
 
-        public Shelly2ConfigParmsDebugWebSocket websocket;
+    public static class Shelly2SysConfig {
+        public Shelly2SysConfigDebug debug;
+    }
+
+    public static class Shelly2SysConfigDebug {
+        public Shelly2SysConfigDebugWebSocket websocket;
+    }
+
+    public static class Shelly2SysConfigDebugWebSocket {
+        public Boolean enable;
     }
 
     /**

@@ -17,7 +17,7 @@ import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.dto.ShellyDebugLogJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -116,13 +116,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     protected volatile boolean initialized;
     protected final boolean alwaysOn;
     private @Nullable Shelly2RpcSocket rpcSocket;
-    private final Shelly2DebugLogController debugLog;
     private volatile @Nullable Shelly2AuthChallenge authInfo;
     // collapses concurrent refreshes of a stale nonce onto one, each extra nonce fills the device's nonce cache
     private final Object authLock = new Object();
     private volatile @Nullable String pendingAsyncMethod;
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
+    private final Shelly2DebugLogController debugLog;
 
     // Pro/Plus RGBW(W) PM: RPC method family per settings.lights[i].apiComponent tag - replaces per-call-site
     // profile-string checks (SHELLY2_PROFILE_CCTX2.equals(...)) with a single lookup, correct for hybrid profiles.
@@ -1351,13 +1351,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Nullable
     String buildDebugLogAuthHeader() throws ShellyApiException {
+        // the /debug/log upgrade GET reuses the nonce of the last /rpc challenge
         Shelly2AuthChallenge challenge = authInfo;
-        if (challenge == null || config.getPassword().isBlank()) {
-            return null;
-        }
-        // Reuse the nonce of the last /rpc challenge for the /debug/log upgrade GET
-        return formatAuthResponse(SHELLY2_DEBUGLOG_ENDPOINT, buildAuthResponse(HttpMethod.GET,
-                SHELLY2_DEBUGLOG_ENDPOINT, challenge, SHELLY2_AUTHDEF_USER, config.getPassword()));
+        return challenge != null && !config.getPassword().isBlank()
+                ? buildAuthHeader(HttpMethod.GET, SHELLY2_DEBUGLOG_ENDPOINT, challenge)
+                : null;
     }
 
     @Override

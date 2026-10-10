@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
-import static org.openhab.binding.shelly.internal.api2.dto.ShellyDebugLogJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -33,7 +35,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyDebugLogJsonDTO.Shelly2DebugLogMessage;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.Shelly2DebugLogMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,31 +60,34 @@ public class Shelly2DebugLogSocket {
     private final Gson gson = new Gson();
 
     private final String thingName;
-    private final String debugLogUrl;
+    private final @Nullable InetSocketAddress deviceSocketAddr;
     private final WebSocketClient client;
     private final Shelly2DebugLogListener listener;
 
     // All access must be guarded by "this"
     private @Nullable Session session;
 
-    public Shelly2DebugLogSocket(String thingName, String debugLogUrl, WebSocketClient webSocketClient,
-            Shelly2DebugLogListener listener) {
+    public Shelly2DebugLogSocket(String thingName, @Nullable InetSocketAddress deviceSocketAddr,
+            WebSocketClient webSocketClient, Shelly2DebugLogListener listener) {
         this.thingName = thingName;
-        this.debugLogUrl = debugLogUrl;
+        this.deviceSocketAddr = deviceSocketAddr;
         this.client = webSocketClient;
         this.listener = listener;
     }
 
     public void connect(@Nullable String authHeader) throws ShellyApiException {
+        InetSocketAddress socketAddr = this.deviceSocketAddr;
+        InetAddress inetAddr;
+        if (socketAddr == null || (inetAddr = socketAddr.getAddress()) == null) {
+            throw new ShellyApiException(thingName + ": Device IP not set");
+        }
+        int port = socketAddr.getPort();
+        String hostHeader = port > 0 ? inetAddr.getHostAddress() + ":" + port : inetAddr.getHostAddress();
         URI uri;
         try {
-            uri = new URI(debugLogUrl);
+            uri = new URI("ws://" + hostHeader + SHELLY2_DEBUGLOG_ENDPOINT);
         } catch (URISyntaxException e) {
             throw new ShellyApiException(thingName + ": Invalid Debug Log URI: " + e.getMessage(), e);
-        }
-        String hostHeader = uri.getRawAuthority();
-        if (hostHeader == null || hostHeader.isBlank()) {
-            throw new ShellyApiException(thingName + ": Device IP not set");
         }
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setHeader(HttpHeaders.HOST, hostHeader);

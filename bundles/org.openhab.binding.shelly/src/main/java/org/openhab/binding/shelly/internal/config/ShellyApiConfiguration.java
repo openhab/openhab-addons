@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.config;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY1_CALLBACK_URI;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_DEFAULT_USERID;
-import static org.openhab.binding.shelly.internal.api2.dto.ShellyDebugLogJsonDTO.SHELLY2_DEBUGLOG_ENDPOINT;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.net.InetAddress;
@@ -64,13 +63,11 @@ public class ShellyApiConfiguration {
 
     private static class ShellyApiUrls {
         private final String deviceApi;
-        private final String debugLog;
         private final String websocketCallback;
         private final String eventCallback;
 
         public ShellyApiUrls(String localIp, String localPort, String deviceIp) {
             deviceApi = "http://" + deviceIp;
-            debugLog = "ws://" + deviceIp + SHELLY2_DEBUGLOG_ENDPOINT;
             if (localIp.isBlank()) {
                 websocketCallback = "";
                 eventCallback = "";
@@ -345,10 +342,6 @@ public class ShellyApiConfiguration {
 
     public synchronized String getDeviceApiUrl() {
         return urls.deviceApi;
-    }
-
-    public synchronized String getDebugLogUrl() {
-        return urls.debugLog;
     }
 
     public synchronized String getEventCallbackUrl() {

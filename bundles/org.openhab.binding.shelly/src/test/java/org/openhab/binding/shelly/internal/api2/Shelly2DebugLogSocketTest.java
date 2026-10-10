@@ -16,6 +16,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
+import java.net.InetSocketAddress;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -48,7 +50,7 @@ class Shelly2DebugLogSocketTest {
 
     @BeforeEach
     void setUp() {
-        socket = new Shelly2DebugLogSocket("test", "ws://127.0.0.1:80/debug/log", webSocketClient, listener);
+        socket = new Shelly2DebugLogSocket("test", new InetSocketAddress("127.0.0.1", 80), webSocketClient, listener);
         when(session.isOpen()).thenReturn(true);
     }
 

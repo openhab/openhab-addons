@@ -252,12 +252,7 @@ public class ShellyHttpClient {
 
     protected @Nullable Shelly2AuthRsp buildAuthResponse(String uri, @Nullable Shelly2AuthChallenge challenge,
             String user, String password) throws ShellyApiException {
-        return buildAuthResponse(HttpMethod.POST, uri, challenge, user, password);
-    }
-
-    protected @Nullable Shelly2AuthRsp buildAuthResponse(HttpMethod method, String uri,
-            @Nullable Shelly2AuthChallenge challenge, String user, String password) throws ShellyApiException {
-        return buildAuthResponse(challenge, user, password, sha256(method + ":" + uri));
+        return buildAuthResponse(challenge, user, password, sha256(HttpMethod.POST + ":" + uri));
     }
 
     // a WebSocket request has no HTTP method/URI, the RPC spec defines HA2 = SHA256("dummy_method:dummy_uri")
@@ -303,6 +298,12 @@ public class ShellyHttpClient {
         return rsp != null ? MessageFormat.format(HTTP_AUTH_TYPE_DIGEST
                 + " username=\"{0}\", realm=\"{1}\", uri=\"{2}\", nonce=\"{3}\", cnonce=\"{4}\", nc=\"{5}\", qop=\"auth\",response=\"{6}\", algorithm=\"{7}\", ",
                 rsp.username, rsp.realm, uri, rsp.nonce, rsp.cnonce, rsp.nc, rsp.response, rsp.algorithm) : "";
+    }
+
+    protected String buildAuthHeader(HttpMethod method, String uri, Shelly2AuthChallenge challenge)
+            throws ShellyApiException {
+        return formatAuthResponse(uri,
+                buildAuthResponse(challenge, SHELLY2_AUTHDEF_USER, config.getPassword(), sha256(method + ":" + uri)));
     }
 
     /**

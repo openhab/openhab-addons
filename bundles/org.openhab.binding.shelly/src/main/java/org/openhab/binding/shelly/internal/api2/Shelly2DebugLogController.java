@@ -13,18 +13,18 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.dto.ShellyDebugLogJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfigResponse.Shelly2WsConfigResult;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyDebugLogJsonDTO.Shelly2ConfigParmsDebug;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyDebugLogJsonDTO.Shelly2ConfigParmsDebug.Shelly2ConfigParmsDebugWebSocket;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.Shelly2SysConfig;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.Shelly2SysConfigDebug;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.Shelly2SysConfigDebugWebSocket;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.Shelly2SysSetConfigParams;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.slf4j.Logger;
@@ -58,9 +58,10 @@ public class Shelly2DebugLogController implements Shelly2DebugLogListener {
 
     public synchronized void setEnabled(boolean enable) throws ShellyApiException {
         try {
-            Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
-            params.config.debug = new Shelly2ConfigParmsDebug();
-            params.config.debug.websocket = new Shelly2ConfigParmsDebugWebSocket();
+            Shelly2SysSetConfigParams params = new Shelly2SysSetConfigParams();
+            params.config = new Shelly2SysConfig();
+            params.config.debug = new Shelly2SysConfigDebug();
+            params.config.debug.websocket = new Shelly2SysConfigDebugWebSocket();
             params.config.debug.websocket.enable = enable;
             api.apiRequest(SHELLYRPC_METHOD_SYS_SETCONFIG, params, Shelly2WsConfigResult.class);
 
@@ -109,7 +110,8 @@ public class Shelly2DebugLogController implements Shelly2DebugLogListener {
         if (socket != null) {
             return;
         }
-        Shelly2DebugLogSocket newSocket = new Shelly2DebugLogSocket(thingName, config.getDebugLogUrl(), client, this);
+        Shelly2DebugLogSocket newSocket = new Shelly2DebugLogSocket(thingName, config.getDeviceSocketAddress(), client,
+                this);
         socket = newSocket;
         try {
             newSocket.connect(api.buildDebugLogAuthHeader());
