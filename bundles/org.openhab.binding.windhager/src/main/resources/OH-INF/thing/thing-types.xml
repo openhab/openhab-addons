@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- BioWin 2 Thing Type -->
-	<thing-type id="biowin2">
+	<thing-type id="biowin2" extensible="biowin-value">
 		<label>BioWin 2</label>
 		<description>Windhager BioWin 2 heating system</description>
 
