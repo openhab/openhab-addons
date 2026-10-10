@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.websocket.api.StatusCode;
@@ -120,6 +122,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private volatile @Nullable String pendingAsyncMethod;
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
+    private final Shelly2DebugLogController debugLog;
 
     // Pro/Plus RGBW(W) PM: RPC method family per settings.lights[i].apiComponent tag - replaces per-call-site
     // profile-string checks (SHELLY2_PROFILE_CCTX2.equals(...)) with a single lookup, correct for hybrid profiles.
@@ -161,6 +164,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         this.client = webSocketClient;
         this.scheduler = scheduler;
         this.alwaysOn = profile.alwaysOn;
+        this.debugLog = new Shelly2DebugLogController(thingName, this, config, webSocketClient);
     }
 
     @Override
@@ -213,6 +217,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         profile.initialized = true;
+
+        if (profile.capDebugLog && dc.sys.debug != null && dc.sys.debug.websocket != null
+                && getBool(dc.sys.debug.websocket.enable)) {
+            debugLog.resume();
+        }
 
         try {
             if (alwaysOn && dc.ble != null) {
@@ -1331,6 +1340,25 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
+    public void setDebugLogEnabled(boolean enable) throws ShellyApiException {
+        debugLog.setEnabled(enable);
+    }
+
+    @Override
+    public boolean isDebugLogEnabled() {
+        return debugLog.isEnabled();
+    }
+
+    @Nullable
+    String buildDebugLogAuthHeader() throws ShellyApiException {
+        // the /debug/log upgrade GET reuses the nonce of the last /rpc challenge
+        Shelly2AuthChallenge challenge = authInfo;
+        return challenge != null && !config.getPassword().isBlank()
+                ? buildAuthHeader(HttpMethod.GET, SHELLY2_DEBUGLOG_ENDPOINT, challenge)
+                : null;
+    }
+
+    @Override
     public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
         setLightParms(lightIndex, Map.of(parm, value));
     }
@@ -1675,6 +1703,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void close() {
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        ShellyThingInterface thing = this.thing;
+        debugLog.close(thing != null && thing.isStopping());
         if (rpcSocket == null) {
             initialized = false;
             return;

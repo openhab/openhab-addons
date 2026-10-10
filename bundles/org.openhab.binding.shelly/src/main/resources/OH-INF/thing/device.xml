@@ -122,6 +122,12 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="deviceDebug" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Debug Logging</label>
+		<description>ON: Streams the device's real-time debug log into openHAB's log at DEBUG or TRACE level</description>
+		<category>Switch</category>
+	</channel-type>
 	<channel-type id="deviceTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Internal Temperature</label>

@@ -76,6 +76,7 @@ public class ShellyDeviceProfile {
     public boolean alwaysOn = true;
     public boolean isGen2;
     public boolean isBlu;
+    public boolean capDebugLog; // true if the device's debug log can be streamed (Gen2+, reachable all the time)
     public String gateway = "";
 
     public String hwRev = "";
@@ -264,6 +265,7 @@ public class ShellyDeviceProfile {
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)
+        capDebugLog = isGen2 && alwaysOn;
     }
 
     public void initializeInputs(ThingTypeUID thingTypeUID, String btnType) {

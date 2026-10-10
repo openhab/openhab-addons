@@ -300,6 +300,12 @@ public class ShellyHttpClient {
                 rsp.username, rsp.realm, uri, rsp.nonce, rsp.cnonce, rsp.nc, rsp.response, rsp.algorithm) : "";
     }
 
+    protected String buildAuthHeader(HttpMethod method, String uri, Shelly2AuthChallenge challenge)
+            throws ShellyApiException {
+        return formatAuthResponse(uri,
+                buildAuthResponse(challenge, SHELLY2_AUTHDEF_USER, config.getPassword(), sha256(method + ":" + uri)));
+    }
+
     /**
      * Fill in POST data, set http headers
      *
