@@ -194,7 +194,7 @@ public class AutomowerBindingConstants {
     public static final String GROUP_WORKAREA = "work-area#";
 
     public static final String CHANNEL_WORKAREA_NAME = GROUP_WORKAREA + "name";
-        public static final String CHANNEL_WORKAREA_ID = GROUP_WORKAREA + "id";
+    public static final String CHANNEL_WORKAREA_ID = GROUP_WORKAREA + "id";
     public static final String CHANNEL_WORKAREA_TYPE = GROUP_WORKAREA + "type";
     public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = GROUP_WORKAREA + "cutting-height";
     public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT_CM = GROUP_WORKAREA + "cutting-height-cm";

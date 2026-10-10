@@ -15,15 +15,15 @@ package org.openhab.binding.automower.internal.things;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_WORKAREA_ID;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
-import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_WORKAREA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_WORKAREA_ID;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_WORKAREA;
 
 import java.lang.reflect.Field;
 import java.time.ZoneId;
@@ -85,9 +85,8 @@ class AutomowerHandlerCacheTest {
     private void assertWorkAreaIdPublished(long workAreaId) {
         ThingUID bridgeUID = new ThingUID(THING_TYPE_BRIDGE, "bridge-1");
         ThingUID thingUID = new ThingUID(THING_TYPE_WORKAREA, bridgeUID, "mower-1-" + workAreaId);
-        Thing thing = ThingBuilder.create(THING_TYPE_WORKAREA, thingUID).withBridge(bridgeUID)
-                .withChannel(ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_WORKAREA_ID), CoreItemFactory.NUMBER)
-                        .build())
+        Thing thing = ThingBuilder.create(THING_TYPE_WORKAREA, thingUID).withBridge(bridgeUID).withChannel(
+                ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_WORKAREA_ID), CoreItemFactory.NUMBER).build())
                 .build();
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         AutomowerWorkAreaHandler handler = new AutomowerWorkAreaHandler(thing);
