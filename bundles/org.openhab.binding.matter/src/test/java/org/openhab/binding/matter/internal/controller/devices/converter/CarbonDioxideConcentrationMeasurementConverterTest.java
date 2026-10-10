@@ -13,6 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -72,6 +73,7 @@ class CarbonDioxideConcentrationMeasurementConverterTest extends BaseMatterConve
         assertEquals("matter:node:test:12345:1#carbondioxideconcentrationmeasurement-measuredvalue",
                 channel.getUID().toString());
         assertEquals("Number:Dimensionless", channel.getAcceptedItemType());
+        assertFalse(channel.getLabel() != null && channel.getLabel().startsWith("@text/"));
     }
 
     @Test

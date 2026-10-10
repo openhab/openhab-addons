@@ -93,8 +93,8 @@ public abstract class AbstractConcentrationMeasurementConverter<T extends BaseCl
 
         Channel measuredValueChannel = ChannelBuilder
                 .create(new ChannelUID(channelGroupUID, measuredValueChannelId), "Number:Dimensionless")
-                .withType(measuredValueChannelType).withLabel(measuredValueLabel)
-                .withDescription(measuredValueDescription).build();
+                .withType(measuredValueChannelType).withLabel(handler.getTranslation(measuredValueLabel))
+                .withDescription(handler.getTranslation(measuredValueDescription)).build();
 
         StateDescription stateDescription = createStateDescriptionWithPattern();
         channels.put(measuredValueChannel, stateDescription);
