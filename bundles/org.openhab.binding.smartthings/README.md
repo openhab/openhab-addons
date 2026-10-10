@@ -26,11 +26,17 @@ Do not reset your appliance or remove its SmartThings registration to enable thi
 
 Discovery runs only when you start a scan; there is no automatic or background network scanning.
 
-1. Set **Discovery Subnet** in **Settings → Bindings → Samsung SmartThings Binding**, as described in [Binding Configuration](#binding-configuration).
+1. Check that the **Primary Address** in **Settings → Network** selects the network used by your appliance.
 1. Start a Samsung SmartThings scan in the Inbox.
 1. Wait for the scan to finish, then add your appliance from the results.
 
-Use `192.168.1.0/24` to scan a typical home subnet, or `192.168.1.50/32` to look for a single known appliance.
+By default, discovery uses the subnet of openHAB's primary IPv4 interface.
+For example, a primary address of `192.168.0.4/24` results in a scan of `192.168.0.0/24`, without additional binding configuration.
+The current address and interface prefix are checked each time you start a scan; an ongoing scan keeps its original address range.
+If the primary subnet cannot be determined, is not private IPv4, or is larger than `/24`, set **Discovery Subnet** explicitly as described in [Binding Configuration](#binding-configuration).
+Discovery never guesses a subnet from the broadcast address or scans other interfaces automatically.
+
+To override the default, use `192.168.1.0/24` to scan a different home subnet, or `192.168.1.50/32` to look for a single known appliance.
 A full `/24` scan can take about three minutes; results appear when it completes.
 Cancelling, restarting, or changing the scan configuration discards incomplete results.
 
@@ -45,14 +51,15 @@ Discovery does not update an existing Thing's address after a DHCP change.
 
 ## Binding Configuration
 
-The only binding-wide setting is the optional subnet used for Inbox scans.
-Leave it empty if you intend to add appliances manually.
+The only binding-wide setting is an optional subnet override for Inbox scans.
+Leave it empty to use the primary IPv4 interface's subnet selected through **Settings → Network**.
+Neither an empty setting nor an explicit override starts scans automatically.
 
 | Name | Type | Description | Default | Required |
 |------|------|-------------|---------|----------|
-| `discoverySubnet` | text | Private IPv4 subnet in CIDR notation, with a prefix from `/24` to `/32`. | N/A | no |
+| `discoverySubnet` | text | Override with a private IPv4 subnet in CIDR notation, with a prefix from `/24` to `/32`. | Primary IPv4 interface's subnet | no |
 
-Configure it in **Settings → Bindings → Samsung SmartThings Binding**, or use the [configuration example](cfg/smartthings.cfg) to create `$OPENHAB_CONF/services/smartthings.cfg` with the following setting:
+Configure an override in **Settings → Bindings → Samsung SmartThings Binding**, or use the [configuration example](cfg/smartthings.cfg) to create `$OPENHAB_CONF/services/smartthings.cfg` with the following setting:
 
 ```properties
 binding.smartthings:discoverySubnet=192.168.1.0/24
@@ -248,7 +255,7 @@ The binding does not derive or provision this key.
 
 | Symptom | What to check |
 |---------|---------------|
-| Appliance is not found | Check `discoverySubnet`, wait for the scan to finish, and allow UDP traffic. If the firmware lacks public discovery metadata, add the Thing manually. |
+| Appliance is not found | Check the primary IPv4 subnet in **Settings → Network**, or set `discoverySubnet` explicitly. Only private `/24`–`/32` networks are scanned. Wait for the scan to finish and allow UDP traffic. If the firmware lacks public discovery metadata, add the Thing manually. |
 | Thing is OFFLINE | Check the address and advertised secure port, network isolation, identity-file permissions, and any imported credentials or certificate pin. Firmware that rejects the default profile needs authorized credentials or is unsupported. |
 | Device identity mismatch | Verify that the configured address still belongs to the intended appliance and that `deviceId` matches it. Changing the host alone does not replace the remembered identity. |
 | Readings work, but commands do not | Enable Remote Control if required, and check the channel's advertised commands and limits. A successful connection does not establish write permission; some firmware may acknowledge a command without applying it. |

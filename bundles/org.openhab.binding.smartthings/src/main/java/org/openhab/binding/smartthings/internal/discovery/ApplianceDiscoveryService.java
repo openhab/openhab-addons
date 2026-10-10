@@ -10,13 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.ocf;
+package org.openhab.binding.smartthings.internal.discovery;
 
 import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_APPLIANCE;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,27 +31,34 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.ocf.Discovery;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.ScanListener;
+import org.openhab.core.net.CidrAddress;
+import org.openhab.core.net.NetUtil;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * User-triggered, bounded discovery on an explicitly configured private subnet.
+ * User-triggered, bounded discovery on an explicit private subnet or the primary IPv4 interface's subnet.
  *
  * @author Kai Kreuzer - Initial contribution
+ * @author Kai Kreuzer - Network-derived discovery defaults
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "binding.smartthings")
@@ -67,26 +76,34 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
     private final ScheduledExecutorService control;
     private final ScheduledExecutorService workers;
     private final Probe probe;
+    private final NetworkAddressService networkAddressService;
+    private final Supplier<Collection<CidrAddress>> interfaceAddresses;
     private final Semaphore slots = new Semaphore(CONCURRENCY);
 
     // Lifecycle transitions and publication are serialized; network requests never occupy this executor.
     private boolean active;
-    private List<InetAddress> addresses = List.of();
+    private @Nullable Object configuredSubnet;
     private @Nullable Scan scan;
 
-    public ApplianceDiscoveryService() {
+    @Activate
+    public ApplianceDiscoveryService(@Reference NetworkAddressService networkAddressService) {
         super(Set.of(THING_TYPE_APPLIANCE), SCAN_TIMEOUT_SECONDS, false);
         control = ThreadPoolManager.getPoolBasedSequentialScheduledExecutorService("smartthings-discovery-control",
                 "smartthings-discovery-control");
         workers = ThreadPoolManager.getScheduledPool("smartthings-discovery-probes");
         probe = Discovery::discoverSamsung;
+        this.networkAddressService = networkAddressService;
+        interfaceAddresses = NetUtil::getAllInterfaceAddresses;
     }
 
-    ApplianceDiscoveryService(ScheduledExecutorService control, ScheduledExecutorService workers, Probe probe) {
+    ApplianceDiscoveryService(ScheduledExecutorService control, ScheduledExecutorService workers, Probe probe,
+            NetworkAddressService networkAddressService, Supplier<Collection<CidrAddress>> interfaceAddresses) {
         super(control, Set.of(THING_TYPE_APPLIANCE), SCAN_TIMEOUT_SECONDS, false, null, null);
         this.control = control;
         this.workers = workers;
         this.probe = probe;
+        this.networkAddressService = networkAddressService;
+        this.interfaceAddresses = interfaceAddresses;
     }
 
     @Activate
@@ -108,18 +125,35 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void configure(@Nullable Map<String, Object> properties) {
-        addresses = List.of();
-        Object subnet = properties == null ? null : properties.get("discoverySubnet");
+        configuredSubnet = properties == null ? null : properties.get("discoverySubnet");
+    }
+
+    private List<InetAddress> scanAddresses() {
+        Object subnet = configuredSubnet;
         if (subnet == null || "".equals(subnet)) {
-            return;
+            String primaryAddress = networkAddressService.getPrimaryIpv4HostAddress();
+            if (primaryAddress == null) {
+                return List.of();
+            }
+            // Resolve afresh for each scan, but retain a stable address snapshot throughout the scan.
+            List<CidrAddress> matches = interfaceAddresses.get().stream()
+                    .filter(address -> address.getAddress() instanceof Inet4Address
+                            && address.getAddress().getHostAddress().equals(primaryAddress))
+                    .distinct().toList();
+            if (matches.size() != 1) {
+                return List.of();
+            }
+            subnet = matches.getFirst().toString();
         }
         try {
             if (!(subnet instanceof String cidr)) {
                 throw new IllegalArgumentException("Discovery subnet must be text");
             }
-            addresses = DiscoverySubnet.addresses(cidr);
+            return DiscoverySubnet.addresses(cidr);
         } catch (IllegalArgumentException e) {
-            logger.warn("Samsung appliance discovery disabled: {}", e.getMessage());
+            logger.debug("Samsung appliance discovery skipped: {}. Configure a private IPv4 discoverySubnet",
+                    e.getMessage());
+            return List.of();
         }
     }
 
@@ -143,8 +177,10 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        List<InetAddress> addresses = scanAddresses();
         if (addresses.isEmpty()) {
-            logger.debug("Configure a private IPv4 discoverySubnet before scanning for Samsung appliances");
+            logger.debug(
+                    "No suitable discovery subnet; configure a private IPv4 discoverySubnet before scanning for Samsung appliances");
             super.stopScan();
             return;
         }

@@ -39,8 +39,8 @@ import com.google.gson.JsonObject;
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-final class Discovery {
-    record Descriptor(String deviceId, String name, int securePort) {
+public final class Discovery {
+    public record Descriptor(String deviceId, String name, int securePort) {
     }
 
     private Discovery() {
@@ -65,7 +65,7 @@ final class Discovery {
         return discover(host, ports, timeoutSeconds, false);
     }
 
-    static Descriptor discoverSamsung(InetAddress host, int timeoutSeconds) throws IOException {
+    public static Descriptor discoverSamsung(InetAddress host, int timeoutSeconds) throws IOException {
         return discoverSamsung(host, new LinkedHashSet<>(List.of(5683, 49154, 49153)), timeoutSeconds);
     }
 

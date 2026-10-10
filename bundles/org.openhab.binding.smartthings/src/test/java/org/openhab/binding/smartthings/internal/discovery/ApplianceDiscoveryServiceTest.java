@@ -10,13 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.ocf;
+package org.openhab.binding.smartthings.internal.discovery;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -32,14 +34,18 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.openhab.binding.smartthings.internal.ocf.Discovery;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.ScanListener;
+import org.openhab.core.net.CidrAddress;
+import org.openhab.core.net.NetworkAddressService;
 
 /**
  * Manual discovery, stable results and cancellation across bounded concurrent scans.
  *
  * @author Kai Kreuzer - Initial contribution
+ * @author Kai Kreuzer - Network-derived discovery coverage
  */
 @NonNullByDefault
 @Timeout(20)
@@ -48,6 +54,8 @@ class ApplianceDiscoveryServiceTest {
     private final ScheduledExecutorService control = executor(1);
     private final ScheduledExecutorService workers = executor(8);
     private final List<DiscoveryResult> results = new CopyOnWriteArrayList<>();
+    private final NetworkAddressService networkAddressService = mock(NetworkAddressService.class);
+    private Collection<CidrAddress> interfaceAddresses = List.of();
     private @Nullable ApplianceDiscoveryService service;
 
     private static ScheduledExecutorService executor(int threads) {
@@ -78,7 +86,8 @@ class ApplianceDiscoveryServiceTest {
 
     private ApplianceDiscoveryService create(Map<String, Object> properties, ApplianceDiscoveryService.Probe probe,
             int timeoutSeconds) throws Exception {
-        var current = new ApplianceDiscoveryService(control, workers, probe) {
+        var current = new ApplianceDiscoveryService(control, workers, probe, networkAddressService,
+                () -> interfaceAddresses) {
             @Override
             public int getScanTimeout() {
                 return timeoutSeconds;
@@ -125,6 +134,132 @@ class ApplianceDiscoveryServiceTest {
             assertEquals(0, calls.get());
         }
         assertTrue(results.isEmpty());
+    }
+
+    private static CidrAddress address(String host, int prefix) throws Exception {
+        return new CidrAddress(InetAddress.getByName(host), (short) prefix);
+    }
+
+    @Test
+    void usesPrimaryInterfaceSubnetForMissingAndEmptyConfigurationOnlyWhenScanning() throws Exception {
+        when(networkAddressService.getPrimaryIpv4HostAddress()).thenReturn("192.168.0.4");
+        interfaceAddresses = List.of(address("10.0.0.1", 24), address("192.168.0.4", 24), address("fd00::1", 64));
+        List<String> hosts = new CopyOnWriteArrayList<>();
+        var current = create(Map.of(), (host, timeout) -> {
+            hosts.add(host.getHostAddress());
+            if (host.getHostAddress().equals("192.168.0.250")) {
+                return descriptor(IDENTITY);
+            }
+            throw new IOException("No supported appliance");
+        });
+        assertTrue(hosts.isEmpty());
+        assertFalse(current.isBackgroundDiscoveryEnabled());
+        for (Map<String, Object> configuration : List.of(Map.<String, Object> of(),
+                Map.<String, Object> of("discoverySubnet", ""))) {
+            hosts.clear();
+            current.modified(configuration);
+            Completion completion = new Completion();
+            current.startScan(completion);
+            assertTrue(completion.finished.get(5, TimeUnit.SECONDS));
+            drain();
+            assertEquals(254, hosts.size());
+            assertEquals(254, hosts.stream().distinct().count());
+            assertTrue(hosts.containsAll(List.of("192.168.0.1", "192.168.0.4", "192.168.0.250", "192.168.0.254")));
+            assertTrue(hosts.stream().allMatch(host -> host.startsWith("192.168.0.")));
+            assertFalse(hosts.contains("192.168.0.0"));
+            assertFalse(hosts.contains("192.168.0.255"));
+        }
+        assertEquals(2, results.size());
+        assertEquals("192.168.0.250", results.getFirst().getProperties().get("host"));
+    }
+
+    @Test
+    void explicitSubnetOverridesNetworkSettingsAndInvalidOverridesNeverUseTheDefault() throws Exception {
+        when(networkAddressService.getPrimaryIpv4HostAddress()).thenReturn("192.168.0.4");
+        interfaceAddresses = List.of(address("192.168.0.4", 24));
+        AtomicInteger calls = new AtomicInteger();
+        var current = create(Map.of("discoverySubnet", "10.0.0.50/32"), (host, timeout) -> {
+            assertEquals("10.0.0.50", host.getHostAddress());
+            calls.incrementAndGet();
+            return descriptor(IDENTITY);
+        });
+        Completion completion = new Completion();
+        current.startScan(completion);
+        assertTrue(completion.finished.get(5, TimeUnit.SECONDS));
+        assertEquals(1, calls.get());
+        for (Object subnet : List.of("10.0.0.0/23", "8.8.8.8/32", "localhost/32", " ", 42)) {
+            current.modified(Map.of("discoverySubnet", subnet));
+            completion = new Completion();
+            current.startScan(completion);
+            assertTrue(completion.finished.get(5, TimeUnit.SECONDS));
+            assertEquals(1, calls.get());
+        }
+        verify(networkAddressService, never()).getPrimaryIpv4HostAddress();
+    }
+
+    @Test
+    void refusesMissingUnmatchedAmbiguousNonPrivateAndOversizedDefaultSubnets() throws Exception {
+        AtomicInteger calls = new AtomicInteger();
+        var current = create(Map.of(), (host, timeout) -> {
+            calls.incrementAndGet();
+            return descriptor(IDENTITY);
+        });
+        for (CidrAddress candidate : List.of(address("10.0.0.1", 23), address("10.0.0.1", 0), address("10.0.0.1", 33),
+                address("8.8.8.8", 24), address("169.254.1.1", 24), address("127.0.0.1", 32), address("fd00::1", 64))) {
+            when(networkAddressService.getPrimaryIpv4HostAddress()).thenReturn(candidate.getAddress().getHostAddress());
+            interfaceAddresses = List.of(candidate);
+            Completion completion = new Completion();
+            current.startScan(completion);
+            assertTrue(completion.finished.get(5, TimeUnit.SECONDS));
+            assertEquals(0, calls.get());
+        }
+        when(networkAddressService.getPrimaryIpv4HostAddress()).thenReturn("192.168.0.4");
+        for (Collection<CidrAddress> candidates : List.of(List.<CidrAddress> of(), List.of(address("192.168.0.5", 24)),
+                List.of(address("192.168.0.4", 24), address("192.168.0.4", 25)))) {
+            interfaceAddresses = candidates;
+            Completion completion = new Completion();
+            current.startScan(completion);
+            assertTrue(completion.finished.get(5, TimeUnit.SECONDS));
+            assertEquals(0, calls.get());
+        }
+        when(networkAddressService.getPrimaryIpv4HostAddress()).thenReturn(null);
+        interfaceAddresses = List.of(address("192.168.0.4", 24));
+        Completion completion = new Completion();
+        current.startScan(completion);
+        assertTrue(completion.finished.get(5, TimeUnit.SECONDS));
+        assertEquals(0, calls.get());
+    }
+
+    @Test
+    void reReadsNetworkSettingsAndPrefixOnEachScanAndAfterClearingOverride() throws Exception {
+        List<String> hosts = new CopyOnWriteArrayList<>();
+        var current = create(Map.of("discoverySubnet", "10.0.0.50/32"), (host, timeout) -> {
+            hosts.add(host.getHostAddress());
+            throw new IOException("No supported appliance");
+        });
+        Completion completion = new Completion();
+        current.startScan(completion);
+        assertTrue(completion.finished.get(5, TimeUnit.SECONDS));
+        assertEquals(List.of("10.0.0.50"), hosts);
+        current.modified(Map.of());
+        when(networkAddressService.getPrimaryIpv4HostAddress()).thenReturn("192.168.0.4");
+        interfaceAddresses = List.of(address("192.168.0.4", 32));
+        for (int prefix : List.of(32, 31)) {
+            hosts.clear();
+            interfaceAddresses = List.of(address("192.168.0.4", prefix), address("192.168.0.4", prefix));
+            completion = new Completion();
+            current.startScan(completion);
+            assertTrue(completion.finished.get(5, TimeUnit.SECONDS));
+            assertEquals(prefix == 32 ? List.of("192.168.0.4") : List.of("192.168.0.4", "192.168.0.5"),
+                    hosts.stream().sorted().toList());
+        }
+        when(networkAddressService.getPrimaryIpv4HostAddress()).thenReturn("10.0.0.7");
+        interfaceAddresses = List.of(address("192.168.0.4", 31), address("10.0.0.7", 32));
+        hosts.clear();
+        completion = new Completion();
+        current.startScan(completion);
+        assertTrue(completion.finished.get(5, TimeUnit.SECONDS));
+        assertEquals(List.of("10.0.0.7"), hosts);
     }
 
     @Test

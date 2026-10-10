@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.ocf;
+package org.openhab.binding.smartthings.internal.discovery;
 
 import static org.junit.jupiter.api.Assertions.*;
 
