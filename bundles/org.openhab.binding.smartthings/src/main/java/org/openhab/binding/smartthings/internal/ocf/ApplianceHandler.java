@@ -404,7 +404,7 @@ public class ApplianceHandler extends BaseThingHandler {
             if (!isActive(current)) {
                 return;
             }
-            List<Point> points = current.resources.points();
+            List<Point> points = current.resources.points(true);
             List<Channel> channels = new ArrayList<>();
             for (Point point : points) {
                 String type = switch (point.itemType()) {

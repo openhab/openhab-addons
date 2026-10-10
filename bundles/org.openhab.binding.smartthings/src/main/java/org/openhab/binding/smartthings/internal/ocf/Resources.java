@@ -41,6 +41,8 @@ import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -73,6 +75,7 @@ public class Resources {
     private static final String WATER = "/water/consumption/vs/0";
     private static final String KIDS_LOCK = "/kidslock/vs/0";
     private static final String SETINFO = "/wm/setinfo/vs/0";
+    private static final Logger LOGGER = LoggerFactory.getLogger(Resources.class);
     private final Map<String, JsonObject> resources = new LinkedHashMap<>();
 
     /** A channel backed by one field, or the complete JSON representation when field is empty. */
@@ -132,6 +135,10 @@ public class Resources {
 
     /** Returns current channels; capability flags can change their writability between updates. */
     public synchronized List<Point> points() {
+        return points(false);
+    }
+
+    synchronized List<Point> points(boolean logIgnoredChannels) {
         List<Point> result = new ArrayList<>();
         resources.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
             String href = entry.getKey();
@@ -144,15 +151,23 @@ public class Resources {
             if (href.endsWith(POWER) && rep.has("value")) {
                 add(result, href, "value", "Switch", "Power",
                         booleanValue(rep.get("value")) != null && powerWritable(prefix(href, POWER)));
-            } else if (href.endsWith(POWER_VS) && rep.has(VENDOR + "power")
-                    && !standardBooleanUsable(prefix(href, POWER_VS), POWER)) {
-                add(result, href, VENDOR + "power", "Switch", "Power",
-                        onOff(rep.get(VENDOR + "power")) != null && powerWritable(prefix(href, POWER_VS)));
+            } else if (href.endsWith(POWER_VS) && rep.has(VENDOR + "power")) {
+                if (!standardBooleanUsable(prefix(href, POWER_VS), POWER)) {
+                    add(result, href, VENDOR + "power", "Switch", "Power",
+                            onOff(rep.get(VENDOR + "power")) != null && powerWritable(prefix(href, POWER_VS)));
+                } else {
+                    logIgnoredChannel(logIgnoredChannels, href, VENDOR + "power", "Power",
+                            "a usable standard power resource is available");
+                }
             } else if (href.endsWith(REMOTE) && rep.has("value")) {
                 add(result, href, "value", "Switch", "Remote Control", false);
-            } else if (href.endsWith(REMOTE_VS) && rep.has(VENDOR + "remoteControlEnabled")
-                    && !standardBooleanUsable(prefix(href, REMOTE_VS), REMOTE)) {
-                add(result, href, VENDOR + "remoteControlEnabled", "Switch", "Remote Control", false);
+            } else if (href.endsWith(REMOTE_VS) && rep.has(VENDOR + "remoteControlEnabled")) {
+                if (!standardBooleanUsable(prefix(href, REMOTE_VS), REMOTE)) {
+                    add(result, href, VENDOR + "remoteControlEnabled", "Switch", "Remote Control", false);
+                } else {
+                    logIgnoredChannel(logIgnoredChannels, href, VENDOR + "remoteControlEnabled", "Remote Control",
+                            "a usable standard remote-control resource is available");
+                }
             } else if ((href.endsWith(CURRENT) || href.endsWith(DESIRED)) && rep.has("temperature")) {
                 boolean desired = href.endsWith(DESIRED);
                 add(result, href, "temperature", "Number:Temperature", desired ? "Desired Temperature" : "Temperature",
@@ -176,12 +191,22 @@ public class Resources {
                 JsonObject item = temperatureItem(rep);
                 if (item != null) {
                     String base = prefix(href, TEMPERATURES_VS);
-                    if (item.has(VENDOR + "current") && !standardTemperatureUsable(base + CURRENT)) {
-                        add(result, href, VENDOR + "current", "Number:Temperature", "Temperature", false);
+                    if (item.has(VENDOR + "current")) {
+                        if (!standardTemperatureUsable(base + CURRENT)) {
+                            add(result, href, VENDOR + "current", "Number:Temperature", "Temperature", false);
+                        } else {
+                            logIgnoredChannel(logIgnoredChannels, href, VENDOR + "current", "Temperature",
+                                    "a usable standard current-temperature resource is available");
+                        }
                     }
-                    if (item.has(VENDOR + "desired") && !standardTemperatureUsable(base + DESIRED)) {
-                        add(result, href, VENDOR + "desired", "Number:Temperature", "Desired Temperature",
-                                vendorBounds(item) != null);
+                    if (item.has(VENDOR + "desired")) {
+                        if (!standardTemperatureUsable(base + DESIRED)) {
+                            add(result, href, VENDOR + "desired", "Number:Temperature", "Desired Temperature",
+                                    vendorBounds(item) != null);
+                        } else {
+                            logIgnoredChannel(logIgnoredChannels, href, VENDOR + "desired", "Desired Temperature",
+                                    "a usable standard desired-temperature resource is available");
+                        }
                     }
                 }
             } else if (modesSuffix != null && rep.has(VENDOR + "modes")) {
@@ -201,10 +226,19 @@ public class Resources {
         result.forEach(point -> pointsById.computeIfAbsent(point.id(), ignored -> new ArrayList<>()).add(point));
         List<Point> uniquePoints = new ArrayList<>();
         for (List<Point> points : pointsById.values()) {
-            List<Point> retained = points.size() > 1
-                    && points.stream().anyMatch(point -> !point.label().endsWith("(Raw)"))
-                            ? points.stream().filter(point -> !point.label().endsWith("(Raw)")).toList()
-                            : points;
+            boolean omitRaw = points.size() > 1 && points.stream().anyMatch(point -> !point.label().endsWith("(Raw)"));
+            List<Point> retained;
+            if (omitRaw) {
+                for (Point point : points) {
+                    if (point.label().endsWith("(Raw)")) {
+                        logIgnoredChannel(logIgnoredChannels, point.href(), point.field(), point.label(),
+                                "a non-raw channel uses the same channel identifier");
+                    }
+                }
+                retained = points.stream().filter(point -> !point.label().endsWith("(Raw)")).toList();
+            } else {
+                retained = points;
+            }
             for (Point point : retained) {
                 uniquePoints.add(retained.size() == 1 ? point
                         : new Point(fallbackId(point), point.href(), point.field(), point.itemType(), point.label(),
@@ -493,6 +527,12 @@ public class Resources {
         String resource = href.substring(1).replaceFirst("/vs/0$", "").replaceFirst("/0$", "");
         String readable = readableId(resource);
         points.add(new Point(readable, href, field, itemType, label, description(href, field, label), writable));
+    }
+
+    private void logIgnoredChannel(boolean enabled, String href, String field, String label, String reason) {
+        if (enabled) {
+            LOGGER.debug("Not adding potential channel '{}' from resource {} field {}: {}", label, href, field, reason);
+        }
     }
 
     private static String fallbackId(Point point) {
