@@ -65,8 +65,9 @@ public class DynamicSourceRegistry {
         }
 
         void cancel() {
-            if (future != null) {
-                future.cancel(false);
+            ScheduledFuture<?> localFuture = this.future;
+            if (localFuture != null) {
+                localFuture.cancel(false);
             }
         }
 
