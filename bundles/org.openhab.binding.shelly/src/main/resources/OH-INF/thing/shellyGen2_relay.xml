@@ -13,6 +13,7 @@
 			<channel-group id="sensors" typeId="externalSensors"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -29,6 +30,7 @@
 			<channel-group id="sensors" typeId="externalSensors"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -43,6 +45,7 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="sensors" typeId="externalSensors"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -69,6 +72,7 @@
 			</channel-group>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -85,6 +89,7 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -103,6 +108,7 @@
 				<label>Relay 2</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -119,6 +125,7 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -134,6 +141,7 @@
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -149,6 +157,7 @@
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -164,6 +173,7 @@
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -179,6 +189,7 @@
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -193,6 +204,7 @@
 		<channel-groups>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -229,6 +241,7 @@
 				<label>Power Meter 4</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -253,6 +266,7 @@
 				<label>Input 4</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -277,6 +291,7 @@
 				<label>Input 4</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -296,6 +311,7 @@
 			</channel-group>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -309,6 +325,7 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -323,6 +340,7 @@
 		<channel-groups>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -336,6 +354,7 @@
 		<channel-groups>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -349,6 +368,7 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -365,6 +385,7 @@
 			<channel-group id="sensors" typeId="externalSensors"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -381,6 +402,7 @@
 			<channel-group id="sensors" typeId="externalSensors"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -395,6 +417,7 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -437,6 +460,7 @@
 			</channel-group>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -462,6 +486,7 @@
 			</channel-group>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -478,6 +503,7 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -499,6 +525,7 @@
 				<label>Relay 3</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -522,6 +549,7 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -542,6 +570,7 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -564,6 +593,7 @@
 			</channel-group>
 			<channel-group id="nmeter" typeId="nmeter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -587,6 +617,7 @@
 			</channel-group>
 			<channel-group id="nmeter" typeId="nmeter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -624,6 +655,7 @@
 				<label>Power Meter 4</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -639,6 +671,7 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -664,6 +697,7 @@
 			</channel-group>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -679,6 +713,7 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -693,6 +728,7 @@
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -709,6 +745,7 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -723,6 +760,7 @@
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -738,6 +776,7 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -759,6 +798,7 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -781,6 +821,7 @@
 			</channel-group>
 			<channel-group id="nmeter" typeId="nmeter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>

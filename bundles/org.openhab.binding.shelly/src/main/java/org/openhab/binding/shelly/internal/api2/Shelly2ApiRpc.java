@@ -574,6 +574,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.warn("{}: Device requires restart to activate changes", thingName);
                 }
                 status.uptime = params.sys.uptime;
+                status.restartRequired = params.sys.restartRequired;
+                status.ramTotal = params.sys.ramSize;
+                status.ramFree = params.sys.ramFree;
+                status.fsSize = params.sys.fsSize;
+                status.fsFree = params.sys.fsFree;
                 if (params.sys.wakeupPeriod != null) {
                     profile.updateWakeupPeriod(params.sys.wakeupPeriod / 60);
                 }
@@ -827,6 +832,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.wifiSta.rssi = getInteger(ds.wifi.rssi);
         status.fsFree = ds.sys.fsFree;
         status.fsSize = ds.sys.fsSize;
+        status.ramTotal = ds.sys.ramSize;
+        status.ramFree = ds.sys.ramFree;
+        status.restartRequired = ds.sys.restartRequired;
         status.discoverable = getBool(profile.settings.discoverable);
 
         if (ds.sys.wakeupPeriod != null) {
