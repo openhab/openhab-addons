@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 public class SolarEdgeGenericHandlerTest {
     @Test
     public void distinguishesAuthorizationFromTransientOAuthFailures() {
-        assertEquals(ThingStatusDetail.CONFIGURATION_PENDING, SolarEdgeGenericHandler
+        assertEquals(ThingStatusDetail.AUTHORIZATION_REQUIRED, SolarEdgeGenericHandler
                 .oauthFailureStatusDetail(new SolarEdgeOAuthException("Authorization required", true)));
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR,
                 SolarEdgeGenericHandler.oauthFailureStatusDetail(new SolarEdgeOAuthException("Temporary failure")));

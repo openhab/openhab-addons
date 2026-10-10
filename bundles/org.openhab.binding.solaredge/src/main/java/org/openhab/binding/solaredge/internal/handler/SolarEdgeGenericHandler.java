@@ -172,7 +172,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
             synchronized (authorizationLock) {
                 setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
             }
-            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, authorizationDescription());
+            updateStatus(ThingStatusDetail.AUTHORIZATION_REQUIRED, authorizationDescription());
         } else {
             oAuthServlet.unregister(this);
             synchronized (authorizationLock) {
@@ -386,13 +386,13 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
             }
             String description = e.isAuthorizationRequired() && !authorizationUrl.isBlank() ? authorizationDescription()
                     : e.getMessage();
-            updateStatus(ThingStatus.OFFLINE, oauthFailureStatusDetail(e), description);
+            updateStatus(oauthFailureStatusDetail(e), description);
             return "";
         }
     }
 
     static ThingStatusDetail oauthFailureStatusDetail(SolarEdgeOAuthException e) {
-        return e.isAuthorizationRequired() ? ThingStatusDetail.CONFIGURATION_PENDING
+        return e.isAuthorizationRequired() ? ThingStatusDetail.AUTHORIZATION_REQUIRED
                 : ThingStatusDetail.COMMUNICATION_ERROR;
     }
 
