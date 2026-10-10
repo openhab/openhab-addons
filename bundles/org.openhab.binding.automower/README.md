@@ -160,6 +160,7 @@ These channels hold the different Work Area configurations.
 | channel                                                     | type                      | access mode     | description                                                                         | advanced     |
 |-------------------------------------------------------------|---------------------------|-----------------|-------------------------------------------------------------------------------------|--------------|
 | work-area#name                                              | String                    | R/W             | Name of the Work Area                                                               | false        |
+| work-area#id                                                | Number                    | R               | Unique numeric ID of the Work Area                                                  | true         |
 | work-area#type                                              | String                    | R               | The type of the Work Area, e.g. RANDOM                                              | true         |
 | work-area#cutting-height                                    | Number:Dimensionless      | R/W             | Cutting height of the Work Area in percent. 0-100                                   | false        |
 | work-area#use-global-cutting-height                         | Switch                    | R               | If the Work Area uses the global cutting height instead of its own                  | true         |

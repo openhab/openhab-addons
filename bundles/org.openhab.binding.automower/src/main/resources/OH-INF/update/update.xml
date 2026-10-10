@@ -682,5 +682,11 @@
 				<type>automower:workarea-cutting-height-cm-type</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="id" groupIds="work-area">
+				<type>automower:workarea-id-type</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

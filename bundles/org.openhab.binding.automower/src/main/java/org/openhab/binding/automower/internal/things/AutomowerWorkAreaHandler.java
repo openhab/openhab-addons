@@ -278,6 +278,7 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
     }
 
     private void updateWorkAreaChannels(WorkArea workArea, AutomowerHandler mowerHandler) {
+        updateState(CHANNEL_WORKAREA_ID, new DecimalType(workArea.getWorkAreaId()));
         if (workArea.getWorkAreaId() == 0L && workArea.getName().isBlank()) {
             updateState(CHANNEL_WORKAREA_NAME, new StringType("main area"));
         } else {

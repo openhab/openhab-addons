@@ -71,7 +71,7 @@
 			<property name="mowerHasWorkAreas">N/A</property>
 			<property name="mowerCuttingHeightMinCm">N/A</property>
 			<property name="mowerCuttingHeightMaxCm">N/A</property>
-			<property name="thingTypeVersion">5</property>
+			<property name="thingTypeVersion">6</property>
 		</properties>
 
 		<config-description>
@@ -236,6 +236,7 @@
 		<label>Work Area</label>
 		<channels>
 			<channel id="name" typeId="workarea-name-type"/>
+			<channel id="id" typeId="workarea-id-type"/>
 			<channel id="type" typeId="workarea-type-type"/>
 			<channel id="cutting-height" typeId="workarea-cutting-height-type"/>
 			<channel id="cutting-height-cm" typeId="workarea-cutting-height-cm-type"/>
@@ -648,6 +649,13 @@
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Name of the Work Area</description>
+	</channel-type>
+
+	<channel-type id="workarea-id-type" advanced="true">
+		<item-type>Number</item-type>
+		<label>Work Area ID</label>
+		<description>Unique numeric identifier of the Work Area</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="workarea-cutting-height-type">
