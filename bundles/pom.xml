@@ -489,6 +489,7 @@
     <module>org.openhab.binding.vektiva</module>
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.velux</module>
+    <module>org.openhab.binding.veluxactive</module>
     <module>org.openhab.binding.venstarthermostat</module>
     <module>org.openhab.binding.ventaair</module>
     <module>org.openhab.binding.verisure</module>

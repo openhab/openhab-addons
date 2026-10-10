@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="veluxactive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="locked">
+		<item-type>Switch</item-type>
+		<label>Departure Locked</label>
+		<description>Reported departure lock state. Send ON to lock or OFF to unlock after pairing the gateway.</description>
+		<category>Lock</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="last-seen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Last contact with the gateway reported by the service</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>CO₂</label>
+		<description>Current CO₂ concentration measured by the sensor.</description>
+		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="illuminance">
+		<item-type unitHint="lx">Number:Illuminance</item-type>
+		<label>Illuminance</label>
+		<description>Room illuminance</description>
+		<category>Light</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="position">
+		<item-type>Rollershutter</item-type>
+		<label>Position</label>
+		<description>0% open, 100% closed. Window opening requires gateway pairing. STOP stops all movements on
+			the gateway.</description>
+		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state pattern="%d %%"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="operating-mode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<description>Operating mode reported by the device</description>
+		<state readOnly="true">
+			<options>
+				<option value="algo-active">Automatic Control Active</option>
+				<option value="algo-available">Automatic Control Available</option>
+				<option value="algo-disabled">Automatic Control Disabled</option>
+				<option value="manual">Manual</option>
+				<option value="unavailable">Unavailable</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
