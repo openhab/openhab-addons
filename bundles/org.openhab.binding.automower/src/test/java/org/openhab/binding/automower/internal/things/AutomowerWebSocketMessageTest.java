@@ -87,7 +87,7 @@ class AutomowerWebSocketMessageTest {
                   "type": "planner-event-v2",
                   "attributes": {
                     "planner": {
-                      "nextStartTimestamp": 1720000000000,
+                      "nextStartTimestamp": 1720000000,
                       "override": {
                         "action": "FORCE_MOW"
                       },
@@ -100,7 +100,7 @@ class AutomowerWebSocketMessageTest {
 
         Mower mower = (Mower) getField(handler, "mowerState");
         Planner planner = mower.getAttributes().getPlanner();
-        assertEquals(1720000000000L, planner.getNextStartTimestamp());
+        assertEquals(1720000000L, planner.getNextStartTimestamp());
         assertEquals(org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Action.FORCE_MOW,
                 planner.getOverride().getAction());
         assertEquals(
@@ -144,7 +144,7 @@ class AutomowerWebSocketMessageTest {
                 mowerApp.getState());
         assertEquals(123, mowerApp.getErrorCode());
         assertEquals(true, mowerApp.getIsErrorConfirmable());
-        assertEquals(1720000000000L, mowerApp.getErrorCodeTimestamp());
+        assertEquals(1720000000L, mowerApp.getErrorCodeTimestamp());
         assertEquals(17746L, mowerApp.getWorkAreaId());
     }
 

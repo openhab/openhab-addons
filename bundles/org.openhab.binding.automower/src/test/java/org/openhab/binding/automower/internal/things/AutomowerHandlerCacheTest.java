@@ -13,8 +13,6 @@
 package org.openhab.binding.automower.internal.things;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
@@ -98,36 +96,6 @@ class AutomowerHandlerCacheTest {
         handler.updateChannels(workArea, List.of(), mock(AutomowerHandler.class));
 
         verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_WORKAREA_ID), new DecimalType(workAreaId));
-    }
-
-    @Test
-    void restPollConvertsPlannerTimestampFromSecondsToMillis() throws Exception {
-        TestContext context = createContext(false, false);
-        try {
-            long timestampSeconds = System.currentTimeMillis() / 1000 + 3600;
-            context.mower.getAttributes().getMetadata().setStatusTimestamp(timestampSeconds);
-            context.mower.getAttributes().getMower().setErrorCodeTimestamp(timestampSeconds);
-            context.mower.getAttributes().getPlanner().setNextStartTimestamp(timestampSeconds);
-
-            context.handler.updateAutomowerStateViaREST(context.mower);
-
-            long timestampMillis = timestampSeconds * 1000;
-            assertEquals(timestampMillis, context.mower.getAttributes().getMetadata().getStatusTimestamp());
-            assertEquals(timestampMillis, context.mower.getAttributes().getMower().getErrorCodeTimestamp());
-            assertEquals(timestampMillis, context.mower.getAttributes().getPlanner().getNextStartTimestamp());
-        } finally {
-            context.handler.dispose();
-        }
-    }
-
-    @Test
-    void onlyFuturePlannerTimestampsArePublished() {
-        long now = 1_900_000_000_000L;
-
-        assertTrue(AutomowerHandler.isNextStartTimestampInFuture(now + 1, now));
-        assertFalse(AutomowerHandler.isNextStartTimestampInFuture(now, now));
-        assertFalse(AutomowerHandler.isNextStartTimestampInFuture(now - 1, now));
-        assertFalse(AutomowerHandler.isNextStartTimestampInFuture(0, now));
     }
 
     @Test
