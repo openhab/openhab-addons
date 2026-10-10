@@ -69,13 +69,25 @@
 			<property name="mowerHasPosition">N/A</property>
 			<property name="mowerHasStayOutZones">N/A</property>
 			<property name="mowerHasWorkAreas">N/A</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="mowerCuttingHeightMinCm">N/A</property>
+			<property name="mowerCuttingHeightMaxCm">N/A</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 
 		<config-description>
 			<parameter name="mowerZoneId" type="text" required="false">
 				<label>TimeZone</label>
 				<description>Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone configured in openHAB</description>
+			</parameter>
+			<parameter name="minCuttingHeightCm" type="decimal" required="false" min="0" unit="cm" advanced="true">
+				<label>Minimum Cutting Height</label>
+				<description>Minimum cutting height in cm used to convert the raw mower and work-area values. Leave empty to disable
+					calculated cm channels.</description>
+			</parameter>
+			<parameter name="maxCuttingHeightCm" type="decimal" required="false" min="0" unit="cm" advanced="true">
+				<label>Maximum Cutting Height</label>
+				<description>Maximum cutting height in cm used to convert the raw mower and work-area values. Leave empty to disable
+					calculated cm channels.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -120,7 +132,9 @@
 		<properties>
 			<property name="mowerId">N/A</property>
 			<property name="workareaId">N/A</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="mowerCuttingHeightMinCm">N/A</property>
+			<property name="mowerCuttingHeightMaxCm">N/A</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 	</thing-type>
 
@@ -162,6 +176,7 @@
 		<label>Settings</label>
 		<channels>
 			<channel id="cutting-height" typeId="setting-cutting-height-type"/>
+			<channel id="cutting-height-cm" typeId="setting-cutting-height-cm-type"/>
 			<!-- channel created on demand
 				<channel id="headlight-mode" typeId="setting-headlight-mode-type"/>
 			-->
@@ -223,6 +238,7 @@
 			<channel id="name" typeId="workarea-name-type"/>
 			<channel id="type" typeId="workarea-type-type"/>
 			<channel id="cutting-height" typeId="workarea-cutting-height-type"/>
+			<channel id="cutting-height-cm" typeId="workarea-cutting-height-cm-type"/>
 			<channel id="use-global-cutting-height" typeId="workarea-use-global-cutting-height-type"/>
 			<channel id="enabled" typeId="workarea-enabled-type"/>
 			<channel id="schedulable" typeId="workarea-schedulable-type"/>
@@ -460,6 +476,13 @@
 		<description>Prescaled cutting height, range: 1-9</description>
 	</channel-type>
 
+	<channel-type id="setting-cutting-height-cm-type" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Cutting Height</label>
+		<description>Calculated cutting height in cm. Requires the mower's minimum and maximum cutting-height configuration.</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
 	<channel-type id="setting-headlight-mode-type">
 		<item-type>String</item-type>
 		<label>Headlight Mode</label>
@@ -632,6 +655,13 @@
 		<label>Cutting Height</label>
 		<description>Cutting height of the Work Area, range: 0-100</description>
 		<state pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="workarea-cutting-height-cm-type" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Cutting Height</label>
+		<description>Calculated cutting height in cm for the Work Area. The range is inherited from the mower configuration.</description>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="workarea-enabled-type">
