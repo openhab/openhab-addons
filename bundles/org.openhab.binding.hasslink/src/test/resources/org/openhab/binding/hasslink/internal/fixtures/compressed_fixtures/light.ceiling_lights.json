@@ -1,0 +1,39 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "light.ceiling_lights": {
+        "s": "on",
+        "a": {
+          "min_color_temp_kelvin": 2000,
+          "max_color_temp_kelvin": 6535,
+          "supported_color_modes": [
+            "color_temp",
+            "hs"
+          ],
+          "color_mode": "color_temp",
+          "brightness": 180,
+          "color_temp_kelvin": 2631,
+          "hs_color": [
+            28.55,
+            67.974
+          ],
+          "rgb_color": [
+            255,
+            164,
+            82
+          ],
+          "xy_color": [
+            0.532,
+            0.388
+          ],
+          "friendly_name": "Ceiling Lights",
+          "supported_features": 0
+        },
+        "c": "01M3201RG9WFEWEG0100GT4147",
+        "lc": 1789994787.3377223
+      }
+    }
+  }
+}

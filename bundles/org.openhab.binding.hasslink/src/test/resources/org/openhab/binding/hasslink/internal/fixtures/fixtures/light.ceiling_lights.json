@@ -1,0 +1,56 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "light.ceiling_lights",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "light.ceiling_lights",
+        "state": "on",
+        "attributes": {
+          "min_color_temp_kelvin": 2000,
+          "max_color_temp_kelvin": 6535,
+          "supported_color_modes": [
+            "color_temp",
+            "hs"
+          ],
+          "color_mode": "color_temp",
+          "brightness": 180,
+          "color_temp_kelvin": 2631,
+          "hs_color": [
+            28.55,
+            67.974
+          ],
+          "rgb_color": [
+            255,
+            164,
+            82
+          ],
+          "xy_color": [
+            0.532,
+            0.388
+          ],
+          "friendly_name": "Ceiling Lights",
+          "supported_features": 0
+        },
+        "last_changed": "2026-09-21T12:46:27.337722+00:00",
+        "last_reported": "2026-09-21T12:46:27.373114+00:00",
+        "last_updated": "2026-09-21T12:46:27.337722+00:00",
+        "context": {
+          "id": "01M3201RG9WFEWEG0100GT4147",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

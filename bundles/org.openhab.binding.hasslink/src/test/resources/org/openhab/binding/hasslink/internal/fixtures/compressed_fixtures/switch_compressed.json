@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "switch.decorative_lights": {
+        "s": "on",
+        "a": {
+          "assumed_state": true,
+          "friendly_name": "Decorative Lights"
+        },
+        "c": "01M3201RGTNY9AJBHXXZVCX182",
+        "lc": 1789994787.354519
+      }
+    }
+  }
+}

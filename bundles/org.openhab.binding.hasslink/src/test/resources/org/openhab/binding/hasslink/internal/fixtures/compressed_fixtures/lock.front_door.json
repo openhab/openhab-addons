@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "lock.front_door": {
+        "s": "locked",
+        "a": {
+          "friendly_name": "Front Door",
+          "supported_features": 0
+        },
+        "c": "01M3201RGBG7H8QCAHCEY9BDKZ",
+        "lc": 1789994787.339309
+      }
+    }
+  }
+}

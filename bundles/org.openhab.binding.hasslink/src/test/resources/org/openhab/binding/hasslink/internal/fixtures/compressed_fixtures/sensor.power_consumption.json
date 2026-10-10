@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.power_consumption": {
+        "s": "100",
+        "a": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "Power consumption"
+        },
+        "c": "01M3201RGK8J64JE5ZJJ7PTKQJ",
+        "lc": 1789994787.3479934
+      }
+    }
+  }
+}

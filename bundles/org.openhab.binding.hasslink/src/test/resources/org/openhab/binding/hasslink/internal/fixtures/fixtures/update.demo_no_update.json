@@ -1,0 +1,45 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "update.demo_no_update",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "update.demo_no_update",
+        "state": "off",
+        "attributes": {
+          "auto_update": false,
+          "display_precision": 0,
+          "installed_version": "1.0.0",
+          "in_progress": false,
+          "latest_version": "1.0.0",
+          "release_summary": null,
+          "release_url": null,
+          "skipped_version": null,
+          "title": "AdGuard Home",
+          "update_percentage": null,
+          "entity_picture": "/api/brands/integration/demo/icon.png",
+          "friendly_name": "Demo No Update",
+          "supported_features": 11
+        },
+        "last_changed": "2026-09-21T12:46:27.357599+00:00",
+        "last_reported": "2026-09-21T12:46:27.357599+00:00",
+        "last_updated": "2026-09-21T12:46:27.357599+00:00",
+        "context": {
+          "id": "01M3201RGXVFMXT9AJDXJG2JED",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

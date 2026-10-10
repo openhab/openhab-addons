@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "lawn_mower.yuka_back_yard": {
+        "s": "paused",
+        "a": {
+          "friendly_name": "Yuka Back Yard",
+          "supported_features": 7
+        },
+        "c": "01M34MNB3ZVXB60MGDRVJFK4PJ",
+        "lc": 1789997109.375343
+      }
+    }
+  }
+}

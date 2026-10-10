@@ -1,0 +1,34 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "remote.remote_two",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "remote.remote_two",
+        "state": "on",
+        "attributes": {
+          "friendly_name": "Remote Two",
+          "supported_features": 0
+        },
+        "last_changed": "2026-09-21T12:46:27.344732+00:00",
+        "last_reported": "2026-09-21T12:46:27.344732+00:00",
+        "last_updated": "2026-09-21T12:46:27.344732+00:00",
+        "context": {
+          "id": "01M3201RGGZ6PVPG7HKJX3XPAT",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

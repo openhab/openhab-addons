@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "conversation.home_assistant": {
+        "s": "unknown",
+        "a": {
+          "friendly_name": "Home Assistant",
+          "supported_features": 1
+        },
+        "c": "01M3201QYGKNBECCN7GGZ1WQA1",
+        "lc": 1789994786.7680588
+      }
+    }
+  }
+}

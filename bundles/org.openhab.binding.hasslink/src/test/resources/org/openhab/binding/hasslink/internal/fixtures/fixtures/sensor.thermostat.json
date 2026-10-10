@@ -1,0 +1,40 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "sensor.thermostat",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "sensor.thermostat",
+        "state": "eco",
+        "attributes": {
+          "options": [
+            "away",
+            "comfort",
+            "eco",
+            "sleep"
+          ],
+          "device_class": "enum",
+          "friendly_name": "Thermostat"
+        },
+        "last_changed": "2026-09-21T12:46:27.353499+00:00",
+        "last_reported": "2026-09-21T12:46:27.374111+00:00",
+        "last_updated": "2026-09-21T12:46:27.353499+00:00",
+        "context": {
+          "id": "01M3201RGSY3BTXCZH5NGAQQHJ",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

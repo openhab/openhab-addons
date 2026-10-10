@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.total_gas_ft3": {
+        "s": "0.028316846592",
+        "a": {
+          "state_class": "total",
+          "unit_of_measurement": "m\u00b3",
+          "device_class": "gas",
+          "friendly_name": "Total gas 2"
+        },
+        "c": "01M320AXFSQ86S70NKBQWDQ040",
+        "lc": 1789995087.353251
+      }
+    }
+  }
+}
