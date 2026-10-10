@@ -1,7 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"mrbond.airer.m1pro"
+			"mrbond.airer.m1super"
 		],
 		"propertyMethod": "get_prop",
 		"maxProperties": 2,
@@ -186,6 +186,41 @@
 					"Position"
 				],
 				"readmeComment": "Value mapping `[\"0\"=\"Normal\",\"1\"=\"Highest\",\"2\"=\"Lowest\"]`"
+			},
+			{
+				"property": "disinfect",
+				"friendlyName": "Disinfect",
+				"channel": "disinfect",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_disinfect",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Only available when the airer is at its highest position."
+			},
+			{
+				"property": "distime",
+				"friendlyName": "Disinfect Time",
+				"channel": "distime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"tags": [
+					"Status",
+					"Duration"
+				]
 			}
 		],
 		"experimental": true
