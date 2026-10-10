@@ -365,13 +365,20 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     public void poll() {
-        AutomowerBridge automowerBridge = getAutomowerBridge();
-        AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
-        if (automowerBridgeHandler != null && automowerBridge != null) {
-            automowerBridgeHandler.pollAutomowers(automowerBridge);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+        AutomowerBridge automowerBridge;
+        AutomowerBridgeHandler automowerBridgeHandler;
+        synchronized (this) {
+            if (disposed) {
+                return;
+            }
+            automowerBridge = getAutomowerBridge();
+            automowerBridgeHandler = getAutomowerBridgeHandler();
+            if (automowerBridgeHandler == null || automowerBridge == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+                return;
+            }
         }
+        automowerBridgeHandler.pollAutomowers(automowerBridge);
     }
 
     /**

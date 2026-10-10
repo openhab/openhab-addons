@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.automower.internal.things;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*;
 
 import java.lang.reflect.Method;
@@ -30,12 +34,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
+import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -46,14 +53,18 @@ import org.openhab.core.types.RefreshType;
 class AutomowerHandlerCommandTest {
     @Test
     void disposeDoesNotWaitForScheduledRefreshPoll() throws Exception {
-        AutomowerHandler handler = spy(createHandler());
+        AutomowerHandler handler = createHandler();
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        handler.setCallback(callback);
+        AutomowerBridgeHandler bridgeHandler = attachBridge(handler, callback);
         CountDownLatch pollStarted = new CountDownLatch(1);
         CountDownLatch finishPoll = new CountDownLatch(1);
         doAnswer(invocation -> {
+            assertFalse(Thread.holdsLock(handler));
             pollStarted.countDown();
             assertTrue(finishPoll.await(2, TimeUnit.SECONDS));
             return null;
-        }).when(handler).poll();
+        }).when(bridgeHandler).pollAutomowers(any());
 
         Method refreshMethod = AutomowerHandler.class.getDeclaredMethod("runScheduledStateRefresh");
         refreshMethod.setAccessible(true);
@@ -76,6 +87,48 @@ class AutomowerHandlerCommandTest {
             finishPoll.countDown();
             executor.shutdownNow();
         }
+    }
+
+    @Test
+    void scheduledRefreshDoesNotPollWhenDisposedBeforePollEntry() throws Exception {
+        assertScheduledRefreshSkipsPollAfterDisposal(true);
+    }
+
+    @Test
+    void scheduledRefreshDoesNotUpdateStatusWhenDisposedBeforePollEntryWithoutBridge() throws Exception {
+        assertScheduledRefreshSkipsPollAfterDisposal(false);
+    }
+
+    private void assertScheduledRefreshSkipsPollAfterDisposal(boolean bridgeAvailable) throws Exception {
+        AutomowerHandler handler = spy(createHandler());
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        handler.setCallback(callback);
+        AutomowerBridgeHandler bridgeHandler = bridgeAvailable ? attachBridge(handler, callback) : null;
+        doAnswer(invocation -> {
+            handler.dispose();
+            return invocation.callRealMethod();
+        }).when(handler).poll();
+
+        Method refreshMethod = AutomowerHandler.class.getDeclaredMethod("runScheduledStateRefresh");
+        refreshMethod.setAccessible(true);
+        refreshMethod.invoke(handler);
+
+        verify(handler).poll();
+        if (bridgeHandler != null) {
+            verify(bridgeHandler, never()).pollAutomowers(any());
+        }
+        verify(callback, never()).statusUpdated(any(), any());
+    }
+
+    private AutomowerBridgeHandler attachBridge(AutomowerHandler handler, ThingHandlerCallback callback) {
+        ThingUID bridgeUID = new ThingUID("automower:bridge:bridge-1");
+        Bridge bridge = mock(Bridge.class);
+        AutomowerBridgeHandler bridgeHandler = mock(AutomowerBridgeHandler.class);
+        when(handler.getThing().getBridgeUID()).thenReturn(bridgeUID);
+        when(callback.getBridge(bridgeUID)).thenReturn(bridge);
+        when(bridge.getHandler()).thenReturn(bridgeHandler);
+        when(bridgeHandler.getAutomowerBridge()).thenReturn(mock(AutomowerBridge.class));
+        return bridgeHandler;
     }
 
     @Test
