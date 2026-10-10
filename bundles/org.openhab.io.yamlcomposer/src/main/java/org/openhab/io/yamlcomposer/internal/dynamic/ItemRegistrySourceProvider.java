@@ -13,6 +13,7 @@
 package org.openhab.io.yamlcomposer.internal.dynamic;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -25,7 +26,6 @@ import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemRegistryChangeListener;
 import org.openhab.core.items.Metadata;
-import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.items.dto.ItemDTO;
 import org.openhab.core.items.dto.ItemDTOMapper;
@@ -100,28 +100,57 @@ public class ItemRegistrySourceProvider implements DynamicSourceProvider<Item>, 
 
     @Override
     public Map<String, @Nullable Object> adaptToMap(Item item) {
+        return adaptToMap(item, getMetadataForItem(item.getName()));
+    }
+
+    @Override
+    public Map<String, Map<String, @Nullable Object>> getSourceMap() {
+        Map<String, Map<String, Metadata>> metadataByItem = new LinkedHashMap<>();
+        for (Metadata metadata : metadataRegistry.getAll()) {
+            String itemName = metadata.getUID().getItemName();
+            String namespace = metadata.getUID().getNamespace();
+            metadataByItem.computeIfAbsent(itemName, key -> new LinkedHashMap<>()).put(namespace, metadata);
+        }
+
+        Map<String, Map<String, @Nullable Object>> sourceMap = new LinkedHashMap<>();
+        for (Item item : getAllEntities()) {
+            sourceMap.put(getKey(item), adaptToMap(item, metadataByItem.getOrDefault(item.getName(), Map.of())));
+        }
+        return Collections.unmodifiableMap(sourceMap);
+    }
+
+    private Map<String, @Nullable Object> adaptToMap(Item item, Map<String, Metadata> itemMetadata) {
         ItemDTO dto = ItemDTOMapper.map(item);
         Map<String, @Nullable Object> dtoMap = OBJECT_MAPPER.convertValue(dto,
                 new TypeReference<Map<String, @Nullable Object>>() {
                 });
 
         Map<String, @Nullable Object> metadataMap = new LinkedHashMap<>();
-        for (String namespace : metadataRegistry.getAllNamespaces(item.getName())) {
-            Metadata metadata = metadataRegistry.get(new MetadataKey(namespace, item.getName()));
-            if (metadata != null) {
-                Map<String, @Nullable Object> metadataEntry = new LinkedHashMap<>();
-                metadataEntry.put("value", metadata.getValue());
-                if (!metadata.getConfiguration().isEmpty()) {
-                    metadataEntry.put("config", metadata.getConfiguration());
-                }
-                metadataMap.put(namespace, metadataEntry);
-            }
-        }
+        itemMetadata.forEach((namespace, metadata) -> metadataMap.put(namespace, toMetadataMap(metadata)));
         if (!metadataMap.isEmpty()) {
             dtoMap.put("metadata", metadataMap);
         }
 
         return RegistryEntityUtils.immutableMap(dtoMap);
+    }
+
+    private Map<String, Metadata> getMetadataForItem(String itemName) {
+        Map<String, Metadata> itemMetadata = new LinkedHashMap<>();
+        for (Metadata metadata : metadataRegistry.getAll()) {
+            if (itemName.equals(metadata.getUID().getItemName())) {
+                itemMetadata.put(metadata.getUID().getNamespace(), metadata);
+            }
+        }
+        return itemMetadata;
+    }
+
+    private Map<String, @Nullable Object> toMetadataMap(Metadata metadata) {
+        Map<String, @Nullable Object> metadataEntry = new LinkedHashMap<>();
+        metadataEntry.put("value", metadata.getValue());
+        if (!metadata.getConfiguration().isEmpty()) {
+            metadataEntry.put("config", metadata.getConfiguration());
+        }
+        return metadataEntry;
     }
 
     @Override
@@ -158,44 +187,12 @@ public class ItemRegistrySourceProvider implements DynamicSourceProvider<Item>, 
         String itemName = changedMetadata.getUID().getItemName();
 
         try {
-            Item item = itemRegistry.getItem(itemName);
-            String namespace = changedMetadata.getUID().getNamespace();
-            Map<String, @Nullable Object> oldEntity = adaptToMap(item, namespace, oldMetadata);
-            Map<String, @Nullable Object> newEntity = adaptToMap(item, namespace, newMetadata);
-            onChangeListener.accept(new EntityChange(SOURCE_NAME, oldEntity, newEntity));
+            itemRegistry.getItem(itemName);
+            onChangeListener.accept(new EntityChange(SOURCE_NAME, null, null));
         } catch (ItemNotFoundException e) {
             // The metadata belongs to an item that is no longer in the registry.
             // We can ignore this case since the item removal will trigger a 'removed' event for the item itself.
         }
-    }
-
-    private Map<String, @Nullable Object> adaptToMap(Item item, String namespace, @Nullable Metadata changedMetadata) {
-        Map<String, @Nullable Object> entityMap = new LinkedHashMap<>(adaptToMap(item));
-        Map<String, @Nullable Object> metadataMap = new LinkedHashMap<>();
-        Object currentMetadata = entityMap.get("metadata");
-        if (currentMetadata instanceof Map<?, ?> currentMap) {
-            currentMap.forEach((key, value) -> {
-                if (key instanceof String metadataNamespace) {
-                    metadataMap.put(metadataNamespace, value);
-                }
-            });
-        }
-
-        metadataMap.remove(namespace);
-        if (changedMetadata != null) {
-            Map<String, @Nullable Object> metadataEntry = new LinkedHashMap<>();
-            metadataEntry.put("value", changedMetadata.getValue());
-            if (!changedMetadata.getConfiguration().isEmpty()) {
-                metadataEntry.put("config", changedMetadata.getConfiguration());
-            }
-            metadataMap.put(namespace, metadataEntry);
-        }
-        if (metadataMap.isEmpty()) {
-            entityMap.remove("metadata");
-        } else {
-            entityMap.put("metadata", metadataMap);
-        }
-        return RegistryEntityUtils.immutableMap(entityMap);
     }
 
     @Deactivate

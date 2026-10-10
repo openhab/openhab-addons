@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -100,8 +101,7 @@ class ItemRegistrySourceProviderTest {
         when(item.getName()).thenReturn("LivingRoom_Light");
         Metadata metadata = new Metadata(new MetadataKey("stateDescription", "LivingRoom_Light"), "",
                 Map.of("pattern", "%.1f °C"));
-        when(metadataRegistry.getAllNamespaces("LivingRoom_Light")).thenReturn(List.of("stateDescription"));
-        when(metadataRegistry.get(new MetadataKey("stateDescription", "LivingRoom_Light"))).thenReturn(metadata);
+        when(metadataRegistry.getAll()).thenReturn(List.of(metadata));
 
         Map<String, @Nullable Object> map = provider.adaptToMap(item);
 
@@ -113,6 +113,26 @@ class ItemRegistrySourceProviderTest {
         @SuppressWarnings("unchecked")
         Map<String, Object> config = (Map<String, Object>) metadataMap.get("stateDescription").get("config");
         assertEquals("%.1f °C", config.get("pattern"));
+    }
+
+    @Test
+    void indexesMetadataOnceForSourceSnapshot() {
+        Item item1 = mock(Item.class);
+        when(item1.getName()).thenReturn("Item1");
+        Item item2 = mock(Item.class);
+        when(item2.getName()).thenReturn("Item2");
+        when(itemRegistry.getItems()).thenReturn(List.of(item1, item2));
+        Metadata metadata = new Metadata(new MetadataKey("unit", "Item2"), "°C", Map.of());
+        when(metadataRegistry.getAll()).thenReturn(List.of(metadata));
+
+        Map<String, Map<String, @Nullable Object>> snapshot = provider.getSourceMap();
+
+        assertEquals(2, snapshot.size());
+        assertNull(snapshot.get("Item1").get("metadata"));
+        assertNotNull(snapshot.get("Item2").get("metadata"));
+        verify(metadataRegistry).getAll();
+        verify(metadataRegistry, never()).getAllNamespaces("Item1");
+        verify(metadataRegistry, never()).getAllNamespaces("Item2");
     }
 
     @Test
@@ -169,22 +189,12 @@ class ItemRegistrySourceProviderTest {
         listener.removed(oldMetadata);
 
         assertEquals(3, emittedChanges.size());
-        EntityChange added = emittedChanges.get(0);
-        assertEquals("ITEMS", added.source());
-        assertNotNull(added.oldEntity());
-        assertNull(metadataValue(added.oldEntity(), "unit"));
-        assertEquals("°F", metadataValue(added.newEntity(), "unit"));
-
-        EntityChange updated = emittedChanges.get(1);
-        assertEquals("ITEMS", updated.source());
-        assertEquals("°C", metadataValue(updated.oldEntity(), "unit"));
-        assertEquals("°F", metadataValue(updated.newEntity(), "unit"));
-
-        EntityChange removed = emittedChanges.get(2);
-        assertEquals("ITEMS", removed.source());
-        assertEquals("°C", metadataValue(removed.oldEntity(), "unit"));
-        assertNotNull(removed.newEntity());
-        assertNull(metadataValue(removed.newEntity(), "unit"));
+        for (EntityChange change : emittedChanges) {
+            assertEquals("ITEMS", change.source());
+            assertNull(change.oldEntity());
+            assertNull(change.newEntity());
+        }
+        verify(metadataRegistry, never()).getAll();
     }
 
     @Test
@@ -227,13 +237,5 @@ class ItemRegistrySourceProviderTest {
         ArgumentCaptor<RegistryChangeListener<Metadata>> listenerCaptor = ArgumentCaptor
                 .forClass(RegistryChangeListener.class);
         verify(metadataRegistry).removeRegistryChangeListener(listenerCaptor.capture());
-    }
-
-    private static @Nullable Object metadataValue(@Nullable Map<String, @Nullable Object> entity, String namespace) {
-        if (entity == null || !(entity.get("metadata") instanceof Map<?, ?> metadataMap)
-                || !(metadataMap.get(namespace) instanceof Map<?, ?> metadataEntry)) {
-            return null;
-        }
-        return metadataEntry.get("value");
     }
 }
