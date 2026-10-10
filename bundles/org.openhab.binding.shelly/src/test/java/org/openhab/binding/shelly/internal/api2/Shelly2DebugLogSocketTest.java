@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.net.InetSocketAddress;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -39,14 +40,15 @@ import org.mockito.quality.Strictness;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@NonNullByDefault({})
+@NonNullByDefault
+@SuppressWarnings("null")
 class Shelly2DebugLogSocketTest {
 
-    private @Mock WebSocketClient webSocketClient;
-    private @Mock Shelly2DebugLogListener listener;
-    private @Mock Session session;
+    private @NonNullByDefault({}) @Mock WebSocketClient webSocketClient;
+    private @NonNullByDefault({}) @Mock Shelly2DebugLogListener listener;
+    private @NonNullByDefault({}) @Mock Session session;
 
-    private Shelly2DebugLogSocket socket;
+    private @NonNullByDefault({}) Shelly2DebugLogSocket socket;
 
     @BeforeEach
     void setUp() {
@@ -57,7 +59,7 @@ class Shelly2DebugLogSocketTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = { "Digest username=\"admin\", response=\"abc\"" })
-    void connectSetsAuthorizationHeaderOnlyWhenProvided(String authHeader) throws Exception {
+    void connectSetsAuthorizationHeaderOnlyWhenProvided(@Nullable String authHeader) throws Exception {
         socket.connect(authHeader);
 
         ArgumentCaptor<ClientUpgradeRequest> captor = ArgumentCaptor.forClass(ClientUpgradeRequest.class);
