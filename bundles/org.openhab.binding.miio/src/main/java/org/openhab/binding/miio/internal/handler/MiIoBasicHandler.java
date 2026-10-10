@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.measure.Unit;
@@ -93,6 +95,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class MiIoBasicHandler extends MiIoAbstractHandler {
+    private static final Pattern VALUE_TOKEN = Pattern.compile("$value$", Pattern.LITERAL | Pattern.CASE_INSENSITIVE);
+
     protected final Logger logger = LoggerFactory.getLogger(MiIoBasicHandler.class);
     protected boolean hasChannelStructure;
 
@@ -165,8 +169,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (!actions.isEmpty()) {
             final MiIoBasicChannel miIoBasicChannel = actions.get(channelUID);
             if (miIoBasicChannel != null) {
-                int valuePos = 0;
                 for (MiIoDeviceAction action : miIoBasicChannel.getActions()) {
+                    int valuePos = 0;
                     @Nullable
                     JsonElement value = null;
                     JsonArray parameters = action.getParameters().deepCopy();
@@ -233,8 +237,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         if (paramType == CommandParameterType.STRING) {
                             value = new JsonPrimitive(command.toString().toLowerCase());
                         } else if (paramType == CommandParameterType.CUSTOMSTRING) {
-                            value = new JsonPrimitive(parameters.get(valuePos).getAsString().replace("$value",
-                                    command.toString().toLowerCase()));
+                            String text = command.toString().toLowerCase();
+                            if (valuePos < parameters.size() && parameters.get(valuePos).isJsonPrimitive()) {
+                                Matcher matcher = VALUE_TOKEN.matcher(parameters.get(valuePos).getAsString());
+                                if (matcher.find()) {
+                                    text = matcher.replaceAll(Matcher.quoteReplacement(text));
+                                }
+                            }
+                            value = new JsonPrimitive(text);
                         }
                     } else {
                         value = new JsonPrimitive(command.toString().toLowerCase());
