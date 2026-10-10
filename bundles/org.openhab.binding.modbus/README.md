@@ -486,18 +486,16 @@ Commands passed to openHAB items that are bound to a [data channel](#channels) a
 
 1. Command is sent to openHAB item, that is bound to a [data channel](#channels).
 Command must be such that it is accepted by the item in the first place
-1. Command is converted to string (e.g. `"3.14"`) and passed to the transformation.
-Note that in case `readTransform="default"`, a default transformation provided by the binding is used.
-  See [Transformations](#transformations) section for more details.
-1. We try to convert transformation output to number (`DecimalType`), `OPEN`/`CLOSED` (`OpenClosedType`), and `ON`/`OFF` (`OnOffType`); in this order.
-  First successful conversion is stored.
-  For example, `"3.14"` would convert to number (`DecimalType`), while `"CLOSED"` would convert to `CLOSED` (of `OpenClosedType`).'
-In case all conversions fail, the command is discarded and nothing is written to the Modbus slave.
+1. Unless `writeTransform="default"`, the command is converted to a string (e.g. `"3.14"`) and passed to the transformation.
+  With `writeTransform="default"`, the original command is used unchanged.
+  See [Transformations](#transformations) for more details.
+1. Non-JSON transformation output is parsed as a number (`DecimalType`) or `ON`/`OFF` (`OnOffType`), in that order.
+  For example, `"3.14"` becomes a number and `"OFF"` becomes `OnOffType.OFF`.
+  Transformed `"OPEN"` and `"CLOSED"` values are not accepted as write commands. If parsing fails, nothing is written to the Modbus slave.
 1. Next step depends on the `writeType`:
-   - `writeType="coil"`: the command from the transformation is converted to boolean.
-     Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
-   - `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`.
-   For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
+   - `writeType="coil"`: the command is converted to a boolean. Non-zero numbers and `ON` become `true`; zero and `OFF` become `false`. Commands that cannot be converted are discarded.
+   - `writeType="holding"`: `ON` and `OFF` are converted to `1` and `0`. The number is converted to one or more registers using `writeValueType`.
+     For example, number `3.14` becomes two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
 1. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`.
   Write address is specified by `writeStart`.
 
@@ -592,17 +590,17 @@ There are three different format to specify the configuration:
 
 #### Example: Inverting Binary Data On Read And Write
 
-This example transformation is able to invert "boolean" input.
-In this case, boolean input is considered to be either number `0`/`1`, `ON`/`OFF`, or `OPEN`/`CLOSED`.
+This example transformation inverts binary input represented as `0`/`1` or `ON`/`OFF`.
+It returns `0` or `1`, which can be used for both read and write transformations.
 
 ```javascript
 // function to invert Modbus binary states
 // variable "input" contains data passed by openHAB
 (function(inputData) {
     var out = inputData ;      // allow UNDEF to pass through
-    if (inputData == '1' || inputData == 'ON' || inputData == 'OPEN') {
-        out = '0' ;  // change to OFF or OPEN depending on your Item type
-    } else if (inputData == '0' || inputData == 'OFF' || inputData == 'CLOSED') {
+    if (inputData == '1' || inputData == 'ON') {
+        out = '0' ;
+    } else if (inputData == '0' || inputData == 'OFF') {
         out = '1' ;
     }
     return out ;      // return a string
