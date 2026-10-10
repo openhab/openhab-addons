@@ -15,6 +15,8 @@ package org.openhab.binding.zwavejs.internal.api.dto;
 import java.time.Instant;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * @author Leo Siepel - Initial contribution
  */
@@ -33,7 +35,7 @@ public class Node {
     public String label;
     public int interviewAttempts;
     public List<Endpoint> endpoints;
-    public List<Value> values;
+    public List<@NonNull Value> values;
     public boolean isFrequentListening;
     public int maxDataRate;
     public List<Integer> supportedDataRates;
