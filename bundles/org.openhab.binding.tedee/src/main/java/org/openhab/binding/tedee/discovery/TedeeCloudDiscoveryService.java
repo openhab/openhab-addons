@@ -67,7 +67,9 @@ public class TedeeCloudDiscoveryService extends AbstractThingHandlerDiscoverySer
 
     @Override
     protected void startBackgroundDiscovery() {
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
+        ScheduledFuture<?> currentJob = discoveryJob;
+
+        if (currentJob == null || currentJob.isCancelled()) {
             discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverLocks, 0, DISCOVERY_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
         }
@@ -119,7 +121,7 @@ public class TedeeCloudDiscoveryService extends AbstractThingHandlerDiscoverySer
 
                 String label = lock.name;
 
-                if (label == null || label.isBlank()) {
+                if (label.isBlank()) {
                     label = "Tedee Lock " + lock.id;
                 }
 
@@ -134,18 +136,6 @@ public class TedeeCloudDiscoveryService extends AbstractThingHandlerDiscoverySer
             logger.warn("Tedee Cloud discovery failed: {}", e.getMessage());
         } catch (RuntimeException e) {
             logger.warn("Unexpected error during Tedee Cloud discovery", e);
-        }
-    }
-
-    private TedeeClientHolder getClient() {
-        return new TedeeClientHolder(thingHandler.getClient() instanceof TedeeCloudApi cloudApi ? cloudApi : null);
-    }
-
-    private static class TedeeClientHolder {
-        private final @Nullable TedeeCloudApi api;
-
-        TedeeClientHolder(@Nullable TedeeCloudApi api) {
-            this.api = api;
         }
     }
 

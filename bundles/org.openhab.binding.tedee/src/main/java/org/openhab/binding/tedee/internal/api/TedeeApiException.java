@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TedeeApiException extends Exception {
+    private static final long serialVersionUID = 1L;
     private final int status;
 
     public TedeeApiException(String m, int s) {

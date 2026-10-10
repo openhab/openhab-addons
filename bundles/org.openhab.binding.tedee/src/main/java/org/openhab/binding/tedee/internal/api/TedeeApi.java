@@ -27,8 +27,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -47,7 +45,6 @@ public class TedeeApi implements TedeeClient {
     private final HttpClient client;
     private final Gson gson = new Gson();
     private final String base, token;
-    private final Logger logger = LoggerFactory.getLogger(TedeeApi.class);
 
     public TedeeApi(HttpClient c, String ip, int port, String t) {
         client = c;
