@@ -208,7 +208,7 @@ public class EcobeeAuth {
     private void updateBridgeStatus() {
         AuthorizeResponseDTO response = authResponse;
         if (response != null) {
-            bridgeHandler.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            bridgeHandler.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.AUTHORIZATION_REQUIRED,
                     String.format("Enter PIN '%s' in MyApps. PIN expires in %d minutes", response.pin,
                             getMinutesUntilPinExpiration()));
         }
