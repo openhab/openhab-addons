@@ -1702,10 +1702,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void close() {
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
         ShellyThingInterface thing = this.thing;
         debugLog.close(thing != null && thing.isStopping());
-
-        Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket == null) {
             initialized = false;
             return;
