@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="appliance">
+		<label>Samsung OCF Appliance</label>
+		<description>Direct authenticated control of a compatible Samsung appliance. Dynamic channels are created only for
+			recognized appliance resources; descriptions report advertised command values and ranges when available. No
+			SmartThings Hub is required.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Appliance Address</label>
+				<description>Host name or IP address of the appliance on the same network.</description>
+			</parameter>
+			<parameter name="port" type="integer" min="0" max="65535">
+				<label>Secure CoAP Port</label>
+				<description>Advertised DTLS port. Zero discovers the secure port from this host using public CoAP discovery.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="clientPort" type="integer" min="0" max="65535">
+				<label>Client UDP Port</label>
+				<description>Client UDP port. Zero selects a deterministic stable port. Use an explicit unused port if
+					multiple
+					Things would conflict.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="10" unit="s">
+				<label>Refresh Interval</label>
+				<description>Delay between fallback resource polls when event subscriptions are unavailable, in seconds.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="timeout" type="integer" min="1" max="60" unit="s">
+				<label>Request Timeout</label>
+				<description>Maximum duration of each discovery or authenticated CoAP request, in seconds.</description>
+				<default>12</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="deviceId" type="text">
+				<label>Expected Device UUID</label>
+				<description>Optional expected appliance UUID. The authenticated device identity must match; otherwise the first
+					authenticated identity is remembered for this Thing.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="keyStore" type="text">
+				<label>Client PKCS12 Key Store</label>
+				<description>Absolute path on the openHAB server to a PKCS12 key store containing one authorized client private key
+					and its certificate chain. Leave empty to generate and retain a client identity automatically.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="keyStorePassword" type="text">
+				<context>password</context>
+				<label>Key Store Password</label>
+				<description>Password protecting the client PKCS12 key store and private key.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="serverFingerprint" type="text">
+				<label>Server Certificate SHA-256 Fingerprint</label>
+				<description>Explicitly trusted appliance leaf certificate fingerprint obtained through an authenticated,
+					out-of-band source. Leave empty to validate against the bundled Samsung OCF CA. Hexadecimal, with optional colon
+					separators.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ownerId" type="text">
+				<label>Owner UUID</label>
+				<description>Owner UUID associated with an imported OwnerPSK. Not the device UUID.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ownerPsk" type="text">
+				<context>password</context>
+				<label>OwnerPSK</label>
+				<description>Previously provisioned, authorized owner pre-shared key: 16 or 32 bytes encoded as hexadecimal. Use
+					either this mode or certificate authentication.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Appliance Switch</label>
+		<description>Boolean resource state. Writes are accepted only when live appliance capabilities and Remote Control
+			permit them.</description>
+	</channel-type>
+	<channel-type id="switch-readonly">
+		<item-type>Switch</item-type>
+		<label>Appliance Switch State</label>
+		<description>Read-only boolean resource state.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Appliance Number</label>
+		<description>Numeric resource state. The channel description reports validated command ranges when available;
+			otherwise supported command values depend on live device capabilities.</description>
+	</channel-type>
+	<channel-type id="number-readonly">
+		<item-type>Number</item-type>
+		<label>Appliance Number State</label>
+		<description>Read-only numeric resource state. No unit or range is inferred.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Appliance Temperature</label>
+		<description>Temperature in the device-reported unit. Writes require a valid advertised range and increment.</description>
+		<category>Temperature</category>
+	</channel-type>
+	<channel-type id="temperature-readonly">
+		<item-type>Number:Temperature</item-type>
+		<label>Appliance Temperature State</label>
+		<description>Read-only temperature in the device-reported unit.</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>Appliance Setting</label>
+		<description>Text resource state. Mode channels report the exact command values advertised by the appliance, with
+			display names when available. Other valid commands depend on live device capabilities.</description>
+	</channel-type>
+	<channel-type id="string-readonly">
+		<item-type>String</item-type>
+		<label>Appliance Text State</label>
+		<description>Read-only text or JSON representation of a non-security resource.</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

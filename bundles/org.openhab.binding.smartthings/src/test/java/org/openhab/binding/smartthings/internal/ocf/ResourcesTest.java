@@ -1,0 +1,673 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.smartthings.internal.ocf;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.smartthings.internal.ocf.Resources.Point;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.UnDefType;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+/**
+ * Tests for the OCF representation and command model without a network connection.
+ *
+ * @author Kai Kreuzer - Initial contribution
+ */
+@NonNullByDefault
+class ResourcesTest {
+    private final Resources resources = new Resources();
+
+    @Test
+    void descriptionsExposeRawAdvertisedChoicesAndTrackCapabilityUpdates() throws IOException {
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.airconditioner\"]}"));
+        resources.update("/wind/strength/vs/0", json("""
+                {"x.com.samsung.da.modes":"2","x.com.samsung.da.supportedModes":["2","4","Auto","2"]}
+                """));
+        Point fan = point("/wind/strength/vs/0", "x.com.samsung.da.modes");
+        assertEquals(List.of("2", "4", "Auto"), resources.stateDescription(fan).toStateDescription().getOptions()
+                .stream().map(option -> option.getValue()).toList());
+        assertEquals(List.of("2", "4", "Auto"),
+                resources.commandOptions(fan).stream().map(option -> option.getCommand()).toList());
+        resources.update(fan.href(), json("{\"x.com.samsung.da.modes\":\"4\"}"));
+        assertEquals(3, resources.commandOptions(point(fan.href(), fan.field())).size());
+        resources.update(fan.href(), json("{\"x.com.samsung.da.supportedModes\":[\"4\",{}]}"));
+        Point invalid = point(fan.href(), fan.field());
+        assertTrue(resources.stateDescription(invalid).toStateDescription().getOptions().isEmpty());
+        assertTrue(resources.stateDescription(invalid).toStateDescription().isReadOnly());
+        assertTrue(resources.commandOptions(invalid).isEmpty());
+    }
+
+    @Test
+    void temperatureDescriptionsExposeValidatedBoundsAndNativeUnits() throws IOException {
+        resources.update("/temperature/desired/0", json("""
+                {"temperature":20,"units":"C","range":[16,30]}
+                """));
+        Point desired = point("/temperature/desired/0", "temperature");
+        assertNull(resources.stateDescription(desired).toStateDescription().getMinimum());
+        assertTrue(resources.stateDescription(desired).toStateDescription().isReadOnly());
+        resources.update("/temperature/control/vs/0", json("{\"x.com.samsung.da.increment\":\"0.5\"}"));
+        var description = resources.stateDescription(point(desired.href(), desired.field())).toStateDescription();
+        assertEquals(new BigDecimal("16"), description.getMinimum());
+        assertEquals(new BigDecimal("30"), description.getMaximum());
+        assertEquals(new BigDecimal("0.5"), description.getStep());
+        assertNull(description.getPattern());
+        assertFalse(description.isReadOnly());
+        resources.update(desired.href(), json("{\"units\":\"F\",\"range\":[60,86],\"increment\":1}"));
+        description = resources.stateDescription(point(desired.href(), desired.field())).toStateDescription();
+        assertEquals(new BigDecimal("60"), description.getMinimum());
+        assertEquals(BigDecimal.ONE, description.getStep());
+        assertNull(description.getPattern());
+        resources.update(desired.href(), json("{\"range\":null}"));
+        description = resources.stateDescription(point(desired.href(), desired.field())).toStateDescription();
+        assertNull(description.getMinimum());
+        assertNull(description.getMaximum());
+        assertNull(description.getStep());
+        assertTrue(description.isReadOnly());
+    }
+
+    @Test
+    void switchAndFanDescriptionsMatchTheirChannelTypesWithoutGenericResourceChannels() throws IOException {
+        resources.update("/power/vs/0", json("{\"x.com.samsung.da.power\":\"On\"}"));
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        resources.update("/airflow/0", json("{\"speed\":1}"));
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.airpurifier\"]}"));
+        resources.update("/diagnostic/0", json("{\"supportedStates\":[\"Run\",\"Stop\"]}"));
+        Point power = point("/power/vs/0", "x.com.samsung.da.power");
+        assertEquals(List.of("ON", "OFF"),
+                resources.commandOptions(power).stream().map(option -> option.getCommand()).toList());
+        Point remote = point("/remotectrl/0", "value");
+        assertEquals(2, resources.stateDescription(remote).toStateDescription().getOptions().size());
+        assertTrue(resources.commandOptions(remote).isEmpty());
+        Point fan = point("/airflow/0", "speed");
+        var description = resources.stateDescription(fan).toStateDescription();
+        assertEquals(BigDecimal.ZERO, description.getMinimum());
+        assertEquals(BigDecimal.valueOf(4), description.getMaximum());
+        assertEquals(BigDecimal.ONE, description.getStep());
+        assertEquals(5, resources.commandOptions(fan).size());
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.oven\"]}"));
+        fan = point("/airflow/0", "speed");
+        assertNull(resources.stateDescription(fan).toStateDescription().getMaximum());
+        assertTrue(resources.stateDescription(fan).toStateDescription().getOptions().isEmpty());
+        assertTrue(resources.commandOptions(fan).isEmpty());
+        assertTrue(resources.snapshot().containsKey("/diagnostic/0"));
+        assertTrue(resources.points().stream().noneMatch(point -> point.href().equals("/diagnostic/0")));
+    }
+
+    @Test
+    void readsEveryBatchEntryIncludingIndexZero() throws IOException {
+        resources.update("/device/0", json("""
+                [
+                    {"href":"/power/0","rep":{"value":true}},
+                    {"href":"/temperature/current/0","rep":{"temperature":21.5,"units":"C"}}
+                ]
+                """));
+        assertEquals(OnOffType.ON, resources.state(point("/power/0", "value")));
+        assertEquals(new QuantityType<>(21.5, SIUnits.CELSIUS),
+                resources.state(point("/temperature/current/0", "temperature")));
+    }
+
+    @Test
+    void readsCollectionMetadataAndLinkedRepresentations() throws IOException {
+        resources.update("/device/0", json("""
+                [
+                    {"rt":["oic.wk.col"],"links":[{"href":"/power/0"}]},
+                    {"href":"/power/0","rep":{"value":false}},
+                    {"href":"/device/1","rep":{"links":[
+                        {"href":"/new/resource","rep":{"status":"Ready"}}
+                    ]}}
+                ]
+                """));
+        assertEquals(OnOffType.OFF, resources.state(point("/power/0", "value")));
+        assertTrue(resources.snapshot().containsKey("/new/resource"));
+        assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/new/resource")));
+    }
+
+    @Test
+    void distinguishesDiscoveredStubsFromConfirmedEmptyResources() throws IOException {
+        resources.update("/oic/res", json("""
+                {"links":[{"href":"/power/0","rt":["oic.r.switch.binary"]},
+                    {"href":"/unknown/0"}]}
+                """));
+        assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/power/0")));
+        assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/unknown/0")));
+        resources.update("/device/0", json("""
+                [{"href":"/power/0","rep":{"href":"/power/0"}},
+                 {"href":"/unknown/0","rep":{}}]
+                """));
+        assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/power/0")));
+        assertTrue(resources.snapshot().containsKey("/unknown/0"));
+        assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/unknown/0")));
+        resources.update("/power/0", json("{\"value\":true}"));
+        resources.update("/power/0", json("{\"href\":\"/power/0\"}"));
+        assertEquals(OnOffType.ON, resources.state(point("/power/0", "value")));
+    }
+
+    @Test
+    void mergesPartialUpdatesAndProtectsCacheFromMutations() throws IOException {
+        JsonElement initial = json("""
+                {"temperature":20,"units":"C","range":[16,30],"increment":0.5,
+                 "extra":{"one":1,"two":2}}
+                """);
+        resources.update("/temperature/desired/0", initial);
+        initial.getAsJsonObject().addProperty("temperature", 99);
+        resources.update("/temperature/desired/0", json("{\"temperature\":21,\"extra\":{\"one\":3}}"));
+        Map<String, JsonObject> snapshot = resources.snapshot();
+        JsonObject rep = snapshot.get("/temperature/desired/0");
+        assertEquals(21, rep.get("temperature").getAsInt());
+        assertEquals("C", rep.get("units").getAsString());
+        assertEquals(2, rep.getAsJsonObject("extra").get("two").getAsInt());
+        rep.getAsJsonArray("range").set(0, json("100"));
+        rep.getAsJsonObject("extra").addProperty("two", 99);
+        snapshot.clear();
+        assertEquals(16, resources.snapshot().get("/temperature/desired/0").getAsJsonArray("range").get(0).getAsInt());
+        assertTrue(point("/temperature/desired/0", "temperature").writable());
+    }
+
+    @Test
+    void rejectsUnsafePathsAndMalformedEnvelopesAtomically() throws IOException {
+        for (String path : List.of("power/0", "/", "/../power/0", "/a/./power/0", "/a//power/0", "/power/0?q=x",
+                "/power/0#fragment", "https://example.org/power/0", "/%2e%2e/power/0", "/a\\power/0")) {
+            assertThrows(IOException.class, () -> resources.update(path, json("{}")), path);
+        }
+        for (String payload : List.of("null", "true", "12", "[true]", "[{\"value\":true}]", "{\"links\":{}}",
+                "{\"links\":[null]}", "{\"links\":[{\"href\":true}]}", "[{\"href\":\"/power/0\",\"rep\":[]}]",
+                "[{\"href\":\"/power/0\",\"rep\":{\"href\":\"/power/1\"}}]")) {
+            assertThrows(IOException.class, () -> resources.update("/device/0", json(payload)), payload);
+        }
+        resources.update("/power/0", json("{\"value\":false}"));
+        assertThrows(IOException.class, () -> resources.update("/device/0", json("""
+                [{"href":"/power/0","rep":{"value":true}},
+                 {"href":"/../invalid","rep":{}}]
+                """)));
+        assertEquals(OnOffType.OFF, resources.state(point("/power/0", "value")));
+    }
+
+    @Test
+    void booleanFieldsRequireActualBooleansAndUnknownIsNotOff() throws IOException {
+        resources.update("/power/0", json("{\"value\":false}"));
+        assertEquals(OnOffType.OFF, resources.state(point("/power/0", "value")));
+        for (String invalid : List.of("\"false\"", "0", "null", "{}", "[]")) {
+            resources.update("/power/0", json("{\"value\":" + invalid + "}"));
+            Point point = point("/power/0", "value");
+            assertEquals(UnDefType.UNDEF, resources.state(point));
+            assertFalse(point.writable());
+        }
+    }
+
+    @Test
+    void powerCommandsRequireExplicitRemoteControlAndDoNotUpdateState() throws IOException {
+        resources.update("/power/0", json("{\"value\":false}"));
+        Point power = point("/power/0", "value");
+        assertFalse(resources.remoteControlEnabled());
+        assertThrows(IllegalArgumentException.class, () -> resources.command(power, OnOffType.ON));
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        assertTrue(resources.remoteControlEnabled());
+        assertEquals(json("{\"value\":true}"), resources.command(power, OnOffType.ON));
+        assertEquals(OnOffType.OFF, resources.state(power));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(power, new StringType("ON")));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(power, new DecimalType(1)));
+        assertThrows(IllegalArgumentException.class,
+                () -> resources.command(point("/remotectrl/0", "value"), OnOffType.OFF));
+        resources.update("/remotectrl/0", json("{\"value\":false}"));
+        assertFalse(resources.remoteControlEnabled());
+        assertThrows(IllegalArgumentException.class, () -> resources.command(power, OnOffType.ON));
+        resources.update("/remotectrl/0", json("{\"value\":null}"));
+        assertFalse(resources.remoteControlEnabled());
+        assertThrows(IllegalArgumentException.class, () -> resources.command(power, OnOffType.ON));
+    }
+
+    @Test
+    void usesVendorPowerUntilStandardResourceIsUsable() throws IOException {
+        resources.update("/power/0", json("{\"href\":\"/power/0\"}"));
+        resources.update("/power/vs/0", json("{\"x.com.samsung.da.power\":\"On\"}"));
+        resources.update("/remotectrl/vs/0", json("{\"x.com.samsung.da.remoteControlEnabled\":\"true\"}"));
+        Point vendor = point("/power/vs/0", "x.com.samsung.da.power");
+        assertEquals(OnOffType.ON, resources.state(vendor));
+        assertEquals(json("{\"x.com.samsung.da.power\":\"Off\"}"), resources.command(vendor, OnOffType.OFF));
+        resources.update("/power/0", json("{\"value\":\"unavailable\"}"));
+        Point vendorWithCollision = point("/power/vs/0", "x.com.samsung.da.power");
+        assertEquals(OnOffType.ON, resources.state(vendorWithCollision));
+        assertFalse(point("/power/0", "value").writable());
+        resources.update("/power/0", json("{\"value\":false}"));
+        assertEquals(OnOffType.OFF, resources.state(point("/power/0", "value")));
+        assertTrue(resources.points().stream().noneMatch(p -> p.field().equals("x.com.samsung.da.power")));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(vendor, OnOffType.ON));
+    }
+
+    @Test
+    void standardRemoteControlTakesPrecedenceWhenConfirmed() throws IOException {
+        resources.update("/remotectrl/vs/0", json("{\"x.com.samsung.da.remoteControlEnabled\":\"true\"}"));
+        resources.update("/remotectrl/0", json("{\"href\":\"/remotectrl/0\"}"));
+        assertTrue(resources.remoteControlEnabled());
+        resources.update("/remotectrl/0", json("{\"value\":false}"));
+        assertFalse(resources.remoteControlEnabled());
+        assertTrue(
+                resources.points().stream().noneMatch(p -> p.field().equals("x.com.samsung.da.remoteControlEnabled")));
+        resources.update("/remotectrl/0", json("{\"value\":{}}"));
+        assertTrue(resources.remoteControlEnabled());
+        for (String invalid : List.of("\"unknown\"", "true", "null", "1", "{}", "[]")) {
+            resources.update("/remotectrl/vs/0", json("{\"x.com.samsung.da.remoteControlEnabled\":" + invalid + "}"));
+            assertFalse(resources.remoteControlEnabled());
+        }
+    }
+
+    @Test
+    void respectsPowerCapabilityChangesAndRejectsStalePoints() throws IOException {
+        resources.update("/power/0", json("{\"value\":true}"));
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        Point previous = point("/power/0", "value");
+        resources.update("/wm/setinfo/vs/0", json("{\"x.com.samsung.da.isModelSettingPowerOnOff\":\"false\"}"));
+        assertFalse(point("/power/0", "value").writable());
+        assertThrows(IllegalArgumentException.class, () -> resources.command(previous, OnOffType.OFF));
+        assertEquals(OnOffType.ON, resources.state(previous));
+        resources.update("/wm/setinfo/vs/0", json("{\"x.com.samsung.da.isModelSettingPowerOnOff\":\"true\"}"));
+        assertTrue(point("/power/0", "value").writable());
+        assertEquals(json("{\"value\":false}"), resources.command(previous, OnOffType.OFF));
+    }
+
+    @Test
+    void temperaturesPreserveUnitsAndValidateConvertedCommands() throws IOException {
+        resources.update("/temperature/current/0", json("{\"temperature\":68,\"units\":\"F\"}"));
+        Point measured = point("/temperature/current/0", "temperature");
+        assertFalse(measured.writable());
+        assertEquals(new QuantityType<>(68, ImperialUnits.FAHRENHEIT), resources.state(measured));
+        resources.update("/temperature/desired/0", json("""
+                {"temperature":20,"units":"C","range":[16,30],"increment":0.5}
+                """));
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        Point desired = point("/temperature/desired/0", "temperature");
+        assertTrue(desired.writable());
+        assertEquals("Desired Temperature setpoint from 16 to 30 ℃ in increments of 0.5.", desired.description());
+        assertEquals(json("{\"temperature\":20}"),
+                resources.command(desired, new QuantityType<>(68, ImperialUnits.FAHRENHEIT)));
+        assertEquals(json("{\"temperature\":16}"), resources.command(desired, new DecimalType(16)));
+        assertEquals(json("{\"temperature\":30}"), resources.command(desired, new DecimalType(30)));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(desired, new DecimalType(15.5)));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(desired, new DecimalType(30.5)));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(desired, new DecimalType(20.1)));
+        assertThrows(IllegalArgumentException.class,
+                () -> resources.command(desired, new QuantityType<>(70, ImperialUnits.FAHRENHEIT)));
+        assertEquals(json("{\"temperature\":16}"),
+                resources.command(desired, new QuantityType<>(60.8, ImperialUnits.FAHRENHEIT)));
+        assertEquals(json("{\"temperature\":30}"),
+                resources.command(desired, new QuantityType<>(86, ImperialUnits.FAHRENHEIT)));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(desired, new StringType("20")));
+        assertThrows(IllegalArgumentException.class,
+                () -> resources.command(desired, new QuantityType<>(20, Units.WATT)));
+        resources.update("/temperature/desired/0",
+                json("{\"units\":\"F\",\"range\":[60,86],\"step\":1,\"increment\":1}"));
+        assertEquals(json("{\"temperature\":68}"), resources.command(point("/temperature/desired/0", "temperature"),
+                new QuantityType<>(20, SIUnits.CELSIUS)));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(measured, new DecimalType(70)));
+    }
+
+    @Test
+    void temperatureWritesRequireDeviceBoundsUnitsAndIncrement() throws IOException {
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        for (String payload : List.of("{\"temperature\":20,\"units\":\"C\",\"range\":[16,30]}",
+                "{\"temperature\":20,\"units\":\"C\",\"increment\":1}",
+                "{\"temperature\":20,\"range\":[16,30],\"increment\":1}",
+                "{\"temperature\":20,\"units\":\"Kelvin\",\"range\":[16,30],\"increment\":1}",
+                "{\"temperature\":20,\"units\":\"C\",\"range\":[30,16],\"increment\":1}",
+                "{\"temperature\":20,\"units\":\"C\",\"range\":[16,30],\"increment\":0}",
+                "{\"temperature\":20,\"units\":\"C\",\"range\":[16,30],\"increment\":-1}",
+                "{\"temperature\":20,\"units\":\"C\",\"range\":[16,30],\"increment\":99}",
+                "{\"temperature\":20,\"units\":\"C\",\"range\":[16,null],\"increment\":1}",
+                "{\"temperature\":{},\"units\":\"C\",\"range\":[16,30],\"increment\":1}")) {
+            Resources model = new Resources();
+            model.update("/temperature/desired/0", json(payload));
+            Point desired = model.points().getFirst();
+            assertFalse(desired.writable(), payload);
+            assertThrows(IllegalArgumentException.class, () -> model.command(desired, new DecimalType(20)), payload);
+        }
+    }
+
+    @Test
+    void readsSeparateAdvertisedTemperatureIncrement() throws IOException {
+        resources.update("/temperature/desired/0", json("""
+                {"temperature":20,"units":"C","range":[16,30]}
+                """));
+        assertFalse(point("/temperature/desired/0", "temperature").writable());
+        resources.update("/temperature/control/vs/0", json("{\"x.com.samsung.da.increment\":\"0.5\"}"));
+        assertTrue(point("/temperature/desired/0", "temperature").writable());
+        resources.update("/temperature/control/vs/0", json("{\"units\":\"F\"}"));
+        assertFalse(point("/temperature/desired/0", "temperature").writable());
+        resources.update("/temperature/control/vs/0", json("{\"units\":\"C\"}"));
+        assertTrue(point("/temperature/desired/0", "temperature").writable());
+    }
+
+    @Test
+    void malformedTemperatureValuesBecomeUndefined() throws IOException {
+        for (String value : List.of("null", "\"NaN\"", "\"Infinity\"", "true", "[]", "{}", "1e2147483647",
+                "1e-2147483647", "\"" + "9".repeat(300) + "\"")) {
+            resources.update("/temperature/current/0", json("{\"temperature\":" + value + ",\"units\":\"C\"}"));
+            assertEquals(UnDefType.UNDEF, resources.state(point("/temperature/current/0", "temperature")), value);
+        }
+        resources.update("/temperature/current/0", json("{\"temperature\":20,\"units\":null}"));
+        assertEquals(UnDefType.UNDEF, resources.state(point("/temperature/current/0", "temperature")));
+    }
+
+    @Test
+    void knownMeasurementsDoNotGuessCounterUnitsOrCoerceNegativePower() throws IOException {
+        resources.update("/energy/consumption/vs/0", json("""
+                {"x.com.samsung.da.instantaneousPower":"-500","x.com.samsung.da.cumulativePower":"1234"}
+                """));
+        Point watts = point("/energy/consumption/vs/0", "x.com.samsung.da.instantaneousPower");
+        assertEquals("energy-consumption", watts.id());
+        assertEquals(UnDefType.UNDEF, resources.state(watts));
+        assertTrue(resources.points().stream().noneMatch(point -> point.label().endsWith("(Raw)")));
+        resources.update("/energy/consumption/vs/0", json("{\"x.com.samsung.da.instantaneousPower\":93}"));
+        assertEquals(new QuantityType<>(93, Units.WATT), resources.state(watts));
+        resources.update("/water/consumption/vs/0", json("{\"x.com.samsung.da.cumulativeWater\":\"45\"}"));
+        assertEquals(new DecimalType(45),
+                resources.state(point("/water/consumption/vs/0", "x.com.samsung.da.cumulativeWater")));
+        resources.update("/kidslock/vs/0", json("{\"x.com.samsung.da.kidsLock\":\"Run\"}"));
+        assertEquals(new StringType("Run"), resources.state(point("/kidslock/vs/0", "x.com.samsung.da.kidsLock")));
+    }
+
+    @Test
+    void airflowWritesOnlyConfirmedPurifierSpeedAndMinimalPayload() throws IOException {
+        resources.update("/airflow/0", json("{\"speed\":1,\"direction\":\"Off\"}"));
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        assertFalse(point("/airflow/0", "speed").writable());
+        resources.update("/oic/d", json("{\"rt\":[\"oic.wk.d\",\"oic.d.airpurifier\"]}"));
+        Point speed = point("/airflow/0", "speed");
+        assertTrue(speed.writable());
+        assertEquals(
+                "Fan Speed reported by the appliance. Valid commands for supported air purifiers are integers from 0 to 4.",
+                speed.description());
+        assertEquals(json("{\"speed\":2}"), resources.command(speed, new DecimalType(2)));
+        assertEquals(json("{\"speed\":0}"), resources.command(speed, new DecimalType(0)));
+        assertEquals(json("{\"speed\":4}"), resources.command(speed, new DecimalType(4)));
+        for (double invalid : List.of(-1.0, 4.5, 5.0, 2.2)) {
+            assertThrows(IllegalArgumentException.class, () -> resources.command(speed, new DecimalType(invalid)));
+        }
+        assertThrows(IllegalArgumentException.class, () -> resources.command(speed, new StringType("2")));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(speed, new QuantityType<>(2, Units.WATT)));
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.oven\"]}"));
+        assertFalse(point("/airflow/0", "speed").writable());
+        assertThrows(IllegalArgumentException.class, () -> resources.command(speed, new DecimalType(2)));
+    }
+
+    @Test
+    void operatingModesNeedConfirmedModelAndAdvertisedEnum() throws IOException {
+        resources.update("/mode/vs/0", json("""
+                {"x.com.samsung.da.modes":["Auto"],"x.com.samsung.da.supportedModes":["Auto","Sleep"],
+                 "x.com.samsung.da.modesName":["Automatic","Sleep Mode"]}
+                """));
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        assertFalse(point("/mode/vs/0", "x.com.samsung.da.modes").writable());
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.dehumidifier\"]}"));
+        Point mode = point("/mode/vs/0", "x.com.samsung.da.modes");
+        assertEquals("Operating Mode reported by the appliance. Supported command values (display names): "
+                + "Auto (Automatic), Sleep (Sleep Mode).", mode.description());
+        assertEquals(new StringType("Auto"), resources.state(mode));
+        assertEquals(json("{\"x.com.samsung.da.modes\":[\"Sleep\"]}"),
+                resources.command(mode, new StringType("Sleep")));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(mode, new StringType("Start")));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(mode, OnOffType.ON));
+        resources.update("/mode/vs/0", json("{\"x.com.samsung.da.supportedModes\":[\"Auto\",{}]}"));
+        assertFalse(point("/mode/vs/0", "x.com.samsung.da.modes").writable());
+        assertEquals("Operating Mode reported by the appliance. No supported command values were advertised.",
+                point("/mode/vs/0", "x.com.samsung.da.modes").description());
+        resources.update("/mode/vs/0", json("{\"x.com.samsung.da.modes\":[]}"));
+        assertEquals(UnDefType.UNDEF, resources.state(point("/mode/vs/0", "x.com.samsung.da.modes")));
+    }
+
+    @Test
+    void unknownOperationalResourcesDoNotBecomeChannels() throws IOException {
+        resources.update("/operational/state/vs/0", json("""
+                {"x.com.samsung.da.operatingState":"Ready","supportedStates":["Run","Stop"]}
+                """));
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        assertTrue(resources.snapshot().containsKey("/operational/state/vs/0"));
+        assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/operational/state/vs/0")));
+    }
+
+    @Test
+    void securityResourcesAreExcludedFromChannels() throws IOException {
+        resources.update("/oic/sec/cred", json("{\"creds\":[{\"privatedata\":{\"data\":\"secret\"}}]}"));
+        resources.update("/device/1/oic/sec/cred", json("{\"creds\":[]}"));
+        assertTrue(resources.points().isEmpty());
+    }
+
+    @Test
+    void compositePathsKeepTheirIdentityAndUseTheirOwnRemoteControl() throws IOException {
+        resources.update("/units/1/power/0", json("{\"value\":false}"));
+        resources.update("/units/2/power/vs/0", json("{\"x.com.samsung.da.power\":\"Off\"}"));
+        resources.update("/units/1/remotectrl/0", json("{\"value\":true}"));
+        resources.update("/units/2/remotectrl/0", json("{\"value\":false}"));
+        Point first = point("/units/1/power/0", "value");
+        Point second = point("/units/2/power/vs/0", "x.com.samsung.da.power");
+        assertNotEquals(first.id(), second.id());
+        assertEquals(json("{\"value\":true}"), resources.command(first, OnOffType.ON));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(second, OnOffType.ON));
+        assertFalse(resources.remoteControlEnabled());
+        resources.update("/units/2/remotectrl/0", json("{\"value\":true}"));
+        assertTrue(resources.remoteControlEnabled());
+        assertEquals(json("{\"x.com.samsung.da.power\":\"On\"}"), resources.command(second, OnOffType.ON));
+    }
+
+    @Test
+    void readsObjectEnvelopesAndRejectsInventedStateMappings() throws IOException {
+        resources.update("/device/0", json("{\"href\":\"/power/0\",\"rep\":{\"value\":true}}"));
+        Point power = point("/power/0", "value");
+        assertEquals(OnOffType.ON, resources.state(power));
+        Point invented = new Point(power.id(), power.href(), "value", "String", power.label(), power.description(),
+                false);
+        assertEquals(UnDefType.UNDEF, resources.state(invented));
+        Point unknown = new Point("unknown", power.href(), power.field(), power.itemType(), power.label(),
+                power.description(), true);
+        assertEquals(UnDefType.UNDEF, resources.state(unknown));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(unknown, OnOffType.OFF));
+    }
+
+    @Test
+    void channelIdsAreReadableUniqueAndIndependentOfArrivalOrder() throws IOException {
+        resources.update("/unit/a/power/0", json("{\"value\":1}"));
+        resources.update("/unit-a/power/0", json("{\"value\":2}"));
+        assertEquals("unit-a-power-0-value-2", point("/unit/a/power/0", "value").id());
+        assertEquals("unit-a-power-0-value", point("/unit-a/power/0", "value").id());
+
+        Resources reverse = new Resources();
+        reverse.update("/unit-a/power/0", json("{\"value\":2}"));
+        reverse.update("/unit/a/power/0", json("{\"value\":1}"));
+        assertEquals(resources.points(), reverse.points());
+
+        resources.update("/mode/vs/0", json("{\"x.com.samsung.da.modes\":[\"Auto\"]}"));
+        assertEquals("mode", point("/mode/vs/0", "x.com.samsung.da.modes").id());
+
+        Resources energy = new Resources();
+        energy.update("/energy/consumption/vs/0",
+                json("{\"x.com.samsung.da.instantaneousPower\":93," + "\"x.com.samsung.da.cumulativePower\":1234}"));
+        assertEquals(List.of("energy-consumption"), energy.points().stream().map(Point::id).toList());
+        assertEquals("energy-consumption", energy.points().getFirst().id());
+    }
+
+    @Test
+    void airConditionerAllowsItsOptionalRemoteGateToBeAbsent() throws IOException {
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.airconditioner\"]}"));
+        resources.update("/power/vs/0", json("{\"x.com.samsung.da.power\":\"Off\"}"));
+        resources.update("/mode/vs/0",
+                json("""
+                        {"x.com.samsung.da.modes":["Heat"],"x.com.samsung.da.supportedModes":["Cool","Dry","Wind","Auto","Heat"],
+                         "x.com.samsung.da.options":[{"x.com.samsung.da.unknown":"preserve"}]}
+                        """));
+        assertTrue(resources.remoteControlEnabled());
+        assertEquals(json("{\"x.com.samsung.da.power\":\"On\"}"),
+                resources.command(point("/power/vs/0", "x.com.samsung.da.power"), OnOffType.ON));
+        Point mode = point("/mode/vs/0", "x.com.samsung.da.modes");
+        assertEquals(new StringType("Heat"), resources.state(mode));
+        assertEquals(json("{\"x.com.samsung.da.modes\":[\"Cool\"]}"), resources.command(mode, new StringType("Cool")));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(mode, new StringType("Start")));
+        assertEquals(new StringType("Heat"), resources.state(mode));
+    }
+
+    @Test
+    void airConditionerRejectsPresentUnknownAndDisabledRemoteGates() throws IOException {
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.airconditioner\"]}"));
+        resources.update("/power/vs/0", json("{\"x.com.samsung.da.power\":\"Off\"}"));
+        Point power = point("/power/vs/0", "x.com.samsung.da.power");
+        for (String gate : List.of("{\"href\":\"/remotectrl/0\"}", "{\"value\":false}", "{\"value\":null}")) {
+            resources.update("/remotectrl/0", json(gate));
+            assertFalse(resources.remoteControlEnabled());
+            assertThrows(IllegalArgumentException.class, () -> resources.command(power, OnOffType.ON));
+        }
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        assertEquals(json("{\"x.com.samsung.da.power\":\"On\"}"), resources.command(power, OnOffType.ON));
+    }
+
+    @Test
+    void airConditionerFanSwingAndWindFreePreserveScalarWireFormat() throws IOException {
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.airconditioner\"]}"));
+        for (String path : List.of("/wind/strength/vs/0", "/wind/direction/vs/0", "/mode/convenient/vs/0")) {
+            String payload = switch (path) {
+                case "/wind/strength/vs/0" -> """
+                        {"x.com.samsung.da.modes":"0","x.com.samsung.da.supportedModes":["0","1","2","3","4"],
+                         "x.com.samsung.da.modesName":["Auto","Low","Mid","High","Turbo"]}
+                        """;
+                case "/wind/direction/vs/0" ->
+                    """
+                            {"x.com.samsung.da.modes":"Fix","x.com.samsung.da.supportedModes":["Fix","All","Up_And_Low","Left_And_Right"]}
+                            """;
+                default ->
+                    """
+                            {"x.com.samsung.da.modes":"Off","x.com.samsung.da.supportedModes":["Off","Sleep","Speed","Nano","NanoSleep"]}
+                            """;
+            };
+            resources.update(path, json(payload));
+            Point mode = point(path, "x.com.samsung.da.modes");
+            String requested = path.contains("strength") ? "3" : path.contains("direction") ? "All" : "Nano";
+            assertTrue(mode.writable());
+            assertEquals(json("{\"x.com.samsung.da.modes\":\"" + requested + "\"}"),
+                    resources.command(mode, new StringType(requested)));
+            assertThrows(IllegalArgumentException.class, () -> resources.command(mode, new StringType("unsupported")));
+            assertThrows(IllegalArgumentException.class, () -> resources.command(mode, new DecimalType(3)));
+        }
+    }
+
+    @Test
+    void unsupportedAndCompositeModesAreReadOnly() throws IOException {
+        resources.update("/wind/strength/vs/0", json("""
+                {"x.com.samsung.da.modes":"0","x.com.samsung.da.supportedModes":["0","1"]}
+                """));
+        assertFalse(point("/wind/strength/vs/0", "x.com.samsung.da.modes").writable());
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.airconditioner\"]}"));
+        resources.update("/mode/vs/0", json("""
+                {"x.com.samsung.da.modes":["Heat","Dry"],"x.com.samsung.da.supportedModes":["Heat","Dry"]}
+                """));
+        Point mode = point("/mode/vs/0", "x.com.samsung.da.modes");
+        assertFalse(mode.writable());
+        assertEquals(UnDefType.UNDEF, resources.state(mode));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(mode, new StringType("Heat")));
+    }
+
+    @Test
+    void vendorTemperatureFallbackUsesMinimalBoundedUpdates() throws IOException {
+        vendorTemperatures();
+        Point desired = point("/temperatures/vs/0", "x.com.samsung.da.desired");
+        var description = resources.stateDescription(desired).toStateDescription();
+        assertEquals(new BigDecimal("16"), description.getMinimum());
+        assertEquals(new BigDecimal("30"), description.getMaximum());
+        assertEquals(new BigDecimal("1.0"), description.getStep());
+        assertNull(description.getPattern());
+        assertFalse(description.isReadOnly());
+        assertNull(resources.stateDescription(point(desired.href(), "x.com.samsung.da.current")).toStateDescription()
+                .getMinimum());
+        assertEquals(new QuantityType<>("22 °C"), resources.state(desired));
+        assertEquals(new QuantityType<>("21 °C"),
+                resources.state(point("/temperatures/vs/0", "x.com.samsung.da.current")));
+        assertEquals(json("""
+                {"x.com.samsung.da.items":[{"x.com.samsung.da.id":"0","x.com.samsung.da.desired":"23"}]}
+                """), resources.command(desired, new DecimalType(23)));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(desired, new DecimalType("22.5")));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(desired, new DecimalType(31)));
+        assertEquals(new QuantityType<>("22 °C"), resources.state(desired));
+    }
+
+    @Test
+    void standardTemperaturesTakePrecedenceAndUseVendorIncrementFallback() throws IOException {
+        vendorTemperatures();
+        resources.update("/temperature/current/0", json("{\"temperature\":21.5,\"units\":\"C\"}"));
+        resources.update("/temperature/desired/0", json("{\"temperature\":22,\"units\":\"C\",\"range\":[16,30]}"));
+        assertTrue(resources.points().stream()
+                .noneMatch(p -> p.href().equals("/temperatures/vs/0") && !p.field().isEmpty()));
+        assertEquals(json("{\"temperature\":23}"),
+                resources.command(point("/temperature/desired/0", "temperature"), new DecimalType(23)));
+        resources.update("/temperature/control/vs/0", json("{\"x.com.samsung.da.increment\":\"unknown\"}"));
+        assertFalse(point("/temperature/desired/0", "temperature").writable());
+    }
+
+    @Test
+    void vendorTemperatureUnknownIdsAndMultipleItemsDoNotCreateChannels() throws IOException {
+        vendorTemperatures();
+        resources.update("/temperatures/vs/0", json("""
+                {"x.com.samsung.da.items":[{"x.com.samsung.da.id":"unknown","x.com.samsung.da.desired":"20"}]}
+                """));
+        assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/temperatures/vs/0")));
+        resources.update("/temperatures/vs/0", json("""
+                {"x.com.samsung.da.items":[{"x.com.samsung.da.id":"0"},{"x.com.samsung.da.id":"1"}]}
+                """));
+        assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/temperatures/vs/0")));
+    }
+
+    @Test
+    void excludesSecurityResourcesAndUnknownResourcesFromChannels() throws IOException {
+        resources.update("/sec/cred", json("{\"secret\":\"must-not-publish\"}"));
+        resources.update("/oic/sec/doxm", json("{\"ownerId\":\"must-not-publish\"}"));
+        resources.update("/diagnostic/vs/0",
+                json("""
+                        {"normal":"visible","nested":{"access_token":"must-not-publish","password":"must-not-publish","value":1},
+                         "links":[{"href":"/sec/cred","rep":{"credential":"must-not-publish"}}]}
+                        """));
+        assertFalse(resources.snapshot().containsKey("/sec/cred"));
+        assertFalse(resources.snapshot().containsKey("/oic/sec/doxm"));
+        assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/diagnostic/vs/0")));
+    }
+
+    private void vendorTemperatures() throws IOException {
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.airconditioner\"]}"));
+        resources.update("/temperatures/vs/0",
+                json("""
+                        {"x.com.samsung.da.items":[{"x.com.samsung.da.id":"0","x.com.samsung.da.description":"Temperature",
+                          "x.com.samsung.da.desired":"22.0","x.com.samsung.da.current":"21.0","x.com.samsung.da.maximum":"30",
+                          "x.com.samsung.da.minimum":"16","x.com.samsung.da.increment":"1.0","x.com.samsung.da.unit":"Celsius"}]}
+                        """));
+    }
+
+    private Point point(String href, String field) {
+        return resources.points().stream().filter(p -> p.href().equals(href) && p.field().equals(field)).findFirst()
+                .orElseThrow(() -> new AssertionError("Missing point " + href + " " + field));
+    }
+
+    private static JsonElement json(String text) {
+        return JsonParser.parseString(text);
+    }
+}
