@@ -33,8 +33,20 @@ public class GeniReadRequestTest {
     }
 
     @Test
-    void requestPower() {
+    void requestMotor() {
         String expected = "27 07 E7 F8 0A 03 57 00 45 8A CD";
-        assertThat(HexUtils.bytesToHex(GeniReadRequest.Power.request(), " "), is(expected));
+        assertThat(HexUtils.bytesToHex(GeniReadRequest.Motor.request(), " "), is(expected));
+    }
+
+    @Test
+    void requestEnergy() {
+        String expected = "27 07 E7 F8 0A 03 57 00 01 82 8D";
+        assertThat(HexUtils.bytesToHex(GeniReadRequest.Energy.request(), " "), is(expected));
+    }
+
+    @Test
+    void requestCounters() {
+        String expected = "27 07 E7 F8 0A 03 5D 00 01 45 4C";
+        assertThat(HexUtils.bytesToHex(GeniReadRequest.Counters.request(), " "), is(expected));
     }
 }

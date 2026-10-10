@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="grundfos-flow">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type unitHint="m³/h,gal/min">Number:VolumetricFlowRate</item-type>
 		<label>Current Flow</label>
 		<description>Current flow</description>
 		<category>Flow</category>
@@ -13,7 +13,7 @@
 	</channel-type>
 
 	<channel-type id="grundfos-head">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="m,ft">Number:Length</item-type>
 		<label>Current Head</label>
 		<description>Current head</description>
 		<category>Water</category>
@@ -36,6 +36,18 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
+	<channel-type id="grundfos-energy">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Total Energy Consumption</label>
+		<description>Accumulated electrical energy consumed by the pump</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
 	<channel-type id="grundfos-motor-speed">
 		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Motor Speed</label>
@@ -46,6 +58,40 @@
 			<tag>Frequency</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
+	</channel-type>
+
+	<channel-type id="grundfos-motor-current">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Motor Current</label>
+		<description>Current drawn by the pump motor</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
+	<channel-type id="grundfos-operating-time">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Operating Time</label>
+		<description>Accumulated running time of the pump</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
+	<channel-type id="grundfos-start-count">
+		<item-type>Number</item-type>
+		<label>Start Count</label>
+		<description>Accumulated number of pump starts</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<thing-type id="mi401">
@@ -102,15 +148,20 @@
 				<label>AC Voltage</label>
 				<description>Current AC pump voltage</description>
 			</channel>
+			<channel id="motor-current" typeId="grundfos-motor-current"/>
+			<channel id="motor-speed" typeId="grundfos-motor-speed"/>
 			<channel id="power" typeId="system.electric-power">
 				<label>Power Consumption</label>
 				<description>Current pump power consumption</description>
 			</channel>
-			<channel id="motor-speed" typeId="grundfos-motor-speed"/>
+			<channel id="energy" typeId="grundfos-energy"/>
+			<channel id="operating-time" typeId="grundfos-operating-time"/>
+			<channel id="start-count" typeId="grundfos-start-count"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">Grundfos</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>address</representation-property>
