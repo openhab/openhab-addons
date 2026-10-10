@@ -1,0 +1,125 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.keba.internal.handler.udp;
+
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.keba.internal.KebaBindingConstants;
+import org.openhab.binding.keba.internal.handler.KeContactCombinedHandler;
+import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.thing.binding.ThingActions;
+import org.openhab.core.thing.binding.ThingActionsScope;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link KeContactActions} is responsible for handling actions, which
+ * are sent to the binding.
+ *
+ * @author Simon Spielmann - Initial contribution
+ */
+@Component(scope = ServiceScope.PROTOTYPE, service = KeContactActions.class)
+@ThingActionsScope(name = KebaBindingConstants.BINDING_ID)
+@NonNullByDefault
+public class KeContactActions implements ThingActions {
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactActions.class));
+    private @Nullable ThingHandler handler;
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
+    public void setDisplay(
+            @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDesc") @Nullable String text,
+            @ActionInput(name = "durationMin", label = "@text/actionInputDurationMinLabel", description = "@text/actionInputDurationMinDesc") int durationMin,
+            @ActionInput(name = "durationMax", label = "@text/actionInputDurationMaxLabel", description = "@text/actionInputDurationMaxDesc") int durationMax) {
+        ThingHandler localHandler = handler;
+        if (localHandler == null) {
+            logger.warn("KeContact Action service ThingHandler is null!");
+            return;
+        }
+        if (localHandler instanceof KeContactHandler udpHandler) {
+            udpHandler.setDisplay(text, durationMin, durationMax);
+        } else if (localHandler instanceof KeContactCombinedHandler combinedHandler) {
+            combinedHandler.setDisplay(text, durationMin, durationMax);
+        }
+    }
+
+    public static void setDisplay(ThingActions actions, @Nullable String text, int durationMin, int durationMax) {
+        ((KeContactActions) actions).setDisplay(text, durationMin, durationMax);
+    }
+
+    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
+    public void setDisplay(
+            @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDesc") @Nullable String text) {
+        setDisplay(text, -1, -1);
+    }
+
+    public static void setDisplay(ThingActions actions, @Nullable String text) {
+        ((KeContactActions) actions).setDisplay(text);
+    }
+
+    @RuleAction(label = "@text/actionSetChargingCurrentLabel", description = "@text/actionSetChargingCurrentDesc")
+    public void setChargingCurrent(
+            @ActionInput(name = "current", label = "@text/actionInputCurrentMilliAmpsLabel", description = "@text/actionInputCurrentMilliAmpsDesc") int currentMilliAmps,
+            @ActionInput(name = "delaySeconds", label = "@text/actionInputDelaySecondsLabel", description = "@text/actionInputDelaySecondsDesc") int delaySeconds) {
+        ThingHandler localHandler = handler;
+        if (localHandler == null) {
+            logger.warn("KeContact Action service ThingHandler is null!");
+            return;
+        }
+        if (localHandler instanceof KeContactHandler udpHandler) {
+            udpHandler.setChargingCurrent(currentMilliAmps, delaySeconds);
+        } else if (localHandler instanceof KeContactCombinedHandler combinedHandler) {
+            combinedHandler.setChargingCurrent(currentMilliAmps, delaySeconds);
+        }
+    }
+
+    public static void setChargingCurrent(ThingActions actions, int currentMilliAmps, int delaySeconds) {
+        ((KeContactActions) actions).setChargingCurrent(currentMilliAmps, delaySeconds);
+    }
+
+    @RuleAction(label = "@text/actionSetFailsafeLabel", description = "@text/actionSetFailsafeDesc")
+    public void setFailsafe(
+            @ActionInput(name = "current", label = "@text/actionInputCurrentMilliAmpsLabel", description = "@text/actionInputCurrentMilliAmpsDesc") int currentMilliAmps,
+            @ActionInput(name = "timeoutSeconds", label = "@text/actionInputFailsafeTimeoutLabel", description = "@text/actionInputFailsafeTimeoutDesc") int timeoutSeconds,
+            @ActionInput(name = "persist", label = "@text/actionInputFailsafePersistLabel", description = "@text/actionInputFailsafePersistDesc") boolean persist) {
+        ThingHandler localHandler = handler;
+        if (localHandler == null) {
+            logger.warn("KeContact Action service ThingHandler is null!");
+            return;
+        }
+        if (localHandler instanceof KeContactHandler udpHandler) {
+            udpHandler.setFailsafe(currentMilliAmps, timeoutSeconds, persist);
+        } else if (localHandler instanceof KeContactCombinedHandler combinedHandler) {
+            combinedHandler.setFailsafe(currentMilliAmps, timeoutSeconds, persist);
+        }
+    }
+
+    public static void setFailsafe(ThingActions actions, int currentMilliAmps, int timeoutSeconds, boolean persist) {
+        ((KeContactActions) actions).setFailsafe(currentMilliAmps, timeoutSeconds, persist);
+    }
+}

@@ -10,26 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.keba.internal.handler;
+package org.openhab.binding.keba.internal.handler.udp;
 
 import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
+import org.openhab.binding.keba.internal.handler.KeContactCombinedConfiguration;
+import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -42,7 +47,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -51,7 +55,6 @@ import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -61,12 +64,11 @@ import com.google.gson.JsonParser;
  * are sent to one of the channels.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Michael Weger - Combined Thing UDP integration
  */
-public class KeContactHandler extends BaseThingHandler {
+@NonNullByDefault
+public class KeContactHandler extends KeContactProtocolHandler {
 
-    public static final String IP_ADDRESS = "ipAddress";
-    public static final String POLLING_REFRESH_INTERVAL = "refreshInterval";
-    public static final int POLLING_REFRESH_INTERVAL_DEFAULT = 15;
     public static final int REPORT_INTERVAL = 3000;
     public static final int BUFFER_SIZE = 1024;
     public static final int REMOTE_PORT_NUMBER = 7090;
@@ -77,67 +79,118 @@ public class KeContactHandler extends BaseThingHandler {
     public static final int SOCKET_TIME_OUT_MS = 3000;
     public static final int SOCKET_CHECK_PORT_NUMBER = 80;
 
-    private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactHandler.class));
 
     private final KeContactTransceiver transceiver;
 
-    private ScheduledFuture<?> pollingJob;
-    private ExpiringCacheMap<String, ByteBuffer> cache;
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ExpiringCacheMap<String, ByteBuffer> cache;
 
     private int maxPresetCurrent = 0;
     private int maxSystemCurrent = 63000;
-    private KebaType type;
-    private KebaSeries series;
+    private int failsafeCurrent;
+    private long failsafeTimeout;
+    private boolean hasFailsafeCurrent;
+    private boolean hasFailsafeTimeout;
+    private @Nullable KebaType type;
+    private @Nullable KebaSeries series;
     private int lastState = -1; // trigger a report100 at startup
     private boolean isReport100needed = true;
+    private String ipAddress = "";
+    private int refreshInterval;
 
     public KeContactHandler(Thing thing, KeContactTransceiver transceiver) {
-        super(thing);
+        this(thing, transceiver, null, null);
+    }
+
+    public KeContactHandler(Thing thing, KeContactTransceiver transceiver, @Nullable Configuration configuration,
+            @Nullable Listener listener) {
+        super(thing, configuration, listener);
         this.transceiver = transceiver;
+    }
+
+    public void initializeCommands(String host) {
+        ipAddress = host;
+        refreshInterval = 0;
+        transceiver.registerHandler(this);
+    }
+
+    public boolean readReport(int report) {
+        ByteBuffer response = transceiver.send("report " + report, this);
+        if (response == null) {
+            logger.debug("No UDP response for report {} from {}", report, ipAddress);
+            return false;
+        }
+        try {
+            JsonObject data = JsonParser
+                    .parseString(new String(response.array(), 0, response.limit(), StandardCharsets.US_ASCII).trim())
+                    .getAsJsonObject();
+            if (!data.has("ID") || data.get("ID").getAsInt() != report || report == 1 && !data.has("Product")
+                    || report == 2 && !data.has("State")) {
+                logger.debug("Unexpected UDP response for report {} from {}", report, ipAddress);
+                return false;
+            }
+            onData(response);
+            return true;
+        } catch (JsonParseException | IllegalStateException | NumberFormatException e) {
+            logger.debug("Invalid UDP response for report {} from {}", report, ipAddress);
+            return false;
+        }
     }
 
     @Override
     public void initialize() {
+        KeContactCombinedConfiguration configuration = getConfigAs(KeContactCombinedConfiguration.class);
+        ipAddress = configuration.ipAddress;
+        refreshInterval = configuration.refreshIntervalSlow;
         try {
             if (isKebaReachable()) {
                 transceiver.registerHandler(this);
+                if (refreshInterval > 0) {
+                    ExpiringCacheMap<String, ByteBuffer> localCache = new ExpiringCacheMap<>(
+                            Math.max(refreshInterval - 5, 1) * 1000);
+                    cache = localCache;
+                    localCache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
+                    localCache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
+                    localCache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
+                    localCache.put(CACHE_REPORT_100, () -> transceiver.send("report 100", getHandler()));
 
-                int refreshInterval = getRefreshInterval();
-                cache = new ExpiringCacheMap<>(Math.max(refreshInterval - 5, 0) * 1000);
-
-                cache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
-                cache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
-                cache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
-                cache.put(CACHE_REPORT_100, () -> transceiver.send("report 100", getHandler()));
-
-                if (pollingJob == null || pollingJob.isCancelled()) {
-                    pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0, refreshInterval,
-                            TimeUnit.SECONDS);
+                    ScheduledFuture<?> localPollingJob = pollingJob;
+                    if (localPollingJob == null || localPollingJob.isCancelled()) {
+                        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0, refreshInterval,
+                                TimeUnit.SECONDS);
+                    }
+                } else {
+                    ByteBuffer response = transceiver.send("report 1", this);
+                    if (response == null) {
+                        logger.debug("Missing response from Keba station for one-time identification");
+                    } else {
+                        onData(response);
+                    }
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "IP address or port number not set");
+                        "@text/offline.config-error-address-port");
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Exception during initialization of binding: " + e.toString());
+                    "@text/offline.comm-error-init [\"" + String.valueOf(e.getMessage()) + "\"]");
         }
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(KeContactActions.class);
+        Collection<Class<? extends ThingHandlerService>> services = new ArrayList<>();
+        services.add(KeContactActions.class);
+        return services;
     }
 
     private boolean isKebaReachable() throws IOException {
         boolean isReachable = false;
         SocketAddress sockAddr = new InetSocketAddress(getIPAddress(), SOCKET_CHECK_PORT_NUMBER);
-        Socket socket = new Socket();
-        try {
+        try (Socket socket = new Socket()) {
             socket.connect(sockAddr, SOCKET_TIME_OUT_MS);
             isReachable = true;
-        } finally {
-            socket.close();
         }
         logger.debug("isKebaReachable() returns {}", isReachable);
         return isReachable;
@@ -145,22 +198,24 @@ public class KeContactHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
-            pollingJob = null;
+        ScheduledFuture<?> localPollingJob = pollingJob;
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+            if (localPollingJob.equals(pollingJob)) {
+                pollingJob = null;
+            }
         }
 
         transceiver.unRegisterHandler(this);
+        super.dispose();
     }
 
     public String getIPAddress() {
-        return getConfig().get(IP_ADDRESS) != null ? (String) getConfig().get(IP_ADDRESS) : "";
+        return ipAddress;
     }
 
     public int getRefreshInterval() {
-        return getConfig().get(POLLING_REFRESH_INTERVAL) != null
-                ? ((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue()
-                : POLLING_REFRESH_INTERVAL_DEFAULT;
+        return refreshInterval;
     }
 
     private KeContactHandler getHandler() {
@@ -168,13 +223,8 @@ public class KeContactHandler extends BaseThingHandler {
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
-    }
-
-    @Override
-    protected Configuration getConfig() {
-        return super.getConfig();
     }
 
     private void pollingRunnable() {
@@ -184,9 +234,13 @@ public class KeContactHandler extends BaseThingHandler {
             if (!isKebaReachable()) {
                 logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "A timeout occurred while polling the charging station");
+                        "@text/offline.comm-error-timeout");
             } else {
-                ByteBuffer response = cache.get(CACHE_REPORT_1);
+                ExpiringCacheMap<String, ByteBuffer> localCache = cache;
+                if (localCache == null) {
+                    return;
+                }
+                ByteBuffer response = localCache.get(CACHE_REPORT_1);
                 if (response == null) {
                     logger.debug("Missing response from Keba station for 'report 1'");
                 } else {
@@ -195,7 +249,7 @@ public class KeContactHandler extends BaseThingHandler {
 
                 Thread.sleep(REPORT_INTERVAL);
 
-                response = cache.get(CACHE_REPORT_2);
+                response = localCache.get(CACHE_REPORT_2);
                 if (response == null) {
                     logger.debug("Missing response from Keba station for 'report 2'");
                 } else {
@@ -204,7 +258,7 @@ public class KeContactHandler extends BaseThingHandler {
 
                 Thread.sleep(REPORT_INTERVAL);
 
-                response = cache.get(CACHE_REPORT_3);
+                response = localCache.get(CACHE_REPORT_3);
                 if (response == null) {
                     logger.debug("Missing response from Keba station for 'report 3'");
                 } else {
@@ -214,7 +268,7 @@ public class KeContactHandler extends BaseThingHandler {
                 if (isReport100needed) {
                     Thread.sleep(REPORT_INTERVAL);
 
-                    response = cache.get(CACHE_REPORT_100);
+                    response = localCache.get(CACHE_REPORT_100);
                     if (response == null) {
                         logger.debug("Missing response from Keba station for 'report 100'");
                     } else {
@@ -223,12 +277,16 @@ public class KeContactHandler extends BaseThingHandler {
                     isReport100needed = false;
                 }
             }
+        } catch (InterruptedIOException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
         } catch (IOException e) {
             logger.debug("An error occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
                     e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "An error occurred while polling the charging station");
+                    "@text/offline.comm-error-polling");
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
         }
     }
@@ -238,7 +296,7 @@ public class KeContactHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         }
 
-        String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
+        String response = new String(byteBuffer.array(), 0, byteBuffer.limit(), StandardCharsets.US_ASCII);
         response = Objects.requireNonNull(StringUtils.chomp(response));
 
         if (response.contains("TCH-OK")) {
@@ -249,31 +307,80 @@ public class KeContactHandler extends BaseThingHandler {
         try {
             JsonObject readObject = JsonParser.parseString(response).getAsJsonObject();
 
-            for (Entry<String, JsonElement> entry : readObject.entrySet()) {
+            for (var entry : readObject.entrySet()) {
                 switch (entry.getKey()) {
                     case "Product": {
                         Map<String, String> properties = editProperties();
-                        String product = entry.getValue().getAsString().trim();
-                        properties.put(CHANNEL_MODEL, product);
+                        String product = Objects.requireNonNull(entry.getValue().getAsString().trim());
+                        properties.put(PROPERTY_MODEL, product);
                         updateProperties(properties);
                         if (product.contains("P20")) {
                             type = KebaType.P20;
                         } else if (product.contains("P30")) {
                             type = KebaType.P30;
                         }
-                        series = KebaSeries.getSeries(product.substring(13, 14).charAt(0));
+                        if (product.length() > 13) {
+                            try {
+                                series = KebaSeries.getSeries(product.charAt(13));
+                            } catch (IllegalArgumentException e) {
+                                logger.debug("Unknown KEBA product series in product '{}'.", product);
+                            }
+                        } else {
+                            logger.debug("KEBA product value is too short to determine its series: '{}'.", product);
+                        }
                         break;
                     }
                     case "Serial": {
                         Map<String, String> properties = editProperties();
-                        properties.put(CHANNEL_SERIAL, entry.getValue().getAsString());
+                        properties.put(PROPERTY_SERIAL, Objects.requireNonNull(entry.getValue().getAsString()));
                         updateProperties(properties);
                         break;
                     }
                     case "Firmware": {
                         Map<String, String> properties = editProperties();
-                        properties.put(CHANNEL_FIRMWARE, entry.getValue().getAsString());
+                        properties.put(PROPERTY_FIRMWARE, Objects.requireNonNull(entry.getValue().getAsString()));
                         updateProperties(properties);
+                        break;
+                    }
+                    case "COM-module": {
+                        Map<String, String> properties = editProperties();
+                        properties.put("communicationModulePresent",
+                                Objects.requireNonNull(Boolean.toString(entry.getValue().getAsInt() == 1)));
+                        updateProperties(properties);
+                        break;
+                    }
+                    case "Backend": {
+                        updateState(CHANNEL_BACKEND, OnOffType.from(entry.getValue().getAsInt() == 1));
+                        break;
+                    }
+                    case "timeQ": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_TIME_QUALITY, newState);
+                        break;
+                    }
+                    case "setBoot": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_BOOT_FLAG, newState);
+                        break;
+                    }
+                    case "DIP-Sw1": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_DIP_SWITCH_1, newState);
+                        break;
+                    }
+                    case "DIP-Sw2": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_DIP_SWITCH_2, newState);
+                        break;
+                    }
+                    case "Error1": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_ERROR_1, newState);
+                        break;
+                    }
+                    case "Error2": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_ERROR_2, newState);
                         break;
                     }
                     case "Plug": {
@@ -337,7 +444,7 @@ public class KeContactHandler extends BaseThingHandler {
                         State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_MAX_SYSTEM_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
-                            if (maxSystemCurrent < maxPresetCurrent) {
+                            if (!isCombined() && maxSystemCurrent < maxPresetCurrent) {
                                 transceiver.send("curr " + maxSystemCurrent, this);
                                 updateState(CHANNEL_MAX_PRESET_CURRENT,
                                         new QuantityType<>(maxSystemCurrent / 1000.0, Units.AMPERE));
@@ -354,7 +461,7 @@ public class KeContactHandler extends BaseThingHandler {
                         maxPresetCurrent = state;
                         State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_MAX_PRESET_CURRENT, newState);
-                        if (maxSystemCurrent != 0) {
+                        if (maxSystemCurrent > 6000) {
                             updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<>(
                                     Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000)), Units.PERCENT));
                         }
@@ -362,8 +469,30 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     case "Curr FS": {
                         int state = entry.getValue().getAsInt();
+                        failsafeCurrent = state;
+                        hasFailsafeCurrent = true;
                         State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_FAILSAFE_CURRENT, newState);
+                        break;
+                    }
+                    case "Tmo FS": {
+                        long state = entry.getValue().getAsLong();
+                        failsafeTimeout = state;
+                        hasFailsafeTimeout = true;
+                        State newState = new QuantityType<>(state, Units.SECOND);
+                        updateState(CHANNEL_FAILSAFE_TIMEOUT, newState);
+                        break;
+                    }
+                    case "Curr timer": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_CURR_TIMER, newState);
+                        break;
+                    }
+                    case "Tmo CT": {
+                        long state = entry.getValue().getAsLong();
+                        State newState = new QuantityType<>(state, Units.SECOND);
+                        updateState(CHANNEL_CURR_TIMER_TIMEOUT, newState);
                         break;
                     }
                     case "Max curr": {
@@ -411,6 +540,16 @@ public class KeContactHandler extends BaseThingHandler {
                         long state = entry.getValue().getAsLong();
                         State newState = new QuantityType<>(state, Units.SECOND);
                         updateState(CHANNEL_UPTIME, newState);
+                        break;
+                    }
+                    case "X2 phaseSwitch source": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_PHASE_SWITCH_SOURCE, newState);
+                        break;
+                    }
+                    case "X2 phaseSwitch": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_PHASE_SWITCH_STATE, newState);
                         break;
                     }
                     case "U1": {
@@ -486,13 +625,13 @@ public class KeContactHandler extends BaseThingHandler {
                         break;
                     }
                     case "RFID tag": {
-                        String state = entry.getValue().getAsString().trim();
+                        String state = Objects.requireNonNull(entry.getValue().getAsString().trim());
                         State newState = new StringType(state);
                         updateState(CHANNEL_SESSION_RFID_TAG, newState);
                         break;
                     }
                     case "RFID class": {
-                        String state = entry.getValue().getAsString().trim();
+                        String state = Objects.requireNonNull(entry.getValue().getAsString().trim());
                         State newState = new StringType(state);
                         updateState(CHANNEL_SESSION_RFID_CLASS, newState);
                         break;
@@ -526,8 +665,7 @@ public class KeContactHandler extends BaseThingHandler {
                 case CHANNEL_MAX_PRESET_CURRENT: {
                     if (command instanceof QuantityType<?> quantityCommand) {
                         QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit("mA"));
-
-                        transceiver.send("curr " + Math.min(Math.max(6000, value.intValue()), maxSystemCurrent), this);
+                        setChargingCurrent(Math.min(Math.max(6000, value.intValue()), maxSystemCurrent), 1);
                     }
                     break;
                 }
@@ -549,7 +687,7 @@ public class KeContactHandler extends BaseThingHandler {
                         } else {
                             return;
                         }
-                        transceiver.send("curr " + newValue, this);
+                        setChargingCurrent((int) newValue, 1);
                     }
                     break;
                 }
@@ -577,6 +715,45 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     break;
                 }
+                case CHANNEL_UNLOCK_PLUG: {
+                    if (command == OnOffType.ON) {
+                        ByteBuffer response = transceiver.send("unlock", this);
+                        if (isCommandAcknowledged(response)) {
+                            updateState(CHANNEL_UNLOCK_PLUG, OnOffType.OFF);
+                        }
+                    }
+                    break;
+                }
+                case CHANNEL_UDP_STOP: {
+                    if (command instanceof StringType stringCommand) {
+                        // Use the active session's RFID supplied by the caller.
+                        String rfidTag = stringCommand.toString().trim();
+                        if (isUsableRfidTag(rfidTag)) {
+                            transceiver.send("stop " + rfidTag, this);
+                        }
+                    }
+                    break;
+                }
+                case CHANNEL_FAILSAFE_CURRENT: {
+                    Integer current = failsafeCurrentValue(command);
+                    if (current != null) {
+                        sendFailsafe(null, current, 0);
+                    }
+                    break;
+                }
+                case CHANNEL_FAILSAFE_TIMEOUT: {
+                    Long timeout = failsafeTimeoutValue(command);
+                    if (timeout != null) {
+                        sendFailsafe(timeout, null, 0);
+                    }
+                    break;
+                }
+                case CHANNEL_FAILSAFE_PERSIST: {
+                    if (command == OnOffType.ON) {
+                        sendFailsafe(null, null, 1);
+                    }
+                    break;
+                }
                 case CHANNEL_DISPLAY: {
                     if (command instanceof StringType) {
                         setDisplay(command.toString(), -1, -1);
@@ -601,22 +778,112 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     break;
                 }
+                case CHANNEL_PHASE_SWITCH_SOURCE: {
+                    if (command instanceof DecimalType decimalCommand) {
+                        transceiver.send("x2src " + decimalCommand.intValue(), this);
+                    }
+                    break;
+                }
+                case CHANNEL_PHASE_SWITCH_STATE: {
+                    if (command instanceof DecimalType decimalCommand
+                            && (decimalCommand.toBigDecimal().compareTo(BigDecimal.ONE) == 0
+                                    || decimalCommand.toBigDecimal().compareTo(BigDecimal.valueOf(3)) == 0)) {
+                        // the wallbox reports/expects phase counts (1 or 3), but the "x2" command takes 0 or 1
+                        transceiver.send("x2 " + (decimalCommand.intValue() >= 3 ? 1 : 0), this);
+                    }
+                    break;
+                }
             }
         }
     }
 
-    public void setDisplay(String text, int durationMin, int durationMax) {
+    private static boolean isUsableRfidTag(String tag) {
+        return tag.matches("(?i)(?!0{16})[0-9a-f]{16}");
+    }
+
+    private static boolean isCommandAcknowledged(@Nullable ByteBuffer response) {
+        return response != null
+                && new String(response.array(), 0, response.limit(), StandardCharsets.US_ASCII).contains("TCH-OK");
+    }
+
+    private @Nullable Integer failsafeCurrentValue(Command command) {
+        long milliAmperes;
+        if (command instanceof QuantityType<?> quantity) {
+            milliAmperes = Math.round(Objects.requireNonNull(quantity.toUnit(Units.AMPERE)).doubleValue() * 1000);
+        } else if (command instanceof DecimalType decimal) {
+            milliAmperes = decimal.longValue();
+        } else {
+            return null;
+        }
+        return milliAmperes == 0 || milliAmperes >= 6000 && milliAmperes <= 63000 ? (int) milliAmperes : null;
+    }
+
+    private @Nullable Long failsafeTimeoutValue(Command command) {
+        long seconds;
+        if (command instanceof QuantityType<?> quantity) {
+            seconds = Math.round(Objects.requireNonNull(quantity.toUnit(Units.SECOND)).doubleValue());
+        } else if (command instanceof DecimalType decimal) {
+            seconds = decimal.longValue();
+        } else {
+            return null;
+        }
+        return seconds == 0 || seconds >= 5 && seconds <= 600 ? seconds : null;
+    }
+
+    public void setChargingCurrent(int currentMilliAmps, int delaySeconds) {
+        if (delaySeconds >= 0 && (currentMilliAmps == 0
+                || currentMilliAmps >= 6000 && currentMilliAmps <= Math.min(maxSystemCurrent, 63000))) {
+            transceiver.send("currtime " + currentMilliAmps + " " + delaySeconds, this);
+        }
+    }
+
+    public void setFailsafe(int currentMilliAmps, int timeoutSeconds, boolean persist) {
+        if (isValidFailsafeCurrent(currentMilliAmps) && isValidFailsafeTimeout(timeoutSeconds)) {
+            sendFailsafe((long) timeoutSeconds, currentMilliAmps, persist ? 1 : 0);
+        }
+    }
+
+    private static boolean isValidFailsafeCurrent(int milliAmperes) {
+        return milliAmperes == 0 || milliAmperes >= 6000 && milliAmperes <= 63000;
+    }
+
+    private static boolean isValidFailsafeTimeout(long seconds) {
+        return seconds == 0 || seconds >= 5 && seconds <= 600;
+    }
+
+    private void sendFailsafe(@Nullable Long timeoutOverride, @Nullable Integer currentOverride, int saved) {
+        if ((timeoutOverride == null && !hasFailsafeTimeout) || (currentOverride == null && !hasFailsafeCurrent)) {
+            readReport(2);
+        }
+        long timeout = timeoutOverride != null ? timeoutOverride : failsafeTimeout;
+        int current = currentOverride != null ? currentOverride : failsafeCurrent;
+        if ((hasFailsafeCurrent || currentOverride != null) && (hasFailsafeTimeout || timeoutOverride != null)
+                && isValidFailsafeTimeout(timeout) && isValidFailsafeCurrent(current)) {
+            ByteBuffer response = transceiver.send("failsafe " + timeout + " " + current + " " + saved, this);
+            if (isCommandAcknowledged(response)) {
+                failsafeTimeout = timeout;
+                failsafeCurrent = current;
+                hasFailsafeTimeout = true;
+                hasFailsafeCurrent = true;
+                if (saved == 1) {
+                    updateState(CHANNEL_FAILSAFE_PERSIST, OnOffType.OFF);
+                }
+            }
+        }
+    }
+
+    public void setDisplay(@Nullable String text, int durationMin, int durationMax) {
+        String displayText = text != null ? text : "";
         if (type == KebaType.P30 && (series == KebaSeries.C || series == KebaSeries.X)) {
-            int maxLength = (text.length() < 23) ? text.length() : 23;
+            int maxLength = (displayText.length() < 23) ? displayText.length() : 23;
             int a = 1;
-            if (durationMax < 0 || durationMax < 0) {
+            if (durationMin < 0 || durationMax < 0) {
                 a = 0;
                 durationMin = 0;
                 durationMax = 0;
             }
-            transceiver.send(
-                    "display " + a + " " + durationMin + " " + durationMax + " 0 " + text.substring(0, maxLength),
-                    this);
+            transceiver.send("display " + a + " " + durationMin + " " + durationMax + " 0 "
+                    + displayText.substring(0, maxLength), this);
         } else {
             logger.warn("'Display' is not supported on a KEBA KeContact {}:{}", type, series);
         }
