@@ -112,6 +112,21 @@ public class MqttMessageBuilder {
         return "/appliance/" + deviceUUID + "/subscribe";
     }
 
+    /**
+     * Extract the deviceUUID from the topic. The topic is expected to be in the format
+     * "/appliance/{deviceUUID}/publish" or "/appliance/{deviceUUID}/subscribe".
+     *
+     * @param topic
+     * @return deviceUUID
+     */
+    public @Nullable String getDeviceUUID(String topic) {
+        String[] parts = topic.split("/");
+        if (parts.length >= 3 && "appliance".equals(parts[1])) {
+            return parts[2];
+        }
+        return null;
+    }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
