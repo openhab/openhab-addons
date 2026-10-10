@@ -13,6 +13,8 @@
 package org.openhab.binding.automower.internal.things;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
@@ -62,6 +64,31 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 @SuppressWarnings("all")
 class AutomowerHandlerCacheTest {
+    @Test
+    void restPollConvertsPlannerTimestampFromSecondsToMillis() throws Exception {
+        TestContext context = createContext(false, false);
+        try {
+            long timestampSeconds = System.currentTimeMillis() / 1000 + 3600;
+            context.mower.getAttributes().getPlanner().setNextStartTimestamp(timestampSeconds);
+
+            context.handler.updateAutomowerStateViaREST(context.mower);
+
+            assertEquals(timestampSeconds * 1000, context.mower.getAttributes().getPlanner().getNextStartTimestamp());
+        } finally {
+            context.handler.dispose();
+        }
+    }
+
+    @Test
+    void onlyFuturePlannerTimestampsArePublished() {
+        long now = 1_900_000_000_000L;
+
+        assertTrue(AutomowerHandler.isNextStartTimestampInFuture(now + 1, now));
+        assertFalse(AutomowerHandler.isNextStartTimestampInFuture(now, now));
+        assertFalse(AutomowerHandler.isNextStartTimestampInFuture(now - 1, now));
+        assertFalse(AutomowerHandler.isNextStartTimestampInFuture(0, now));
+    }
+
     @Test
     void successfulCalendarUpdateReplacesOnlyTargetWorkAreaTasks() throws Exception {
         TestContext context = createContext(true, false);

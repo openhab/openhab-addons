@@ -390,7 +390,20 @@ public class AutomowerHandler extends BaseThingHandler {
 
     public void updateAutomowerStateViaREST(Mower mower) {
         this.lastQueryTime = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        if (isValidResult(mower)) {
+            Planner planner = mower.getAttributes().getPlanner();
+            // REST uses epoch seconds for planner timestamps; WebSocket events already use milliseconds.
+            planner.setNextStartTimestamp(convertRestPlannerTimestampToMillis(planner.getNextStartTimestamp()));
+        }
         updateAutomowerState(mower);
+    }
+
+    static long convertRestPlannerTimestampToMillis(long timestampSeconds) {
+        return TimeUnit.SECONDS.toMillis(timestampSeconds);
+    }
+
+    static boolean isNextStartTimestampInFuture(long timestampMillis, long currentTimeMillis) {
+        return timestampMillis > currentTimeMillis;
     }
 
     public void updateAutomowerState() {
@@ -1273,8 +1286,10 @@ public class AutomowerHandler extends BaseThingHandler {
         // If next start timestamp is 0 it means the mower should start now
         if (nextStartTimestamp == 0L) {
             updateState(CHANNEL_STATUS_NEXT_START, UnDefType.NULL);
-        } else {
+        } else if (isNextStartTimestampInFuture(nextStartTimestamp, System.currentTimeMillis())) {
             updateState(CHANNEL_STATUS_NEXT_START, new DateTimeType(toZonedDateTime(nextStartTimestamp, mowerZoneId)));
+        } else {
+            logger.trace("Ignoring past next-start timestamp {}", nextStartTimestamp);
         }
         updateState(CHANNEL_STATUS_OVERRIDE_ACTION,
                 new StringType(mower.getAttributes().getPlanner().getOverride().getAction().name()));
