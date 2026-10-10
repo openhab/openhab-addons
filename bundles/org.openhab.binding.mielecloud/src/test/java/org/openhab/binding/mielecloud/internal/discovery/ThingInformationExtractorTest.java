@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
@@ -80,26 +79,36 @@ public class ThingInformationExtractorTest {
                 properties.get(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER));
     }
 
+    private static Stream<Arguments> hobThingTypes() {
+        return Stream.of(
+                Arguments.of(MieleCloudBindingConstants.THING_TYPE_HOB, DeviceType.HOB_INDUCTION, "Induction Hob",
+                        "IH-7890", 2, "2"),
+                Arguments.of(MieleCloudBindingConstants.THING_TYPE_HOB, DeviceType.HOB_INDUCTION, "Induction Hob",
+                        "IH-7890", 4, "4"),
+                Arguments.of(MieleCloudBindingConstants.THING_TYPE_HOB_WITH_VAPOR_EXTRACTION,
+                        DeviceType.HOB_WITH_VAPOR_EXTRACTION, "Hob with vapour extraction", "KMDA-7633", 4, "4"));
+    }
+
     @ParameterizedTest
-    @CsvSource({ "2,2", "4,4" })
-    void propertiesForHobContainPlateCount(int plateCount, String expectedPlateCountPropertyValue) {
+    @MethodSource("hobThingTypes")
+    void propertiesForHobContainPlateCount(ThingTypeUID thingTypeUid, DeviceType deviceType, String type,
+            String techType, int plateCount, String expectedPlateCountPropertyValue) {
         // given:
         var deviceState = mock(DeviceState.class);
-        when(deviceState.getRawType()).thenReturn(DeviceType.HOB_INDUCTION);
+        when(deviceState.getRawType()).thenReturn(deviceType);
         when(deviceState.getDeviceIdentifier()).thenReturn("000124430019");
         when(deviceState.getFabNumber()).thenReturn(Optional.of("000124430019"));
-        when(deviceState.getType()).thenReturn(Optional.of("Induction Hob"));
-        when(deviceState.getTechType()).thenReturn(Optional.of("IH-7890"));
+        when(deviceState.getType()).thenReturn(Optional.of(type));
+        when(deviceState.getTechType()).thenReturn(Optional.of(techType));
         when(deviceState.getPlateStepCount()).thenReturn(Optional.of(plateCount));
 
         // when:
-        var properties = ThingInformationExtractor.extractProperties(MieleCloudBindingConstants.THING_TYPE_HOB,
-                deviceState);
+        var properties = ThingInformationExtractor.extractProperties(thingTypeUid, deviceState);
 
         // then:
         assertEquals(4, properties.size());
         assertEquals("000124430019", properties.get(Thing.PROPERTY_SERIAL_NUMBER));
-        assertEquals("Induction Hob IH-7890", properties.get(Thing.PROPERTY_MODEL_ID));
+        assertEquals(type + " " + techType, properties.get(Thing.PROPERTY_MODEL_ID));
         assertEquals("000124430019", properties.get(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER));
         assertEquals(expectedPlateCountPropertyValue, properties.get(MieleCloudBindingConstants.PROPERTY_PLATE_COUNT));
     }

@@ -14,24 +14,25 @@ Appliances from recent generations will support all functionality.
 
 The following types of appliances are supported:
 
-| Appliance type                   | Thing type               |
-| -------------------------------- | ------------------------ |
-| Coffee Machine                   | `coffee_system`          |
-| Dishwasher                       | `dishwasher`             |
-| Dish Warmer                      | `dish_warmer`            |
-| Freezer                          | `freezer`                |
-| Fridge                           | `fridge`                 |
-| Fridge-Freezer Combination       | `fridge_freezer`         |
-| Hob                              | `hob`                    |
-| Hood                             | `hood`                   |
-| Microwave Oven                   | `oven`                   |
-| Oven                             | `oven`                   |
-| Robotic Vacuum Cleaner           | `robotic_vacuum_cleaner` |
-| Tumble Dryer                     | `dryer`                  |
-| Washer Dryer                     | `washer_dryer`           |
-| Washing Machine                  | `washing_machine`        |
-| Wine Cabinet                     | `wine_storage`           |
-| Wine Cabinet Freezer Combination | `wine_storage`           |
+| Appliance type                   | Thing type                  |
+| -------------------------------- | --------------------------- |
+| Coffee Machine                   | `coffee_system`             |
+| Dishwasher                       | `dishwasher`                |
+| Dish Warmer                      | `dish_warmer`               |
+| Freezer                          | `freezer`                   |
+| Fridge                           | `fridge`                    |
+| Fridge-Freezer Combination       | `fridge_freezer`            |
+| Hob                              | `hob`                       |
+| Hob with Vapor Extraction        | `hob_with_vapor_extraction` |
+| Hood                             | `hood`                      |
+| Microwave Oven                   | `oven`                      |
+| Oven                             | `oven`                      |
+| Robotic Vacuum Cleaner           | `robotic_vacuum_cleaner`    |
+| Tumble Dryer                     | `dryer`                     |
+| Washer Dryer                     | `washer_dryer`              |
+| Washing Machine                  | `washing_machine`           |
+| Wine Cabinet                     | `wine_storage`              |
+| Wine Cabinet Freezer Combination | `wine_storage`              |
 
 ## Discovery
 
@@ -127,8 +128,8 @@ Channel ID and channel type ID match unless noted.
 | pre_heat_finished                     | Switch    | Indicates whether the pre-heating finished.                                        | Yes       |
 | temperature_target                    | Number    | The target temperature of the device.                                              | Yes       |
 | temperature_current                   | Number    | The currently measured temperature of the device.                                  | Yes       |
-| ventilation_power                     | String    | The current ventilation power of the hood.                                         | Yes       |
-| ventilation_power_raw                 | Number    | The current raw ventilation power of the hood.                                     | Yes       |
+| ventilation_power                     | String    | The current ventilation power of the device.                                       | Yes       |
+| ventilation_power_raw                 | Number    | The current raw ventilation power of the device.                                   | Yes       |
 | error_state                           | Switch    | Indication flag which signals an error state for the device.                       | Yes       |
 | info_state                            | Switch    | Indication flag which signals an information of the device.                        | Yes       |
 | fridge_super_cool                     | Switch    | Start the super cooling mode of the fridge.                                        | No        |
@@ -299,6 +300,17 @@ Channel ID and channel type ID match unless noted.
 - info_state
 - plate_1_power_step to plate_6_power_step with channel type ID plate_power_step
 - plate_1_power_step_raw to plate_6_power_step_raw with channel type ID plate_power_step_raw
+
+### Hob with Vapor Extraction
+
+- operation_state
+- operation_state_raw
+- error_state
+- info_state
+- plate_1_power_step to plate_6_power_step with channel type ID plate_power_step
+- plate_1_power_step_raw to plate_6_power_step_raw with channel type ID plate_power_step_raw
+- ventilation_power
+- ventilation_power_raw
 
 ### Hood
 
