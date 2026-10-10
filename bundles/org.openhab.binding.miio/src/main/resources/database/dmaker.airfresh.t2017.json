@@ -303,7 +303,10 @@
 				"actions": [
 					{
 						"command": "set_filter_reset",
-						"parameterType": "STRING"
+						"parameterType": "STRING",
+						"condition": {
+							"name": "LowerCase"
+						}
 					}
 				]
 			}
