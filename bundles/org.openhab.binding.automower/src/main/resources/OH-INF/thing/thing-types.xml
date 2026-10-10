@@ -79,13 +79,13 @@
 				<label>TimeZone</label>
 				<description>Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone configured in openHAB</description>
 			</parameter>
-			<parameter name="minCuttingHeightCm" type="decimal" required="false" min="0" unit="cm" advanced="true">
-				<label>Minimum Cutting Height</label>
+			<parameter name="minCuttingHeightCm" type="decimal" required="false" min="0">
+				<label>Minimum Cutting Height (cm)</label>
 				<description>Minimum cutting height in cm used to convert the raw mower and work-area values. Leave empty to disable
 					calculated cm channels.</description>
 			</parameter>
-			<parameter name="maxCuttingHeightCm" type="decimal" required="false" min="0" unit="cm" advanced="true">
-				<label>Maximum Cutting Height</label>
+			<parameter name="maxCuttingHeightCm" type="decimal" required="false" min="0">
+				<label>Maximum Cutting Height (cm)</label>
 				<description>Maximum cutting height in cm used to convert the raw mower and work-area values. Leave empty to disable
 					calculated cm channels.</description>
 			</parameter>
