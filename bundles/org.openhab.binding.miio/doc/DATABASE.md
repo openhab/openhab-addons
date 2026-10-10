@@ -369,12 +369,12 @@ Three seconds after the command, all channels are refreshed.
 | `ONOFFNUMBER` | ON, OFF | `1`, `0` |
 | `ONOFFPARA` | ON, OFF | No value. The `*` in `command` is replaced by `on` or `off` and the parameter list is empty. |
 | `NUMBER` | number or percent | The number. |
-| `STRING` | text | The text, converted to lower case. |
+| `STRING` | text | The text as typed. Use the `LowerCase` [condition](#conditions) for devices that only accept lower case. |
 | `COLOR` | HSB color | The RGB color as integer (`0xRRGGBB`). A number or percent is passed as number (brightness) and ON or OFF as 100 or 0. |
 | `EMPTY` | any | The command is ignored, the `parameters` (or the `returnValue` of a matching condition) are the value. For a legacy command the list is sent as one nested element: `command[[...]]`. For MIoT actions it is the `in` list. |
 | `NONE` | any | The value is only available for the `condition`, it is not placed in the `parameters`. |
 | `UNKNOWN` | any | No value for ON/OFF and text commands. Used by generated placeholder actions that never send. |
-| `CUSTOMSTRING` | text | The text, converted to lower case, replaces `$value$` in the `parameters` entry that contains it, for example `"color,$value$"`. Without such an entry it behaves like `STRING`. For a fixed list of values, prefer `STRING` or `NUMBER` with a `matchValue` condition and `returnValue`. |
+| `CUSTOMSTRING` | text | The text as typed replaces only the token `$value$` (not case sensitive) in the `parameters` entry that contains it, so `"color,$value$"` gives `"color,red"` and the rest of the entry is kept. Without such an entry, or without `parameters`, it behaves like `STRING`. For a fixed list of values, prefer `STRING` or `NUMBER` with a `matchValue` condition and `returnValue`. |
 
 - A number or percent command always results in the number, whatever the `parameterType`, except for `COLOR` and `EMPTY`.
   Combine this with a condition (see the dimmer example in the cookbook) to handle both on/off and numbers on one channel.
@@ -382,7 +382,9 @@ Three seconds after the command, all channels are refreshed.
   Use an `ONOFF...` type for a `Switch`, or `EMPTY` for a switch that only triggers a command (the value is then ignored).
   A `Switch` or `String` channel with `NUMBER` sends nothing, unless a `matchValue` condition with a `returnValue` supplies the value.
 - Commands of other types (for example UP, DOWN, STOP) are sent as lower case text.
-- `STRING` converts the text to lower case, so define the option values of such channels in lower case.
+- `STRING` and `CUSTOMSTRING` send the text as typed, so the option values of a channel are sent exactly as defined.
+  Add the `LowerCase` condition when the device only accepts lower case, for example for a text that the user types.
+  Texts sent as typed are not corrected: a rule that sends `Auto` to a channel with the option `auto` sends `Auto`.
 - For legacy commands use `EMPTY` without `parameters` (sends `[[]]`) or with a single entry.
   A missing `parameterType` is `EMPTY`, which ignores the command value.
 
@@ -392,6 +394,19 @@ Three seconds after the command, all channels are refreshed.
 - With `parameters`, the value replaces the entry that contains `$value$`, for example `[0, "$value$"]` gives `cron_add[0,30]`.
   Put `$value$` explicitly in every action that has `parameters`.
   If no entry of the `parameters` contains `$value$`, the value replaces the first entry.
+- The token is found case insensitively, and the entry that contains it is determined for every action separately: an action without the token does not use the position found for another action of the same channel.
+- `$value$` can also be inside a parameter that is an object or a list, for example `{"piid": 10, "value": "$value$"}`.
+  The value then replaces the token wherever it is in the `parameters`, and the `parameters` are sent as defined otherwise:
+  - A text that consists only of the token gets the value with its type (number, boolean or text), so `"value": "$value$"` with `NUMBER` sends `"value": 18`.
+  - A token inside a longer text is replaced as text, for example `"{\"selects\":[[$value$,1,1,2,1]]}"` gives `{"selects":[[18,1,1,2,1]]}`.
+    The value is inserted as is, so the text must be valid at that position: use a `Number` channel, or require the user to provide valid text.
+  - Several tokens are all replaced by the same value.
+  - The value is the value after the `parameterType` and the `condition`, so a `LowerCase` or `matchValue` with `returnValue` also applies here.
+  - This works for MIoT actions and for legacy commands.
+  - A parameter that is only `"$value$"` (not nested) keeps working as before.
+- A command that would still contain `$value$` after this is not sent (logged at DEBUG), instead of sending the literal token.
+  This happens when there is no single value to insert: `EMPTY` ignores the command value, and `ONOFFPARA` and `NONE` do not insert a value.
+  Use `NUMBER`, `STRING` or `CUSTOMSTRING` (or `ONOFF...` for a switch), or give the `matchValue` entries a `returnValue` without the token.
 - `NONE` and `ONOFFPARA` never insert the value, so `parameters` stay as written (including `$variables$`).
   The command is only sent when a value was determined for the command: ON/OFF or a number for `ONOFFPARA`, a number for `NONE` (ON/OFF and text send nothing), or any command when a condition supplies the value.
 
@@ -417,6 +432,7 @@ A variable that has no value stays in the command as it is.
 | `BrightnessOnOff` | Changes a number to `"off"` (lower than 1) or `"on"` (1 or more). Other values pass unchanged. |
 | `HSBOnly` | Passes the value only if the command is an HSB color. |
 | `HSVTOBRGB` | Passes for an HSB color command the integer with brightness in the highest byte and RGB in the lower bytes. Rejects other commands. |
+| `LowerCase` | Converts a text value to lower case. Other values pass unchanged. Use it with `STRING` or `CUSTOMSTRING` for devices that only accept lower case, see for example the `mode` channel of `zhimi.airpurifier.v6.json`. |
 
 ## MIoT Devices
 
@@ -436,7 +452,7 @@ The channels and actions use the same fields, with the additional `siid`/`piid` 
 
 An action with `"command": "set_properties"` on a MIoT channel sends `set_properties[{"did":"<channel>","siid":..,"piid":..,"value":<value>}]`.
 Do not specify `parameters` for it.
-Use `ONOFFBOOL` for booleans, `NUMBER` for numbers and enumerations (use `options` for the enumeration values) and `STRING` for text (which is converted to lower case).
+Use `ONOFFBOOL` for booleans, `NUMBER` for numbers and enumerations (use `options` for the enumeration values) and `STRING` for text (sent as typed).
 
 ```json
 {
@@ -485,8 +501,23 @@ The channel itself has no `siid`/`piid`, an empty `property` and no `refresh`.
 
 - The `in` list is the `parameters` of an `EMPTY` action, or the `returnValue` of the matching condition.
   Without any of those it is an empty list.
-- Actions that need input must be given a fixed list of `{"piid":..,"value":..}` entries as in the example below.
-  Inserting the value of the channel in such a list (`$value$` inside the objects) is currently not supported.
+- Actions that need a fixed input are given a list of `{"piid":..,"value":..}` entries as in the example below.
+- Actions that need a value from the user (for example the rooms to clean) put `$value$` inside that list, see [Parameters and `$value$`](#parameters-and-value):
+
+  ```json
+  {
+    "command": "action",
+    "parameterType": "NUMBER",
+    "siid": 4,
+    "aiid": 1,
+    "parameters": [
+      {"piid": 1, "value": 18},
+      {"piid": 10, "value": "{\"selects\":[[$value$,1,1,2,1]]}"}
+    ]
+  }
+  ```
+
+  Use `EMPTY` only for actions without user input: it ignores the command value, so an action with `$value$` in the list is not sent.
 
 ```json
 {
@@ -627,7 +658,7 @@ A quantity command is converted to the channel `unit` first: `2 h` or `120 min` 
 
 ### Selection List
 
-A `String` channel with `options`, sent as lower case text: `set_mode["auto"]`.
+A `String` channel with `options`, sent as the option value: `set_mode["auto"]`.
 
 ```json
 {
@@ -901,7 +932,7 @@ Common mistakes:
 - `refresh` is `false` when omitted, a channel without `refresh` is never read.
 - The `property` of two polled channels must differ, a channel id may only be used once and the `customRefreshCommand` texts must be unique.
 - A `String` channel needs `STRING` or `EMPTY` (or a `matchValue` with `returnValue`) and a `Switch` an `ONOFF...` type or `EMPTY`, otherwise nothing is sent.
-- `STRING` converts to lower case but `matchValue` compares the command as it was received, case sensitive.
+- `matchValue` compares the command as it was received, case sensitive, also when the action has a `LowerCase` condition (the conversion happens after the match).
 - `stateDescription` and `category` are ignored when `channelType` is used.
 - `readOnly` only influences the UI, use an empty `actions` list for channels that cannot be written.
 - The experimental file `<model>[-miot]-experimental.json` may still be in `conf/misc/miio`.
