@@ -59,6 +59,9 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.handler.LightModelAccessor.LightModels;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel.Mode;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentBattery;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentMedia;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -133,6 +136,8 @@ public class ShellyComponents {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CALIBRATED,
                     getOnOff(profile.settings.calibrated));
         }
+        ShellyComponentThermostat.updateChannels(thingHandler, status);
+        ShellyComponentMedia.updateChannels(thingHandler, status);
 
         return false; // device status never triggers update
     }
@@ -810,23 +815,11 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_CAPACITOR_VOLTAGE,
                         toQuantityType(getDouble(sdata.capacitorVoltage), DIGITS_VOLT_PRECISE, Units.VOLT));
             }
-            if (sdata.bat != null) { // no update for Sense
-                if (sdata.bat.value != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                            toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
-                }
-
-                int lowBattery = thingHandler.getThingConfig().getLowBattery();
-                Boolean batteryLowFlag = sdata.bat.batteryLow;
-                boolean isLow = batteryLowFlag != null ? batteryLowFlag.booleanValue()
-                        : (sdata.bat.value != null && !charger && getDouble(sdata.bat.value) < lowBattery);
-                boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
-                        getOnOff(isLow));
-                updated |= changed;
-                if (changed && isLow) {
-                    thingHandler.postEvent(ALARM_TYPE_LOW_BATTERY, false);
-                }
+            ShellyStatusSensor.ShellySensorBat bat = sdata.bat;
+            if (bat != null) { // no update for Sense
+                updated |= ShellyComponentBattery.updateChannels(thingHandler, CHANNEL_GROUP_BATTERY, bat, charger);
             }
+            updated |= ShellyComponentBattery.updateExtChannels(thingHandler, sdata);
 
             if (sdata.motion != null) { // Shelly Sense
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
