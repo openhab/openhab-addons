@@ -1,33 +1,54 @@
 # MELCloud Binding
 
-This is an openHAB binding for [Mitsubishi MELCloud](https://www.melcloud.com/).
+This is an openHAB binding for Mitsubishi [MELCloud](https://www.melcloud.com/) and [MELCloud Home](https://melcloudhome.com/).
 Installing this binding, you can control your Mitsubishi devices from openHAB without accessing the MELCloud App and benefiting from all openHAB automations.
+
+The binding supports two independent Thing families, backed by two different MELCloud cloud APIs, each with its own bridge:
+
+- **MELCloud Things** (`melcloudaccount`/`acdevice`/`heatpumpdevice`): the original, official MELCloud cloud API.
+- **MELCloud Home Things** (`home-account`/`ata-unit`/`atw-unit`): the newer cloud API used by the MELCloud Home app.
+
+Both families can be configured and used at the same time.
 
 ## Supported Things
 
-Supported Thing types
+| Thing ID | Family | Bridge? | Description |
+|----------|--------|---------|-------------|
+| `melcloudaccount` | MELCloud | Yes | MELCloud account. |
+| `acdevice` | MELCloud | No | Air-to-Air (ATA) heat pump, marketed as an A.C. device. |
+| `heatpumpdevice` | MELCloud | No | Air-to-Water (ATW) heat pump. |
+| `home-account` | MELCloud Home | Yes | MELCloud Home account. |
+| `ata-unit` | MELCloud Home | No | Air-to-Air (ATA) heat pump, marketed as an A.C. unit. |
+| `atw-unit` | MELCloud Home | No | Air-to-Water (ATW) heat pump. |
 
-- melcloudaccount (bridge)
-- acdevice
-- heatpumpdevice
+A bridge is required to connect to your MELCloud account: `melcloudaccount` for MELCloud Things, `home-account` for MELCloud Home Things.
 
-A bridge is required to connect to your MELCloud account.
+Both Thing families cover the same two Mitsubishi Electric heat pump types.
+ATA (Air-to-Air) units exchange heat with indoor air and are commonly sold and known as air conditioners.
+ATW (Air-to-Water) units heat water, used for space heating and/or a hot water tank.
 
 ## Discovery
 
-Discovery is used _after_ a bridge has been created and configured with your login information.
+Discovery works identically for both Thing families, regardless of which bridge type is used.
 
 1. Add the binding
-1. Add a new Thing of type melcloudaccount and configure with username and password
+1. Add a new bridge Thing and configure it with your login credentials: `melcloudaccount` for MELCloud, `home-account` for MELCloud Home
 1. Go to Inbox and start discovery devices using MELCloud Binding
-1. Supported devices (A.C. Device, Heatpump Device) should appear in your inbox
+1. Supported devices/units should appear in your inbox: A.C. Device / Heatpump Device for MELCloud, labelled `MELCloud Home ATA - <unit name>` / `MELCloud Home ATW - <unit name>` for MELCloud Home
 
-Binding support also manual Thing configuration by Thing files.
+Background discovery runs once automatically when the bridge goes online, so devices/units already present in your account at that time are found without a manual scan.
+It does not run periodically afterwards.
+If you add a new device or unit to your account later, you need to trigger a manual scan from the Inbox to discover it.
+
+Both families also support manual Thing configuration by Thing files, as an alternative to discovery.
 
 ## Thing Configuration
 
+### MELCloud Things
+
 In order to manually create a Thing file and not use the discovery routine you will need to know device MELCloud device ID.
-This is a bit difficult to get. The easiest way of getting this is enable debug level logging of the binding or discovery devices by the binding (discovered device can be removed afterwards).
+This is a bit difficult to get.
+The easiest way of getting this is enable debug level logging of the binding or discovery devices by the binding (discovered device can be removed afterwards).
 
 MELCloud account configuration:
 
@@ -69,14 +90,42 @@ MELCloud account configuration:
 A.C. device and Heatpump device configuration:
 
 | Config          | Mandatory | Description                                                                                                                                                                                                                                       |
-|-----------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|-----------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | deviceID        | x         | MELCloud device ID.                                                                                                                                                                                                                               |
 | buildingID      |           | MELCloud building ID. If not defined, binding tries to find matching id by device ID.                                                                                                                                                             |
 | pollingInterval |           | Refresh time interval in seconds for updates from MELCloud. Minimum is 180, defaults to 360 seconds. Mitsubishi Electric introduced limits on their API so changing default value may cause excessive traffic and lock you out for several hours. |
 
+### MELCloud Home Things
+
+As with MELCloud Things, manually configuring an `ata-unit`/`atw-unit` Thing file requires the unit's `unitId`.
+The easiest way to get it is to run discovery once and read the value off the discovered Thing (it can be removed afterwards if you prefer a Thing file).
+
+MELCloud Home account configuration:
+
+| Config   | Mandatory | Description                                             |
+|----------|-----------|----------------------------------------------------------|
+| username | x         | Email address used to sign in to the MELCloud Home app. |
+| password | x         | Password used to sign in to the MELCloud Home app.      |
+| enableRealtimeUpdates |   | Use the realtime push channel for faster updates after changes made outside openHAB. Falls back to polling on failure. Default: `true` (advanced). |
+
+ATA unit and ATW unit configuration:
+
+| Config | Mandatory | Description                                                        |
+|--------|-----------|----------------------------------------------------------------------|
+| unitId | x         | The unit's identifier, as returned by the MELCloud Home API.        |
+
+MELCloud Home has no public API.
+The binding signs in with your account credentials the same way the MELCloud Home mobile app does and relies on interfaces that Mitsubishi Electric may change or rate-limit without notice.
+A change on their side can break the MELCloud Home Things until the binding is adapted.
+
+Unlike MELCloud Things, MELCloud Home Things have no `pollingInterval` config parameter.
+The `home-account` bridge centrally polls every registered unit's state every 60 seconds; each unit additionally polls its own energy/outdoor-temperature telemetry (`energy-consumed`/`energy-produced`/`outdoor-temperature` channels) every 30 minutes, since that data changes slowly.
+
 ## Channels
 
-A.C. device channels
+### MELCloud Things
+
+#### A.C. device
 
 | Channel             | Type               | Description                                                                              | Read Only |
 |---------------------|--------------------|------------------------------------------------------------------------------------------|-----------|
@@ -92,7 +141,7 @@ A.C. device channels
 | offline             | Switch             | Is device in offline state.                                                              | True      |
 | hasPendingCommand   | Switch             | Device has a pending command(s).                                                         | True      |
 
-Heatpump device channels
+#### Heatpump device
 
 | Channel                    | Type               | Description                                                                                                                              | Read Only |
 |----------------------------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------|-----------|
@@ -114,9 +163,115 @@ Heatpump device channels
 | heatTemperatureModeZone2   | Number             | Temperature control mode for Zone 2 (0 = "Heat thermostat", 1 = "Heat flow", 2 = "Heat curve", 3 = "Cool thermostat", 4 = "Cool flow"    | False     |
 | operationMode              | String             | Operation mode: "0" = Idle, "1" = Heat water, "2" = Heat zones, "3" = Cooling, "4" = Defrost, "5" = Stand-by, "6" = Legionella           | False     |
 
-## Full Example for items configuration
+### MELCloud Home Things
 
-### melcloud.things
+For MELCloud Home Things, a channel whose value is not present in the underlying MELCloud Home API response
+(missing from the unit's `settings` array, no telemetry/trend-summary reading available for the polled window, or a
+`null` top-level field such as `rssi`) is updated to `UNDEF`, rather than being left at its previous value or at
+openHAB's uninitialized state.
+This applies in particular to `outdoor-temperature` on Air-to-Water (ATW) units,
+whose `settings` array frequently does not include an `OutdoorTemperature` entry at all, depending on the unit/
+firmware.
+It does not apply to a value that is present but not recognized by this binding (an unknown fan speed,
+vane position, or operation mode word); such cases are logged at debug level and leave the channel untouched instead,
+since that indicates a binding gap rather than genuinely missing data.
+
+#### Air-to-Air (ATA) heat pump
+
+| Channel             | Type                | Description                                                                          | Read Only |
+|----------------------|--------------------|---------------------------------------------------------------------------------------|-----------|
+| power                | Switch              | Power status of the unit.                                                            | False     |
+| operation-mode       | Number              | Operation mode: "1" = Heat, "2" = Dry, "3" = Cool, "7" = Fan, "8" = Automatic.       | False     |
+| set-temperature      | Number:Temperature  | Set temperature: Min = 10, Max = 40.                                                 | False     |
+| room-temperature     | Number:Temperature  | Room temperature.                                                                    | True      |
+| fan-speed            | Number              | Fan speed: "0" = Auto, "1" = One, "2" = Two, "3" = Three, "4" = Four, "5" = Five.    | False     |
+| vane-horizontal      | Number              | Vane Horizontal: "0" = Auto, "1" = Left, "2" = Left Centre, "3" = Centre, "4" = Right Centre, "5" = Right, "12" = Swing. | False |
+| vane-vertical        | Number              | Vane Vertical: "0" = Auto, "1" = One, "2" = Two, "3" = Three, "4" = Four, "5" = Five, "7" = Swing. | False |
+| outdoor-temperature  | Number:Temperature  | Outdoor temperature reported by the unit. Refreshed every 30 minutes.               | True      |
+| energy-consumed      | Number:Energy       | Cumulative energy consumed, in Wh. Refreshed every 30 minutes.                       | True      |
+| rssi                 | Number              | Wi-Fi signal quality (openHAB's built-in `system.signal-strength` channel, 0 = no signal to 4 = excellent). | True |
+| is-in-error          | Switch              | Whether the unit is currently reporting an error.                                    | True      |
+| error-code           | String              | The unit's current error code, if any.                                              | True      |
+| in-standby-mode      | Switch              | Whether the unit is currently in standby mode.                                      | True      |
+
+`operation-mode`'s codes `1` (Heat) and `3` (Cool) are confirmed against the MELCloud Home API's own integer
+encoding (observed on its Schedule/Scene write endpoints); `2` (Dry), `7` (Fan), and `8` (Automatic) are an invented
+convention chosen to match the legacy MELCloud binding's numbering and are not independently confirmed.
+
+#### Air-to-Water (ATW)
+
+| Channel                        | Type                | Description                                                                          | Read Only |
+|---------------------------------|--------------------|---------------------------------------------------------------------------------------|-----------|
+| power                           | Switch              | Power status of the unit.                                                           | False     |
+| operation-status                | Number              | What the unit is doing right now: `1` = Stop, `2` = Hot Water, `3` = Heating, `4` = Cooling, `5` = Freeze Stat, `6` = Legionella Prevention. | True      |
+| zone1-operation-mode            | Number              | Heating/cooling strategy for zone 1: `0` = Heat Room Temperature, `1` = Heat Flow Temperature, `2` = Heat Curve, `3` = Cool Room Temperature, `4` = Cool Flow Temperature, `5` = Dry Floor. | False |
+| set-temperature-zone1           | Number:Temperature  | Set temperature Zone 1: Min = 10, Max = 30.                                         | False     |
+| room-temperature-zone1          | Number:Temperature  | Room temperature Zone 1.                                                             | True      |
+| zone2-operation-mode            | Number              | Same codes as `zone1-operation-mode`, for zone 2. Reads `UNDEF` unless the unit reports a second zone. | False |
+| set-temperature-zone2           | Number:Temperature  | Set temperature Zone 2: Min = 10, Max = 30. Reads `UNDEF` unless the unit reports a second zone. | False |
+| room-temperature-zone2          | Number:Temperature  | Room temperature Zone 2. Reads `UNDEF` unless the unit reports a second zone.        | True      |
+| tank-water-temperature          | Number:Temperature  | Tank water temperature.                                                             | True      |
+| tank-target-water-temperature   | Number:Temperature  | Tank water target temperature: Min = 20, Max = 65.                                  | False     |
+| forced-hot-water-mode           | Switch              | If water mode is Heat Now (true) or Auto (false).                                   | False     |
+| outdoor-temperature             | Number:Temperature  | Outdoor temperature reported by the unit. Refreshed every 30 minutes.               | True      |
+| energy-consumed                 | Number:Energy       | Cumulative energy consumed, in Wh. Refreshed every 30 minutes.                       | True      |
+| energy-produced                 | Number:Energy       | Cumulative energy produced, in Wh. Refreshed every 30 minutes.                       | True      |
+| cop                             | Number              | Coefficient of performance: ratio of energy produced to energy consumed.            | True      |
+| rssi                            | Number              | Wi-Fi signal quality (openHAB's built-in `system.signal-strength` channel, 0 = no signal to 4 = excellent). | True |
+| is-in-error                     | Switch              | Whether the unit is currently reporting an error.                                   | True      |
+| error-code                      | String              | The unit's current error code, if any.                                             | True      |
+| in-standby-mode                 | Switch              | Whether the unit is currently in standby mode.                                     | True      |
+| holiday-mode                    | Switch              | Whether holiday mode is currently enabled.                                          | True      |
+| frost-protection                | Switch              | Whether frost protection is currently enabled.                                     | True      |
+
+## Actions
+
+### MELCloud Home Air-to-Water (ATW) Schedule Management
+
+`atw-unit` Things expose cloud schedule management as `ThingActions` rather than Channels/Items: a
+schedule is a variable-length list of multi-field entries, which doesn't fit the single-value Channel/Item model the
+rest of this binding uses.
+
+**This feature is provisional.**
+The endpoint paths, the day-of-week/operation-mode integer encodings, and even
+whether one write call genuinely serves both create and update are not independently confirmed against real ATW
+traffic.
+Treat it as a starting point that may need adjustment once verified, not a guaranteed-working feature.
+
+```java
+import org.openhab.core.model.script.actions.Things;
+import org.openhab.binding.melcloud.internal.home.handler.MelCloudHomeAtwScheduleActions;
+
+var actions = Things.getActions("melcloud", "melcloud:atw-unit:myhomeaccount:attic");
+if (actions instanceof MelCloudHomeAtwScheduleActions scheduleActions) {
+    // List current schedule entries (each a Map<String, Object> — see the field names in MelCloudHomeAtwScheduleEntry)
+    var schedules = scheduleActions.listSchedules();
+
+    // Create a new entry: days is a comma-separated list of lowercase day names.
+    // operationModeZone1 accepts only the three confirmed heating words below — a cooling mode is rejected
+    // (returns "") rather than guessed, since no confirmed integer code exists for it yet.
+    String newId = scheduleActions.createSchedule("monday,wednesday,friday", "06:00:00", true,
+            "heatRoomTemperature", 21.0, null, null, null);
+
+    // Update an existing entry by id; null fields keep the entry's current value. The full entry is sent, so the
+    // id must be one returned by listSchedules() (unconfirmed against real traffic).
+    scheduleActions.updateSchedule(newId, null, null, null, null, 19.0, null, null, null);
+
+    // Delete an entry, or suspend/resume every schedule on the unit at once.
+    scheduleActions.deleteSchedule(newId);
+    scheduleActions.setSchedulesEnabled(false);
+}
+```
+
+Rules DSL scripts use the static delegate methods instead (e.g.
+`MelCloudHomeAtwScheduleActions.listSchedules(actions)`), following the same convention as other openHAB binding
+actions.
+
+## Full Example for Items Configuration
+
+### MELCloud Things
+
+#### melcloud.things
 
 ```plaintext
 Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user.name@example.com", password="xxxxxx", language="0" ] {
@@ -125,7 +280,7 @@ Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user
 }
 ```
 
-### melcloud.items
+#### melcloud.items
 
 ```plaintext
 Switch      power               { channel="melcloud:acdevice:myaccount:livingroom:power" }
@@ -157,4 +312,52 @@ Number      heatpumpFlowTemperatureZone2        { channel="melcloud:heatpumpdevi
 String      heatpumpHeatTemperatureModeZone1    { channel="melcloud:heatpumpdevice:myaccount:attic:heatTemperatureModeZone1" }
 String      heatpumpHeatTemperatureModeZone2    { channel="melcloud:heatpumpdevice:myaccount:attic:heatTemperatureModeZone2" }
 String      heatpumpHeatPumpOperationMode       { channel="melcloud:heatpumpdevice:myaccount:attic:operationMode" }
+```
+
+### MELCloud Home Things
+
+#### melcloud-home.things
+
+```plaintext
+Bridge melcloud:home-account:myhomeaccount "My MELCloud Home account" [ username="user.name@example.com", password="xxxxxx" ] {
+ Thing ata-unit livingroom "Livingroom A.C. unit" [ unitId="<unit-id-from-discovery>" ]
+ Thing atw-unit attic "Attic Heatpump unit" [ unitId="<unit-id-from-discovery>" ]
+}
+```
+
+#### melcloud-home.items
+
+```plaintext
+Switch      homePower                    { channel="melcloud:ata-unit:myhomeaccount:livingroom:power" }
+Number      homeOperationMode            { channel="melcloud:ata-unit:myhomeaccount:livingroom:operation-mode" }
+Number      homeSetTemperature           { channel="melcloud:ata-unit:myhomeaccount:livingroom:set-temperature" }
+Number      homeRoomTemperature          { channel="melcloud:ata-unit:myhomeaccount:livingroom:room-temperature" }
+Number      homeFanSpeed                 { channel="melcloud:ata-unit:myhomeaccount:livingroom:fan-speed" }
+Number      homeVaneHorizontal           { channel="melcloud:ata-unit:myhomeaccount:livingroom:vane-horizontal" }
+Number      homeVaneVertical             { channel="melcloud:ata-unit:myhomeaccount:livingroom:vane-vertical" }
+Number      homeOutdoorTemperature       { channel="melcloud:ata-unit:myhomeaccount:livingroom:outdoor-temperature" }
+Number      homeEnergyConsumed           { channel="melcloud:ata-unit:myhomeaccount:livingroom:energy-consumed" }
+Number      homeSignalStrength           { channel="melcloud:ata-unit:myhomeaccount:livingroom:rssi" }
+Switch      homeIsInError                { channel="melcloud:ata-unit:myhomeaccount:livingroom:is-in-error" }
+String      homeErrorCode                { channel="melcloud:ata-unit:myhomeaccount:livingroom:error-code" }
+Switch      homeInStandbyMode            { channel="melcloud:ata-unit:myhomeaccount:livingroom:in-standby-mode" }
+
+Switch      homeHeatpumpPower                      { channel="melcloud:atw-unit:myhomeaccount:attic:power" }
+Number      homeHeatpumpOperationStatus            { channel="melcloud:atw-unit:myhomeaccount:attic:operation-status" }
+Number      homeHeatpumpZone1OperationMode         { channel="melcloud:atw-unit:myhomeaccount:attic:zone1-operation-mode" }
+Number      homeHeatpumpSetTemperatureZone1        { channel="melcloud:atw-unit:myhomeaccount:attic:set-temperature-zone1" }
+Number      homeHeatpumpRoomTemperatureZone1       { channel="melcloud:atw-unit:myhomeaccount:attic:room-temperature-zone1" }
+Number      homeHeatpumpTankWaterTemperature       { channel="melcloud:atw-unit:myhomeaccount:attic:tank-water-temperature" }
+Number      homeHeatpumpTankTargetWaterTemperature { channel="melcloud:atw-unit:myhomeaccount:attic:tank-target-water-temperature" }
+Switch      homeHeatpumpForcedHotWaterMode         { channel="melcloud:atw-unit:myhomeaccount:attic:forced-hot-water-mode" }
+Number      homeHeatpumpOutdoorTemperature         { channel="melcloud:atw-unit:myhomeaccount:attic:outdoor-temperature" }
+Number      homeHeatpumpEnergyConsumed             { channel="melcloud:atw-unit:myhomeaccount:attic:energy-consumed" }
+Number      homeHeatpumpEnergyProduced             { channel="melcloud:atw-unit:myhomeaccount:attic:energy-produced" }
+Number      homeHeatpumpCop                        { channel="melcloud:atw-unit:myhomeaccount:attic:cop" }
+Number      homeHeatpumpSignalStrength             { channel="melcloud:atw-unit:myhomeaccount:attic:rssi" }
+Switch      homeHeatpumpIsInError                  { channel="melcloud:atw-unit:myhomeaccount:attic:is-in-error" }
+String      homeHeatpumpErrorCode                  { channel="melcloud:atw-unit:myhomeaccount:attic:error-code" }
+Switch      homeHeatpumpInStandbyMode              { channel="melcloud:atw-unit:myhomeaccount:attic:in-standby-mode" }
+Switch      homeHeatpumpHolidayMode                { channel="melcloud:atw-unit:myhomeaccount:attic:holiday-mode" }
+Switch      homeHeatpumpFrostProtection            { channel="melcloud:atw-unit:myhomeaccount:attic:frost-protection" }
 ```

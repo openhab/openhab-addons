@@ -1,0 +1,173 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.melcloud.internal.home.api.dto;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Unit tests for {@link MelCloudHomeAtwUnit}, in particular the zone-2 gating logic and the
+ * {@code holidayMode}/{@code frostProtection} top-level toggle fields.
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@NonNullByDefault
+class MelCloudHomeAtwUnitTest {
+
+    private static MelCloudHomeAtwUnit unitWithSettings(String... nameValuePairs) {
+        MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
+        List<MelCloudHomeSetting> settings = new ArrayList<>(unit.settings);
+        for (int i = 0; i < nameValuePairs.length; i += 2) {
+            MelCloudHomeSetting setting = new MelCloudHomeSetting();
+            setting.name = nameValuePairs[i];
+            setting.value = nameValuePairs[i + 1];
+            settings.add(setting);
+        }
+        unit.settings = settings;
+        return unit;
+    }
+
+    @Test
+    void whenHasZone2SettingIsFalseThenZone2AccessorsReturnEmpty() {
+        // Arrange
+        MelCloudHomeAtwUnit unit = unitWithSettings("HasZone2", "False", "OperationModeZone2", "HeatCurve",
+                "SetTemperatureZone2", "21.0", "RoomTemperatureZone2", "20.5");
+
+        // Act & Assert
+        assertFalse(unit.hasZone2());
+        assertEquals(Optional.empty(), unit.getOperationModeZone2());
+        assertEquals(Optional.empty(), unit.getSetTemperatureZone2());
+        assertEquals(Optional.empty(), unit.getRoomTemperatureZone2());
+    }
+
+    @Test
+    void whenHasZone2SettingIsTrueThenZone2AccessorsReturnTheirValues() {
+        // Arrange
+        MelCloudHomeAtwUnit unit = unitWithSettings("HasZone2", "True", "OperationModeZone2", "HeatCurve",
+                "SetTemperatureZone2", "21.0", "RoomTemperatureZone2", "20.5");
+
+        // Act & Assert
+        assertTrue(unit.hasZone2());
+        assertEquals(Optional.of("HeatCurve"), unit.getOperationModeZone2());
+        assertEquals(Optional.of(21.0), unit.getSetTemperatureZone2());
+        assertEquals(Optional.of(20.5), unit.getRoomTemperatureZone2());
+    }
+
+    @Test
+    void whenHasZone2SettingIsNotBooleanThenZone2AccessorsReturnEmpty() {
+        // Arrange: the API reports the literal "None" when a unit has no second zone.
+        MelCloudHomeAtwUnit unit = unitWithSettings("HasZone2", "None", "OperationModeZone2", "HeatCurve");
+
+        // Act & Assert
+        assertFalse(unit.hasZone2());
+        assertEquals(Optional.empty(), unit.getOperationModeZone2());
+    }
+
+    @Test
+    void whenHolidayModeIsNullThenGetHolidayModeEnabledReturnsEmpty() {
+        // Arrange
+        MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
+
+        // Act
+        Optional<Boolean> holidayModeEnabled = unit.getHolidayModeEnabled();
+
+        // Assert
+        assertTrue(holidayModeEnabled.isEmpty());
+    }
+
+    @Test
+    void whenHolidayModeIsSetAndDisabledThenGetHolidayModeEnabledReturnsFalse() {
+        // Arrange: an explicitly reported "false" is distinguishable from an absent toggle.
+        MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
+        MelCloudHomeToggleState toggleState = new MelCloudHomeToggleState();
+        toggleState.enabled = false;
+        unit.holidayMode = toggleState;
+
+        // Act
+        Optional<Boolean> holidayModeEnabled = unit.getHolidayModeEnabled();
+
+        // Assert
+        assertEquals(Optional.of(Boolean.FALSE), holidayModeEnabled);
+    }
+
+    @Test
+    void whenHolidayModeIsSetAndEnabledThenGetHolidayModeEnabledReturnsTrue() {
+        // Arrange
+        MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
+        MelCloudHomeToggleState toggleState = new MelCloudHomeToggleState();
+        toggleState.enabled = true;
+        unit.holidayMode = toggleState;
+
+        // Act
+        Optional<Boolean> holidayModeEnabled = unit.getHolidayModeEnabled();
+
+        // Assert
+        assertEquals(Optional.of(Boolean.TRUE), holidayModeEnabled);
+    }
+
+    @Test
+    void whenFrostProtectionIsNullThenGetFrostProtectionEnabledReturnsEmpty() {
+        // Arrange
+        MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
+
+        // Act
+        Optional<Boolean> frostProtectionEnabled = unit.getFrostProtectionEnabled();
+
+        // Assert
+        assertTrue(frostProtectionEnabled.isEmpty());
+    }
+
+    @Test
+    void whenPowerSettingIsMissingThenGetPowerReturnsEmpty() {
+        // Arrange
+        MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
+
+        // Act
+        Optional<Boolean> power = unit.getPower();
+
+        // Assert
+        assertTrue(power.isEmpty());
+    }
+
+    @Test
+    void whenOutdoorTemperatureSettingIsPresentThenGetOutdoorTemperatureReturnsIt() {
+        // Arrange
+        MelCloudHomeAtwUnit unit = unitWithSettings("OutdoorTemperature", "5.5");
+
+        // Act
+        Optional<Double> outdoorTemperature = unit.getOutdoorTemperature();
+
+        // Assert
+        assertEquals(Optional.of(5.5), outdoorTemperature);
+    }
+
+    @Test
+    void whenOperationModeSettingIsMissingThenGetOperationStatusDefaultsToStop() {
+        // Arrange
+        MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
+
+        // Act
+        String operationStatus = unit.getOperationStatus();
+
+        // Assert
+        assertEquals("Stop", operationStatus);
+    }
+}

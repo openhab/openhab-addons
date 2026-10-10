@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="melcloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="atw-unit">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="home-account"/>
+		</supported-bridge-type-refs>
+		<label>Home Air-to-Water Unit</label>
+		<description>An Air-to-Water (heat pump) unit on the MELCloud Home cloud platform.</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
+		<channels>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="operation-status" typeId="operationStatus-channel"/>
+			<channel id="zone1-operation-mode" typeId="zoneOperationMode-channel"/>
+			<channel id="set-temperature-zone1" typeId="setTemperatureZone1-channel"/>
+			<channel id="room-temperature-zone1" typeId="roomTemperatureZone1-channel"/>
+			<channel id="zone2-operation-mode" typeId="zoneOperationMode-channel"/>
+			<channel id="set-temperature-zone2" typeId="setTemperatureZone2-channel"/>
+			<channel id="room-temperature-zone2" typeId="roomTemperatureZone2-channel"/>
+			<channel id="tank-water-temperature" typeId="tankWaterTemperature-channel"/>
+			<channel id="tank-target-water-temperature" typeId="tankTargetWaterTemperature-channel"/>
+			<channel id="forced-hot-water-mode" typeId="forcedHotWaterMode-channel"/>
+			<channel id="outdoor-temperature" typeId="system.outdoor-temperature"/>
+			<channel id="energy-consumed" typeId="energyConsumed-channel"/>
+			<channel id="energy-produced" typeId="energyProduced-channel"/>
+			<channel id="cop" typeId="cop-channel"/>
+			<channel id="rssi" typeId="system.signal-strength"/>
+			<channel id="is-in-error" typeId="isInError-channel"/>
+			<channel id="error-code" typeId="errorCode-channel"/>
+			<channel id="in-standby-mode" typeId="inStandbyMode-channel"/>
+			<channel id="holiday-mode" typeId="holidayMode-channel"/>
+			<channel id="frost-protection" typeId="frostProtection-channel"/>
+		</channels>
+
+		<representation-property>unitId</representation-property>
+
+		<config-description>
+			<parameter name="unitId" type="text" required="true">
+				<label>Unit ID</label>
+				<description>The unit's identifier, as returned by the MELCloud Home API.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

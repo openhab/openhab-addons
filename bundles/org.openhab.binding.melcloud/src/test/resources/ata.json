@@ -1,0 +1,114 @@
+{
+	"id": "11111111-2222-3333-4444-555566667777",
+	"firstname": "SyntheticFirst",
+	"lastname": "SyntheticLast",
+	"email": "synthetic.owner@example.invalid",
+	"language": "en",
+	"country": "DE",
+	"numberOfDevicesAllowed": 10,
+	"numberOfBuildingsAllowed": 2,
+	"numberOfGuestUsersAllowedPerUnit": 5,
+	"numberOfGuestDevicesAllowed": 10,
+	"buildings": [
+		{
+			"id": "aaaaaaaa-bbbb-cccc-dddd-eeeeffff0000",
+			"name": "Townhouse",
+			"timezone": "Europe/Berlin",
+			"airToAirUnits": [
+				{
+					"unitSettings": null,
+					"schedule": [],
+					"scheduleEnabled": true,
+					"connectedInterfaceIdentifier": "001122aabbcc",
+					"capabilities": {
+						"isMultiSplitSystem": false,
+						"isLegacyDevice": false,
+						"hasStandby": true,
+						"hasCoolOperationMode": true,
+						"hasHeatOperationMode": true,
+						"hasAutoOperationMode": true,
+						"hasDryOperationMode": true,
+						"hasAutomaticFanSpeed": true,
+						"hasAirDirection": true,
+						"hasSwing": true,
+						"hasExtendedTemperatureRange": true,
+						"hasEnergyConsumedMeter": true,
+						"numberOfFanSpeeds": 5,
+						"minTempCoolDry": 16,
+						"maxTempCoolDry": 31,
+						"minTempHeat": 10,
+						"maxTempHeat": 31,
+						"minTempAutomatic": 16,
+						"maxTempAutomatic": 31,
+						"hasDemandSideControl": false,
+						"hasHalfDegreeIncrements": true,
+						"supportsWideVane": true
+					},
+					"frostProtection": null,
+					"overheatProtection": null,
+					"holidayMode": null,
+					"connectedInterfaceType": "melCloudWiFi",
+					"systemId": "99999999-8888-7777-6666-555544443333",
+					"id": "0f0e0d0c-0b0a-0908-0706-050403020100",
+					"givenDisplayName": "SyntheticLoft",
+					"displayIcon": "LivingRoom",
+					"settings": [
+						{
+							"name": "RoomTemperature",
+							"value": "23"
+						},
+						{
+							"name": "Power",
+							"value": "False"
+						},
+						{
+							"name": "OperationMode",
+							"value": "Cool"
+						},
+						{
+							"name": "ActualFanSpeed",
+							"value": "Off"
+						},
+						{
+							"name": "SetFanSpeed",
+							"value": "Auto"
+						},
+						{
+							"name": "VaneHorizontalDirection",
+							"value": "Auto"
+						},
+						{
+							"name": "VaneVerticalDirection",
+							"value": "Auto"
+						},
+						{
+							"name": "InStandbyMode",
+							"value": "False"
+						},
+						{
+							"name": "SetTemperature",
+							"value": "21.5"
+						},
+						{
+							"name": "IsInError",
+							"value": "False"
+						},
+						{
+							"name": "ErrorCode",
+							"value": ""
+						}
+					],
+					"timeZone": "Europe/Berlin",
+					"rssi": -60,
+					"isConnected": true,
+					"isInError": false,
+					"energyProducedOptIn": null,
+					"isEnergyUsageCompatible": false
+				}
+			],
+			"airToWaterUnits": []
+		}
+	],
+	"guestBuildings": [],
+	"scenes": []
+}
