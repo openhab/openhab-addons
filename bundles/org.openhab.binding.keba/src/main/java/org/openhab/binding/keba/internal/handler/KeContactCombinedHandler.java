@@ -625,7 +625,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 && sourceFor(CHANNEL_STATE, localSession.modbusOnline, localSession.restOnline) == Protocol.REST) {
             updateState(CHANNEL_STATE, numericRestState(Objects.requireNonNull(state.toString())));
         }
-        if (sourceFor(channel, localSession.modbusOnline, localSession.restOnline) != protocol) {
+        boolean modbusTriggerReset = protocol == Protocol.MODBUS && state == OnOffType.OFF
+                && (CHANNEL_FAILSAFE_PERSIST.equals(channel) || CHANNEL_ACTIVATE_FAST_CHARGING.equals(channel));
+        if (!modbusTriggerReset && sourceFor(channel, localSession.modbusOnline, localSession.restOnline) != protocol) {
             return;
         }
         if (protocol == Protocol.MODBUS && CHANNEL_CABLE_STATE.equals(channel) && state instanceof DecimalType cable) {

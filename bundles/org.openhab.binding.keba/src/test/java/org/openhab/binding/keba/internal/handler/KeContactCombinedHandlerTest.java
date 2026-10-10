@@ -43,6 +43,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.keba.internal.handler.KeContactCombinedHandler.Protocol;
+import org.openhab.binding.keba.internal.handler.modbus.KeContactModbusHandler;
 import org.openhab.binding.keba.internal.handler.rest.KeContactRestHandler;
 import org.openhab.binding.keba.internal.handler.udp.KeContactActions;
 import org.openhab.binding.keba.internal.handler.udp.KeContactHandler;
@@ -93,6 +94,56 @@ import com.google.gson.JsonParser;
  * @author Michael Weger - Initial contribution
  */
 class KeContactCombinedHandlerTest {
+
+    @Test
+    void forwardsModbusTriggerResetsWithoutBypassingReadPrecedence() {
+        for (String prefix : List.of("", "modbus#")) {
+            ThingUID uid = new ThingUID("keba:kecontact:triggerresets");
+            List<String> triggers = List.of("failsafepersist", "activatefastcharging");
+            var channels = triggers.stream()
+                    .map(channel -> ChannelBuilder.create(new ChannelUID(uid, prefix + channel), "Switch").build())
+                    .toList();
+            Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                    .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "modbusEnabled", true,
+                            "udpEnabled", false, "restEnabled", false)))
+                    .withChannels(channels).build();
+            List<KeContactProtocolHandler.Listener> listeners = new ArrayList<>();
+            try (var adapters = mockConstruction(KeContactModbusHandler.class, (adapter, context) -> {
+                listeners.add((KeContactProtocolHandler.Listener) Objects.requireNonNull(context.arguments().get(3)));
+            })) {
+                ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+                KeContactCombinedHandler handler = new KeContactCombinedHandler(thing,
+                        Objects.requireNonNull(mock(ModbusManager.class)),
+                        Objects.requireNonNull(mock(KeContactTransceiver.class)));
+                handler.setCallback(callback);
+                try {
+                    handler.initialize();
+                    assertEquals(1, adapters.constructed().size());
+                    KeContactProtocolHandler.Listener listener = listeners.get(0);
+                    listener.statusUpdated(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                    for (String channel : triggers) {
+                        listener.stateUpdated(channel, OnOffType.ON);
+                        verify(callback, never()).stateUpdated(new ChannelUID(uid, prefix + channel), OnOffType.ON);
+                        listener.stateUpdated(channel, OnOffType.OFF);
+                        verify(callback).stateUpdated(new ChannelUID(uid, prefix + channel), OnOffType.OFF);
+                    }
+                    listener.statusUpdated(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, null);
+                    listener.stateUpdated("power", new DecimalType(123));
+                    verify(callback, never()).stateUpdated(any(ChannelUID.class), eq(new DecimalType(123)));
+                    for (String channel : triggers) {
+                        listener.stateUpdated(channel, OnOffType.OFF);
+                        verify(callback, times(2)).stateUpdated(new ChannelUID(uid, prefix + channel), OnOffType.OFF);
+                    }
+                } finally {
+                    handler.dispose();
+                }
+                for (String channel : triggers) {
+                    listeners.get(0).stateUpdated(channel, OnOffType.OFF);
+                    verify(callback, times(2)).stateUpdated(new ChannelUID(uid, prefix + channel), OnOffType.OFF);
+                }
+            }
+        }
+    }
 
     @Test
     void retainsLegacyUdpChannelIdsAsCanonicalChannels() {
