@@ -54,8 +54,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsWiFiNetwork;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
@@ -122,12 +120,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscoveryInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiClient.class);
-    protected final ShellyStatusRelay relayStatus = new ShellyStatusRelay();
     // written by the poll and the WebSocket thread
     private final Map<String, Double> componentTemperatures = new ConcurrentHashMap<>();
     protected final ShellyStatusSensor sensorData = new ShellyStatusSensor();
-    protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
-    protected @Nullable ShellyThingInterface thing;
+    protected volatile @Nullable ShellyThingInterface thing;
 
     private static final String RPC_SRC_PREFIX = "ohshelly-";
     private static final AtomicInteger REQUEST_ID = new AtomicInteger(1);
@@ -337,24 +333,22 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             // Preserve the existing relay list when the relay count is unchanged. Unconditional reset
             // would wipe ison/isValid just reported by a NotifyStatus event racing this profile refresh
             // (race condition: getDeviceProfile → onNotifyStatus → updateRelayStatus).
-            if (profile.status.relays == null || profile.status.relays.size() != profile.numRelays
-                    || relayStatus.relays == null || relayStatus.relays.size() != profile.numRelays) {
-                profile.status.relays = new ArrayList<>(profile.numRelays);
-                relayStatus.relays = new ArrayList<>(profile.numRelays);
+            if (profile.status.relays == null || profile.status.relays.size() != profile.numRelays) {
+                // fill before publishing, the WebSocket thread reads this list concurrently
+                ArrayList<@Nullable ShellySettingsRelay> statusRelays = new ArrayList<>(profile.numRelays);
                 for (int i = 0; i < profile.numRelays; i++) {
-                    profile.status.relays.add(new ShellySettingsRelay());
-                    relayStatus.relays.add(new ShellyShortStatusRelay());
+                    statusRelays.add(new ShellySettingsRelay());
                 }
+                profile.status.relays = statusRelays;
             }
         }
 
         if (profile.numInputs > 0) {
-            profile.status.inputs = new ArrayList<>(profile.numInputs);
-            relayStatus.inputs = new ArrayList<>(profile.numInputs);
+            ArrayList<@Nullable ShellyInputState> statusInputs = new ArrayList<>(profile.numInputs);
             for (int i = 0; i < profile.numInputs; i++) {
-                profile.status.inputs.add(new ShellyInputState(i));
-                relayStatus.inputs.add(new ShellyInputState(i));
+                statusInputs.add(new ShellyInputState(i));
             }
+            profile.status.inputs = statusInputs;
         }
 
         profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
@@ -413,12 +407,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
 
         if (profile.isRoller) {
-            profile.status.rollers = new ArrayList<>(profile.numRollers);
+            ArrayList<@Nullable ShellyRollerStatus> statusRollers = new ArrayList<>(profile.numRollers);
             for (int i = 0; i < profile.numRollers; i++) {
-                ShellyRollerStatus rs = new ShellyRollerStatus();
-                profile.status.rollers.add(rs);
-                rollerStatus.add(rs);
+                statusRollers.add(new ShellyRollerStatus());
             }
+            profile.status.rollers = statusRollers;
         }
 
         if (profile.isDimmer) {
@@ -697,7 +690,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ShellyDeviceProfile profile = getProfile();
 
         ShellySettingsRelay rstatus;
-        ShellyShortStatusRelay sr;
         if (rs.id == null) { // firmware 1.6.1 returns id = null!
             rs.id = id >= 10 ? id - 10 : id; // ids start at 10
         }
@@ -707,35 +699,28 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 throw new IllegalArgumentException("Update for invalid relay index");
             }
             rstatus = status.relays.get(rIdx);
-            sr = relayStatus.relays.get(rIdx);
         } else {
             rstatus = new ShellySettingsRelay();
-            sr = new ShellyShortStatusRelay();
             rIdx = rs.id;
         }
 
-        sr.isValid = rstatus.isValid = true;
-        sr.name = rstatus.name = status.name;
+        rstatus.isValid = true;
+        rstatus.name = status.name;
         if (rs.output != null) {
-            sr.ison = rstatus.ison = getBool(rs.output);
-        }
-        if (rs.timerStartetAt != null && rs.timerStartetAt > 0) {
-            sr.timerRemaining = (int) (now() - rs.timerStartetAt);
+            rstatus.ison = getBool(rs.output);
         }
         Shelly2DeviceStatusTemp temperature = rs.temperature;
         if (temperature != null) {
-            sr.temperature = temperature.tC;
             updateDeviceInnerTemp(status, "switch" + id, temperature);
         }
 
         String[] errors = rs.errors;
         if (errors != null) {
             for (String error : errors) {
-                sr.overpower = rstatus.overpower = SHELLY2_ERROR_OVERPOWER.equals(error);
+                rstatus.overpower = SHELLY2_ERROR_OVERPOWER.equals(error);
                 status.overload = SHELLY2_ERROR_OVERVOLTAGE.equals(error);
                 status.overtemperature = SHELLY2_ERROR_OVERTEMP.equals(error);
             }
-            sr.overtemperature = status.overtemperature;
         }
 
         ShellySettingsEMeter emeter = (status.emeters != null && rIdx >= 0 && rIdx < status.emeters.size())
@@ -768,7 +753,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (profile.hasRelays) {
             // Update internal structures
             status.relays.set(rIdx, rstatus);
-            relayStatus.relays.set(rIdx, sr);
         }
 
         updateMeter(status, rIdx, emeter, channelUpdate);
@@ -785,7 +769,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ShellyDeviceProfile profile = getProfile();
 
         ShellySettingsRelay rstatus;
-        ShellyShortStatusRelay sr;
         if (bs.id == null) { // invalid for fw 1.6.1
             bs.id = id;
         }
@@ -795,28 +778,24 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 throw new IllegalArgumentException("Update for invalid relay index");
             }
             rstatus = status.relays.get(rIdx);
-            sr = relayStatus.relays.get(rIdx);
         } else {
             rstatus = new ShellySettingsRelay();
-            sr = new ShellyShortStatusRelay();
             rIdx = bs.id;
         }
 
-        sr.isValid = rstatus.isValid = true;
-        sr.name = rstatus.name = status.name;
+        rstatus.isValid = true;
+        rstatus.name = status.name;
         if (bs.output != null) {
-            sr.ison = rstatus.ison = getBool(bs.output);
+            rstatus.ison = getBool(bs.output);
         }
         Shelly2DeviceStatusTemp temperature = bs.temperature;
         if (temperature != null) {
-            sr.temperature = temperature.tC;
             updateDeviceInnerTemp(status, "cb" + id, temperature);
         }
 
         if (profile.hasRelays) {
             // Update internal structures
             status.relays.set(rIdx, rstatus);
-            relayStatus.relays.set(rIdx, sr);
         }
 
         return channelUpdate && profile.hasRelays
@@ -1184,8 +1163,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             emeter.pf = cs.pf;
         }
 
-        rollerStatus.set(rIdx, rs);
-        status.rollers.set(rIdx, rs);
         if (emeter.isValid) { // Shelly Shutter has no meters
             status.emeters.set(rIdx, emeter);
         }
@@ -1872,7 +1849,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= addInputStatus(2, status, ds.input2, updateChannels);
         updated |= addInputStatus(3, status, ds.input3, updateChannels);
         updated |= addInputStatus(4, status, ds.input4, updateChannels);
-        status.inputs = relayStatus.inputs;
         return updated;
     }
 
@@ -1886,14 +1862,18 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         ShellyDeviceProfile profile = getProfile();
 
-        if (is.id == null || is.id > profile.numInputs) {
+        List<@Nullable ShellyInputState> inputs = status.inputs;
+        if (inputs == null || is.id == null || is.id >= profile.numInputs || is.id >= inputs.size()) {
             logger.debug("{}: Invalid input id: {}", thingName, is.id);
             return false;
         }
 
         String group = profile.getInputGroup(is.id);
-        ShellyInputState input = relayStatus.inputs.size() > is.id ? relayStatus.inputs.get(is.id)
-                : new ShellyInputState(is.id);
+        ShellyInputState input = inputs.get(is.id);
+        if (input == null) {
+            input = new ShellyInputState(is.id);
+            inputs.set(is.id, input);
+        }
         boolean updated = false;
         input.input = getBool(is.state) ? 1 : 0; // old format Integer, new one Boolean
         if (input.event == null && profile.inButtonMode(is.id)) {
@@ -1903,7 +1883,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (is.percent != null) { // analogous input
             status.extAnalogInput = new ShellyExtAnalogInput(getDouble(is.percent));
         }
-        relayStatus.inputs.set(is.id, input);
         if (updateChannels) {
             updated |= updateChannel(group, CHANNEL_INPUT + profile.getInputSuffix(is.id), getOnOff(getBool(is.state)));
         }

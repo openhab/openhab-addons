@@ -185,28 +185,31 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
      * the same time it avoids confusing new less advanced users with less important channels.
      */
     private void hideSecondaryChannels() {
-        boolean dirty = false;
-        List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        boolean hasPrimaryColor = channels.stream().anyMatch(c -> CHAN_FULL_PRIMARY_COLOR.equals(c.getUID().getId()));
+        synchronized (channelLock) {
+            boolean dirty = false;
+            List<Channel> channels = new ArrayList<>(getThing().getChannels());
+            boolean hasPrimaryColor = channels.stream()
+                    .anyMatch(c -> CHAN_FULL_PRIMARY_COLOR.equals(c.getUID().getId()));
 
-        for (int i = 0; i < channels.size(); i++) {
-            Channel channel = channels.get(i);
-            String id = channel.getUID().getId();
-            ChannelTypeUID type = channel.getChannelTypeUID();
-            if (CHAN_FULL_CONTROL_POWER.equals(id) && !TYPE_UID_ADV_POWER.equals(type)) {
-                Channel advanced = ChannelBuilder.create(channel).withType(TYPE_UID_ADV_POWER).build();
-                channels.set(i, advanced);
-                dirty = true;
-            } else if ((CHAN_FULL_CONTROL_BRIGHT.equals(id) || CHAN_FULL_WHITE_BRIGHT.equals(id)) //
-                    && hasPrimaryColor && !TYPE_UID_ADV_BRIGHT.equals(type)) {
-                Channel advanced = ChannelBuilder.create(channel).withType(TYPE_UID_ADV_BRIGHT).build();
-                channels.set(i, advanced);
-                dirty = true;
+            for (int i = 0; i < channels.size(); i++) {
+                Channel channel = channels.get(i);
+                String id = channel.getUID().getId();
+                ChannelTypeUID type = channel.getChannelTypeUID();
+                if (CHAN_FULL_CONTROL_POWER.equals(id) && !TYPE_UID_ADV_POWER.equals(type)) {
+                    Channel advanced = ChannelBuilder.create(channel).withType(TYPE_UID_ADV_POWER).build();
+                    channels.set(i, advanced);
+                    dirty = true;
+                } else if ((CHAN_FULL_CONTROL_BRIGHT.equals(id) || CHAN_FULL_WHITE_BRIGHT.equals(id)) //
+                        && hasPrimaryColor && !TYPE_UID_ADV_BRIGHT.equals(type)) {
+                    Channel advanced = ChannelBuilder.create(channel).withType(TYPE_UID_ADV_BRIGHT).build();
+                    channels.set(i, advanced);
+                    dirty = true;
+                }
             }
-        }
 
-        if (dirty) {
-            updateThing(editThing().withChannels(channels).build());
+            if (dirty) {
+                updateThing(editThing().withChannels(channels).build());
+            }
         }
     }
 

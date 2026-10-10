@@ -182,11 +182,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException {
-        return callApi(SHELLY_URL_STATUS_RELEAY + "/" + relayIndex, ShellyStatusRelay.class);
-    }
-
-    @Override
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
         callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(Locale.ROOT),
                 String.class);

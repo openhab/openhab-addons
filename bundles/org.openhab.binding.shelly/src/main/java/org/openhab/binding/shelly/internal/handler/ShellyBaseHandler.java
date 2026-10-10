@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -129,8 +131,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private volatile ShellyDeviceStats stats = new ShellyDeviceStats();
     private volatile boolean channelsCreated = false;
     private volatile boolean stopping = false;
-    private int vibrationFilter = 0;
-    private String lastWakeupReason = "";
+    private final AtomicInteger vibrationFilter = new AtomicInteger();
+    private final AtomicReference<String> lastWakeupReason = new AtomicReference<>("");
     private volatile boolean updateMarkerSet;
 
     // Scheduler
@@ -141,9 +143,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
     private volatile boolean refreshSettings;
-    private final Object channelLock = new Object();
-    private @Nullable ScheduledFuture<?> statusJob;
-    private @Nullable ScheduledFuture<?> initJob;
+    // guards read-modify-write of the Thing's channel list
+    protected final Object channelLock = new Object();
+    private final Object initLock = new Object();
+    private volatile @Nullable ScheduledFuture<?> statusJob;
+    private volatile @Nullable ScheduledFuture<?> initJob;
 
     /**
      * Constructor
@@ -344,9 +348,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @throws ShellyApiException e.g. http returned non-ok response, check e.getMessage() for details.
      */
     public boolean initializeThing() throws ShellyApiException {
+        // init job, command and status threads may all trigger it; dedicated lock as it does blocking I/O
+        synchronized (initLock) {
+            return initializeThingSerialized();
+        }
+    }
+
+    private boolean initializeThingSerialized() throws ShellyApiException {
         // Init from thing type to have a basic profile, gets updated when device info is received from API
         refreshSettings = false;
-        lastWakeupReason = "";
+        lastWakeupReason.set("");
         cache.setThingName(thingName);
         cache.clear();
         resetStats();
@@ -661,10 +672,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return;
         }
         try {
-            if (vibrationFilter > 0) {
-                vibrationFilter--;
+            int vibrationRemaining = vibrationFilter.getAndUpdate(v -> Math.max(v - 1, 0)) - 1;
+            if (vibrationRemaining >= 0) {
                 logger.debug("{}: Vibration events are absorbed for {} more seconds", thingName,
-                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+                        vibrationRemaining * UPDATE_STATUS_INTERVAL_SECONDS);
             }
 
             skipUpdate++;
@@ -691,9 +702,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 ShellySettingsStatus status = api.getStatus();
                 throttleRetryPending = false;
                 boolean restarted = checkRestarted(status);
-                profile = getProfile(refreshSettings || restarted);
-                profile.status = status;
-                profile.updateFromStatus(status);
+                ShellyDeviceProfile prf = getProfile(refreshSettings || restarted);
+                prf.status = status;
+                prf.updateFromStatus(status);
                 if (stopping) {
                     // dispose() may have run while the blocking calls above were in flight
                     return;
@@ -1387,7 +1398,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     /**
      * Start the background updates
      */
-    protected void startUpdateJob() {
+    protected synchronized void startUpdateJob() {
+        if (stopping) {
+            // the init job may complete after dispose() cancelled the jobs
+            return;
+        }
         ScheduledFuture<?> statusJob = this.statusJob;
         if ((statusJob == null) || statusJob.isCancelled()) {
             this.statusJob = scheduler.scheduleWithFixedDelay(this::refreshStatus, 2, UPDATE_STATUS_INTERVAL_SECONDS,
@@ -1481,11 +1496,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             String reason = getString((String) valueArray.get(0));
             String newVal = valueArray.toString();
             changed = updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP, getStringType(reason));
-            changed |= !lastWakeupReason.isEmpty() && !lastWakeupReason.equals(newVal);
+            String previous = getString(lastWakeupReason.getAndSet(newVal));
+            changed |= !previous.isEmpty() && !previous.equals(newVal);
             if (changed) {
                 postEvent(reason.toUpperCase(Locale.ROOT), true);
             }
-            lastWakeupReason = newVal;
         }
         return changed;
     }
@@ -1848,13 +1863,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         String triggerCh = mkChannelId(group, channel);
         logger.debug("{}: Send event {} to channel {}", thingName, triggerCh, payload);
         if (EVENT_TYPE_VIBRATION.contentEquals(payload)) {
-            if (vibrationFilter == 0) {
-                vibrationFilter = VIBRATION_FILTER_SEC / UPDATE_STATUS_INTERVAL_SECONDS + 1;
+            int filterCycles = VIBRATION_FILTER_SEC / UPDATE_STATUS_INTERVAL_SECONDS + 1;
+            if (vibrationFilter.compareAndSet(0, filterCycles)) {
                 logger.debug("{}: Duplicate vibration events will be absorbed for the next {} sec", thingName,
-                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+                        filterCycles * UPDATE_STATUS_INTERVAL_SECONDS);
             } else {
                 logger.debug("{}: Vibration event absorbed, {} sec remaining", thingName,
-                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+                        vibrationFilter.get() * UPDATE_STATUS_INTERVAL_SECONDS);
                 return;
             }
         }
@@ -1864,6 +1879,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     public void stop() {
         logger.debug("{}: Shutting down", thingName);
+        cancelJobs();
+        api.close();
+        profile.initialized = false;
+    }
+
+    private synchronized void cancelJobs() {
         ScheduledFuture<?> job = this.initJob;
         if (job != null) {
             job.cancel(true);
@@ -1875,8 +1896,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             statusJob = null;
             logger.debug("{}: Shelly statusJob stopped", thingName);
         }
-        api.close();
-        profile.initialized = false;
     }
 
     /**
