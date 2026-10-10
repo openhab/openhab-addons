@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caldav"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>CalDAV Account</label>
+		<description>Connects to a CalDAV server, discovers available calendar collections and manages synchronization.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter-group name="connection">
+				<label>Connection</label>
+				<description>Connection and authentication settings.</description>
+			</parameter-group>
+			<parameter-group name="discovery">
+				<label>Discovery</label>
+				<description>Calendar discovery settings.</description>
+			</parameter-group>
+			<parameter-group name="synchronization">
+				<label>Synchronization</label>
+				<description>Synchronization frequency and local synchronization range.</description>
+			</parameter-group>
+			<parameter-group name="advanced">
+				<label>Advanced</label>
+				<description>Advanced options.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="url" type="text" required="true" groupName="connection">
+				<label>CalDAV URL</label>
+				<description>Starting URL for CalDAV discovery. Its meaning depends on the selected discovery mode.</description>
+			</parameter>
+			<parameter name="username" type="text" required="false" groupName="connection">
+				<label>Username</label>
+				<description>Optional username used to authenticate with the CalDAV server.</description>
+			</parameter>
+			<parameter name="password" type="text" required="false" groupName="connection">
+				<context>password</context>
+				<label>Password</label>
+				<description>Optional password or application password used to authenticate with the CalDAV server.</description>
+			</parameter>
+			<parameter name="authType" type="text" required="true" groupName="connection">
+				<label>Authentication</label>
+				<description>Authentication method used for the CalDAV server.</description>
+				<default>AUTO</default>
+				<options>
+					<option value="AUTO">Automatic</option>
+					<option value="BASIC">Basic Authentication</option>
+					<option value="DIGEST">Digest Authentication</option>
+				</options>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" min="1" max="300" required="true" groupName="connection">
+				<label>Request Timeout</label>
+				<description>Maximum time in seconds to wait for a server response.</description>
+				<default>30</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="verifyCertificate" type="boolean" required="true" groupName="connection">
+				<label>Verify Certificate</label>
+				<description>Verifies the TLS certificate of the CalDAV server. Disabling this is not recommended.</description>
+				<default>true</default>
+			</parameter>
+
+			<parameter name="discoveryMode" type="text" required="true" groupName="discovery">
+				<label>Discovery Mode</label>
+				<description>Defines what the configured URL represents and which CalDAV discovery steps are performed.</description>
+				<default>AUTO</default>
+				<options>
+					<option value="AUTO">Automatic</option>
+					<option value="DIRECT">Direct</option>
+				</options>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" min="30" max="2147483647" required="true"
+				groupName="synchronization">
+				<label>Refresh Interval</label>
+				<description>Interval in seconds between synchronization checks.</description>
+				<default>300</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="syncMode" type="text" required="true" groupName="synchronization">
+				<label>Synchronization Mode</label>
+				<description>Selects the synchronization method. Automatic mode chooses the best method supported by the server.</description>
+				<default>AUTO</default>
+				<options>
+					<option value="AUTO">Automatic</option>
+					<option value="SYNC_TOKEN">Sync Token</option>
+					<option value="ETAG">ETag</option>
+					<option value="FULL">Full Synchronization</option>
+				</options>
+			</parameter>
+			<parameter name="maxPastDays" type="integer" min="0" max="36500" required="true"
+				groupName="synchronization">
+				<label>Past Sync Days</label>
+				<description>Number of past days retained in the local synchronization window.</description>
+				<default>30</default>
+				<unitLabel>d</unitLabel>
+			</parameter>
+			<parameter name="maxFutureDays" type="integer" min="1" max="36500" required="true"
+				groupName="synchronization">
+				<label>Future Sync Days</label>
+				<description>Number of future days retained in the local synchronization window.</description>
+				<default>365</default>
+				<unitLabel>d</unitLabel>
+			</parameter>
+			<parameter name="readOnly" type="boolean" required="true" groupName="advanced">
+				<label>Read Only</label>
+				<description>Must remain enabled. Calendar modifications are not supported.</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="calendar">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>CalDAV Calendar</label>
+		<description>Represents one CalDAV calendar collection and provides event instances from the configured time range.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="events" typeId="events"/>
+			<channel-group id="current" typeId="current"/>
+			<channel-group id="next" typeId="next"/>
+			<channel-group id="sync" typeId="sync"/>
+		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description>
+			<parameter-group name="calendar">
+				<label>Calendar</label>
+				<description>Calendar collection settings.</description>
+			</parameter-group>
+			<parameter-group name="range">
+				<label>Time Range</label>
+				<description>Defines which event instances are exposed by the calendar thing.</description>
+			</parameter-group>
+			<parameter-group name="advanced">
+				<label>Advanced</label>
+				<description>Advanced options.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="path" type="text" required="true" groupName="calendar">
+				<label>Calendar Path</label>
+				<description>Path or URL of the CalDAV calendar collection.</description>
+			</parameter>
+
+			<parameter name="rangeAnchor" type="text" required="true" groupName="range">
+				<label>Range Reference</label>
+				<description>Defines whether offsets are calculated from the start of the current day or from the current time.</description>
+				<default>TODAY</default>
+				<options>
+					<option value="TODAY">Today</option>
+					<option value="NOW">Current Time</option>
+				</options>
+			</parameter>
+			<parameter name="rangeStartOffset" type="integer" min="-2147483648" max="2147483647" required="true"
+				groupName="range">
+				<label>Start Offset</label>
+				<description>Offset at which the output range begins. Negative values select past days.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="rangeEndOffset" type="integer" min="-2147483648" max="2147483647" required="true"
+				groupName="range">
+				<label>End Offset</label>
+				<description>Offset defining the last included day of the output range.</description>
+				<default>6</default>
+			</parameter>
+			<parameter name="maxEvents" type="integer" min="1" max="50000" required="true" groupName="range">
+				<label>Maximum Events</label>
+				<description>Maximum number of event instances exposed for the configured time range.</description>
+				<default>500</default>
+			</parameter>
+
+			<parameter name="includeCancelled" type="boolean" required="true" groupName="advanced">
+				<label>Include Cancelled Events</label>
+				<description>Includes cancelled events in the output.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
