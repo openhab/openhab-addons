@@ -1,172 +1,257 @@
 # Samsung SmartThings Binding
 
-This binding supports direct, authenticated local control of compatible Samsung OCF appliances.
+Control and monitor compatible Samsung appliances directly over your local network.
+Depending on your appliance, you can switch power, read temperatures, change the target temperature, and select operating, fan, swing, or comfort modes.
+State changes are delivered through event subscriptions where supported, with polling used only as a fallback.
+No SmartThings Hub, SmartApp, cloud token, or cloud API is required for operation.
 
-## Samsung OCF Appliances
+## Supported Things
 
-The `appliance` Thing communicates directly with an appliance using CoAP over DTLS and CBOR.
-It does not require a SmartThings Hub, SmartApp, cloud token, or cloud API for operation.
-This is **not** a general replacement for the SmartThings Hub or a means of controlling every device registered in SmartThings.
-Support depends on the appliance exposing compatible Samsung OCF resources and accepting the supplied local credentials.
+| Thing Type | Description |
+|------------|-------------|
+| `appliance` | Samsung appliance with a compatible local OCF interface (`smartthings:appliance`). No bridge is required. |
 
-### Prerequisites
+The binding recognizes resources used by Samsung air conditioners, air purifiers, and dehumidifiers.
+Available channels and controls depend on the model and firmware; not every appliance provides every setting or accepts commands.
+Local readings and temperature-change notifications have been tested on a Samsung air conditioner.
+This does not establish compatibility with every Samsung model or firmware version.
 
-- Give the appliance a stable address on the same reachable local network as openHAB.
-- Allow UDP traffic between openHAB and the appliance.
-  With `port=0`, the binding uses public CoAP discovery at that host to obtain the advertised secure DTLS port; this single-host lookup does not scan a subnet.
-  Alternatively, configure the advertised secure port explicitly.
-- Normally, no credential configuration is needed: the binding generates a persistent client identity and verifies the appliance certificate against its bundled Samsung OCF root.
-  This requires firmware that accepts the Samsung service client profile described below.
-  The binding does not obtain credentials from the cloud, pair with an appliance, provision ownership, or reset its security database.
-- Enable the appliance's Remote Control setting where required for writes.
-  This is separate from DTLS authentication: a working read connection does not prove that writes are permitted.
+The appliance must expose compatible Samsung OCF resources and accept the binding's client credentials.
+The default authentication works with firmware that accepts the Samsung service client profile; other firmware requires already authorized credentials or is unsupported.
+This binding is **not** a general replacement for the SmartThings Hub and cannot control every device registered in SmartThings.
+It does not pair appliances, obtain credentials from the cloud, or provision ownership.
+Do not reset your appliance or remove its SmartThings registration to enable this integration.
 
-Do not reset the appliance, remove its SmartThings registration, or disable certificate verification to enable this integration.
-Credential compatibility varies by firmware; cloud-free operation after configuration does not imply universally cloud-free credential provisioning.
+## Discovery
 
-### Discovery
+Discovery runs only when you start a scan; there is no automatic or background network scanning.
 
-Inbox discovery is an explicit, bounded subnet scan, not mDNS or multicast discovery.
-There is no automatic or background network scanning, and no subnet is inferred from the openHAB network interfaces.
-In Main UI, open **Settings → Bindings → Samsung SmartThings Binding** and set **Discovery Subnet** (`discoverySubnet`).
-Then start a Samsung SmartThings scan in the Inbox.
-Alternatively, set the binding configuration in `services/smartthings.cfg`:
+1. Set **Discovery Subnet** in **Settings → Bindings → Samsung SmartThings Binding**, as described in [Binding Configuration](#binding-configuration).
+1. Start a Samsung SmartThings scan in the Inbox.
+1. Wait for the scan to finish, then add your appliance from the results.
+
+Use `192.168.1.0/24` to scan a typical home subnet, or `192.168.1.50/32` to look for a single known appliance.
+A full `/24` scan can take about three minutes; results appear when it completes.
+Cancelling, restarting, or changing the scan configuration discards incomplete results.
+
+Discovery fills in the appliance address, secure port, and expected device UUID.
+It uses read-only, unauthenticated advertisements and does not pair the appliance, change its settings, or establish trust.
+The appliance must advertise a device UUID, a secure port, and Samsung manufacturer information.
+Some firmware does not provide this information; if your appliance is not found, try [manual Thing configuration](#thing-configuration).
+UDP firewalls, guest-network isolation, VLAN routing, and appliance sleep modes may prevent discovery.
+
+Use a DHCP reservation to keep the appliance address stable.
+Discovery does not update an existing Thing's address after a DHCP change.
+
+## Binding Configuration
+
+The only binding-wide setting is the optional subnet used for Inbox scans.
+Leave it empty if you intend to add appliances manually.
+
+| Name | Type | Description | Default | Required |
+|------|------|-------------|---------|----------|
+| `discoverySubnet` | text | Private IPv4 subnet in CIDR notation, with a prefix from `/24` to `/32`. | N/A | no |
+
+Configure it in **Settings → Bindings → Samsung SmartThings Binding**, or use the [configuration example](cfg/smartthings.cfg) to create `$OPENHAB_CONF/services/smartthings.cfg` with the following setting:
 
 ```properties
 binding.smartthings:discoverySubnet=192.168.1.0/24
 ```
 
-Use a literal IPv4 CIDR with a prefix between `/24` and `/32`, entirely within the private ranges `10.0.0.0/8`, `172.16.0.0/12`, or `192.168.0.0/16`.
-Public, loopback, link-local, multicast, unspecified, hostname-based, larger, and malformed ranges are rejected.
-Host bits are normalized to the subnet boundary.
-Each scan covers at most 256 total addresses; network and broadcast addresses are omitted for `/24` through `/30`, while both `/31` addresses and the single `/32` address are eligible.
-Use `/32` to discover only one known appliance.
-Leaving the setting empty disables Inbox discovery.
+The subnet must be entirely within `10.0.0.0/8`, `172.16.0.0/12`, or `192.168.0.0/16`.
+Only literal IPv4 addresses are accepted, not host names or public addresses.
+Scans cover at most 256 addresses and use UDP ports `5683`, `49154`, and `49153`.
 
-The scan uses read-only public CoAP requests to UDP ports `5683`, `49154`, and `49153`, with at most four concurrent probes and a three-second budget per host.
-A complete `/24` scan can take about three minutes and is stopped after 210 seconds; results are published when the scan completes.
-Cancelling, restarting, or reconfiguring a scan discards its incomplete results.
-The appliance must expose its device UUID, an unambiguous secure DTLS port, and Samsung manufacturer metadata (`mnmn`) through `/oic/p`.
-Unknown manufacturers and conflicting advertisements of the same UUID at different addresses are not published.
-Some firmware does not provide public discovery metadata; create its Thing manually instead.
-UDP firewalls, guest-network isolation, VLAN routing, and appliance sleep modes may prevent discovery.
+## Thing Configuration
 
-Results have a stable UUID-based Thing identity and prefill `host`, `port`, and the expected `deviceId`.
-These unauthenticated advertisements do **not** establish trust, obtain credentials, pair, or change appliance ownership or state.
-The default certificate authentication is configured automatically; alternative credentials and certificate pins are advanced options described below.
-Discovery does not update an existing Thing's configured host after a DHCP address change; use a DHCP reservation or update the host manually.
+### Prerequisites
 
-### Authentication
+- Give your appliance a stable IP address reachable from the openHAB server.
+- Allow UDP traffic between openHAB and the appliance, including public discovery and its secure CoAP port.
+- Enable the appliance's **Remote Control** setting where required to accept commands.
+- Ensure the openHAB service account can store its client identity in `$OPENHAB_USERDATA/etc/smartthings/` with owner-only permissions.
 
-**Automatic certificate mode (default):** Leave `keyStore`, `keyStorePassword`, `serverFingerprint`, `ownerId`, and `ownerPsk` empty.
-The binding generates an RSA client key and a self-signed client certificate using the Samsung service UUID `ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9`.
-You do not need OpenSSL, certificates, keys, or a password to configure a compatible appliance.
-This is a **firmware-specific compatibility profile**, not a universal authorization or provisioning mechanism.
-Firmware that rejects this profile needs already authorized imported credentials or is unsupported.
+### `appliance` Thing Configuration
 
-The identity is shared by this binding's appliances and stored in `$OPENHAB_USERDATA/etc/smartthings/client.p12`.
-It is reused across restarts and renewed near certificate expiry without changing its private key.
-The directory and files are restricted to the openHAB service account; filesystems that cannot enforce owner-only permissions are rejected.
-The automatically managed PKCS12 uses an empty password because filesystem access control, rather than a built-in password, protects the private key.
-Protect userdata backups accordingly.
-A corrupt or unreadable identity is not silently replaced; restore it from a protected backup or resolve the storage problem.
+To add an appliance manually in Main UI, select the Samsung SmartThings binding, add a **Samsung OCF Appliance**, and enter its host name or IP address.
+Leave **Secure CoAP Port** at `0` to discover the secure port from that appliance.
+This single-host lookup works without a configured discovery subnet.
+If automatic port discovery fails, enter the appliance's known secure DTLS port explicitly.
+Do not use a public discovery port as the secure port.
 
-Appliance certificate signatures, validity and authentication usage are checked against the bundled Samsung Electronics OCF Root CA.
-Its DER SHA-256 fingerprint is `E363FD4CC50380266D757321469E9ADEC15E5ECBEE28201447ECE02A52ED627F`.
-The public certificate was obtained from the community-maintained [SmartThings-Local repository](https://github.com/QuiteYellow/SmartThings-Local/blob/main/smartthings_local/protocol/ocf_root_ca.pem); source and license attribution are in `NOTICE`.
-Its manufacturer provenance has not been independently authenticated.
-The binding does not download trust anchors at runtime, use system roots, or trust an unverified first connection.
-Samsung certificates identify OCF UUIDs rather than IP/DNS names, so host-name verification is not used; the logical device UUID is checked separately through authenticated `/oic/d`.
+Normally, leave all credential settings empty: the binding generates and retains a client identity automatically.
+See [Advanced Authentication](#advanced-authentication) if you already have authorized credentials or a verified certificate fingerprint.
 
-**Advanced certificate options:** To use your own authorized identity, set `keyStore` to an absolute PKCS12 path containing one private key and its certificate chain, and set `keyStorePassword` if needed.
-Protect this file and its password, and restrict access to the openHAB service account.
-To override CA trust, set `serverFingerprint` to the SHA-256 fingerprint of the appliance's leaf certificate, obtained through an independently authenticated, out-of-band source.
-Hexadecimal with optional colon separators is accepted.
-This pins the valid, signing leaf certificate instead of using CA path validation, and works with either generated or imported client identities.
-Never pin a certificate merely because it was returned by the configured IP address.
-A replacement pinned certificate requires a newly verified fingerprint.
+| Name | Type | Description | Default | Required | Advanced |
+|------|------|-------------|---------|----------|----------|
+| `host` | text | Appliance IP address or host name. | N/A | yes | no |
+| `port` | integer | Secure CoAP port; `0` discovers it from this host. Range: `0`–`65535`. | `0` | no | no |
+| `clientPort` | integer | Local UDP port; `0` selects a stable port automatically. Set an unused port if Things conflict. Range: `0`–`65535`. | `0` | no | yes |
+| `refreshInterval` | integer | Delay between fallback polls in seconds, used when event subscriptions are unavailable. Minimum: `10`. | `60` | no | no |
+| `timeout` | integer | Per-request timeout in seconds. Range: `1`–`60`. | `12` | no | yes |
+| `deviceId` | text | Expected appliance UUID. If omitted, the first authenticated UUID is remembered. | N/A | no | yes |
+| `keyStore` | text | Absolute path to an authorized client PKCS12 key store on the openHAB server. Leave empty to use the generated identity. | N/A | no | yes |
+| `keyStorePassword` | text | Password for the imported key store and private key. | N/A | no | yes |
+| `serverFingerprint` | text | Independently verified SHA-256 fingerprint of the appliance's leaf certificate. Leave empty to use the bundled Samsung OCF CA. | N/A | no | yes |
+| `ownerId` | text | Previously provisioned owner UUID, required when using `ownerPsk`. Not the appliance UUID. | N/A | no | yes |
+| `ownerPsk` | text | Authorized OwnerPSK: 16 or 32 bytes encoded as hexadecimal. Mutually exclusive with imported certificate and fingerprint settings. | N/A | no | yes |
 
-**OwnerPSK mode:** Set `ownerId` to the owner UUID associated with a previously provisioned, authorized OwnerPSK and set `ownerPsk` to the key in hexadecimal (16 or 32 bytes, hence 32 or 64 hexadecimal characters).
-This owner UUID is not the device UUID.
-Leave `keyStore`, `keyStorePassword`, and `serverFingerprint` unset in this mode; OwnerPSK and client certificate modes are mutually exclusive.
-The binding does not derive or provision an OwnerPSK.
+If `deviceId` is omitted, the authenticated UUID is saved in the Thing's properties and checked on subsequent connections.
+Changing the host alone does not authorize a different appliance.
+An identity mismatch prevents state updates and commands.
+
+## Channels
+
+Channels are created after the binding connects to your appliance and reads its capabilities.
+Open the Thing's **Channels** tab to see which channels are available, their Item types, and their supported commands.
+Only recognized appliance settings are exposed; unknown and security resources do not create channels.
+
+The following table lists typical channel IDs for resources without an appliance-specific path prefix.
+Actual IDs can differ, particularly for appliances with multiple units or settings sharing a resource path.
+Always use the IDs shown on your Thing when linking Items.
+
+| Channel | Type | Read/Write | Description |
+|---------|------|------------|-------------|
+| `power` | Switch | RW* | Appliance power. Use `ON` or `OFF`. |
+| `remotectrl` | Switch | R | Whether Remote Control is enabled on the appliance. |
+| `temperature-current` | Number:Temperature | R | Measured temperature in the appliance's reported unit. |
+| `temperature-desired` | Number:Temperature | RW* | Target temperature, subject to the reported range and increment. |
+| `mode` | String | RW* | Operating mode. Use the choices advertised by the appliance. |
+| `wind-strength` | String | RW* | Fan setting. Commands may be numeric strings or names, depending on the appliance. |
+| `wind-direction` | String | RW* | Swing setting, such as `Fix`, `All`, `Up_And_Low`, or `Left_And_Right`, if advertised. |
+| `mode-convenient` | String | RW* | Comfort setting. On supporting firmware, `Nano` means WindFree and `NanoSleep` combines WindFree and sleep. |
+| `airflow` | Number | RW* | Fan speed. Commands are limited to integers from `0` to `4` on supported air purifiers; otherwise read-only. |
+| `energy-consumption` | Number:Power | R | Instantaneous power consumption. |
+| `water-consumption` | Number | R | Raw cumulative water reading; no unit is inferred. |
+| `kidslock` | String | R | Child-lock state. |
+
+`RW*` means writable only when the appliance's current capabilities and Remote Control setting permit it.
+A working read connection does not guarantee that the appliance accepts commands.
+
+Some air conditioners provide temperatures through a combined resource instead of separate current and desired channels.
+For these appliances, temperature channels are derived from `/temperatures/vs/0`, for a single zone with identifier `0`.
+A raw cumulative power reading may be available when instantaneous consumption is absent; it uses a `Number` Item without an inferred unit.
+
+Channel descriptions provide the supported mode commands, display names where available, and temperature units, ranges, and increments.
+Use these values rather than assuming a generic temperature range or fan scale.
+Read-only channels provide no command choices.
+If upgrading from a version with long resource-based channel IDs, check and relink your existing Items to the new IDs.
+
+### State Updates and Commands
+
+The binding subscribes to appliance events using CoAP Observe over an authenticated, encrypted DTLS connection.
+Changes made on the appliance or through another controller update linked Items as notifications arrive.
+Polling stops when all subscriptions for successfully read resources are established.
+
+If a subscription fails or is unsupported, the binding polls only the affected resources at `refreshInterval`; working subscriptions continue delivering updates.
+Failed subscriptions are retried with increasing delays, starting at `refreshInterval` and capped at five minutes, or at `refreshInterval` if it is longer.
+Registrations without an initial response expire after `timeout` and are recovered through fallback polling.
+An unchanged setting is not treated as failed just because it sends no notifications.
+Subscriptions are renewed automatically.
+If the connection fails, the Thing goes OFFLINE and the binding attempts to reconnect using fallback polling.
+An unavailable optional resource alone does not take an otherwise reachable appliance offline.
+
+Sending `REFRESH` to a linked Item requests a full resource refresh without changing appliance settings.
+After a command, the binding reads the appliance state back rather than assuming the command succeeded.
+Some appliances report the new value only in a later notification or fallback poll.
+Failed write requests are not retried automatically because the appliance may already have applied them.
+
+## Full Example
+
+This example assumes an air conditioner at `192.168.1.50` that exposes the listed channels.
+Replace the address and channel IDs with those of your appliance, and omit Items for settings it does not expose.
+The example uses automatic authentication and secure-port discovery.
 
 ### Thing Configuration
 
-An appliance is a standalone Thing without a bridge.
-Create it manually in Main UI or in a `.things` file:
+`$OPENHAB_CONF/things/smartthings.things`:
 
 ```java
-Thing smartthings:appliance:bedroom "Bedroom Appliance" [ host="192.168.1.50", port=0 ]
+Thing smartthings:appliance:bedroom "Bedroom Air Conditioner" [ host="192.168.1.50", port=0 ]
 ```
 
-Never publish your key store, passwords, OwnerPSK, or owner UUID in logs, support reports, or shared examples.
+### Item Configuration
 
-| Parameter           | Default | Description                                                                                          |
-|---------------------|---------|------------------------------------------------------------------------------------------------------|
-| `host`              | —       | Required appliance IP address or host name.                                                           |
-| `port`              | `0`     | Secure CoAP port; `0` discovers the advertised port from this host.                                    |
-| `clientPort`         | `0`     | Client UDP port; `0` selects a deterministic stable port. Override if multiple Things conflict.        |
-| `refreshInterval`   | `60`    | Fallback poll delay in seconds, minimum `10`; used when resource subscriptions are unavailable.       |
-| `timeout`           | `12`    | Per-request timeout in seconds, from `1` to `60`.                                                      |
-| `deviceId`          | —       | Optional expected appliance UUID, checked against authenticated `/oic/d`.                             |
-| `keyStore`          | —       | Optional imported client PKCS12 path; empty generates a persistent identity.                                                 |
-| `keyStorePassword`  | —       | PKCS12/private-key password.                                                                         |
-| `serverFingerprint` | —       | Optional trusted SHA-256 leaf pin; empty verifies against the bundled Samsung OCF CA.                 |
-| `ownerId`           | —       | Previously provisioned owner UUID, required in OwnerPSK mode.                                         |
-| `ownerPsk`          | —       | Authorized 16- or 32-byte OwnerPSK encoded as hexadecimal, required in OwnerPSK mode.                   |
+`$OPENHAB_CONF/items/smartthings.items`:
 
-If `deviceId` is omitted, the binding remembers the first authenticated device UUID in the Thing's `deviceId` property and checks subsequent reads against it.
-Previously stored `deviceid` properties remain checked and are migrated after successful authentication.
-A configured or remembered identity mismatch prevents state publication and writes.
-Changing the host alone does not authorize a different appliance identity.
+```java
+Switch BedroomAC_Power "Power" { channel="smartthings:appliance:bedroom:power" }
+Number:Temperature BedroomAC_Temperature "Room Temperature [%.1f %unit%]" { channel="smartthings:appliance:bedroom:temperature-current" }
+Number:Temperature BedroomAC_Target "Target Temperature [%.1f %unit%]" { channel="smartthings:appliance:bedroom:temperature-desired" }
+String BedroomAC_Mode "Operating Mode [%s]" { channel="smartthings:appliance:bedroom:mode" }
+String BedroomAC_Fan "Fan Setting [%s]" { channel="smartthings:appliance:bedroom:wind-strength" }
+```
 
-### Channels
+### Sitemap Configuration
 
-Channels are created from authenticated resource representations rather than a fixed SmartThings capability list.
-Their identifiers are concise, readable names derived from the resource path, omitting trailing `/vs/0` or `/0`
-segments (for example, `/mode/vs/0` becomes `mode`). If names collide, raw channels are omitted when a non-raw channel
-shares that identifier; otherwise a deterministic fallback based on the full resource path and field name is used.
-Remaining collisions receive numeric suffixes. Use the channels displayed on
-the Thing's Channels tab when linking Items; these identifiers replace the previous long IDs, so existing Items may need
-to be relinked.
+`$OPENHAB_CONF/sitemaps/smartthings.sitemap`:
 
-Depending on the appliance's advertised capabilities, the following resources are recognized:
+```perl
+sitemap smartthings label="Samsung Appliances" {
+    Frame label="Bedroom Air Conditioner" {
+        Switch item=BedroomAC_Power
+        Text item=BedroomAC_Temperature
+        Text item=BedroomAC_Target
+        Text item=BedroomAC_Mode
+        Text item=BedroomAC_Fan
+    }
+}
+```
 
-| Setting | Samsung OCF resource | Behavior |
-|---------|----------------------|----------|
-| Power | `/power/vs/0` | `On`/`Off`, exposed as a Switch. |
-| Current temperature | `/temperature/current/0` | Read-only quantity in the advertised unit. |
-| Target temperature | `/temperature/desired/0` | Quantity checked against the advertised range and increment. |
-| Temperature fallback | `/temperatures/vs/0` | Supports a single zone with identifier `0` when standard temperature resources are unavailable. |
-| Operating mode | `/mode/vs/0` | Only advertised modes; supports scalar or single-mode array representations. |
-| Fan strength | `/wind/strength/vs/0` | Raw advertised choices, which may be numeric strings. |
-| Swing direction | `/wind/direction/vs/0` | Raw advertised choices such as `Fix`, `All`, `Up_And_Low`, or `Left_And_Right`. |
-| Comfort mode | `/mode/convenient/vs/0` | Only advertised choices; `Nano` means WindFree and `NanoSleep` combines WindFree and sleep on supporting Samsung firmware. |
+The sitemap provides a power switch and displays the remaining settings without assuming supported command values.
+To add setpoint or mode controls, use the range, increment, and command choices shown in your Thing's channel descriptions.
 
-The resource paths can vary by appliance; channels are derived from the resources actually returned.
-Do not send guessed or unsupported modes.
-Not every model exposes every setting or permits every write.
-Temperatures use device-reported units; setpoints and other commands are checked against the device's live capabilities, limits, and increments. Dynamic channel descriptions list advertised mode command values from `x.com.samsung.da.supportedModes` and include matching display names from `x.com.samsung.da.modesName` when available. Target-temperature descriptions include the validated range, unit, and increment. For confirmed air purifiers, Fan Speed commands are restricted to integers from 0 to 4; this is an implementation constraint, not a device-advertised range.
-No generic temperature range, fan scale, or fixed mode choices are assumed.
-The channels expose appliance-specific state and command descriptions: advertised mode choices, supported switch and fan commands, and temperature units, limits, and increments.
-These descriptions are refreshed alongside resource readings; read-only channels expose no command choices.
-Known appliance resources are mapped to appropriately typed channels. Unknown resources remain cached internally but do not create generic `Resource ...` channels; security resources are excluded from the cache and never exposed.
+## Advanced Authentication
 
-The binding initially reads `/device/0`, requests the batch interface only when necessary, and reads linked resource stubs individually.
-It then subscribes to resource changes using CoAP Observe over the authenticated DTLS connection, updating channel states as notifications arrive.
-Periodic polling stops once subscriptions for all successfully read resources are established. If any subscription is pending, unsupported, malformed, or fails, polling continues at `refreshInterval` only for the affected resources; healthy subscriptions continue delivering immediate updates without redundant reads or re-registration.
-Failed subscriptions are retried with exponential backoff, starting at `refreshInterval` and capped at five minutes (or `refreshInterval` if longer). Repeated initial registration responses alone do not reset the backoff; subsequent notifications do.
-Registrations without an initial valid response expire after `timeout` and are canceled and retried during fallback polling. An unchanged resource is not considered failed merely because it sends no subsequent notifications.
-If fallback reads fail, an authenticated identity read distinguishes an unavailable resource from a failed connection. Explicit `REFRESH` still performs a full resource refresh.
-Subscriptions are automatically renewed according to the device's notification Max-Age and are canceled when the Thing is disposed or reinitialized.
-Partial representations preserve previously received fields rather than turning missing readings into zero or empty states.
-`REFRESH` only reads; it does not write to the appliance.
-Every write is serialized, revalidates live capabilities and Remote Control, and is followed by a readback instead of an optimistic state update.
-A failed POST is not retried automatically because the appliance may already have applied it.
-Some appliances acknowledge a write before their readings change; an immediate readback may still show the previous value until a subsequent notification or fallback poll.
-Communication failures set the Thing offline, cancel subscriptions, and enable fallback polling to reauthenticate and restore it online.
+Never share your key store, passwords, OwnerPSK, or owner UUID in logs, support reports, or configuration examples.
+Do not disable certificate verification to make a connection work.
 
-For troubleshooting, first check network reachability, the advertised port, identity storage permissions, any imported credentials or certificate pin, and the appliance's Remote Control setting.
-Do not share credentials or bypass DTLS verification.
-Firmware that rejects both authorized credential profiles is not supported by this local implementation.
+### Automatic Client Identity
+
+Leave `keyStore`, `keyStorePassword`, `serverFingerprint`, `ownerId`, and `ownerPsk` empty to use the default authentication.
+No OpenSSL setup, external certificate, key, or password is needed for compatible firmware.
+The binding generates an RSA key and self-signed certificate using the Samsung service UUID `ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9`.
+This firmware-specific profile is not a universal authorization or provisioning mechanism.
+
+The identity is shared by the binding's appliances and stored in `$OPENHAB_USERDATA/etc/smartthings/client.p12`.
+It is reused across restarts and renewed near expiry without changing its private key.
+The generated key store uses an empty password; owner-only filesystem permissions protect it instead.
+Protect userdata backups, and use a filesystem that can enforce these permissions.
+A corrupt or unreadable identity is not silently replaced; restore a protected backup or resolve the storage problem.
+
+The binding verifies appliance certificates against its bundled Samsung Electronics OCF Root CA, including signatures, validity, and authentication usage.
+The CA's DER SHA-256 fingerprint is `E363FD4CC50380266D757321469E9ADEC15E5ECBEE28201447ECE02A52ED627F`.
+The public certificate comes from the community-maintained [SmartThings-Local repository](https://github.com/QuiteYellow/SmartThings-Local/blob/main/smartthings_local/protocol/ocf_root_ca.pem); attribution is in [NOTICE](NOTICE).
+Its manufacturer provenance has not been independently authenticated.
+The binding does not download trust anchors, use system roots, or trust an unverified first connection.
+Samsung certificates identify OCF UUIDs rather than IP addresses or DNS names, so the binding checks the authenticated device UUID rather than a certificate host name.
+
+### Imported Client Certificate or Certificate Pin
+
+To use an already authorized client identity, set `keyStore` to an absolute PKCS12 path containing one private key and its certificate chain.
+Set `keyStorePassword` if needed, and restrict access to the file and password to the openHAB service account.
+
+To replace CA validation with a certificate pin, set `serverFingerprint` to an independently verified SHA-256 fingerprint of the appliance's leaf certificate.
+Hexadecimal fingerprints with optional colon separators are accepted.
+Pins work with generated or imported client identities and still require a valid signing certificate.
+Do not trust a fingerprint simply because it was returned by the configured IP address.
+If the appliance certificate is replaced, obtain and verify its new fingerprint before updating the pin.
+
+### OwnerPSK
+
+Use this mode only if you already have a provisioned, authorized OwnerPSK.
+Set `ownerId` to its owner UUID, not the appliance UUID, and `ownerPsk` to 32 or 64 hexadecimal characters representing a 16- or 32-byte key.
+Leave `keyStore`, `keyStorePassword`, and `serverFingerprint` empty; OwnerPSK and certificate modes are mutually exclusive.
+The binding does not derive or provision this key.
+
+## Troubleshooting
+
+| Symptom | What to check |
+|---------|---------------|
+| Appliance is not found | Check `discoverySubnet`, wait for the scan to finish, and allow UDP traffic. If the firmware lacks public discovery metadata, add the Thing manually. |
+| Thing is OFFLINE | Check the address and advertised secure port, network isolation, identity-file permissions, and any imported credentials or certificate pin. Firmware that rejects the default profile needs authorized credentials or is unsupported. |
+| Device identity mismatch | Verify that the configured address still belongs to the intended appliance and that `deviceId` matches it. Changing the host alone does not replace the remembered identity. |
+| Readings work, but commands do not | Enable Remote Control if required, and check the channel's advertised commands and limits. A successful connection does not establish write permission; some firmware may acknowledge a command without applying it. |
+| A setting is missing | Check the Thing's Channels tab. Only recognized resources returned by your appliance are exposed, and not all models support every setting. |
+| Updates are delayed | The affected setting may be using fallback polling. Check `refreshInterval` and network reachability; failed subscriptions are retried automatically. |
+| A command still shows the old value | Wait for the appliance's next notification or fallback poll, or request `REFRESH`. The displayed state comes from the appliance rather than an assumed command result. |
