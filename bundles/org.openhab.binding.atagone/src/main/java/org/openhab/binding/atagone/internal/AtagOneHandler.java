@@ -1103,8 +1103,7 @@ public class AtagOneHandler extends BaseThingHandler {
                     startPollJob(0, myGeneration);
                     break;
                 case 1:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "@text/offline.conf-pending.press-accept");
+                    updateStatus(ThingStatusDetail.AUTHORIZATION_REQUIRED, "@text/offline.conf-pending.press-accept");
                     pairingJob = scheduler.schedule(() -> doPair(client, clientId, myGeneration), PAIRING_RETRY_S,
                             TimeUnit.SECONDS);
                     break;
