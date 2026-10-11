@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Helper methods for adaptive polling and status refresh triggers.
  *
- * @author reyhard - Initial contribution
+ * @author Maciej Pham - Initial contribution
  */
 @NonNullByDefault
 public final class VacuumRefreshPolicy {

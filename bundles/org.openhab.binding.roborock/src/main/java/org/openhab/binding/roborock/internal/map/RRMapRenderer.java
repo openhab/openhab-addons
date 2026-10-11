@@ -33,7 +33,7 @@ import org.openhab.binding.roborock.internal.RoborockException;
 /**
  * Renders RR map data as a colorized PNG image with semantic overlays.
  *
- * @author reyhard - Initial contribution
+ * @author Maciej Pham - Initial contribution
  */
 @NonNullByDefault
 public final class RRMapRenderer {
