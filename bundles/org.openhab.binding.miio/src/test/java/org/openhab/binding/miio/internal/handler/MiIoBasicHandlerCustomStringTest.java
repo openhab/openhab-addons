@@ -15,6 +15,10 @@ package org.openhab.binding.miio.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +33,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
+import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.core.i18n.LocaleProvider;
@@ -40,9 +45,10 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 
 /**
- * Tests the commands sent for actions with the CUSTOMSTRING parameter type.
+ * Tests the commands sent for actions with the STRING and CUSTOMSTRING parameter types.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -87,6 +93,21 @@ public class MiIoBasicHandlerCustomStringTest {
             return new ArrayList<>(sentCommands);
         }
 
+        List<String> sendToDatabaseChannel(String fileName, String channelId, String command) throws IOException {
+            try (InputStream is = getClass().getResourceAsStream("/database/" + fileName)) {
+                assertNotNull(is, "Database file not found: " + fileName);
+                MiIoBasicDevice device = new Gson().fromJson(
+                        JsonParser.parseReader(new InputStreamReader(is, StandardCharsets.UTF_8)),
+                        MiIoBasicDevice.class);
+                for (MiIoBasicChannel channel : device.getDevice().getChannels()) {
+                    actions.put(new ChannelUID(thingUID, channel.getChannel()), channel);
+                }
+            }
+            sentCommands.clear();
+            handleCommand(new ChannelUID(thingUID, channelId), new StringType(command));
+            return new ArrayList<>(sentCommands);
+        }
+
         @Override
         protected int sendCommand(String command, String params, String cloudServer, String sender) {
             sentCommands.add(command + params);
@@ -109,7 +130,7 @@ public class MiIoBasicHandlerCustomStringTest {
 
     @Test
     public void customStringReplacesValueToken() {
-        assertEquals(List.of("set_x[\"auto\"]"),
+        assertEquals(List.of("set_x[\"Auto\"]"),
                 handler.send("[" + action("CUSTOMSTRING", "[\"$value$\"]") + "]", "Auto"));
     }
 
@@ -133,8 +154,8 @@ public class MiIoBasicHandlerCustomStringTest {
 
     @Test
     public void customStringWithoutParametersSendsText() {
-        assertEquals(List.of("set_x[\"auto\"]"), handler.send("[" + action("CUSTOMSTRING", "[]") + "]", "Auto"));
-        assertEquals(List.of("set_x[\"auto\"]"),
+        assertEquals(List.of("set_x[\"Auto\"]"), handler.send("[" + action("CUSTOMSTRING", "[]") + "]", "Auto"));
+        assertEquals(List.of("set_x[\"Auto\"]"),
                 handler.send("[{\"command\": \"set_x\", \"parameterType\": \"CUSTOMSTRING\"}]", "Auto"));
     }
 
@@ -154,9 +175,34 @@ public class MiIoBasicHandlerCustomStringTest {
     }
 
     @Test
-    public void stringTypeIsUnchanged() {
-        assertEquals(List.of("set_x[\"auto\"]"), handler.send("[" + action("STRING", "[]") + "]", "Auto"));
-        assertEquals(List.of("set_x[1,\"auto\"]"),
-                handler.send("[" + action("STRING", "[1, \"$value$\"]") + "]", "Auto"));
+    public void textIsSentAsTyped() {
+        assertEquals(List.of("set_x[\"Auto\"]"), handler.send("[" + action("STRING", "[]") + "]", "Auto"));
+        assertEquals(List.of("set_x[1,\"Living Room\"]"),
+                handler.send("[" + action("STRING", "[1, \"$value$\"]") + "]", "Living Room"));
+        assertEquals(List.of("set_x[\"color,Auto,100\"]"),
+                handler.send("[" + action("CUSTOMSTRING", "[\"color,$value$,100\"]") + "]", "Auto"));
+    }
+
+    @Test
+    public void lowerCaseConditionConvertsText() {
+        String condition = ", \"condition\": {\"name\": \"LowerCase\"}}";
+        assertEquals(List.of("set_x[\"on\"]"),
+                handler.send("[{\"command\": \"set_x\", \"parameterType\": \"STRING\"" + condition + "]", "ON"));
+        assertEquals(List.of("set_x[\"auto\"]"), handler
+                .send("[{\"command\": \"set_x\", \"parameterType\": \"CUSTOMSTRING\"" + condition + "]", "Auto"));
+    }
+
+    @Test
+    public void databaseEnumerationsAreSentInLowerCase() throws IOException {
+        assertEquals(List.of("set_mode[\"silent\"]"),
+                handler.sendToDatabaseChannel("zhimi.humidifier.v1.json", "mode", "Silent"));
+        assertEquals(List.of("set_doorbell_push[\"on\"]"),
+                handler.sendToDatabaseChannel("lumi.gateway.json", "doorbellPush", "ON"));
+    }
+
+    @Test
+    public void databaseFreeTextIsSentAsTyped() throws IOException {
+        assertEquals(List.of("set_name[\"Living Room\"]"),
+                handler.sendToDatabaseChannel("yeelink.light.lamp1.json", "name", "Living Room"));
     }
 }
