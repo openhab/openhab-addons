@@ -225,7 +225,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             String challenge = generateCodeChallenge(codeVerifier);
             String code = getCode(challenge);
             if (!code.isBlank()) {
-                updateStatus(ThingStatusDetail.AUTHORIZATION_REQUIRED, "@text/dirigera.gateway.status.pairing-button");
+                updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/dirigera.gateway.status.pairing-button");
                 /**
                  * Approx 3 minutes possible to push DIRIGERA button
                  */
@@ -262,7 +262,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             updater = scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES);
         } else {
             // status "retry pairing" if token is still blank
-            updateStatus(ThingStatusDetail.AUTHORIZATION_REQUIRED, "@text/dirigera.gateway.status.pairing-retry");
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/dirigera.gateway.status.pairing-retry");
         }
     }
 

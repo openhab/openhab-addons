@@ -386,7 +386,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         }
                     }
                     if (!connection.isLoggedIn()) {
-                        updateStatus(ThingStatusDetail.AUTHORIZATION_REQUIRED,
+                        updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
                                 "Please login in through servlet: http(s)://<YOUROPENHAB>:<YOURPORT>/amazonechocontrol/"
                                         + URLEncoder.encode(uid.getId(), StandardCharsets.UTF_8));
                         if (pushConnection.getState() != CLOSED) {
