@@ -142,7 +142,23 @@ public class AutomowerHandler extends BaseThingHandler {
             String param = channelIDSplit[1];
             sendAutomowerCalendarTask(command, index, null, param);
         } else if (GROUP_SETTING.startsWith(groupId)) {
-            if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)) {
+            if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT_CM)) {
+                @Nullable
+                Double requestedCuttingHeightCm = null;
+                if (command instanceof QuantityType<?> cmd) {
+                    QuantityType<?> cuttingHeightCm = cmd.toUnit(MetricPrefix.CENTI(SIUnits.METRE));
+                    if (cuttingHeightCm != null) {
+                        requestedCuttingHeightCm = cuttingHeightCm.doubleValue();
+                    }
+                } else if (command instanceof DecimalType cmd) {
+                    requestedCuttingHeightCm = cmd.doubleValue();
+                }
+
+                Byte rawCuttingHeight = calculateRawCuttingHeightForConfiguredRange(requestedCuttingHeightCm);
+                if (rawCuttingHeight != null) {
+                    sendAutomowerSettingsCuttingHeight(rawCuttingHeight);
+                }
+            } else if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)) {
                 if (command instanceof DecimalType cmd) {
                     sendAutomowerSettingsCuttingHeight(cmd.byteValue());
                 }
@@ -237,6 +253,28 @@ public class AutomowerHandler extends BaseThingHandler {
     @Nullable
     public Double calculateCuttingHeightCmForWorkArea(@Nullable Byte rawCuttingHeight) {
         return calculateCuttingHeightCm(getMinCuttingHeightCm(), getMaxCuttingHeightCm(), rawCuttingHeight, 0.0, 100.0);
+    }
+
+    @Nullable
+    static Byte calculateRawCuttingHeightForConfiguredRange(@Nullable Number cuttingHeightCm, @Nullable Double minCm,
+            @Nullable Double maxCm) {
+        if (cuttingHeightCm == null || minCm == null || maxCm == null || !Double.isFinite(minCm)
+                || !Double.isFinite(maxCm) || minCm >= maxCm) {
+            return null;
+        }
+
+        double requestedHeight = cuttingHeightCm.doubleValue();
+        if (!Double.isFinite(requestedHeight) || requestedHeight < minCm || requestedHeight > maxCm) {
+            return null;
+        }
+
+        return (byte) Math.round(1.0 + 8.0 * ((requestedHeight - minCm) / (maxCm - minCm)));
+    }
+
+    @Nullable
+    public Byte calculateRawCuttingHeightForConfiguredRange(@Nullable Number cuttingHeightCm) {
+        return calculateRawCuttingHeightForConfiguredRange(cuttingHeightCm, getMinCuttingHeightCm(),
+                getMaxCuttingHeightCm());
     }
 
     boolean hasValidCuttingHeightCmRange() {

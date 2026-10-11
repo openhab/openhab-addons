@@ -52,4 +52,20 @@ class AutomowerCuttingHeightConfigTest {
         assertEquals(5.5, AutomowerHandler.calculateCuttingHeightCm(3.0, 8.0, (byte) 50, 0.0, 100.0), 0.01);
         assertEquals(4.0, AutomowerHandler.calculateCuttingHeightCm(3.0, 8.0, (byte) 20, 0.0, 100.0), 0.01);
     }
+
+    @Test
+    void calculateRawCuttingHeightFromCmUsesConfiguredRange() {
+        assertEquals((byte) 1, AutomowerHandler.calculateRawCuttingHeightForConfiguredRange(3.0, 3.0, 8.0));
+        assertEquals((byte) 5, AutomowerHandler.calculateRawCuttingHeightForConfiguredRange(5.5, 3.0, 8.0));
+        assertEquals((byte) 9, AutomowerHandler.calculateRawCuttingHeightForConfiguredRange(8.0, 3.0, 8.0));
+    }
+
+    @Test
+    void calculateRawCuttingHeightFromCmRejectsInvalidInput() {
+        assertNull(AutomowerHandler.calculateRawCuttingHeightForConfiguredRange(null, 3.0, 8.0));
+        assertNull(AutomowerHandler.calculateRawCuttingHeightForConfiguredRange(5.5, null, 8.0));
+        assertNull(AutomowerHandler.calculateRawCuttingHeightForConfiguredRange(5.5, 3.0, null));
+        assertNull(AutomowerHandler.calculateRawCuttingHeightForConfiguredRange(2.5, 3.0, 8.0));
+        assertNull(AutomowerHandler.calculateRawCuttingHeightForConfiguredRange(8.5, 3.0, 8.0));
+    }
 }

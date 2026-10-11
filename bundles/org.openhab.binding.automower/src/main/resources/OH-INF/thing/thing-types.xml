@@ -71,7 +71,7 @@
 			<property name="mowerHasWorkAreas">N/A</property>
 			<property name="mowerCuttingHeightMinCm">N/A</property>
 			<property name="mowerCuttingHeightMaxCm">N/A</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -112,7 +112,7 @@
 		<properties>
 			<property name="mowerId">N/A</property>
 			<property name="stayoutzoneId">N/A</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 	</thing-type>
 
@@ -484,8 +484,9 @@
 	<channel-type id="setting-cutting-height-cm-type" advanced="true">
 		<item-type>Number:Length</item-type>
 		<label>Cutting Height</label>
-		<description>Calculated cutting height in cm. Requires the mower's minimum and maximum cutting-height configuration.</description>
-		<state pattern="%.1f %unit%"/>
+		<description>Calculated or commanded cutting height in cm. Requires the mower's minimum and maximum cutting-height
+			configuration.</description>
+		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="setting-headlight-mode-type">

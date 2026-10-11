@@ -95,12 +95,13 @@ These channels represent the Automower® status.
 
 These channels hold Automower® settings.
 
-| channel                                              | type     | access mode     | description                                                               | advanced     |
-|------------------------------------------------------|----------|-----------------|---------------------------------------------------------------------------|--------------|
-| setting#cutting-height                               | Number   | R/W             | Prescaled cutting height, Range: 1-9                                      | false        |
-| setting#headlight-mode<sup id="a1">[1](#f1)</sup>    | String   | R/W             | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT)   | false        |
+| channel                                                       | type          | access mode | description                                                                   | advanced |
+|---------------------------------------------------------------|---------------|-------------|-------------------------------------------------------------------------------|----------|
+| setting#cutting-height                                        | Number        | R/W         | Prescaled cutting height, Range: 1-9                                          | false    |
+| setting#headlight-mode<sup id="a1">[1](#f1)</sup>             | String        | R/W         | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT)       | false    |
+| setting#cutting-height-cm<sup id="a3">[3](#f3)</sup>          | Number:Length | R/W         | Calculated cutting height in cm; commands set the nearest mower setting       | true     |
 
-The advanced read-only `setting#cutting-height-cm` channel reports the calculated cutting height in cm when both mower height limits are configured.
+The advanced `setting#cutting-height-cm` channel reports the calculated cutting height in cm when both mower height limits are configured. Commands are mapped to the nearest supported raw mower setting.
 
 The absolute cutting height can be calculated from the prescaled cutting height using the following formula:
 
@@ -157,20 +158,21 @@ Channels that are relevant for all Stayout Zones of this Automower®.
 
 These channels hold the different Work Area configurations.
 
-| channel                                                     | type                      | access mode     | description                                                                         | advanced     |
-|-------------------------------------------------------------|---------------------------|-----------------|-------------------------------------------------------------------------------------|--------------|
-| work-area#name                                              | String                    | R/W             | Name of the Work Area                                                               | false        |
-| work-area#id                                                | Number                    | R               | Unique numeric ID of the Work Area                                                  | true         |
-| work-area#type                                              | String                    | R               | The type of the Work Area, e.g. RANDOM                                              | true         |
-| work-area#cutting-height                                    | Number:Dimensionless      | R/W             | Cutting height of the Work Area in percent. 0-100                                   | false        |
-| work-area#use-global-cutting-height                         | Switch                    | R               | If the Work Area uses the global cutting height instead of its own                  | true         |
-| work-area#enabled                                           | Switch                    | R/W             | If the Work Area is enabled or disabled                                             | false        |
-| work-area#schedulable                                       | Switch                    | R               | If the Work Area can be scheduled                                                   | true         |
-| work-area#progress<sup id="a2">[2](#f2)</sup>               | Number                    | R               | The progress on a Work Area                                                         | true         |
-| work-area#last-time-completed<sup id="a2">[2](#f2)</sup>    | DateTime                  | R               | Timestamp when the Work Area was last completed                                     | true         |
-| work-area#last-time-abandoned                               | DateTime                  | R               | Timestamp when the Work Area was last abandoned                                     | true         |
-| work-area#orientation                                       | Number:Angle              | R/W             | Orientation of the mowing pattern in degrees. Pattern based Work Areas only         | true         |
-| work-area#orientation-shift                                 | Number:Angle              | R/W             | Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only   | true         |
+| channel                                                              | type                      | access mode | description                                                                         | advanced |
+|----------------------------------------------------------------------|---------------------------|-------------|-------------------------------------------------------------------------------------|----------|
+| work-area#name                                                       | String                    | R/W         | Name of the Work Area                                                               | false    |
+| work-area#id                                                         | Number                    | R           | Unique numeric ID of the Work Area                                                  | true     |
+| work-area#type                                                       | String                    | R           | The type of the Work Area, e.g. RANDOM                                              | true     |
+| work-area#cutting-height                                             | Number:Dimensionless      | R/W         | Cutting height of the Work Area in percent. 0-100                                   | false    |
+| work-area#cutting-height-cm<sup id="a3">[3](#f3)</sup>               | Number:Length             | R           | Calculated cutting height in cm                                                     | true     |
+| work-area#use-global-cutting-height                                  | Switch                    | R           | If the Work Area uses the global cutting height instead of its own                  | true     |
+| work-area#enabled                                                    | Switch                    | R/W         | If the Work Area is enabled or disabled                                             | false    |
+| work-area#schedulable                                                | Switch                    | R           | If the Work Area can be scheduled                                                   | true     |
+| work-area#progress<sup id="a2">[2](#f2)</sup>                        | Number                    | R           | The progress on a Work Area                                                         | true     |
+| work-area#last-time-completed<sup id="a2">[2](#f2)</sup>             | DateTime                  | R           | Timestamp when the Work Area was last completed                                     | true     |
+| work-area#last-time-abandoned                                        | DateTime                  | R           | Timestamp when the Work Area was last abandoned                                     | true     |
+| work-area#orientation                                                | Number:Angle              | R/W         | Orientation of the mowing pattern in degrees. Pattern based Work Areas only         | true     |
+| work-area#orientation-shift                                          | Number:Angle              | R/W         | Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only   | true     |
 
 The advanced read-only `work-area#cutting-height-cm` channel reports the calculated height using the limits inherited from the mower. The inherited minimum and maximum are also visible as work-area properties.
 
@@ -327,3 +329,4 @@ end
 
 - <b id="f1">1)</b> ... Channel availability depends on Automower® capabilities [↩](#a1)
 - <b id="f2">2)</b> ... Channel available for EPOS Automower® and systematic mowing Work Area only [↩](#a2)
+- <b id="f3">3)</b> ... cm channels are available only when both mower cutting-height limits are configured with valid values [↩](#a3)
