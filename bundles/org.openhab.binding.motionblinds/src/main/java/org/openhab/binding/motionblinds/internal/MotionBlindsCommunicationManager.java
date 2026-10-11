@@ -285,9 +285,16 @@ public class MotionBlindsCommunicationManager {
         }
     }
 
+    /**
+     * Stop the listener when no handler and no discovery need it. The check is made while holding the lock: a
+     * listener registered concurrently either prevents the stop, or its subsequent {@link #startListener()} waits
+     * for the lock and starts a new receiver.
+     */
     private void stopListenerIfUnused() {
-        if (listeners.isEmpty() && discoveryListener.get() == null) {
-            stopListener();
+        synchronized (listenerLock) {
+            if (listeners.isEmpty() && discoveryListener.get() == null) {
+                stopListener();
+            }
         }
     }
 
