@@ -51,6 +51,10 @@ The valid range and the default of `slaveId` depend on the role:
 | hager-flow-powermeter | Hager Flow PowerMeter | 30 - 37 | 30 |
 | hager-flow-sgready | Hager Flow SG-Ready Device | 50 - 59 | 50 |
 
+The power meter with the default `slaveId` `30` is the `ROOT` meter at the grid connection and reports `ROOT` in the
+`powermeter-type` channel.
+Each Hager Flow system has to have such a base meter, additional power meters are optional.
+
 ## Channels
 
 All register values are read only except the boost mode of a charging station.
@@ -211,7 +215,7 @@ Registers with independent bits are provided as one `Switch` channel per bit.
 | Channel | Type | Access | Label | Description |
 |---------|------|--------|-------|-------------|
 | storage-index | Number | RO | Storage Index |  |
-| storage-dcdc-status | Switch | RO | Storage DCDC status |  |
+| storage-dcdc-status | Number | RO | Storage DCDC status |  |
 | storage-bat-status | Switch | RO | Storage Bat Status |  |
 | battery-state-of-charge | Number:Dimensionless | RO | Battery State of Charge |  |
 
@@ -324,9 +328,21 @@ Number:Power HagerFlow_BatteryPower "Battery Power" { channel="modbus:hager-flow
 The sign was observed on a running device, see
 [issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6086682236).
 
+### PowerMeter Power and Energy Sign
+
+Power and energy of the power meter are signed.
+Negative power means feed-in into the grid and positive power means consumption.
+The energy counters are net values per phase, that is `import minus export` since commissioning, so they decrease
+while the system feeds in.
+`powermeter-energy-sum` (register `4164`) is the sum of the three phases and equals `powermeter-energy-l1` plus
+`powermeter-energy-l2` plus `powermeter-energy-l3`.
+
+The signs were observed on a running device, see
+[issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6108071235).
+
 ## Known Limitations
 
-The following parts of the Hager Flow Modbus table are not provided as channels:
+The following deviations from the Hager Flow Modbus table are known:
 
 - `status` (register `4945`, charging session information) packs the `ALG Data` byte structure of Annex 1 of
   the Modbus table.
@@ -343,6 +359,9 @@ The following parts of the Hager Flow Modbus table are not provided as channels:
   states `0`, `-1`, `-2` and `-3`.
   The register is provided as a `Switch`, so `0` is `OFF` and every other value is `ON`.
   The detailed state is not part of the channel.
+- `Storage DCDC status` (register `4098`) is declared as `bool` in the Modbus table, but a device reports the
+  value `2` while the battery sits at its reserve level.
+  The register is provided as a `Number` channel, so values beyond `0` and `1` stay visible.
 
 The Root/Main power values (registers `4102`, `4104`, `4106` and `4108`) are declared as `U32` in the Modbus
 table, but they are read as `I32` because they can become negative.
