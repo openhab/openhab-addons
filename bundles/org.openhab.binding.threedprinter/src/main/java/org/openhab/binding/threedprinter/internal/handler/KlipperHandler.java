@@ -98,13 +98,9 @@ public class KlipperHandler extends AbstractPrinterHandler {
     private String lastPreviewFilename = "";
     private @Nullable RawType lastPreviewState;
 
-    /** Whether {@link #discoverExtraExtruders} has completed at least once. */
     private boolean extrudersDiscovered = false;
-    /** Klipper object names (e.g. {@code extruder1}) for toolheads beyond the primary {@code extruder}. */
     private List<String> extraExtruders = List.of();
-    /** The object-query URL suffix, extended with any discovered extra extruders. */
     private String queryUrlSuffix = QUERY_URL_SUFFIX;
-    /** Maps a dynamically added per-tool setpoint channel ID to the Klipper heater object name it controls. */
     private Map<String, String> extraSetpointHeaterByChannel = new LinkedHashMap<>();
 
     public KlipperHandler(Thing thing, HttpClient httpClient) {
