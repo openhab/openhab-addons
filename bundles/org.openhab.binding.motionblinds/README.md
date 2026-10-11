@@ -72,8 +72,10 @@ The binding follows the slats from the movements of the blind, including movemen
 The slats are controlled mechanically without feedback, so expect a precision of about ±10%; send the tilt again to correct it.
 If the slats consistently end up too far or not far enough, adjust `tiltTravel` and `tiltSlack` for your blind, in steps of 0.1-0.3%:
 
-- Lower the blind fully and tilt to 50%. If the slats turn past open (bottom side visible), increase `tiltSlack`; if they stay closed (top side visible), decrease it.
-- Raise the blind a bit, tilt to 0% and then to 50%. If the slats turn past open (top side visible), increase `tiltTravel`; if they do not reach open, decrease it.
+- Lower the blind fully and tilt to 50%. If the slats turn past open (bottom side visible), decrease `tiltSlack`; if they stay closed (top side visible), increase it.
+- Raise the blind a bit, tilt to 0% and then to 50%. If the slats turn past open (top side visible), decrease `tiltTravel`; if they do not reach open, increase it.
+
+Larger values make the binding move the blind further for the same tilt change.
 
 The motor keeps its own estimate of the slat angle (`angle` channel).
 It uses a wider range than the real slats, so it drifts from them when the blind changes direction.

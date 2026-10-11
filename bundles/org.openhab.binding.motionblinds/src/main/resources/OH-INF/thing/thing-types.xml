@@ -47,16 +47,16 @@
 			<parameter name="tiltTravel" type="decimal" unit="%" min="0.5" max="20" step="0.1">
 				<label>Tilt Travel</label>
 				<description>Travel of the blind that turns the slats from closed on one side to closed on the other side.
-					Increase
-					it if tilt steps at mid-height turn the slats too far, decrease it if they do not turn far enough.</description>
+					Decrease
+					it if tilt steps at mid-height turn the slats too far, increase it if they do not turn far enough.</description>
 				<default>3</default>
 			</parameter>
 			<parameter name="tiltSlack" type="decimal" unit="%" min="0" max="10" step="0.1">
 				<label>Tilt Slack</label>
 				<description>Travel that does not turn the slats when the blind starts to move up from fully lowered, until the
-					bottom rail lifts off. Increase it if tilt 50% from fully lowered turns the slats past open (bottom side
+					bottom rail lifts off. Decrease it if tilt 50% from fully lowered turns the slats past open (bottom side
 					visible),
-					decrease it if they stay closed (top side visible).</description>
+					increase it if they stay closed (top side visible).</description>
 				<default>2</default>
 			</parameter>
 		</config-description>

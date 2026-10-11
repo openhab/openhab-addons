@@ -15,6 +15,7 @@ package org.openhab.binding.motionblinds.internal;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -153,6 +154,41 @@ public class SlatTrackerTest {
     public void firstStatusIsEstimatedFromMotorAngle() {
         tracker.update(97, 92);
         assertEquals(52, tracker.getTilt());
+    }
+
+    /**
+     * The calibration instructions (README, Thing description) rely on this: a larger value moves the blind further
+     * for the same tilt change, so slats turned too far need a smaller value.
+     */
+    @Test
+    public void largerCalibrationValuesMoveFurther() {
+        assertTrue(angleChangeFromFullyLowered(2.5) > angleChangeFromFullyLowered(2.0));
+        assertTrue(angleChangeFromFullyLowered(2.0) > angleChangeFromFullyLowered(1.5));
+        assertTrue(angleChangeAtMidHeight(4.0) > angleChangeAtMidHeight(3.0));
+        assertTrue(angleChangeAtMidHeight(3.0) > angleChangeAtMidHeight(2.5));
+    }
+
+    /**
+     * Motor travel for tilt 50% from fully lowered, which depends on {@code tiltSlack}.
+     */
+    private static int angleChangeFromFullyLowered(double tiltSlack) {
+        SlatTracker slatTracker = new SlatTracker(3, tiltSlack);
+        slatTracker.update(100, 176);
+        return Math.abs(targetAngle(slatTracker.tiltCommand(50)) - 176);
+    }
+
+    /**
+     * Motor travel for tilt 0% to 50% at mid-height, which depends on {@code tiltTravel}.
+     */
+    private static int angleChangeAtMidHeight(double tiltTravel) {
+        SlatTracker slatTracker = new SlatTracker(tiltTravel, 2);
+        slatTracker.update(49, 0);
+        return targetAngle(slatTracker.tiltCommand(50));
+    }
+
+    private static int targetAngle(@Nullable Map<String, Object> command) {
+        assertNotNull(command);
+        return (Integer) Objects.requireNonNull(command.get("targetAngle"));
     }
 
     private void observe(int position, int angle, int observedTilt) {
