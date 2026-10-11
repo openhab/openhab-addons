@@ -218,6 +218,23 @@ public class MotionBlindsHandlerTest {
     }
 
     @Test
+    public void noSecondTiltMoveWhileBlindKeepsMoving() throws IOException, InterruptedException {
+        // after the first tilt move the blind keeps travelling up, e.g. started with the remote
+        respond(GET_DEVICE_LIST_ACK, status(100, 176), status(100, 176), status(99, 160), status(98, 140),
+                status(97, 120), status(96, 100), status(95, 80), status(94, 60), status(93, 40));
+        createHandler(KEY).initialize();
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
+
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_TILT), new PercentType(75));
+
+        // all stop checks see a different angle; give a second move the time it would need afterwards
+        Thread.sleep(8000);
+        ArgumentCaptor<MotionBlindsRequest> captor = ArgumentCaptor.forClass(MotionBlindsRequest.class);
+        verify(communicationManager, atLeastOnce()).sendRequest(eq(IP), captor.capture(), eq(MAC));
+        assertEquals(1, captor.getAllValues().stream().filter(r -> MSG_WRITE_DEVICE.equals(r.msgType)).count());
+    }
+
+    @Test
     public void tiltAboveOpenFromFullyLoweredTakesTwoMoves() throws IOException {
         // after the first command the motor is still moving on the first check; it overshoots the target by only 1°
         // and stops 6° before the end of the slack

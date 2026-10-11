@@ -219,8 +219,11 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     /**
      * Read the status until the motor angle does not change anymore.
      *
-     * @return {@code false} if interrupted or the status could not be read; the last known angle is then stale and
-     *         must not be taken as the motor having stopped
+     * @return {@code true} if two consecutive checks found the same angle; {@code false} if interrupted, if the
+     *         status could not be read (the last known angle is then stale and must not be taken as the motor having
+     *         stopped), or if the motor was still moving after all checks: a tilt move takes 1-2 seconds, so the
+     *         blind is then being moved by something else (remote, app, another command) and a further move would
+     *         be based on an intermediate state and interfere with it
      */
     private boolean waitUntilStopped() {
         Integer previousAngle = null;
@@ -240,7 +243,8 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             }
             previousAngle = angle;
         }
-        return true;
+        logger.debug("Motor {} is still moving after {} checks, tilt is not continued", mac, MAX_STOP_CHECKS);
+        return false;
     }
 
     private @Nullable Map<String, Object> angleCommand(Command command) {
