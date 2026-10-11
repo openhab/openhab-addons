@@ -148,7 +148,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             return;
         }
         if (r.getResponseCode() == 403) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
                     "Allow authentication for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
 
             stopTimer();
