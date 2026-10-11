@@ -79,11 +79,11 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
     boolean immediateSetup() {
         config = getConfigAs(LinuxInputConfiguration.class);
         channels.clear();
-        String statusDesc = null;
         if (!config.enable) {
-            statusDesc = "Administratively disabled";
+            updateStatus(ThingStatusDetail.DISABLED, "Administratively disabled");
+        } else {
+            updateStatus(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING);
         }
-        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, statusDesc);
         return true;
     }
 

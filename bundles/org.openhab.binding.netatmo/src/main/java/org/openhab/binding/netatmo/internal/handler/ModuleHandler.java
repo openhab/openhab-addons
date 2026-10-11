@@ -77,8 +77,6 @@ public class ModuleHandler extends BaseThingHandler implements CommonInterface {
             @Nullable String thingStatusReason) {
         if (thingStatusDetail == ThingStatusDetail.NONE) {
             updateStatus(thingStatus, thingStatusReason);
-        } else if (thingStatusDetail == ThingStatusDetail.BRIDGE_UNINITIALIZED) {
-            updateStatus(thingStatus, thingStatusDetail, thingStatusReason);
         } else {
             updateStatus(thingStatusDetail, thingStatusReason);
         }
