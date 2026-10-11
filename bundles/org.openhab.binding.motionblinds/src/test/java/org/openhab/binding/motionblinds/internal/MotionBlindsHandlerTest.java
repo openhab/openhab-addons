@@ -151,7 +151,7 @@ public class MotionBlindsHandlerTest {
 
     @Test
     public void noResponseGoesOfflineWithCommunicationError() throws IOException {
-        when(communicationManager.sendRequest(anyString(), any())).thenThrow(new IOException("No response"));
+        when(communicationManager.sendRequest(anyString(), any(), eq(MAC))).thenThrow(new IOException("No response"));
         createHandler(KEY).initialize();
 
         verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class),
@@ -165,7 +165,7 @@ public class MotionBlindsHandlerTest {
 
         verify(callback).statusUpdated(any(Thing.class), argThat(info -> info.getStatus() == ThingStatus.OFFLINE
                 && info.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
-        verify(communicationManager, never()).sendRequest(anyString(), any());
+        verify(communicationManager, never()).sendRequest(anyString(), any(), anyString());
         verify(communicationManager, never()).registerListener(anyString(), any());
     }
 
@@ -236,9 +236,9 @@ public class MotionBlindsHandlerTest {
         verify(callback).stateUpdated(channel(CHANNEL_POSITION), eq(new PercentType(90)));
 
         // further requests go to the address the motor reported from
-        when(communicationManager.sendRequest(eq(OTHER_IP), any())).thenReturn(parse(READ_DEVICE_ACK));
+        when(communicationManager.sendRequest(eq(OTHER_IP), any(), eq(MAC))).thenReturn(parse(READ_DEVICE_ACK));
         handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), RefreshType.REFRESH);
-        verify(communicationManager, timeout(TIMEOUT_MS)).sendRequest(eq(OTHER_IP), any());
+        verify(communicationManager, timeout(TIMEOUT_MS)).sendRequest(eq(OTHER_IP), any(), eq(MAC));
     }
 
     @Test
@@ -258,12 +258,12 @@ public class MotionBlindsHandlerTest {
         verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
 
         // the motor got a new IP address and does not answer on the old one anymore
-        when(communicationManager.sendRequest(eq(IP), any())).thenThrow(new IOException("No response"));
-        when(communicationManager.sendRequest(eq(OTHER_IP), any())).thenReturn(parse(READ_DEVICE_ACK));
+        when(communicationManager.sendRequest(eq(IP), any(), eq(MAC))).thenThrow(new IOException("No response"));
+        when(communicationManager.sendRequest(eq(OTHER_IP), any(), eq(MAC))).thenReturn(parse(READ_DEVICE_ACK));
         motorAnswersDiscoveryFrom(OTHER_IP);
         handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), RefreshType.REFRESH);
 
-        verify(communicationManager, timeout(TIMEOUT_MS)).sendRequest(eq(OTHER_IP), any());
+        verify(communicationManager, timeout(TIMEOUT_MS)).sendRequest(eq(OTHER_IP), any(), eq(MAC));
         verify(communicationManager, times(2)).sendDiscoveryRequest();
     }
 
@@ -275,7 +275,7 @@ public class MotionBlindsHandlerTest {
         verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class),
                 argThat(info -> info.getStatus() == ThingStatus.OFFLINE
                         && info.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR));
-        verify(communicationManager, never()).sendRequest(anyString(), any());
+        verify(communicationManager, never()).sendRequest(anyString(), any(), anyString());
     }
 
     private MotionBlindsHandler createHandler(String key) {
@@ -303,7 +303,7 @@ public class MotionBlindsHandlerTest {
         for (int i = 0; i < next.length; i++) {
             messages[i] = parse(next[i]);
         }
-        when(communicationManager.sendRequest(eq(IP), any())).thenReturn(parse(first), messages);
+        when(communicationManager.sendRequest(eq(IP), any(), eq(MAC))).thenReturn(parse(first), messages);
     }
 
     private static String status(int position, int angle) {
@@ -317,7 +317,7 @@ public class MotionBlindsHandlerTest {
 
     private List<MotionBlindsRequest> captureRequests(int count) throws IOException {
         ArgumentCaptor<MotionBlindsRequest> captor = ArgumentCaptor.forClass(MotionBlindsRequest.class);
-        verify(communicationManager, timeout(TIMEOUT_MS).times(count)).sendRequest(eq(IP), captor.capture());
+        verify(communicationManager, timeout(TIMEOUT_MS).times(count)).sendRequest(eq(IP), captor.capture(), eq(MAC));
         return captor.getAllValues();
     }
 

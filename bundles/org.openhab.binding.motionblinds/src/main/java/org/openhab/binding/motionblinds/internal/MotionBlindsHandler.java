@@ -315,10 +315,11 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     private MotionBlindsMessage send(MotionBlindsRequest request) throws IOException {
         String currentIp = ipAddress;
         if (currentIp.isEmpty()) {
-            return communicationManager.sendRequest(resolveIpAddress(), request);
+            return communicationManager.sendRequest(resolveIpAddress(), request, mac);
         }
         try {
-            return communicationManager.sendRequest(currentIp, request);
+            // only this motor's answer is accepted, so another device at a stale address leads to a new search
+            return communicationManager.sendRequest(currentIp, request, mac);
         } catch (IOException e) {
             String resolvedIp;
             try {
@@ -329,7 +330,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             if (resolvedIp.equals(currentIp)) {
                 throw e;
             }
-            return communicationManager.sendRequest(resolvedIp, request);
+            return communicationManager.sendRequest(resolvedIp, request, mac);
         }
     }
 

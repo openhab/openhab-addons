@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -74,6 +75,19 @@ public class MotionBlindsCommunicationManager {
     private @Nullable MulticastSocket multicastSocket;
     private @Nullable Thread listenerThread;
 
+    private final int sendPort;
+    private final int requestTimeoutMs;
+
+    public MotionBlindsCommunicationManager() {
+        this(UDP_PORT_SEND, REQUEST_TIMEOUT_MS);
+    }
+
+    // for test purposes only
+    MotionBlindsCommunicationManager(int sendPort, int requestTimeoutMs) {
+        this.sendPort = sendPort;
+        this.requestTimeoutMs = requestTimeoutMs;
+    }
+
     /**
      * Receives messages pushed by a motor.
      */
@@ -106,44 +120,86 @@ public class MotionBlindsCommunicationManager {
     }
 
     /**
-     * Send a request to a motor and wait for its acknowledge.
+     * Send a request to a motor and wait for its acknowledge. Only an acknowledge of the requested type (or an error
+     * reply), sent from the requested address by the motor with the expected MAC address, is accepted; other packets
+     * arriving at the socket are discarded.
      *
-     * @throws IOException if the motor did not answer after all attempts or the answer could not be parsed
+     * @param expectedMac MAC address of the motor that must answer
+     * @throws IOException if the motor did not answer after all attempts
      */
-    public MotionBlindsMessage sendRequest(String ipAddress, MotionBlindsRequest request) throws IOException {
+    public MotionBlindsMessage sendRequest(String ipAddress, MotionBlindsRequest request, String expectedMac)
+            throws IOException {
         String json = gson.toJson(request);
         byte[] payload = json.getBytes(StandardCharsets.UTF_8);
         InetAddress address = InetAddress.getByName(ipAddress);
+        String expectedType = request.msgType + "Ack";
         if (logger.isTraceEnabled()) {
             logger.trace("Sending to {}: {}", ipAddress, hideTokens(json));
         }
 
         try (DatagramSocket socket = new DatagramSocket()) {
-            socket.setSoTimeout(REQUEST_TIMEOUT_MS);
             byte[] buffer = new byte[RECEIVE_BUFFER_SIZE];
             for (int attempt = 1;; attempt++) {
-                socket.send(new DatagramPacket(payload, payload.length, address, UDP_PORT_SEND));
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                try {
-                    socket.receive(packet);
-                } catch (SocketTimeoutException e) {
-                    if (attempt >= REQUEST_ATTEMPTS) {
-                        throw new IOException("No response from " + ipAddress + " after " + attempt + " attempts");
-                    }
-                    logger.debug("Timeout waiting for response from {} (attempt {})", ipAddress, attempt);
-                    continue;
+                socket.send(new DatagramPacket(payload, payload.length, address, sendPort));
+                MotionBlindsMessage message = receiveResponse(socket, buffer, address, expectedType, expectedMac);
+                if (message != null) {
+                    return message;
                 }
-                String response = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
+                if (attempt >= REQUEST_ATTEMPTS) {
+                    throw new IOException("No response from " + ipAddress + " after " + attempt + " attempts");
+                }
+                logger.debug("Timeout waiting for response from {} (attempt {})", ipAddress, attempt);
+            }
+        }
+    }
+
+    /**
+     * Wait for the response to a request until the request timeout has passed, discarding other packets.
+     *
+     * @return the response, or {@code null} on timeout
+     */
+    private @Nullable MotionBlindsMessage receiveResponse(DatagramSocket socket, byte[] buffer, InetAddress address,
+            String expectedType, String expectedMac) throws IOException {
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(requestTimeoutMs);
+        while (true) {
+            long remainingMs = TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime());
+            if (remainingMs <= 0) {
+                return null;
+            }
+            socket.setSoTimeout((int) remainingMs);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            try {
+                socket.receive(packet);
+            } catch (SocketTimeoutException e) {
+                return null;
+            }
+            String response = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
+            MotionBlindsMessage message = parse(response);
+            if (message != null && isResponse(address, packet.getAddress(), message, expectedType, expectedMac)) {
                 if (logger.isTraceEnabled()) {
-                    logger.trace("Received from {}: {}", ipAddress, hideTokens(response));
-                }
-                MotionBlindsMessage message = parse(response);
-                if (message == null) {
-                    throw new IOException("Invalid response from " + ipAddress);
+                    logger.trace("Received from {}: {}", address.getHostAddress(), hideTokens(response));
                 }
                 return message;
             }
+            logger.debug("Discarded packet from {} while waiting for {} from {}: {}",
+                    packet.getAddress().getHostAddress(), expectedType, address.getHostAddress(), hideTokens(response));
         }
+    }
+
+    /**
+     * Check that a received message is the response to a request: sent from the requested address, of the expected
+     * acknowledge type (or an error reply, which carries an {@code actionResult}), by the expected motor.
+     */
+    static boolean isResponse(InetAddress expectedAddress, InetAddress sender, MotionBlindsMessage message,
+            String expectedType, String expectedMac) {
+        if (!expectedAddress.equals(sender)) {
+            return false;
+        }
+        if (!expectedType.equals(message.msgType) && message.actionResult == null) {
+            return false;
+        }
+        String mac = message.mac;
+        return mac != null && normalizeMac(mac).equals(normalizeMac(expectedMac));
     }
 
     /**
