@@ -198,6 +198,26 @@ public class MotionBlindsHandlerTest {
     }
 
     @Test
+    public void noSecondTiltMoveWhenMotorStopsAnswering() throws IOException, InterruptedException {
+        when(communicationManager.sendRequest(eq(IP), any(), eq(MAC)))
+                .thenReturn(parse(GET_DEVICE_LIST_ACK), parse(status(100, 176)), parse(status(100, 176)))
+                .thenThrow(new IOException("No response"));
+        createHandler(KEY).initialize();
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
+
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_TILT), new PercentType(75));
+
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class),
+                argThat(info -> info.getStatus() == ThingStatus.OFFLINE
+                        && info.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR));
+        // give a second move the time it would need; only the first one may have been sent
+        Thread.sleep(3000);
+        ArgumentCaptor<MotionBlindsRequest> captor = ArgumentCaptor.forClass(MotionBlindsRequest.class);
+        verify(communicationManager, atLeastOnce()).sendRequest(eq(IP), captor.capture(), eq(MAC));
+        assertEquals(1, captor.getAllValues().stream().filter(r -> MSG_WRITE_DEVICE.equals(r.msgType)).count());
+    }
+
+    @Test
     public void tiltAboveOpenFromFullyLoweredTakesTwoMoves() throws IOException {
         // after the first command the motor is still moving on the first check; it overshoots the target by only 1°
         // and stops 6° before the end of the slack

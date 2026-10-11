@@ -219,7 +219,8 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     /**
      * Read the status until the motor angle does not change anymore.
      *
-     * @return {@code false} if interrupted
+     * @return {@code false} if interrupted or the status could not be read; the last known angle is then stale and
+     *         must not be taken as the motor having stopped
      */
     private boolean waitUntilStopped() {
         Integer previousAngle = null;
@@ -230,7 +231,9 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
                 Thread.currentThread().interrupt();
                 return false;
             }
-            poll();
+            if (!poll()) {
+                return false;
+            }
             Integer angle = slatTracker.getMotorAngle();
             if (angle != null && angle.equals(previousAngle)) {
                 return true;
@@ -253,15 +256,22 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         return angle == null ? null : Map.of("targetAngle", Math.max(0, Math.min(MAX_ANGLE, angle)));
     }
 
-    private void poll() {
+    /**
+     * Read the status of the motor; on failure the Thing goes offline.
+     *
+     * @return {@code true} if the status was read
+     */
+    private boolean poll() {
         try {
             request(MSG_READ_DEVICE, null);
+            return true;
         } catch (AccessDeniedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-access-denied");
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+        return false;
     }
 
     private void write(Map<String, Object> data) {
