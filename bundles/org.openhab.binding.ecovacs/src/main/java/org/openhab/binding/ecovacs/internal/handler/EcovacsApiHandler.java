@@ -158,7 +158,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
             return;
         }
         logger.debug("Ecovacs API login for account '{}' expired", getThing().getUID().getId());
-        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-login-required");
+        updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/offline.config-error-login-required");
         try {
             Files.deleteIfExists(getCredentialsCacheFile());
         } catch (IOException e) {
@@ -178,7 +178,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
     private void checkCredentials() {
         Credentials creds = restoreCachedCredentials();
         if (creds == null || creds.isExpired()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-login-required");
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/offline.config-error-login-required");
             return;
         }
 
