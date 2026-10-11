@@ -253,9 +253,16 @@ public class MotionBlindsCommunicationManager {
             MulticastSocket socket;
             try {
                 socket = new MulticastSocket(null);
+            } catch (IOException e) {
+                logger.warn("Unable to create multicast socket: {}", e.getMessage());
+                return;
+            }
+            try {
                 socket.setReuseAddress(true);
                 socket.bind(new InetSocketAddress(UDP_PORT_RECEIVE));
             } catch (IOException e) {
+                // do not leak the partially initialized socket
+                socket.close();
                 logger.warn("Unable to listen on UDP port {}: {}", UDP_PORT_RECEIVE, e.getMessage());
                 return;
             }
