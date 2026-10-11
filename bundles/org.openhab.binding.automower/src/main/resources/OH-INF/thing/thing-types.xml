@@ -482,7 +482,7 @@
 	</channel-type>
 
 	<channel-type id="setting-cutting-height-cm-type" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="cm">Number:Length</item-type>
 		<label>Cutting Height</label>
 		<description>Calculated or commanded cutting height in cm. Requires the mower's minimum and maximum cutting-height
 			configuration.</description>
@@ -671,7 +671,7 @@
 	</channel-type>
 
 	<channel-type id="workarea-cutting-height-cm-type" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="cm">Number:Length</item-type>
 		<label>Cutting Height</label>
 		<description>Calculated cutting height in cm for the Work Area. The range is inherited from the mower configuration.</description>
 		<state pattern="%.1f %unit%"/>
