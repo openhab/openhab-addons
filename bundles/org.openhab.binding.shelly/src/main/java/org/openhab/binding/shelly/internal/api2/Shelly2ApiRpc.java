@@ -108,13 +108,20 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterface, Shelly2RpctInterface {
+    private static final String REALM_WALLDISPLAY = "ShellyWallDisplay";
+
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
     private final ShellyThingTable thingTable;
 
     protected volatile boolean initialized;
     protected final boolean alwaysOn;
     private @Nullable Shelly2RpcSocket rpcSocket;
-    private @Nullable Shelly2AuthChallenge authInfo;
+    private volatile @Nullable Shelly2AuthChallenge authInfo;
+    // The Wall Display rejects the Digest Authorization header on POST /rpc, it wants the "auth" object in the message
+    private volatile @Nullable Shelly2AuthChallenge bodyAuthInfo;
+    // collapses concurrent refreshes of a stale nonce onto one, each extra nonce fills the device's nonce cache
+    private final Object authLock = new Object();
+    private volatile @Nullable String pendingAsyncMethod;
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
 
@@ -541,11 +548,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         getThing().incProtMessages();
         if (message.error != null) {
             if (message.error.code == HttpStatus.UNAUTHORIZED_401 && !getString(message.error.message).isEmpty()) {
-                // Save nonce for notification
-                Shelly2AuthChallenge auth = gson.fromJson(message.error.message, Shelly2AuthChallenge.class);
-                if (auth != null && auth.realm == null) {
-                    logger.debug("{}: Authentication data received: {}", thingName, message.error.message);
-                    authInfo = auth;
+                // WebSocket requests are fire-and-forget, so the rejected one has to be resent with auth
+                Shelly2AuthChallenge auth = fromJson(gson, message.error.message, Shelly2AuthChallenge.class, false);
+                if (auth != null) {
+                    logger.debug("{}: Authentication requested on WebSocket channel: {}", thingName,
+                            message.error.message);
+                    synchronized (authLock) {
+                        authInfo = auth;
+                    }
+                    retryPendingAsyncRequest(auth);
                 }
             } else {
                 logger.debug("{}: Error status received - {} {}", thingName, message.error.code, message.error.message);
@@ -1542,9 +1553,27 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
             Shelly2RpcBaseMessage request = buildRequest(method, null);
+            pendingAsyncMethod = method;
             rpcSocket.sendMessage(gson.toJson(request)); // submit, result will be async
         } else {
             throw new ShellyApiException("RPC socket isn't connected, cannot send async request");
+        }
+    }
+
+    // only asyncApiRequest() uses the WebSocket channel, so tracking a single pending method is enough
+    private void retryPendingAsyncRequest(Shelly2AuthChallenge challenge) {
+        String method = pendingAsyncMethod;
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        if (method == null || rpcSocket == null) {
+            return;
+        }
+        pendingAsyncMethod = null;
+        try {
+            Shelly2RpcBaseMessage request = buildRequest(method, null);
+            request.auth = buildChannelAuthResponse(challenge, SHELLY2_AUTHDEF_USER, config.getPassword());
+            rpcSocket.sendMessage(gson.toJson(request));
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Unable to authenticate WebSocket request", thingName, e);
         }
     }
 
@@ -1552,41 +1581,35 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
+        Shelly2AuthChallenge sentAuth = authInfo; // snapshot of the nonce this request is about to use, if any
+        Shelly2AuthChallenge sentBodyAuth = bodyAuthInfo;
         try {
             // only always-on devices have an RPC WebSocket; battery devices use HTTP RPC only
             if (alwaysOn) {
                 reconnect(); // make sure WS is connected
             }
 
-            json = rpcPost(gson.toJson(req));
+            json = rpcPost(req);
         } catch (ShellyApiException e) {
             ShellyApiResult res = e.getApiResult();
             String auth = getString(res.authChallenge);
-            if (res.isHttpAccessUnauthorized() && !auth.isEmpty()) {
-                String[] options = auth.split(",");
-                Shelly2AuthChallenge authInfo = this.authInfo = new Shelly2AuthChallenge();
-                for (String o : options) {
-                    String key = substringBefore(o, "=").stripLeading().trim();
-                    String value = substringAfter(o, "=").replace("\"", "").trim();
-                    switch (key) {
-                        case "Digest qop":
-                            authInfo.authType = SHELLY2_AUTHTTYPE_DIGEST;
-                            break;
-                        case "realm":
-                            authInfo.realm = value;
-                            break;
-                        case "nonce":
-                            // authInfo.nonce = Long.parseLong(value, 16);
-                            authInfo.nonce = value;
-                            break;
-                        case "algorithm":
-                            authInfo.algorithm = value;
-                            break;
+            Shelly2AuthChallenge bodyChallenge = parseBodyAuthChallenge(res.getHttpResponse());
+            boolean authInBody = bodyChallenge != null && getString(bodyChallenge.realm).startsWith(REALM_WALLDISPLAY);
+            if (res.isHttpAccessUnauthorized() && (!auth.isEmpty() || authInBody)) {
+                synchronized (authLock) {
+                    // identity check: another thread may already have refreshed the nonce meanwhile
+                    if (authInBody) {
+                        if (bodyAuthInfo == sentBodyAuth) { // NOPMD CompareObjectsWithEquals
+                            bodyAuthInfo = bodyChallenge;
+                        }
+                    } else if (authInfo == sentAuth) { // NOPMD CompareObjectsWithEquals
+                        authInfo = parseAuthChallenge(auth);
                     }
                 }
                 req = buildRequest(method, params); // update RPC message id
-                json = rpcPost(gson.toJson(req));
+                json = rpcPost(req);
             } else {
+                // a 429 is retried by handleApiException() after the device's throttle window
                 throw e;
             }
         }
@@ -1619,8 +1642,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         apiRequest(request.method, request.params, Shelly2RpcBaseMessage.class);
     }
 
-    private String rpcPost(String postData) throws ShellyApiException {
-        return httpPost(authInfo, postData);
+    private String rpcPost(Shelly2RpcBaseMessage request) throws ShellyApiException {
+        Shelly2AuthChallenge bodyAuth = bodyAuthInfo;
+        if (bodyAuth != null) { // Wall Display: authenticate inside the message, not with an Authorization header
+            request.auth = buildChannelAuthResponse(bodyAuth, SHELLY2_AUTHDEF_USER, config.getPassword());
+            return httpPost((Shelly2AuthChallenge) null, gson.toJson(request));
+        }
+        return httpPost(authInfo, gson.toJson(request));
     }
 
     private void reconnect() throws ShellyApiException {

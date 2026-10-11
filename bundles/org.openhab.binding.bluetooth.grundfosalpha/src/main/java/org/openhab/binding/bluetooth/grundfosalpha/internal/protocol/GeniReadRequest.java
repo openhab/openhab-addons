@@ -29,7 +29,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum GeniReadRequest {
     FlowHead(0x5d, 0x0121, new ObjectLayout(0x0130, 1, 24)),
-    Power(0x57, 0x0045, new ObjectLayout(0x0100, 1, 37));
+    Motor(0x57, 0x0045, new ObjectLayout(0x0100, 1, 37)),
+    Energy(0x57, 0x0001, new ObjectLayout(0x00e8, 1, 26)),
+    // Version 2 adds eight bytes; starts and operating seconds retain their version-1 offsets.
+    Counters(0x5d, 0x0001, new ObjectLayout(0x00f8, 1, 20), new ObjectLayout(0x00f8, 2, 28));
 
     static final int DATA_CLASS = 10;
     private static final int READ_PAYLOAD_LENGTH = 3;

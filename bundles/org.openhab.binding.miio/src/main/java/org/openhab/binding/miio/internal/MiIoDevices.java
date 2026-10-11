@@ -147,6 +147,7 @@ public enum MiIoDevices {
     MMGG_PET_WATERER_S3("mmgg.pet_waterer.s3", "Mijia Smart Pet Water Dispenser", THING_TYPE_BASIC),
     MMGG_PET_WATERER_S4("mmgg.pet_waterer.s4", "XIAOWAN Smart Pet Water Dispenser", THING_TYPE_BASIC),
     MMGG_PET_WATERER_WI11("mmgg.pet_waterer.wi11", "Xiaomi Smart Pet Fountain", THING_TYPE_BASIC),
+    MRBOND_AIRER_M0("mrbond.airer.m0", "MR.BOND", THING_TYPE_BASIC),
     MRBOND_AIRER_M1PRO("mrbond.airer.m1pro", "MR.BOND", THING_TYPE_BASIC),
     MRBOND_AIRER_M1S("mrbond.airer.m1s", "MR.BOND", THING_TYPE_BASIC),
     MRBOND_AIRER_M1SUPER("mrbond.airer.m1super", "MR.BOND", THING_TYPE_BASIC),

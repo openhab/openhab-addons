@@ -647,4 +647,28 @@
 			</update-channel>
 		</instruction-set>
 	</thing-type>
+
+	<thing-type uid="automower:work-area">
+		<instruction-set targetVersion="4">
+			<!-- Work Area -->
+			<add-channel id="type" groupIds="work-area">
+				<type>automower:workarea-type-type</type>
+			</add-channel>
+			<add-channel id="use-global-cutting-height" groupIds="work-area">
+				<type>automower:workarea-use-global-cutting-height-type</type>
+			</add-channel>
+			<add-channel id="schedulable" groupIds="work-area">
+				<type>automower:workarea-schedulable-type</type>
+			</add-channel>
+			<add-channel id="last-time-abandoned" groupIds="work-area">
+				<type>automower:workarea-last-time-abandoned-type</type>
+			</add-channel>
+			<add-channel id="orientation" groupIds="work-area">
+				<type>automower:workarea-orientation-type</type>
+			</add-channel>
+			<add-channel id="orientation-shift" groupIds="work-area">
+				<type>automower:workarea-orientation-shift-type</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
 </update:update-descriptions>

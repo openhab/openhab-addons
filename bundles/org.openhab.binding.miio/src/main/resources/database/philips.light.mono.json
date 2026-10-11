@@ -16,10 +16,7 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -47,7 +44,7 @@
 				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Brightness"
 				]
 			},
 			{
@@ -62,6 +59,10 @@
 						"command": "set_user_scene",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
 				]
 			}
 		]
