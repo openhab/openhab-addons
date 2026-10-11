@@ -196,7 +196,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
         // check and get appliance profile
         var profile = applianceProfileService.getProfile(configuration.haId);
         if (profile == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.profile-pending");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.profile-pending");
             return;
         }
 
