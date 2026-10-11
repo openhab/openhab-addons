@@ -71,9 +71,11 @@ public class SimpleClass {
 
 (In fact, it can even be a simpler one-liner, see the [no boilerplate section](#noboilerplate))
 
-When openHAB presents a Java script to the Java223 automation bundle, it searches for methods with name `main`, `eval`, `run`, `exec`, or any methods annotated with `@RunScript`, and then runs them (from here we will refer to those as the "runnable methods").
+When openHAB presents a Java script to the Java223 automation bundle, it searches for methods with name `eval`, `exec`, `main`, `run`, or any methods annotated with `@RunScript`, and then runs them (order is not specified). From now on we will refer to those as the "runnable methods".
 Files in `automation/jsr223` can perform their logic in the constructor and are not required to have a runnable method.
-Returning a value is supported but optional. That's all you need for a basic script.
+Returning a value is supported but optional. If you execute several methods, only the first returned value will be kept.
+
+That's all you need for a basic script.
 
 A note about the context: each script has its own context, its own ClassLoader.
 It means that scripts are perfectly separated and cannot interact with, or even see, each other.
@@ -456,6 +458,30 @@ Example of transformation appending the word "Hello" to the input, using the "no
 return "Hello " + input;
 ```
 
+You can also declare parameters in the method signature. Here is an example of a transformation using two parameters ('min' and 'max'), to convert a percentage (dimmer) to a scaled number:
+
+```java
+import helper.generated.Java223Script;
+
+public class ToScaledNumber extends Java223Script {
+
+    @SuppressWarnings({"unused"})
+    public Object run(String input, String min, String max)  {
+        int minValue = min == null ? 0: Integer.parseInt(min);
+        int maxValue = max == null? 100:  Integer.parseInt(max);
+        int amplitude = maxValue - minValue;
+        int dimmerValue = Integer.parseInt(input);
+        return Double.valueOf((float) dimmerValue * (float) amplitude / 100f + minValue).intValue();
+    }
+}
+```
+
+You can then use this transformation in a profile:
+
+``` none
+ToScaledNumber.java?min=200&max=454
+```
+
 # Use your IDE
 
 ## convenience-dependencies.jar
@@ -653,6 +679,24 @@ public class MyRule extends Java223Script {
         _items.my_bulb_item().send(ON);
         logger.info("Movement detected at {}", inputs.getItemName());
     }
+}
+```
+
+## Other triggers / Use tags / UID
+
+Other triggers are available in the `helper.rules.annotations` package.
+You can also use the `uid` or `name` attribute to specify a unique identifier for the rule.
+You can also use the `tags` attribute on the `@Rule` annotation to specify a list of tags. Some tags have special OpenHAB meaning, such as the "Schedule" tag which will display the rule in the schedule MainUI page.
+
+```java
+import helper.rules.annotations.CronTrigger;
+import helper.rules.annotations.Rule;
+import helper.generated.Java223Script;
+
+@CronTrigger(cronExpression = "0 0 0 * * ?")
+@Rule(uid = "myuid", name = "midnight", description = "Midnight every day", tags = {"Schedule", "mytag"})
+public void testMidnight() {
+  // ...
 }
 ```
 

@@ -27,88 +27,21 @@ import java.util.stream.Collectors;
  */
 public class JavaScriptEngine implements ScriptEngine, Compilable {
 
-    private NameStrategy nameStrategy = new DefaultNameStrategy();
-    private ConstructorStrategy constructorStrategy = DefaultConstructorStrategy.byDefaultConstructor();
-    private ExecutionStrategyFactory executionStrategyFactory = clazz -> new DefaultExecutionStrategy(clazz);
-    private Isolation isolation = Isolation.CallerClassLoader;
-    private List<String> compilationOptions = null;
+    private final NameStrategy nameStrategy = new DefaultNameStrategy();
+    private final ConstructorStrategy constructorStrategy = DefaultConstructorStrategy.byDefaultConstructor();
+    private final ExecutionStrategyFactory executionStrategyFactory = DefaultExecutionStrategy::new;
+    private final List<String> compilationOptions = null;
     private PackageResourceListingStrategy packageResourceListingStrategy = null;
-    private BindingStrategy bindingStrategy = null;
-    private CompilationStrategy compilationStrategy = new DefaultCompilationStrategy();
-    private ScriptInterceptorStrategy scriptInterceptorStrategy = new NoInterceptorStrategy();
+    private final BindingStrategy bindingStrategy = null;
+    private final CompilationStrategy compilationStrategy = new DefaultCompilationStrategy();
+    private final ScriptInterceptorStrategy scriptInterceptorStrategy = new NoInterceptorStrategy();
 
     private ScriptContext context = new SimpleScriptContext();
 
-    private ClassLoader executionClassLoader = getClass().getClassLoader();
-
-    /**
-     * Sets the name strategy used to determine the Java class name from a script.
-     *
-     * @param nameStrategy the {@link NameStrategy} to use in this script engine
-     */
-    public void setNameStrategy(NameStrategy nameStrategy) {
-        this.nameStrategy = nameStrategy;
-    }
-
-    /**
-     * Sets the constructor strategy used to construct a Java instance of a class.
-     *
-     * @param constructorStrategy the {@link ConstructorStrategy} to use in this script engine
-     */
-    public void setConstructorStrategy(ConstructorStrategy constructorStrategy) {
-        this.constructorStrategy = constructorStrategy;
-    }
+    private final ClassLoader executionClassLoader = getClass().getClassLoader();
 
     public void setPackageResourceListingStrategy(PackageResourceListingStrategy packageResourceListingStrategy) {
         this.packageResourceListingStrategy = packageResourceListingStrategy;
-    }
-
-    public void setBindingStrategy(BindingStrategy bindingStrategy) {
-        this.bindingStrategy = bindingStrategy;
-    }
-
-    public void setCompilationStrategy(CompilationStrategy compilationStrategy) {
-        this.compilationStrategy = compilationStrategy;
-    }
-
-    public void setScriptInterceptorStrategy(ScriptInterceptorStrategy scriptInterceptorStrategy) {
-        this.scriptInterceptorStrategy = scriptInterceptorStrategy;
-    }
-
-    /**
-     * Sets the factory for the execution strategy used to execute a method of a class instance.
-     *
-     * @param executionStrategyFactory the {@link ExecutionStrategyFactory} to use in this script engine
-     */
-    public void setExecutionStrategyFactory(ExecutionStrategyFactory executionStrategyFactory) {
-        this.executionStrategyFactory = executionStrategyFactory;
-    }
-
-    /**
-     * Sets the {@link ClassLoader} used to load and execute the class.
-     *
-     * @param executionClassLoader the execution {@link ClassLoader}
-     */
-    public void setExecutionClassLoader(ClassLoader executionClassLoader) {
-        this.executionClassLoader = executionClassLoader;
-    }
-
-    /**
-     * Sets the isolation of the script.
-     *
-     * @param isolation the {@link Isolation}
-     */
-    public void setIsolation(Isolation isolation) {
-        this.isolation = isolation;
-    }
-
-    /**
-     * Sets options used in java compilation
-     *
-     * @param compilationOptions options to use in java compilation
-     */
-    public void setCompilationOptions(List<String> compilationOptions) {
-        this.compilationOptions = compilationOptions;
     }
 
     @Override
@@ -192,8 +125,7 @@ public class JavaScriptEngine implements ScriptEngine, Compilable {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         StandardJavaFileManager standardFileManager = compiler.getStandardFileManager(diagnostics, null, null);
-        ClassLoader parentClassLoader = isolation == Isolation.CallerClassLoader ? executionClassLoader : null;
-        MemoryFileManager memoryFileManager = new MemoryFileManager(standardFileManager, parentClassLoader);
+        MemoryFileManager memoryFileManager = new MemoryFileManager(standardFileManager, executionClassLoader);
         memoryFileManager.setPackageResourceListingStrategy(packageResourceListingStrategy);
 
         String fullClassName = nameStrategy.getFullName(script);
