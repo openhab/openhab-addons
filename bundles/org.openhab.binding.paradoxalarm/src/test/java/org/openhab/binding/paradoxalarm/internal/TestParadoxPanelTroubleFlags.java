@@ -33,6 +33,8 @@ import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
  * byte 14: battery_failure_trouble = bit 1 from LSB (mask 0x02)
  * ac_trouble = bit 0 from LSB (mask 0x01)
  * byte 15: com_pc_trouble = bit 5 from LSB (mask 0x20)
+ *
+ * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
 public class TestParadoxPanelTroubleFlags {
