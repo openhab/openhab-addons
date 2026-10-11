@@ -232,6 +232,12 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
             }
         }
 
+        if (mowerHandler.hasValidCuttingHeightCmRange()
+                || thing.getChannel(CHANNEL_WORKAREA_CUTTING_HEIGHT_CM) != null) {
+            AutomowerHandler.createChannel(null, CHANNEL_WORKAREA_CUTTING_HEIGHT_CM,
+                    CHANNEL_TYPE_WORKAREA_CUTTING_HEIGHT_CM, "Number:Length", channelAdd, thing);
+        }
+
         int i;
         for (i = 0; i < calendarTasks.size(); i++) {
             int j = 0;
@@ -262,8 +268,6 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
     public void updateChannels(WorkArea workArea, List<CalendarTask> calendarTasks, AutomowerHandler mowerHandler) {
         updateStatus(ThingStatus.ONLINE);
 
-        updateWorkAreaChannels(workArea, mowerHandler);
-
         // only show the Tasks of the current WorkArea
         List<CalendarTask> calendarTasksFiltered = new ArrayList<>();
         long workAreaId = workArea.getWorkAreaId();
@@ -274,6 +278,7 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         }
 
         addRemoveDynamicChannels(calendarTasksFiltered, mowerHandler);
+        updateWorkAreaChannels(workArea, mowerHandler);
         updateCalendarTaskChannels(calendarTasksFiltered);
     }
 
@@ -292,6 +297,8 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         if (calculatedWorkAreaCuttingHeightCm != null) {
             updateState(CHANNEL_WORKAREA_CUTTING_HEIGHT_CM,
                     new QuantityType<>(calculatedWorkAreaCuttingHeightCm, MetricPrefix.CENTI(SIUnits.METRE)));
+        } else if (thing.getChannel(CHANNEL_WORKAREA_CUTTING_HEIGHT_CM) != null) {
+            updateState(CHANNEL_WORKAREA_CUTTING_HEIGHT_CM, UnDefType.NULL);
         }
 
         Map<String, String> properties = editProperties();

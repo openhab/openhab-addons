@@ -239,6 +239,13 @@ public class AutomowerHandler extends BaseThingHandler {
         return calculateCuttingHeightCm(getMinCuttingHeightCm(), getMaxCuttingHeightCm(), rawCuttingHeight, 0.0, 100.0);
     }
 
+    boolean hasValidCuttingHeightCmRange() {
+        Double minCuttingHeightCm = getMinCuttingHeightCm();
+        Double maxCuttingHeightCm = getMaxCuttingHeightCm();
+        return minCuttingHeightCm != null && maxCuttingHeightCm != null && Double.isFinite(minCuttingHeightCm)
+                && Double.isFinite(maxCuttingHeightCm) && minCuttingHeightCm < maxCuttingHeightCm;
+    }
+
     @Nullable
     public static Double calculateCuttingHeightCm(@Nullable Double minCuttingHeightCm,
             @Nullable Double maxCuttingHeightCm, @Nullable Byte rawCuttingHeight) {
@@ -1168,6 +1175,10 @@ public class AutomowerHandler extends BaseThingHandler {
             createChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE, CoreItemFactory.STRING,
                     channelAdd, thing);
         }
+        if (hasValidCuttingHeightCmRange() || thing.getChannel(CHANNEL_SETTING_CUTTING_HEIGHT_CM) != null) {
+            createChannel(null, CHANNEL_SETTING_CUTTING_HEIGHT_CM, CHANNEL_TYPE_SETTING_CUTTING_HEIGHT_CM,
+                    "Number:Length", channelAdd, thing);
+        }
 
         int i;
         if (!capabilities.hasWorkAreas()) {
@@ -1313,6 +1324,8 @@ public class AutomowerHandler extends BaseThingHandler {
         if (calculatedCuttingHeightCm != null) {
             updateState(CHANNEL_SETTING_CUTTING_HEIGHT_CM,
                     new QuantityType<>(calculatedCuttingHeightCm, MetricPrefix.CENTI(SIUnits.METRE)));
+        } else if (thing.getChannel(CHANNEL_SETTING_CUTTING_HEIGHT_CM) != null) {
+            updateState(CHANNEL_SETTING_CUTTING_HEIGHT_CM, UnDefType.NULL);
         }
     }
 

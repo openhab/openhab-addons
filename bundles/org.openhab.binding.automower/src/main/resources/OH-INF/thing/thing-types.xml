@@ -178,9 +178,9 @@
 		<label>Settings</label>
 		<channels>
 			<channel id="cutting-height" typeId="setting-cutting-height-type"/>
-			<channel id="cutting-height-cm" typeId="setting-cutting-height-cm-type"/>
 			<!-- channel created on demand
 				<channel id="headlight-mode" typeId="setting-headlight-mode-type"/>
+				<channel id="cutting-height-cm" typeId="setting-cutting-height-cm-type"/>
 			-->
 		</channels>
 	</channel-group-type>
@@ -241,7 +241,6 @@
 			<channel id="id" typeId="workarea-id-type"/>
 			<channel id="type" typeId="workarea-type-type"/>
 			<channel id="cutting-height" typeId="workarea-cutting-height-type"/>
-			<channel id="cutting-height-cm" typeId="workarea-cutting-height-cm-type"/>
 			<channel id="use-global-cutting-height" typeId="workarea-use-global-cutting-height-type"/>
 			<channel id="enabled" typeId="workarea-enabled-type"/>
 			<channel id="schedulable" typeId="workarea-schedulable-type"/>
@@ -250,6 +249,9 @@
 			<channel id="last-time-abandoned" typeId="workarea-last-time-abandoned-type"/>
 			<channel id="orientation" typeId="workarea-orientation-type"/>
 			<channel id="orientation-shift" typeId="workarea-orientation-shift-type"/>
+			<!-- channel created on demand
+				<channel id="cutting-height-cm" typeId="workarea-cutting-height-cm-type"/>
+			-->
 		</channels>
 	</channel-group-type>
 

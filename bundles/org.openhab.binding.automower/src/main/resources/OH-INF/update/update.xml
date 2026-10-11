@@ -646,12 +646,6 @@
 				<type>automower:message-position-type</type>
 			</update-channel>
 		</instruction-set>
-
-		<instruction-set targetVersion="4">
-			<add-channel id="cutting-height-cm" groupIds="setting">
-				<type>automower:setting-cutting-height-cm-type</type>
-			</add-channel>
-		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="automower:work-area">
@@ -674,9 +668,6 @@
 			</add-channel>
 			<add-channel id="orientation-shift" groupIds="work-area">
 				<type>automower:workarea-orientation-shift-type</type>
-			</add-channel>
-			<add-channel id="cutting-height-cm" groupIds="work-area">
-				<type>automower:workarea-cutting-height-cm-type</type>
 			</add-channel>
 			<add-channel id="id" groupIds="work-area">
 				<type>automower:workarea-id-type</type>
