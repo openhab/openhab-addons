@@ -17,6 +17,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,9 +43,12 @@ import org.openhab.core.events.EventPublisher;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.items.events.ItemTimeSeriesUpdatedEvent;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceServiceRegistry;
 import org.openhab.core.persistence.QueryablePersistenceService;
+import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
 /**
@@ -79,6 +85,36 @@ public class OptimalWindowModuleHandlerFactoryTest {
                 .withConfiguration(config(item)).build();
     }
 
+    /**
+     * Hourly forecast for today and tomorrow, falling until the last hour, so with a 48h range the window is always
+     * in the future and not kept as a started window.
+     */
+    private static List<HistoricItem> hourlyForecast() {
+        ZonedDateTime start = ZonedDateTime.now(ZoneId.of("GMT")).truncatedTo(ChronoUnit.DAYS);
+        List<HistoricItem> items = new ArrayList<>();
+        for (int hour = 0; hour < 48; hour++) {
+            ZonedDateTime timestamp = start.plusHours(hour);
+            State state = new DecimalType(48 - hour);
+            items.add(new HistoricItem() {
+                @Override
+                public ZonedDateTime getTimestamp() {
+                    return timestamp;
+                }
+
+                @Override
+                public State getState() {
+                    return state;
+                }
+
+                @Override
+                public String getName() {
+                    return "Price";
+                }
+            });
+        }
+        return items;
+    }
+
     private static ItemTimeSeriesUpdatedEvent timeSeriesUpdated(String item) {
         return ItemEventFactory.createTimeSeriesUpdatedEvent(item, new TimeSeries(TimeSeries.Policy.REPLACE), null);
     }
@@ -104,7 +140,13 @@ public class OptimalWindowModuleHandlerFactoryTest {
 
     @Test
     void forecastUpdateRecalculatesMatchingTrigger() {
-        WindowTriggerHandler handler = (WindowTriggerHandler) factory.getHandler(trigger("Price"), "rule1");
+        // empty results are not cached, so the forecast must give a window
+        when(persistenceService.query(any(FilterCriteria.class))).thenReturn(hourlyForecast());
+        Trigger trigger = ModuleBuilder.createTrigger().withId("1").withTypeUID(OptimalWindowConstants.TRIGGER_TYPE_ID)
+                .withConfiguration(
+                        new Configuration(Map.of("forecastItem", "Price", "length", "1h", "rangeDuration", "48h")))
+                .build();
+        WindowTriggerHandler handler = (WindowTriggerHandler) factory.getHandler(trigger, "rule1");
         assertNotNull(handler);
 
         handler.refresh();

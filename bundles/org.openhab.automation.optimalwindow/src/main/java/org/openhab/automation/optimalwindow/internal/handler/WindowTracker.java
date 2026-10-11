@@ -29,10 +29,11 @@ import org.slf4j.LoggerFactory;
  * Keeps track of the optimal window of a trigger or a condition.
  *
  * The window is recalculated when the forecast item receives a new time series, when the search range moves on, and
- * at least every {@link #MAX_RESULT_AGE}. Once a window has started, it is kept until the end of its search range, so
- * new forecast values cannot interrupt it and it runs only once per range. If the next search range starts before the
- * window of the previous range has ended, e.g. with ranges longer than 24 hours, the previous window is kept until it
- * has ended, also if it has not started yet.
+ * at least every {@link #MAX_RESULT_AGE}. If no window could be calculated, it is tried again on every call, e.g.
+ * because the persistence service has not stored a new time series yet. Once a window has started, it is kept until
+ * the end of its search range, so new forecast values cannot interrupt it and it runs only once per range. If the
+ * next search range starts before the window of the previous range has ended, e.g. with ranges longer than 24 hours,
+ * the previous window is kept until it has ended, also if it has not started yet.
  *
  * @author Thomas Leber - Initial contribution
  */
@@ -85,7 +86,7 @@ public class WindowTracker {
         if (previous != null && isKept(previous, range, instant)) {
             return previous;
         }
-        if (range.equals(calculatedRange) && calculatedAt.plus(MAX_RESULT_AGE).isAfter(instant)) {
+        if (previous != null && range.equals(calculatedRange) && calculatedAt.plus(MAX_RESULT_AGE).isAfter(instant)) {
             return previous;
         }
 
