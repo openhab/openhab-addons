@@ -63,14 +63,14 @@ public class CommodityMeteringCluster extends BaseCluster {
         /**
          * Indicates the specific TariffComponentStructs associated with the metered commodity.
          */
-        public List<Long> tariffComponentIDs; // list
+        public List<Long> tariffComponentIds; // list
         /**
          * This field indicates the amount of a commodity metered during the associated TariffComponentStructs.
          */
         public BigInteger quantity; // int64
 
-        public MeteredQuantityStruct(List<Long> tariffComponentIDs, BigInteger quantity) {
-            this.tariffComponentIDs = tariffComponentIDs;
+        public MeteredQuantityStruct(List<Long> tariffComponentIds, BigInteger quantity) {
+            this.tariffComponentIds = tariffComponentIds;
             this.quantity = quantity;
         }
     }

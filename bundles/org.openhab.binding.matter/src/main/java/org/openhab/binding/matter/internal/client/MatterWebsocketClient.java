@@ -266,8 +266,8 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                 }
                 logger.debug("result type: {} ", response.type);
                 if (response.type != ResponseType.RESULT_SUCCESS) {
-                    future.completeExceptionally(
-                            new MatterRequestException(response.error, MatterErrorCode.fromErrorId(response.errorId)));
+                    future.completeExceptionally(new MatterRequestException(response.error,
+                            MatterErrorCode.fromErrorId(response.errorId), true));
                 } else {
                     future.complete(response.result);
                 }
@@ -435,7 +435,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         Session session = this.session;
         if (session == null) {
             logger.debug("Could not send {} {} : no valid session", namespace, functionName);
-            responseFuture.completeExceptionally(new MatterRequestException("No valid session", null));
+            responseFuture.completeExceptionally(new MatterRequestException("No valid session", null, false));
             return responseFuture;
         }
         String requestId = UUID.randomUUID().toString();

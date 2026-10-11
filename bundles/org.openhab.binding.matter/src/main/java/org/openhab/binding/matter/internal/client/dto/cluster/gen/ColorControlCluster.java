@@ -278,9 +278,11 @@ public class ColorControlCluster extends BaseCluster {
     public Integer enhancedCurrentHue; // 16384 uint16 R V
     /**
      * Indicates which attributes are currently determining the color of the device.
-     * To provide compatibility with clients not supporting EHUE, the original ColorMode attribute shall indicate
-     * CurrentHue and CurrentSaturation when the light uses the EnhancedCurrentHue attribute. If the ColorMode attribute
-     * is changed, its new value shall be copied to the EnhancedColorMode attribute.
+     * To provide compatibility with clients not supporting EHUE, the ColorMode attribute shall indicate
+     * CurrentHueAndCurrentSaturation when the EnhancedCurrentHue attribute indicates
+     * EnhancedCurrentHueAndCurrentSaturation. For other values of the EnhancedCurrentHue attribute, the value of the
+     * ColorMode attribute shall be the same as the value of the EnhancedCurrentHue attribute. If the ColorMode
+     * attribute is changed, its new value shall be copied to the EnhancedColorMode attribute.
      */
     public EnhancedColorModeEnum enhancedColorMode; // 16385 EnhancedColorModeEnum R V
     /**

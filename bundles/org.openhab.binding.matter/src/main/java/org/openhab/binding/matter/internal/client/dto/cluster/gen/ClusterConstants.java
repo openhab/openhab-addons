@@ -187,11 +187,11 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPESUPPORTED = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPESUPPORTED);
 
-    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED = "ObjectCountReached";
-    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED = "Object Count Reached";
-    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED = "ambientcontextsensing-objectcountreached";
-    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED);
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_OBJECTCOUNTTHRESHOLDREACHED = "ObjectCountThresholdReached";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_OBJECTCOUNTTHRESHOLDREACHED = "Object Count Threshold Reached";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNTTHRESHOLDREACHED = "ambientcontextsensing-objectcountthresholdreached";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_OBJECTCOUNTTHRESHOLDREACHED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNTTHRESHOLDREACHED);
 
     public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_OBJECTCOUNTCONFIG = "ObjectCountConfig";
     public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_OBJECTCOUNTCONFIG = "Object Count Config";

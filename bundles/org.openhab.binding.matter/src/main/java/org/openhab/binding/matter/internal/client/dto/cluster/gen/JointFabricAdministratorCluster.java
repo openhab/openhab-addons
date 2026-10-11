@@ -38,7 +38,7 @@ public class JointFabricAdministratorCluster extends BaseCluster {
      * Fabrics attribute (i.e. the Fabric Table) which is associated with the JointFabric. This field shall have the
      * value of null if there is no fabric associated with the JointFabric.
      */
-    public Integer administratorFabricIndex; // 0 fabric-idx A
+    public Integer administratorFabricIndex; // 0 fabric-idx R A
 
     // Enums
     /**

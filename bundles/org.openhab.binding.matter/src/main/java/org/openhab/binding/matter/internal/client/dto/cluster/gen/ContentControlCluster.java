@@ -333,43 +333,43 @@ public class ContentControlCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * Supports managing screen time limits.
+         * Supports managing screen time limits
          */
         public boolean screenTime;
         /**
          * 
-         * Supports managing a PIN code which is used for restricting access to configuration of this feature.
+         * Supports managing a PIN code which is used for restricting access to configuration of this feature
          */
         public boolean pinManagement;
         /**
          * 
-         * Supports managing content controls for unrated content.
+         * Supports managing content controls for unrated content
          */
         public boolean blockUnrated;
         /**
          * 
-         * Supports managing content controls based upon rating threshold for on demand content.
+         * Supports managing content controls based upon rating threshold for on demand content
          */
         public boolean onDemandContentRating;
         /**
          * 
-         * Supports managing content controls based upon rating threshold for scheduled content.
+         * Supports managing content controls based upon rating threshold for scheduled content
          */
         public boolean scheduledContentRating;
         /**
          * 
-         * Supports managing a set of channels that are prohibited.
+         * Supports managing a set of channels that are prohibited
          */
         public boolean blockChannels;
         /**
          * 
-         * Supports managing a set of applications that are prohibited.
+         * Supports managing a set of applications that are prohibited
          */
         public boolean blockApplications;
         /**
          * 
          * Supports managing content controls based upon setting time window in which all contents and applications
-         * SHALL be blocked.
+         * SHALL be blocked
          */
         public boolean blockContentTimeWindow;
 

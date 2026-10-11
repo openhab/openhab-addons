@@ -14,26 +14,31 @@ package org.openhab.binding.matter.internal.bridge;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.bridge.devices.BaseDevice;
 import org.openhab.binding.matter.internal.bridge.devices.DeviceRegistry;
 import org.openhab.binding.matter.internal.client.MatterClientListener;
+import org.openhab.binding.matter.internal.client.MatterRequestException;
 import org.openhab.binding.matter.internal.client.MatterWebsocketService;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeCommissionState;
@@ -49,6 +54,8 @@ import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.events.Event;
+import org.openhab.core.events.EventSubscriber;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -57,6 +64,13 @@ import org.openhab.core.items.ItemRegistryChangeListener;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.items.events.ItemStateChangedEvent;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.events.ThingStatusInfoChangedEvent;
+import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
@@ -77,10 +91,11 @@ import com.google.gson.JsonParseException;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = MatterBridge.class, configurationPid = MatterBridge.CONFIG_PID, property = Constants.SERVICE_PID
-        + "=" + MatterBridge.CONFIG_PID)
+@Component(immediate = true, service = { MatterBridge.class,
+        EventSubscriber.class }, configurationPid = MatterBridge.CONFIG_PID, property = Constants.SERVICE_PID + "="
+                + MatterBridge.CONFIG_PID)
 @ConfigurableService(category = "io", label = "Matter Bridge", description_uri = MatterBridge.CONFIG_URI)
-public class MatterBridge implements MatterClientListener {
+public class MatterBridge implements MatterClientListener, EventSubscriber {
     private final Logger logger = LoggerFactory.getLogger(MatterBridge.class);
     protected static final String CONFIG_PID = "org.openhab.matter";
     protected static final String CONFIG_URI = "io:matter";
@@ -92,34 +107,51 @@ public class MatterBridge implements MatterClientListener {
     private static final String PRODUCT_ID = "0001";
     private static final String VENDOR_ID = "65521";
 
-    private final Map<String, BaseDevice> devices = new HashMap<>();
+    private final Map<String, BaseDevice> devices = new ConcurrentHashMap<>();
+    // Items whose endpoint failed, with the structure that failed. They are left out until their structure changes.
+    private final Map<String, List<Object>> rejectedDevices = new HashMap<>();
+    // Counts client stops, so a registration still running when the client stops does not keep its devices
+    private final AtomicInteger clientGeneration = new AtomicInteger();
+    private int registeredGeneration = -1;
 
     private MatterBridgeClient client;
     private ItemRegistry itemRegistry;
     private MetadataRegistry metadataRegistry;
+    private ItemChannelLinkRegistry itemChannelLinkRegistry;
     private MatterWebsocketService websocketService;
     private ConfigurationAdmin configAdmin;
     private MatterBridgeSettings settings;
 
     private final ItemRegistryChangeListener itemRegistryChangeListener;
     private final RegistryChangeListener<Metadata> metadataRegistryChangeListener;
+    private final RegistryChangeListener<ItemChannelLink> itemChannelLinkRegistryChangeListener;
     // Use a dedicated pool rather than the shared common pool: registerItems() makes blocking websocket
     // calls while holding the instance lock, so it must not be able to starve the common pool.
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("matter.MatterBridge");
     private boolean resetStorage = false;
     private @Nullable ScheduledFuture<?> modifyFuture;
     private @Nullable ScheduledFuture<?> reconnectFuture;
-    private RunningState runningState = RunningState.Stopped;
-    private boolean commissioningWindowOpen = false;
+    private @Nullable ScheduledFuture<?> reachableFuture;
+    private volatile RunningState runningState = RunningState.Stopped;
+    private volatile boolean commissioningWindowOpen = false;
 
     @Activate
     public MatterBridge(final @Reference ItemRegistry itemRegistry, final @Reference MetadataRegistry metadataRegistry,
-            final @Reference MatterWebsocketService websocketService, final @Reference ConfigurationAdmin configAdmin) {
+            final @Reference MatterWebsocketService websocketService, final @Reference ConfigurationAdmin configAdmin,
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry) {
+        this(itemRegistry, metadataRegistry, websocketService, configAdmin, itemChannelLinkRegistry,
+                new MatterBridgeClient());
+    }
+
+    MatterBridge(ItemRegistry itemRegistry, MetadataRegistry metadataRegistry, MatterWebsocketService websocketService,
+            ConfigurationAdmin configAdmin, ItemChannelLinkRegistry itemChannelLinkRegistry,
+            MatterBridgeClient client) {
         this.itemRegistry = itemRegistry;
         this.metadataRegistry = metadataRegistry;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.websocketService = websocketService;
         this.configAdmin = configAdmin;
-        this.client = new MatterBridgeClient();
+        this.client = client;
         this.settings = new MatterBridgeSettings();
 
         itemRegistryChangeListener = new ItemRegistryChangeListener() {
@@ -179,6 +211,21 @@ public class MatterBridge implements MatterClientListener {
             }
         };
         this.metadataRegistry.addRegistryChangeListener(metadataRegistryChangeListener);
+
+        itemChannelLinkRegistryChangeListener = new RegistryChangeListener<>() {
+            public void added(ItemChannelLink element) {
+                scheduleUpdateReachable();
+            }
+
+            public void removed(ItemChannelLink element) {
+                scheduleUpdateReachable();
+            }
+
+            public void updated(ItemChannelLink oldElement, ItemChannelLink element) {
+                scheduleUpdateReachable();
+            }
+        };
+        this.itemChannelLinkRegistry.addRegistryChangeListener(itemChannelLinkRegistryChangeListener);
     }
 
     @Activate
@@ -198,6 +245,7 @@ public class MatterBridge implements MatterClientListener {
         logger.debug("Deactivating Matter Bridge");
         itemRegistry.removeRegistryChangeListener(itemRegistryChangeListener);
         metadataRegistry.removeRegistryChangeListener(metadataRegistryChangeListener);
+        itemChannelLinkRegistry.removeRegistryChangeListener(itemChannelLinkRegistryChangeListener);
         stopClient();
     }
 
@@ -301,6 +349,31 @@ public class MatterBridge implements MatterClientListener {
         }
     }
 
+    @Override
+    public Set<String> getSubscribedEventTypes() {
+        return Set.of(ItemStateChangedEvent.TYPE, ThingStatusInfoChangedEvent.TYPE);
+    }
+
+    @Override
+    public void receive(Event event) {
+        if (runningState != RunningState.Running) {
+            return;
+        }
+        if (event instanceof ItemStateChangedEvent changed) {
+            if ((changed.getItemState() instanceof UnDefType) != (changed.getOldItemState() instanceof UnDefType)) {
+                String itemName = changed.getItemName();
+                devices.values().stream()
+                        .filter(device -> device.stateItems().stream().anyMatch(i -> i.getName().equals(itemName)))
+                        .forEach(device -> device.updateReachable(this::isReachable));
+            }
+        } else if (event instanceof ThingStatusInfoChangedEvent changed) {
+            if ((changed.getStatusInfo().getStatus() == ThingStatus.ONLINE) != (changed.getOldStatusInfo()
+                    .getStatus() == ThingStatus.ONLINE)) {
+                updateReachable();
+            }
+        }
+    }
+
     public void restart() {
         stopClient();
         connectClient();
@@ -365,15 +438,20 @@ public class MatterBridge implements MatterClientListener {
 
     private void stopClient() {
         logger.debug("Stopping Matter Bridge Client");
+        clientGeneration.incrementAndGet();
         cancelConnect();
         updateRunningState(RunningState.Stopped, null);
         ScheduledFuture<?> modifyFuture = this.modifyFuture;
         if (modifyFuture != null) {
             modifyFuture.cancel(true);
         }
+        ScheduledFuture<?> reachableFuture = this.reachableFuture;
+        if (reachableFuture != null) {
+            reachableFuture.cancel(false);
+        }
         client.removeListener(this);
         client.disconnect();
-        devices.values().forEach(BaseDevice::dispose);
+        devices.values().forEach(BaseDevice::deactivate);
         devices.clear();
     }
 
@@ -442,7 +520,7 @@ public class MatterBridge implements MatterClientListener {
         return changed;
     }
 
-    private void registerItems() {
+    void registerItems() {
         doRegisterItems(false);
     }
 
@@ -453,6 +531,116 @@ public class MatterBridge implements MatterClientListener {
             logger.debug("Bridge not connected, deferring item registration");
             return;
         }
+        int generation = clientGeneration.get();
+        if (generation != registeredGeneration) {
+            // a new connection retries every item
+            rejectedDevices.clear();
+            registeredGeneration = generation;
+        }
+        Map<String, BaseDevice> itemDevices = createDevices();
+        if (runningState == RunningState.Running && !itemDevices.isEmpty()) {
+            try {
+                if (!updateEndpoints(itemDevices)) {
+                    // matter.js keeps listing an endpoint that failed to add, and only a restart removes it
+                    startBridge(createDevices(), false);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        } else {
+            startBridge(itemDevices, isRetry);
+        }
+    }
+
+    /**
+     * Creates a device, not yet activated, for each item with a Matter device type in its metadata. Items whose
+     * endpoint failed are left out until their structure changes.
+     */
+    private Map<String, BaseDevice> createDevices() {
+        Map<String, BaseDevice> itemDevices = new HashMap<>();
+        for (Metadata metadata : metadataRegistry.getAll()) {
+            final MetadataKey uid = metadata.getUID();
+            if ("matter".equals(uid.getNamespace())) {
+                try {
+                    logger.debug("Metadata {}", metadata);
+                    final GenericItem item = (GenericItem) itemRegistry.getItem(uid.getItemName());
+                    for (String part : metadata.getValue().split(",")) {
+                        BaseDevice device = DeviceRegistry.createDevice(part.trim(), metadataRegistry, client, item);
+                        if (device != null) {
+                            itemDevices.put(item.getName(), device);
+                            break;
+                        }
+                    }
+                } catch (ItemNotFoundException e) {
+                    logger.debug("Could not find item {}", uid.getItemName());
+                }
+            }
+        }
+        rejectedDevices.keySet().retainAll(itemDevices.keySet());
+        itemDevices.values().removeIf(device -> {
+            List<Object> rejected = rejectedDevices.get(device.getName());
+            if (rejected == null) {
+                return false;
+            }
+            if (rejected.equals(device.structure())) {
+                logger.debug("Leaving out item {}, its endpoint failed", device.getName());
+                return true;
+            }
+            rejectedDevices.remove(device.getName());
+            return false;
+        });
+        return itemDevices;
+    }
+
+    private void rejectDevice(BaseDevice device, String reason) {
+        logger.warn("Could not add item {} to the bridge, it is left out until its Matter metadata changes: {}",
+                device.getName(), reason);
+        rejectedDevices.put(device.getName(), device.structure());
+    }
+
+    /**
+     * Whether the bridge server answered with an error for this item, as opposed to the request not getting an
+     * answer at all
+     */
+    private boolean isItemError(ExecutionException e) {
+        return e.getCause() instanceof MatterRequestException requestException && requestException.isFromServer();
+    }
+
+    /**
+     * Activates a device. A device whose options cannot be turned into an endpoint is left out.
+     *
+     * @return the endpoint, or null if the device was left out
+     */
+    private @Nullable BridgedEndpoint activate(BaseDevice device) {
+        try {
+            return device.activateBridgedEndpoint(this::isReachable);
+        } catch (RuntimeException e) {
+            device.dispose();
+            rejectDevice(device, String.valueOf(e.getMessage()));
+            return null;
+        }
+    }
+
+    /**
+     * Adds an activated device to the devices map, unless the client was stopped while it was being set up
+     *
+     * @return false if the client was stopped
+     */
+    private boolean keepDevice(BaseDevice device) {
+        if (clientGeneration.get() != registeredGeneration) {
+            device.deactivate();
+            return false;
+        }
+        devices.put(device.getName(), device);
+        return true;
+    }
+
+    private void deactivateDevices() {
+        devices.values().forEach(BaseDevice::deactivate);
+        devices.clear();
+    }
+
+    private void startBridge(Map<String, BaseDevice> itemDevices, boolean isRetry) {
         try {
             logger.debug("Initializing bridge, resetStorage: {}", resetStorage);
             client.initializeBridge(resetStorage).get();
@@ -474,66 +662,61 @@ public class MatterBridge implements MatterClientListener {
         updateRunningState(RunningState.Starting, null);
 
         // clear out any existing devices
-        devices.values().forEach(BaseDevice::dispose);
-        devices.clear();
+        deactivateDevices();
 
         Map<String, BridgedEndpoint> bridgedEndpoints = new HashMap<>();
-        for (Metadata metadata : metadataRegistry.getAll()) {
-            final MetadataKey uid = metadata.getUID();
-            if ("matter".equals(uid.getNamespace())) {
-                try {
-                    logger.debug("Metadata {}", metadata);
-                    if (devices.containsKey(uid.getItemName())) {
-                        logger.debug("Updating item {}", uid.getItemName());
-                    }
-                    final GenericItem item = (GenericItem) itemRegistry.getItem(uid.getItemName());
-                    String deviceType = metadata.getValue();
-                    List<String> parts = Arrays.asList(deviceType.split(",")).stream().map(String::trim)
-                            .collect(Collectors.toList());
-                    for (String part : parts) {
-                        BaseDevice device = DeviceRegistry.createDevice(part, metadataRegistry, client, item);
-                        if (device != null) {
-                            bridgedEndpoints.put(item.getName(), device.activateBridgedEndpoint());
-                            logger.debug("Registered item {} with device type {}", item.getName(), device.deviceType());
-                            devices.put(item.getName(), device);
-                            break;
-                        }
-                    }
-                } catch (ItemNotFoundException e) {
-                    logger.debug("Could not find item {}", uid.getItemName());
-                }
+        for (BaseDevice device : itemDevices.values()) {
+            BridgedEndpoint endpoint = activate(device);
+            if (endpoint == null) {
+                continue;
             }
+            if (!keepDevice(device)) {
+                deactivateDevices();
+                updateRunningState(RunningState.Stopped, null);
+                return;
+            }
+            bridgedEndpoints.put(device.getName(), endpoint);
+            logger.debug("Registered item {} with device type {}", device.getName(), device.deviceType());
         }
-        if (devices.isEmpty()) {
+
+        if (bridgedEndpoints.isEmpty()) {
             logger.info("No devices found to register with bridge, not starting bridge");
             updateRunningState(RunningState.Stopped, "No items found with matter metadata");
             return;
         }
 
-        try {
-            for (BridgedEndpoint be : bridgedEndpoints.values()) {
-                logger.debug("Registering endpoint {}", be.id);
-                client.addEndpoint(be).get();
+        for (Map.Entry<String, BridgedEndpoint> entry : bridgedEndpoints.entrySet()) {
+            try {
+                logger.debug("Registering endpoint {}", entry.getKey());
+                client.addEndpoint(entry.getValue()).get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Could not register device with bridge", e);
+                updateRunningState(RunningState.Error, e.getMessage());
+                deactivateDevices();
+                return;
+            } catch (ExecutionException e) {
+                BaseDevice device = itemDevices.get(entry.getKey());
+                if (device == null || !isItemError(e)) {
+                    logger.debug("Could not register device with bridge", e);
+                    updateRunningState(RunningState.Error, e.getMessage());
+                    deactivateDevices();
+                    return;
+                }
+                rejectDevice(device, String.valueOf(e.getMessage()));
+                deactivateDevices();
+                // Start again without it. Each pass leaves out one more item, so this always ends.
+                startBridge(createDevices(), isRetry);
+                return;
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Could not register device with bridge", e);
-            updateRunningState(RunningState.Error, e.getMessage());
-            devices.values().forEach(BaseDevice::dispose);
-            devices.clear();
-            return;
-        } catch (ExecutionException e) {
-            logger.debug("Could not register device with bridge", e);
-            updateRunningState(RunningState.Error, e.getMessage());
-            devices.values().forEach(BaseDevice::dispose);
-            devices.clear();
-            return;
         }
 
         try {
             client.startBridge().get();
             updateRunningState(RunningState.Running, null);
             updatePairingCodes();
+            // picks up reachability changes made while the bridge was starting
+            updateReachable();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Could not start bridge", e);
@@ -552,6 +735,126 @@ public class MatterBridge implements MatterClientListener {
             }
             updateRunningState(RunningState.Error, e.getMessage());
         }
+    }
+
+    /**
+     * Brings the endpoints of a running bridge in line with the items without restarting it, so paired ecosystems
+     * stay connected.
+     *
+     * @param itemDevices the devices for the current items, not yet activated
+     * @return false if an endpoint failed to add, which leaves the bridge needing a restart
+     */
+    private boolean updateEndpoints(Map<String, BaseDevice> itemDevices) throws InterruptedException {
+        for (String name : List.copyOf(devices.keySet())) {
+            if (!itemDevices.containsKey(name)) {
+                logger.debug("Removing endpoint {}", name);
+                BaseDevice removed = devices.remove(name);
+                if (removed != null) {
+                    removed.deactivate();
+                }
+                awaitEndpointChange(name, client.removeEndpoint(name));
+            }
+        }
+        for (BaseDevice device : itemDevices.values()) {
+            String name = device.getName();
+            BaseDevice existing = devices.get(name);
+            if (existing == null) {
+                logger.debug("Adding endpoint {}", name);
+                if (!sendEndpoint(device, client::addEndpoint)) {
+                    return false;
+                }
+            } else if (existing.structureChanged()) {
+                logger.debug("Replacing endpoint {}", name);
+                devices.remove(name);
+                existing.deactivate();
+                if (!sendEndpoint(device, client::updateEndpoint)) {
+                    return false;
+                }
+            } else if (!existing.usesSameItems(device)) {
+                logger.debug("Moving endpoint {} to the edited item", name);
+                if (activate(device) == null) {
+                    continue;
+                }
+                devices.remove(name);
+                existing.deactivate();
+                if (!keepDevice(device)) {
+                    return true;
+                }
+                awaitEndpointChange(name, device.takeOver(existing));
+            } else {
+                awaitEndpointChange(name, existing.updateLabel(device.label()));
+            }
+        }
+        updateReachable();
+        return true;
+    }
+
+    /**
+     * Activates a device and sends its endpoint to the bridge.
+     *
+     * @return false if the bridge failed to add the endpoint
+     */
+    private boolean sendEndpoint(BaseDevice device, Function<BridgedEndpoint, CompletableFuture<String>> send)
+            throws InterruptedException {
+        BridgedEndpoint endpoint = activate(device);
+        if (endpoint == null) {
+            return true;
+        }
+        try {
+            send.apply(endpoint).get();
+            keepDevice(device);
+            return true;
+        } catch (InterruptedException e) {
+            device.deactivate();
+            throw e;
+        } catch (ExecutionException e) {
+            device.deactivate();
+            if (isItemError(e)) {
+                rejectDevice(device, String.valueOf(e.getMessage()));
+            } else {
+                logger.debug("Could not update the bridge endpoint for item {}", device.getName(), e);
+            }
+            return false;
+        }
+    }
+
+    private void awaitEndpointChange(String name, CompletableFuture<Void> change) throws InterruptedException {
+        try {
+            change.get();
+        } catch (ExecutionException e) {
+            logger.warn("Could not update the bridge endpoint for item {}: {}", name, e.getMessage());
+        }
+    }
+
+    /**
+     * A device is unreachable when all of its items are NULL or UNDEF, or when its items are linked to Things and
+     * none of them is online. A group without members counts as unreachable.
+     */
+    private boolean isReachable(BaseDevice device) {
+        Collection<GenericItem> items = device.stateItems();
+        if (items.stream().allMatch(item -> item.getState() instanceof UnDefType)) {
+            return false;
+        }
+        Set<Thing> things = new HashSet<>();
+        items.forEach(item -> things.addAll(itemChannelLinkRegistry.getBoundThings(item.getName())));
+        return things.isEmpty() || things.stream().anyMatch(thing -> thing.getStatus() == ThingStatus.ONLINE);
+    }
+
+    private void updateReachable() {
+        if (runningState == RunningState.Running) {
+            devices.values().forEach(device -> device.updateReachable(this::isReachable));
+        }
+    }
+
+    /**
+     * Updates the reachable flags once a burst of link changes, such as a reloaded things file, is over
+     */
+    private void scheduleUpdateReachable() {
+        ScheduledFuture<?> future = reachableFuture;
+        if (future != null) {
+            future.cancel(false);
+        }
+        reachableFuture = scheduler.schedule(this::updateReachable, 1, TimeUnit.SECONDS);
     }
 
     private void manageCommissioningWindow(boolean open) {
@@ -628,7 +931,8 @@ public class MatterBridge implements MatterClientListener {
         }
         ScheduledFuture<?> modifyFuture = this.modifyFuture;
         if (modifyFuture != null) {
-            modifyFuture.cancel(true);
+            // a registration already running finishes, the next one waits for it
+            modifyFuture.cancel(false);
         }
         this.modifyFuture = scheduler.schedule(this::registerItems, 5, TimeUnit.SECONDS);
     }

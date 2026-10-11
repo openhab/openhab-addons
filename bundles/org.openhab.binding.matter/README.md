@@ -19,10 +19,14 @@ For more information on the Matter specification, see the [Matter Ecosystem Over
 
 ## Matter.JS Runtime
 
-This binding uses the excellent [matter.js](https://github.com/project-chip/matter.js) implementation of the Matter 1.5.1 protocol.
+This binding uses the excellent [matter.js](https://github.com/project-chip/matter.js) implementation of the Matter 1.6.1 protocol.
 
-As such, this binding requires Node.js 22+ and will attempt to download and cache an appropriate version when started if a version is not already installed on the system.
+As such, this binding requires Node.js 22.13 or newer and will attempt to download and cache Node.js 24 when started if a suitable version is not already installed on the system.
 Alpine Linux users (typically docker) and those on older Linux distributions will need to install this manually as the official NodeJS versions are not compatible.
+
+Matter state, including pairings, is stored in `$OPENHAB_USERDATA/matter`.
+Back up this folder before upgrading openHAB.
+Storage written by a newer version can usually be read after a downgrade, but a bridged door lock loses any users or PINs set through a Matter ecosystem.
 
 ## Matter and IPv6
 
@@ -573,7 +577,7 @@ If there are issues starting the bridge, check the status field in the bridge se
 
 Pairing codes and other options can be found in the MainUI under "Settings -> Add-on Settings -> Matter Binding"
 
-When the matter bridge starts, if no 3rd party clients are paired, it will automatically open the "Commissioning Window", meaning you can use the QR code or manual pair code found in the bridge settings page to pair a new client like Alexa, Google Home or Apple Home.
+When the matter bridge starts, if no 3rd party clients are paired, it will automatically open the "Commissioning Window" for up to 48 hours, meaning you can use the QR code or manual pair code found in the bridge settings page to pair a new client like Alexa, Google Home or Apple Home.
 
 <img src="./doc/bridge-settings-pair.png" alt="Commissioning Window" width="500"/>
 
@@ -619,6 +623,17 @@ The following is a list of supported Matter device types and their corresponding
 - Fixed Labels
   - Matter has a concept of "Fixed Labels" which allows devices to expose arbitrary label names and values which can be used by clients for tasks like grouping devices in rooms.
   - Example: `[fixedLabels="room=Office, floor=1"]`
+
+### Item Changes and Device Status
+
+Adding, changing or removing items is applied to the running bridge, so paired apps stay connected.
+Changing an item's label renames the device in place.
+Changing its options or members replaces the device. A device that keeps its type keeps its identity, so paired apps keep it in the same room.
+Changing the device type adds it as a new device.
+An item the bridge cannot add, for example because of an invalid option, is logged and left out until its Matter metadata changes. The rest of the bridge keeps running.
+
+A device shows as not responding in paired apps when all of its items are `NULL` or `UNDEF`, or when its items are linked to Things and none of those Things is online.
+For a Group item, its member items are checked, so a group without members shows as not responding.
 
 ### Thermostat group member tags
 
@@ -744,6 +759,7 @@ Switch                TestFanSingleItem         "On/Off"                        
 - Alexa: Suddenly stops working and says it could not connect to a device or device not responding.
   - Check the Settings page in the Main UI to confirm the bridge is running
   - Ensure the openHAB item has the proper matter tag, or that the item is being loaded at all (check item file errors)
+  - Check that the item has a state and that its Thing is online, see [Item Changes and Device Status](#item-changes-and-device-status)
   - Rarely, you may need to reboot the Alexa device.
   If you have multiple devices and not sure which is the primary matter connection, you may need to reboot all of them.
 

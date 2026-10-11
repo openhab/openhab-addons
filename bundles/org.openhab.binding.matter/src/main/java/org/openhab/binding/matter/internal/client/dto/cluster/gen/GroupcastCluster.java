@@ -308,7 +308,7 @@ public class GroupcastCluster extends BaseCluster {
         public boolean sender;
         /**
          * 
-         * Supports PerGroup multicast addresses.
+         * Supports PerGroup multicast addresses
          */
         public boolean perGroup;
 
@@ -420,6 +420,7 @@ public class GroupcastCluster extends BaseCluster {
      * This command shall allow an Administrator to configure test modes that allow validation of Groupcast
      * communication.
      * This command shall have the following data fields subject to the listed conformance.
+     * Note: The behavior of the command when the TestOperation is EnableSenderTesting is provisional.
      */
     public static ClusterCommand groupcastTesting(GroupcastTestingEnum testOperation, Integer durationSeconds) {
         Map<String, Object> map = new LinkedHashMap<>();

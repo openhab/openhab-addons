@@ -102,7 +102,7 @@ public class EcosystemInformationCluster extends BaseCluster {
          * This field shall specify the EcosystemLocationStruct entries in the LocationDirectory attribute associated
          * with this EcosystemDeviceStruct.
          */
-        public List<String> uniqueLocationIDs; // list
+        public List<String> uniqueLocationIds; // list
         /**
          * This field shall indicate the timestamp of when the UniqueLocationIDs was last modified.
          * > [!NOTE]
@@ -111,19 +111,19 @@ public class EcosystemInformationCluster extends BaseCluster {
          * design. Since this is meant to be provided from user input, it is unlikely these signals would be happening
          * at one time.
          */
-        public BigInteger uniqueLocationIDsLastEdit; // epoch-us
+        public BigInteger uniqueLocationIdsLastEdit; // epoch-us
         public Integer fabricIndex; // FabricIndex
 
         public EcosystemDeviceStruct(String deviceName, BigInteger deviceNameLastEdit, Integer bridgedEndpoint,
-                Integer originalEndpoint, List<DeviceTypeStruct> deviceTypes, List<String> uniqueLocationIDs,
-                BigInteger uniqueLocationIDsLastEdit, Integer fabricIndex) {
+                Integer originalEndpoint, List<DeviceTypeStruct> deviceTypes, List<String> uniqueLocationIds,
+                BigInteger uniqueLocationIdsLastEdit, Integer fabricIndex) {
             this.deviceName = deviceName;
             this.deviceNameLastEdit = deviceNameLastEdit;
             this.bridgedEndpoint = bridgedEndpoint;
             this.originalEndpoint = originalEndpoint;
             this.deviceTypes = deviceTypes;
-            this.uniqueLocationIDs = uniqueLocationIDs;
-            this.uniqueLocationIDsLastEdit = uniqueLocationIDsLastEdit;
+            this.uniqueLocationIds = uniqueLocationIds;
+            this.uniqueLocationIdsLastEdit = uniqueLocationIdsLastEdit;
             this.fabricIndex = fabricIndex;
         }
     }

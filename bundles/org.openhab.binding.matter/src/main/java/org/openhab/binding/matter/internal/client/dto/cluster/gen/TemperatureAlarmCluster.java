@@ -192,7 +192,6 @@ public class TemperatureAlarmCluster extends BaseCluster {
      * > [!NOTE]
      * > NOTE: The constraints related to the field values in the table above shall have the relationship as represented
      * by the illustration below:
-     * !TemperatureAlarm Thresholds
      */
     public static ClusterCommand setTemperatureAlarmThresholds(Integer criticalOverTemperatureThreshold,
             Integer majorOverTemperatureThreshold, Integer minorOverTemperatureThreshold,

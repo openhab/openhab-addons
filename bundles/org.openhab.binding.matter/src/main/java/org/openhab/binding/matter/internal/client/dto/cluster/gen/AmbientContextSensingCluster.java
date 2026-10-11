@@ -35,7 +35,7 @@ public class AmbientContextSensingCluster extends BaseCluster {
     public static final String ATTRIBUTE_AUDIO_CONTEXT_DETECTED = "audioContextDetected";
     public static final String ATTRIBUTE_AMBIENT_CONTEXT_TYPE = "ambientContextType";
     public static final String ATTRIBUTE_AMBIENT_CONTEXT_TYPE_SUPPORTED = "ambientContextTypeSupported";
-    public static final String ATTRIBUTE_OBJECT_COUNT_REACHED = "objectCountReached";
+    public static final String ATTRIBUTE_OBJECT_COUNT_THRESHOLD_REACHED = "objectCountThresholdReached";
     public static final String ATTRIBUTE_OBJECT_COUNT_CONFIG = "objectCountConfig";
     public static final String ATTRIBUTE_OBJECT_COUNT = "objectCount";
     public static final String ATTRIBUTE_SIMULTANEOUS_DETECTION_LIMIT = "simultaneousDetectionLimit";
@@ -50,7 +50,7 @@ public class AmbientContextSensingCluster extends BaseCluster {
      */
     public Boolean humanActivityDetected; // 0 bool R V
     /**
-     * Indicates the occurrence of object identification in Boolean data. The detail object identification can be found
+     * Indicates the occurrence of object identification in Boolean data. The identified object information can be found
      * from the AmbientContextType attribute.
      */
     public Boolean objectIdentified; // 1 bool R V
@@ -61,51 +61,53 @@ public class AmbientContextSensingCluster extends BaseCluster {
     public Boolean audioContextDetected; // 2 bool R V
     /**
      * Indicates the details for the currently observed and detected ambient context. This attribute supports multiple
-     * simultaneous ambient context detections. The attribute expression rule is provided in the
-     * MultipleAmbientSensingDetection section. The total number of simultaneous ambient context detections is limited
-     * by the SimultaneousDetectionLimit attribute.
+     * simultaneous ambient context detections. The attribute expression rule is defined in the
+     * MultipleAmbientSensingDetection section. The total number of simultaneous ambient context detections is
+     * constrained by the SimultaneousDetectionLimit attribute.
      */
     public List<AmbientContextTypeStruct> ambientContextType; // 3 list R V
     /**
      * Indicates the list of ambient context detection types supported by the server. Each supported ambient context
-     * detection type element shall be of a type supported in the AmbientContextFeatureMap and shall indicate a
-     * supported ambient context detection SemanticTagStruct from one of the following namespaces: Identified Human
-     * Activity Namespace, Identified Object Namespace, Identified Sound Namespace in the StandardNamespaces.
+     * detection type element shall correspond to a feature type supported in the AmbientContextFeatureMap and shall be
+     * represented by a SemanticTagStruct from one of the following StandardNamespaces: Identified Human Activity
+     * Namespace, Identified Object Namespace, or Identified Sound Namespace.
      */
-    public List<ModeSelectCluster.SemanticTagStruct> ambientContextTypeSupported; // 4 list R V
+    public List<Semtag> ambientContextTypeSupported; // 4 list R V
     /**
-     * Indicates whether the number of an object being counted is greater or equal to the threshold specified by the
-     * ObjectCountThreshold. The counting object shall be limited to one identified object type and identified by the
-     * Identified Object namespace tag ID from presented in the AmbientContextTypeSupported attribute.
+     * Indicates whether the number count of the specified object is greater or equal to the threshold specified by the
+     * ObjectCountThreshold. The object being counted shall be limited to one identified object type and shall be
+     * identified by the tag ID from the Identified Object namespace, as presented in the AmbientContextTypeSupported
+     * attribute.
      */
-    public Boolean objectCountReached; // 5 bool R V
+    public Boolean objectCountThresholdReached; // 5 bool R V
     /**
-     * Indicates configuration parameters to support an object counting feature. The attribute specifies the object to
-     * be detected and counted and the counting threshold value for the object counting purpose.
+     * This attribute shall specify the configuration parameters required to support an object counting feature,
+     * including the identification of the object to be detected and counted, as well as the counting threshold value
+     * for the ObjectCountThresholdReached detection.
      */
     public ObjectCountConfigStruct objectCountConfig; // 6 ObjectCountConfigStruct RW VM
     /**
-     * Indicates the number of objects detected in the area covered by the sensor. ObjectCount shall be exposed only
-     * when ObjectCountReached is true.
+     * This optional attribute shall indicate the number of objects detected in the area covered by the sensor.
+     * ObjectCount shall be exposed only when the ObjectCountThresholdReached attribute is true.
      */
     public Integer objectCount; // 7 uint16 R V
     /**
      * Indicates the maximum number of simultaneous multiple ambient context detections supported by the server. If an
      * additional detection event causes the total number of simultaneous detection events to exceed a
      * SimultaneousDetectionLimit, the oldest ambient sensing detection event shall be removed and the latest detection
-     * shall be added. The same type of ambient context sensing event occurred consecutively within the HoldTime
-     * duration shall not increase the total number of simultaneous detection events. If a simultaneous detection
-     * feature is not supported, then the value shall be set to 1.
+     * shall be added. The consecutive recurrence of the same ambient context sensing event within the HoldTime duration
+     * shall not increase the total number of simultaneous detection events. If simultaneous detection is not supported,
+     * then the value shall be set to 1.
      */
-    public Integer simultaneousDetectionLimit; // 8 uint8 RW
+    public Integer simultaneousDetectionLimit; // 8 uint8 R V
     /**
-     * Indicates the time duration of True state, in seconds, before the sensor changes its sensing detection state from
-     * True to False after the last detection. Low values of HoldTime SHOULD be avoided since they could lead to
-     * generating overly frequent data reports on subscriptions. This is equivalent to the HoldTime attribute of the
-     * OccupancySensing cluster attribute. For further information, refer to the HoldTime attribute description of the
-     * Occupancy Sensing Cluster. The HoldTime shall be applied to each ambient context detection occurrence
-     * individually. A more detail HoldTime implementation example over multiple simultaneous ambient context detections
-     * can be found in theMultipleAmbientSensingDetection section.
+     * Indicates the time duration (in seconds) of True state before transitioning its sensing detection state from True
+     * to False after the last detection. Low HoldTime value SHOULD be avoided to prevent excessive data reporting for
+     * subscription. This attribute is equivalent to the HoldTime attribute of the OccupancySensing cluster. For further
+     * information, refer to the HoldTime attribute description of the Occupancy Sensing Cluster. The HoldTime shall be
+     * applied individually to each ambient context detection occurrence individually. A more detailed HoldTime
+     * implementation example for multiple simultaneous ambient context detections can be found in
+     * theMultipleAmbientSensingDetection section.
      */
     public Integer holdTime; // 9 uint16 RW VM
     /**
@@ -123,52 +125,61 @@ public class AmbientContextSensingCluster extends BaseCluster {
 
     // Structs
     /**
-     * This event shall be generated when a new different ambient context detection is added to AmbientContextType.
+     * This event shall be generated when a new ambient context detection is added to the AmbientContextType attribute.
      */
     public static class AmbientContextDetectStarted {
         /**
          * This field shall indicate the detail ambient context information that triggers this event reporting. The
-         * detail ambient context information shall be presented by the namespace ID and semantic tag ID available from
-         * Identified Human Activity Namespace, Identified Object Namespace, Identified Sound Namespace in the
-         * StandardNamespaces. For object counting feature, the AmbientContextDetected field represents the object being
-         * counted.
+         * detail ambient context information shall be represented by the namespace ID and semantic tag ID available
+         * from Identified Human Activity, Identified Object, and Identified Sound namespaces in the StandardNamespaces.
+         * For the object counting feature, the AmbientContextDetected field shall represent the object being counted.
          */
         public AmbientContextTypeStruct ambientContextDetected; // AmbientContextTypeStruct
         /**
-         * This field shall indicate an ObjectCountReached attribute value when the event reporting is triggered by the
-         * object counting threshold detection.
+         * This field shall indicate an ObjectCountThresholdReached attribute value when the event reporting is
+         * triggered by the object counting threshold detection.
          */
-        public Boolean objectCountReached; // bool
+        public Boolean objectCountThresholdReached; // bool
         /**
          * This field shall indicate the number of objects detected in the area covered by the sensor when
-         * ObjectCountReached attribute is changed to True.
+         * ObjectCountThresholdReached attribute is changed to True.
          */
         public Integer objectCount; // uint16
 
-        public AmbientContextDetectStarted(AmbientContextTypeStruct ambientContextDetected, Boolean objectCountReached,
-                Integer objectCount) {
+        public AmbientContextDetectStarted(AmbientContextTypeStruct ambientContextDetected,
+                Boolean objectCountThresholdReached, Integer objectCount) {
             this.ambientContextDetected = ambientContextDetected;
-            this.objectCountReached = objectCountReached;
+            this.objectCountThresholdReached = objectCountThresholdReached;
             this.objectCount = objectCount;
         }
     }
 
     /**
-     * This event shall be generated when the ambient context detection that generated the AmbientContextDetectStarted
-     * event is removed from AmbientContextType. This end event doesn't necessary reflect the end of the actual event
-     * progression. For example, both AmbientContextDetectStarted and AmbientContextDetectEnded events are used to
-     * inform the "sleeping" event occurrence where AmbientContextDetectEnded event doesn't necessarily indicate the
-     * actual end of "sleeping" action.
+     * This event shall be generated when the ambient context previously reported by an AmbientContextDetectStarted
+     * event is removed from the AmbientContextType attribute. This termination event doesn't necessarily reflect or
+     * coincide with the end of the actual event progression. For example, while both AmbientContextDetectStarted and
+     * AmbientContextDetectEnded events are used to inform the "sleeping" event occurrence, the
+     * AmbientContextDetectEnded event doesn't necessarily indicate the actual end of "sleeping" action. The
+     * AmbientContextDetectStarted event start time information is provided to facilitate the mapping of the matching
+     * the AmbientContextDetectStarted event and the AmbientContextDetectEnded event for event logging purpose. If a
+     * server is time-synchronized or capable of supporting both the POSIX time stamp and the system time stamp, a
+     * server shall provide the EventStartTimePos data field instead of the EventStartTimeSys data field.
      */
     public static class AmbientContextDetectEnded {
         /**
-         * This field shall indicate the system time stamp or the epoch time stamp when the corresponding
-         * AmbientContextDetectStarted Event was generated.
+         * This field shall indicate the POSIX time stamp when the corresponding AmbientContextDetectStarted Event was
+         * generated.
          */
-        public BigInteger eventStartTime; // posix-ms
+        public BigInteger eventStartTimePos; // posix-ms
+        /**
+         * This field shall indicate the system time stamp when the corresponding AmbientContextDetectStarted Event was
+         * generated.
+         */
+        public BigInteger eventStartTimeSys; // systime-ms
 
-        public AmbientContextDetectEnded(BigInteger eventStartTime) {
-            this.eventStartTime = eventStartTime;
+        public AmbientContextDetectEnded(BigInteger eventStartTimePos, BigInteger eventStartTimeSys) {
+            this.eventStartTimePos = eventStartTimePos;
+            this.eventStartTimeSys = eventStartTimeSys;
         }
     }
 
@@ -204,24 +215,24 @@ public class AmbientContextSensingCluster extends BaseCluster {
      */
     public static class AmbientContextTypeStruct {
         /**
-         * This field specifies the detail ambient context information related to the Boolean detection attributes,
+         * This field specifies the detail ambient context information associated with the Boolean detection attributes,
          * HumanActivityDetected, ObjectIdentified, and AudioContextDetected. The detail ambient context information
-         * shall be presented by the namespace ID and semantic tag ID of the SemanticTagStruct available from Identified
-         * Human Activity Namespace, Identified Object Namespace, Identified Sound Namespace in the StandardNamespaces.
-         * When AmbientContextSensed field contains more than one data element, it shall indicate a combined ambient
-         * context event instead of unrelated independent ambient context events. For an example, if a joint event
-         * exposure of "Child Fall" is intended, then the AmbientContextType attribute can be exposed as
+         * shall be represented by the namespace ID and semantic tag ID of the SemanticTagStruct available from
+         * Identified Human Activity, Identified Object, and Identified Sound namespaces in the StandardNamespaces. When
+         * AmbientContextSensed field contains multiple data elements, it shall indicate a single combined ambient
+         * context event rather than unrelated independent ambient context events. For an example, if a joint event
+         * exposure of "Child Fall" is intended, then the AmbientContextType attribute can be exposed as follows:
          * where AmbientContextSensed field contains the SemanticTag data list of "Child" tag ID (=2) from
          * IdentifiedObject namespace (=0x4B) and "Fall" tag ID (=1) from IdentifiedHumanActivity namespace (=0x49).
          * However, if two independent events exposure is intended, then the AmbientContextType attribute can be exposed
-         * as
-         * where AmbientContextSensed field contains only one individual ambient sensing context. In order to avoid
-         * confusion arising from many possible joint permutations, AmbientContextSensed field shall NOT include more
-         * than 2 ambient context events.
+         * as follows:
+         * where each AmbientContextSensed field contains only one individual ambient sensing context. In order to
+         * prevent confusion arising from excessive joint permutations, AmbientContextSensed field shall NOT include
+         * more than two ambient context events.
          */
-        public List<ModeSelectCluster.SemanticTagStruct> ambientContextSensed; // list
+        public List<Semtag> ambientContextSensed; // list
 
-        public AmbientContextTypeStruct(List<ModeSelectCluster.SemanticTagStruct> ambientContextSensed) {
+        public AmbientContextTypeStruct(List<Semtag> ambientContextSensed) {
             this.ambientContextSensed = ambientContextSensed;
         }
     }
@@ -231,19 +242,18 @@ public class AmbientContextSensingCluster extends BaseCluster {
      */
     public static class ObjectCountConfigStruct {
         /**
-         * This field shall indicate an object to be detected and counted. If the MfgCode field, in CountingObject, is
-         * NULL, it shall be specified by ObjectIdentified namespace ID and its tag number available from the
+         * This field shall indicate the object to be detected and counted. If the MfgCode field in CountingObject is
+         * NULL, the object shall be specified by ObjectIdentified namespace ID and its tag ID available from the
          * AmbientContextTypeSupported attribute.
          */
-        public ModeSelectCluster.SemanticTagStruct countingObject; // ModeSelect.SemanticTagStruct
+        public Semtag countingObject; // semtag
         /**
          * This field shall indicate the minimum number of detected objects to render the true Boolean state of
          * CountThresholdReached attribute.
          */
         public Integer objectCountThreshold; // uint16
 
-        public ObjectCountConfigStruct(ModeSelectCluster.SemanticTagStruct countingObject,
-                Integer objectCountThreshold) {
+        public ObjectCountConfigStruct(Semtag countingObject, Integer objectCountThreshold) {
             this.countingObject = countingObject;
             this.objectCountThreshold = objectCountThreshold;
         }
@@ -265,7 +275,7 @@ public class AmbientContextSensingCluster extends BaseCluster {
          * This field shall indicate the predicted state of the AmbientContextType attribute for the specified time
          * period.
          */
-        public List<ModeSelectCluster.SemanticTagStruct> ambientContextType; // list
+        public List<Semtag> ambientContextType; // list
         /**
          * This field shall indicate the predicted state of the CrowdDetected attribute for the specified time period.
          */
@@ -282,9 +292,8 @@ public class AmbientContextSensingCluster extends BaseCluster {
          */
         public Integer confidence; // percent
 
-        public PredictedActivityStruct(Long startTimestamp, Long endTimestamp,
-                List<ModeSelectCluster.SemanticTagStruct> ambientContextType, Boolean crowdDetected, Integer crowdCount,
-                Integer confidence) {
+        public PredictedActivityStruct(Long startTimestamp, Long endTimestamp, List<Semtag> ambientContextType,
+                Boolean crowdDetected, Integer crowdCount, Integer confidence) {
             this.startTimestamp = startTimestamp;
             this.endTimestamp = endTimestamp;
             this.ambientContextType = ambientContextType;
@@ -318,7 +327,7 @@ public class AmbientContextSensingCluster extends BaseCluster {
         public boolean soundIdentification;
         /**
          * 
-         * Supports predicting various human actions and activities.
+         * Supports predicting various human actions and activities
          */
         public boolean predictedActivity;
 
@@ -349,7 +358,7 @@ public class AmbientContextSensingCluster extends BaseCluster {
         str += "audioContextDetected : " + audioContextDetected + "\n";
         str += "ambientContextType : " + ambientContextType + "\n";
         str += "ambientContextTypeSupported : " + ambientContextTypeSupported + "\n";
-        str += "objectCountReached : " + objectCountReached + "\n";
+        str += "objectCountThresholdReached : " + objectCountThresholdReached + "\n";
         str += "objectCountConfig : " + objectCountConfig + "\n";
         str += "objectCount : " + objectCount + "\n";
         str += "simultaneousDetectionLimit : " + simultaneousDetectionLimit + "\n";
