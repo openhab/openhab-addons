@@ -155,7 +155,7 @@ public class StatusTests {
         ahm.initialize();
         ahm.refresh();
         ThingStatusInfo tsi = tcl.getThingStatus();
-        assertOfflineStatus(tsi, ThingStatusDetail.COMMUNICATION_ERROR, null, "Auth");
+        assertOfflineStatus(tsi, ThingStatusDetail.AUTHORIZATION_PENDING, null, "Auth");
         tearDown(ahm);
     }
 
@@ -191,7 +191,7 @@ public class StatusTests {
         ahm.refresh();
         ThingStatusInfo tsi = tcl.getThingStatus();
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth Offline");
-        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth details");
+        assertEquals(ThingStatusDetail.AUTHORIZATION_PENDING, tsi.getStatusDetail(), "Auth details");
         String statusDescription = tsi.getDescription();
         assertNotNull(statusDescription);
         assertTrue(statusDescription.contains("@text/mercedesme.account.status.auth-failure"),

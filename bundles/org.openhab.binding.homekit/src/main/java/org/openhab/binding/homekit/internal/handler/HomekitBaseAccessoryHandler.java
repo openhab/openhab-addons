@@ -328,7 +328,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         Ed25519PublicKeyParameters accessoryKey = keyStore.getAccessoryKey(uniqueId);
         if (accessoryKey == null) {
             logger.debug("{} no stored pairing credentials", thing.getUID());
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.not-paired");
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/error.not-paired");
             return false;
         }
 
@@ -365,11 +365,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return false;
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
                 | InvalidCipherTextException | IOException | TimeoutException | ExecutionException
-                | IllegalStateException e) {
+                | IllegalStateException | SecurityException e) {
             logger.debug("{} restored pairing was not verified", thing.getUID(), e);
             sessionUpgradeInProgress.set(false);
             scheduleConnectionAttempt();
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(
+                    e instanceof InvalidCipherTextException || e instanceof SecurityException
+                            ? ThingStatusDetail.AUTHORIZATION_PENDING
+                            : ThingStatusDetail.CONFIGURATION_ERROR,
                     THING_STATUS_FMT.formatted("error.pairing-verification-failed", e.getMessage()));
             return false;
         }
@@ -572,7 +575,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (Exception e) {
             // catch all; log all exceptions
             logger.debug("{} pairing / verification failed '{}'", thing.getUID(), e.getMessage(), e);
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(
+                    e instanceof InvalidCipherTextException || e instanceof SecurityException
+                            ? ThingStatusDetail.AUTHORIZATION_PENDING
+                            : ThingStatusDetail.CONFIGURATION_ERROR,
                     THING_STATUS_FMT.formatted("error.pairing-verification-failed", e.getMessage()));
             return ACTION_RESULT_ERROR_FORMAT.formatted("pairing error");
         }
@@ -618,7 +624,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public String unpair() {
         String result = unpairInner();
         if (result.startsWith(ACTION_RESULT_OK)) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.not-paired");
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/error.not-paired");
         }
         return result;
     }

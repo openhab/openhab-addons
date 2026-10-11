@@ -498,7 +498,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private void handleAuthError(MercedesMeAuthException e) {
-        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, STATUS_AUTH_FAILURE + " [\"" + e.getMessage() + "\"]");
+        updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, STATUS_AUTH_FAILURE + " [\"" + e.getMessage() + "\"]");
     }
 
     private void handleApiError(MercedesMeApiException e) {
