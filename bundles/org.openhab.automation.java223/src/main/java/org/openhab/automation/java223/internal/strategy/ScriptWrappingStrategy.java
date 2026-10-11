@@ -165,6 +165,9 @@ public class ScriptWrappingStrategy implements ScriptInterceptorStrategy {
             modifiedScript.append(BOILERPLATE_CODE_HELPER_INJECTION);
         }
         modifiedScript.append(BOILERPLATE_CODE_BEGIN_MAIN);
+        if (!scriptLines.getLast().trim().endsWith(";")) {
+            scriptLines.add(";");
+        }
         modifiedScript.append(String.join("\n", scriptLines));
         modifiedScript.append("\n");
         if (!returnIsPresent) {
