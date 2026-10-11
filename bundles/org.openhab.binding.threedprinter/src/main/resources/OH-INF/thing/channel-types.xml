@@ -127,7 +127,7 @@
 		<tags>
 			<tag>Setpoint</tag>
 		</tags>
-		<state min="0" max="100" pattern="%d %%"/>
+		<state min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<!--
