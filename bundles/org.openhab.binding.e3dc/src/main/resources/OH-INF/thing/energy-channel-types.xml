@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="energy-solar-day">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy Today</label>
+		<description>Photovoltaic energy produced today</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energy-house-day">
+		<item-type>Number:Energy</item-type>
+		<label>House Energy Today</label>
+		<description>Energy consumed by the household today</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energy-grid-in-day">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Supply Today</label>
+		<description>Energy drawn from the grid today</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energy-grid-out-day">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Feed Today</label>
+		<description>Energy fed into the grid today</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energy-battery-in-day">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Charge Today</label>
+		<description>Energy charged into the battery today</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energy-battery-out-day">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Discharge Today</label>
+		<description>Energy taken from the battery today</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

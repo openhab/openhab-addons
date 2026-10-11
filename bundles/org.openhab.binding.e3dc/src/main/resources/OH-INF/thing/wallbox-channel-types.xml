@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="wallbox-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>Power L1</label>
+		<description>Power on phase L1</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>Power L2</label>
+		<description>Power on phase L2</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>Power L3</label>
+		<description>Power on phase L3</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-energy-total">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy</label>
+		<description>Energy produced since commissioning</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-energy-solar">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy</label>
+		<description>Energy taken from the photovoltaic system</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<description>Battery state of charge</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-min-charge-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Minimum Charge Current</label>
+		<description>Lowest charging current allowed</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-max-charge-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Maximum Charge Current</label>
+		<description>Highest charging current allowed</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-number-phases">
+		<item-type>Number</item-type>
+		<label>Number of Phases</label>
+		<description>Number of phases used for charging</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="1">Single phase</option>
+				<option value="3">Three phases</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="wallbox-key-state">
+		<item-type>Switch</item-type>
+		<label>Key State</label>
+		<description>State of the wallbox key switch</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-plugged">
+		<item-type>Switch</item-type>
+		<label>Plugged</label>
+		<description>A vehicle is connected</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>The connector is locked</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-charging">
+		<item-type>Switch</item-type>
+		<label>Charging</label>
+		<description>A charging session is running</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-suspended">
+		<item-type>Switch</item-type>
+		<label>Suspended</label>
+		<description>Charging is currently suspended</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-sun-mode">
+		<item-type>Switch</item-type>
+		<label>Sun Mode</label>
+		<description>Charging uses surplus photovoltaic power</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-set-max-charge-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Set Maximum Charge Current</label>
+		<description>Highest charging current allowed for the wallbox</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wallbox-set-sun-mode">
+		<item-type>Switch</item-type>
+		<label>Set Sun Mode</label>
+		<description>Whether wallbox charging uses surplus photovoltaic power</description>
+		<state/>
+	</channel-type>
+
+</thing:thing-descriptions>

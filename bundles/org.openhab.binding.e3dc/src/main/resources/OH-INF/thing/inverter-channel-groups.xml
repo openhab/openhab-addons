@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="inverter">
+		<label>Inverter</label>
+		<channels>
+			<channel id="ac-power" typeId="inverter-ac-power"/>
+			<channel id="ac-voltage" typeId="inverter-ac-voltage"/>
+			<channel id="ac-current" typeId="inverter-ac-current"/>
+			<channel id="ac-frequency" typeId="inverter-ac-frequency"/>
+			<channel id="temperature" typeId="inverter-temperature"/>
+			<channel id="on-grid" typeId="inverter-on-grid"/>
+			<channel id="string-count" typeId="inverter-string-count"/>
+			<channel id="energy-total" typeId="inverter-energy-total"/>
+			<channel id="energy-day" typeId="inverter-energy-day"/>
+			<channel id="tracker-1-power" typeId="inverter-tracker-1-power"/>
+			<channel id="tracker-1-voltage" typeId="inverter-tracker-1-voltage"/>
+			<channel id="tracker-1-current" typeId="inverter-tracker-1-current"/>
+			<channel id="tracker-2-power" typeId="inverter-tracker-2-power"/>
+			<channel id="tracker-2-voltage" typeId="inverter-tracker-2-voltage"/>
+			<channel id="tracker-2-current" typeId="inverter-tracker-2-current"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

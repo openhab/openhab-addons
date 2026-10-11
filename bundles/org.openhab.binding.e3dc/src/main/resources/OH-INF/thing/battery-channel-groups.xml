@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="battery">
+		<label>Battery</label>
+		<channels>
+			<channel id="soc" typeId="battery-soc"/>
+			<channel id="rsoc" typeId="battery-rsoc"/>
+			<channel id="remaining-charge-power" typeId="battery-remaining-charge-power"/>
+			<channel id="remaining-discharge-power" typeId="battery-remaining-discharge-power"/>
+			<channel id="max-charge-power" typeId="battery-max-charge-power"/>
+			<channel id="max-discharge-power" typeId="battery-max-discharge-power"/>
+			<channel id="discharge-start-power" typeId="battery-discharge-start-power"/>
+			<channel id="set-max-charge-power" typeId="battery-set-max-charge-power"/>
+			<channel id="set-max-discharge-power" typeId="battery-set-max-discharge-power"/>
+			<channel id="set-discharge-start-power" typeId="battery-set-discharge-start-power"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

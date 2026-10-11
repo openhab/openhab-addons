@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="system">
+		<label>System</label>
+		<channels>
+			<channel id="software-version" typeId="system-software-version"/>
+			<channel id="serial-number" typeId="system-serial-number"/>
+			<channel id="production-date" typeId="system-production-date"/>
+			<channel id="time-zone" typeId="system-time-zone"/>
+			<channel id="installed-peak-power" typeId="system-installed-peak-power"/>
+			<channel id="inverter-count" typeId="system-inverter-count"/>
+			<channel id="battery-count" typeId="system-battery-count"/>
+			<channel id="mode" typeId="system-mode"/>
+			<channel id="coupling-mode" typeId="system-coupling-mode"/>
+			<channel id="emergency-power-status" typeId="system-emergency-power-status"/>
+			<channel id="charging-lock" typeId="system-charging-lock"/>
+			<channel id="discharging-lock" typeId="system-discharging-lock"/>
+			<channel id="emergency-power-available" typeId="system-emergency-power-available"/>
+			<channel id="charging-throttled" typeId="system-charging-throttled"/>
+			<channel id="grid-in-limit" typeId="system-grid-in-limit"/>
+			<channel id="charging-time-lock" typeId="system-charging-time-lock"/>
+			<channel id="discharging-time-lock" typeId="system-discharging-time-lock"/>
+			<channel id="weather-regulated-charge" typeId="system-weather-regulated-charge"/>
+			<channel id="power-limits-used" typeId="system-power-limits-used"/>
+			<channel id="powersave" typeId="system-powersave"/>
+			<channel id="set-power-limits" typeId="system-set-power-limits"/>
+			<channel id="set-weather-regulated-charge" typeId="system-set-weather-regulated-charge"/>
+			<channel id="set-power-mode" typeId="system-set-power-mode"/>
+			<channel id="set-manual-charge" typeId="system-set-manual-charge"/>
+			<channel id="derate-at-percent" typeId="system-derate-at-percent"/>
+			<channel id="derate-at-power" typeId="system-derate-at-power"/>
+			<channel id="idle-periods-enabled" typeId="system-idle-periods-enabled"/>
+			<channel id="idle-periods" typeId="system-idle-periods"/>
+			<channel id="manual-charge-energy" typeId="system-manual-charge-energy"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

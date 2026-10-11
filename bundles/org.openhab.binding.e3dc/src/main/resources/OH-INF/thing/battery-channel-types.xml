@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="battery-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<description>Battery state of charge</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-rsoc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Real State of Charge</label>
+		<description>Battery state of charge from the energy history</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-remaining-charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Remaining Charge Power</label>
+		<description>Charge power still available</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-remaining-discharge-power">
+		<item-type>Number:Power</item-type>
+		<label>Remaining Discharge Power</label>
+		<description>Discharge power still available</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-max-charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Maximum Charge Power</label>
+		<description>Configured limit for battery charging</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-max-discharge-power">
+		<item-type>Number:Power</item-type>
+		<label>Maximum Discharge Power</label>
+		<description>Configured limit for battery discharging</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-discharge-start-power">
+		<item-type>Number:Power</item-type>
+		<label>Discharge Start Power</label>
+		<description>Power above which the battery is discharged</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-set-max-charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Set Maximum Charge Power</label>
+		<description>Limit for battery charging</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-set-max-discharge-power">
+		<item-type>Number:Power</item-type>
+		<label>Set Maximum Discharge Power</label>
+		<description>Limit for battery discharging</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-set-discharge-start-power">
+		<item-type>Number:Power</item-type>
+		<label>Set Discharge Start Power</label>
+		<description>Power above which the battery is discharged</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>
