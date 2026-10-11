@@ -93,6 +93,7 @@
                 <exclude>freemarker/ext/servlet/**</exclude>
                 <exclude>freemarker/ext/jsp/**</exclude>
                 <exclude>freemarker/ext/dom/**</exclude>
+                <exclude>freemarker/ext/jdom/**</exclude>
                 <exclude>freemarker/ext/xml/**</exclude>
                 <exclude>helper/**</exclude>
               </excludes>

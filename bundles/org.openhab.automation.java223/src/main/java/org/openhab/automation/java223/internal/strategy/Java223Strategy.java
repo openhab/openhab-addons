@@ -184,7 +184,7 @@ public class Java223Strategy
         }
 
         throw new ScriptException(String.format(
-                "cannot execute: %s doesn't have a method named eval/main/run, or a RunScript annotated method",
+                "cannot execute: %s doesn't have a method named eval/exec//main/run, or a RunScript annotated method",
                 compiledClass.getSimpleName()));
     }
 
