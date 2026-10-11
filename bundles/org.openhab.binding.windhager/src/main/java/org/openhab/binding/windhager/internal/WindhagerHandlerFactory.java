@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link WindhagerHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author BenjiU - Initial contribution
+ * @author Benjamin Utz - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.windhager", service = ThingHandlerFactory.class)

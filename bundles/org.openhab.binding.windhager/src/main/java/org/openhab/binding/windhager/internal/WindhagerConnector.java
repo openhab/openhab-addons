@@ -38,7 +38,7 @@ import com.google.gson.JsonParser;
 /**
  * Connector for the BioWin webserver.
  *
- * @author BenjiU - Initial contribution
+ * @author Benjamin Utz - Initial contribution
  */
 @NonNullByDefault
 public class WindhagerConnector {

@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Configuration for a single BioWin channel.
  *
- * @author BenjiU - Initial contribution
+ * @author Benjamin Utz - Initial contribution
  */
 @NonNullByDefault
 public class WindhagerChannelConfiguration {

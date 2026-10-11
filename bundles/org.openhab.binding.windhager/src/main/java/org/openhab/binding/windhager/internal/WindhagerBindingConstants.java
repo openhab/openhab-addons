@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link WindhagerBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author BenjiU - Initial contribution
+ * @author Benjamin Utz - Initial contribution
  */
 @NonNullByDefault
 public class WindhagerBindingConstants {

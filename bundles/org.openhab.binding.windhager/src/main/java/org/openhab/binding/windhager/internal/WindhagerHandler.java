@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * The {@link WindhagerHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author BenjiU - Initial contribution
+ * @author Benjamin Utz - Initial contribution
  */
 @NonNullByDefault
 public class WindhagerHandler extends BaseThingHandler {
