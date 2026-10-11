@@ -9,7 +9,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hager-flow-storage-dcdc-status">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Storage DCDC status</label>
 		<state readOnly="true"/>
 	</channel-type>

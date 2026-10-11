@@ -41,7 +41,10 @@ public final class HagerFlowStorageRegisterMap {
 
     public static final Register STORAGE_INDEX = new Register("storage-index", GROUP_STATUS, 4097, 1, U16, READ_ONLY,
             null, Map.of(), List.of());
-    public static final Register STORAGE_DCDC_STATUS = new Register("storage-dcdc-status", GROUP_STATUS, 4098, 1, BOOL,
+    // The Modbus table documents bool, but a device reports the value 2 while the battery sits at its reserve level,
+    // which a Switch cannot show. The register is therefore read as a Number, see
+    // https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6108071235
+    public static final Register STORAGE_DCDC_STATUS = new Register("storage-dcdc-status", GROUP_STATUS, 4098, 1, U16,
             READ_ONLY, null, Map.of(), List.of());
     public static final Register STORAGE_BAT_STATUS = new Register("storage-bat-status", GROUP_STATUS, 4099, 1, BOOL,
             READ_ONLY, null, Map.of(), List.of());

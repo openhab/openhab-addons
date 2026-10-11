@@ -91,12 +91,20 @@ public class RegisterDecoderTest {
 
     @Test
     public void testBoolean() {
-        Register on = register("storage-dcdc-status", 0, 1, BOOL, null);
-        Register off = register("storage-bat-status", 1, 1, BOOL, null);
+        Register on = register("storage-bat-status", 0, 1, BOOL, null);
+        Register off = register("powermeter-working-status", 1, 1, BOOL, null);
         ModbusRegisterArray registers = new ModbusRegisterArray(1, 0);
 
         assertEquals(OnOffType.ON, decode(on, registers, 0));
         assertEquals(OnOffType.OFF, decode(off, registers, 0));
+    }
+
+    @Test
+    public void testStorageDcdcStatusShowsValuesBeyondBoolean() {
+        // the device reports 2 for this register while the battery sits at its reserve level
+        State state = decode(HagerFlowStorageRegisterMap.STORAGE_DCDC_STATUS, new ModbusRegisterArray(2));
+
+        assertEquals(new DecimalType(2), state);
     }
 
     @Test
