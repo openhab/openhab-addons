@@ -47,7 +47,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
@@ -65,6 +67,7 @@ public class MiotParser {
     private static final String BASEURL = "https://miot-spec.org/miot-spec-v2/";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final boolean SKIP_SIID_1 = true;
+    private static final String VALUE_TOKEN = "$value$";
 
     private String model;
     private @Nullable String urn;
@@ -146,14 +149,8 @@ public class MiotParser {
                     }
                     if (property.access.contains("read") || property.access.contains("write")) {
                         MiIoBasicChannel miIoBasicChannel = new MiIoBasicChannel();
-                        miIoBasicChannel
-                                .setFriendlyName((isPureAscii(service.description) && !service.description.isBlank()
-                                        ? captializedName(service.description)
-                                        : captializedName(serviceId))
-                                        + " - "
-                                        + (isPureAscii(property.description) && !property.description.isBlank()
-                                                ? captializedName(property.description)
-                                                : captializedName(propertyId)));
+                        miIoBasicChannel.setFriendlyName(displayName(service.description, serviceId) + " - "
+                                + displayName(property.description, propertyId));
                         miIoBasicChannel.setSiid(service.siid);
                         miIoBasicChannel.setPiid(property.piid);
                         // avoid duplicates and make camel case and avoid invalid channel names
@@ -169,103 +166,10 @@ public class MiotParser {
                             propertyId = propertyId.concat(Integer.toString(cnt));
                             logger.warn("duplicate for property:{} - {} ({}", chanId, property.description, cnt);
                         }
-                        if (property.unit != null && !property.unit.isBlank()) {
-                            if (!property.unit.contains("none")) {
-                                miIoBasicChannel.setUnit(property.unit);
-                            }
-                        }
                         miIoBasicChannel.setProperty(propertyId);
                         miIoBasicChannel.setChannel(chanId);
-                        switch (property.format) {
-                            case "bool":
-                                miIoBasicChannel.setType("Switch");
-                                break;
-                            case "uint8":
-                            case "uint16":
-                            case "uint32":
-                            case "int8":
-                            case "int16":
-                            case "int32":
-                            case "int64":
-                            case "float":
-                                StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
-                                int decimals = -1;
-                                String unit = "";
-                                if (stateDescription == null) {
-                                    stateDescription = new StateDescriptionDTO();
-                                }
-                                String type = MiIoQuantiyTypesConversion.getType(property.unit);
-                                if (type != null) {
-                                    miIoBasicChannel.setType("Number" + ":" + type);
-                                    unit = " %unit%";
-                                    decimals = property.format.contentEquals("float") ? 1 : 0;
-
-                                } else {
-                                    miIoBasicChannel.setType("Number");
-                                    decimals = property.format.contentEquals("uint8") ? 0 : 1;
-                                    if (property.unit != null) {
-                                        unknownUnits.add(property.unit);
-                                    }
-                                }
-                                if (property.valueRange != null && property.valueRange.size() == 3) {
-                                    stateDescription.setMinimum(property.valueRange.get(0));
-                                    stateDescription.setMaximum(property.valueRange.get(1));
-
-                                    BigDecimal step = property.valueRange.get(2);
-                                    if (step.signum() != 0) {
-                                        stateDescription.setStep(step);
-                                        if (step.compareTo(BigDecimal.ONE) >= 0) {
-                                            decimals = 0;
-                                        }
-                                    }
-                                }
-                                if (decimals > -1) {
-                                    stateDescription.setPattern("%." + Integer.toString(decimals) + "f" + unit);
-                                }
-                                miIoBasicChannel.setStateDescription(stateDescription);
-                                break;
-                            case "string":
-                                miIoBasicChannel.setType("String");
-                                break;
-                            case "hex":
-                                miIoBasicChannel.setType("String");
-                                logger.info("no type mapping implemented for {}", property.format);
-                                break;
-                            default:
-                                miIoBasicChannel.setType("String");
-                                logger.info("no type mapping for {}", property.format);
-                                break;
-                        }
+                        applyPropertyFormat(miIoBasicChannel, property, unknownUnits);
                         miIoBasicChannel.setRefresh(property.access.contains("read"));
-                        // add option values
-                        if (property.valueList != null && !property.valueList.isEmpty()) {
-                            StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
-                            if (stateDescription == null) {
-                                stateDescription = new StateDescriptionDTO();
-                            }
-                            stateDescription.setPattern(null);
-                            List<OptionsValueListDTO> channeloptions = new LinkedList<>();
-                            for (OptionsValueDescriptionsListDTO miotOption : property.valueList) {
-                                // miIoBasicChannel.setValueList(property.valueList);
-                                OptionsValueListDTO basicOption = new OptionsValueListDTO();
-                                basicOption.setLabel(miotOption.getDescription());
-                                basicOption.setValue(String.valueOf(miotOption.value));
-                                channeloptions.add(basicOption);
-                            }
-                            stateDescription.setOptions(channeloptions);
-                            miIoBasicChannel.setStateDescription(stateDescription);
-
-                            // Add the mapping for the readme
-                            StringBuilder mapping = new StringBuilder();
-                            mapping.append("Value mapping [");
-
-                            for (OptionsValueDescriptionsListDTO valueMap : property.valueList) {
-                                mapping.append(String.format("\"%d\"=\"%s\",", valueMap.value, valueMap.description));
-                            }
-                            mapping.deleteCharAt(mapping.length() - 1);
-                            mapping.append("]");
-                            miIoBasicChannel.setReadmeComment(mapping.toString());
-                        }
                         if (property.access.contains("write")) {
                             List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
                             MiIoDeviceAction action = new MiIoDeviceAction();
@@ -305,7 +209,13 @@ public class MiotParser {
                 }
                 if (service.actions != null) {
                     for (ActionDTO action : service.actions) {
-                        deviceActions.put(action, service);
+                        MiIoBasicChannel inputChannel = actionInputChannel(service, serviceId, action, propCheck,
+                                unknownUnits);
+                        if (inputChannel != null) {
+                            miIoBasicChannels.add(inputChannel);
+                        } else {
+                            deviceActions.put(action, service);
+                        }
                         String actionId = action.type.substring(action.type.indexOf("action:")).split(":")[1];
                         actionText.append("`action{");
                         actionText.append(String.format("\"did\":\"%s-%s\",", serviceId, actionId));
@@ -338,6 +248,182 @@ public class MiotParser {
 
         this.device = device;
         return device;
+    }
+
+    /**
+     * Sets the unit, channel type, state description and value mapping of a channel from the format of a MIoT
+     * property.
+     */
+    private void applyPropertyFormat(MiIoBasicChannel miIoBasicChannel, PropertyDTO property,
+            Set<String> unknownUnits) {
+        if (property.unit != null && !property.unit.isBlank()) {
+            if (!property.unit.contains("none")) {
+                miIoBasicChannel.setUnit(property.unit);
+            }
+        }
+
+        switch (property.format) {
+            case "bool":
+                miIoBasicChannel.setType("Switch");
+                break;
+            case "uint8":
+            case "uint16":
+            case "uint32":
+            case "int8":
+            case "int16":
+            case "int32":
+            case "int64":
+            case "float":
+                StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
+                int decimals = -1;
+                String unit = "";
+                if (stateDescription == null) {
+                    stateDescription = new StateDescriptionDTO();
+                }
+                String type = MiIoQuantiyTypesConversion.getType(property.unit);
+                if (type != null) {
+                    miIoBasicChannel.setType("Number" + ":" + type);
+                    unit = " %unit%";
+                    decimals = property.format.contentEquals("float") ? 1 : 0;
+
+                } else {
+                    miIoBasicChannel.setType("Number");
+                    decimals = property.format.contentEquals("uint8") ? 0 : 1;
+                    if (property.unit != null) {
+                        unknownUnits.add(property.unit);
+                    }
+                }
+                if (property.valueRange != null && property.valueRange.size() == 3) {
+                    stateDescription.setMinimum(property.valueRange.get(0));
+                    stateDescription.setMaximum(property.valueRange.get(1));
+
+                    BigDecimal step = property.valueRange.get(2);
+                    if (step.signum() != 0) {
+                        stateDescription.setStep(step);
+                        if (step.compareTo(BigDecimal.ONE) >= 0) {
+                            decimals = 0;
+                        }
+                    }
+                }
+                if (decimals > -1) {
+                    stateDescription.setPattern("%." + Integer.toString(decimals) + "f" + unit);
+                }
+                miIoBasicChannel.setStateDescription(stateDescription);
+                break;
+            case "string":
+                miIoBasicChannel.setType("String");
+                break;
+            case "hex":
+                miIoBasicChannel.setType("String");
+                logger.info("no type mapping implemented for {}", property.format);
+                break;
+            default:
+                miIoBasicChannel.setType("String");
+                logger.info("no type mapping for {}", property.format);
+                break;
+        }
+
+        // add option values
+        if (property.valueList != null && !property.valueList.isEmpty()) {
+            StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
+            if (stateDescription == null) {
+                stateDescription = new StateDescriptionDTO();
+            }
+            stateDescription.setPattern(null);
+            List<OptionsValueListDTO> channeloptions = new LinkedList<>();
+            for (OptionsValueDescriptionsListDTO miotOption : property.valueList) {
+                // miIoBasicChannel.setValueList(property.valueList);
+                OptionsValueListDTO basicOption = new OptionsValueListDTO();
+                basicOption.setLabel(miotOption.getDescription());
+                basicOption.setValue(String.valueOf(miotOption.value));
+                channeloptions.add(basicOption);
+            }
+            stateDescription.setOptions(channeloptions);
+            miIoBasicChannel.setStateDescription(stateDescription);
+
+            // Add the mapping for the readme
+            StringBuilder mapping = new StringBuilder();
+            mapping.append("Value mapping [");
+
+            for (OptionsValueDescriptionsListDTO valueMap : property.valueList) {
+                mapping.append(String.format("\"%d\"=\"%s\",", valueMap.value, valueMap.description));
+            }
+            mapping.deleteCharAt(mapping.length() - 1);
+            mapping.append("]");
+            miIoBasicChannel.setReadmeComment(mapping.toString());
+        }
+    }
+
+    /**
+     * Creates a channel for an action with exactly one input. The command value of the channel is sent as that input,
+     * with the {@code $value$} token in the parameters of the action. An action with several inputs can not be filled
+     * from one channel value, so it is not handled here and stays on the actions channel.
+     *
+     * @return the channel, or null if the action input can not be provided by one channel
+     */
+    private @Nullable MiIoBasicChannel actionInputChannel(ServiceDTO service, String serviceId, ActionDTO action,
+            Set<String> propCheck, Set<String> unknownUnits) {
+        if (action.in.size() != 1 || !(action.in.get(0) instanceof Number)) {
+            return null;
+        }
+        String actionId = action.type.substring(action.type.indexOf("action:")).split(":")[1];
+        int piid = ((Number) action.in.get(0)).intValue();
+        List<PropertyDTO> properties = service.properties;
+        PropertyDTO input = null;
+        if (properties != null) {
+            input = properties.stream().filter(property -> property.piid != null && property.piid == piid).findFirst()
+                    .orElse(null);
+        }
+        if (input == null) {
+            logger.info("Input piid {} of action {} not found in the properties of service {}", piid, actionId,
+                    service.siid);
+            return null;
+        }
+        // avoid duplicates and make camel case and avoid invalid channel names
+        String chanId = (serviceId + "_" + actionId).replace(" ", "").replace(".", "_").replace("-", "_");
+        int cnt = 0;
+        while (propCheck.contains(chanId + Integer.toString(cnt))) {
+            cnt++;
+        }
+        propCheck.add(chanId.concat(Integer.toString(cnt)));
+        if (cnt > 0) {
+            chanId = chanId.concat(Integer.toString(cnt));
+            logger.warn("duplicate for action:{} ({})", chanId, cnt);
+        }
+        MiIoBasicChannel miIoBasicChannel = new MiIoBasicChannel();
+        miIoBasicChannel.setFriendlyName(
+                displayName(service.description, serviceId) + " - " + displayName(action.description, actionId));
+        miIoBasicChannel.setChannel(chanId);
+        miIoBasicChannel.setProperty("");
+        miIoBasicChannel.setRefresh(false);
+        applyPropertyFormat(miIoBasicChannel, input, unknownUnits);
+
+        MiIoDeviceAction miIoDeviceAction = new MiIoDeviceAction();
+        miIoDeviceAction.setCommand("action");
+        miIoDeviceAction.setSiid(service.siid);
+        miIoDeviceAction.setAiid(action.iid);
+        String channelType = miIoBasicChannel.getType();
+        if (channelType.startsWith("Number")) {
+            miIoDeviceAction.setparameterType(CommandParameterType.NUMBER);
+        } else if ("Switch".equals(channelType)) {
+            miIoDeviceAction.setparameterType(CommandParameterType.ONOFFBOOL);
+        } else {
+            miIoDeviceAction.setparameterType(CommandParameterType.STRING);
+        }
+        JsonObject inputParameter = new JsonObject();
+        inputParameter.addProperty("piid", piid);
+        inputParameter.addProperty("value", VALUE_TOKEN);
+        JsonArray parameters = new JsonArray();
+        parameters.add(inputParameter);
+        miIoDeviceAction.setParameters(parameters);
+        List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
+        miIoDeviceActions.add(miIoDeviceAction);
+        miIoBasicChannel.setActions(miIoDeviceActions);
+        return miIoBasicChannel;
+    }
+
+    private static String displayName(String description, String id) {
+        return isPureAscii(description) && !description.isBlank() ? captializedName(description) : captializedName(id);
     }
 
     private MiIoBasicChannel actionChannel(Map<ActionDTO, ServiceDTO> deviceActions) {

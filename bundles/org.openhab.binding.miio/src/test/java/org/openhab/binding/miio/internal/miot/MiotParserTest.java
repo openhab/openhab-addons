@@ -21,6 +21,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.miio.internal.basic.CommandParameterType;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceActionCondition;
@@ -101,6 +102,48 @@ public class MiotParserTest {
             }
             """;
 
+    private static final String INPUT_SPEC = """
+            {
+              "type": "urn:miot-spec-v2:device:vacuum:0000A006:test-model:1",
+              "description": "Robot Cleaner",
+              "services": [
+                {
+                  "iid": 11,
+                  "type": "urn:miot-spec-v2:service:custom:00007801:test-model:1",
+                  "description": "Custom",
+                  "properties": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:property:mute:00000001:test-model:1",
+                      "description": "Mute", "format": "bool", "access": ["read", "write"] },
+                    { "iid": 2, "type": "urn:miot-spec-v2:property:volume:00000002:test-model:1",
+                      "description": "Volume", "format": "uint8", "access": ["read", "write"],
+                      "unit": "percentage", "value-range": [0, 100, 1] },
+                    { "iid": 3, "type": "urn:miot-spec-v2:property:language:00000003:test-model:1",
+                      "description": "Language", "format": "string", "access": ["read", "write"] },
+                    { "iid": 4, "type": "urn:miot-spec-v2:property:mode:00000004:test-model:1",
+                      "description": "Mode", "format": "uint8", "access": ["read", "write"],
+                      "value-list": [ { "value": 0, "description": "Auto" }, { "value": 1, "description": "Quiet" } ] }
+                  ],
+                  "actions": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:action:set-mute:00002801:test-model:1",
+                      "description": "Set Mute", "in": [1], "out": [] },
+                    { "iid": 2, "type": "urn:miot-spec-v2:action:set-volume:00002802:test-model:1",
+                      "description": "Set Volume", "in": [2], "out": [] },
+                    { "iid": 3, "type": "urn:miot-spec-v2:action:set-language:00002803:test-model:1",
+                      "description": "Set Language", "in": [3], "out": [] },
+                    { "iid": 4, "type": "urn:miot-spec-v2:action:set-mode:00002804:test-model:1",
+                      "description": "Set Mode", "in": [4], "out": [] },
+                    { "iid": 5, "type": "urn:miot-spec-v2:action:set-both:00002805:test-model:1",
+                      "description": "Set Both", "in": [1, 2], "out": [] },
+                    { "iid": 6, "type": "urn:miot-spec-v2:action:start-all:00002806:test-model:1",
+                      "description": "Start All", "in": [], "out": [] },
+                    { "iid": 7, "type": "urn:miot-spec-v2:action:set-missing:00002807:test-model:1",
+                      "description": "Set Missing", "in": [9], "out": [] }
+                  ]
+                }
+              ]
+            }
+            """;
+
     private MiIoBasicChannel parseChannel(String channelId) throws MiotParseException {
         MiotParser parser = new MiotParser("test.vacuum.model");
         List<MiIoBasicChannel> channels = parser.getDevice(JsonParser.parseString(SPEC)).getDevice().getChannels();
@@ -142,5 +185,81 @@ public class MiotParserTest {
                 .toList();
         assertEquals(values, matchValues);
         assertEquals(List.of(8, 9, 10), actions.getActions().stream().map(MiIoDeviceAction::getSiid).toList());
+    }
+
+    private List<MiIoBasicChannel> parseInputSpec() throws MiotParseException {
+        return new MiotParser("test.vacuum.model").getDevice(JsonParser.parseString(INPUT_SPEC)).getDevice()
+                .getChannels();
+    }
+
+    private MiIoBasicChannel inputChannel(String channelId) throws MiotParseException {
+        return parseInputSpec().stream().filter(c -> channelId.equals(c.getChannel())).findFirst().orElseThrow();
+    }
+
+    private void assertInputAction(MiIoBasicChannel channel, int aiid, int piid, CommandParameterType parameterType) {
+        assertEquals(1, channel.getActions().size());
+        MiIoDeviceAction action = channel.getActions().get(0);
+        assertEquals("action", action.getCommand());
+        assertEquals(11, action.getSiid());
+        assertEquals(aiid, action.getAiid());
+        assertEquals(parameterType, action.getparameterType());
+        assertEquals(JsonParser.parseString("[{\"piid\": " + piid + ", \"value\": \"$value$\"}]"),
+                action.getParameters());
+        assertNull(action.getCondition());
+        assertEquals("", channel.getProperty());
+    }
+
+    @Test
+    public void actionWithBooleanInputGetsSwitchChannel() throws MiotParseException {
+        MiIoBasicChannel channel = inputChannel("custom_set_mute");
+
+        assertEquals("Switch", channel.getType());
+        assertEquals("Custom - Set Mute", channel.getFriendlyName());
+        assertInputAction(channel, 1, 1, CommandParameterType.ONOFFBOOL);
+    }
+
+    @Test
+    public void actionWithNumberInputGetsNumberChannelWithRange() throws MiotParseException {
+        MiIoBasicChannel channel = inputChannel("custom_set_volume");
+
+        assertTrue(channel.getType().startsWith("Number"));
+        StateDescriptionDTO stateDescription = channel.getStateDescription();
+        assertNotNull(stateDescription);
+        assertEquals(new BigDecimal("100"), stateDescription.getMaximum());
+        assertInputAction(channel, 2, 2, CommandParameterType.NUMBER);
+    }
+
+    @Test
+    public void actionWithStringInputGetsStringChannel() throws MiotParseException {
+        MiIoBasicChannel channel = inputChannel("custom_set_language");
+
+        assertEquals("String", channel.getType());
+        assertInputAction(channel, 3, 3, CommandParameterType.STRING);
+    }
+
+    @Test
+    public void actionWithValueListInputKeepsOptions() throws MiotParseException {
+        MiIoBasicChannel channel = inputChannel("custom_set_mode");
+
+        StateDescriptionDTO stateDescription = channel.getStateDescription();
+        assertNotNull(stateDescription);
+        assertEquals(List.of("0", "1"), Objects.requireNonNull(stateDescription.getOptions()).stream()
+                .map(OptionsValueListDTO::getValue).toList());
+        assertInputAction(channel, 4, 4, CommandParameterType.NUMBER);
+    }
+
+    @Test
+    public void actionsWithoutSingleInputStayOnActionsChannel() throws MiotParseException {
+        List<MiIoBasicChannel> channels = parseInputSpec();
+        MiIoBasicChannel actions = channels.stream().filter(c -> "actions".equals(c.getChannel())).findFirst()
+                .orElseThrow();
+
+        assertEquals(List.of(5, 6, 7), actions.getActions().stream().map(MiIoDeviceAction::getAiid).toList());
+        assertEquals(List.of(CommandParameterType.UNKNOWN, CommandParameterType.EMPTY, CommandParameterType.UNKNOWN),
+                actions.getActions().stream().map(MiIoDeviceAction::getparameterType).toList());
+        assertEquals(
+                List.of("actions", "mute", "volume", "language", "mode", "custom_set_mute", "custom_set_volume",
+                        "custom_set_language", "custom_set_mode"),
+                channels.stream().map(MiIoBasicChannel::getChannel).toList());
     }
 }
