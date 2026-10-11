@@ -15,6 +15,7 @@ package org.openhab.binding.motionblinds.internal;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -56,17 +57,14 @@ public class MessageSerializationTest {
 
     @Test
     public void parseGetDeviceListAck() {
-        MotionBlindsMessage message = GSON.fromJson(GET_DEVICE_LIST_ACK, MotionBlindsMessage.class);
-        assertNotNull(message);
+        MotionBlindsMessage message = parse(GET_DEVICE_LIST_ACK);
         assertEquals("GetDeviceListAck", message.msgType);
         assertEquals("244cab4e06b4", message.mac);
         assertEquals("22000002", message.deviceType);
         assertEquals("0.9", message.protocolVersion);
         assertEquals("5Yx9TSv3kUq7Hn2a", message.token);
-        JsonElement data = message.data;
-        assertNotNull(data);
-        DeviceListEntry[] entries = GSON.fromJson(data, DeviceListEntry[].class);
-        assertNotNull(entries);
+        JsonElement data = Objects.requireNonNull(message.data);
+        DeviceListEntry[] entries = Objects.requireNonNull(GSON.fromJson(data, DeviceListEntry[].class));
         assertEquals(1, entries.length);
         assertEquals("244cab4e06b4", entries[0].mac);
     }
@@ -83,15 +81,12 @@ public class MessageSerializationTest {
         assertEquals(90, moving.currentPosition);
         assertNull(moving.operation);
 
-        MotionBlindsMessage heartbeat = GSON.fromJson(HEARTBEAT, MotionBlindsMessage.class);
-        assertNotNull(heartbeat);
-        assertEquals("Qw3rTy7uIoP1aSdF", heartbeat.token);
+        assertEquals("Qw3rTy7uIoP1aSdF", parse(HEARTBEAT).token);
     }
 
     @Test
     public void parseActionResult() {
-        MotionBlindsMessage message = GSON.fromJson(ACCESS_TOKEN_ERROR, MotionBlindsMessage.class);
-        assertNotNull(message);
+        MotionBlindsMessage message = parse(ACCESS_TOKEN_ERROR);
         assertEquals("AccessToken error", message.actionResult);
         assertNull(message.data);
     }
@@ -128,26 +123,27 @@ public class MessageSerializationTest {
 
     @Test
     public void discoveryResult() {
-        MotionBlindsMessage message = GSON.fromJson(GET_DEVICE_LIST_ACK, MotionBlindsMessage.class);
-        assertNotNull(message);
-        DiscoveryResult result = MotionBlindsDiscoveryService.toDiscoveryResult(message, "192.168.0.21");
-        assertNotNull(result);
+        DiscoveryResult result = Objects.requireNonNull(
+                MotionBlindsDiscoveryService.toDiscoveryResult(parse(GET_DEVICE_LIST_ACK), "192.168.0.21"));
         assertEquals("motionblinds:wifi-motor:244cab4e06b4", result.getThingUID().getAsString());
         assertEquals("244cab4e06b4", result.getProperties().get("macAddress"));
         assertNull(result.getProperties().get("ipAddress"));
         assertEquals("macAddress", result.getRepresentationProperty());
 
-        MotionBlindsMessage hub = GSON.fromJson(GET_DEVICE_LIST_ACK.replace("\"deviceType\":\"22000002\",\"Proto",
-                "\"deviceType\":\"02000002\",\"Proto"), MotionBlindsMessage.class);
-        assertNotNull(hub);
+        MotionBlindsMessage hub = parse(GET_DEVICE_LIST_ACK.replace("\"deviceType\":\"22000002\",\"Proto",
+                "\"deviceType\":\"02000002\",\"Proto"));
         assertNull(MotionBlindsDiscoveryService.toDiscoveryResult(hub, "192.168.0.30"));
     }
 
+    /**
+     * Gson results are nullable; {@code requireNonNull} establishes non-null values for the null analysis, which
+     * does not treat JUnit assertions as null checks.
+     */
+    private static MotionBlindsMessage parse(String json) {
+        return Objects.requireNonNull(GSON.fromJson(json, MotionBlindsMessage.class));
+    }
+
     private static DeviceStatus parseStatus(String json) {
-        MotionBlindsMessage message = GSON.fromJson(json, MotionBlindsMessage.class);
-        assertNotNull(message);
-        DeviceStatus status = GSON.fromJson(message.data, DeviceStatus.class);
-        assertNotNull(status);
-        return status;
+        return Objects.requireNonNull(GSON.fromJson(parse(json).data, DeviceStatus.class));
     }
 }

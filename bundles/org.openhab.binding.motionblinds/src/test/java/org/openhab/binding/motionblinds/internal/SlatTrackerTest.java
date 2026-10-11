@@ -187,15 +187,12 @@ public class SlatTrackerTest {
     }
 
     private static int targetAngle(@Nullable Map<String, Object> command) {
-        assertNotNull(command);
-        return (Integer) Objects.requireNonNull(command.get("targetAngle"));
+        return (Integer) Objects.requireNonNull(Objects.requireNonNull(command).get("targetAngle"));
     }
 
     private void observe(int position, int angle, int observedTilt) {
         tracker.update(position, angle);
-        @Nullable
-        Integer tilt = tracker.getTilt();
-        assertNotNull(tilt);
+        int tilt = Objects.requireNonNull(tracker.getTilt());
         assertTrue(Math.abs(tilt - observedTilt) <= TOLERANCE, "at " + position + "%, motor angle " + angle
                 + "°: tracked tilt " + tilt + "%, observed " + observedTilt + "%");
     }
@@ -204,8 +201,7 @@ public class SlatTrackerTest {
      * The best move is chosen in whole degrees, so allow for rounding.
      */
     private static void assertTargetAngle(int expected, @Nullable Map<String, Object> command) {
-        assertNotNull(command);
-        Object targetAngle = command.get("targetAngle");
+        Object targetAngle = Objects.requireNonNull(command).get("targetAngle");
         assertTrue(targetAngle instanceof Integer angle && Math.abs(angle - expected) <= 2,
                 "expected targetAngle " + expected + " ± 2, got " + command);
     }

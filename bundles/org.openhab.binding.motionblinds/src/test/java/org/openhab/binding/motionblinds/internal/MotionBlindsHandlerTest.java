@@ -255,8 +255,7 @@ public class MotionBlindsHandlerTest {
         verify(callback, timeout(TIMEOUT_MS).atLeastOnce()).stateUpdated(channel(CHANNEL_TILT),
                 eq(new PercentType(50)));
         // then a quarter swing down, at half the rate while the bottom rail sets down on the sill
-        Map<String, Object> second = requests.get(6).data;
-        assertNotNull(second);
+        Map<String, Object> second = Objects.requireNonNull(requests.get(6).data);
         Object targetAngle = second.get("targetAngle");
         assertTrue(
                 targetAngle instanceof Integer angle && Math.abs(angle - (124 + 44 - SlatTracker.MOTOR_OVERSHOOT)) <= 2,
