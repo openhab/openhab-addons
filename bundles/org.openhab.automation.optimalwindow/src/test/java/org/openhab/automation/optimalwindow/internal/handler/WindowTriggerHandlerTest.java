@@ -256,6 +256,22 @@ public class WindowTriggerHandlerTest {
     }
 
     @Test
+    void emptyResultIsNotCached() {
+        // the time series arrived, but persistence has not stored it yet when the window is calculated
+        forecast = new TreeMap<>();
+        WindowTriggerHandler handler = createHandler(Map.of());
+
+        at(0);
+        handler.refresh();
+        assertEquals(UnDefType.UNDEF, lastState("WindowText"));
+
+        forecast = forecast(2, 4);
+        clock.instant = DAY.plusMinutes(1).toInstant();
+        handler.refresh();
+        assertEquals(new StringType("02:00\u201304:00"), lastState("WindowText"));
+    }
+
+    @Test
     void cachedResultExpires() {
         WindowTriggerHandler handler = createHandler(Map.of());
 
