@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>E3/DC Connection</label>
+		<description>Connection to an E3/DC home power plant over the RSCP interface.</description>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>Host name or IP address of the E3/DC device.</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>TCP port of the RSCP interface.</description>
+				<default>5033</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="userName" type="text" required="true">
+				<label>User Name</label>
+				<description>Local user name of the device.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of the local user.</description>
+			</parameter>
+			<parameter name="rscpPassword" type="text" required="true">
+				<context>password</context>
+				<label>RSCP Password</label>
+				<description>RSCP password set on the device. Used to encrypt the connection.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="5">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in seconds.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="timeout" type="integer" unit="s" min="1">
+				<label>Timeout</label>
+				<description>Timeout for a single request in seconds.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

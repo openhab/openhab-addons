@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="meter-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>Power L1</label>
+		<description>Power on phase L1</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>Power L2</label>
+		<description>Power on phase L2</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>Power L3</label>
+		<description>Power on phase L3</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-voltage-l1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage L1</label>
+		<description>Voltage on phase L1</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-voltage-l2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage L2</label>
+		<description>Voltage on phase L2</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-voltage-l3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage L3</label>
+		<description>Voltage on phase L3</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-active-phases">
+		<item-type>Number</item-type>
+		<label>Active Phases</label>
+		<description>Number of phases currently in use</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-energy-l1">
+		<item-type>Number:Energy</item-type>
+		<label>Energy L1</label>
+		<description>Energy measured on phase L1</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-energy-l2">
+		<item-type>Number:Energy</item-type>
+		<label>Energy L2</label>
+		<description>Energy measured on phase L2</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-energy-l3">
+		<item-type>Number:Energy</item-type>
+		<label>Energy L3</label>
+		<description>Energy measured on phase L3</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="meter-max-phase-power">
+		<item-type>Number:Power</item-type>
+		<label>Maximum Phase Power</label>
+		<description>Highest power measured on one phase</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

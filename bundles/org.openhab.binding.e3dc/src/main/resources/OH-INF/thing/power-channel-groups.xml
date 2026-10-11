@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="power">
+		<label>Power</label>
+		<channels>
+			<channel id="solar-power" typeId="power-solar-power"/>
+			<channel id="battery-power" typeId="power-battery-power"/>
+			<channel id="house-power" typeId="power-house-power"/>
+			<channel id="grid-power" typeId="power-grid-power"/>
+			<channel id="additional-power" typeId="power-additional-power"/>
+			<channel id="autarky" typeId="power-autarky"/>
+			<channel id="self-consumption" typeId="power-self-consumption"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

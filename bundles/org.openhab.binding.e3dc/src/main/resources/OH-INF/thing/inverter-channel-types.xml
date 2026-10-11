@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="inverter-ac-power">
+		<item-type>Number:Power</item-type>
+		<label>AC Power</label>
+		<description>Alternating current power of the inverter</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage</label>
+		<description>Alternating current voltage of the inverter</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Current</label>
+		<description>Alternating current of the inverter</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>AC Frequency</label>
+		<description>Grid frequency measured by the inverter</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature of the inverter</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-on-grid">
+		<item-type>Switch</item-type>
+		<label>On Grid</label>
+		<description>Whether the inverter is connected to the grid</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-string-count">
+		<item-type>Number</item-type>
+		<label>String Count</label>
+		<description>Number of photovoltaic strings in use</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-energy-total">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy</label>
+		<description>Energy produced since commissioning</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-energy-day">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Today</label>
+		<description>Energy produced today</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-tracker-1-power">
+		<item-type>Number:Power</item-type>
+		<label>Tracker 1 Power</label>
+		<description>Direct current power of the first photovoltaic tracker</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-tracker-1-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Tracker 1 Voltage</label>
+		<description>Direct current voltage of the first photovoltaic tracker</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-tracker-1-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Tracker 1 Current</label>
+		<description>Direct current of the first photovoltaic tracker</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-tracker-2-power">
+		<item-type>Number:Power</item-type>
+		<label>Tracker 2 Power</label>
+		<description>Direct current power of the second photovoltaic tracker</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-tracker-2-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Tracker 2 Voltage</label>
+		<description>Direct current voltage of the second photovoltaic tracker</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-tracker-2-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Tracker 2 Current</label>
+		<description>Direct current of the second photovoltaic tracker</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

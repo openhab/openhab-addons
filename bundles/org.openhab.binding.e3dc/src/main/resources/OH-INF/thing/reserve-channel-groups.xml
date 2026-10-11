@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="reserve">
+		<label>Emergency Power Reserve</label>
+		<description>Reserve of the battery kept available for emergency power</description>
+		<channels>
+			<channel id="percent" typeId="reserve-percent"/>
+			<channel id="energy" typeId="reserve-energy"/>
+			<channel id="energy-max" typeId="reserve-energy-max"/>
+			<channel id="last-soc" typeId="reserve-last-soc"/>
+			<channel id="set-percent" typeId="reserve-set-percent"/>
+			<channel id="set-energy" typeId="reserve-set-energy"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

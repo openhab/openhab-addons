@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="power-plant">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>E3/DC Power Plant</label>
+		<description>Values of the E3/DC home power plant like power flows, battery and energy counters.</description>
+
+		<channel-groups>
+			<channel-group id="power" typeId="power"/>
+			<channel-group id="battery" typeId="battery"/>
+			<channel-group id="grid" typeId="grid"/>
+			<channel-group id="inverter" typeId="inverter"/>
+			<channel-group id="energy" typeId="energy"/>
+			<channel-group id="history" typeId="history"/>
+			<channel-group id="reserve" typeId="reserve"/>
+			<channel-group id="system" typeId="system"/>
+		</channel-groups>
+	</thing-type>
+
+</thing:thing-descriptions>

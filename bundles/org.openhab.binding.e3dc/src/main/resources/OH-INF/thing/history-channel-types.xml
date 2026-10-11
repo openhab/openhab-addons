@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="history-day-solar">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy Today</label>
+		<description>Photovoltaic energy of the completed day</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-day-house">
+		<item-type>Number:Energy</item-type>
+		<label>House Energy Today</label>
+		<description>Household energy of the completed day</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-day-grid-in">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Supply Today</label>
+		<description>Energy drawn from the grid on the completed day</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-day-grid-out">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Feed Today</label>
+		<description>Energy fed into the grid on the completed day</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-day-battery-in">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Charge Today</label>
+		<description>Energy charged into the battery on the completed day</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-day-battery-out">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Discharge Today</label>
+		<description>Energy taken from the battery on the completed day</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-day-autarky">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky Today</label>
+		<description>Share of consumption covered by the power plant on the completed day</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-week-solar">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy This Week</label>
+		<description>Photovoltaic energy of the last seven days</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-week-house">
+		<item-type>Number:Energy</item-type>
+		<label>House Energy This Week</label>
+		<description>Household energy of the last seven days</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-week-grid-in">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Supply This Week</label>
+		<description>Energy drawn from the grid in the last seven days</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-week-grid-out">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Feed This Week</label>
+		<description>Energy fed into the grid in the last seven days</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-week-battery-in">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Charge This Week</label>
+		<description>Energy charged into the battery in the last seven days</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-week-battery-out">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Discharge This Week</label>
+		<description>Energy taken from the battery in the last seven days</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-week-autarky">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky This Week</label>
+		<description>Share of consumption covered by the power plant in the last seven days</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-month-solar">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy This Month</label>
+		<description>Photovoltaic energy of the current month</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-month-house">
+		<item-type>Number:Energy</item-type>
+		<label>House Energy This Month</label>
+		<description>Household energy of the current month</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-month-grid-in">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Supply This Month</label>
+		<description>Energy drawn from the grid in the current month</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-month-grid-out">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Feed This Month</label>
+		<description>Energy fed into the grid in the current month</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-month-battery-in">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Charge This Month</label>
+		<description>Energy charged into the battery in the current month</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-month-battery-out">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Discharge This Month</label>
+		<description>Energy taken from the battery in the current month</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-month-autarky">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky This Month</label>
+		<description>Share of consumption covered by the power plant in the current month</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-year-solar">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy This Year</label>
+		<description>Photovoltaic energy of the current year</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-year-house">
+		<item-type>Number:Energy</item-type>
+		<label>House Energy This Year</label>
+		<description>Household energy of the current year</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-year-grid-in">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Supply This Year</label>
+		<description>Energy drawn from the grid in the current year</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-year-grid-out">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Feed This Year</label>
+		<description>Energy fed into the grid in the current year</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-year-battery-in">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Charge This Year</label>
+		<description>Energy charged into the battery in the current year</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-year-battery-out">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Discharge This Year</label>
+		<description>Energy taken from the battery in the current year</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-year-autarky">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky This Year</label>
+		<description>Share of consumption covered by the power plant in the current year</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-day-consumed-production">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumption Today</label>
+		<description>Share of production used on site on the completed day</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-week-consumed-production">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumption This Week</label>
+		<description>Share of production used on site in the last seven days</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-month-consumed-production">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumption This Month</label>
+		<description>Share of production used on site in the current month</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="history-year-consumed-production">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumption This Year</label>
+		<description>Share of production used on site in the current year</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

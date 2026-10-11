@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="system-software-version">
+		<item-type>String</item-type>
+		<label>Software Version</label>
+		<description>Firmware version of the device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-serial-number">
+		<item-type>String</item-type>
+		<label>Serial Number</label>
+		<description>Serial number of the device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-production-date">
+		<item-type>String</item-type>
+		<label>Production Date</label>
+		<description>Manufacturing date of the device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-time-zone">
+		<item-type>String</item-type>
+		<label>Time Zone</label>
+		<description>Time zone configured on the device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-installed-peak-power">
+		<item-type>Number:Power</item-type>
+		<label>Installed Peak Power</label>
+		<description>Peak power of the installed photovoltaic system</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-inverter-count">
+		<item-type>Number</item-type>
+		<label>Inverter Count</label>
+		<description>Number of inverters in the system</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-battery-count">
+		<item-type>Number</item-type>
+		<label>Battery Count</label>
+		<description>Number of batteries in the system</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-mode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Operating mode of the energy management system</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-coupling-mode">
+		<item-type>Number</item-type>
+		<label>Coupling Mode</label>
+		<description>How the power plant is coupled to the grid</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-emergency-power-status">
+		<item-type>Number</item-type>
+		<label>Emergency Power Status</label>
+		<description>State of the emergency power supply</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-charging-lock">
+		<item-type>Switch</item-type>
+		<label>Charging Lock</label>
+		<description>Battery charging is currently blocked</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-discharging-lock">
+		<item-type>Switch</item-type>
+		<label>Discharging Lock</label>
+		<description>Battery discharging is currently blocked</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-emergency-power-available">
+		<item-type>Switch</item-type>
+		<label>Emergency Power Available</label>
+		<description>Emergency power reserve is available</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-charging-throttled">
+		<item-type>Switch</item-type>
+		<label>Charging Throttled</label>
+		<description>Battery charging is currently limited</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-grid-in-limit">
+		<item-type>Switch</item-type>
+		<label>Grid Limit Active</label>
+		<description>Grid consumption is currently limited</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-charging-time-lock">
+		<item-type>Switch</item-type>
+		<label>Charging Time Lock</label>
+		<description>Battery charging is blocked by a time window</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-discharging-time-lock">
+		<item-type>Switch</item-type>
+		<label>Discharging Time Lock</label>
+		<description>Battery discharging is blocked by a time window</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-weather-regulated-charge">
+		<item-type>Switch</item-type>
+		<label>Weather Regulated Charge</label>
+		<description>Charging follows the weather forecast</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-power-limits-used">
+		<item-type>Switch</item-type>
+		<label>Power Limits Used</label>
+		<description>Configured power limits are active</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-powersave">
+		<item-type>Switch</item-type>
+		<label>Power Save</label>
+		<description>Power saving mode is active</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-set-power-limits">
+		<item-type>Switch</item-type>
+		<label>Set Power Limits</label>
+		<description>Whether the configured power limits are active</description>
+		<state/>
+	</channel-type>
+
+	<channel-type id="system-set-weather-regulated-charge">
+		<item-type>Switch</item-type>
+		<label>Set Weather Regulated Charge</label>
+		<description>Whether charging follows the weather forecast</description>
+		<state/>
+	</channel-type>
+
+	<channel-type id="system-set-power-mode">
+		<item-type>Number</item-type>
+		<label>Set Power Mode</label>
+		<description>Manual power mode of the energy management</description>
+		<state pattern="%s">
+			<options>
+				<option value="0">Automatic</option>
+				<option value="1">Idle</option>
+				<option value="2">Discharge</option>
+				<option value="3">Charge</option>
+				<option value="4">Grid Charge</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="system-set-manual-charge">
+		<item-type>Number:Power</item-type>
+		<label>Set Manual Charge Power</label>
+		<description>Start a manual battery charge</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="system-idle-periods">
+		<item-type>String</item-type>
+		<label>Idle Periods</label>
+		<description>Periods during which the battery is locked against charging or discharging, one period per line as
+			name:days:mode:active:hh:mm-hh:mm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-derate-at-percent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Derate at Percent</label>
+		<description>Share of the installed peak power at which the feed in is reduced</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-derate-at-power">
+		<item-type>Number:Power</item-type>
+		<label>Derate at Power</label>
+		<description>Power at which the feed in is reduced</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-idle-periods-enabled">
+		<item-type>Switch</item-type>
+		<label>Idle Periods Enabled</label>
+		<description>Whether the device uses the configured idle periods</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-manual-charge-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Manual Charge Energy</label>
+		<description>Energy of the manual battery charge started last</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
