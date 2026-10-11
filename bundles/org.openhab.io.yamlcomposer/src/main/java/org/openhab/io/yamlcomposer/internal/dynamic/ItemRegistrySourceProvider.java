@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -109,7 +110,8 @@ public class ItemRegistrySourceProvider implements DynamicSourceProvider<Item>, 
         for (Metadata metadata : metadataRegistry.getAll()) {
             String itemName = metadata.getUID().getItemName();
             String namespace = metadata.getUID().getNamespace();
-            metadataByItem.computeIfAbsent(itemName, key -> new LinkedHashMap<>()).put(namespace, metadata);
+            Objects.requireNonNull(metadataByItem.computeIfAbsent(itemName, key -> new LinkedHashMap<>()))
+                    .put(namespace, metadata);
         }
 
         Map<String, Map<String, @Nullable Object>> sourceMap = new LinkedHashMap<>();
