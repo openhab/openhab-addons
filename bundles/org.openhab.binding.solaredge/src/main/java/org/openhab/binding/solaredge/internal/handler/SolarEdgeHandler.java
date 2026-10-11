@@ -39,11 +39,16 @@ public interface SolarEdgeHandler extends ThingHandler, ChannelProvider {
      * to update the thing status because updateStatus is protected.
      *
      * @param status Bridge status
-     * @param statusDetail Bridge status detail
      * @param description Bridge status description
      */
     void setStatusInfo(ThingStatus status, @Nullable String description);
 
+    /**
+     * Updates the bridge status from a detail reported by the web interface.
+     *
+     * @param statusDetail Bridge status detail
+     * @param description Bridge status description
+     */
     void setStatusInfo(ThingStatusDetail statusDetail, @Nullable String description);
 
     /**

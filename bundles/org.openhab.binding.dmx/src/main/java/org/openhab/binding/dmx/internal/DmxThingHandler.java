@@ -64,7 +64,7 @@ public abstract class DmxThingHandler extends BaseThingHandler {
             if (ThingStatusDetail.NONE.equals(dmxHandlerStatus)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, dmxHandlerStatus);
+                updateStatus(dmxHandlerStatus);
             }
         }
     }
