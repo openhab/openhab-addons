@@ -164,7 +164,7 @@
 		<tags>
 			<tag>Setpoint</tag>
 		</tags>
-		<state readOnly="true" min="1" max="200" pattern="%d %%"/>
+		<state readOnly="true" min="1" max="200" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="prusa-fan-speed">
