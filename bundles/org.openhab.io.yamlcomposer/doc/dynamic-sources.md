@@ -13,6 +13,7 @@ YAML Composer exposes special top-level map variables corresponding to runtime r
 1. **Snapshot Consistency:** Dynamic sources evaluate against a consistent snapshot of the openHAB registry for the duration of a compilation pass, preventing mid-render state tearing if registries update mid-evaluation.
 1. **Dependency Tracking**: Whenever a YAML file queries a dynamic source, YAML Composer automatically registers a dependency between that source file and the respective openHAB registry.
 1. **Automatic Recompilation**: When an entity is added, removed, or updated—or when a Thing is **enabled** or **disabled**—YAML Composer automatically invalidates and recompiles all dependent YAML files in the background after a brief debounce period.
+   Changes to an Item's metadata also trigger recompilation of files that depend on `ITEMS`.
 
 ::: tip Non-Disruptive Event Filtering
 YAML Composer filters out transient runtime status changes (such as a device fluctuating between `ONLINE` and `OFFLINE`).
@@ -110,14 +111,15 @@ The `ITEMS` map is keyed by openHAB **Item Name** strings (for example, `Kitchen
 
 Each entry in `ITEMS` contains the item's DTO representation:
 
-| Key          | Type     | Description                                                          |
-|:-------------|:---------|:---------------------------------------------------------------------|
-| `name`       | `String` | Unique item name.                                                    |
-| `type`       | `String` | Item type (e.g., `Switch`, `Dimmer`, `Group`, `Number:Temperature`). |
-| `label`      | `String` | Item label text.                                                     |
-| `category`   | `String` | Category/icon name assigned to the item.                             |
-| `tags`       | `List`   | List of semantic tags (e.g., `['Lightbulb', 'Control']`).            |
-| `groupNames` | `List`   | List of parent group names this item belongs to.                     |
+| Key          | Type     | Description                                                                                                                                  |
+|:-------------|:---------|:---------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`       | `String` | Unique item name.                                                                                                                            |
+| `type`       | `String` | Item type (e.g., `Switch`, `Dimmer`, `Group`, `Number:Temperature`).                                                                         |
+| `label`      | `String` | Item label text.                                                                                                                             |
+| `category`   | `String` | Category/icon name assigned to the item.                                                                                                     |
+| `tags`       | `List`   | List of semantic tags (e.g., `['Lightbulb', 'Control']`).                                                                                    |
+| `groupNames` | `List`   | List of parent group names this item belongs to.                                                                                             |
+| `metadata`   | `Map`    | Optional map of metadata, keyed by namespace. Each entry contains a `value` and includes a `config` map when the metadata has configuration. |
 
 **Example:**
 
@@ -131,7 +133,15 @@ P2S_Printer_Chamber_Light:
     - Point
   groupNames:
     - Printer_Lights
+  metadata:
+    stateDescription:
+      value: ''
+      config:
+        pattern: '%.1f °C'
 ```
+
+Metadata is omitted when the item has no registered metadata.
+The `config` field is omitted when the metadata configuration is empty.
 
 ---
 
