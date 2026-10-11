@@ -59,6 +59,7 @@
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="control" typeId="control"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -80,6 +81,38 @@
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
+
+	<channel-type id="thermostatCurrentTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>Temperature measured by the thermostat</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="thermostatEnable">
+		<item-type>Switch</item-type>
+		<label>Thermostat Enabled</label>
+		<description>ON: The thermostat is enabled</description>
+		<category>Heating</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="thermostatHeating">
+		<item-type>Switch</item-type>
+		<label>Heating</label>
+		<description>ON: The thermostat requests heating</description>
+		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="floodAlarmMode">
 		<item-type>String</item-type>

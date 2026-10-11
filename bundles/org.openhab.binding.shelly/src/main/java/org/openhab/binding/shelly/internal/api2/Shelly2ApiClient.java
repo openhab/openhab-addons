@@ -21,6 +21,7 @@ import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -90,6 +91,8 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusSmoke;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusTempId;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusThermostat;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusThermostatSchedules;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
@@ -101,6 +104,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelaySt
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2ThermostatProfiles.Shelly2ThermostatProfile;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover.Shelly2DeviceConfigCoverObstructionDetection;
@@ -111,6 +115,8 @@ import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -124,6 +130,7 @@ import com.google.gson.JsonParseException;
  * {@link Shelly2ApiClient} Low level part of the RPC API
  *
  * @author Markus Michels - Initial contribution
+ * @author Gerhard Braun - Wall Display thermostat support
  */
 @NonNullByDefault
 public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscoveryInterface {
@@ -469,6 +476,13 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             }
         }
 
+        if (profile.isWall) {
+            profile.hasThermostat = dc.thermostat0 != null;
+            if (profile.hasThermostat) {
+                loadThermostatProfiles(profile);
+            }
+        }
+
         if (dc.led != null) {
             profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
@@ -727,7 +741,97 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateBatteryStatus(sensorData, result.devicepower0);
         updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
+        // after updateSensors(), which creates the thermostat channels on the first status
+        updated |= updateThermostatStatus(result.thermostat0);
         return updated;
+    }
+
+    protected boolean updateThermostatStatus(@Nullable Shelly2DeviceStatusThermostat value) throws ShellyApiException {
+        if (value == null || !getProfile().hasThermostat) {
+            return false;
+        }
+        boolean updated = false;
+        Double current = value.currentC;
+        if (current != null) {
+            updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CURRTEMP,
+                    toQuantityType(current, DIGITS_TEMP, SIUnits.CELSIUS));
+        }
+        Double target = value.targetC;
+        if (target != null) {
+            updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
+                    toQuantityType(target, DIGITS_TEMP, SIUnits.CELSIUS));
+        }
+        Boolean enable = value.enable;
+        if (enable != null) {
+            updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_THERMOSTAT, getOnOff(enable));
+        }
+        Boolean output = value.output;
+        if (output != null) {
+            updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HEATING, getOnOff(output));
+        }
+        Shelly2DeviceStatusThermostatSchedules schedules = value.schedules;
+        if (schedules != null) {
+            Boolean scheduleEnable = schedules.enable;
+            if (scheduleEnable != null) {
+                updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE, getOnOff(scheduleEnable));
+            }
+            Integer profileId = schedules.profileId;
+            if (profileId != null) {
+                updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE,
+                        new StringType(profileId.toString()));
+            }
+        }
+        return updated;
+    }
+
+    /**
+     * Read the names of the thermostat schedule profiles, which are the options of the profile channel.
+     *
+     * @return true if the profiles have changed
+     */
+    protected boolean loadThermostatProfiles(ShellyDeviceProfile profile) {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.id = 0;
+        try {
+            Shelly2ThermostatProfiles result = apiRequest(SHELLYRPC_METHOD_THERMOSTAT_LISTPROFILES, params,
+                    Shelly2ThermostatProfiles.class);
+            Map<Integer, String> profiles = new LinkedHashMap<>();
+            List<Shelly2ThermostatProfile> list = result.profiles;
+            if (list != null) {
+                for (Shelly2ThermostatProfile p : list) {
+                    Integer id = p.id;
+                    if (id != null) {
+                        profiles.put(id, getString(p.name));
+                    }
+                }
+            }
+            boolean changed = !profiles.equals(profile.thermostatProfiles);
+            profile.thermostatProfiles = profiles;
+            return changed;
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Unable to read thermostat profiles: {}", thingName, e.getMessage());
+            return false;
+        }
+    }
+
+    public void setThermostatConfig(@Nullable Boolean enable, @Nullable Double targetTemp) throws ShellyApiException {
+        // Thermostat.SetConfig expects {"id":0,"config":{"enable":bool,"target_C":n}}
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.id = 0;
+        params.withConfig();
+        params.config.enable = enable;
+        params.config.targetC = targetTemp;
+        apiRequest(SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG, params, String.class);
+    }
+
+    public void setThermostatSchedule(@Nullable Boolean enable, @Nullable Integer profileId) throws ShellyApiException {
+        // Thermostat.Schedule.SetConfig expects {"id":0,"config":{"enable":bool,"profile_id":n}}
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.id = 0;
+        params.withConfig();
+        params.config.enable = enable;
+        params.config.profileId = profileId;
+        apiRequest(SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_SETCONFIG, params, String.class);
     }
 
     private boolean updateRelayStatus(int id, ShellySettingsStatus status, @Nullable Shelly2RelayStatus rs,

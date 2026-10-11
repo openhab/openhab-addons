@@ -411,6 +411,11 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH))
 
+                // Wall Display thermostat (setpoint, schedule and profile reuse the TRV channels)
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_CURRTEMP, "thermostatCurrentTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_THERMOSTAT, "thermostatEnable", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_HEATING, "thermostatHeating", ITEMT_SWITCH))
+
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_ALARM_MODE, "floodAlarmMode", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF, "floodReportHoldoff",
                         ITEMT_TIME))
@@ -1006,6 +1011,16 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_APPARENT_TEMP);
         addChannel(thing, newChannels, ws90 || sdata.seaLevelPressure != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_SEALEVEL_PRESSURE);
+
+        // Wall Display thermostat
+        if (profile.isWall && profile.hasThermostat) {
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CURRTEMP);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_THERMOSTAT);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HEATING);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
+        }
 
         // Flood Gen4
         if (profile.isFlood && profile.isGen2) {

@@ -576,6 +576,16 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         throw new ShellyApiException("Request not supported");
     }
 
+    @Override
+    public void setThermostatConfig(@Nullable Boolean enable, @Nullable Double targetTemp) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
+    }
+
+    @Override
+    public void setThermostatSchedule(@Nullable Boolean enable, @Nullable Integer profileId) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
+    }
+
     /**
      * Set sensor Action URLs
      *

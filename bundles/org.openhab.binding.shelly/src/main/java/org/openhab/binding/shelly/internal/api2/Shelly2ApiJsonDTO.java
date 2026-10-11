@@ -99,6 +99,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
     public static final String SHELLYRPC_METHOD_FLOOD_SETCONFIG = "Flood.SetConfig";
+    public static final String SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG = "Thermostat.SetConfig";
+    public static final String SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_SETCONFIG = "Thermostat.Schedule.SetConfig";
+    public static final String SHELLYRPC_METHOD_THERMOSTAT_LISTPROFILES = "Thermostat.Schedule.ListProfiles";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
     public static final String SHELLYRPC_METHOD_SCRIPT_SETCONFIG = "Script.SetConfig";
     public static final String SHELLYRPC_METHOD_SCRIPT_GETSTATUS = "Script.GetStatus";
@@ -421,6 +424,11 @@ public class Shelly2ApiJsonDTO {
             public Boolean mute;
         }
 
+        public static class Shelly2ConfigThermostat {
+            public @Nullable Integer id;
+            public @Nullable Boolean enable;
+        }
+
         public static class Shelly2ConfigFlood {
             public @Nullable Integer id;
             public @Nullable String name;
@@ -608,6 +616,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("flood:0")
             public @Nullable Shelly2ConfigFlood flood0;
+
+            @SerializedName("thermostat:0")
+            public @Nullable Shelly2ConfigThermostat thermostat0;
 
             @SerializedName("lora:100")
             public Shelly2DeviceConfigLora lora100;
@@ -885,6 +896,25 @@ public class Shelly2ApiJsonDTO {
                 public Boolean mute;
             }
 
+            public static class Shelly2DeviceStatusThermostat {
+                public @Nullable Integer id;
+                public @Nullable Boolean enable;
+                @SerializedName("target_C")
+                public @Nullable Double targetC;
+                @SerializedName("current_C")
+                public @Nullable Double currentC;
+                public @Nullable Boolean output;
+                public @Nullable Shelly2DeviceStatusThermostatSchedules schedules;
+            }
+
+            public static class Shelly2DeviceStatusThermostatSchedules {
+                public @Nullable Boolean enable;
+                @SerializedName("profile_id")
+                public @Nullable Integer profileId;
+                @SerializedName("profile_name")
+                public @Nullable String profileName;
+            }
+
             public class Shelly2DeviceStatusFlood {
                 public @Nullable Integer id;
                 public @Nullable Boolean alarm;
@@ -1029,6 +1059,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("flood:0")
             public @Nullable Shelly2DeviceStatusFlood flood0;
+
+            @SerializedName("thermostat:0")
+            public @Nullable Shelly2DeviceStatusThermostat thermostat0;
 
             @SerializedName("voltmeter:0")
             public @Nullable Shelly2DeviceStatusVoltage voltmeter0;
@@ -1206,6 +1239,12 @@ public class Shelly2ApiJsonDTO {
         public @Nullable String alarmMode;
         @SerializedName("report_holdoff")
         public @Nullable Integer reportHoldoff;
+
+        // Thermostat.SetConfig / Thermostat.Schedule.SetConfig (the enable flag is shared with the other components)
+        @SerializedName("target_C")
+        public @Nullable Double targetC;
+        @SerializedName("profile_id")
+        public @Nullable Integer profileId;
     }
 
     public static class Shelly2RpcRequest {
@@ -1285,6 +1324,15 @@ public class Shelly2ApiJsonDTO {
             params.data = data;
             return this;
         }
+    }
+
+    public static class Shelly2ThermostatProfiles {
+        public static class Shelly2ThermostatProfile {
+            public @Nullable Integer id;
+            public @Nullable String name;
+        }
+
+        public @Nullable ArrayList<Shelly2ThermostatProfile> profiles;
     }
 
     public static class Shelly2WsConfigResponse {

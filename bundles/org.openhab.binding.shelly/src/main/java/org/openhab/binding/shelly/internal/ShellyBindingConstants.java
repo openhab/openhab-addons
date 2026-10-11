@@ -191,6 +191,9 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_CONTROL_PROFILE = "selectedProfile"; // TRV
     public static final String CHANNEL_CONTROL_ALARM_MODE = "alarmMode"; // Flood Gen4
     public static final String CHANNEL_CONTROL_REPORT_HOLDOFF = "reportHoldoff"; // Flood Gen4
+    public static final String CHANNEL_CONTROL_CURRTEMP = "currentTemp"; // Wall Display thermostat
+    public static final String CHANNEL_CONTROL_THERMOSTAT = "thermostat"; // Wall Display thermostat
+    public static final String CHANNEL_CONTROL_HEATING = "heating"; // Wall Display thermostat
 
     // External sensors for Shelly1/1PM
     public static final String CHANNEL_ESENSOR_TEMP1 = CHANNEL_SENSOR_TEMP + "1";

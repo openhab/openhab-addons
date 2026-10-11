@@ -2674,19 +2674,29 @@ end
 
 ## Shelly Wall Displays
 
-| Group   | Channel     | Type     | read-only | Description                                                                       |
-| ------- | ----------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay   | output      | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|         | outputName  | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|         | input       | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|         | autoOn      | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
-|         | autoOff     | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
-|         | timerActive | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|         | button      | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| sensors | temperature | Number   | yes       | Temperature reported by the integrated sensor                                     |
-|         | humidity    | Number   | yes       | Relative Humidity in percent reported by the integrated sensor                    |
-|         | lux         | Number   | yes       | Brightness in Lux reported by the integrated sensor                               |
-|         | lastUpdate  | DateTime | yes       | Timestamp of the last update (any sensor value changed)                           |
+| Group   | Channel         | Type               | read-only | Description                                                                                    |
+| ------- | --------------- | ------------------ | --------- | ---------------------------------------------------------------------------------------------- |
+| relay   | output          | Switch             | r/w       | Controls the relay's output channel (on/off)                                                   |
+|         | outputName      | String             | yes       | Logical name of this relay output as configured in the Shelly App                              |
+|         | input           | Switch             | yes       | ON: Input/Button is powered, see General Notes on Channels                                     |
+|         | autoOn          | Number             | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds               |
+|         | autoOff         | Number             | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds               |
+|         | timerActive     | Switch             | yes       | Relay #1: ON: An auto-on/off timer is active                                                   |
+|         | button          | Trigger            | yes       | Event trigger, see section Button Events                                                       |
+| sensors | temperature     | Number             | yes       | Temperature reported by the integrated sensor                                                  |
+|         | humidity        | Number             | yes       | Relative Humidity in percent reported by the integrated sensor                                 |
+|         | lux             | Number             | yes       | Brightness in Lux reported by the integrated sensor                                            |
+|         | lastUpdate      | DateTime           | yes       | Timestamp of the last update (any sensor value changed)                                        |
+| control | currentTemp     | Number:Temperature | yes       | Current temperature as measured by the thermostat                                              |
+|         | targetTemp      | Number:Temperature | r/w       | Target temperature of the thermostat                                                           |
+|         | thermostat      | Switch             | r/w       | ON: The thermostat is enabled                                                                  |
+|         | heating         | Switch             | yes       | ON: The thermostat requests heating                                                            |
+|         | schedule        | Switch             | r/w       | ON: The schedule of the selected profile controls the target temperature                       |
+|         | selectedProfile | String             | r/w       | Id of the active schedule profile; the options show the profile names configured on the device |
+
+The `control` channels are available when the Wall Display reports a thermostat.
+The profile names can be changed on the device and are updated in the options of `selectedProfile`; the command accepts the profile id or the name.
+Changes made on the device are reported to openHAB immediately.
 
 ## Full Example
 

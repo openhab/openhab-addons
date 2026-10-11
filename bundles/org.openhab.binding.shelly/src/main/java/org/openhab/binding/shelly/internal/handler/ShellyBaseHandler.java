@@ -70,6 +70,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -92,6 +93,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Markus Michels - Initial contribution
+ * @author Gerhard Braun - Wall Display thermostat support
  */
 @NonNullByDefault
 public abstract class ShellyBaseHandler extends BaseThingHandler
@@ -516,7 +518,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     api.setSleepTime(value);
                     break;
                 case CHANNEL_CONTROL_SCHEDULE:
-                    if (profile.isTRV) {
+                    if (profile.isWall) {
+                        logger.debug("{}: Set thermostat schedule to {}", thingName, command);
+                        api.setThermostatSchedule(command == OnOffType.ON, null);
+                        update = true;
+                    } else if (profile.isTRV) {
                         logger.debug("{}: {} Valve schedule/profile", thingName,
                                 command == OnOffType.ON ? "Enable" : "Disable");
                         api.setValveProfile(0,
@@ -525,6 +531,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_PROFILE:
                     logger.debug("{}: Select profile {}", thingName, command);
+                    if (profile.isWall) {
+                        Integer profileId = getThermostatProfileId(command.toString());
+                        if (profileId == null) {
+                            logger.warn("{}: Invalid thermostat profile {} requested", thingName, command);
+                        } else {
+                            api.setThermostatSchedule(null, profileId);
+                            update = true;
+                        }
+                        break;
+                    }
                     int id = -1;
                     if (command instanceof Number) {
                         id = getNumber(command).intValue();
@@ -554,7 +570,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
-                    api.setValveTemperature(0, getNumber(command).doubleValue());
+                    if (profile.isWall) {
+                        api.setThermostatConfig(null, getCelsius(command));
+                        update = true;
+                    } else {
+                        api.setValveTemperature(0, getNumber(command).doubleValue());
+                    }
+                    break;
+                case CHANNEL_CONTROL_THERMOSTAT:
+                    if (profile.isWall) {
+                        logger.debug("{}: Set thermostat enable to {}", thingName, command);
+                        api.setThermostatConfig(command == OnOffType.ON, null);
+                        update = true;
+                    }
                     break;
                 case CHANNEL_CONTROL_POSITION:
                     logger.debug("{}: Set position to {}", thingName, command);
@@ -833,6 +861,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 channelDefinitions.addStateOption(channelId, "" + fid, fid + ": " + name);
                 fid++;
             }
+        }
+        if (prf.isWall && prf.hasThermostat) {
+            String channelId = mkChannelId(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
+            logger.debug("{}: Adding {} thermostat profile(s) to channel description", thingName,
+                    prf.thermostatProfiles.size());
+            channelDefinitions.clearStateOptions(channelId);
+            prf.thermostatProfiles.forEach((id, name) -> channelDefinitions.addStateOption(channelId, "" + id, name));
         }
         if (prf.isRoller && prf.settings.favorites != null) {
             String channelId = mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_FAV);
@@ -1808,6 +1843,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             if (consumeRefreshSettings(forceRefresh)) {
                 profile = api.getDeviceProfile(thing.getThingTypeUID(), null);
                 profile.updateWatchdogPeriod();
+                if (profile.isWall && profile.hasThermostat) {
+                    // the profiles can be changed on the device, which signals it with a config change
+                    addStateOptions(profile);
+                    Channel profileChannel = thing
+                            .getChannel(mkChannelId(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE));
+                    if (profileChannel != null) {
+                        stateDescriptionProvider.notifyStateDescriptionUpdated(profileChannel);
+                    }
+                }
                 if (!isThingOnline()) {
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }
@@ -1827,6 +1871,31 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public ShellyDeviceProfile getProfile() {
         return profile;
+    }
+
+    /**
+     * Resolve the id of a thermostat schedule profile from a command.
+     *
+     * @param value the profile id or the profile name
+     * @return the profile id, null if the value doesn't match a profile of the device
+     */
+    private @Nullable Integer getThermostatProfileId(String value) {
+        for (Map.Entry<Integer, String> p : profile.thermostatProfiles.entrySet()) {
+            if (value.equals(p.getKey().toString()) || value.equalsIgnoreCase(p.getValue())) {
+                return p.getKey();
+            }
+        }
+        return null;
+    }
+
+    private double getCelsius(Command command) {
+        if (command instanceof QuantityType<?> quantity) {
+            QuantityType<?> celsius = quantity.toUnit(SIUnits.CELSIUS);
+            if (celsius != null) {
+                return celsius.doubleValue();
+            }
+        }
+        return getNumber(command).doubleValue();
     }
 
     @Override

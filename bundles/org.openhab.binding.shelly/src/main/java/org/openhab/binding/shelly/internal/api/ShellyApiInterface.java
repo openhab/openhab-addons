@@ -100,6 +100,22 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
 
     void setFloodConfig(int id, @Nullable String alarmMode, int reportHoldoff) throws ShellyApiException;
 
+    /**
+     * Set the Wall Display thermostat configuration.
+     *
+     * @param enable thermostat enabled, null: unchanged
+     * @param targetTemp target temperature in °C, null: unchanged
+     */
+    void setThermostatConfig(@Nullable Boolean enable, @Nullable Double targetTemp) throws ShellyApiException;
+
+    /**
+     * Set the Wall Display thermostat schedule configuration.
+     *
+     * @param enable schedule enabled, null: unchanged
+     * @param profileId id of the schedule profile to activate, null: unchanged
+     */
+    void setThermostatSchedule(@Nullable Boolean enable, @Nullable Integer profileId) throws ShellyApiException;
+
     ShellyOtaCheckResult checkForUpdate() throws ShellyApiException;
 
     ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException;

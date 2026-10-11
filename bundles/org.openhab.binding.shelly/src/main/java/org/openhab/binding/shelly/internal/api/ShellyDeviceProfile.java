@@ -21,6 +21,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -127,6 +128,8 @@ public class ShellyDeviceProfile {
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
     public String floodAlarmMode = ""; // Flood Gen4: alarm mode from Flood.GetConfig
     public int reportHoldoff = 0; // Flood Gen4: report holdoff in seconds
+    public boolean hasThermostat; // true: Wall Display with thermostat component
+    public Map<Integer, String> thermostatProfiles = new LinkedHashMap<>(); // Wall Display: profile id -> name
     public boolean isEM50; // true for Shelly Pro EM50
     public boolean isEM1; // true for em1-clamp meter devices (Plus EM, Mini EM, Pro EM50); Pro EM50 also has a relay
     public boolean isWS90; // true for Ecowitt WS90
