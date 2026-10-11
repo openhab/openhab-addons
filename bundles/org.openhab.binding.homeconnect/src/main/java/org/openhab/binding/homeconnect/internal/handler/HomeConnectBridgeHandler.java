@@ -137,7 +137,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                 AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
 
                 if (accessTokenResponse == null) {
-                    updateStatus(ThingStatusDetail.AUTHORIZATION_REQUIRED,
+                    updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
                             "Please authenticate your account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. http://192.168.178.100:8080/homeconnect).");
                 } else {
                     apiClient.getHomeAppliances();
