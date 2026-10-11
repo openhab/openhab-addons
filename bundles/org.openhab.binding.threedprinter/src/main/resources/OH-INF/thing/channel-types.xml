@@ -34,7 +34,7 @@
 	</channel-type>
 
 	<channel-type id="job-progress">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Print Progress</label>
 		<description>Percentage of the current print job completed.</description>
 		<tags>
