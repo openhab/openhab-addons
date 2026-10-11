@@ -16,7 +16,8 @@ This binding has been tested against:
 - **Prusa Core One** running PrusaLink server 2.1.2 / Buddy firmware 6.5.7+12836 (`prusa-link` thing type)
 - **Snapmaker U1** running Klipper via Moonraker 1.4.1.6 (`klipper` thing type), including its 4 toolheads (see [Multi-toolhead printers](#multi-toolhead-printers))
 
-Other Buddy-firmware Prusa printers (MK3.5, MINI+, XL) and other Klipper/Moonraker printers are expected to work the same way, since they expose the same PrusaLink v1 and Moonraker APIs respectively, but have not been verified by the author. The `octoprint` thing type has not been tested against a live OctoPrint server; it is expected to work against any standard OctoPrint installation (the print preview additionally requires the [PrusaSlicer Thumbnails](https://plugins.octoprint.org/plugins/prusaslicerthumbnails/) plugin).
+Other Buddy-firmware Prusa printers (MK3.5, MINI+, XL) and other Klipper/Moonraker printers are expected to work the same way, since they expose the same PrusaLink v1 and Moonraker APIs respectively, but have not been verified by the author.
+The `octoprint` thing type has not been tested against a live OctoPrint server; it is expected to work against any standard OctoPrint installation (the print preview additionally requires the [PrusaSlicer Thumbnails](https://plugins.octoprint.org/plugins/prusaslicerthumbnails/) plugin).
 
 ## Supported Things
 
