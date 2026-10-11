@@ -267,10 +267,9 @@ public class BridgeHandler extends BaseBridgeHandler {
             // check if SHC access is not possible and pairing necessary
             if (!httpClient.isAccessPossible()) {
                 // update status description to show pairing test
-                this.updateStatus(ThingStatus.UNKNOWN, "@text/offline.conf-error-pairing");
+                this.updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/offline.conf-error-pairing");
                 if (!httpClient.doPairing()) {
-                    this.updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                            "@text/offline.conf-error-pairing");
+                    this.updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/offline.conf-error-pairing");
                 }
                 // restart initial access - needed also in case of successful pairing to check access again
                 scheduleInitialAccess(httpClient);
@@ -279,7 +278,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
             // SHC is online and access should possible
             if (!checkBridgeAccess()) {
-                this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "@text/offline.not-reachable");
+                this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.not-reachable");
                 // restart initial access
                 scheduleInitialAccess(httpClient);
                 return;

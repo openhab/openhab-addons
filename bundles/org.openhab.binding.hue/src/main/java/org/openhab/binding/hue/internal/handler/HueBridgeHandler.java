@@ -860,7 +860,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private void handleLinkButtonNotPressed(LinkButtonException ex) {
         logger.debug("Failed creating new user on Hue Bridge: {}", ex.getMessage());
-        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-press-pairing-button");
+        updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/offline.conf-error-press-pairing-button");
     }
 
     private void handleExceptionWhileCreatingUser(Exception ex) {
