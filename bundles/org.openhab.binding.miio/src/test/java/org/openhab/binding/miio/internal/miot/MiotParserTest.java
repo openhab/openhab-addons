@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.miio.internal.basic.CommandParameterType;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
+import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceActionCondition;
 import org.openhab.binding.miio.internal.basic.OptionsValueListDTO;
@@ -138,6 +139,26 @@ public class MiotParserTest {
                       "description": "Start All", "in": [], "out": [] },
                     { "iid": 7, "type": "urn:miot-spec-v2:action:set-missing:00002807:test-model:1",
                       "description": "Set Missing", "in": [9], "out": [] }
+                  ]
+                }
+              ]
+            }
+            """;
+
+    private static final String DOUBLE_SPACE_SPEC = """
+            {
+              "type": "urn:miot-spec-v2:device:vacuum:0000A006:test-model:1",
+              "description": "Robot Cleaner",
+              "services": [
+                {
+                  "iid": 2,
+                  "type": "urn:miot-spec-v2:service:vacuum:00007810:test-model:1",
+                  "description": "Robot Cleaner",
+                  "properties": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:property:status:00000007:test-model:1",
+                      "description": "Status", "format": "uint8", "access": ["read", "notify"],
+                      "value-list": [ { "value": 10, "description": "In The Dry" },
+                                      { "value": 11, "description": "In The  Dust" } ] }
                   ]
                 }
               ]
@@ -261,5 +282,17 @@ public class MiotParserTest {
                 List.of("actions", "mute", "volume", "language", "mode", "custom_set_mute", "custom_set_volume",
                         "custom_set_language", "custom_set_mode"),
                 channels.stream().map(MiIoBasicChannel::getChannel).toList());
+    }
+
+    @Test
+    public void toJsonKeepsDoubleSpacesInTexts() throws MiotParseException {
+        MiIoBasicDevice device = new MiotParser("test.vacuum.model")
+                .getDevice(JsonParser.parseString(DOUBLE_SPACE_SPEC));
+        String json = MiotParser.toJson(device);
+
+        assertTrue(json.contains("\"In The  Dust\""), "double space in a text must be preserved");
+        assertFalse(json.contains("In The" + "\t" + "Dust"), "no tab may replace a double space in a text");
+        assertTrue(json.contains("\r\n\t\t\"channels\""), "indentation is converted to tabs with CRLF line endings");
+        assertFalse(json.contains("\n  "), "no space indentation is left");
     }
 }

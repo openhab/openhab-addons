@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,6 +69,7 @@ public class MiotParser {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final boolean SKIP_SIID_1 = true;
     private static final String VALUE_TOKEN = "$value$";
+    private static final Pattern LEADING_SPACES = Pattern.compile("(?m)^((?: {2})+)");
 
     private String model;
     private @Nullable String urn;
@@ -102,8 +104,9 @@ public class MiotParser {
     public static String toJson(MiIoBasicDevice device) {
         String usersJson = GSON.toJson(device);
         usersJson = usersJson.replace(".0,\n", ",\n");
-        usersJson = usersJson.replace("\n", "\r\n").replace("  ", "\t");
-        return usersJson;
+        // only the indentation is converted, double spaces inside texts must stay as they are
+        usersJson = LEADING_SPACES.matcher(usersJson).replaceAll(m -> "\t".repeat(m.group(1).length() / 2));
+        return usersJson.replace("\n", "\r\n");
     }
 
     public void writeDevice(String path, MiIoBasicDevice device) {
