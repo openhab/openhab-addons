@@ -88,18 +88,19 @@ public class RefreshAutoCapability extends RefreshCapability {
     }
 
     Duration delayFrom(Instant now) {
-        Instant planned = now.plus(plannedDelay(now));
+        return isRetrying() ? retryDelay(now) : plannedDelay(now);
+    }
+
+    private Duration retryDelay(Instant now) {
+        Instant planned = now.plus(backoffDelay(consecutiveFailures));
         Instant moved = outsideBusyWindow(planned, slotAfterBusyWindow);
         if (!moved.equals(planned)) {
-            logger.debug("{} poll moved from {} to {}", thingUID, planned, moved);
+            logger.debug("{} retry moved from {} to {}", thingUID, planned, moved);
         }
         return Duration.between(now, moved);
     }
 
     private Duration plannedDelay(Instant now) {
-        if (consecutiveFailures > 0) {
-            return backoffDelay(consecutiveFailures);
-        }
         Instant timestamp = dataTimestamp;
         if (timestamp == null) {
             return nextProbeDelay();
@@ -131,7 +132,7 @@ public class RefreshAutoCapability extends RefreshCapability {
         return delay.compareTo(PROBING_INTERVAL) < 0 ? delay : PROBING_INTERVAL;
     }
 
-    /** Every thing keeps its own place behind a busy window, so that not all of them poll at its end. */
+    /** Every thing keeps its own place behind a busy window, so that not all of them retry at its end. */
     static Duration slotAfterBusyWindow(ThingUID thingUID) {
         int thingSpecific = thingUID.getAsString().hashCode();
         return Duration.ofMillis(Math.floorMod(thingSpecific, SPREAD_AFTER_BUSY_WINDOW.toMillis()));

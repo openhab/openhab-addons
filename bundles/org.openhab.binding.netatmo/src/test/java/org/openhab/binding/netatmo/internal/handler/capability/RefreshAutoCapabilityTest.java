@@ -129,7 +129,29 @@ class RefreshAutoCapabilityTest {
     }
 
     @Test
-    void pollInTheBusyWindowMovesToItsSlotBehindTheWindow() {
+    void startInTheBusyWindowPollsAtOnceAndMovesOnlyTheRetry() {
+        refresh.setInterval(Duration.ofMinutes(10));
+        assertEquals(RefreshCapability.ASAP, lastScheduledDelay());
+
+        refresh.fetchFailed(BUSY);
+
+        assertEquals(Duration.ofSeconds(58).plus(RefreshAutoCapability.slotAfterBusyWindow(STATION)),
+                refresh.delayFrom(ROUND_TEN_MINUTES.plusSeconds(2)));
+    }
+
+    @Test
+    void regularPollsInTheBusyWindowAreNotMoved() {
+        Instant now = ROUND_TEN_MINUTES.minusSeconds(305);
+        when(station.getLastSeen()).thenReturn(ZonedDateTime.ofInstant(now.minusSeconds(300), ZoneOffset.UTC));
+        refresh.setInterval(Duration.ofMinutes(10));
+        refresh.updateNAThing(station);
+
+        assertEquals(Duration.ofSeconds(315), refresh.delayFrom(now));
+        assertEquals(Duration.ofSeconds(30), refresh.delayFrom(ROUND_TEN_MINUTES.plusSeconds(600 * 2 - 20)));
+    }
+
+    @Test
+    void retryInTheBusyWindowMovesToItsSlotBehindTheWindow() {
         Instant planned = ROUND_TEN_MINUTES.plusSeconds(600 * 3 + 12).plusMillis(500);
         Instant windowEnd = ROUND_TEN_MINUTES.plusSeconds(600 * 3 + 60);
 
@@ -158,7 +180,7 @@ class RefreshAutoCapabilityTest {
     }
 
     @Test
-    void pollOutsideTheBusyWindowStays() {
+    void retryOutsideTheBusyWindowStays() {
         Instant atWindowEnd = ROUND_TEN_MINUTES.plusSeconds(60);
         Instant beforeRoundFiveMinutes = ROUND_TEN_MINUTES.plusSeconds(299).plusMillis(999);
         Instant beforeRoundTenMinutes = ROUND_TEN_MINUTES.plusSeconds(599).plusMillis(999);
