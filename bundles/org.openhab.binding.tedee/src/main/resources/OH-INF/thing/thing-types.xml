@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0">
 
-	<bridge-type id="bridge">
+	<bridge-type id="local-bridge">
 		<label>Tedee Bridge</label>
 		<description>Tedee Bridge for local communication with Tedee locks.</description>
 
@@ -31,7 +31,7 @@
 		</config-description>
 	</bridge-type>
 
-	<bridge-type id="cloud">
+	<bridge-type id="cloud-bridge">
 		<label>Tedee Cloud</label>
 		<description>Tedee Cloud connection using a Personal Access Key.</description>
 
@@ -52,7 +52,8 @@
 
 	<thing-type id="lock">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="local-bridge"/>
+			<bridge-type-ref id="cloud-bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Tedee Lock</label>
