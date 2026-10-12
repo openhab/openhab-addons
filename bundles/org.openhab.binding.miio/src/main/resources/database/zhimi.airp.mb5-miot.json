@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airp.mb5"
+			"zhimi.airp.mb5",
+			"zhimi.airp.mb5a"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
