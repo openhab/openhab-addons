@@ -176,45 +176,45 @@ Channel IDs are based on the definition's group and item names; for example, `In
 The `deye_2mppt` definition provides the following read-only channels.
 For example, use `inverter-total-ac-output-power--active-` for AC output power; `grid-total-grid-power` is available only with inverter types whose definitions include it.
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| solar-pv1-voltage | Number | PV1 Voltage |
-| solar-pv2-voltage | Number | PV2 Voltage |
-| solar-pv1-current | Number | PV1 Current |
-| solar-pv2-current | Number | PV2 Current |
-| solar-daily-production | Number | Daily Production |
-| solar-daily-production-1 | Number | Daily Production 1 |
-| solar-daily-production-2 | Number | Daily Production 2 |
-| solar-total-production | Number | Total Production |
-| solar-total-production-1 | Number | Total Production 1 |
-| solar-total-production-2 | Number | Total Production 2 |
-| solar-active-power-regulations | Number | Active Power Regulations |
-| grid-ac-voltage | Number | AC Voltage |
-| grid-grid-current | Number | Grid Current |
-| grid-ac-output-frequency | Number | AC Output Frequency |
-| grid-grid-voltage-upp-limit | Number | Grid Voltage Upp Limit |
-| grid-grid-voltage-lower-limit | Number | Grid Voltage Lower Limit |
-| grid-grid-frequency-upper-limit | Number | Grid Frequency Upper Limit |
-| grid-grid-frequency-lower-limit | Number | Grid Frequency Lower Limit |
+| Channel                                              | Type   | Description                                     |
+|------------------------------------------------------|--------|-------------------------------------------------|
+| solar-pv1-voltage                                    | Number | PV1 Voltage                                     |
+| solar-pv2-voltage                                    | Number | PV2 Voltage                                     |
+| solar-pv1-current                                    | Number | PV1 Current                                     |
+| solar-pv2-current                                    | Number | PV2 Current                                     |
+| solar-daily-production                               | Number | Daily Production                                |
+| solar-daily-production-1                             | Number | Daily Production 1                              |
+| solar-daily-production-2                             | Number | Daily Production 2                              |
+| solar-total-production                               | Number | Total Production                                |
+| solar-total-production-1                             | Number | Total Production 1                              |
+| solar-total-production-2                             | Number | Total Production 2                              |
+| solar-active-power-regulations                       | Number | Active Power Regulations                        |
+| grid-ac-voltage                                      | Number | AC Voltage                                      |
+| grid-grid-current                                    | Number | Grid Current                                    |
+| grid-ac-output-frequency                             | Number | AC Output Frequency                             |
+| grid-grid-voltage-upp-limit                          | Number | Grid Voltage Upp Limit                          |
+| grid-grid-voltage-lower-limit                        | Number | Grid Voltage Lower Limit                        |
+| grid-grid-frequency-upper-limit                      | Number | Grid Frequency Upper Limit                      |
+| grid-grid-frequency-lower-limit                      | Number | Grid Frequency Lower Limit                      |
 | grid-overfrequency-and-load-reduction-starting-point | Number | Overfrequency And Load Reduction Starting Point |
-| grid-overfrequency-and-load-reduction-percentage | Number | Overfrequency And Load Reduction Percentage |
-| grid-on-off-enable | String | ON-OFF Enable |
-| grid-island-protection-enable | String | Island Protection Enable |
-| grid-overfrequency-load-shedding-enable | String | Overfrequency&Load-shedding Enable |
-| inverter-running-status | String | Running Status |
-| inverter-total-ac-output-power--active- | Number | Total AC Output Power (Active) |
-| inverter-radiator-temperature | Number | Radiator Temperature |
-| inverter-inverter-id | String | Inverter ID |
-| inverter-hardware-version | String | Hardware Version |
-| inverter-dc-master-firmware-version | String | DC Master Firmware Version |
-| inverter-ac-version--number | String | AC Version. Number |
-| inverter-rated-power | Number | Rated Power |
-| inverter-communication-protocol-version | String | Communication Protocol Version |
-| inverter-start-up-self-checking-time | Number | Start-up Self-checking Time |
-| inverter-update-time | String | Update Time |
-| inverter-soft-start-enable | String | Soft Start Enable |
-| inverter-power-factor-regulation | Number | Power Factor Regulation |
-| inverter-restore-factory-settings | String | Restore Factory Settings |
+| grid-overfrequency-and-load-reduction-percentage     | Number | Overfrequency And Load Reduction Percentage     |
+| grid-on-off-enable                                   | String | ON-OFF Enable                                   |
+| grid-island-protection-enable                        | String | Island Protection Enable                        |
+| grid-overfrequency-load-shedding-enable              | String | Overfrequency&Load-shedding Enable              |
+| inverter-running-status                              | String | Running Status                                  |
+| inverter-total-ac-output-power--active-              | Number | Total AC Output Power (Active)                  |
+| inverter-radiator-temperature                        | Number | Radiator Temperature                            |
+| inverter-inverter-id                                 | String | Inverter ID                                     |
+| inverter-hardware-version                            | String | Hardware Version                                |
+| inverter-dc-master-firmware-version                  | String | DC Master Firmware Version                      |
+| inverter-ac-version--number                          | String | AC Version. Number                              |
+| inverter-rated-power                                 | Number | Rated Power                                     |
+| inverter-communication-protocol-version              | String | Communication Protocol Version                  |
+| inverter-start-up-self-checking-time                 | Number | Start-up Self-checking Time                     |
+| inverter-update-time                                 | String | Update Time                                     |
+| inverter-soft-start-enable                           | String | Soft Start Enable                               |
+| inverter-power-factor-regulation                     | Number | Power Factor Regulation                         |
+| inverter-restore-factory-settings                    | String | Restore Factory Settings                        |
 
 ## Writable Channels
 
