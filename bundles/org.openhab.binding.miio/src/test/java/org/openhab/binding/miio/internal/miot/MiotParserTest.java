@@ -165,6 +165,26 @@ public class MiotParserTest {
             }
             """;
 
+    private static final String ACTION_ONLY_SPEC = """
+            {
+              "type": "urn:miot-spec-v2:device:vacuum:0000A006:test-model:1",
+              "description": "Robot Cleaner",
+              "services": [
+                {
+                  "iid": 3,
+                  "type": "urn:miot-spec-v2:service:identify:00007801:test-model:1",
+                  "description": "Identify",
+                  "actions": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:action:identify:00002801:test-model:1",
+                      "description": "Identify", "in": [], "out": [] },
+                    { "iid": 2, "type": "urn:miot-spec-v2:action:reset:00002802:test-model:1",
+                      "description": "Reset" }
+                  ]
+                }
+              ]
+            }
+            """;
+
     private MiIoBasicChannel parseChannel(String channelId) throws MiotParseException {
         MiotParser parser = new MiotParser("test.vacuum.model");
         List<MiIoBasicChannel> channels = parser.getDevice(JsonParser.parseString(SPEC)).getDevice().getChannels();
@@ -282,6 +302,19 @@ public class MiotParserTest {
                 List.of("actions", "mute", "volume", "language", "mode", "custom_set_mute", "custom_set_volume",
                         "custom_set_language", "custom_set_mode"),
                 channels.stream().map(MiIoBasicChannel::getChannel).toList());
+    }
+
+    @Test
+    public void actionsOfServiceWithoutPropertiesAreOnActionsChannel() throws MiotParseException {
+        List<MiIoBasicChannel> channels = new MiotParser("test.vacuum.model")
+                .getDevice(JsonParser.parseString(ACTION_ONLY_SPEC)).getDevice().getChannels();
+
+        assertEquals(List.of("actions"), channels.stream().map(MiIoBasicChannel::getChannel).toList());
+        List<MiIoDeviceAction> actions = channels.get(0).getActions();
+        assertEquals(List.of(1, 2), actions.stream().map(MiIoDeviceAction::getAiid).toList());
+        // the second action has no list of inputs in the spec, which is the same as an empty list
+        assertEquals(List.of(CommandParameterType.EMPTY, CommandParameterType.EMPTY),
+                actions.stream().map(MiIoDeviceAction::getparameterType).toList());
     }
 
     @Test

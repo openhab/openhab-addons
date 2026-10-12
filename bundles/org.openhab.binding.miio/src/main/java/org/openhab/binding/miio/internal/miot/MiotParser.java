@@ -156,14 +156,8 @@ public class MiotParser {
                                 + displayName(property.description, propertyId));
                         miIoBasicChannel.setSiid(service.siid);
                         miIoBasicChannel.setPiid(property.piid);
-                        // avoid duplicates and make camel case and avoid invalid channel names
-                        String chanId = propertyId.replace(" ", "").replace(".", "_").replace("-", "_");
-
-                        int cnt = 0;
-                        while (propCheck.contains(chanId + Integer.toString(cnt))) {
-                            cnt++;
-                        }
-                        propCheck.add(chanId.concat(Integer.toString(cnt)));
+                        String chanId = channelId(propertyId);
+                        int cnt = reserveChannelId(propCheck, chanId);
                         if (cnt > 0) {
                             chanId = chanId.concat(Integer.toString(cnt));
                             propertyId = propertyId.concat(Integer.toString(cnt));
@@ -210,27 +204,26 @@ public class MiotParser {
                                 service.description, property.piid, property.description);
                     }
                 }
-                if (service.actions != null) {
-                    for (ActionDTO action : service.actions) {
-                        MiIoBasicChannel inputChannel = actionInputChannel(service, serviceId, action, propCheck,
-                                unknownUnits);
-                        if (inputChannel != null) {
-                            miIoBasicChannels.add(inputChannel);
-                        } else {
-                            deviceActions.put(action, service);
-                        }
-                        String actionId = action.type.substring(action.type.indexOf("action:")).split(":")[1];
-                        actionText.append("`action{");
-                        actionText.append(String.format("\"did\":\"%s-%s\",", serviceId, actionId));
-                        actionText.append(String.format("\"siid\":%d,", service.siid));
-                        actionText.append(String.format("\"aiid\":%d,", action.iid));
-                        actionText.append(String.format("\"in\":%s", action.in));
-                        actionText.append("}`\r\n");
-                    }
-
-                }
             } else {
                 logger.info("SID: {}, description: {} has no identified properties", service.siid, service.description);
+            }
+            if (service.actions != null) {
+                for (ActionDTO action : service.actions) {
+                    String actionId = actionId(action);
+                    MiIoBasicChannel inputChannel = actionInputChannel(service, serviceId, action, actionId, propCheck,
+                            unknownUnits);
+                    if (inputChannel != null) {
+                        miIoBasicChannels.add(inputChannel);
+                    } else {
+                        deviceActions.put(action, service);
+                    }
+                    actionText.append("`action{");
+                    actionText.append(String.format("\"did\":\"%s-%s\",", serviceId, actionId));
+                    actionText.append(String.format("\"siid\":%d,", service.siid));
+                    actionText.append(String.format("\"aiid\":%d,", action.iid));
+                    actionText.append(String.format("\"in\":%s", inputs(action)));
+                    actionText.append("}`\r\n");
+                }
             }
         }
         if (!deviceActions.isEmpty()) {
@@ -365,12 +358,12 @@ public class MiotParser {
      * @return the channel, or null if the action input can not be provided by one channel
      */
     private @Nullable MiIoBasicChannel actionInputChannel(ServiceDTO service, String serviceId, ActionDTO action,
-            Set<String> propCheck, Set<String> unknownUnits) {
-        if (action.in.size() != 1 || !(action.in.get(0) instanceof Number)) {
+            String actionId, Set<String> propCheck, Set<String> unknownUnits) {
+        List<Object> inputs = inputs(action);
+        if (inputs.size() != 1 || !(inputs.get(0) instanceof Number)) {
             return null;
         }
-        String actionId = action.type.substring(action.type.indexOf("action:")).split(":")[1];
-        int piid = ((Number) action.in.get(0)).intValue();
+        int piid = ((Number) inputs.get(0)).intValue();
         List<PropertyDTO> properties = service.properties;
         PropertyDTO input = null;
         if (properties != null) {
@@ -382,13 +375,8 @@ public class MiotParser {
                     service.siid);
             return null;
         }
-        // avoid duplicates and make camel case and avoid invalid channel names
-        String chanId = (serviceId + "_" + actionId).replace(" ", "").replace(".", "_").replace("-", "_");
-        int cnt = 0;
-        while (propCheck.contains(chanId + Integer.toString(cnt))) {
-            cnt++;
-        }
-        propCheck.add(chanId.concat(Integer.toString(cnt)));
+        String chanId = channelId(serviceId + "_" + actionId);
+        int cnt = reserveChannelId(propCheck, chanId);
         if (cnt > 0) {
             chanId = chanId.concat(Integer.toString(cnt));
             logger.warn("duplicate for action:{} ({})", chanId, cnt);
@@ -425,6 +413,39 @@ public class MiotParser {
         return miIoBasicChannel;
     }
 
+    private static String actionId(ActionDTO action) {
+        return action.type.substring(action.type.indexOf("action:")).split(":")[1];
+    }
+
+    /**
+     * @return the inputs of the action, an action without inputs in the spec has none
+     */
+    private static List<Object> inputs(ActionDTO action) {
+        List<Object> inputs = action.in;
+        return inputs != null ? inputs : List.of();
+    }
+
+    /**
+     * Removes the characters that are not valid in a channel name.
+     */
+    private static String channelId(String id) {
+        return id.replace(" ", "").replace(".", "_").replace("-", "_");
+    }
+
+    /**
+     * Registers the channel id, to avoid duplicate channel names.
+     *
+     * @return the number to append to the channel id to make it unique, 0 if it is unique already
+     */
+    private static int reserveChannelId(Set<String> propCheck, String chanId) {
+        int cnt = 0;
+        while (propCheck.contains(chanId + Integer.toString(cnt))) {
+            cnt++;
+        }
+        propCheck.add(chanId.concat(Integer.toString(cnt)));
+        return cnt;
+    }
+
     private static String displayName(String description, String id) {
         return isPureAscii(description) && !description.isBlank() ? captializedName(description) : captializedName(id);
     }
@@ -442,7 +463,7 @@ public class MiotParser {
             List<MiIoDeviceAction> miIoDeviceActions = new LinkedList<>();
             Set<String> actionCheck = new HashSet<>();
             deviceActions.forEach((action, service) -> {
-                String actionId = action.type.substring(action.type.indexOf("action:")).split(":")[1];
+                String actionId = actionId(action);
                 String serviceId = service.type.substring(service.type.indexOf("service:")).split(":")[1];
                 String description = String.format("%s-%s", serviceId, actionId);
                 String label = captializedName(description);
@@ -467,8 +488,9 @@ public class MiotParser {
                 miIoDeviceAction.setparameterType(CommandParameterType.EMPTY);
                 miIoDeviceAction.setSiid(service.siid);
                 miIoDeviceAction.setAiid(action.iid);
-                if (!action.in.isEmpty()) {
-                    miIoDeviceAction.setParameters(JsonParser.parseString(GSON.toJson(action.in)).getAsJsonArray());
+                List<Object> inputs = inputs(action);
+                if (!inputs.isEmpty()) {
+                    miIoDeviceAction.setParameters(JsonParser.parseString(GSON.toJson(inputs)).getAsJsonArray());
                     miIoDeviceAction.setparameterType("fromparameter");
                 }
                 MiIoDeviceActionCondition miIoDeviceActionCondition = new MiIoDeviceActionCondition();
