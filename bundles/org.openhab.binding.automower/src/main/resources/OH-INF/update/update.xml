@@ -649,7 +649,7 @@
 	</thing-type>
 
 	<thing-type uid="automower:work-area">
-		<instruction-set targetVersion="4">
+		<instruction-set targetVersion="5">
 			<!-- Work Area -->
 			<add-channel id="type" groupIds="work-area">
 				<type>automower:workarea-type-type</type>
@@ -668,6 +668,9 @@
 			</add-channel>
 			<add-channel id="orientation-shift" groupIds="work-area">
 				<type>automower:workarea-orientation-shift-type</type>
+			</add-channel>
+			<add-channel id="id" groupIds="work-area">
+				<type>automower:workarea-id-type</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
