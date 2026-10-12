@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Model Urns DTO for miot spec file.
  *
- * To read http://miot-spec.org/miot-spec-v2/instances?status=released
+ * To read http://miot-spec.org/miot-spec-v2/instances?status=released or status=all
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -35,6 +35,9 @@ public class ModelUrnsDTO {
     @SerializedName("type")
     @Expose
     private String type = "";
+    @SerializedName("status")
+    @Expose
+    private String status = "";
 
     public String getModel() {
         return model;
@@ -58,5 +61,12 @@ public class ModelUrnsDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    /**
+     * @return the status of the spec (released, preview or debug), empty if the list does not contain the status
+     */
+    public String getStatus() {
+        return status;
     }
 }

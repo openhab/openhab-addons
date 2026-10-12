@@ -13,14 +13,8 @@
 package org.openhab.binding.miio.internal;
 
 import java.io.File;
-import java.net.URI;
-import java.net.http.HttpClient.Version;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -46,11 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 
 /**
  * Supporting tool for creation of the json database files for miot devices
@@ -61,8 +50,9 @@ import com.google.gson.JsonPrimitive;
  *
  * The argument is the model string to create the database file for.
  * If the digit at the end of the model is omitted, it will try a range of devices.
- * Without a version the first released spec version is used. Append a spec version to select another one, e.g.
- * {@code -Dexec.args="viomi.vacuum.v13:2"} (all spec versions, including debug ones, can be selected this way).
+ * Without a version the newest spec is used: the highest released version, or the highest preview or else debug
+ * version for a model without released spec. Append a spec version to select another one, e.g.
+ * {@code -Dexec.args="viomi.vacuum.v13:1"} (all spec versions, including debug ones, can be selected this way).
  * <p>
  * Actions with more than one input can not be filled from a single channel value, and neither can an action with an
  * input that is not a property of its service. The parser generates them as actions that are never sent, so they are
@@ -78,11 +68,8 @@ public class MiotJsonFileCreator {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static final String BASEDIR = "./src/main/resources/database/";
-    private static final String BASE_URL = "https://miot-spec.org/miot-spec-v2/";
     private static final String FILENAME_EXTENSION = "-miot.json";
     private static final boolean OVERWRITE_EXISTING_DATABASE_FILE = false;
-    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(15);
-    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(60);
 
     @Disabled
     public static void main(String[] args) {
@@ -103,28 +90,27 @@ public class MiotJsonFileCreator {
         MiotParser miotParser;
         for (String modelArg : models) {
             String model = modelArg;
-            String version = "";
+            Integer version = null;
             int versionPos = modelArg.indexOf(':');
             if (versionPos > 0) {
                 model = modelArg.substring(0, versionPos);
-                version = modelArg.substring(versionPos + 1);
+                try {
+                    version = Integer.valueOf(modelArg.substring(versionPos + 1));
+                } catch (NumberFormatException e) {
+                    LOGGER.info("Skipping {}: the spec version is not a number", modelArg);
+                    continue;
+                }
             }
-            LOGGER.info("Processing: {} (spec version {})", model, version.isEmpty() ? "first released" : version);
+            LOGGER.info("Processing: {} (spec version {})", model, version == null ? "newest" : version);
             HttpClient httpClient = null;
             try {
                 httpClient = new HttpClient(new SslContextFactory.Client());
                 httpClient.setFollowRedirects(false);
                 httpClient.start();
-                MiIoBasicDevice device;
-                if (version.isEmpty()) {
-                    miotParser = MiotParser.parse(model, httpClient);
-                    LOGGER.info("urn: {}", miotParser.getUrn());
-                    LOGGER.info("{}", miotParser.getUrnData());
-                    device = miotParser.getDevice();
-                } else {
-                    miotParser = new MiotParser(model);
-                    device = miotParser.getDevice(getUrnData(model, version));
-                }
+                miotParser = MiotParser.parse(model, version, httpClient);
+                LOGGER.info("urn: {}", miotParser.getUrn());
+                LOGGER.info("{}", miotParser.getUrnData());
+                MiIoBasicDevice device = miotParser.getDevice();
                 if (device != null) {
                     removeUnsupportedActions(model, device);
                     LOGGER.info("Device: {}", device);
@@ -163,43 +149,6 @@ public class MiotJsonFileCreator {
             sb.append("\r\n");
         }
         LOGGER.info("Checksums for device comparisons\r\n{}", sb);
-    }
-
-    // the list of all spec versions exceeds the buffer size of the jetty client
-    private static JsonElement getUrnData(String model, String version) throws Exception {
-        java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder().version(Version.HTTP_1_1)
-                .connectTimeout(CONNECT_TIMEOUT).build();
-        String instancesUrl = BASE_URL + "instances?status=all";
-        JsonElement instances = JsonParser.parseString(get(client, instancesUrl));
-        if (!(instances instanceof JsonObject root) || !(root.get("instances") instanceof JsonArray list)) {
-            throw new MiotParseException("No list of instances in the response of " + instancesUrl);
-        }
-        for (JsonElement instance : list) {
-            if (instance instanceof JsonObject data && model.equals(text(data, "model"))
-                    && version.equals(text(data, "version"))) {
-                String urn = text(data, "type");
-                if (urn.isEmpty()) {
-                    throw new MiotParseException("Model " + model + " with spec version " + version + " has no urn");
-                }
-                LOGGER.info("urn: {} (status {})", urn, data.get("status"));
-                return JsonParser.parseString(get(client, BASE_URL + "instance?type=" + urn));
-            }
-        }
-        throw new MiotParseException("Model " + model + " with spec version " + version + " not found");
-    }
-
-    private static String text(JsonObject data, String member) {
-        return data.get(member) instanceof JsonPrimitive primitive ? primitive.getAsString() : "";
-    }
-
-    private static String get(java.net.http.HttpClient client, String url) throws Exception {
-        HttpResponse<String> response = client.send(
-                HttpRequest.newBuilder(URI.create(url)).timeout(REQUEST_TIMEOUT).GET().build(),
-                BodyHandlers.ofString());
-        if (response.statusCode() != 200) {
-            throw new MiotParseException("Http status " + response.statusCode() + " for " + url);
-        }
-        return response.body();
     }
 
     /**

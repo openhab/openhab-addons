@@ -13,11 +13,16 @@
 package org.openhab.binding.miio.internal.miot;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -34,6 +39,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.basic.CommandParameterType;
 import org.openhab.binding.miio.internal.basic.DeviceMapping;
@@ -53,6 +61,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 /**
  * Support creation of the miot db files
@@ -70,6 +79,11 @@ public class MiotParser {
     private static final boolean SKIP_SIID_1 = true;
     private static final String VALUE_TOKEN = "$value$";
     private static final Pattern LEADING_SPACES = Pattern.compile("(?m)^((?: {2})+)");
+    private static final String STATUS_RELEASED = "released";
+    private static final String STATUS_ALL = "all";
+    private static final Comparator<ModelUrnsDTO> NEWEST_SPEC = Comparator
+            .comparingInt((ModelUrnsDTO instance) -> statusRank(instance.getStatus()))
+            .thenComparing(ModelUrnsDTO::getVersion);
 
     private String model;
     private @Nullable String urn;
@@ -80,10 +94,24 @@ public class MiotParser {
         this.model = model;
     }
 
+    /**
+     * Creates the device from the newest spec of the model: the highest released version, or if the model has no
+     * released spec the highest preview version, or else the highest debug version.
+     */
     public static MiotParser parse(String model, HttpClient httpClient) throws MiotParseException {
+        return parse(model, null, httpClient);
+    }
+
+    /**
+     * Creates the device from the spec of the model.
+     *
+     * @param version the spec version to use (any status), or null for the newest spec
+     */
+    public static MiotParser parse(String model, @Nullable Integer version, HttpClient httpClient)
+            throws MiotParseException {
         MiotParser miotParser = new MiotParser(model);
         try {
-            String urn = miotParser.getURN(model, httpClient);
+            String urn = miotParser.getURN(model, version, httpClient);
             if (urn == null) {
                 throw new MiotParseException("Device not found in in miot specs : " + model);
             }
@@ -521,38 +549,106 @@ public class MiotParser {
     }
 
     private JsonElement getUrnData(String urn, HttpClient httpClient)
-            throws InterruptedException, TimeoutException, ExecutionException, JsonParseException {
+            throws InterruptedException, TimeoutException, ExecutionException, JsonParseException, MiotParseException {
         ContentResponse response;
         String urlStr = BASEURL + "instance?type=" + urn;
         logger.info("miot info: {}", urlStr);
         response = httpClient.newRequest(urlStr).timeout(15, TimeUnit.SECONDS).send();
+        if (response.getStatus() != HttpStatus.OK_200) {
+            throw new MiotParseException("Http status " + response.getStatus() + " for " + urlStr);
+        }
         JsonElement json = JsonParser.parseString(response.getContentAsString());
         this.urnData = json;
         return json;
     }
 
-    private @Nullable String getURN(String model, HttpClient httpClient) {
-        ContentResponse response;
+    private @Nullable String getURN(String model, @Nullable Integer version, HttpClient httpClient)
+            throws MiotParseException {
         try {
-            response = httpClient.newRequest(BASEURL + "instances?status=released").timeout(15, TimeUnit.SECONDS)
-                    .send();
-            JsonElement json = JsonParser.parseString(response.getContentAsString());
-            UrnsDTO data = GSON.fromJson(json, UrnsDTO.class);
-            if (data == null) {
+            ModelUrnsDTO instance = version == null ? findInstance(STATUS_RELEASED, model, null, httpClient) : null;
+            if (instance == null) {
+                // a selected version can have any status, and a model without released spec has preview or debug ones
+                instance = findInstance(STATUS_ALL, model, version, httpClient);
+            }
+            if (instance == null) {
                 return null;
             }
-            for (ModelUrnsDTO device : data.getInstances()) {
-                if (device.getModel().contentEquals(model)) {
-                    this.urn = device.getType();
-                    return device.getType();
-                }
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.info("miot spec for {}: version {}, status {}, urn {}", model, instance.getVersion(),
+                    instance.getStatus().isEmpty() ? STATUS_RELEASED : instance.getStatus(), instance.getType());
+            this.urn = instance.getType();
+            return instance.getType();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted downloading models");
+        } catch (TimeoutException | ExecutionException | IOException e) {
             logger.debug("Failed downloading models: {}", e.getMessage());
-        } catch (JsonParseException e) {
+        } catch (JsonParseException | IllegalStateException e) {
             logger.debug("Failed parsing downloading models: {}", e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Searches the list of specs with the status for the model. The list has several megabytes, more than the client
+     * buffers for a response, so it is read as a stream.
+     */
+    private @Nullable ModelUrnsDTO findInstance(String status, String model, @Nullable Integer version,
+            HttpClient httpClient)
+            throws InterruptedException, TimeoutException, ExecutionException, IOException, MiotParseException {
+        String urlStr = BASEURL + "instances?status=" + status;
+        InputStreamResponseListener listener = new InputStreamResponseListener();
+        httpClient.newRequest(urlStr).timeout(60, TimeUnit.SECONDS).send(listener);
+        try (InputStream stream = listener.getInputStream();
+                Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            Response response = listener.get(15, TimeUnit.SECONDS);
+            if (response.getStatus() != HttpStatus.OK_200) {
+                throw new MiotParseException("Http status " + response.getStatus() + " for " + urlStr);
+            }
+            return selectInstance(reader, model, version);
+        }
+    }
+
+    /**
+     * Selects the spec of the model from the json list of specs.
+     *
+     * @param version the version to select, or null for the newest spec: a released spec is preferred over a preview
+     *            and a preview over a debug spec, of those the highest version is selected
+     * @return the spec, or null if the list has no (such) spec for the model
+     */
+    static @Nullable ModelUrnsDTO selectInstance(Reader json, String model, @Nullable Integer version)
+            throws IOException {
+        ModelUrnsDTO selected = null;
+        JsonReader reader = new JsonReader(json);
+        reader.beginObject();
+        while (reader.hasNext()) {
+            if (!"instances".equals(reader.nextName())) {
+                reader.skipValue();
+                continue;
+            }
+            reader.beginArray();
+            while (reader.hasNext()) {
+                ModelUrnsDTO instance = GSON.fromJson(reader, ModelUrnsDTO.class);
+                if (instance == null || !model.equals(instance.getModel())) {
+                    continue;
+                }
+                if (version != null ? version.equals(instance.getVersion())
+                        : selected == null || NEWEST_SPEC.compare(instance, selected) > 0) {
+                    selected = instance;
+                }
+            }
+            reader.endArray();
+        }
+        reader.endObject();
+        return selected;
+    }
+
+    private static int statusRank(String status) {
+        return switch (status) {
+            // the list of released specs has no status
+            case STATUS_RELEASED, "" -> 2;
+            case "preview" -> 1;
+            default -> 0;
+        };
     }
 
     public String getModel() {

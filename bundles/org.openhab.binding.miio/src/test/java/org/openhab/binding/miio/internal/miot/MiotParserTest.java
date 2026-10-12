@@ -14,6 +14,8 @@ package org.openhab.binding.miio.internal.miot;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -184,6 +186,62 @@ public class MiotParserTest {
               ]
             }
             """;
+
+    private static final String RELEASED_INSTANCES = """
+            {
+              "instances": [
+                { "status": "released", "model": "other.vacuum.model", "version": 9, "type": "urn:other:9", "ts": 1 },
+                { "model": "test.vacuum.model", "version": 1, "type": "urn:test:1", "ts": 1 },
+                { "model": "test.vacuum.model", "version": 3, "type": "urn:test:3", "ts": 1 },
+                { "model": "test.vacuum.model", "version": 2, "type": "urn:test:2", "ts": 1 }
+              ],
+              "total": 4
+            }
+            """;
+
+    private static final String ALL_INSTANCES = """
+            {
+              "instances": [
+                { "status": "debug", "model": "test.vacuum.model", "version": 1, "type": "urn:test:1" },
+                { "status": "preview", "model": "test.vacuum.model", "version": 2, "type": "urn:test:2" },
+                { "status": "debug", "model": "test.vacuum.model", "version": 5, "type": "urn:test:5" },
+                { "status": "debug", "model": "debug.vacuum.model", "version": 1, "type": "urn:debug:1" },
+                { "status": "debug", "model": "debug.vacuum.model", "version": 4, "type": "urn:debug:4" },
+                { "status": "released", "model": "mixed.vacuum.model", "version": 1, "type": "urn:mixed:1" },
+                { "status": "debug", "model": "mixed.vacuum.model", "version": 2, "type": "urn:mixed:2" }
+              ]
+            }
+            """;
+
+    private @Nullable String selectUrn(String instances, String model, @Nullable Integer version) throws IOException {
+        ModelUrnsDTO instance = MiotParser.selectInstance(new StringReader(instances), model, version);
+        return instance == null ? null : instance.getType();
+    }
+
+    @Test
+    public void highestReleasedVersionIsSelected() throws IOException {
+        assertEquals("urn:test:3", selectUrn(RELEASED_INSTANCES, "test.vacuum.model", null));
+    }
+
+    @Test
+    public void releasedIsPreferredOverPreviewAndPreviewOverDebug() throws IOException {
+        assertEquals("urn:test:2", selectUrn(ALL_INSTANCES, "test.vacuum.model", null));
+        assertEquals("urn:debug:4", selectUrn(ALL_INSTANCES, "debug.vacuum.model", null));
+        assertEquals("urn:mixed:1", selectUrn(ALL_INSTANCES, "mixed.vacuum.model", null));
+    }
+
+    @Test
+    public void requestedVersionIsSelected() throws IOException {
+        assertEquals("urn:test:2", selectUrn(RELEASED_INSTANCES, "test.vacuum.model", 2));
+        assertEquals("urn:mixed:2", selectUrn(ALL_INSTANCES, "mixed.vacuum.model", 2));
+        assertNull(selectUrn(ALL_INSTANCES, "test.vacuum.model", 3));
+    }
+
+    @Test
+    public void modelWithoutSpecIsNotFound() throws IOException {
+        assertNull(selectUrn(RELEASED_INSTANCES, "unknown.vacuum.model", null));
+        assertNull(selectUrn("{ \"instances\": [] }", "test.vacuum.model", null));
+    }
 
     private MiIoBasicChannel parseChannel(String channelId) throws MiotParseException {
         MiotParser parser = new MiotParser("test.vacuum.model");
