@@ -61,7 +61,7 @@ class URIMetaDataProcessorTest {
     }
 
     @Test
-    @Disabled 
+    @Disabled("https://github.com/openhab/openhab-addons/issues/21926")
     void generateShouldReturnXMLWithAllFormatAttributes() {
         AudioFormat audioFormat = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, true, 8, 192000,
                 48000L, 2);
