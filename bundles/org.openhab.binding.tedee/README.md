@@ -5,9 +5,9 @@ The Tedee binding integrates Tedee Smart Locks with openHAB through either:
 - the local Tedee Bridge API, or
 - the Tedee Cloud API.
 
-The binding is developed and tested against openHAB 4.3.x / 4.3.5.
 
-Local communication does not require the Tedee Cloud API for normal operation. Cloud access is available as an optional alternative and can be used without a local Tedee Bridge.
+Local communication does not require the Tedee Cloud API for normal operation. 
+Cloud access is available as an optional alternative and can be used without a local Tedee Bridge.
 
 ## Supported Features
 
@@ -44,7 +44,6 @@ The Bridge represents the physical Tedee Bridge used for local API communication
 | `pollInterval` | integer | No | `300` | Configured interval in seconds for bridge monitoring |
 
 The Bridge must be reachable from the openHAB server. The Tedee Bridge API is local to the LAN.
-
 Tedee also requires the Bridge itself to have internet connectivity so that it can obtain and refresh access certificates for paired devices.
 
 ### Tedee Cloud
@@ -100,7 +99,8 @@ The `action` channel provides explicit actions:
 - `UNLOCK_NO_PULL`
 - `PULL`
 
-When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also perform the pull spring operation. `UNLOCK_NO_PULL` unlocks without pulling the spring.
+When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also perform the pull spring operation. 
+`UNLOCK_NO_PULL` unlocks without pulling the spring.
 
 ### Lock State
 
@@ -139,7 +139,8 @@ When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also 
 | `3` | `CLOSED` |
 | `4` | `UNCALIBRATED` |
 
-A physical door sensor is required for meaningful door-state testing. The current test installation does not have such a sensor.
+A physical door sensor is required for meaningful door-state testing. 
+The current test installation does not have such a sensor.
 
 ### Device Settings
 
@@ -159,7 +160,8 @@ The following Tedee device settings are exposed as read-only channels:
 | `buttonLockEnabled` | Switch | Physical button locking enabled |
 | `buttonUnlockEnabled` | Switch | Physical button unlocking enabled |
 
-These settings are read from the Tedee lock response and refreshed by polling or `REFRESH`. Writing settings is not currently implemented.
+These settings are read from the Tedee lock response and refreshed by polling or `REFRESH`. 
+Writing settings is not currently implemented.
 
 ### Thing Properties
 
@@ -372,7 +374,8 @@ PULL
 
 `UNLOCK_NO_PULL` is useful when automatic pull spring is enabled but the desired operation is to unlock without pulling the spring.
 
-The Tedee APIs return an acknowledgement as soon as the operation has started. The final state is reported later through polling and/or local callback events.
+The Tedee APIs return an acknowledgement as soon as the operation has started. 
+The final state is reported later through polling and/or local callback events.
 
 ## Rules Examples
 
@@ -418,7 +421,8 @@ or:
 openhab:send Tedee_Action REFRESH
 ```
 
-A refresh triggers a complete lock refresh rather than updating only the requested channel. The API response contains multiple values, so all lock channels and properties are updated together.
+A refresh triggers a complete lock refresh rather than updating only the requested channel. 
+The API response contains multiple values, so all lock channels and properties are updated together.
 
 The default lock polling interval is currently 300 seconds.
 
@@ -492,7 +496,8 @@ Tedee documents additional events that are useful for the binding:
 - `device-battery-stop-charging`
 - `device-battery-fully-charged`
 
-These events are not yet processed individually by the current servlet implementation. The normal polling/refresh mechanism remains available as the fallback for the corresponding values.
+These events are not yet processed individually by the current servlet implementation. 
+The normal polling/refresh mechanism remains available as the fallback for the corresponding values.
 
 ## Local API
 
@@ -521,7 +526,8 @@ Authentication uses the `api_token` mechanism implemented by the binding.
 
 The `mode=3` unlock operation is used for `UNLOCK_NO_PULL`.
 
-Tedee documents lock, unlock and pull as asynchronous operations. The initial HTTP response confirms that the operation has started; the final state can be observed through a subsequent refresh, polling cycle or callback event.
+Tedee documents lock, unlock and pull as asynchronous operations. 
+The initial HTTP response confirms that the operation has started; the final state can be observed through a subsequent refresh, polling cycle or callback event.
 
 ## Cloud API
 
