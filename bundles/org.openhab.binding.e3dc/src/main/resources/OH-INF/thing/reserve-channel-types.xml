@@ -8,14 +8,14 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Reserve</label>
 		<description>Share of the battery kept for emergency power</description>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<state pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="reserve-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Reserve Energy</label>
 		<description>Energy kept for emergency power</description>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="reserve-energy-max">
@@ -30,20 +30,6 @@
 		<label>Reserve Last State of Charge</label>
 		<description>State of charge the battery was left with for emergency power</description>
 		<state pattern="%.0f %%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="reserve-set-percent">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Set Reserve</label>
-		<description>Share of the battery to keep for emergency power</description>
-		<state pattern="%.0f %%"/>
-	</channel-type>
-
-	<channel-type id="reserve-set-energy">
-		<item-type>Number:Energy</item-type>
-		<label>Set Reserve Energy</label>
-		<description>Energy to keep for emergency power</description>
-		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

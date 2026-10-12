@@ -22,6 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class E3DCBridgeConfiguration {
 
+    /** Shortest poll interval the binding accepts; a shorter one would query the device without pause. */
+    public static final int MIN_REFRESH_INTERVAL_SECONDS = 1;
+
+    /** Longest poll interval the binding accepts, the range the RSCP tooling allows for its own cycle. */
+    public static final int MAX_REFRESH_INTERVAL_SECONDS = 300;
+
     /** Host name or IP address of the device. */
     public String host = "";
 
@@ -42,4 +48,16 @@ public class E3DCBridgeConfiguration {
 
     /** Socket timeout in seconds. */
     public int timeout = 10;
+
+    /**
+     * The configured poll interval limited to the supported range.
+     *
+     * <p>
+     * The bounds in the thing metadata only restrict what the user interface offers; a value from a
+     * things file or the REST API is not checked against them. An interval of zero or less would make
+     * the scheduler run the next cycle immediately, so the value is limited here as well.
+     */
+    public int refreshIntervalSeconds() {
+        return Math.clamp(refreshInterval, MIN_REFRESH_INTERVAL_SECONDS, MAX_REFRESH_INTERVAL_SECONDS);
+    }
 }

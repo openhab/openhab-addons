@@ -57,7 +57,15 @@
 		<item-type>Number</item-type>
 		<label>Mode</label>
 		<description>Operating mode of the energy management system</description>
-		<state pattern="%d" readOnly="true"/>
+		<state pattern="%s">
+			<options>
+				<option value="0">Automatic</option>
+				<option value="1">Idle</option>
+				<option value="2">Discharge</option>
+				<option value="3">Charge</option>
+				<option value="4">Grid Charge</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="system-coupling-mode">
@@ -127,14 +135,14 @@
 		<item-type>Switch</item-type>
 		<label>Weather Regulated Charge</label>
 		<description>Charging follows the weather forecast</description>
-		<state readOnly="true"/>
+		<state/>
 	</channel-type>
 
 	<channel-type id="system-power-limits-used">
 		<item-type>Switch</item-type>
 		<label>Power Limits Used</label>
 		<description>Configured power limits are active</description>
-		<state readOnly="true"/>
+		<state/>
 	</channel-type>
 
 	<channel-type id="system-powersave">
@@ -142,35 +150,6 @@
 		<label>Power Save</label>
 		<description>Power saving mode is active</description>
 		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="system-set-power-limits">
-		<item-type>Switch</item-type>
-		<label>Set Power Limits</label>
-		<description>Whether the configured power limits are active</description>
-		<state/>
-	</channel-type>
-
-	<channel-type id="system-set-weather-regulated-charge">
-		<item-type>Switch</item-type>
-		<label>Set Weather Regulated Charge</label>
-		<description>Whether charging follows the weather forecast</description>
-		<state/>
-	</channel-type>
-
-	<channel-type id="system-set-power-mode">
-		<item-type>Number</item-type>
-		<label>Set Power Mode</label>
-		<description>Manual power mode of the energy management</description>
-		<state pattern="%s">
-			<options>
-				<option value="0">Automatic</option>
-				<option value="1">Idle</option>
-				<option value="2">Discharge</option>
-				<option value="3">Charge</option>
-				<option value="4">Grid Charge</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="system-set-manual-charge">

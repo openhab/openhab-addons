@@ -46,6 +46,10 @@ class E3DCChannelTypesTest {
 
     private static final Path THING_DIRECTORY = Path.of("src", "main", "resources", "OH-INF", "thing");
 
+    /** The item types whose channel types may name a unit in their state pattern. */
+    private static final Set<String> UNIT_ITEM_TYPES = Set.of("Number:Power", "Number:Energy",
+            "Number:ElectricPotential", "Number:ElectricCurrent", "Number:Frequency", "Number:Temperature");
+
     private static final Pattern CHANNEL_TYPE = Pattern.compile("<channel-type id=\"([^\"]+)\">(.*?)</channel-type>",
             Pattern.DOTALL);
     private static final Pattern ITEM_TYPE = Pattern.compile("<item-type>([^<]+)</item-type>");
@@ -155,13 +159,11 @@ class E3DCChannelTypesTest {
             String state = type.body().substring(type.body().indexOf("<state"));
             boolean namesUnit = state.contains("%unit%");
             String itemType = type.itemType();
-            if (namesUnit && !itemType.equals("Number:Power") && !itemType.equals("Number:Energy")
-                    && !itemType.equals("Number:ElectricPotential") && !itemType.equals("Number:ElectricCurrent")
-                    && !itemType.equals("Number:Frequency") && !itemType.equals("Number:Temperature")) {
+            if (namesUnit && !UNIT_ITEM_TYPES.contains(itemType)) {
                 wrong.add(type.id() + " (" + itemType + ") names a unit");
             }
             boolean namesPercent = state.contains("%%") || state.contains("% ");
-            if (namesPercent && !itemType.equals("Number:Dimensionless")) {
+            if (namesPercent && !"Number:Dimensionless".equals(itemType)) {
                 wrong.add(type.id() + " (" + itemType + ") names a percentage");
             }
         }
@@ -186,7 +188,7 @@ class E3DCChannelTypesTest {
      */
     @Test
     void channelsWithAFixedValueSetDeclareOptions() throws IOException {
-        List<String> expected = List.of("system-set-power-mode", "wallbox-number-phases");
+        List<String> expected = List.of("system-mode", "wallbox-number-phases");
         Pattern option = Pattern.compile("<option value=\"([^\"]+)\">([^<]+)</option>");
         for (String id : expected) {
             ChannelType type = channelTypes().get(id);
@@ -203,7 +205,7 @@ class E3DCChannelTypesTest {
             }
         }
         // the power mode is documented as automatic, idle, discharge, charge and grid charge
-        ChannelType powerMode = Objects.requireNonNull(channelTypes().get("system-set-power-mode"));
+        ChannelType powerMode = Objects.requireNonNull(channelTypes().get("system-mode"));
         Matcher matcher = option.matcher(powerMode.body());
         List<String> modes = new ArrayList<>();
         while (matcher.find()) {

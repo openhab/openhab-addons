@@ -103,27 +103,31 @@ class RscpClientTest {
 
                 byte[] request = readEncryptedFrame(in, cipher);
                 ByteBuffer buffer = ByteBuffer.wrap(request).order(ByteOrder.LITTLE_ENDIAN);
-                assertEquals(0xE3DC, buffer.getShort() & 0xFFFF, "frame magic");
-                int ctrl = buffer.getShort() & 0xFFFF;
+                assertEquals((byte) 0xE3, buffer.get(), "frame magic, first byte");
+                assertEquals((byte) 0xDC, buffer.get(), "frame magic, second byte");
+                assertEquals((byte) 0x00, buffer.get(), "control byte 0 is zero");
+                int ctrl = buffer.get() & 0xFF;
                 assertEquals(RscpCodec.CTRL_CRC, ctrl & RscpCodec.CTRL_CRC, "the CRC bit must be set");
                 buffer.getLong();
                 buffer.getInt();
                 int payloadLength = buffer.getShort() & 0xFFFF;
 
-                assertEquals(RscpTag.RSCP_REQ_AUTHENTICATION, buffer.getInt(), "outer tag");
-                assertEquals(RscpType.CONTAINER.getCode(), buffer.get() & 0xFF, "outer type");
-                int containerLength = buffer.getShort() & 0xFFFF;
-                observedContainerLength.set(containerLength);
-                assertEquals(payloadLength, containerLength + 7,
-                        "the payload length counts the container header as well");
+                // the authentication is the only element, so it is the whole payload: no container with
+                // tag 0 wraps it, because a frame carries its elements side by side
+                assertEquals(RscpTag.RSCP_REQ_AUTHENTICATION, buffer.getInt(), "the authentication tag");
+                assertEquals(RscpType.CONTAINER.getCode(), buffer.get() & 0xFF, "its type");
+                int authenticationLength = buffer.getShort() & 0xFFFF;
+                observedContainerLength.set(authenticationLength);
+                assertEquals(payloadLength, authenticationLength + 7,
+                        "the payload length counts the element header as well");
 
                 assertEquals(RscpTag.RSCP_AUTHENTICATION_USER, buffer.getInt(), "user tag");
                 assertEquals(RscpType.CSTRING.getCode(), buffer.get() & 0xFF, "user type");
                 int userLength = buffer.getShort() & 0xFFFF;
                 byte[] userBytes = new byte[userLength];
                 buffer.get(userBytes);
-                observedUser.set(new String(userBytes, 0, userLength - 1, StandardCharsets.UTF_8));
-                assertEquals(0, userBytes[userLength - 1], "the user name must be zero terminated");
+                observedUser.set(new String(userBytes, StandardCharsets.UTF_8));
+                assertNotEquals(0, userBytes[userLength - 1], "the user name carries no terminator");
 
                 assertEquals(RscpTag.RSCP_AUTHENTICATION_PASSWORD, buffer.getInt(), "password tag");
                 assertEquals(RscpType.CSTRING.getCode(), buffer.get() & 0xFF, "password type");
@@ -146,8 +150,9 @@ class RscpClientTest {
         script.await();
 
         assertEquals(USER, observedUser.get());
-        int expectedContainer = 7 + USER.getBytes(StandardCharsets.UTF_8).length + 1 + 7
-                + PASSWORD.getBytes(StandardCharsets.UTF_8).length + 1;
+        // each credential is a 7 byte header plus the bare text, without a terminator
+        int expectedContainer = 7 + USER.getBytes(StandardCharsets.UTF_8).length + 7
+                + PASSWORD.getBytes(StandardCharsets.UTF_8).length;
         assertEquals(expectedContainer, observedContainerLength.get().intValue(),
                 "the container must contain exactly the two credentials");
     }
@@ -259,8 +264,11 @@ class RscpClientTest {
     private static byte[] frame(byte[] payload) {
         ByteBuffer buffer = ByteBuffer.allocate(RscpCodec.HEADER_LENGTH + payload.length + 4)
                 .order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putShort((short) 0xE3DC);
-        buffer.putShort((short) RscpCodec.CTRL_CRC);
+        buffer.put(RscpCodec.MAGIC_BYTES[0]);
+        buffer.put(RscpCodec.MAGIC_BYTES[1]);
+        // the control bytes as they travel: zero, then the version with the CRC flag
+        buffer.put((byte) 0);
+        buffer.put((byte) RscpCodec.VERSION);
         buffer.putLong(1_600_000_000L);
         buffer.putInt(0);
         buffer.putShort((short) payload.length);
@@ -291,7 +299,8 @@ class RscpClientTest {
             byte[] encrypted = raw.toByteArray();
             if (total < 0) {
                 byte[] probe = cipher.peek(encrypted);
-                int ctrl = ByteBuffer.wrap(probe, 2, 2).order(ByteOrder.LITTLE_ENDIAN).getShort() & 0xFFFF;
+                // the CRC flag sits in the second control byte, index 3
+                int ctrl = probe[3] & 0xFF;
                 int dataLength = ByteBuffer.wrap(probe, 16, 2).order(ByteOrder.LITTLE_ENDIAN).getShort() & 0xFFFF;
                 total = RscpCodec.HEADER_LENGTH + dataLength + ((ctrl & RscpCodec.CTRL_CRC) != 0 ? 4 : 0);
                 needed = ((total + Rijndael256.BLOCK - 1) / Rijndael256.BLOCK) * Rijndael256.BLOCK;

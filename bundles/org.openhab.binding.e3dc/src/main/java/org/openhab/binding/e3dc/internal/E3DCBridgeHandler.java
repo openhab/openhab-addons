@@ -15,9 +15,11 @@ package org.openhab.binding.e3dc.internal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +38,10 @@ import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -68,12 +72,19 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     private static final int RECONNECT_DELAY_SECONDS = 30;
 
     /**
-     * The tags requested on every poll: the union of the channels of all three thing types. Requesting
-     * a fixed set keeps the poll independent of which things the user has created.
+     * The tags requested on every poll, which are the root values of the channels of all thing types. A
+     * fixed set keeps the poll independent of which things the user has created.
+     *
+     * <p>
+     * A value that is read through a container that addresses one of several devices does not belong here:
+     * it is part of the request of that container, see {@link #containerRequests()}.
      */
     private static final Set<Integer> POLL_TAGS = pollTags();
 
-    /** Containers whose nested values the binding publishes. */
+    /**
+     * Containers whose nested values the binding publishes, requested with no parameter. Containers that
+     * address one of several devices are not part of this set for the same reason.
+     */
     private static final Set<Integer> POLL_CONTAINERS = pollContainers();
 
     /**
@@ -84,10 +95,32 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     private static final Set<Integer> WINDOWED_CONTAINERS = Set.of(RscpTag.DB_HISTORY_DATA_DAY,
             RscpTag.DB_HISTORY_DATA_WEEK, RscpTag.DB_HISTORY_DATA_MONTH, RscpTag.DB_HISTORY_DATA_YEAR);
 
+    /**
+     * The channel groups a thing needs a container request for, with the configuration key holding the index
+     * of the addressed device. A group without a key is requested with index {@code 0}: the cell modules are
+     * asked for as the first battery, which answers with the container of every module.
+     */
+    private static final Map<ThingTypeUID, List<GroupRequest>> GROUP_REQUESTS = Map.of(//
+            E3DCBindingConstants.THING_TYPE_WALLBOX,
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_WALLBOX, "wallboxIndex")), //
+            E3DCBindingConstants.THING_TYPE_POWER_METER,
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_METER, "meterIndex")), //
+            E3DCBindingConstants.THING_TYPE_BATTERY_MODULE,
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_MODULE, null)), //
+            E3DCBindingConstants.THING_TYPE_POWER_PLANT,
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_INVERTER, null),
+                    new GroupRequest(E3DCBindingConstants.GROUP_RESERVE, null)));
+
+    /** One channel group of a thing, with the configuration key of the device it addresses. */
+    private record GroupRequest(String groupId, @Nullable String indexConfigurationKey) {
+    }
+
     private static Set<Integer> pollTags() {
         Set<Integer> tags = new LinkedHashSet<>();
         for (E3DCChannelSpec spec : allSpecs()) {
-            if (spec.container() == 0) {
+            int requestTag = RscpTag.pollTagFor(spec.tag());
+            if (spec.container() == 0 && E3DCContainerRequests.forContainerTag(requestTag) == null
+                    && !E3DCContainerRequests.isParameter(requestTag)) {
                 tags.add(spec.tag());
             }
         }
@@ -97,7 +130,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     private static Set<Integer> pollContainers() {
         Set<Integer> containers = new LinkedHashSet<>();
         for (E3DCChannelSpec spec : allSpecs()) {
-            if (spec.container() != 0) {
+            if (spec.container() != 0 && E3DCContainerRequests.forResponseTag(spec.container()) == null) {
                 containers.add(spec.container());
             }
         }
@@ -109,6 +142,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         specs.addAll(E3DCChannelSpec.powerPlant().all());
         specs.addAll(E3DCChannelSpec.wallbox().all());
         specs.addAll(E3DCChannelSpec.powerMeter().all());
+        specs.addAll(E3DCChannelSpec.batteryModule().all());
         return specs;
     }
 
@@ -160,14 +194,16 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             newClient.connect();
         } catch (RscpException e) {
             newClient.close();
-            logger.debug("Cannot connect to {}: {}", current.host, e.getMessage());
+            // a connection that does not come up is what the user has to act on, so it belongs in the log at
+            // the default level and not only in the thing status
+            logger.warn("Cannot connect to {}:{}: {}", current.host, current.port, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
         client = newClient;
         droppedTags.clear();
         updateStatus(ThingStatus.ONLINE);
-        logger.debug("Connected to E3/DC device at {}:{}", current.host, current.port);
+        logger.info("Connected to E3/DC device at {}:{}", current.host, current.port);
 
         pollOnce();
         scheduleNextPoll();
@@ -178,7 +214,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         if (current == null) {
             return;
         }
-        schedule(this::pollCycle, current.refreshInterval);
+        schedule(this::pollCycle, current.refreshIntervalSeconds());
     }
 
     private void scheduleReconnect() {
@@ -246,6 +282,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         try {
             RscpValue response = current.request(buildRequest());
             reportTagSupport(response);
+            logContainerAnswers(response);
             for (E3DCDataListener listener : listeners) {
                 try {
                     listener.onData(response);
@@ -260,15 +297,34 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Builds one request covering every root tag plus the values nested in containers.
+     * Logs the containers the parameterised requests were answered with.
+     *
+     * <p>
+     * A request the device rejects is otherwise invisible: the container simply stays without values and the
+     * channels of the thing stay empty.
+     */
+    private void logContainerAnswers(RscpValue response) {
+        for (E3DCContainerRequests.Container container : E3DCContainerRequests.all()) {
+            for (RscpValue answer : response.findAll(container.responseTag())) {
+                logger.debug("Answer of {}: {}", RscpTag.nameOf(container.responseTag()), answer.describeTree());
+            }
+        }
+    }
+
+    /**
+     * Builds the elements of one request: every root tag, the values nested in containers and one request
+     * per container whose answer depends on the parameters of the request.
      *
      * <p>
      * The channel specs name the tags the device answers with, but a request has to carry the matching
-     * {@code *_REQ_*} tag: the device does not recognise a response tag in a request. A container is
-     * requested by its own request tag without listing its members, because asking for the container
-     * returns the enclosed values.
+     * {@code *_REQ_*} tag: the device does not recognise a response tag in a request. A container that
+     * answers everything it has is requested by its own request tag without listing its members.
+     *
+     * <p>
+     * The elements are top level items of the frame, not children of a common container: an RSCP frame
+     * has no root element other than the list itself.
      */
-    private RscpValue buildRequest() {
+    private List<RscpValue> buildRequest() {
         List<RscpValue> items = new ArrayList<>();
         for (int responseTag : POLL_TAGS) {
             if (!droppedTags.contains(responseTag)) {
@@ -289,7 +345,51 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
                 items.add(historyRequest(container));
             }
         }
-        return RscpValue.container(0, items);
+        items.addAll(containerRequests());
+        return items;
+    }
+
+    /**
+     * One request per container whose answer depends on the parameters of the request.
+     *
+     * <p>
+     * Which containers a system needs follows from the things it has, so a system without a wallbox does not
+     * ask for one. A container of a thing that exists more than once is requested once per configured index.
+     */
+    private List<RscpValue> containerRequests() {
+        Map<String, RscpValue> requests = new LinkedHashMap<>();
+        for (Thing thing : getThing().getThings()) {
+            for (GroupRequest group : GROUP_REQUESTS.getOrDefault(thing.getThingTypeUID(), List.of())) {
+                E3DCContainerRequests.Container container = E3DCContainerRequests.forGroup(group.groupId());
+                Integer index = configuredIndex(thing, group.indexConfigurationKey());
+                if (container != null && index != null) {
+                    requests.putIfAbsent(container.containerTag() + "/" + index, container.request(index, droppedTags));
+                }
+            }
+        }
+        return new ArrayList<>(requests.values());
+    }
+
+    /**
+     * The index a container is requested with: the configured one when the group names a configuration key,
+     * otherwise the first device of that kind.
+     */
+    private static @Nullable Integer configuredIndex(Thing thing, @Nullable String configKey) {
+        if (configKey == null) {
+            return 0;
+        }
+        Object value = thing.getConfiguration().get(configKey);
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        if (value instanceof String text) {
+            try {
+                return Integer.valueOf(text.trim());
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -303,7 +403,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
      */
     private RscpValue historyRequest(int container) {
         int requestTag = RscpTag.pollTagFor(container);
-        LocalDate today = LocalDate.now();
+        // RSCP timestamps are UTC, so the period boundaries are taken in UTC as well
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
         LocalDate start = switch (container) {
             case RscpTag.DB_HISTORY_DATA_DAY -> today;
             case RscpTag.DB_HISTORY_DATA_WEEK -> today.minusDays(6);
@@ -335,6 +436,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         collectErrors(response, errored);
         for (int tag : errored) {
             RscpError error = findErrorFor(response, tag);
+            logger.debug("{} was answered with {}", RscpTag.nameOf(tag), error);
             if (error == RscpError.UNKNOWN_TAG || error == RscpError.NOT_AVAILABLE || error == RscpError.NOT_HANDLED) {
                 Integer previous = tagFailures.get(tag);
                 int failures = (previous != null ? previous : 0) + 1;
@@ -385,12 +487,12 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /** Sends one RSCP request over the existing connection. Used by child handlers for commands. */
-    public RscpValue sendRequest(RscpValue item) throws RscpException {
+    public RscpValue sendRequest(List<RscpValue> items) throws RscpException {
         RscpClient current = client;
         if (current == null || !current.isConnected()) {
             throw new RscpException("Not connected to the device");
         }
-        return current.request(item);
+        return current.request(items);
     }
 
     public boolean isConnected() {

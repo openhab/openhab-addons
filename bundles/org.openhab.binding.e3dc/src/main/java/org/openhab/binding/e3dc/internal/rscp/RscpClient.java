@@ -13,11 +13,13 @@
 package org.openhab.binding.e3dc.internal.rscp;
 
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +27,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A synchronous RSCP connection to an E3/DC device.
@@ -32,7 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * <p>
  * The connection is a plain TCP socket; every frame is encrypted with Rijndael-256 in CBC mode, so
  * the chaining state belongs to the connection and a new socket needs a fresh {@link RscpCipher}.
- * Authentication happens inside the encrypted channel with the local user credentials.
+ * Authentication happens inside the encrypted channel with the credentials of the E3/DC cloud account.
  *
  * <p>
  * This class is not thread safe. Callers must serialize access, because request and response are not
@@ -44,6 +48,8 @@ import org.eclipse.jdt.annotation.Nullable;
 public class RscpClient implements AutoCloseable {
 
     public static final int DEFAULT_PORT = 5033;
+
+    private final Logger logger = LoggerFactory.getLogger(RscpClient.class);
 
     private final String host;
     private final int port;
@@ -69,6 +75,7 @@ public class RscpClient implements AutoCloseable {
     /** Opens the socket and authenticates. */
     public void connect() throws RscpException {
         close();
+        logger.debug("Connecting to {}:{} with a timeout of {} ms", host, port, timeoutMillis);
         try {
             Socket newSocket = new Socket();
             newSocket.connect(new InetSocketAddress(host, port), timeoutMillis);
@@ -82,19 +89,57 @@ public class RscpClient implements AutoCloseable {
             close();
             throw new RscpException("Cannot connect to " + host + ":" + port, e);
         }
+        Socket connected = socket;
+        logger.debug("Connected to {}:{} from local port {}. Authenticating user '{}' (password and RSCP key are"
+                + " not logged)", host, port, connected != null ? connected.getLocalPort() : -1, user);
 
         RscpValue authentication = RscpValue.container(RscpTag.RSCP_REQ_AUTHENTICATION,
                 List.of(RscpValue.cstring(RscpTag.RSCP_AUTHENTICATION_USER, user),
                         RscpValue.cstring(RscpTag.RSCP_AUTHENTICATION_PASSWORD, password)));
-        RscpValue response = request(authentication);
+        RscpValue response;
+        try {
+            response = request(List.of(authentication));
+        } catch (RscpException e) {
+            close();
+            throw new RscpException(explainHandshakeFailure(e), e);
+        }
         RscpError error = response.findError();
         if (error != null) {
             close();
             if (error == RscpError.ACCESS_DENIED) {
-                throw new RscpException("The device rejected the credentials");
+                throw new RscpException("The device rejected the credentials (access denied). The user name or the"
+                        + " password does not match the E3/DC cloud account.");
             }
             throw new RscpException("Authentication failed with " + error);
         }
+        logger.debug("Authentication succeeded, the device answered with {}", response);
+    }
+
+    /**
+     * Turns a failure during the handshake into a message that names the likely cause.
+     *
+     * <p>
+     * The two failures look alike in a log but have different causes: a timeout means that nothing arrived
+     * at all, while a connection that closes without a single byte usually means the device could not
+     * decrypt the request, which points at the RSCP key rather than at the credentials.
+     */
+    private String explainHandshakeFailure(RscpException cause) {
+        String detail = cause.getMessage();
+        if (detail == null) {
+            detail = cause.toString();
+        }
+        Throwable root = cause.getCause() != null ? cause.getCause() : cause;
+        if (root instanceof SocketTimeoutException) {
+            return "No answer from " + host + ":" + port + " within " + timeoutMillis + " ms. The host answered on"
+                    + " the TCP level but the RSCP interface stayed silent; check the port and whether another"
+                    + " client still holds the connection. (" + detail + ")";
+        }
+        if (root instanceof EOFException || detail.contains("closed after 0 of")) {
+            return "The device closed the connection without sending a single byte. It most likely could not"
+                    + " decrypt the request, so the RSCP password probably does not match the one set on the"
+                    + " device. (" + detail + ")";
+        }
+        return detail;
     }
 
     public boolean isConnected() {
@@ -103,31 +148,38 @@ public class RscpClient implements AutoCloseable {
     }
 
     /**
-     * Sends one container and returns the decoded response.
+     * Sends the elements and returns the decoded answer.
      *
      * <p>
-     * A device side error item for the requested tag is not treated as a failure: it is returned so
-     * the caller can distinguish "unsupported data point" from "request failed".
+     * A device side error item for a requested tag is not treated as a failure: it is returned so the
+     * caller can distinguish an unsupported data point from a failed request.
+     *
+     * <p>
+     * The device answers with exactly one frame that carries all elements, so one frame is read. Reading
+     * further frames would consume the answer of the next request, because the device replies about a
+     * second later while a follow-up read waits only a fraction of that.
      */
-    public RscpValue request(RscpValue item) throws RscpException {
+    public RscpValue request(List<RscpValue> requestItems) throws RscpException {
         byte[] frame;
         try {
-            frame = RscpCodec.encodeFrame(item);
+            frame = RscpCodec.encodeFrame(requestItems);
         } catch (IOException e) {
             throw new RscpException("Cannot encode the request: " + e.getMessage(), e);
         }
         send(frame);
-        byte[] response = receive();
-        List<RscpValue> items = RscpCodec.decodeFrame(response);
-        if (items.isEmpty()) {
+        List<RscpValue> received = RscpCodec.decodeFrame(receive());
+        if (received.isEmpty()) {
             throw new RscpException("The device sent an empty response");
         }
-        return items.size() == 1 ? items.get(0) : RscpValue.container(0, items);
+        logger.debug("Request of {} elements answered with {} elements", requestItems.size(), received.size());
+        RscpValue answer = received.size() == 1 ? received.get(0) : RscpValue.container(0, received);
+        logger.trace("Answer: {}", answer.describeTree());
+        return answer;
     }
 
-    /** Requests one tag by sending it inside the root container. */
+    /** Requests one tag, which is a top level element of the frame. */
     public RscpValue requestTag(int tag) throws RscpException {
-        return request(RscpValue.container(0, List.of(RscpValue.none(tag))));
+        return request(List.of(RscpValue.none(tag)));
     }
 
     private void send(byte[] frame) throws RscpException {
@@ -137,8 +189,10 @@ public class RscpClient implements AutoCloseable {
             throw new RscpException("Not connected");
         }
         try {
-            currentOutput.write(currentCipher.encrypt(frame));
+            byte[] encrypted = currentCipher.encrypt(frame);
+            currentOutput.write(encrypted);
             currentOutput.flush();
+            logger.trace("Sent {} plain bytes, {} encrypted bytes", frame.length, encrypted.length);
         } catch (IOException e) {
             throw new RscpException("Cannot send the request: " + e.getMessage(), e);
         }
@@ -177,6 +231,7 @@ public class RscpClient implements AutoCloseable {
                 }
             }
             byte[] plain = currentCipher.decrypt(raw.toByteArray());
+            logger.trace("Received {} encrypted bytes for a plain frame of {} bytes", raw.size(), totalPlain);
             return java.util.Arrays.copyOf(plain, totalPlain);
         } catch (IOException e) {
             throw new RscpException("Cannot read the response: " + e.getMessage(), e);
@@ -196,7 +251,8 @@ public class RscpClient implements AutoCloseable {
         if (probe.length < RscpCodec.HEADER_LENGTH) {
             throw new RscpException("The response header is incomplete");
         }
-        int ctrl = ByteBuffer.wrap(probe, 2, 2).order(ByteOrder.LITTLE_ENDIAN).getShort() & 0xFFFF;
+        // the flag sits in the second control byte, index 2 is zero
+        int ctrl = probe[3] & 0xFF;
         int dataLength = ByteBuffer.wrap(probe, 16, 2).order(ByteOrder.LITTLE_ENDIAN).getShort() & 0xFFFF;
         return RscpCodec.HEADER_LENGTH + dataLength + ((ctrl & RscpCodec.CTRL_CRC) != 0 ? 4 : 0);
     }

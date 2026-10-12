@@ -53,7 +53,7 @@ CHANNEL_TEXT = {
     'autarky': ('Number:Dimensionless', 'Autarky', 'Share of consumption covered by the power plant'),
     'self-consumption': ('Number:Dimensionless', 'Self Consumption', 'Share of production used on site'),
     'soc': ('Number:Dimensionless', 'State of Charge', 'Battery state of charge'),
-    'rsoc': ('Number:Dimensionless', 'Real State of Charge', 'Battery state of charge from the energy history'),
+    'rsoc': ('Number:Dimensionless', 'Real State of Charge', 'State of charge the battery reports itself'),
     'remaining-charge-power': ('Number:Power', 'Remaining Charge Power', 'Charge power still available'),
     'remaining-discharge-power': ('Number:Power', 'Remaining Discharge Power', 'Discharge power still available'),
     'max-charge-power': ('Number:Power', 'Maximum Charge Power', 'Configured limit for battery charging'),
@@ -72,12 +72,6 @@ CHANNEL_TEXT = {
     'string-count': ('Number', 'String Count', 'Number of photovoltaic strings in use'),
     'energy-total': ('Number:Energy', 'Total Energy', 'Energy produced since commissioning'),
     'energy-day': ('Number:Energy', 'Energy Today', 'Energy produced today'),
-    'solar-day': ('Number:Energy', 'Solar Energy Today', 'Photovoltaic energy produced today'),
-    'house-day': ('Number:Energy', 'House Energy Today', 'Energy consumed by the household today'),
-    'grid-in-day': ('Number:Energy', 'Grid Supply Today', 'Energy drawn from the grid today'),
-    'grid-out-day': ('Number:Energy', 'Grid Feed Today', 'Energy fed into the grid today'),
-    'battery-in-day': ('Number:Energy', 'Battery Charge Today', 'Energy charged into the battery today'),
-    'battery-out-day': ('Number:Energy', 'Battery Discharge Today', 'Energy taken from the battery today'),
     'software-version': ('String', 'Software Version', 'Firmware version of the device'),
     'serial-number': ('String', 'Serial Number', 'Serial number of the device'),
     'production-date': ('String', 'Production Date', 'Manufacturing date of the device'),
@@ -112,6 +106,8 @@ CHANNEL_TEXT = {
     'min-charge-current': ('Number:ElectricCurrent', 'Minimum Charge Current', 'Lowest charging current allowed'),
     'max-charge-current': ('Number:ElectricCurrent', 'Maximum Charge Current', 'Highest charging current allowed'),
     'number-phases': ('Number', 'Number of Phases', 'Number of phases used for charging'),
+    'auto-phase-switch': ('Switch', 'Automatic Phase Switch',
+                          'Whether the wallbox changes the number of phases by itself'),
     'key-state': ('Switch', 'Key State', 'State of the wallbox key switch'),
     'plugged': ('Switch', 'Plugged', 'A vehicle is connected'),
     'locked': ('Switch', 'Locked', 'The connector is locked'),
@@ -120,22 +116,9 @@ CHANNEL_TEXT = {
     'sun-mode': ('Switch', 'Sun Mode', 'Charging uses surplus photovoltaic power'),
 }
 
-# writable channels, labelled from the set channel id
+# writable channels that start an action instead of setting a value
 COMMAND_TEXT = {
-    'set-max-charge-power': ('Number:Power', 'Set Maximum Charge Power', 'Limit for battery charging'),
-    'set-max-discharge-power': ('Number:Power', 'Set Maximum Discharge Power', 'Limit for battery discharging'),
-    'set-discharge-start-power': ('Number:Power', 'Set Discharge Start Power',
-                                  'Power above which the battery is discharged'),
-    'set-power-limits': ('Switch', 'Set Power Limits', 'Whether the configured power limits are active'),
-    'set-weather-regulated-charge': ('Switch', 'Set Weather Regulated Charge',
-                                     'Whether charging follows the weather forecast'),
-    'set-power-mode': ('Number', 'Set Power Mode',
-                       'Manual power mode: 0 automatic, 1 idle, 2 discharge, 3 charge, 4 grid charge'),
     'set-manual-charge': ('Number:Power', 'Set Manual Charge Power', 'Start a manual battery charge'),
-    'set-max-charge-current': ('Number:ElectricCurrent', 'Set Maximum Charge Current',
-                               'Highest charging current allowed for the wallbox'),
-    'set-sun-mode': ('Switch', 'Set Sun Mode', 'Whether wallbox charging uses surplus photovoltaic power'),
-    'set-suspended': ('Switch', 'Set Suspended', 'Suspend or resume the charging session'),
 }
 
 GROUP_LABEL = {
@@ -143,7 +126,6 @@ GROUP_LABEL = {
     'GROUP_BATTERY': 'Battery',
     'GROUP_GRID': 'Grid',
     'GROUP_INVERTER': 'Inverter',
-    'GROUP_ENERGY': 'Energy',
     'GROUP_SYSTEM': 'System',
     'GROUP_WALLBOX': 'Wallbox',
     'GROUP_METER': 'Power Meter',

@@ -52,8 +52,10 @@ class RscpCodecTest {
         int extra = withCrc ? 4 : 0;
         ByteBuffer buffer = ByteBuffer.allocate(RscpCodec.HEADER_LENGTH + payload.length + extra)
                 .order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putShort((short) 0xE3DC);
-        buffer.putShort((short) (withCrc ? RscpCodec.CTRL_CRC : 0));
+        buffer.put(RscpCodec.MAGIC_BYTES[0]);
+        buffer.put(RscpCodec.MAGIC_BYTES[1]);
+        buffer.put((byte) 0);
+        buffer.put((byte) (withCrc ? RscpCodec.VERSION : 0));
         buffer.putLong(1_600_000_000L);
         buffer.putInt(123_000_000);
         buffer.putShort((short) payload.length);
@@ -87,11 +89,20 @@ class RscpCodecTest {
 
     @Test
     void encodedFrameFollowsTheDocumentedLayout() throws Exception {
-        byte[] encoded = RscpCodec.encodeFrame(RscpValue.none(RscpTag.EMS_REQ_POWER_PV));
+        byte[] encoded = RscpCodec.encodeFrame(List.of(RscpValue.none(RscpTag.EMS_REQ_POWER_PV)));
+
+        // the control field is checked as raw bytes: reading it as a little endian short hides a wrong
+        // byte order, which is exactly how the version byte was lost before
+        assertEquals((byte) 0xE3, encoded[0], "frame magic, first byte");
+        assertEquals((byte) 0xDC, encoded[1], "frame magic, second byte");
+        assertEquals((byte) 0x00, encoded[2], "control byte 0 is zero");
+        assertEquals((byte) 0x11, encoded[3], "control byte 1 carries version and CRC flag");
+        assertTrue((encoded[3] & RscpCodec.CTRL_CRC) != 0, "the CRC flag must be set");
+        assertEquals(RscpCodec.VERSION, encoded[3] & 0xFF, "the announced control value");
 
         ByteBuffer buffer = ByteBuffer.wrap(encoded).order(ByteOrder.LITTLE_ENDIAN);
-        assertEquals(0xE3DC, buffer.getShort() & 0xFFFF, "frame magic");
-        assertEquals(RscpCodec.CTRL_CRC, buffer.getShort() & 0xFFFF, "the CRC bit must be set");
+        buffer.getShort();
+        buffer.getShort();
         buffer.getLong();
         buffer.getInt();
         int payloadLength = buffer.getShort() & 0xFFFF;
@@ -104,9 +115,28 @@ class RscpCodecTest {
         assertEquals(0, buffer.getShort() & 0xFFFF, "and no value");
     }
 
+    /**
+     * A frame carries a list of elements side by side. Wrapping them in a container would announce an
+     * outer tag the interface does not have, which is what the device answered with NOT_HANDLED before.
+     */
+    @Test
+    void frameElementsAreSiblingsWithoutAWrappingContainer() throws Exception {
+        byte[] encoded = RscpCodec.encodeFrame(
+                List.of(RscpValue.none(RscpTag.EMS_REQ_POWER_PV), RscpValue.none(RscpTag.EMS_REQ_BAT_SOC)));
+
+        List<RscpValue> decoded = RscpCodec.decodeFrame(encoded);
+
+        assertEquals(2, decoded.size(), "both elements are top level items");
+        assertEquals(RscpTag.EMS_REQ_POWER_PV, decoded.get(0).getTag());
+        assertEquals(RscpTag.EMS_REQ_BAT_SOC, decoded.get(1).getTag());
+        assertEquals(RscpType.NONE, decoded.get(0).getType(), "a request element carries no value");
+        // the payload is header plus the two items and the CRC, with no room for a container in between
+        assertEquals(RscpCodec.HEADER_LENGTH + 2 * ITEM_HEADER + 4, encoded.length);
+    }
+
     @Test
     void everyEncodedFrameCarriesAValidCrc() throws Exception {
-        byte[] encoded = RscpCodec.encodeFrame(RscpValue.cstring(RscpTag.RSCP_AUTHENTICATION_USER, "someone"));
+        byte[] encoded = RscpCodec.encodeFrame(List.of(RscpValue.cstring(RscpTag.RSCP_AUTHENTICATION_USER, "someone")));
 
         CRC32 crc = new CRC32();
         crc.update(encoded, 0, encoded.length - 4);
@@ -116,17 +146,18 @@ class RscpCodecTest {
     }
 
     @Test
-    void aStringIsEncodedAsZeroTerminatedCString() throws Exception {
-        byte[] encoded = RscpCodec.encodeFrame(RscpValue.cstring(RscpTag.RSCP_AUTHENTICATION_USER, "abc"));
+    void aStringIsEncodedWithoutATerminator() throws Exception {
+        byte[] encoded = RscpCodec.encodeFrame(List.of(RscpValue.cstring(RscpTag.RSCP_AUTHENTICATION_USER, "abc")));
 
         ByteBuffer buffer = ByteBuffer.wrap(encoded).order(ByteOrder.LITTLE_ENDIAN);
         buffer.position(RscpCodec.HEADER_LENGTH + 4);
         assertEquals(RscpType.CSTRING.getCode(), buffer.get() & 0xFF);
-        assertEquals(4, buffer.getShort() & 0xFFFF, "three characters plus the terminator");
+        assertEquals(3, buffer.getShort() & 0xFFFF, "the three characters and nothing else");
 
-        byte[] text = new byte[4];
+        byte[] text = new byte[3];
         buffer.get(text);
-        assertArrayEquals(new byte[] { 'a', 'b', 'c', 0 }, text);
+        assertArrayEquals(new byte[] { 'a', 'b', 'c' }, text,
+                "the device expects the bare text, a trailing NUL is not sent");
     }
 
     @Test
@@ -134,7 +165,7 @@ class RscpCodecTest {
         RscpValue container = RscpValue.container(RscpTag.RSCP_REQ_AUTHENTICATION,
                 List.of(RscpValue.cstring(RscpTag.RSCP_AUTHENTICATION_USER, "u"),
                         RscpValue.cstring(RscpTag.RSCP_AUTHENTICATION_PASSWORD, "p")));
-        byte[] encoded = RscpCodec.encodeFrame(container);
+        byte[] encoded = RscpCodec.encodeFrame(List.of(container));
 
         ByteBuffer buffer = ByteBuffer.wrap(encoded).order(ByteOrder.LITTLE_ENDIAN);
         buffer.position(RscpCodec.HEADER_LENGTH);
@@ -142,8 +173,8 @@ class RscpCodecTest {
         assertEquals(RscpType.CONTAINER.getCode(), buffer.get() & 0xFF);
         int containerLength = buffer.getShort() & 0xFFFF;
 
-        // each child is a 7 byte header plus 2 bytes of value
-        assertEquals(2 * (ITEM_HEADER + 2), containerLength);
+        // each child is a 7 byte header plus one byte of value, because strings carry no terminator
+        assertEquals(2 * (ITEM_HEADER + 1), containerLength);
         assertEquals(RscpCodec.HEADER_LENGTH + ITEM_HEADER + containerLength + 4, encoded.length,
                 "the frame payload is the container header plus its children");
     }
@@ -217,7 +248,7 @@ class RscpCodecTest {
 
         for (Case testCase : cases) {
             RscpValue encoded = RscpValue.of(1000, RscpType.fromCode(testCase.type()), testCase.value());
-            RscpValue decoded = firstOf(RscpCodec.decodeFrame(RscpCodec.encodeFrame(encoded)));
+            RscpValue decoded = firstOf(RscpCodec.decodeFrame(RscpCodec.encodeFrame(List.of(encoded))));
             RscpValue item = decoded.find(1000);
             assertNotNull(item, "the item must survive the round trip, but the frame only held " + decoded);
 
@@ -301,18 +332,19 @@ class RscpCodecTest {
         byte[] huge = new byte[0x10000];
         RscpValue oversized = RscpValue.of(1, RscpType.BYTEARRAY, huge);
 
-        assertThrows(java.io.IOException.class, () -> RscpCodec.encodeFrame(oversized));
+        assertThrows(java.io.IOException.class, () -> RscpCodec.encodeFrame(List.of(oversized)));
     }
 
     @Test
     void utf8TextSurvivesTheRoundTrip() throws Exception {
         // written as escapes so the file stays ASCII and cannot be mangled by an editor
         String text = "Gr\u00fc\u00dfe aus M\u00fcnchen";
-        RscpValue decoded = firstOf(
-                RscpCodec.decodeFrame(RscpCodec.encodeFrame(RscpValue.cstring(RscpTag.INFO_SW_RELEASE, text))));
+        RscpValue decoded = firstOf(RscpCodec
+                .decodeFrame(RscpCodec.encodeFrame(List.of(RscpValue.cstring(RscpTag.INFO_SW_RELEASE, text)))));
 
         byte[] raw = decoded.asBytes();
         assertNotNull(raw, "the decoded value must be a byte array");
-        assertEquals(text, new String(raw, 0, raw.length - 1, StandardCharsets.UTF_8));
+        assertEquals(text, new String(raw, StandardCharsets.UTF_8),
+                "the whole value is the text, without a terminator");
     }
 }

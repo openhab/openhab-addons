@@ -14,6 +14,7 @@ package org.openhab.binding.e3dc.internal.rscp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -122,7 +123,7 @@ class Rijndael256Test {
 
     @Test
     void aShortPasswordIsPaddedWithOnes() {
-        byte[] key = Rijndael256.keyFromPassword("smartpower".getBytes());
+        byte[] key = Rijndael256.keyFromPassword("smartpower".getBytes(StandardCharsets.UTF_8));
 
         assertEquals(Rijndael256.BLOCK, key.length);
         assertEquals('s', key[0]);
@@ -158,7 +159,7 @@ class Rijndael256Test {
 
     @Test
     void chainingMakesIdenticalPlaintextBlocksEncryptDifferently() {
-        byte[] password = "smartpower".getBytes();
+        byte[] password = "smartpower".getBytes(StandardCharsets.UTF_8);
         byte[] plain = new byte[Rijndael256.BLOCK * 2];
 
         byte[] encrypted = new RscpCipher(password).encrypt(plain);
@@ -171,7 +172,7 @@ class Rijndael256Test {
 
     @Test
     void decryptionReversesEncryptionAndAdvancesTheChainingState() {
-        byte[] password = "smartpower".getBytes();
+        byte[] password = "smartpower".getBytes(StandardCharsets.UTF_8);
         byte[] plain = new byte[Rijndael256.BLOCK * 2];
         for (int i = 0; i < plain.length; i++) {
             plain[i] = (byte) (i + 1);
@@ -185,7 +186,7 @@ class Rijndael256Test {
 
     @Test
     void peekingDoesNotAdvanceTheChainingState() {
-        byte[] password = "smartpower".getBytes();
+        byte[] password = "smartpower".getBytes(StandardCharsets.UTF_8);
         byte[] plain = new byte[Rijndael256.BLOCK * 2];
         for (int i = 0; i < plain.length; i++) {
             plain[i] = (byte) (i * 3 + 1);

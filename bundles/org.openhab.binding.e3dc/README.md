@@ -38,14 +38,49 @@ The bridge and the things have to be added manually.
 |-----------------|---------|------------------------------------------------------------------|---------|----------|----------|
 | host            | text    | Host name or IP address of the E3/DC device.                      | N/A     | yes      | no       |
 | port            | integer | TCP port of the RSCP interface.                                   | 5033    | no       | yes      |
-| userName        | text    | Local user name of the device.                                    | N/A     | yes      | no       |
-| password        | text    | Password of the local user.                                       | N/A     | yes      | no       |
-| rscpPassword    | text    | RSCP password set on the device; used to encrypt the connection.  | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in seconds.                         | 60      | no       | no       |
+| userName        | text    | User name of the E3/DC account, usually the e-mail address.        | N/A     | yes      | no       |
+| password        | text    | Password of the E3/DC account.                                    | N/A     | yes      | no       |
+| rscpPassword    | text    | Encryption key configured on the device.                          | N/A     | yes      | no       |
+| refreshInterval | integer | Interval the device is polled in seconds, between 1 and 300.      | 60      | no       | no       |
 | timeout         | integer | Timeout for a single request in seconds.                          | 10      | no       | yes      |
 
-The RSCP password is set on the device itself, not in the portal. On the device display it can be
-found under _Main Page → Personalize → User profile → RSCP password_.
+#### The credentials
+
+The bridge needs three values, and they are made of two things only: your E3/DC account and the RSCP
+key. There is no separate account on the device.
+
+| Parameter      | What it is                                              | Where it comes from                                       |
+|----------------|----------------------------------------------------------|-----------------------------------------------------------|
+| `userName`     | Your E3/DC account, usually an e-mail address             | The account you use for the E3/DC portal                   |
+| `password`     | The password of that E3/DC account                        | The same account                                          |
+| `rscpPassword` | The key the connection is encrypted with                  | _Main Page → Personalize → User profile → RSCP password_   |
+
+`userName` and `password` are the E3/DC account credentials, not a device local account. The
+`rscpPassword` is a separate value: it encrypts the connection and is not checked against a user, so a
+wrong key makes the device drop the connection instead of answering with an authentication error.
+
+References: the [E3/DC binding by Björn Brings](https://github.com/bjoernbrings/openhab-addons/tree/E3DC)
+uses the same pair of parameters and documents the account values as `Webusername` (typically the
+e-mail address) and `Webpassword` (used to log into the E3/DC portal);
+[rscp2mqtt](https://github.com/pvtom/rscp2mqtt) configures the same three values.
+
+#### If the connection stays offline
+
+| Status detail          | Meaning                                                                    |
+|------------------------|----------------------------------------------------------------------------|
+| `COMMUNICATION_ERROR` with `closed after 0 of 32 bytes` | The device accepted the TCP connection and closed it without answering. Usually the `rscpPassword` does not match the key on the device, so the request cannot be decrypted. |
+| `COMMUNICATION_ERROR` with a timeout                   | Nothing arrived at all. The host or port is wrong, or a firewall drops the connection. |
+| `COMMUNICATION_ERROR` about the credentials              | The device answered with access denied, so `userName` or `password` is wrong. |
+| `BRIDGE_OFFLINE`                                        | The bridge itself is offline; the state of the bridge explains why.         |
+
+For a protocol level trace of the handshake, raise the log level for the RSCP client:
+
+```text
+log:set TRACE org.openhab.binding.e3dc.internal.rscp
+```
+
+At `DEBUG` the log names the host, the port, the account that is being authenticated and, on failure,
+whether the device stayed silent or closed the connection. Passwords and the RSCP key are never logged.
 
 ### `power-plant`, `wallbox`, `power-meter` and `battery-module` Thing Configuration
 
@@ -79,7 +114,7 @@ The channels are grouped per aspect. Power values are reported in `W`, energy co
 | Channel                   | Type                 | Description                                     |
 |---------------------------|----------------------|-------------------------------------------------|
 | soc                       | Number:Dimensionless | Battery state of charge                          |
-| rsoc                      | Number:Dimensionless | Battery state of charge from the energy history  |
+| rsoc                      | Number:Dimensionless | State of charge the battery reports itself       |
 | remaining-charge-power    | Number:Power         | Charge power still available                     |
 | remaining-discharge-power | Number:Power         | Discharge power still available                  |
 | max-charge-power          | Number:Power         | Configured limit for battery charging            |
@@ -115,17 +150,6 @@ The channels are grouped per aspect. Power values are reported in `W`, energy co
 The direct current values are reported once per photovoltaic tracker and carry no index of their own, so
 the first two trackers are exposed as separate channels. The `string-count` channel reports how many
 trackers the device actually uses.
-
-### Channel Group `energy`
-
-| Channel         | Type          | Description                            |
-|-----------------|---------------|----------------------------------------|
-| solar-day       | Number:Energy | Photovoltaic energy produced today      |
-| house-day       | Number:Energy | Energy consumed by the household today  |
-| grid-in-day     | Number:Energy | Energy drawn from the grid today        |
-| grid-out-day    | Number:Energy | Energy fed into the grid today          |
-| battery-in-day  | Number:Energy | Energy charged into the battery today   |
-| battery-out-day | Number:Energy | Energy taken from the battery today     |
 
 ### Channel Group `system`
 
@@ -222,31 +246,36 @@ The reserve is the part of the battery the device keeps available for emergency 
 
 ### Writable Channels
 
-The following channels accept commands and write the value to the device. The charge and discharge
-limits are written as one container because switching the power limits off resets the enclosed limits:
-a write for one of them always carries the other values that were last read from the device.
+The following channels accept commands and write the value to the device. A value that the device reports
+is set through the channel that reports it, so there is one channel per value and no second one for
+writing it. The charge and discharge limits are written as one container because switching the power
+limits off resets the enclosed limits: a write for one of them always carries the other values that were
+last read from the device.
 
 | Channel Group | Channel                      | Type         | Description                                                                 |
 |---------------|------------------------------|--------------|-----------------------------------------------------------------------------|
-| `battery`     | set-max-charge-power         | Number:Power | Limit for battery charging                                                   |
-| `battery`     | set-max-discharge-power      | Number:Power | Limit for battery discharging                                                |
-| `battery`     | set-discharge-start-power    | Number:Power | Power above which the battery is discharged                                  |
-| `system`      | set-power-limits             | Switch       | Whether the configured power limits are active                               |
-| `system`      | set-weather-regulated-charge | Switch       | Whether charging follows the weather forecast                                |
-| `system`      | set-power-mode               | Number       | Manual power mode, chosen from automatic, idle, discharge, charge and grid charge |
-| `system`      | set-manual-charge            | Number:Power | Start a manual battery charge                                                |
-| `reserve`     | set-percent                  | Number:Dimensionless | Share of the battery to keep for emergency power                    |
-| `reserve`     | set-energy                   | Number:Energy | Energy to keep for emergency power                                          |
-| `wallbox`     | set-max-charge-current       | Number:ElectricCurrent | Highest charging current allowed, 1 to 32 A                        |
-| `wallbox`     | set-sun-mode                 | Switch       | Whether charging uses surplus photovoltaic power                             |
+| `battery`     | max-charge-power             | Number:Power | Configured limit for battery charging                                        |
+| `battery`     | max-discharge-power          | Number:Power | Configured limit for battery discharging                                     |
+| `battery`     | discharge-start-power        | Number:Power | Power above which the battery is discharged                                  |
+| `system`      | power-limits-used            | Switch       | Whether the configured power limits are active                               |
+| `system`      | weather-regulated-charge     | Switch       | Whether charging follows the weather forecast                                |
+| `system`      | mode                         | Number       | Operating mode, chosen from automatic, idle, discharge, charge and grid charge |
+| `system`      | set-manual-charge            | Number:Power | Start a manual battery charge, an action rather than a value                 |
+| `reserve`     | percent                      | Number:Dimensionless | Share of the battery to keep for emergency power                    |
+| `reserve`     | energy                       | Number:Energy | Energy to keep for emergency power                                          |
+| `wallbox`     | sun-mode                     | Switch       | Whether charging uses surplus photovoltaic power                             |
+| `wallbox`     | suspended                    | Switch       | Whether the charging session is suspended                                    |
+| `wallbox`     | auto-phase-switch            | Switch       | Whether the wallbox changes the number of phases by itself                    |
+| `wallbox`     | min-charge-current           | Number:ElectricCurrent | Lowest charging current allowed, 1 to 32 A                  |
+| `wallbox`     | max-charge-current           | Number:ElectricCurrent | Highest charging current allowed, 1 to 32 A                        |
+| `wallbox`     | number-phases                | Number       | Number of phases used for charging, 1 or 3                                   |
 
 A channel state is only updated after the device acknowledged the write, so a rejected command leaves
 the channel untouched.
 
-The wallbox is not configured field by field: it expects one complete command payload. A write for one
-wallbox field therefore carries the values last read for the other fields. Suspending a charging
-session is a toggle on the device rather than a level, which cannot be expressed as a state a user
-sets, so that control is deliberately not offered.
+A wallbox value is written as the parameter of the request that names it, which is also how the value is
+read: every wallbox control is one channel that reports and sets its value. The `plugged`, `locked` and
+`charging` channels report states the device decides, so they are read only.
 
 ### Channel Group `wallbox`
 
@@ -261,6 +290,7 @@ sets, so that control is deliberately not offered.
 | min-charge-current | Number:ElectricCurrent | Lowest charging current allowed            |
 | max-charge-current | Number:ElectricCurrent | Highest charging current allowed           |
 | number-phases      | Number                 | Number of phases used for charging         |
+| auto-phase-switch  | Switch                 | Wallbox changes the number of phases by itself |
 | key-state          | Switch                 | State of the wallbox key switch            |
 | plugged            | Switch                 | A vehicle is connected                     |
 | locked             | Switch                 | The connector is locked                    |
@@ -349,10 +379,10 @@ Number:Dimensionless E3DC_SelfConsumption  "Self Consumption [%.0f %%]"       { 
 
 Number:Dimensionless E3DC_BatterySoc       "Battery SOC [%.0f %%]"            { channel="e3dc:power-plant:device:plant:battery#soc" }
 
-Number:Energy        E3DC_SolarToday       "Solar Today [%.1f %unit%]"        { channel="e3dc:power-plant:device:plant:energy#solar-day" }
-Number:Energy        E3DC_HouseToday       "House Today [%.1f %unit%]"        { channel="e3dc:power-plant:device:plant:energy#house-day" }
-Number:Energy        E3DC_GridInToday      "Grid Supply Today [%.1f %unit%]"  { channel="e3dc:power-plant:device:plant:energy#grid-in-day" }
-Number:Energy        E3DC_GridOutToday     "Grid Feed Today [%.1f %unit%]"    { channel="e3dc:power-plant:device:plant:energy#grid-out-day" }
+Number:Energy        E3DC_DaySolar         "Solar Day [%.1f %unit%]"          { channel="e3dc:power-plant:device:plant:history#day-solar" }
+Number:Energy        E3DC_DayHouse         "House Day [%.1f %unit%]"          { channel="e3dc:power-plant:device:plant:history#day-house" }
+Number:Energy        E3DC_DayGridIn        "Grid Supply Day [%.1f %unit%]"    { channel="e3dc:power-plant:device:plant:history#day-grid-in" }
+Number:Energy        E3DC_DayGridOut       "Grid Feed Day [%.1f %unit%]"      { channel="e3dc:power-plant:device:plant:history#day-grid-out" }
 
 Switch               E3DC_ChargingLock     "Charging Lock [%s]"               { channel="e3dc:power-plant:device:plant:system#charging-lock" }
 String               E3DC_SerialNumber     "Serial Number [%s]"               { channel="e3dc:power-plant:device:plant:system#serial-number" }
@@ -361,10 +391,10 @@ Switch               E3DC_WallboxPlugged   "Wallbox Plugged [%s]"             { 
 Switch               E3DC_WallboxCharging  "Wallbox Charging [%s]"            { channel="e3dc:wallbox:device:wallbox0:wallbox#charging" }
 Number:Power         E3DC_WallboxPower     "Wallbox Power [%.0f %unit%]"      { channel="e3dc:wallbox:device:wallbox0:wallbox#power-l1" }
 
-Number:Power         E3DC_MaxChargePower   "Max Charge Power [%.0f %unit%]"   { channel="e3dc:power-plant:device:plant:battery#set-max-charge-power" }
-Number:Power         E3DC_MaxDischargePower "Max Discharge Power [%.0f %unit%]" { channel="e3dc:power-plant:device:plant:battery#set-max-discharge-power" }
-Switch               E3DC_PowerLimits      "Power Limits [%s]"                { channel="e3dc:power-plant:device:plant:system#set-power-limits" }
-Switch               E3DC_WeatherCharge    "Weather Charge [%s]"              { channel="e3dc:power-plant:device:plant:system#set-weather-regulated-charge" }
+Number:Power         E3DC_MaxChargePower   "Max Charge Power [%.0f %unit%]"   { channel="e3dc:power-plant:device:plant:battery#max-charge-power" }
+Number:Power         E3DC_MaxDischargePower "Max Discharge Power [%.0f %unit%]" { channel="e3dc:power-plant:device:plant:battery#max-discharge-power" }
+Switch               E3DC_PowerLimits      "Power Limits [%s]"                { channel="e3dc:power-plant:device:plant:system#power-limits-used" }
+Switch               E3DC_WeatherCharge    "Weather Charge [%s]"              { channel="e3dc:power-plant:device:plant:system#weather-regulated-charge" }
 ```
 
 ### Sitemap Configuration
@@ -383,11 +413,11 @@ sitemap e3dc label="E3/DC" {
         Text item=E3DC_BatterySoc       label="SOC [%.0f %%]"
         Switch item=E3DC_ChargingLock   label="Charging Lock [%s]"
     }
-    Frame label="Energy Today" {
-        Text item=E3DC_SolarToday       label="Solar [%.1f %unit%]"
-        Text item=E3DC_HouseToday       label="House [%.1f %unit%]"
-        Text item=E3DC_GridInToday      label="Grid Supply [%.1f %unit%]"
-        Text item=E3DC_GridOutToday     label="Grid Feed [%.1f %unit%]"
+    Frame label="Energy Day" {
+        Text item=E3DC_DaySolar         label="Solar [%.1f %unit%]"
+        Text item=E3DC_DayHouse         label="House [%.1f %unit%]"
+        Text item=E3DC_DayGridIn        label="Grid Supply [%.1f %unit%]"
+        Text item=E3DC_DayGridOut       label="Grid Feed [%.1f %unit%]"
     }
     Frame label="Wallbox" {
         Switch item=E3DC_WallboxPlugged  label="Plugged [%s]"
