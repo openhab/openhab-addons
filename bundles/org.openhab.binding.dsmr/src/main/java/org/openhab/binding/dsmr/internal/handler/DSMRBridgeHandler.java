@@ -261,7 +261,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements P1TelegramLi
                     final String lkm = lastKnownReadErrorMessage;
                     final String message = lkm == null ? "@text/addon.dsmr.error.bridge.nodata" : lkm;
 
-                    deviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, message);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
                 }
                 resetLastReceivedState();
             }
@@ -296,7 +296,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements P1TelegramLi
             lastKnownReadErrorMessage = errorMessage;
             // if fatal set directly offline.
             if (errorStatus.isFatal()) {
-                deviceOffline(ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
             }
         }
     }
@@ -343,15 +343,5 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements P1TelegramLi
         if (dsmrDevice != null) {
             dsmrDevice.setLenientMode(lenientMode);
         }
-    }
-
-    /**
-     * Convenience method to set device off line.
-     *
-     * @param status off line status
-     * @param details off line detailed message
-     */
-    private void deviceOffline(final ThingStatusDetail status, final String details) {
-        updateStatus(status, details);
     }
 }
