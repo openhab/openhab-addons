@@ -200,7 +200,7 @@ The same Things can be defined in a `.things` file.
 
 ### Local Tedee Bridge
 
-```text
+```java
 Bridge tedee:bridge:home "Tedee Bridge" [
     ip="BRIDGE_IP",
     port=80,
@@ -216,7 +216,7 @@ Bridge tedee:bridge:home "Tedee Bridge" [
 
 ### Tedee Cloud
 
-```text
+```java
 Bridge tedee:cloud:cloud "Tedee Cloud" [
     personalAccessKey="YOUR_PERSONAL_ACCESS_KEY",
     pollInterval=300
@@ -247,38 +247,22 @@ Channels need to be linked to Items before their states are consumed by openHAB 
 
 ### Main Lock Items Example
 
-```text
-Switch Tedee_Lock "Lock" {
-    channel="tedee:lock:home:locknamehome:lock"
-}
+```java
+Switch Tedee_Lock "Lock" {channel="tedee:lock:home:locknamehome:lock"}
 
-String Tedee_State "Lock State [%s]" {
-    channel="tedee:lock:home:locknamehome:state"
-}
+String Tedee_State "Lock State [%s]" {channel="tedee:lock:home:locknamehome:state"}
 
-String Tedee_Door_State "Door State [%s]" {
-    channel="tedee:lock:home:locknamehome:doorState"
-}
+String Tedee_Door_State "Door State [%s]" {channel="tedee:lock:home:locknamehome:doorState"}
 
-Number Tedee_Battery "Battery [%.0f %%]" {
-    channel="tedee:lock:home:locknamehome:battery"
-}
+Number Tedee_Battery "Battery [%.0f %%]" {channel="tedee:lock:home:locknamehome:battery"}
 
-Switch Tedee_Charging "Charging" {
-    channel="tedee:lock:home:locknamehome:charging"
-}
+Switch Tedee_Charging "Charging" {channel="tedee:lock:home:locknamehome:charging"}
 
-Switch Tedee_Jammed "Jammed" {
-    channel="tedee:lock:home:locknamehome:jammed"
-}
+Switch Tedee_Jammed "Jammed" {channel="tedee:lock:home:locknamehome:jammed"}
 
-Switch Tedee_Connected "Connected" {
-    channel="tedee:lock:home:locknamehome:connected"
-}
+Switch Tedee_Connected "Connected" {channel="tedee:lock:home:locknamehome:connected"}
 
-String Tedee_Action "Action" {
-    channel="tedee:lock:home:locknamehome:action"
-}
+String Tedee_Action "Action" {channel="tedee:lock:home:locknamehome:action"}
 ```
 
 The same Item definitions can be used for a Cloud Lock by replacing the Thing UID:
@@ -289,10 +273,8 @@ tedee:lock:cloud:locknamecloud:<channel>
 
 For example:
 
-```text
-Switch Tedee_Cloud_Connected "Cloud Lock Connected" {
-    channel="tedee:lock:cloud:locknamecloud:connected"
-}
+```java
+Switch Tedee_Cloud_Connected "Cloud Lock Connected" {channel="tedee:lock:cloud:locknamecloud:connected"}
 ```
 
 ### Device Settings Items
@@ -313,50 +295,28 @@ Switch Tedee_Cloud_Connected "Cloud Lock Connected" {
 
 ### Device Settings Items Example
 
-```text
-Switch Tedee_AutoLockEnabled "Auto Lock Enabled" {
-    channel="tedee:lock:home:locknamehome:autoLockEnabled"
-}
+```java
+Switch Tedee_AutoLockEnabled "Auto Lock Enabled" {channel="tedee:lock:home:locknamehome:autoLockEnabled"}
 
-Number Tedee_AutoLockDelay "Auto Lock Delay" {
-    channel="tedee:lock:home:locknamehome:autoLockDelay"
-}
+Number Tedee_AutoLockDelay "Auto Lock Delay" {channel="tedee:lock:home:locknamehome:autoLockDelay"}
 
-Switch Tedee_AutoLockImplicitEnabled "Auto Lock Implicit Enabled" {
-    channel="tedee:lock:home:locknamehome:autoLockImplicitEnabled"
-}
+Switch Tedee_AutoLockImplicitEnabled "Auto Lock Implicit Enabled" {channel="tedee:lock:home:locknamehome:autoLockImplicitEnabled"}
 
-Number Tedee_AutoLockImplicitDelay "Auto Lock Implicit Delay" {
-    channel="tedee:lock:home:locknamehome:autoLockImplicitDelay"
-}
+Number Tedee_AutoLockImplicitDelay "Auto Lock Implicit Delay" {channel="tedee:lock:home:locknamehome:autoLockImplicitDelay"}
 
-Switch Tedee_PullSpringEnabled "Pull Spring Enabled" {
-    channel="tedee:lock:home:locknamehome:pullSpringEnabled"
-}
+Switch Tedee_PullSpringEnabled "Pull Spring Enabled" {channel="tedee:lock:home:locknamehome:pullSpringEnabled"}
 
-Number Tedee_PullSpringDuration "Pull Spring Duration" {
-    channel="tedee:lock:home:locknamehome:pullSpringDuration"
-}
+Number Tedee_PullSpringDuration "Pull Spring Duration" {channel="tedee:lock:home:locknamehome:pullSpringDuration"}
 
-Switch Tedee_AutoPullSpringEnabled "Auto Pull Spring Enabled" {
-    channel="tedee:lock:home:locknamehome:autoPullSpringEnabled"
-}
+Switch Tedee_AutoPullSpringEnabled "Auto Pull Spring Enabled" {channel="tedee:lock:home:locknamehome:autoPullSpringEnabled"}
 
-Switch Tedee_PostponedLockEnabled "Postponed Lock Enabled" {
-    channel="tedee:lock:home:locknamehome:postponedLockEnabled"
-}
+Switch Tedee_PostponedLockEnabled "Postponed Lock Enabled" {channel="tedee:lock:home:locknamehome:postponedLockEnabled"}
 
-Number Tedee_PostponedLockDelay "Postponed Lock Delay" {
-    channel="tedee:lock:home:locknamehome:postponedLockDelay"
-}
+Number Tedee_PostponedLockDelay "Postponed Lock Delay" {channel="tedee:lock:home:locknamehome:postponedLockDelay"}
 
-Switch Tedee_ButtonLockEnabled "Button Lock Enabled" {
-    channel="tedee:lock:home:locknamehome:buttonLockEnabled"
-}
+Switch Tedee_ButtonLockEnabled "Button Lock Enabled" {channel="tedee:lock:home:locknamehome:buttonLockEnabled"}
 
-Switch Tedee_ButtonUnlockEnabled "Button Unlock Enabled" {
-    channel="tedee:lock:home:locknamehome:buttonUnlockEnabled"
-}
+Switch Tedee_ButtonUnlockEnabled "Button Unlock Enabled" {channel="tedee:lock:home:locknamehome:buttonUnlockEnabled"}
 ```
 
 ## Commands
@@ -507,8 +467,6 @@ The local binding communicates with the Tedee Bridge through:
 http://<BRIDGE-IP>/v1.0
 ```
 
-Authentication uses the `api_token` mechanism implemented by the binding.
-
 ### Main Local Endpoints
 
 | Method | Endpoint | Purpose |
@@ -536,8 +494,6 @@ The Cloud binding communicates directly with the Tedee Cloud API.
 ### Cloud Authentication
 
 Cloud requests use the Personal Access Key configured on the `tedee:cloud` Bridge.
-
-The Access Key is stored as a password-type configuration parameter and must not be exposed in documentation or source control.
 
 ### Cloud Operations
 
@@ -587,12 +543,14 @@ Bridge tedee:cloud:cloud "Tedee Cloud" [
 ```
 
 The two Things are independent and use different transport paths to the same Tedee device.
+The api token for the local bridge can be extracted from the bridge in your tedee APP.
+The Personal Access Key can be retrieved from the tedee web portal.
 
 ## Development Status
 
 The current implementation has been tested successfully with:
 
-- openHAB 4.3.5
+- Openhab 5.3.0 / 4.3.5
 - Tedee Bridge
 - Tedee PRO Lock
 - local webhook events
