@@ -43,7 +43,8 @@ The Bridge represents the physical Tedee Bridge used for local API communication
 | `apiToken` | password | Yes | — | Tedee Bridge API token |
 | `pollInterval` | integer | No | `300` | Configured interval in seconds for bridge monitoring |
 
-The Bridge must be reachable from the openHAB server. The Tedee Bridge API is local to the LAN.
+The Bridge must be reachable from the openHAB server. 
+The Tedee Bridge API is local to the LAN.
 Tedee also requires the Bridge itself to have internet connectivity so that it can obtain and refresh access certificates for paired devices.
 
 ### Tedee Cloud
@@ -201,7 +202,7 @@ The same Things can be defined in a `.things` file.
 ### Local Tedee Bridge
 
 ```java
-Bridge tedee:bridge:home "Tedee Bridge" [
+Bridge tedee:local-bridge:home "Tedee Bridge" [
     ip="BRIDGE_IP",
     port=80,
     apiToken="YOUR_API_TOKEN",
@@ -217,7 +218,7 @@ Bridge tedee:bridge:home "Tedee Bridge" [
 ### Tedee Cloud
 
 ```java
-Bridge tedee:cloud:cloud "Tedee Cloud" [
+Bridge tedee:cloud-bridge:cloud "Tedee Cloud" [
     personalAccessKey="YOUR_PERSONAL_ACCESS_KEY",
     pollInterval=300
 ] {
