@@ -320,8 +320,8 @@ public class MiotParserTest {
         StateDescriptionDTO stateDescription = actions.getStateDescription();
 
         assertNotNull(stateDescription);
-        List<@Nullable String> values = stateDescription.getOptions().stream().map(OptionsValueListDTO::getValue)
-                .toList();
+        List<@Nullable String> values = Objects.requireNonNull(stateDescription.getOptions()).stream()
+                .map(OptionsValueListDTO::getValue).toList();
         assertEquals(List.of("brush-cleaner-reset-brush-life", "brush-cleaner-reset-brush-life1",
                 "brush-cleaner-reset-brush-life11"), values);
 
