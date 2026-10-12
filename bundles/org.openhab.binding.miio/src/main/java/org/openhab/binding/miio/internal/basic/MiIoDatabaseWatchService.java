@@ -117,10 +117,10 @@ public class MiIoDatabaseWatchService implements WatchService.WatchEventListener
                     workingDatabaseList.put(id, db);
                 }
             } catch (JsonParseException | IOException | URISyntaxException e) {
-                logger.debug("Error while processing database '{}': {}", db, e.getMessage());
+                logger.warn("Skipping database file '{}': {}", db, e.getMessage());
             }
-            databaseList = workingDatabaseList;
         }
+        databaseList = workingDatabaseList;
     }
 
     private List<URL> findDatabaseFiles() {

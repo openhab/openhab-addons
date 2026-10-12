@@ -205,12 +205,13 @@ public final class Utils {
 
     public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException,
             JsonParseException, IOException, URISyntaxException, NoSuchFileException {
-        JsonObject jsonObject = new JsonObject();
         try (InputStream inputStream = fileName.openStream();
                 InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
             JsonElement jsonElement = JsonParser.parseReader(reader);
-            jsonObject = jsonElement.getAsJsonObject();
-            return jsonObject;
+            if (!jsonElement.isJsonObject()) {
+                throw new JsonSyntaxException("Not a JSON object");
+            }
+            return jsonElement.getAsJsonObject();
         }
     }
 

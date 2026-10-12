@@ -14,8 +14,18 @@ package org.openhab.binding.miio.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import com.google.gson.JsonParseException;
 
 /**
  * Test case for {@link Utils}
@@ -165,5 +175,18 @@ public class UtilsTest {
         assertFalse(logged.contains(TOKEN));
         assertTrue(logged.length() < Utils.MAX_LOG_LENGTH + 100);
         assertTrue(logged.endsWith("... [truncated, " + longText.length() + " characters in total]"));
+    }
+
+    @Test
+    public void convertFileToJSONTest(@TempDir Path folder) throws IOException, URISyntaxException {
+        Path file = folder.resolve("test.json");
+        URL url = file.toUri().toURL();
+        Files.writeString(file, "{\"deviceMapping\":{}}");
+        assertTrue(Utils.convertFileToJSON(url).has("deviceMapping"));
+
+        for (String content : List.of("", "null", "[]", "\"text\"", "{")) {
+            Files.writeString(file, content);
+            assertThrows(JsonParseException.class, () -> Utils.convertFileToJSON(url), content);
+        }
     }
 }
