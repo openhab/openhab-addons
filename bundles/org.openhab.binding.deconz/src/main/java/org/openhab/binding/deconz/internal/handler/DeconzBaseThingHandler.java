@@ -109,7 +109,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
     private @Nullable DeconzBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return null;
         }
         return (DeconzBridgeHandler) bridge.getHandler();
@@ -117,6 +117,11 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (getBridge() == null) {
+            unregisterListener();
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         if (config.id.isEmpty()) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "ID not set");
             return;

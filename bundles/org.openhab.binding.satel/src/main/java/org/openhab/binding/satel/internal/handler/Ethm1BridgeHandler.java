@@ -26,7 +26,6 @@ import org.openhab.binding.satel.internal.protocol.Ethm1Module;
 import org.openhab.binding.satel.internal.protocol.SatelModule;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;

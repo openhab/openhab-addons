@@ -2087,8 +2087,8 @@ class TestMigrationFromThingToBridge {
         verify(callback, atLeastOnce()).statusUpdated(ArgumentMatchers.any(Thing.class), statusCaptor.capture());
 
         boolean foundMigrationStatus = statusCaptor.getAllValues().stream()
-                .anyMatch(status -> status.getStatus() == ThingStatus.UNINITIALIZED
-                        && status.getStatusDetail() == ThingStatusDetail.NOT_YET_READY);
+                .anyMatch(status -> status.getStatus() == ThingStatus.UNKNOWN
+                        && status.getStatusDetail() == ThingStatusDetail.NONE);
 
         assertTrue(foundMigrationStatus, "Status should be UNINITIALIZED with NOT_YET_READY during migration");
     }

@@ -410,8 +410,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         this.password = config.password;
 
         if (host.isEmpty()) {
-            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.host-not-set");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "@text/offline.conf-error.host-not-set");
             return;
         }
         // Create URL for jsonrpc interface

@@ -122,6 +122,10 @@ public class FlumeDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         config = getConfigAs(FlumeDeviceConfig.class);
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(this::goOnline);
@@ -131,7 +135,12 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         if (this.getThing().getStatus() == ThingStatus.ONLINE) {
             return;
         }
-        FlumeBridgeHandler bh = getBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while bringing Thing online: {}", thing.getUID());
+            return;
+        }
+        FlumeBridgeHandler bh = (FlumeBridgeHandler) bridge.getHandler();
 
         if (bh == null) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");

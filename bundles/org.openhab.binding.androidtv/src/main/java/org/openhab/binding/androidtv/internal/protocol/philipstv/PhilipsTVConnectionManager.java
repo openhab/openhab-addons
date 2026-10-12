@@ -516,7 +516,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "offline.authentication-with-philips-tv-device-was-successful-continuing-initialization-of-the-tv");
         } catch (Exception e) {
-            postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+            postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.AUTHORIZATION_PENDING,
                     "offline.could-not-successfully-finish-pairing-process-with-the-tv");
             logger.warn("Error during finishing pairing process with the TV: {}", e.getMessage(), e);
             hasFailed = true;

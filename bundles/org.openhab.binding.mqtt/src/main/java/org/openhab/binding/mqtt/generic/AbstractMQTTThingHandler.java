@@ -190,7 +190,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
             connection = h.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
             resetMessageReceived();
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler has no valid broker connection!");
+            updateStatus(ThingStatus.UNKNOWN, "Bridge handler has no valid broker connection!");
             return;
         }
         this.connection = connection;

@@ -161,7 +161,16 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             return;
         }
 
-        bridgeHandler = (MeteostickBridgeHandler) getBridge().getHandler();
+        var bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof MeteostickBridgeHandler handler)) {
+            logger.debug("Bridge handler unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        bridgeHandler = handler;
 
         if (channel != 0) {
             if (bridgeHandler != null) {

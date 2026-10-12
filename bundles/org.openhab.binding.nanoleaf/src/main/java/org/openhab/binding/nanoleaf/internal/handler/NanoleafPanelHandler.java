@@ -85,7 +85,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         logger.debug("Initializing handler for panel {}", getThing().getUID());
         Bridge controller = getBridge();
         if (controller == null) {
-            initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, ""));
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         } else if (ThingStatus.OFFLINE.equals(controller.getStatus())) {
             initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "@text/error.nanoleaf.panel.controllerOffline"));
@@ -164,7 +165,12 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
     }
 
     private void initializePanel(ThingStatusInfo panelStatus) {
-        updateStatus(panelStatus.getStatus(), panelStatus.getStatusDetail());
+        ThingStatus status = panelStatus.getStatus();
+        if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE) {
+            updateStatus(status, panelStatus.getStatusDetail());
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
         updateState(CHANNEL_PANEL_COLOR, currentPanelColor);
         logger.debug("Panel {} status changed to {}-{}", this.getThing().getUID(), panelStatus.getStatus(),
                 panelStatus.getStatusDetail());

@@ -127,8 +127,7 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
                 data = api == null ? null : collectData(draytonWiserDTO);
                 refresh();
                 if (data == null) {
-                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "No data received");
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "No data received");
                 } else {
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
@@ -213,7 +212,7 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
         final Bridge bridge = getBridge();
 
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return null;
         } else {
             return (HeatHubHandler) bridge.getHandler();

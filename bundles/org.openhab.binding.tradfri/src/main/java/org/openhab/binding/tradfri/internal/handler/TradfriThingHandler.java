@@ -63,6 +63,10 @@ public abstract class TradfriThingHandler extends BaseThingHandler implements Co
     @SuppressWarnings("null")
     public synchronized void initialize() {
         Bridge tradfriGateway = getBridge();
+        if (tradfriGateway == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         this.id = getConfigAs(TradfriDeviceConfig.class).id;
         TradfriGatewayHandler handler = (TradfriGatewayHandler) tradfriGateway.getHandler();
 
@@ -107,9 +111,9 @@ public abstract class TradfriThingHandler extends BaseThingHandler implements Co
     }
 
     @Override
-    @SuppressWarnings("null")
     public void setStatus(ThingStatus status, ThingStatusDetail statusDetail) {
-        if (active && getBridge().getStatus() != ThingStatus.OFFLINE && status != ThingStatus.ONLINE) {
+        Bridge bridge = getBridge();
+        if (active && bridge != null && bridge.getStatus() != ThingStatus.OFFLINE && status != ThingStatus.ONLINE) {
             if (statusDetail == ThingStatusDetail.NONE) {
                 updateStatus(status);
             } else {

@@ -59,7 +59,11 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
     @SuppressWarnings("unchecked")
     public final void initialize() {
         final Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof UniFiControllerBridgeHandler bridgeHandler)) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof UniFiControllerBridgeHandler bridgeHandler)) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.thing.offline.configuration_error");
             return;
         }

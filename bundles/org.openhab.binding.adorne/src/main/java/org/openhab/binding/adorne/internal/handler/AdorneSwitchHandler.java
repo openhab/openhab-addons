@@ -104,7 +104,9 @@ public class AdorneSwitchHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
-            updateStatus(bridgeStatusInfo.getStatus());
+            ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
+            updateStatus((bridgeStatus == ThingStatus.ONLINE || bridgeStatus == ThingStatus.OFFLINE) ? bridgeStatus
+                    : ThingStatus.UNKNOWN);
         }
     }
 

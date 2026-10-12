@@ -238,7 +238,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
     @Override
     public void thingUpdated(Thing thing) {
         cancelPolling();
-        updateStatus(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING);
+        updateStatus(ThingStatus.UNKNOWN);
         this.thing = thing;
         internalInitialize();
     }
@@ -276,7 +276,11 @@ public class GrafikEyeHandler extends BaseThingHandler {
         }
 
         final Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof PrgBridgeHandler)) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof PrgBridgeHandler)) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "GrafikEye must have a parent PRG Bridge");
             return;
         }

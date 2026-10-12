@@ -142,8 +142,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
         config = getConfigAs(ServiceConfiguration.class);
 
         if (config.priceArea().isBlank()) {
-            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-price-area");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "@text/offline.conf-error.no-price-area");
             return;
         }
         GlobalLocationNumber gln = config.getGridCompanyGLN();

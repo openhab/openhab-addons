@@ -184,8 +184,7 @@ public class KM200ThingHandler extends BaseThingHandler {
     public void initialize() {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            logger.debug("Bridge not existing");
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         logger.debug("initialize, Bridge: {}", bridge);
@@ -202,7 +201,7 @@ public class KM200ThingHandler extends BaseThingHandler {
         }
         synchronized (gateway.getDevice()) {
             if (!gateway.getDevice().getInited()) {
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatus.UNKNOWN);
                 logger.debug("Bridge: not initialized: {}", bridge);
                 return;
             }

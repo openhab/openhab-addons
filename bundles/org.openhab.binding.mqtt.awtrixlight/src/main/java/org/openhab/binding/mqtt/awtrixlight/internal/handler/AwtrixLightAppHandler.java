@@ -456,7 +456,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge is missing or offline.");
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
             return;
         }
         ThingHandler handler = localBridge.getHandler();
@@ -636,7 +636,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         } else if (ThingStatus.OFFLINE == bridgeStatus) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
         Future<?> localJob = this.finishInitJob;
         if (localJob != null) {

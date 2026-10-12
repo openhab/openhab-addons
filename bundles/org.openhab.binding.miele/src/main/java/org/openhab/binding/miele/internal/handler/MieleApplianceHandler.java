@@ -154,8 +154,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         this.applianceId = applianceId;
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.bridge-missing");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         initializeTranslationProvider(bridge);

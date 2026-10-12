@@ -77,10 +77,14 @@ public class PlexPlayerHandler extends BaseThingHandler {
         }
 
         Bridge bridge = getBridge();
-        PlexServerHandler bridgeHandler = bridge == null ? null : (PlexServerHandler) bridge.getHandler();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        PlexServerHandler bridgeHandler = (PlexServerHandler) bridge.getHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No bridge associated");
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_PLAYER_CONTROL:

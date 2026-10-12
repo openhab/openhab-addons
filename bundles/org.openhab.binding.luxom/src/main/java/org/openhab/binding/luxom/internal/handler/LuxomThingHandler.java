@@ -93,11 +93,16 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
     }
 
     protected void sendCommands(List<CommandExecutionSpecification> commands) {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         @Nullable
-        LuxomBridgeHandler bridgeHandler = getBridgeHandler();
+        LuxomBridgeHandler bridgeHandler = (LuxomBridgeHandler) bridge.getHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "@text/status.bridge-handler-missing");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.bridge-handler-missing");
             thingOfflineNotify();
         } else {
             bridgeHandler.sendCommands(commands);

@@ -404,7 +404,7 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
     public void initialize() {
         final Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Cannot be initialized without a bridge");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         if (bridge.getStatus() != ThingStatus.ONLINE) {
@@ -443,7 +443,7 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
         // Get the socket session from the
         final SocketSession socketSession = getSocketSession();
         if (socketSession == null) {
-            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "No socket session found");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No socket session found");
             return;
         }
 

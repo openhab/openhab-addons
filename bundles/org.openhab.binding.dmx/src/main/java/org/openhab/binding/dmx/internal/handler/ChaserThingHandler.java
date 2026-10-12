@@ -125,19 +125,10 @@ public class ChaserThingHandler extends DmxThingHandler {
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-        DmxBridgeHandler bridgeHandler;
-        if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "no bridge assigned");
-            dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
+        if (!(this.getBridge() instanceof Bridge bridge
+                && bridge.getHandler() instanceof DMXBridgeHandler bridgeHandler)) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
-        } else {
-            bridgeHandler = (DmxBridgeHandler) bridge.getHandler();
-            if (bridgeHandler == null) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "no bridge handler available");
-                dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
-                return;
-            }
         }
 
         ChaserThingHandlerConfiguration configuration = getConfig().as(ChaserThingHandlerConfiguration.class);

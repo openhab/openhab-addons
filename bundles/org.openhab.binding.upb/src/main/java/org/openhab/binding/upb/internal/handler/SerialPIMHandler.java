@@ -64,8 +64,7 @@ public class SerialPIMHandler extends PIMHandler {
         final String portId = (String) getConfig().get(Constants.CONFIGURATION_PORT);
         if (portId == null || portId.isEmpty()) {
             logger.debug("serial port is not set");
-            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    Constants.OFFLINE_SERIAL_PORT_NOT_SET);
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, Constants.OFFLINE_SERIAL_PORT_NOT_SET);
             return;
         }
 
@@ -118,8 +117,7 @@ public class SerialPIMHandler extends PIMHandler {
         logger.debug("opening serial port {}", portId);
         final SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(portId);
         if (portIdentifier == null) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    Constants.OFFLINE_SERIAL_EXISTS);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, Constants.OFFLINE_SERIAL_EXISTS);
             return null;
         }
 
@@ -127,8 +125,7 @@ public class SerialPIMHandler extends PIMHandler {
         try {
             serialPort = portIdentifier.open("org.openhab.binding.upb", 1000);
         } catch (final PortInUseException e) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    Constants.OFFLINE_SERIAL_INUSE);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, Constants.OFFLINE_SERIAL_INUSE);
             return null;
         }
         try {
@@ -143,8 +140,7 @@ public class SerialPIMHandler extends PIMHandler {
             }
         } catch (final UnsupportedCommOperationException e) {
             logger.debug("cannot open serial port", e);
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    Constants.OFFLINE_SERIAL_UNSUPPORTED);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, Constants.OFFLINE_SERIAL_UNSUPPORTED);
             return null;
         }
         logger.debug("Serial port is initialized");

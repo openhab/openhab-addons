@@ -90,19 +90,13 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
             ourFeeds = restoredFeeds;
         }
 
-        Bridge bridge = this.getBridge();
-        if (bridge != null) {
-            accountHandler = (AccountHandler) bridge.getHandler();
-        }
-        if (accountHandler == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (!(this.getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof AccountHandler handler)) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
-        AccountHandler handler = this.accountHandler;
-        if (handler != null) {
-            bridgeStatusChanged(handler.getThing().getStatusInfo());
-        }
+        accountHandler = handler;
+        bridgeStatusChanged(handler.getThing().getStatusInfo());
     }
 
     @Override

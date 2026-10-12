@@ -76,7 +76,7 @@ public class SysvarHandler extends LutronHandler {
         logger.debug("Initializing handler state for sysvar id {}", integrationId);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, "Awaiting initial response");
             querySysvar(SysvarCommand.ACTION_GETSETSYSVAR);

@@ -138,8 +138,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         // Validate bridge connection
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.configuration.no-bridge");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
@@ -336,7 +335,11 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
      */
     private void updateClientState() {
         Bridge bridge = getBridge();
-        if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                     "@text/error.bridge.unavailable");
             return;

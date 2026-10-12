@@ -74,13 +74,18 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        final SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
+        var bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) bridge.getHandler();
         spotifyApi = bridgeHandler.getSpotifyApi();
 
         if (spotifyApi == null) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                     "Missing configuration from the Spotify Bridge (UID:%s). Fix configuration or report if this problem remains.",
-                    getBridge().getBridgeUID()));
+                    bridge.getBridgeUID()));
             return;
         }
         deviceName = (String) getConfig().get(PROPERTY_SPOTIFY_DEVICE_NAME);

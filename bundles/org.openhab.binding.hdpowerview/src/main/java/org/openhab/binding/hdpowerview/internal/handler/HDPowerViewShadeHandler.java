@@ -57,7 +57,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -107,7 +106,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         logger.debug("Initializing shade handler for shade {}", shadeId);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.invalid-bridge-handler");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);

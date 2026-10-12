@@ -52,12 +52,13 @@ public class BlindHandler extends BaseThingHandler {
         logger.debug("Blind got command: {} and ChannelUID: {} ", command.toFullString(),
                 channelUID.getIdWithoutGroup());
         Bridge bridge = getBridge();
-        EGateHandler localDominoswissHandler = dominoswissHandler;
-        if (bridge != null) {
-            localDominoswissHandler = (EGateHandler) bridge.getHandler();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
         }
+        EGateHandler localDominoswissHandler = (EGateHandler) bridge.getHandler();
         if (localDominoswissHandler == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate not available");
+            updateStatus(ThingStatus.UNKNOWN, "EGate not available");
             logger.debug("Blind thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
             return;
         }
@@ -155,24 +156,25 @@ public class BlindHandler extends BaseThingHandler {
     public void initialize() {
         this.id = getConfig().as(BlindConfig.class).id;
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            dominoswissHandler = (EGateHandler) bridge.getHandler();
-            EGateHandler localDominoswissHandler = dominoswissHandler;
-            if (localDominoswissHandler != null) {
-                localDominoswissHandler.registerBlind(this.id, getThing().getUID());
-                try {
-                    ThingStatus bridgeStatus = bridge.getStatus();
-                    if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
-                        updateStatus(ThingStatus.ONLINE);
-                        localDominoswissHandler = (EGateHandler) bridge.getHandler();
-                    } else if (bridgeStatus == ThingStatus.OFFLINE) {
-                        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
-                    }
-                } catch (Exception e) {
-                    logger.debug("Could not update ThingStatus ", e);
-                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.toString());
-
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        dominoswissHandler = (EGateHandler) bridge.getHandler();
+        EGateHandler localDominoswissHandler = dominoswissHandler;
+        if (localDominoswissHandler != null) {
+            localDominoswissHandler.registerBlind(this.id, getThing().getUID());
+            try {
+                ThingStatus bridgeStatus = bridge.getStatus();
+                if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                    localDominoswissHandler = (EGateHandler) bridge.getHandler();
+                } else if (bridgeStatus == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
+            } catch (Exception e) {
+                logger.debug("Could not update ThingStatus ", e);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.toString());
             }
         }
     }

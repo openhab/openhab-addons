@@ -108,8 +108,7 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
         GoEChargerConfiguration config = this.config;
 
         if (config.ip == null && (config.serial == null || config.token == null)) {
-            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "either ip or token+serial must be configured");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "either ip or token+serial must be configured");
             return;
         }
 

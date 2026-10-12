@@ -121,13 +121,11 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
                 this.eolPattern = eolPattern;
                 logger.debug("{} eolPattern '{}' set", getLogPrefix(), eolPattern);
             } catch (IllegalArgumentException e) {
-                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Invalid EOL sequence");
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invalid EOL sequence");
                 return false;
             }
         } else if (binaryHexData) {
-            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "EOL pattern required for charset = HEX");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "EOL pattern required for charset = HEX");
             return false;
         }
 

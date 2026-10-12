@@ -113,7 +113,11 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     private void pollStatus() {
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateGroupePSAState();
         } else {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
@@ -133,6 +137,10 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         if (getBridgeHandler() != null) {
             GroupePSAConfiguration currentConfig = getConfigAs(GroupePSAConfiguration.class);
             final String id = currentConfig.getId();
@@ -151,7 +159,7 @@ public class GroupePSAHandler extends BaseThingHandler {
                 startGroupePSAPolling(pollingIntervalM);
             }
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -202,6 +210,11 @@ public class GroupePSAHandler extends BaseThingHandler {
     }
 
     private synchronized void updateGroupePSAState() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while updating Thing: {}", thing.getUID());
+            return;
+        }
         if (System.nanoTime() - lastQueryTimeNs <= maxQueryFrequencyNanos) {
             return;
         }
@@ -214,8 +227,7 @@ public class GroupePSAHandler extends BaseThingHandler {
             return;
         }
 
-        GroupePSABridgeHandler groupepsaBridge = getBridgeHandler();
-        if (groupepsaBridge == null) {
+        if (!(bridge.getHandler() instanceof GroupePSABridgeHandler groupepsaBridge)) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             return;
         }

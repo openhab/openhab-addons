@@ -534,7 +534,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public void initialize() {
         super.initialize();
         if (isBridgedAccessory) {
-            if (getBridge() instanceof Bridge bridge && bridge.getStatus() == ThingStatus.ONLINE) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+                return;
+            }
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
                 scheduler.submit(() -> {
                     onConnectedThingAccessoriesLoaded();
                     enableEvents(true);
@@ -1257,7 +1262,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 getScheduler().schedule(() -> doMigration(sourceUniqueId, sourceThing, targetBridge, targetThing),
                         MIGRATION_DELAY_SECONDS, TimeUnit.SECONDS);
                 logger.info("{} has embedded accessories; auto-migrating it", thing.getUID());
-                updateStatus(ThingStatusDetail.NOT_YET_READY, "@text/status.migrating-accessory-to-bridge");
+                updateStatus(ThingStatus.UNKNOWN, "@text/status.migrating-accessory-to-bridge");
                 return true;
             } catch (Exception e) {
                 migrating.set(false);

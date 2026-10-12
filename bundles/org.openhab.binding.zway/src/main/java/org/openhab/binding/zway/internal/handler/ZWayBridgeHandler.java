@@ -139,8 +139,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                     logger.error("Unexpected error");
                 }
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Error occurred when initialize bridge.");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error occurred when initialize bridge.");
                 }
             }
         }

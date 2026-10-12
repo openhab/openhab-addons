@@ -187,8 +187,17 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         useAdvancedStates = Objects
                 .requireNonNullElse((boolean) getConfig().get(TeslaBindingConstants.CONFIG_USEDADVANCEDSTATES), false);
         Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof TeslaAccountHandler teslaAccountHandler)) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
+            return;
+        }
+        var bridgeHandler = bridge.getHandler();
+        if (bridgeHandler == null) {
+            logger.debug("Bridge handler unavailable for Thing {}", getThing().getUID());
+            return;
+        }
+        if (!(bridgeHandler instanceof TeslaAccountHandler teslaAccountHandler)) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Tesla account bridge handler is unavailable");
             return;
         }
         account = teslaAccountHandler;

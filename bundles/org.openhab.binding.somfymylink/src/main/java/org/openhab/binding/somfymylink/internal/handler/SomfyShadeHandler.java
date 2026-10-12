@@ -64,9 +64,7 @@ public class SomfyShadeHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
 
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-            logger.debug("Initialized device state for shade {} {}", ThingStatus.OFFLINE,
-                    ThingStatusDetail.CONFIGURATION_ERROR);
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Initialized device state for shade {}", ThingStatus.ONLINE);

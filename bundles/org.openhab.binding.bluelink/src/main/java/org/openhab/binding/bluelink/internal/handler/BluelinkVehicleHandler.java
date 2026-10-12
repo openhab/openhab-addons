@@ -43,6 +43,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -125,14 +126,14 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     }
 
     private void loadVehicle(final String vin) {
-        final var bridgeHnd = getBridgeHandler();
-        if (bridgeHnd == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (!(getBridge() instanceof Bridge bridge
+                && bridge.getHandler() instanceof BluelinkAccountHandler bridgeHandler)) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
         try {
-            bridgeHnd.getVehicles().stream().filter(v -> vin.equals(v.vin())).findFirst().ifPresentOrElse(v -> {
+            bridgeHandler.getVehicles().stream().filter(v -> vin.equals(v.vin())).findFirst().ifPresentOrElse(v -> {
                 this.vehicle = v;
                 updateProperty(PROPERTY_MODEL, v.model());
                 updateProperty(PROPERTY_ENGINE_TYPE, v.engineType().name());

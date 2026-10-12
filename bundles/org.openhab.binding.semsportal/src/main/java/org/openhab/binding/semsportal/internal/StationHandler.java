@@ -113,7 +113,7 @@ public class StationHandler extends BaseThingHandler {
             try {
                 scheduler.scheduleWithFixedDelay(() -> ensureRecentStatus(), 0, getUpdateInterval(), TimeUnit.MINUTES);
             } catch (Exception e) {
-                updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Unable to update station info. Check Bridge status for details.");
             }
         });

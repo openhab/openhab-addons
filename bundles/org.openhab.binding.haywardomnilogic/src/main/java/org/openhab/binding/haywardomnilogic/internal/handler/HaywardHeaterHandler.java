@@ -23,7 +23,8 @@ import org.openhab.binding.haywardomnilogic.internal.config.HaywardConfig;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Heater Handler
@@ -32,6 +33,7 @@ import org.openhab.core.thing.ThingStatusDetail;
  */
 @NonNullByDefault
 public class HaywardHeaterHandler extends HaywardThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(HaywardHeaterHandler.class);
 
     HaywardConfig config = getConfig().as(HaywardConfig.class);
 
@@ -45,7 +47,11 @@ public class HaywardHeaterHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             systemIDs = bridgehandler.evaluateXPath("//Heater/@systemId", xmlResponse);
             String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
@@ -65,7 +71,7 @@ public class HaywardHeaterHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
         }
     }
 }

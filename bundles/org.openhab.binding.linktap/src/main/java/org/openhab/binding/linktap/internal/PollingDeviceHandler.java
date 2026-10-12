@@ -137,9 +137,14 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
     @Override
     public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(LinkTapDeviceConfiguration.class);
-        if (!(getBridgeHandler() instanceof LinkTapBridgeHandler bridgeHandler)) {
+        if (!(bridge.getHandler() instanceof LinkTapBridgeHandler bridgeHandler)) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, getLocalizedText("polling-device.error.bridge-unset"));
             return;
         } else if (ThingStatus.OFFLINE.equals(bridgeHandler.getThing().getStatus())) {
@@ -235,7 +240,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
         final Bridge parentBridge = getBridge();
         if (parentBridge == null) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, getLocalizedText("polling-device.error.bridge-unset"));
+            logger.debug("Bridge unavailable while sending request for Thing: {}", thing.getUID());
             return EMPTY_STRING;
         }
         final LinkTapBridgeHandler parentBridgeHandler = (LinkTapBridgeHandler) parentBridge.getHandler();

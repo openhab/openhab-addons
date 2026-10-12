@@ -45,6 +45,8 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DigiplexAreaHandler} is responsible for handling commands, which are
@@ -54,6 +56,7 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class DigiplexAreaHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(DigiplexAreaHandler.class);
 
     private @Nullable DigiplexAreaConfiguration config;
     private @Nullable DigiplexBridgeHandler bridgeHandler;
@@ -157,7 +160,7 @@ public class DigiplexAreaHandler extends BaseThingHandler {
         config = getConfigAs(DigiplexAreaConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         bridgeHandler = (DigiplexBridgeHandler) bridge.getHandler();

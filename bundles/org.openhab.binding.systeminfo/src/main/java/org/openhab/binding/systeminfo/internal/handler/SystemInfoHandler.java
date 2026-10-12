@@ -143,7 +143,7 @@ public class SystemInfoHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } else {
-            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "@text/offline.cannot-initialize");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.cannot-initialize");
         }
     }
 

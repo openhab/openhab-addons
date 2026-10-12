@@ -86,7 +86,11 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
         logger.debug("Initializing {} handler.", getThing().getThingTypeUID());
 
         Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof BridgeHandler bridgeHandler)) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof BridgeHandler bridgeHandler)) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge Not set");
             return;
         }

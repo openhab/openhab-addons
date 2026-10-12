@@ -122,7 +122,7 @@ public class AwattarPriceHandler extends BaseThingHandler {
         State state = UnDefType.UNDEF;
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return;
         }
         AwattarBridgeHandler bridgeHandler = (AwattarBridgeHandler) bridge.getHandler();

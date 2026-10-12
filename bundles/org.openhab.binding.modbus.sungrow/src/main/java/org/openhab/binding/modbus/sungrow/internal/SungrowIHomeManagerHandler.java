@@ -140,8 +140,7 @@ public class SungrowIHomeManagerHandler extends BaseModbusThingHandler {
         final SungrowInverterConfiguration config = getConfigAs(SungrowInverterConfiguration.class);
 
         if (config.pollInterval <= 0) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid poll interval: " + config.pollInterval);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid poll interval: " + config.pollInterval);
             return;
         }
 

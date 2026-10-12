@@ -74,7 +74,7 @@ public class DeviceHandler extends BaseThingHandler {
     public void initialize() {
         var bridge = getBridge();
         if (bridge == null) {
-            updateStatus(BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.no-bridge");
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
             return;
         }
         var bridgeHandler = bridge.getHandler();
