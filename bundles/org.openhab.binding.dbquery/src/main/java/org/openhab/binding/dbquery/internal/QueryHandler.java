@@ -43,7 +43,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -193,22 +192,20 @@ public class QueryHandler extends BaseThingHandler {
 
     private void updateStateWithParentBridgeStatus() {
         final @Nullable Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
 
-        if (bridge != null) {
-            @Nullable
-            BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof DatabaseBridgeHandler databaseBridgeHandler) {
-                database = databaseBridgeHandler.getDatabase();
-                if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
-                }
+        if (bridge.getHandler() instanceof DatabaseBridgeHandler databaseBridgeHandler) {
+            database = databaseBridgeHandler.getDatabase();
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

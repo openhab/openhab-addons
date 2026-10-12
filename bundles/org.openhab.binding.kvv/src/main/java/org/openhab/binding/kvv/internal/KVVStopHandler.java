@@ -78,13 +78,13 @@ public class KVVStopHandler extends BaseThingHandler {
 
         final Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Failed to get bridge");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return;
         }
 
         final KVVBridgeHandler bridgeHandler = (KVVBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "Failed to get bridge handler");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Failed to get bridge handler");
             return;
         }
 

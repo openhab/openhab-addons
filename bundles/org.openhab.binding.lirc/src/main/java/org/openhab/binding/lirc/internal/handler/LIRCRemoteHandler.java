@@ -74,9 +74,18 @@ public class LIRCRemoteHandler extends BaseThingHandler implements LIRCMessageLi
             logger.error("Remote name is not set in {}", getThing().getUID());
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Remote name is not set");
         } else {
-            bridgeHandler = (LIRCBridgeHandler) getBridge().getHandler();
+            var bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+                return;
+            }
+            if (!(bridge.getHandler() instanceof LIRCBridgeHandler handler)) {
+                logger.debug("Bridge handler unavailable while initializing Thing: {}", thing.getUID());
+                return;
+            }
+            bridgeHandler = handler;
             bridgeHandler.registerMessageListener(this);
-            if (getBridge().getStatus() == ThingStatus.ONLINE) {
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);

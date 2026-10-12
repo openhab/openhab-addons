@@ -22,7 +22,6 @@ import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +44,11 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
         List<String> systemIDs = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             systemIDs = bridgehandler.evaluateXPath("//Backyard/@systemId", xmlResponse);
             String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
@@ -65,7 +68,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -76,7 +79,11 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
         String alarmStr;
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return false;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             // *****Request Alarm List from Hayward server
             String urlParameters = """
                     <?xml version="1.0" encoding="utf-8"?><Request><Name>GetAlarmList</Name><Parameters>\
@@ -120,7 +127,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
                 return false;
             }
         } else {
-            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
             return false;
         }
     }

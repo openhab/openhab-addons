@@ -89,8 +89,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
 
         bridge = getBridge();
         if (bridge == null) {
-            logger.warn("Unable to initialize meteoblue. No bridge was configured.");
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not configured.");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 

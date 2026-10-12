@@ -76,8 +76,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         try {
             this.ipAddress = InetAddress.getByName(configuration.ipAddress);
         } catch (UnknownHostException e1) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "IP Address not resolvable");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "IP Address not resolvable");
             return;
         }
 

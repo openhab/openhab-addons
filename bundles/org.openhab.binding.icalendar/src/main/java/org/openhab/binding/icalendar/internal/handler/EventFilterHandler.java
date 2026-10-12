@@ -105,7 +105,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     public void initialize() {
         Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "This thing requires a bridge configured to work.");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 

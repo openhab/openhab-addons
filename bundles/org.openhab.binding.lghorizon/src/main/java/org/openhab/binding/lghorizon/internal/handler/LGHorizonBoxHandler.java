@@ -89,8 +89,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     public void initialize() {
         LGHorizonBoxConfiguration config = getConfigAs(LGHorizonBoxConfiguration.class);
         if (config.deviceId.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.box-missing-device-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.box-missing-device-id");
             return;
         }
         this.deviceId = config.deviceId;

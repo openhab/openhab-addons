@@ -159,7 +159,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
         String timeString = date.format(timeFormat);
         logger.debug("Updating HomeWorks processor date and time to {} {}", dateString, timeString);
 
-        if (!this.getBridge().getStatus().equals(ThingStatus.ONLINE)) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.warn("HomeWorks Bridge is offline and cannot update time on HomeWorks processor.");
             if (updateTimeJob != null) {
                 updateTimeJob.cancel(false);

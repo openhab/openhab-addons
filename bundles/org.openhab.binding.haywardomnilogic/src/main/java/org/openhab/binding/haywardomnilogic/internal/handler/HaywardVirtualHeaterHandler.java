@@ -26,7 +26,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateDescriptionFragment;
@@ -60,7 +59,11 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
     @Override
     public void setStateDescriptions() throws HaywardException {
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             // Set heater min and max speeds
             Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_VIRTUALHEATER_CURRENTSETPOINT);
             if (ch != null) {
@@ -81,7 +84,11 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             systemIDs = bridgehandler.evaluateXPath("//VirtualHeater/@systemId", xmlResponse);
             String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
@@ -99,7 +106,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -117,7 +124,11 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                 .get(HaywardBindingConstants.PROPERTY_VIRTUALHEATER_MAXSETTABLEWATERTEMP);
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             String cmdString = this.cmdToString(command);
             String cmdURL = null;
 
@@ -179,7 +190,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
         }
     }
 }

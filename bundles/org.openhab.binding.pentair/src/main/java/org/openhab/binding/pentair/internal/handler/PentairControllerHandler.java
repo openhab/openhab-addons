@@ -122,9 +122,13 @@ public class PentairControllerHandler extends PentairBaseThingHandler {
     public void goOnline() {
         // Only a single controller is supported on the Pentair bus so prevent multiple controller
         // things being created.
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while bringing Thing online: {}", thing.getUID());
+            return;
+        }
         PentairBaseBridgeHandler bridgeHandler = getBridgeHandler();
 
-        if (bridgeHandler == null) { // will not be null here since this is validated in initialize of the super
+        if (bridgeHandler == null) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
             return;
         }

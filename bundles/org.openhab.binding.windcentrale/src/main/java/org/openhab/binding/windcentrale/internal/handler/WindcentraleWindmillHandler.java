@@ -127,8 +127,7 @@ public class WindcentraleWindmillHandler extends BaseThingHandler {
 
         if (windmill == null) {
             // only occurs when a mismatch is introduced between config parameter options and enum values
-            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Invalid windmill name: " + config.name);
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invalid windmill name: " + config.name);
             return;
         }
 

@@ -394,7 +394,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
         } else {
             WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
             if (localBridgeHandler == null) {
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
                 return;
             }
             WledApi localAPI = localBridgeHandler.api;

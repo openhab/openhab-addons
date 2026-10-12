@@ -26,7 +26,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -53,7 +52,11 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             systemIDs = bridgehandler.evaluateXPath("//Chlorinator/@systemId", xmlResponse);
             String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
@@ -102,7 +105,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -119,7 +122,11 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
         String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             String cmdString = this.cmdToString(command);
             try {
                 switch (channelUID.getId()) {
@@ -178,7 +185,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
         }
     }
 }

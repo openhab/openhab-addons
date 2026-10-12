@@ -444,8 +444,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         final String evtVal = event.getValue();
 
         if (KEY_ERROR.equals(evtKey)) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error-get-data");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "@text/offline.communication-error-get-data");
         } else {
             updateStatus(ThingStatus.ONLINE);
 

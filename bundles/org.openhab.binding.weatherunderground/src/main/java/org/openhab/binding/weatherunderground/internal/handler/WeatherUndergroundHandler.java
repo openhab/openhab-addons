@@ -199,10 +199,10 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         logger.debug("Initializing WeatherUnderground handler for thing {}", getThing().getUID());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            initializeThingHandler(null, null);
-        } else {
-            initializeThingHandler(bridge.getHandler(), bridge.getStatus());
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         }
+        initializeThingHandler(bridge.getHandler(), bridge.getStatus());
     }
 
     @Override
@@ -210,10 +210,10 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            initializeThingHandler(null, bridgeStatusInfo.getStatus());
-        } else {
-            initializeThingHandler(bridge.getHandler(), bridgeStatusInfo.getStatus());
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
         }
+        initializeThingHandler(bridge.getHandler(), bridgeStatusInfo.getStatus());
     }
 
     private void initializeThingHandler(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
@@ -262,7 +262,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

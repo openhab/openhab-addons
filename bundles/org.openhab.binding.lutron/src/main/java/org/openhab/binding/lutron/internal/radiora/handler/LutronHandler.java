@@ -21,6 +21,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for non bridge handlers for Lutron RadioRA devices
@@ -30,6 +32,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  */
 @NonNullByDefault
 public abstract class LutronHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(LutronHandler.class);
 
     public LutronHandler(Thing thing) {
         super(thing);
@@ -38,7 +41,7 @@ public abstract class LutronHandler extends BaseThingHandler {
     public @Nullable RS232Handler getRS232Handler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Unable to get bridge");
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
             return null;
         }
         ThingHandler th = bridge.getHandler();

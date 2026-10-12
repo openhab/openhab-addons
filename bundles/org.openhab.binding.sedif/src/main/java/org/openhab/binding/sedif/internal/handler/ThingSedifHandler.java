@@ -178,16 +178,20 @@ public class ThingSedifHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof BridgeSedifWebHandler bridgeHandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof BridgeSedifWebHandler bridgeHandler) {
             initialize(bridgeHandler, bridge.getStatus());
         } else {
-            initialize(null, bridge == null ? null : bridge.getStatus());
+            initialize(null, bridge.getStatus());
         }
     }
 
     private void initialize(@Nullable BridgeSedifWebHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
         if (bridgeHandler == null || bridgeStatus == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
         if (bridgeStatus != ThingStatus.ONLINE) {

@@ -82,7 +82,8 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         // this is important so FroniusBridgeHandler::childHandlerInitialized gets called
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            logger.debug("Bridge unavailable while initializing {}", thing.getUID());
+            return;
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN);
         } else {

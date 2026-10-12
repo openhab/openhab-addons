@@ -30,7 +30,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
@@ -65,7 +64,12 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        final EnergyManagerHandler bridgeHandler = this.getEnergyManagerHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        final EnergyManagerHandler bridgeHandler = getEnergyManagerHandler(bridge);
         if (bridgeHandler != null) {
             this.initDeviceChannels();
             this.updateDeviceProperties();
@@ -210,20 +214,20 @@ public class SimpleDeviceHandler extends BaseThingHandler {
      */
     protected @Nullable EnergyManagerHandler getEnergyManagerHandler() {
         Bridge bridge = this.getBridge();
-        if (bridge != null) {
-            BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof EnergyManagerHandler energyManagerHandler) {
-                return energyManagerHandler;
-            } else {
-                // happens while dynamically reloading the binding
-                this.logger.warn("BridgeHandler is not implementing EnergyManagerHandler {}", bridgeHandler);
-            }
-        } else {
-            // this handler can't work without a bridge
-            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Received null bridge while initializing!");
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return null;
         }
+        return getEnergyManagerHandler(bridge);
+    }
 
+    private @Nullable EnergyManagerHandler getEnergyManagerHandler(Bridge bridge) {
+        BridgeHandler bridgeHandler = bridge.getHandler();
+        if (bridgeHandler instanceof EnergyManagerHandler energyManagerHandler) {
+            return energyManagerHandler;
+        }
+        // happens while dynamically reloading the binding
+        this.logger.warn("BridgeHandler is not implementing EnergyManagerHandler {}", bridgeHandler);
         return null;
     }
 

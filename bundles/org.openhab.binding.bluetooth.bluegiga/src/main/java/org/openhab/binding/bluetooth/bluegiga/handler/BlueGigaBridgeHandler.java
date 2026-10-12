@@ -265,12 +265,10 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
                     return sp;
                 } catch (PortInUseException e) {
-                    updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                            "Serial Error: Port in use");
+                    updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Serial Error: Port in use");
                     throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
                 } catch (UnsupportedCommOperationException e) {
-                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "Serial Error: Unsupported operation");
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Serial Error: Unsupported operation");
                     throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
                 } catch (RuntimeException ex) {
                     logger.debug("Start failed", ex);

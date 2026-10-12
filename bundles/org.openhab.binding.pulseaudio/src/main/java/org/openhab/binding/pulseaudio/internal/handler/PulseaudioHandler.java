@@ -215,9 +215,13 @@ public class PulseaudioHandler extends BaseThingHandler {
     }
 
     private void initializeWithTheBridge() {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         PulseaudioBridgeHandler pulseaudioBridgeHandler = getPulseaudioBridgeHandler();
         if (pulseaudioBridgeHandler == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         } else if (pulseaudioBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {

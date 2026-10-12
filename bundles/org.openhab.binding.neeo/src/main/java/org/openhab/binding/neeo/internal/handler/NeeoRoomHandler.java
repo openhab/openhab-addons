@@ -281,7 +281,7 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Room " + config.getRoomKey() + " couldn't be found");
         } catch (InterruptedException e) {
             logger.debug("Initialization was interrupted", e);
-            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Initialization was interrupted");
+            updateStatus(ThingStatus.UNKNOWN, "Initialization was interrupted");
         }
     }
 

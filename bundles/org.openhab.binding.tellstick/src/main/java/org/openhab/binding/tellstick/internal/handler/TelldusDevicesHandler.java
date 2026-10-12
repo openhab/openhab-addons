@@ -167,7 +167,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
             if (bridge != null) {
                 bridgeStatusChanged(bridge.getStatusInfo());
             } else {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge defined");
+                logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             }
         } else {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Missing serialNumber configuration");
@@ -211,7 +211,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                 }
             } catch (Exception e) {
                 logger.warn("Failed to init device {}", deviceId, e);
-                updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } else {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);

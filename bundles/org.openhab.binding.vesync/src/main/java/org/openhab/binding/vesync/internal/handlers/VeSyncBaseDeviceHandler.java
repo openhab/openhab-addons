@@ -335,9 +335,14 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     private void intializeDeviceForUse() {
         // Sanity check basic setup
-        final VeSyncBridgeHandler bridge = (VeSyncBridgeHandler) getBridgeHandler();
+        Bridge bridgeRef = getBridge();
+        if (bridgeRef == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        final VeSyncBridgeHandler bridge = (VeSyncBridgeHandler) bridgeRef.getHandler();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Missing bridge for API link");
+            logger.debug("Bridge handler unavailable while initializing Thing: {}", thing.getUID());
             return;
         } else {
             updateStatus(ThingStatus.UNKNOWN);

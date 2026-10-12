@@ -260,7 +260,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             logger.debug("Initializing device state for Keypad {}", integrationId);
             Bridge bridge = getBridge();
             if (bridge == null) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+                logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             } else if (bridge.getStatus() == ThingStatus.ONLINE) {
                 if (ledList.isEmpty()) {
                     // Device with no LEDs has nothing to query. Assume it is online if bridge is online.

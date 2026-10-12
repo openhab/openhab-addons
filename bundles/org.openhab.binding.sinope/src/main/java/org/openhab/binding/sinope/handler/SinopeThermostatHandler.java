@@ -258,7 +258,7 @@ public class SinopeThermostatHandler extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         SinopeGatewayHandler handler = getSinopeGatewayHandler();

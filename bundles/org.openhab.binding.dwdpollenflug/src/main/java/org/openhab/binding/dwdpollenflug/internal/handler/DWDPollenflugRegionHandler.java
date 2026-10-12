@@ -48,11 +48,15 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing DWD Pollenflug region handler");
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         thingConfig = getConfigAs(DWDPollenflugRegionConfiguration.class);
 
         if (thingConfig.isValid()) {
-            DWDPollenflugBridgeHandler handler = getBridgeHandler();
-            if (handler == null) {
+            if (!(bridge.getHandler() instanceof DWDPollenflugBridgeHandler)) {
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge handler missing");
             } else {
                 updateStatus(ThingStatus.ONLINE);

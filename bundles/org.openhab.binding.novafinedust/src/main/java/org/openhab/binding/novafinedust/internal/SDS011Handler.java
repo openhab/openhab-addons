@@ -142,8 +142,7 @@ public class SDS011Handler extends BaseThingHandler {
                 try {
                     localCommunicator.requestSensorData();
                 } catch (IOException e) {
-                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "Cannot query data from device");
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Cannot query data from device");
                 }
             }, 2, config.pollingInterval, TimeUnit.SECONDS);
         } else {
@@ -179,8 +178,7 @@ public class SDS011Handler extends BaseThingHandler {
             updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Cannot attach listener to port, because there are too many listeners!");
         } catch (UnsupportedCommOperationException e) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Cannot set serial port parameters");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Cannot set serial port parameters");
         }
     }
 

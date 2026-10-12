@@ -149,7 +149,8 @@ public class StopHandler extends BaseBridgeHandler {
     }
 
     private ApiHandler getApiHandler() {
-        return (ApiHandler) getBridge().getHandler();
+        Bridge bridge = getBridge();
+        return bridge == null ? null : (ApiHandler) bridge.getHandler();
     }
 
     private StopConfiguration loadAndCheckConfiguration() {
@@ -184,8 +185,7 @@ public class StopHandler extends BaseBridgeHandler {
                 uri = new URI(url);
             } catch (URISyntaxException e) {
                 logger.error("Unable to parse {} as a URI.", url);
-                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "stopId or apiKey is set to a bogus value");
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "stopId or apiKey is set to a bogus value");
                 return false;
             }
             ContentResponse response;

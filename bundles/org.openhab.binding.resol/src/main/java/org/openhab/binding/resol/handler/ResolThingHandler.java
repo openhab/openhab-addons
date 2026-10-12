@@ -31,6 +31,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -95,7 +96,9 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     public void initialize() {
         ResolBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
-            updateStatus(bridgeHandler.getStatus());
+            ThingStatus bridgeStatus = bridgeHandler.getStatus();
+            updateStatus((bridgeStatus == ThingStatus.ONLINE || bridgeStatus == ThingStatus.OFFLINE) ? bridgeStatus
+                    : ThingStatus.UNKNOWN);
         }
     }
 

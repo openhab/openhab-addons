@@ -35,6 +35,8 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -46,6 +48,7 @@ import com.google.gson.Gson;
  * @author Tim Roberts - Initial contribution
  */
 public class RioControllerHandler extends AbstractBridgeHandler<RioControllerProtocol> implements RioNamedHandler {
+    private final Logger logger = LoggerFactory.getLogger(RioControllerHandler.class);
     /**
      * The controller identifier of this instance (between 1-6)
      */
@@ -131,7 +134,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
     public void initialize() {
         final Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Cannot be initialized without a bridge");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
@@ -169,7 +172,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
         // Get the socket session from the
         final SocketSession socketSession = getSocketSession();
         if (socketSession == null) {
-            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "No socket session found");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No socket session found");
             return;
         }
 

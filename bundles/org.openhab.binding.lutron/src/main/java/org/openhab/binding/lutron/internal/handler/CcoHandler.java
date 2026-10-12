@@ -118,7 +118,7 @@ public class CcoHandler extends LutronHandler {
         logger.debug("Initializing device state for CCO {}", integrationId);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, "Awaiting initial response");
             queryOutput(TargetType.CCO, OutputCommand.ACTION_STATE);

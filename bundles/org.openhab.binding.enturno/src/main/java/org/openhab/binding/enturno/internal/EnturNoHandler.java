@@ -145,7 +145,9 @@ public class EnturNoHandler extends BaseThingHandler {
             status = ThingStatus.OFFLINE;
         }
 
-        updateStatus(status);
+        if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE || status == ThingStatus.UNKNOWN) {
+            updateStatus(status);
+        }
     }
 
     public void updateData(EnturNoConnection connection) {

@@ -477,6 +477,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return;
         }
 
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
 
         executorService.execute(() -> internalInitialize(initializationGeneration));

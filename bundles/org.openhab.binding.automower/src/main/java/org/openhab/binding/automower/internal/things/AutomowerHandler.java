@@ -333,36 +333,34 @@ public class AutomowerHandler extends BaseThingHandler {
         synchronized (this) {
             disposed = false;
         }
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
-            final String configMowerZoneId = currentConfig.getMowerZoneId();
-            if (configMowerZoneId != null && !configMowerZoneId.isBlank()) {
-                try {
-                    mowerZoneId = ZoneId.of(configMowerZoneId);
-                } catch (DateTimeException e) {
-                    logger.warn("Invalid configuration mowerZoneId: {}, Error: {}", mowerZoneId, e.getMessage());
-                    mowerZoneId = timeZoneProvider.getTimeZone(); // wrong config, use System TimeZone
-                }
-            } else {
-                mowerZoneId = timeZoneProvider.getTimeZone(); // not configured, use System TimeZone
-            }
-
-            final String mowerId = this.getThing().getUID().getId();
-            automowerId.set(mowerId);
-            // Adding handler to map of handlers
-            AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
-            if (automowerBridgeHandler != null) {
-                automowerBridgeHandler.registerAutomowerHandler(mowerId, this);
-            }
-
-            updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
-
-            scheduler.execute(() -> completeInitAsync());
-
-        } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         }
+        AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
+        final String configMowerZoneId = currentConfig.getMowerZoneId();
+        if (configMowerZoneId != null && !configMowerZoneId.isBlank()) {
+            try {
+                mowerZoneId = ZoneId.of(configMowerZoneId);
+            } catch (DateTimeException e) {
+                logger.warn("Invalid configuration mowerZoneId: {}, Error: {}", mowerZoneId, e.getMessage());
+                mowerZoneId = timeZoneProvider.getTimeZone(); // wrong config, use System TimeZone
+            }
+        } else {
+            mowerZoneId = timeZoneProvider.getTimeZone(); // not configured, use System TimeZone
+        }
+
+        final String mowerId = this.getThing().getUID().getId();
+        automowerId.set(mowerId);
+        // Adding handler to map of handlers
+        AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+        if (automowerBridgeHandler != null) {
+            automowerBridgeHandler.registerAutomowerHandler(mowerId, this);
+        }
+
+        updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
+
+        scheduler.execute(() -> completeInitAsync());
     }
 
     private void completeInitAsync() {
@@ -485,8 +483,13 @@ public class AutomowerHandler extends BaseThingHandler {
             if (disposed) {
                 return;
             }
-            automowerBridge = getAutomowerBridge();
-            automowerBridgeHandler = getAutomowerBridgeHandler();
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+                return;
+            }
+            automowerBridgeHandler = bridge.getHandler() instanceof AutomowerBridgeHandler handler ? handler : null;
+            automowerBridge = automowerBridgeHandler != null ? automowerBridgeHandler.getAutomowerBridge() : null;
             if (automowerBridgeHandler == null || automowerBridge == null) {
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 return;

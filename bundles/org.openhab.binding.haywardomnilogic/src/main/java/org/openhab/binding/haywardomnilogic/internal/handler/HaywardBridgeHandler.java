@@ -171,8 +171,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 initAlarmPolling(1);
             }
         } catch (HaywardException e) {
-            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "scheduledInitialize exception: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "scheduledInitialize exception: " + e.getMessage());
             clearPolling(pollTelemetryFuture);
             clearPolling(pollAlarmsFuture);
             commFailureCount = 50;

@@ -135,8 +135,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         registerOAuthService(clientSecret, this);
         try {
             String url = oAuthService.getAuthorizationUrl(redirectURI, "api", clientSecret);
-            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
-                    I18N_OAUTH2_PENDING + " [\"" + url + "\"]");
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, I18N_OAUTH2_PENDING + " [\"" + url + "\"]");
         } catch (OAuthException e) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, I18N_OAUTH2_ERROR + " [\"" + e.getMessage() + "\"]");
         }

@@ -57,7 +57,7 @@ public class InsteonSceneHandler extends InsteonBaseThingHandler {
 
         scheduler.execute(() -> {
             if (getBridge() == null) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
+                logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
                 return;
             }
 
@@ -152,7 +152,7 @@ public class InsteonSceneHandler extends InsteonBaseThingHandler {
     public void updateStatus() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return;
         }
 

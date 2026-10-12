@@ -291,13 +291,13 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     public boolean checkBridgeStatus() {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return false;
         }
 
         SenseEnergyBridgeHandler bridgeHandler = (SenseEnergyBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             return false;
         }
 

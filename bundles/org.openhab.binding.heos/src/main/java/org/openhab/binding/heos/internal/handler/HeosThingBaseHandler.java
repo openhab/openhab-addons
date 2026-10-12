@@ -113,8 +113,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 return;
             }
         } else {
-            logger.warn("No Bridge set within child handler");
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
@@ -217,7 +216,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         } else if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())) {
             updateStatus(ThingStatus.ONLINE);
         } else if (ThingStatus.UNINITIALIZED.equals(bridgeStatusInfo.getStatus())) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

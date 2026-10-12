@@ -513,7 +513,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
         var localApi = api;
         if (localApi == null) {
             logger.debug("Api was null!");
-            updateStatus(NOT_YET_READY, "@text/channel-type.visualcrossing.weather.config-pending");
+            updateStatus(ThingStatus.UNKNOWN, "@text/channel-type.visualcrossing.weather.config-pending");
             return;
         }
         try {

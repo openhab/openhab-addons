@@ -123,17 +123,21 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     /**
      * Initialize the Thing handler.
      *
-     * Sets status to UNKNOWN and attempts to locate and store the bridge handler.
-     * If bridge is not available or not an EvccBridgeHandler, sets status to OFFLINE.
+     * Sets status to UNKNOWN and stores the bridge handler when available.
      */
     @Override
     public void initialize() {
         disposed = false;
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
-        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof EvccBridgeHandler handler) {
+        if (bridge.getHandler() instanceof EvccBridgeHandler handler) {
             bridgeHandler = handler;
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -584,9 +588,13 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     if (json.has("error")) {
                         logger.debug("Sending command was unsuccessful, got this error:\n {}",
                                 json.get("error").getAsString());
-                        updateStatus(getThing().getStatus(), json.get("error").getAsString());
+                        ThingStatus status = getThing().getStatus();
+                        updateStatus(status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE ? status
+                                : ThingStatus.UNKNOWN, json.get("error").getAsString());
                     } else {
-                        updateStatus(getThing().getStatus());
+                        ThingStatus status = getThing().getStatus();
+                        updateStatus(status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE ? status
+                                : ThingStatus.UNKNOWN);
                         logger.warn("evcc API error: HTTP {}", response.getStatus());
                     }
                 });
@@ -607,7 +615,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 break;
             case UNINITIALIZED:
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatus.UNKNOWN);
                 break;
             case ONLINE:
                 Bridge bridge = getBridge();

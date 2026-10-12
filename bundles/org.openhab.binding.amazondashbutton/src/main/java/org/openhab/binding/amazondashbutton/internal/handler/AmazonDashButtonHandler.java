@@ -61,7 +61,7 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
             PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil
                     .getNetworkInterfaceByName(pcapNetworkInterfaceName);
             if (pcapNetworkInterface == null) {
-                updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
                 return;
             }
@@ -80,7 +80,8 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
             if (capturingStarted) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, "The capturing for " + pcapNetworkInterfaceName + " cannot be started.");
+                updateStatus(ThingStatus.OFFLINE,
+                        "The capturing for " + pcapNetworkInterfaceName + " cannot be started.");
             }
         });
     }
@@ -112,7 +113,8 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
             final PcapNetworkInterfaceWrapper trackedPcapNetworkInterface = packetCapturingService
                     .getPcapNetworkInterface();
             if (trackedPcapNetworkInterface.equals(removedNetworkInterface)) {
-                updateStatus(ThingStatus.OFFLINE, "The networkinterface " + removedNetworkInterface.getName() + " is not present anymore.");
+                updateStatus(ThingStatus.OFFLINE,
+                        "The networkinterface " + removedNetworkInterface.getName() + " is not present anymore.");
             }
         }
     }

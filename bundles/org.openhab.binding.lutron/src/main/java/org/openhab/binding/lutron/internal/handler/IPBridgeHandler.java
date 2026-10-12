@@ -194,7 +194,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
 
-            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "login interrupted");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "login interrupted");
             disconnect();
 
             return;

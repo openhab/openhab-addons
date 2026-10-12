@@ -70,6 +70,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -759,11 +760,15 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         if (series == null) {
             // Fetch started — update status to show which window is loading
             String description = "@text/status.history-update [\"" + window.name() + "\"]";
-            ThingStatusDetail detail = thing.getStatusInfo().getStatusDetail();
-            if (detail == ThingStatusDetail.NONE) {
-                updateStatus(thing.getStatus(), description);
-            } else {
-                updateStatus(detail, description);
+            ThingStatusInfo statusInfo = thing.getStatusInfo();
+            ThingStatus status = statusInfo.getStatus();
+            if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE || status == ThingStatus.UNKNOWN) {
+                ThingStatusDetail detail = statusInfo.getStatusDetail();
+                if (detail == ThingStatusDetail.NONE) {
+                    updateStatus(status, description);
+                } else {
+                    updateStatus(detail, description);
+                }
             }
             return;
         }
@@ -785,7 +790,11 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         scheduler.execute(() -> enrichCurrentPeriods(localHistory));
 
         // Restore status (clear the "loading" message)
-        updateStatus(thing.getStatus(), thing.getStatusInfo().getStatusDetail());
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
+        ThingStatus status = statusInfo.getStatus();
+        if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE || status == ThingStatus.UNKNOWN) {
+            updateStatus(status, statusInfo.getStatusDetail());
+        }
         logger.info("History update for {} completed", window.name());
     }
 

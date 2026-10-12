@@ -351,7 +351,11 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         getLogger().debug("Initializing Thinq thing.");
 
         final Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof LGThinQBridgeHandler bridgeHandler) {
+        if (bridge == null) {
+            getLogger().debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof LGThinQBridgeHandler bridgeHandler) {
             this.account = bridgeHandler;
             this.bridgeId = bridge.getUID().getId();
         } else {
@@ -384,7 +388,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             } else {
                 account.registryListenerThing(this);
                 if (bridgeStatus == null) {
-                    updateStatus(ThingStatus.UNINITIALIZED);
+                    updateStatus(ThingStatus.UNKNOWN);
                 } else {
                     switch (bridgeStatus) {
                         case ONLINE:
@@ -392,7 +396,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                             break;
                         case INITIALIZING:
                         case UNINITIALIZED:
-                            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                            updateStatus(ThingStatus.UNKNOWN);
                             break;
                         case UNKNOWN:
                             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
@@ -660,11 +664,13 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     }
 
     protected String getBridgeId() {
-        if (bridgeId.isBlank() && getBridge() == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.communication-error.no-bridge-set");
-            return "UNKNOWN";
-        } else if (bridgeId.isBlank() && getBridge() != null) {
-            bridgeId = Objects.requireNonNull(getBridge()).getUID().getId();
+        if (bridgeId.isBlank()) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                getLogger().debug("Bridge unavailable for Thing: {}", thing.getUID());
+                return "UNKNOWN";
+            }
+            bridgeId = bridge.getUID().getId();
         }
         return bridgeId;
     }
