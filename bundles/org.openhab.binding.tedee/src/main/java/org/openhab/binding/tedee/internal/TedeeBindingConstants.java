@@ -28,9 +28,9 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public final class TedeeBindingConstants {
     public static final String ID = "tedee";
-    public static final ThingTypeUID BRIDGE = new ThingTypeUID(ID, "bridge");
+    public static final ThingTypeUID BRIDGE = new ThingTypeUID(ID, "local-bridge");
     public static final ThingTypeUID LOCK = new ThingTypeUID(ID, "lock");
-    public static final ThingTypeUID CLOUD = new ThingTypeUID(ID, "cloud");
+    public static final ThingTypeUID CLOUD = new ThingTypeUID(ID, "cloud-bridge");
     public static final Set<ThingTypeUID> SUPPORTED = Set.of(BRIDGE, CLOUD, LOCK);
     public static final String C_LOCK = "lock", C_STATE = "state", C_DOOR = "doorState", C_BATTERY = "battery",
             C_CHARGING = "charging", C_JAMMED = "jammed", C_CONNECTED = "connected", C_ACTION = "action";
