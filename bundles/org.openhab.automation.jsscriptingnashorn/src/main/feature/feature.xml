@@ -4,6 +4,11 @@
 
 	<feature name="openhab-automation-jsscriptingnashorn" description="JavaScript Scripting (Nashorn)" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<bundle dependency="true">mvn:org.ow2.asm/asm/${asm.version}</bundle>
+		<bundle dependency="true">mvn:org.ow2.asm/asm-analysis/${asm.version}</bundle>
+		<bundle dependency="true">mvn:org.ow2.asm/asm-commons/${asm.version}</bundle>
+		<bundle dependency="true">mvn:org.ow2.asm/asm-tree/${asm.version}</bundle>
+		<bundle dependency="true">mvn:org.ow2.asm/asm-util/${asm.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.automation.jsscriptingnashorn/${project.version}</bundle>
 	</feature>
 </features>

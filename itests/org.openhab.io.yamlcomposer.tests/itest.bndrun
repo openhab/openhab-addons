@@ -45,11 +45,11 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	org.eclipse.jetty.util.ajax;version='[9.4.58,9.4.59)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[3.0.0,3.0.1)',\
 	org.hamcrest;version='[3.0.0,3.0.1)',\
-	org.objectweb.asm;version='[9.9.1,9.9.2)',\
-	org.objectweb.asm.commons;version='[9.9.1,9.9.2)',\
-	org.objectweb.asm.tree;version='[9.9.1,9.9.2)',\
-	org.objectweb.asm.tree.analysis;version='[9.9.1,9.9.2)',\
-	org.objectweb.asm.util;version='[9.9.1,9.9.2)',\
+	org.objectweb.asm;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.commons;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.tree;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.tree.analysis;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.util;version='[9.10.1,9.10.2)',\
 	org.openhab.core;version='[5.3.0,5.3.1)',\
 	org.openhab.core.test;version='[5.3.0,5.3.1)',\
 	org.openhab.io.yamlcomposer;version='[5.3.0,5.3.1)',\
