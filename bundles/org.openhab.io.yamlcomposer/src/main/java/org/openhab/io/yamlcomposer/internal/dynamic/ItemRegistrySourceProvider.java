@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -126,6 +127,10 @@ public class ItemRegistrySourceProvider implements DynamicSourceProvider<Item>, 
         Map<String, @Nullable Object> dtoMap = OBJECT_MAPPER.convertValue(dto,
                 new TypeReference<Map<String, @Nullable Object>>() {
                 });
+
+        if (item instanceof GroupItem groupItem) {
+            dtoMap.put("members", groupItem.getMembers().stream().map(Item::getName).toList());
+        }
 
         Map<String, @Nullable Object> metadataMap = new LinkedHashMap<>();
         itemMetadata.forEach((namespace, metadata) -> metadataMap.put(namespace, toMetadataMap(metadata)));

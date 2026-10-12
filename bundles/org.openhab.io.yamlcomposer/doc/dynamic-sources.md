@@ -119,6 +119,7 @@ Each entry in `ITEMS` contains the item's DTO representation:
 | `category`   | `String` | Category/icon name assigned to the item.                                                                                                     |
 | `tags`       | `List`   | List of semantic tags (e.g., `['Lightbulb', 'Control']`).                                                                                    |
 | `groupNames` | `List`   | List of parent group names this item belongs to.                                                                                             |
+| `members`    | `List`   | For Group Items only, the names of their direct member Items.                                                                                |
 | `metadata`   | `Map`    | Optional map of metadata, keyed by namespace. Each entry contains a `value` and includes a `config` map when the metadata has configuration. |
 
 **Example:**
@@ -142,6 +143,15 @@ P2S_Printer_Chamber_Light:
 
 Metadata is omitted when the item has no registered metadata.
 The `config` field is omitted when the metadata configuration is empty.
+The `members` field is present only for Group Items and contains direct member names (not recursively expanded members).
+
+```yaml
+Printer_Lights:
+  type: Group
+  name: Printer_Lights
+  members:
+    - P2S_Printer_Chamber_Light
+```
 
 ---
 
