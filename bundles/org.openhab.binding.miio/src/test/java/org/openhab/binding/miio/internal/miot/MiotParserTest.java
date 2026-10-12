@@ -213,6 +213,41 @@ public class MiotParserTest {
             }
             """;
 
+    private static final String ODD_INSTANCES = """
+            {
+              "instances": [
+                { "status": "debug", "model": "status.vacuum.model", "version": 1, "type": "urn:status:1" },
+                { "status": "deprecated", "model": "status.vacuum.model", "version": 8, "type": "urn:status:8" },
+                { "model": "status.vacuum.model", "version": 9, "type": "urn:status:9" },
+                { "status": null, "model": "status.vacuum.model", "version": 10, "type": "urn:status:10" },
+                { "status": "released", "model": "broken.vacuum.model", "version": 1, "type": "urn:broken:1" },
+                { "status": "released", "model": "broken.vacuum.model", "version": null, "type": "urn:broken:null" },
+                { "status": "released", "model": "broken.vacuum.model", "type": "urn:broken:none" },
+                { "status": "released", "model": "broken.vacuum.model", "version": 7 }
+              ]
+            }
+            """;
+
+    private static final String INCOMPLETE_SPEC = """
+            {
+              "type": "urn:miot-spec-v2:device:vacuum:0000A006:test-model:1",
+              "description": "Robot Cleaner",
+              "services": [
+                {
+                  "iid": 11,
+                  "type": "urn:miot-spec-v2:service:custom:00007801:test-model:1",
+                  "properties": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:property:mute:00000001:test-model:1",
+                      "access": ["read", "write"] }
+                  ],
+                  "actions": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:action:set-mute:00002801:test-model:1", "in": [1] }
+                  ]
+                }
+              ]
+            }
+            """;
+
     private @Nullable String selectUrn(String instances, String model, @Nullable Integer version) throws IOException {
         ModelUrnsDTO instance = MiotParser.selectInstance(new StringReader(instances), model, version);
         return instance == null ? null : instance.getType();
@@ -241,6 +276,18 @@ public class MiotParserTest {
     public void modelWithoutSpecIsNotFound() throws IOException {
         assertNull(selectUrn(RELEASED_INSTANCES, "unknown.vacuum.model", null));
         assertNull(selectUrn("{ \"instances\": [] }", "test.vacuum.model", null));
+    }
+
+    @Test
+    public void unknownOrMissingStatusIsRankedBelowDebug() throws IOException {
+        assertEquals("urn:status:1", selectUrn(ODD_INSTANCES, "status.vacuum.model", null));
+        assertEquals("urn:status:9", selectUrn(ODD_INSTANCES, "status.vacuum.model", 9));
+    }
+
+    @Test
+    public void instanceWithoutVersionOrUrnIsIgnored() throws IOException {
+        assertEquals("urn:broken:1", selectUrn(ODD_INSTANCES, "broken.vacuum.model", null));
+        assertNull(selectUrn(ODD_INSTANCES, "broken.vacuum.model", 7));
     }
 
     private MiIoBasicChannel parseChannel(String channelId) throws MiotParseException {
@@ -373,6 +420,27 @@ public class MiotParserTest {
         // the second action has no list of inputs in the spec, which is the same as an empty list
         assertEquals(List.of(CommandParameterType.EMPTY, CommandParameterType.EMPTY),
                 actions.stream().map(MiIoDeviceAction::getparameterType).toList());
+    }
+
+    @Test
+    public void missingDescriptionAndFormatAreTolerated() throws MiotParseException {
+        List<MiIoBasicChannel> channels = new MiotParser("test.vacuum.model")
+                .getDevice(JsonParser.parseString(INCOMPLETE_SPEC)).getDevice().getChannels();
+
+        assertEquals(List.of("mute", "custom_set_mute"), channels.stream().map(MiIoBasicChannel::getChannel).toList());
+        assertEquals(List.of("Custom - Mute", "Custom - Set Mute"),
+                channels.stream().map(MiIoBasicChannel::getFriendlyName).toList());
+        assertEquals(List.of("String", "String"), channels.stream().map(MiIoBasicChannel::getType).toList());
+    }
+
+    @Test
+    public void toJsonWritesWholeNumbersWithoutDecimal() throws MiotParseException {
+        MiIoBasicDevice device = new MiotParser("test.vacuum.model").getDevice(JsonParser.parseString(INPUT_SPEC));
+        String json = MiotParser.toJson(device);
+
+        assertFalse(json.matches("(?s).*\\d\\.0\\D.*"),
+                "no whole number may keep its decimal, also not the last one of a list");
+        assertTrue(json.replaceAll("\\s", "").contains("\"parameters\":[1,2]"));
     }
 
     @Test

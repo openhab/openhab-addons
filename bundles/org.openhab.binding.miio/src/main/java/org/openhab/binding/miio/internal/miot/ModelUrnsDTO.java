@@ -13,6 +13,7 @@
 package org.openhab.binding.miio.internal.miot;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -31,13 +32,13 @@ public class ModelUrnsDTO {
     private String model = "";
     @SerializedName("version")
     @Expose
-    private Integer version = 0;
+    private @Nullable Integer version;
     @SerializedName("type")
     @Expose
-    private String type = "";
+    private @Nullable String type;
     @SerializedName("status")
     @Expose
-    private String status = "";
+    private @Nullable String status;
 
     public String getModel() {
         return model;
@@ -47,7 +48,7 @@ public class ModelUrnsDTO {
         this.model = model;
     }
 
-    public Integer getVersion() {
+    public @Nullable Integer getVersion() {
         return version;
     }
 
@@ -55,7 +56,7 @@ public class ModelUrnsDTO {
         this.version = version;
     }
 
-    public String getType() {
+    public @Nullable String getType() {
         return type;
     }
 
@@ -64,9 +65,9 @@ public class ModelUrnsDTO {
     }
 
     /**
-     * @return the status of the spec (released, preview or debug), empty if the list does not contain the status
+     * @return the status of the spec (released, preview or debug), null if the list does not contain the status
      */
-    public String getStatus() {
+    public @Nullable String getStatus() {
         return status;
     }
 }

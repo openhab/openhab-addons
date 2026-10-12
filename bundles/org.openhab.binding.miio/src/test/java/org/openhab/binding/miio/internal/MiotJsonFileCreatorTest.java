@@ -22,10 +22,12 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
+import org.openhab.binding.miio.internal.basic.MiIoDeviceActionCondition;
 import org.openhab.binding.miio.internal.basic.OptionsValueListDTO;
 import org.openhab.binding.miio.internal.miot.MiotParseException;
 import org.openhab.binding.miio.internal.miot.MiotParser;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
 /**
@@ -83,6 +85,38 @@ public class MiotJsonFileCreatorTest {
         assertEquals(List.of("custom-start-all"),
                 Objects.requireNonNull(Objects.requireNonNull(actions.getStateDescription()).getOptions()).stream()
                         .map(OptionsValueListDTO::getValue).toList());
+    }
+
+    @Test
+    public void actionWithoutMatchValueConditionIsRemoved() throws MiotParseException {
+        MiIoBasicDevice device = new MiotParser("test.vacuum.model")
+                .getDevice(JsonParser.parseString(SPEC.formatted(ACTION_WITHOUT_INPUT)));
+        MiIoBasicChannel actions = device.getDevice().getChannels().get(0);
+        actions.getActions().get(0).setCondition(null);
+        MiIoDeviceActionCondition condition = Objects.requireNonNull(actions.getActions().get(2).getCondition());
+        condition.setParameters(new JsonArray());
+
+        MiotJsonFileCreator.removeUnsupportedActions("test.vacuum.model", device);
+
+        assertEquals(List.of(6), actions.getActions().stream().map(MiIoDeviceAction::getAiid).toList());
+    }
+
+    @Test
+    public void versionIsSplitFromModelBeforeScanning() {
+        assertEquals(List.of("viomi.vacuum.v13"), MiotJsonFileCreator.models("viomi.vacuum.v13:1"));
+        assertEquals(1, MiotJsonFileCreator.version("viomi.vacuum.v13:1"));
+        assertEquals(List.of("viomi.vacuum.v13"), MiotJsonFileCreator.models("viomi.vacuum.v13"));
+        assertNull(MiotJsonFileCreator.version("viomi.vacuum.v13"));
+
+        List<String> scanned = MiotJsonFileCreator.models("viomi.vacuum.v:1");
+        assertEquals(13, scanned.size());
+        assertEquals("viomi.vacuum.v", scanned.get(0));
+        assertEquals("viomi.vacuum.v12", scanned.get(12));
+        assertEquals(1, MiotJsonFileCreator.version("viomi.vacuum.v:1"));
+
+        assertEquals(List.of(), MiotJsonFileCreator.models(""));
+        assertThrows(NumberFormatException.class, () -> MiotJsonFileCreator.version("viomi.vacuum.v13:x"));
+        assertThrows(NumberFormatException.class, () -> MiotJsonFileCreator.version("viomi.vacuum.v13:"));
     }
 
     @Test

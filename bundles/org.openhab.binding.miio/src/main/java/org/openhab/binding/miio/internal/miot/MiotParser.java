@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,6 +38,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.http.HttpStatus;
@@ -79,11 +79,7 @@ public class MiotParser {
     private static final boolean SKIP_SIID_1 = true;
     private static final String VALUE_TOKEN = "$value$";
     private static final Pattern LEADING_SPACES = Pattern.compile("(?m)^((?: {2})+)");
-    private static final String STATUS_RELEASED = "released";
-    private static final String STATUS_ALL = "all";
-    private static final Comparator<ModelUrnsDTO> NEWEST_SPEC = Comparator
-            .comparingInt((ModelUrnsDTO instance) -> statusRank(instance.getStatus()))
-            .thenComparing(ModelUrnsDTO::getVersion);
+    private static final Pattern TRAILING_ZERO = Pattern.compile("(\\d)\\.0(,?\n)");
 
     private String model;
     private @Nullable String urn;
@@ -118,6 +114,9 @@ public class MiotParser {
             JsonElement urnData = miotParser.getUrnData(urn, httpClient);
             miotParser.getDevice(urnData);
             return miotParser;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MiotParseException("Interrupted while downloading miot data", e);
         } catch (Exception e) {
             throw new MiotParseException("Error parsing miot data: " + e.getMessage(), e);
         }
@@ -131,7 +130,7 @@ public class MiotParser {
      */
     public static String toJson(MiIoBasicDevice device) {
         String usersJson = GSON.toJson(device);
-        usersJson = usersJson.replace(".0,\n", ",\n");
+        usersJson = TRAILING_ZERO.matcher(usersJson).replaceAll("$1$2");
         // only the indentation is converted, double spaces inside texts must stay as they are
         usersJson = LEADING_SPACES.matcher(usersJson).replaceAll(m -> "\t".repeat(m.group(1).length() / 2));
         return usersJson.replace("\n", "\r\n");
@@ -199,7 +198,7 @@ public class MiotParser {
                             List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
                             MiIoDeviceAction action = new MiIoDeviceAction();
                             action.setCommand("set_properties");
-                            switch (property.format) {
+                            switch (property.format != null ? property.format : "") {
                                 case "bool":
                                     action.setparameterType(CommandParameterType.ONOFFBOOL);
                                     break;
@@ -286,7 +285,8 @@ public class MiotParser {
             }
         }
 
-        switch (property.format) {
+        String format = property.format != null ? property.format : "";
+        switch (format) {
             case "bool":
                 miIoBasicChannel.setType("Switch");
                 break;
@@ -308,11 +308,11 @@ public class MiotParser {
                 if (type != null) {
                     miIoBasicChannel.setType("Number" + ":" + type);
                     unit = " %unit%";
-                    decimals = property.format.contentEquals("float") ? 1 : 0;
+                    decimals = format.contentEquals("float") ? 1 : 0;
 
                 } else {
                     miIoBasicChannel.setType("Number");
-                    decimals = property.format.contentEquals("uint8") ? 0 : 1;
+                    decimals = format.contentEquals("uint8") ? 0 : 1;
                     if (property.unit != null) {
                         unknownUnits.add(property.unit);
                     }
@@ -339,7 +339,7 @@ public class MiotParser {
                 break;
             case "hex":
                 miIoBasicChannel.setType("String");
-                logger.info("no type mapping implemented for {}", property.format);
+                logger.info("no type mapping implemented for {}", format);
                 break;
             default:
                 miIoBasicChannel.setType("String");
@@ -474,8 +474,9 @@ public class MiotParser {
         return cnt;
     }
 
-    private static String displayName(String description, String id) {
-        return isPureAscii(description) && !description.isBlank() ? captializedName(description) : captializedName(id);
+    private static String displayName(@Nullable String description, String id) {
+        return description != null && !description.isBlank() && isPureAscii(description) ? captializedName(description)
+                : captializedName(id);
     }
 
     private MiIoBasicChannel actionChannel(Map<ActionDTO, ServiceDTO> deviceActions) {
@@ -562,42 +563,31 @@ public class MiotParser {
         return json;
     }
 
+    /**
+     * @return the urn of the spec, or null if the list of specs has no (such) spec for the model
+     */
     private @Nullable String getURN(String model, @Nullable Integer version, HttpClient httpClient)
-            throws MiotParseException {
-        try {
-            ModelUrnsDTO instance = version == null ? findInstance(STATUS_RELEASED, model, null, httpClient) : null;
-            if (instance == null) {
-                // a selected version can have any status, and a model without released spec has preview or debug ones
-                instance = findInstance(STATUS_ALL, model, version, httpClient);
-            }
-            if (instance == null) {
-                return null;
-            }
-            logger.info("miot spec for {}: version {}, status {}, urn {}", model, instance.getVersion(),
-                    instance.getStatus().isEmpty() ? STATUS_RELEASED : instance.getStatus(), instance.getType());
-            this.urn = instance.getType();
-            return instance.getType();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Interrupted downloading models");
-        } catch (TimeoutException | ExecutionException | IOException e) {
-            logger.debug("Failed downloading models: {}", e.getMessage());
-        } catch (JsonParseException | IllegalStateException e) {
-            logger.debug("Failed parsing downloading models: {}", e.getMessage());
+            throws InterruptedException, TimeoutException, ExecutionException, IOException, MiotParseException {
+        ModelUrnsDTO instance = findInstance(model, version, httpClient);
+        if (instance == null) {
+            return null;
         }
-        return null;
+        logger.info("miot spec for {}: version {}, status {}, urn {}", model, instance.getVersion(),
+                instance.getStatus(), instance.getType());
+        this.urn = instance.getType();
+        return instance.getType();
     }
 
     /**
-     * Searches the list of specs with the status for the model. The list has several megabytes, more than the client
-     * buffers for a response, so it is read as a stream.
+     * Searches the list of all specs (released, preview and debug) for the model. The list has several megabytes, more
+     * than the client buffers for a response, so it is read as a stream.
      */
-    private @Nullable ModelUrnsDTO findInstance(String status, String model, @Nullable Integer version,
-            HttpClient httpClient)
+    private @Nullable ModelUrnsDTO findInstance(String model, @Nullable Integer version, HttpClient httpClient)
             throws InterruptedException, TimeoutException, ExecutionException, IOException, MiotParseException {
-        String urlStr = BASEURL + "instances?status=" + status;
+        String urlStr = BASEURL + "instances?status=all";
         InputStreamResponseListener listener = new InputStreamResponseListener();
-        httpClient.newRequest(urlStr).timeout(60, TimeUnit.SECONDS).send(listener);
+        Request request = httpClient.newRequest(urlStr).timeout(60, TimeUnit.SECONDS);
+        request.send(listener);
         try (InputStream stream = listener.getInputStream();
                 Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             Response response = listener.get(15, TimeUnit.SECONDS);
@@ -605,11 +595,15 @@ public class MiotParser {
                 throw new MiotParseException("Http status " + response.getStatus() + " for " + urlStr);
             }
             return selectInstance(reader, model, version);
+        } catch (Exception e) {
+            // closing the stream does not end the request, it would keep its connection until the request timeout
+            request.abort(e);
+            throw e;
         }
     }
 
     /**
-     * Selects the spec of the model from the json list of specs.
+     * Selects the spec of the model from the json list of specs. Entries without version or urn are ignored.
      *
      * @param version the version to select, or null for the newest spec: a released spec is preferred over a preview
      *            and a preview over a debug spec, of those the highest version is selected
@@ -618,6 +612,8 @@ public class MiotParser {
     static @Nullable ModelUrnsDTO selectInstance(Reader json, String model, @Nullable Integer version)
             throws IOException {
         ModelUrnsDTO selected = null;
+        int selectedRank = -1;
+        int selectedVersion = -1;
         JsonReader reader = new JsonReader(json);
         reader.beginObject();
         while (reader.hasNext()) {
@@ -631,9 +627,21 @@ public class MiotParser {
                 if (instance == null || !model.equals(instance.getModel())) {
                     continue;
                 }
-                if (version != null ? version.equals(instance.getVersion())
-                        : selected == null || NEWEST_SPEC.compare(instance, selected) > 0) {
+                Integer instanceVersion = instance.getVersion();
+                if (instanceVersion == null || instance.getType() == null) {
+                    continue;
+                }
+                if (version != null) {
+                    if (version.equals(instanceVersion)) {
+                        selected = instance;
+                    }
+                    continue;
+                }
+                int rank = statusRank(instance.getStatus());
+                if (rank > selectedRank || (rank == selectedRank && instanceVersion > selectedVersion)) {
                     selected = instance;
+                    selectedRank = rank;
+                    selectedVersion = instanceVersion;
                 }
             }
             reader.endArray();
@@ -642,11 +650,14 @@ public class MiotParser {
         return selected;
     }
 
-    private static int statusRank(String status) {
+    private static int statusRank(@Nullable String status) {
+        if (status == null) {
+            return 0;
+        }
         return switch (status) {
-            // the list of released specs has no status
-            case STATUS_RELEASED, "" -> 2;
-            case "preview" -> 1;
+            case "released" -> 3;
+            case "preview" -> 2;
+            case "debug" -> 1;
             default -> 0;
         };
     }
