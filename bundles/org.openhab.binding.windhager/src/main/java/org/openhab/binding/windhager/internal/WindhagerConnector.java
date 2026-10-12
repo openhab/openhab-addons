@@ -44,6 +44,7 @@ import com.google.gson.JsonParser;
 public class WindhagerConnector {
 
     private static final String DATAPOINT_API_PATH = "api/1.0/datapoint/";
+    private static final int MAX_REQUESTS_PER_DIGEST_NONCE = 15;
     private static final int REQUEST_TIMEOUT_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(WindhagerConnector.class);
@@ -51,6 +52,8 @@ public class WindhagerConnector {
     private final HttpClient httpClient;
     private final URI serverUri;
     private final DigestAuthentication authentication;
+    private final Object authenticationLock = new Object();
+    private int requestsSinceAuthenticationRefresh;
 
     public WindhagerConnector(HttpClient httpClient, String hostname, int port, String username, String password)
             throws URISyntaxException {
@@ -101,15 +104,26 @@ public class WindhagerConnector {
     }
 
     private @Nullable ContentResponse sendRequest(String relativePath) {
-        try {
-            URI uri = createRequestUri(relativePath);
-            return httpClient.newRequest(uri).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                    .send();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Interrupted while requesting BioWin path {}", relativePath);
-        } catch (ExecutionException | TimeoutException | URISyntaxException | IllegalArgumentException e) {
-            logger.debug("Unable to request BioWin path {}: {}", relativePath, e.getMessage());
+        synchronized (authenticationLock) {
+            if (++requestsSinceAuthenticationRefresh >= MAX_REQUESTS_PER_DIGEST_NONCE) {
+                AuthenticationStore authenticationStore = httpClient.getAuthenticationStore();
+                Authentication.Result authenticationResult = authenticationStore.findAuthenticationResult(serverUri);
+                if (authenticationResult != null) {
+                    authenticationStore.removeAuthenticationResult(authenticationResult);
+                }
+                requestsSinceAuthenticationRefresh = 0;
+            }
+
+            try {
+                URI uri = createRequestUri(relativePath);
+                return httpClient.newRequest(uri).method(HttpMethod.GET)
+                        .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Interrupted while requesting BioWin path {}", relativePath);
+            } catch (ExecutionException | TimeoutException | URISyntaxException | IllegalArgumentException e) {
+                logger.debug("Unable to request BioWin path {}: {}", relativePath, e.getMessage());
+            }
         }
         return null;
     }

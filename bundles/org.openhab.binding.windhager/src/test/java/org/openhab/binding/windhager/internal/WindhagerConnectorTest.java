@@ -27,6 +27,7 @@ import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +53,10 @@ class WindhagerConnectorTest {
     private final AtomicReference<Integer> responseStatus = new AtomicReference<>(200);
     private final AtomicReference<String> responseBody = new AtomicReference<>("{\"value\":\"23.97\"}");
     private final AtomicReference<String> authorizationHeader = new AtomicReference<>();
+    private final AtomicReference<String> activeNonce = new AtomicReference<>(NONCE);
+    private final AtomicInteger authenticationChallenges = new AtomicInteger();
+    private final AtomicInteger requestsForNonce = new AtomicInteger();
+    private final AtomicInteger maxRequestsPerNonce = new AtomicInteger(Integer.MAX_VALUE);
 
     private HttpServer server;
     private HttpClient httpClient;
@@ -96,6 +101,20 @@ class WindhagerConnectorTest {
         String expectedResponse = md5(
                 ha1 + ":" + NONCE + ":" + parameters.get("nc") + ":" + parameters.get("cnonce") + ":auth:" + ha2);
         assertEquals(expectedResponse, parameters.get("response"));
+    }
+
+    @Test
+    void refreshesDigestChallengeBeforeNonceExpires() {
+        maxRequestsPerNonce.set(20);
+
+        for (int i = 0; i < 45; i++) {
+            WindhagerConnector.ValueReadResult result = connector.readValue(OID);
+
+            assertEquals(23.97, Objects.requireNonNull(result.value()).doubleValue());
+            assertFalse(result.communicationFailure());
+        }
+
+        assertTrue(authenticationChallenges.get() >= 3);
     }
 
     @Test
@@ -147,9 +166,16 @@ class WindhagerConnectorTest {
     private void handleRequest(HttpExchange exchange) throws IOException {
         String authorization = exchange.getRequestHeaders().getFirst("Authorization");
         if (authorization == null) {
-            exchange.getResponseHeaders().add("WWW-Authenticate", "Digest realm=\"" + REALM + "\", nonce=\"" + NONCE
+            int challenge = authenticationChallenges.incrementAndGet();
+            String nonce = challenge == 1 ? NONCE : NONCE + "-" + challenge;
+            activeNonce.set(nonce);
+            requestsForNonce.set(0);
+            exchange.getResponseHeaders().add("WWW-Authenticate", "Digest realm=\"" + REALM + "\", nonce=\"" + nonce
                     + "\", opaque=\"" + OPAQUE + "\", algorithm=MD5, qop=\"auth,auth-int\"");
             exchange.sendResponseHeaders(401, -1);
+        } else if (!activeNonce.get().equals(parseAuthorization(authorization).get("nonce"))
+                || requestsForNonce.incrementAndGet() > maxRequestsPerNonce.get()) {
+            exchange.sendResponseHeaders(400, -1);
         } else {
             authorizationHeader.set(authorization);
             byte[] body = responseBody.get().getBytes(StandardCharsets.UTF_8);
