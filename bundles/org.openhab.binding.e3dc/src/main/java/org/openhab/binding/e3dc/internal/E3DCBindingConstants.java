@@ -50,7 +50,6 @@ public final class E3DCBindingConstants {
     public static final String GROUP_BATTERY = "battery";
     public static final String GROUP_INVERTER = "inverter";
     public static final String GROUP_GRID = "grid";
-    public static final String GROUP_ENERGY = "energy";
     public static final String GROUP_SYSTEM = "system";
 
     /** The energy counters and shares of the completed day, week, month and year. */

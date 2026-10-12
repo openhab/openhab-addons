@@ -14,6 +14,9 @@ package org.openhab.binding.e3dc.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -116,7 +119,8 @@ class E3DCChannelSpecTest {
 
     @Test
     void scalingConvertsWhToKWh() {
-        E3DCChannelSpec energy = E3DCChannelSpec.scaled(RscpTag.DB_DC_POWER, 1000);
+        E3DCChannelSpec energy = E3DCChannelSpec.scaledNested(RscpTag.DB_HISTORY_DATA_DAY, RscpTag.DB_SUM_CONTAINER,
+                RscpTag.DB_DC_POWER, 1000);
         assertEquals(12.5, energy.scale(12500), 0.0001);
     }
 
@@ -162,6 +166,21 @@ class E3DCChannelSpecTest {
         assertTrue(containers.contains(RscpTag.WB_DATA), "wallbox values live in the WB_DATA container");
     }
 
+    /**
+     * The charging mode is a value of its own on this interface, which is why the channel must not be derived
+     * from a status bit: that byte carries another meaning and reported the opposite of the configured mode.
+     */
+    @Test
+    void theSunModeChannelReadsTheValueTheWallboxReports() {
+        E3DCChannelSpec spec = E3DCChannelSpec.wallbox().spec(E3DCBindingConstants.GROUP_WALLBOX, "sun-mode");
+
+        assertNotNull(spec);
+        assertEquals(RscpTag.WB_DATA, spec.container());
+        assertEquals(RscpTag.WB_SUN_MODE_ACTIVE, spec.tag());
+        assertFalse(spec.isBitField(), "the charging mode is not a bit of a status byte");
+        assertEquals(RscpTag.WB_REQ_SUN_MODE_ACTIVE, RscpTag.pollTagFor(RscpTag.WB_SUN_MODE_ACTIVE));
+    }
+
     @Test
     void thePowerMeterRegistryPollsTheMeterContainer() {
         List<Integer> containers = E3DCChannelSpec.powerMeter().containers();
@@ -182,14 +201,15 @@ class E3DCChannelSpecTest {
         Set<String> groups = E3DCChannelSpec.powerPlant().groups().keySet();
 
         assertEquals(Set.of(E3DCBindingConstants.GROUP_POWER, E3DCBindingConstants.GROUP_BATTERY,
-                E3DCBindingConstants.GROUP_GRID, E3DCBindingConstants.GROUP_INVERTER, E3DCBindingConstants.GROUP_ENERGY,
+                E3DCBindingConstants.GROUP_GRID, E3DCBindingConstants.GROUP_INVERTER,
                 E3DCBindingConstants.GROUP_HISTORY, E3DCBindingConstants.GROUP_RESERVE,
                 E3DCBindingConstants.GROUP_SYSTEM), groups);
     }
 
     /**
-     * The reserve values arrive in their own container, which the device answers to its request tag
-     * without parameters.
+     * The reserve values arrive in the container the device answers with, which is not the container the
+     * request is sent with. The request names the data points to read, so its container is not the one the
+     * channels look their values up in.
      */
     @Test
     void theReserveChannelsReadTheReserveContainer() {
@@ -200,12 +220,11 @@ class E3DCChannelSpecTest {
         for (Map.Entry<String, Integer> value : values.entrySet()) {
             E3DCChannelSpec spec = registry.spec(E3DCBindingConstants.GROUP_RESERVE, value.getKey());
             assertNotNull(spec, value.getKey() + " is missing");
-            assertEquals(RscpTag.SE_REQ_EP_RESERVE, spec.container(), value.getKey() + " reads the wrong container");
+            assertEquals(RscpTag.SE_EP_RESERVE, spec.container(), value.getKey() + " reads the wrong container");
             assertEquals(value.getValue(), spec.tag());
             assertEquals(0, spec.nestedTag(), "the reserve values are not double nested");
         }
-        // the response container has to be derivable, otherwise the request would not be recognised
-        assertEquals(RscpTag.SE_REQ_EP_RESERVE, RscpTag.pollTagFor(RscpTag.SE_REQ_EP_RESERVE));
+        assertNotEquals(RscpTag.SE_REQ_EP_RESERVE, RscpTag.SE_EP_RESERVE, "request and answer are two tags");
     }
 
     /**
@@ -215,8 +234,8 @@ class E3DCChannelSpecTest {
     @Test
     void theReserveIsWritableAsAShareAndAsEnergy() {
         E3DCCommandRegistry commands = E3DCCommandSpec.powerPlant();
-        E3DCCommandSpec percent = commands.spec(E3DCBindingConstants.GROUP_RESERVE, "set-percent");
-        E3DCCommandSpec energy = commands.spec(E3DCBindingConstants.GROUP_RESERVE, "set-energy");
+        E3DCCommandSpec percent = commands.spec(E3DCBindingConstants.GROUP_RESERVE, "percent");
+        E3DCCommandSpec energy = commands.spec(E3DCBindingConstants.GROUP_RESERVE, "energy");
 
         assertNotNull(percent);
         assertNotNull(energy);
@@ -286,12 +305,36 @@ class E3DCChannelSpecTest {
         assertEquals(RscpTag.EMS_MAX_CHARGE_POWER, spec.tag(), "the settings container carries the res tag");
     }
 
+    /**
+     * The state of charge the channel reports comes from the battery itself, which is a data point of its
+     * own. The value the history response carries under a similar name is payload of a container and
+     * cannot be asked for, so it must not be used here.
+     */
     @Test
-    void energyCountersArePublishedInKWh() {
-        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_ENERGY, "solar-day");
+    void theRsocChannelReadsTheBatteryValue() {
+        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_BATTERY, "rsoc");
 
         assertNotNull(spec);
-        assertEquals(1000, spec.divisor(), "the device reports these counters in Wh");
+        assertEquals(RscpTag.BAT_RSOC, spec.tag());
+        assertEquals(0, spec.container(), "the battery value is a root data point");
+        assertEquals(RscpTag.BAT_REQ_RSOC, RscpTag.pollTagFor(RscpTag.BAT_RSOC));
+        assertNotEquals(RscpTag.DB_BAT_CHARGE_LEVEL, spec.tag(),
+                "DB_BAT_CHARGE_LEVEL is payload of the history container, not a data point");
+    }
+
+    /**
+     * The energy of the manual charge sits inside the container the device answers with; the container itself
+     * carries no value, so naming it as the tag would leave the channel without a state.
+     */
+    @Test
+    void theManualChargeChannelReadsTheEnergyCounterInsideItsContainer() {
+        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_SYSTEM,
+                "manual-charge-energy");
+
+        assertNotNull(spec);
+        assertEquals(RscpTag.EMS_GET_MANUAL_CHARGE, spec.container());
+        assertEquals(RscpTag.EMS_MANUAL_CHARGE_ENERGY_COUNTER, spec.tag());
+        assertEquals(1000, spec.divisor(), "the device reports this counter in Wh");
     }
 
     @Test
@@ -351,6 +394,55 @@ class E3DCChannelSpecTest {
      */
     private static boolean isPollable(int tag) {
         return RscpTag.requestFor(tag) != 0 || RscpTag.isRequestTag(tag);
+    }
+
+    /**
+     * Guards the defect where a channel named a value that only exists inside a history response as if it
+     * were a data point of its own.
+     *
+     * <p>
+     * The interface declares an id for every data point a device can be asked for, and a value without one
+     * is payload of a container. Asking for it anyway, because the derivation rule happily invents an id,
+     * makes the device answer with an unknown tag error. That is indistinguishable from a device that does
+     * not implement the data point, so the channel goes unnoticed and stays empty.
+     *
+     * <p>
+     * The extracted tag table is the reference for which ids exist, so the poll set is checked against it
+     * rather than against the derivation rule.
+     */
+    @Test
+    void everyPolledIdIsDeclaredByTheInterface() throws IOException {
+        Set<Integer> declared = declaredTagIds();
+        List<String> fabricated = new ArrayList<>();
+        for (Map.Entry<String, Map<String, E3DCChannelSpec>> group : allGroups()) {
+            for (Map.Entry<String, E3DCChannelSpec> channel : group.getValue().entrySet()) {
+                E3DCChannelSpec spec = channel.getValue();
+                // a value inside a container is not asked for on its own, its container is
+                int requested = spec.container() != 0 ? RscpTag.pollTagFor(spec.container())
+                        : RscpTag.pollTagFor(spec.tag());
+                if (!declared.contains(requested)) {
+                    fabricated
+                            .add(group.getKey() + "#" + channel.getKey() + " -> " + String.format("0x%08X", requested));
+                }
+            }
+        }
+        assertTrue(fabricated.isEmpty(),
+                "these channels are polled with an id the interface does not declare: " + fabricated);
+    }
+
+    /** The ids of the extracted RSCP tag table the tools keep as the interface reference. */
+    private static Set<Integer> declaredTagIds() throws IOException {
+        Path table = Path.of("tools", "rscp", "rscp_tags.tsv");
+        Set<Integer> ids = new HashSet<>();
+        for (String line : Files.readAllLines(table)) {
+            String[] columns = line.split("\t");
+            if (columns.length == 2 && columns[0].startsWith("TAG_")) {
+                String hex = columns[1].trim();
+                ids.add((int) Long.parseLong(hex.startsWith("0x") ? hex.substring(2) : hex, 16));
+            }
+        }
+        assertFalse(ids.isEmpty(), "no tags were read from " + table.toAbsolutePath());
+        return ids;
     }
 
     @Test

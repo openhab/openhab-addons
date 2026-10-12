@@ -14,9 +14,6 @@
 			<channel id="max-charge-power" typeId="battery-max-charge-power"/>
 			<channel id="max-discharge-power" typeId="battery-max-discharge-power"/>
 			<channel id="discharge-start-power" typeId="battery-discharge-start-power"/>
-			<channel id="set-max-charge-power" typeId="battery-set-max-charge-power"/>
-			<channel id="set-max-discharge-power" typeId="battery-set-max-discharge-power"/>
-			<channel id="set-discharge-start-power" typeId="battery-set-discharge-start-power"/>
 		</channels>
 	</channel-group-type>
 

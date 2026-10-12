@@ -12,8 +12,6 @@
 			<channel id="energy" typeId="reserve-energy"/>
 			<channel id="energy-max" typeId="reserve-energy-max"/>
 			<channel id="last-soc" typeId="reserve-last-soc"/>
-			<channel id="set-percent" typeId="reserve-set-percent"/>
-			<channel id="set-energy" typeId="reserve-set-energy"/>
 		</channels>
 	</channel-group-type>
 

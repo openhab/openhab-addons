@@ -56,6 +56,11 @@ public final class Probe {
     /**
      * Tags that are queried without a container. These are the data points the binding itself reads, so
      * a probe run also validates the channel model against the device.
+     *
+     * <p>
+     * The database values of the energy history are not listed here: they exist only as payload of the
+     * history containers, which {@link #CONTAINER_TAGS} covers. Asking for one of them on its own is
+     * answered with an unknown tag error and says nothing about the device.
      */
     private static final List<String> DIRECT_TAGS = List.of(//
             "INFO_SW_RELEASE", "INFO_SERIAL_NUMBER", "INFO_PRODUCTION_DATE", "INFO_TIME_ZONE", //
@@ -65,15 +70,59 @@ public final class Probe {
             "PVI_AC_POWER", "PVI_AC_VOLTAGE", "PVI_AC_CURRENT", "PVI_AC_FREQUENCY", "PVI_DC_POWER", "PVI_DC_VOLTAGE",
             "PVI_DC_CURRENT", "PVI_TEMPERATURE", "PVI_ON_GRID", "PVI_USED_STRING_COUNT", "PVI_AC_ENERGY_ALL",
             "PVI_AC_ENERGY_DAY", "PVI_INVERTER_COUNT", //
-            "WB_EXTERN_DATA", "BAT_AVAILABLE_BATTERIES", //
-            "DB_AUTARKY", "DB_CONSUMED_PRODUCTION", "DB_BAT_CHARGE_LEVEL", "DB_DC_POWER", "DB_CONSUMPTION",
-            "DB_GRID_POWER_IN", "DB_GRID_POWER_OUT", "DB_BAT_POWER_IN", "DB_BAT_POWER_OUT");
+            "WB_EXTERN_DATA", "BAT_REQ_AVAILABLE_BATTERIES", "BAT_REQ_RSOC");
 
-    /** Containers whose nested values are requested as well. */
+    /**
+     * Containers whose nested values the binding publishes as well.
+     *
+     * <p>
+     * These are the containers a request carries without parameters. The containers that address one of
+     * several devices do not belong here: they have more than one possible request shape, which is what
+     * {@link #CONTAINER_SHAPES} establishes.
+     */
     private static final List<String> CONTAINER_TAGS = List.of(//
             "EMS_REQ_GET_POWER_SETTINGS", "EMS_REQ_GET_IDLE_PERIODS", "EMS_REQ_GET_MANUAL_CHARGE", //
-            "PVI_REQ_DATA", "BAT_REQ_DATA", "PM_REQ_DATA", "WB_REQ_DATA", "HA_REQ_ACTUATOR_STATES", //
-            "DB_REQ_HISTORY_DATA_DAY");
+            "PVI_REQ_DATA", "HA_REQ_ACTUATOR_STATES", "DB_REQ_HISTORY_DATA_DAY");
+
+    /** The device index the index addressed containers are requested with. */
+    private static final int PROBE_INDEX = 0;
+
+    /** One container request whose shape is under test, with the response container the binding reads. */
+    private record RequestShape(String name, int requestTag, List<RscpValue> children, int expectedResponseTag) {
+    }
+
+    /**
+     * The possible request shapes of the containers that address one of several devices.
+     *
+     * <p>
+     * Such a container may be asked for with the index of the device as its first child, or with no
+     * parameter at all; carrying the container's own tag as a child is a third shape, the one the binding
+     * sends today. Only the answer of the device decides which shape is right, so every shape of every one
+     * of these containers is measured and printed.
+     */
+    private static final List<RequestShape> CONTAINER_SHAPES = List.of(//
+            shape("wb bare", RscpTag.WB_REQ_DATA, List.of(), RscpTag.WB_DATA), //
+            shape("wb requesting its own tag", RscpTag.WB_REQ_DATA, List.of(RscpValue.none(RscpTag.WB_REQ_DATA)),
+                    RscpTag.WB_DATA), //
+            shape("wb with WB_INDEX", RscpTag.WB_REQ_DATA, List.of(RscpValue.uchar8(RscpTag.WB_INDEX, PROBE_INDEX)),
+                    RscpTag.WB_DATA), //
+            shape("pm bare", RscpTag.PM_REQ_DATA, List.of(), RscpTag.PM_DATA), //
+            shape("pm with PM_INDEX", RscpTag.PM_REQ_DATA, List.of(RscpValue.uchar8(RscpTag.PM_INDEX, PROBE_INDEX)),
+                    RscpTag.PM_DATA), //
+            shape("bat bare", RscpTag.BAT_REQ_DATA, List.of(), RscpTag.BAT_DCB_INFO), //
+            shape("bat with BAT_INDEX", RscpTag.BAT_REQ_DATA,
+                    List.of(RscpValue.uchar8(RscpTag.BAT_INDEX, PROBE_INDEX)), RscpTag.BAT_DCB_INFO), //
+            shape("bat with BAT_INDEX and DCB info", RscpTag.BAT_REQ_DATA,
+                    List.of(RscpValue.uchar8(RscpTag.BAT_INDEX, PROBE_INDEX), RscpValue.none(RscpTag.BAT_REQ_DCB_INFO)),
+                    RscpTag.BAT_DCB_INFO), //
+            shape("bat with BAT_INDEX, DCB info and DCB count", RscpTag.BAT_REQ_DATA,
+                    List.of(RscpValue.uchar8(RscpTag.BAT_INDEX, PROBE_INDEX), RscpValue.none(RscpTag.BAT_REQ_DCB_INFO),
+                            RscpValue.none(RscpTag.BAT_REQ_DCB_COUNT)),
+                    RscpTag.BAT_DCB_INFO));
+
+    private static RequestShape shape(String name, int requestTag, List<RscpValue> children, int expectedResponseTag) {
+        return new RequestShape(name, requestTag, children, expectedResponseTag);
+    }
 
     /**
      * Whether to sweep every request tag of the namespaces instead of only the curated list. A full
@@ -130,14 +179,24 @@ public final class Probe {
                     System.out.println();
                     summary.put(name, classify(response));
                 } catch (RscpException e) {
-                    // a lost connection must not end the run, otherwise a long sweep never completes
-                    System.out.println("=== " + name + " === reconnecting after: " + e.getMessage());
                     summary.put(name, "IO_ERROR(" + e.getMessage() + ")");
-                    client.close();
-                    try {
-                        client.connect();
-                    } catch (RscpException reconnect) {
-                        System.out.println("reconnect failed: " + reconnect.getMessage() + ", stopping");
+                    if (!reconnect(client, name, e.getMessage())) {
+                        break;
+                    }
+                }
+            }
+            for (RequestShape shape : CONTAINER_SHAPES) {
+                String name = "shape " + shape.name();
+                RscpValue request = RscpValue.container(shape.requestTag(), shape.children());
+                try {
+                    RscpValue response = client.request(List.of(request));
+                    System.out.println("=== " + name + String.format(" (0x%08X)", shape.requestTag()) + " ===");
+                    print(response, "    ");
+                    System.out.println();
+                    summary.put(name, classifyShape(shape, response));
+                } catch (RscpException e) {
+                    summary.put(name, "IO_ERROR(" + e.getMessage() + ")");
+                    if (!reconnect(client, name, e.getMessage())) {
                         break;
                     }
                 }
@@ -251,6 +310,48 @@ public final class Probe {
             count += countValues(child);
         }
         return count;
+    }
+
+    /**
+     * Re-establishes a lost connection, so a run does not end on the first IO error.
+     *
+     * @return whether the run can continue
+     */
+    private static boolean reconnect(RscpClient client, String name, String message) {
+        System.out.println("=== " + name + " === reconnecting after: " + message);
+        client.close();
+        try {
+            client.connect();
+            return true;
+        } catch (RscpException e) {
+            System.out.println("reconnect failed: " + e.getMessage() + ", stopping");
+            return false;
+        }
+    }
+
+    /**
+     * Whether the device answered a container request with the response container the binding reads from,
+     * and which containers it answered with instead. This is what decides the right request shape.
+     */
+    private static String classifyShape(RequestShape shape, RscpValue response) {
+        RscpError error = response.findError();
+        if (error != null && !"UNKNOWN".equals(error.name())) {
+            return "ERROR(" + error + ")";
+        }
+        List<String> answered = new ArrayList<>();
+        for (RscpValue item : answerItems(response)) {
+            answered.add(RscpTag.nameOf(item.getTag()));
+        }
+        if (response.find(shape.expectedResponseTag()) == null) {
+            return "EMPTY(" + countValues(response) + " values) without "
+                    + RscpTag.nameOf(shape.expectedResponseTag()) + ", answered with " + answered;
+        }
+        return "OK(" + countValues(response) + " values) answered with " + answered;
+    }
+
+    /** The elements an answer consists of: an answer of a single element is that element itself. */
+    private static List<RscpValue> answerItems(RscpValue response) {
+        return response.getTag() == 0 ? response.getChildren() : List.of(response);
     }
 
     private Probe() {

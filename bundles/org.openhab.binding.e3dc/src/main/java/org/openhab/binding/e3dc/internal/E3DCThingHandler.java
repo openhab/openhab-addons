@@ -92,7 +92,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         updateLists(response);
         for (Map.Entry<String, Map<String, E3DCChannelSpec>> group : getRegistry().groups().entrySet()) {
             for (Map.Entry<String, E3DCChannelSpec> channel : group.getValue().entrySet()) {
-                RscpValue value = findValue(response, channel.getValue());
+                RscpValue value = findValue(response, channel.getValue(), getDeviceIndex());
                 if (value != null) {
                     updateChannel(group.getKey(), channel.getKey(), channel.getValue(), value);
                 }
@@ -103,21 +103,33 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         }
     }
 
-    private @Nullable RscpValue findValue(RscpValue response, E3DCChannelSpec spec) {
+    /**
+     * The value of one channel in a poll response.
+     *
+     * @param response the answer of the device
+     * @param spec the channel specification
+     * @param deviceIndex the index of this thing's device, or {@code null} when the container holds a single
+     *            entry
+     */
+    static @Nullable RscpValue findValue(RscpValue response, E3DCChannelSpec spec, @Nullable Integer deviceIndex) {
         RscpValue scope = response;
         if (spec.container() != 0) {
-            scope = selectContainer(response, spec.container());
+            scope = selectContainer(response, spec.container(), deviceIndex);
             if (scope == null) {
                 return null;
             }
         }
         if (spec.nestedTag() != 0) {
-            // values of the history data sit in a sum container inside the period container
-            List<RscpValue> sums = scope.findAll(spec.nestedTag());
-            if (sums.isEmpty()) {
+            // values of the history data sit in a sum container inside the period container, and the values of
+            // the inverter in a container of their own, which the trackers report once per tracker
+            List<RscpValue> nested = scope.findAll(spec.nestedTag());
+            if (nested.isEmpty()) {
                 return null;
             }
-            scope = sums.get(0);
+            if (spec.valueIndex() >= 0) {
+                return spec.valueIndex() < nested.size() ? nested.get(spec.valueIndex()).find(spec.tag()) : null;
+            }
+            scope = nested.get(0);
         }
         if (spec.valueIndex() >= 0) {
             // the container reports the value once per device, for example once per photovoltaic tracker
@@ -131,19 +143,19 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
      * Picks the container instance belonging to this thing's device index. Devices that can exist more
      * than once are returned as several containers, each carrying its own index.
      */
-    private @Nullable RscpValue selectContainer(RscpValue response, int container) {
+    private static @Nullable RscpValue selectContainer(RscpValue response, int container,
+            @Nullable Integer deviceIndex) {
         List<RscpValue> candidates = response.findAll(container);
         if (candidates.isEmpty()) {
             return null;
         }
-        Integer wanted = getDeviceIndex();
-        if (wanted == null) {
+        if (deviceIndex == null) {
             return candidates.get(0);
         }
         int indexTag = indexTagFor(container);
         for (RscpValue candidate : candidates) {
             Number reported = candidate.findNumber(indexTag);
-            if (reported != null && reported.intValue() == wanted) {
+            if (reported != null && reported.intValue() == deviceIndex) {
                 return candidate;
             }
         }
@@ -157,7 +169,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
      * The cell modules of a battery are addressed inside their own container rather than by position,
      * so the index tag belongs to the module container itself.
      */
-    private int indexTagFor(int container) {
+    private static int indexTagFor(int container) {
         if (container == RscpTag.PM_DATA) {
             return RscpTag.PM_INDEX;
         }
@@ -176,13 +188,29 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
             }
             return;
         }
+        State state = valueState(value, spec);
+        if (state != null) {
+            updateState(channelUID, state);
+        }
+    }
+
+    /**
+     * The state a value of this interface publishes on its channel, or {@code null} when it carries none.
+     *
+     * <p>
+     * Most values are numbers, but the interface also reports plain booleans, for example the charging mode of
+     * a wallbox. Treated by their kind alone they would silently keep the channel at its previous state.
+     */
+    static @Nullable State valueState(RscpValue value, E3DCChannelSpec spec) {
         Object raw = value.getValue();
         if (raw instanceof Number number) {
-            updateState(channelUID, new DecimalType(spec.scale(number.doubleValue())));
-        } else if (raw instanceof String string) {
-            updateState(channelUID, new StringType(string));
+            return new DecimalType(spec.scale(number.doubleValue()));
         }
-        // other types, for example byte arrays not mapped to a bit field, carry no publishable value
+        if (raw instanceof Boolean flag) {
+            return flag ? OnOffType.ON : OnOffType.OFF;
+        }
+        // other kinds, for example byte arrays not mapped to a bit field, carry no publishable value
+        return raw instanceof String string ? new StringType(string) : null;
     }
 
     /**
@@ -250,25 +278,34 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         }
         Integer index = getDeviceIndex();
         RscpValue value = spec.toValue(command);
-        RscpValue request = commandHandler.buildRequest(spec, command, index != null ? index : 0);
+        List<RscpValue> request = commandHandler.buildRequest(spec, command, index != null ? index : 0);
         if (value == null || request == null) {
             logger.debug("Command {} is not valid for channel {}", command, channelUID);
             return;
         }
         // the channel state is only updated once the device acknowledged the write
         if (commandHandler.send(bridge, request)) {
-            State state = stateFor(value);
+            State state = stateFor(value, spec);
             if (state != null) {
                 updateState(channelUID, state);
             }
         }
     }
 
-    /** The item state mirroring the value that was written. */
-    private @Nullable State stateFor(RscpValue value) {
+    /**
+     * The item state mirroring the value that was written.
+     *
+     * <p>
+     * A switch is sent as a number on this interface, so its channel has to be updated with a state the item
+     * accepts: a {@code DecimalType} on a Switch item is ignored by the framework.
+     */
+    private @Nullable State stateFor(RscpValue value, E3DCCommandSpec spec) {
         Object raw = value.getValue();
         if (raw instanceof Boolean flag) {
             return flag ? OnOffType.ON : OnOffType.OFF;
+        }
+        if (spec.switchValue() && raw instanceof Number number) {
+            return number.intValue() != 0 ? OnOffType.ON : OnOffType.OFF;
         }
         return raw instanceof Number number ? new DecimalType(number.doubleValue()) : null;
     }

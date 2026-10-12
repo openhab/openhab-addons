@@ -109,6 +109,12 @@ public final class RscpTag {
     public static final int EMS_SET_POWER = 0x01800030;
     public static final int EMS_GET_IDLE_PERIODS_ENABLE = 0x01800035;
     public static final int EMS_GET_MANUAL_CHARGE = 0x0180008E;
+
+    /** The values inside {@link #EMS_GET_MANUAL_CHARGE}, which the device reports in Wh. */
+    public static final int EMS_MANUAL_CHARGE_START_COUNTER = 0x01000150;
+    public static final int EMS_MANUAL_CHARGE_ACTIVE = 0x01000151;
+    public static final int EMS_MANUAL_CHARGE_ENERGY_COUNTER = 0x01000152;
+    public static final int EMS_MANUAL_CHARGE_LASTSTART = 0x01000153;
     public static final int EMS_STATUS = 0x01800040;
     public static final int EMS_USED_CHARGE_LIMIT = 0x01800041;
     public static final int EMS_BAT_CHARGE_LIMIT = 0x01800042;
@@ -178,6 +184,30 @@ public final class RscpTag {
     public static final int PVI_DC_POWER = 0x028DC001;
     public static final int PVI_DC_VOLTAGE = 0x028DC002;
     public static final int PVI_DC_CURRENT = 0x028DC003;
+
+    /**
+     * The data points an inverter request reads.
+     *
+     * <p>
+     * {@code PVI_REQ_DATA} carries the inverter index and these tags, each one a parameter of its own; the
+     * values of the trackers are reported once per tracker inside the answer.
+     */
+    public static final int PVI_REQ_TEMPERATURE = 0x02000100;
+    public static final int PVI_REQ_AC_POWER = 0x020AC001;
+    public static final int PVI_REQ_AC_VOLTAGE = 0x020AC002;
+    public static final int PVI_REQ_AC_CURRENT = 0x020AC003;
+    public static final int PVI_REQ_AC_ENERGY_ALL = 0x020AC006;
+    public static final int PVI_REQ_AC_ENERGY_DAY = 0x020AC008;
+    public static final int PVI_REQ_AC_FREQUENCY = 0x020AC00A;
+    public static final int PVI_REQ_DC_POWER = 0x020DC001;
+    public static final int PVI_REQ_DC_VOLTAGE = 0x020DC002;
+    public static final int PVI_REQ_DC_CURRENT = 0x020DC003;
+    public static final int PVI_INDEX = 0x02040001;
+    public static final int BAT_REQ_RSOC = 0x03000001;
+    public static final int BAT_RSOC = 0x03800001;
+    public static final int BAT_REQ_DCB_COUNT = 0x0300000D;
+    public static final int BAT_REQ_DCB_INFO = 0x03000042;
+    public static final int BAT_DCB_COUNT = 0x0380000D;
     public static final int BAT_REQ_AVAILABLE_BATTERIES = 0x03000056;
     public static final int BAT_AVAILABLE_BATTERIES = 0x03800057;
 
@@ -186,6 +216,12 @@ public final class RscpTag {
      * {@link #BAT_DCB_INFO}.
      */
     public static final int BAT_REQ_DATA = 0x03040000;
+
+    /** The battery a request addresses; the first child of {@link #BAT_REQ_DATA}. */
+    public static final int BAT_INDEX = 0x03040001;
+
+    /** The container holding the battery values of the addressed battery, including the module values. */
+    public static final int BAT_DATA = 0x03840000;
     public static final int PM_INDEX = 0x05040001;
     public static final int PM_POWER_L1 = 0x05800001;
     public static final int PM_POWER_L2 = 0x05800002;
@@ -200,6 +236,25 @@ public final class RscpTag {
     public static final int PM_VOLTAGE_L3 = 0x05800013;
     public static final int PM_DATA = 0x05840000;
     public static final int PM_REQ_DATA = 0x05040000;
+
+    /**
+     * The data points a meter request reads.
+     *
+     * <p>
+     * {@code PM_REQ_DATA} carries the meter index and these tags, each one a parameter of its own; without
+     * them the device answers the container with its index only.
+     */
+    public static final int PM_REQ_POWER_L1 = 0x05000001;
+    public static final int PM_REQ_POWER_L2 = 0x05000002;
+    public static final int PM_REQ_POWER_L3 = 0x05000003;
+    public static final int PM_REQ_ACTIVE_PHASES = 0x05000004;
+    public static final int PM_REQ_ENERGY_L1 = 0x05000006;
+    public static final int PM_REQ_ENERGY_L2 = 0x05000007;
+    public static final int PM_REQ_ENERGY_L3 = 0x05000008;
+    public static final int PM_REQ_MAX_PHASE_POWER = 0x0500000F;
+    public static final int PM_REQ_VOLTAGE_L1 = 0x05000011;
+    public static final int PM_REQ_VOLTAGE_L2 = 0x05000012;
+    public static final int PM_REQ_VOLTAGE_L3 = 0x05000013;
     // Battery cell modules (DCB). Read from the response of the battery data request.
 
     public static final int BAT_DCB_ALARM = 0x03800308;
@@ -216,6 +271,8 @@ public final class RscpTag {
     public static final int BAT_DCB_FULL_CHARGE_CAPACITY = 0x03800106;
     public static final int BAT_DCB_FW_VERSION = 0x03800122;
     public static final int BAT_DCB_INDEX = 0x03800100;
+    public static final int BAT_DCB_LAST_MESSAGE_TIMESTAMP = 0x03800101;
+    public static final int BAT_DCB_END_OF_DISCHARGE = 0x03800104;
     public static final int BAT_DCB_INFO = 0x03800042;
     public static final int BAT_DCB_MANUFACTURE_DATE = 0x03800119;
     public static final int BAT_DCB_MANUFACTURE_NAME = 0x03800302;
@@ -252,6 +309,7 @@ public final class RscpTag {
     public static final int DB_HISTORY_DATA_WEEK = 0x06800200;
     public static final int DB_HISTORY_DATA_MONTH = 0x06800300;
     public static final int DB_HISTORY_DATA_YEAR = 0x06800400;
+    public static final int DB_GRAPH_INDEX = 0x06800001;
     public static final int DB_BAT_POWER_IN = 0x06800002;
     public static final int DB_BAT_POWER_OUT = 0x06800003;
     public static final int DB_DC_POWER = 0x06800004;
@@ -261,8 +319,10 @@ public final class RscpTag {
     public static final int DB_PM_0_POWER = 0x06800008;
     public static final int DB_PM_1_POWER = 0x06800009;
     public static final int DB_BAT_CHARGE_LEVEL = 0x0680000A;
+    public static final int DB_BAT_CYCLE_COUNT = 0x0680000B;
     public static final int DB_CONSUMED_PRODUCTION = 0x0680000C;
     public static final int DB_AUTARKY = 0x0680000D;
+    public static final int DB_VALUE_CONTAINER = 0x06800020;
     public static final int HA_REQ_ACTUATOR_STATES = 0x09000010;
     public static final int INFO_REQ_SERIAL_NUMBER = 0x0A000001;
     public static final int INFO_REQ_PRODUCTION_DATE = 0x0A000002;
@@ -280,8 +340,51 @@ public final class RscpTag {
     public static final int WB_REQ_EXTERN_DATA_ALL = 0x0E041013;
     public static final int WB_REQ_SET_PARAM_1 = 0x0E041018;
     public static final int WB_REQ_SET_PARAM_2 = 0x0E041019;
+
+    /**
+     * The settable values of the wallbox, written as the parameter of the wallbox request that names them.
+     */
+    public static final int WB_REQ_SET_SUN_MODE_ACTIVE = 0x0E041039;
+    public static final int WB_REQ_SET_MAX_CHARGE_CURRENT = 0x0E041049;
+    public static final int WB_REQ_SET_MIN_CHARGE_CURRENT = 0x0E04104A;
+    public static final int WB_REQ_SET_NUMBER_PHASES = 0x0E04103C;
+    public static final int WB_REQ_SET_ABORT_CHARGING = 0x0E04103E;
+    public static final int WB_REQ_SET_AUTO_PHASE_SWITCH_ENABLED = 0x0E000038;
+
+    /** The charging mode the wallbox reports, which is a value of its own rather than a status bit. */
+    public static final int WB_REQ_SUN_MODE_ACTIVE = 0x0E041038;
+    public static final int WB_SUN_MODE_ACTIVE = 0x0E841038;
+
+    /** The suspended state of the charging session, also a value of its own. */
+    public static final int WB_REQ_ABORT_CHARGING = 0x0E04103D;
+    public static final int WB_ABORT_CHARGING = 0x0E84103D;
+
+    /** Whether the wallbox switches the number of phases by itself. */
+    public static final int WB_REQ_AUTO_PHASE_SWITCH_ENABLED = 0x0E000039;
+    public static final int WB_AUTO_PHASE_SWITCH_ENABLED = 0x0E800039;
+
+    /**
+     * The data points a wallbox request reads.
+     *
+     * <p>
+     * {@code WB_REQ_DATA} carries the wallbox index and these tags, each one a parameter of its own;
+     * without them the device answers the container with its index only.
+     */
+    public static final int WB_REQ_ENERGY_ALL = 0x0E000001;
+    public static final int WB_REQ_ENERGY_SOLAR = 0x0E000002;
+    public static final int WB_REQ_SOC = 0x0E000003;
+    public static final int WB_REQ_PM_POWER_L1 = 0x0E00000C;
+    public static final int WB_REQ_PM_POWER_L2 = 0x0E00000D;
+    public static final int WB_REQ_PM_POWER_L3 = 0x0E00000E;
+    public static final int WB_REQ_NUMBER_PHASES = 0x0E04103B;
+    public static final int WB_REQ_MAX_CHARGE_CURRENT = 0x0E041047;
+    public static final int WB_REQ_MIN_CHARGE_CURRENT = 0x0E041048;
+    public static final int WB_REQ_KEY_STATE = 0x0E041050;
     public static final int WB_EXTERN_DATA = 0x0E042010;
     public static final int WB_EXTERN_DATA_LEN = 0x0E042011;
+
+    /** The packed status struct of the wallbox, which carries the extern data of all sources. */
+    public static final int WB_EXTERN_DATA_ALL = 0x0E841013;
     public static final int WB_ENERGY_ALL = 0x0E800001;
     public static final int WB_ENERGY_SOLAR = 0x0E800002;
     public static final int WB_SOC = 0x0E800003;
@@ -294,18 +397,28 @@ public final class RscpTag {
     public static final int WB_MIN_CHARGE_CURRENT = 0x0E841048;
     public static final int WB_KEY_STATE = 0x0E841050;
     public static final int SE_PARAM_EP_RESERVE = 0x1B040023;
+
+    /** The tag the answer of the reserve names the parameter it carries the value of. */
+    public static final int SE_PARAM_INDEX = 0x1B040000;
+
+    /** The value of a reserve parameter of an integral kind. */
+    public static final int SE_PARAM_INT = 0x1B040011;
+
     public static final int SE_PARAM_LAST_SOC = 0x1B040026;
     public static final int SE_PARAM_EP_RESERVE_W = 0x1B040033;
     public static final int SE_PARAM_EP_RESERVE_MAX_W = 0x1B040034;
 
     /**
-     * The container carrying the reserve kept for emergency power.
+     * The request for the reserve kept for emergency power.
      *
      * <p>
-     * The interface uses one id for the request and the response of this data point, so this tag is
-     * both the container to ask for and the container the values arrive in.
+     * The container asks for the data points listed as its parameters and answers in {@link #SE_EP_RESERVE},
+     * so asking for the container alone yields the parameters the device reports by itself.
      */
     public static final int SE_REQ_EP_RESERVE = 0x1B000009;
+
+    /** The container the reserve values arrive in. */
+    public static final int SE_EP_RESERVE = 0x1B800009;
 
     /** Writing the reserve as a share or as an amount of energy. */
     public static final int SE_REQ_SET_EP_RESERVE = 0x1B000010;
@@ -385,6 +498,10 @@ public final class RscpTag {
         NAMES.put(EMS_SET_POWER, "EMS_SET_POWER");
         NAMES.put(EMS_GET_IDLE_PERIODS_ENABLE, "EMS_GET_IDLE_PERIODS_ENABLE");
         NAMES.put(EMS_GET_MANUAL_CHARGE, "EMS_GET_MANUAL_CHARGE");
+        NAMES.put(EMS_MANUAL_CHARGE_START_COUNTER, "EMS_MANUAL_CHARGE_START_COUNTER");
+        NAMES.put(EMS_MANUAL_CHARGE_ACTIVE, "EMS_MANUAL_CHARGE_ACTIVE");
+        NAMES.put(EMS_MANUAL_CHARGE_ENERGY_COUNTER, "EMS_MANUAL_CHARGE_ENERGY_COUNTER");
+        NAMES.put(EMS_MANUAL_CHARGE_LASTSTART, "EMS_MANUAL_CHARGE_LASTSTART");
         NAMES.put(EMS_STATUS, "EMS_STATUS");
         NAMES.put(EMS_USED_CHARGE_LIMIT, "EMS_USED_CHARGE_LIMIT");
         NAMES.put(EMS_BAT_CHARGE_LIMIT, "EMS_BAT_CHARGE_LIMIT");
@@ -444,9 +561,27 @@ public final class RscpTag {
         NAMES.put(PVI_DC_POWER, "PVI_DC_POWER");
         NAMES.put(PVI_DC_VOLTAGE, "PVI_DC_VOLTAGE");
         NAMES.put(PVI_DC_CURRENT, "PVI_DC_CURRENT");
+        NAMES.put(PVI_REQ_TEMPERATURE, "PVI_REQ_TEMPERATURE");
+        NAMES.put(PVI_REQ_AC_POWER, "PVI_REQ_AC_POWER");
+        NAMES.put(PVI_REQ_AC_VOLTAGE, "PVI_REQ_AC_VOLTAGE");
+        NAMES.put(PVI_REQ_AC_CURRENT, "PVI_REQ_AC_CURRENT");
+        NAMES.put(PVI_REQ_AC_ENERGY_ALL, "PVI_REQ_AC_ENERGY_ALL");
+        NAMES.put(PVI_REQ_AC_ENERGY_DAY, "PVI_REQ_AC_ENERGY_DAY");
+        NAMES.put(PVI_REQ_AC_FREQUENCY, "PVI_REQ_AC_FREQUENCY");
+        NAMES.put(PVI_REQ_DC_POWER, "PVI_REQ_DC_POWER");
+        NAMES.put(PVI_REQ_DC_VOLTAGE, "PVI_REQ_DC_VOLTAGE");
+        NAMES.put(PVI_REQ_DC_CURRENT, "PVI_REQ_DC_CURRENT");
+        NAMES.put(PVI_INDEX, "PVI_INDEX");
+        NAMES.put(BAT_REQ_RSOC, "BAT_REQ_RSOC");
+        NAMES.put(BAT_RSOC, "BAT_RSOC");
+        NAMES.put(BAT_REQ_DCB_COUNT, "BAT_REQ_DCB_COUNT");
+        NAMES.put(BAT_REQ_DCB_INFO, "BAT_REQ_DCB_INFO");
         NAMES.put(BAT_REQ_AVAILABLE_BATTERIES, "BAT_REQ_AVAILABLE_BATTERIES");
         NAMES.put(BAT_AVAILABLE_BATTERIES, "BAT_AVAILABLE_BATTERIES");
         NAMES.put(BAT_REQ_DATA, "BAT_REQ_DATA");
+        NAMES.put(BAT_INDEX, "BAT_INDEX");
+        NAMES.put(BAT_DATA, "BAT_DATA");
+        NAMES.put(BAT_DCB_COUNT, "BAT_DCB_COUNT");
         NAMES.put(PM_INDEX, "PM_INDEX");
         NAMES.put(PM_POWER_L1, "PM_POWER_L1");
         NAMES.put(PM_POWER_L2, "PM_POWER_L2");
@@ -461,6 +596,17 @@ public final class RscpTag {
         NAMES.put(PM_VOLTAGE_L3, "PM_VOLTAGE_L3");
         NAMES.put(PM_DATA, "PM_DATA");
         NAMES.put(PM_REQ_DATA, "PM_REQ_DATA");
+        NAMES.put(PM_REQ_POWER_L1, "PM_REQ_POWER_L1");
+        NAMES.put(PM_REQ_POWER_L2, "PM_REQ_POWER_L2");
+        NAMES.put(PM_REQ_POWER_L3, "PM_REQ_POWER_L3");
+        NAMES.put(PM_REQ_ACTIVE_PHASES, "PM_REQ_ACTIVE_PHASES");
+        NAMES.put(PM_REQ_ENERGY_L1, "PM_REQ_ENERGY_L1");
+        NAMES.put(PM_REQ_ENERGY_L2, "PM_REQ_ENERGY_L2");
+        NAMES.put(PM_REQ_ENERGY_L3, "PM_REQ_ENERGY_L3");
+        NAMES.put(PM_REQ_MAX_PHASE_POWER, "PM_REQ_MAX_PHASE_POWER");
+        NAMES.put(PM_REQ_VOLTAGE_L1, "PM_REQ_VOLTAGE_L1");
+        NAMES.put(PM_REQ_VOLTAGE_L2, "PM_REQ_VOLTAGE_L2");
+        NAMES.put(PM_REQ_VOLTAGE_L3, "PM_REQ_VOLTAGE_L3");
         NAMES.put(BAT_DCB_ALARM, "BAT_DCB_ALARM");
         NAMES.put(BAT_DCB_CHARGE_HIGH_TEMPERATURE, "BAT_DCB_CHARGE_HIGH_TEMPERATURE");
         NAMES.put(BAT_DCB_CHARGE_LOW_TEMPERATURE, "BAT_DCB_CHARGE_LOW_TEMPERATURE");
@@ -475,6 +621,8 @@ public final class RscpTag {
         NAMES.put(BAT_DCB_FULL_CHARGE_CAPACITY, "BAT_DCB_FULL_CHARGE_CAPACITY");
         NAMES.put(BAT_DCB_FW_VERSION, "BAT_DCB_FW_VERSION");
         NAMES.put(BAT_DCB_INDEX, "BAT_DCB_INDEX");
+        NAMES.put(BAT_DCB_LAST_MESSAGE_TIMESTAMP, "BAT_DCB_LAST_MESSAGE_TIMESTAMP");
+        NAMES.put(BAT_DCB_END_OF_DISCHARGE, "BAT_DCB_END_OF_DISCHARGE");
         NAMES.put(BAT_DCB_INFO, "BAT_DCB_INFO");
         NAMES.put(BAT_DCB_MANUFACTURE_DATE, "BAT_DCB_MANUFACTURE_DATE");
         NAMES.put(BAT_DCB_MANUFACTURE_NAME, "BAT_DCB_MANUFACTURE_NAME");
@@ -518,6 +666,9 @@ public final class RscpTag {
         NAMES.put(DB_BAT_CHARGE_LEVEL, "DB_BAT_CHARGE_LEVEL");
         NAMES.put(DB_CONSUMED_PRODUCTION, "DB_CONSUMED_PRODUCTION");
         NAMES.put(DB_AUTARKY, "DB_AUTARKY");
+        NAMES.put(DB_GRAPH_INDEX, "DB_GRAPH_INDEX");
+        NAMES.put(DB_BAT_CYCLE_COUNT, "DB_BAT_CYCLE_COUNT");
+        NAMES.put(DB_VALUE_CONTAINER, "DB_VALUE_CONTAINER");
         NAMES.put(HA_REQ_ACTUATOR_STATES, "HA_REQ_ACTUATOR_STATES");
         NAMES.put(INFO_REQ_SERIAL_NUMBER, "INFO_REQ_SERIAL_NUMBER");
         NAMES.put(INFO_REQ_PRODUCTION_DATE, "INFO_REQ_PRODUCTION_DATE");
@@ -535,8 +686,31 @@ public final class RscpTag {
         NAMES.put(WB_REQ_EXTERN_DATA_ALL, "WB_REQ_EXTERN_DATA_ALL");
         NAMES.put(WB_REQ_SET_PARAM_1, "WB_REQ_SET_PARAM_1");
         NAMES.put(WB_REQ_SET_PARAM_2, "WB_REQ_SET_PARAM_2");
+        NAMES.put(WB_REQ_SET_SUN_MODE_ACTIVE, "WB_REQ_SET_SUN_MODE_ACTIVE");
+        NAMES.put(WB_REQ_SET_MAX_CHARGE_CURRENT, "WB_REQ_SET_MAX_CHARGE_CURRENT");
+        NAMES.put(WB_REQ_SET_MIN_CHARGE_CURRENT, "WB_REQ_SET_MIN_CHARGE_CURRENT");
+        NAMES.put(WB_REQ_SET_NUMBER_PHASES, "WB_REQ_SET_NUMBER_PHASES");
+        NAMES.put(WB_REQ_SET_ABORT_CHARGING, "WB_REQ_SET_ABORT_CHARGING");
+        NAMES.put(WB_REQ_SET_AUTO_PHASE_SWITCH_ENABLED, "WB_REQ_SET_AUTO_PHASE_SWITCH_ENABLED");
+        NAMES.put(WB_REQ_SUN_MODE_ACTIVE, "WB_REQ_SUN_MODE_ACTIVE");
+        NAMES.put(WB_SUN_MODE_ACTIVE, "WB_SUN_MODE_ACTIVE");
+        NAMES.put(WB_REQ_ABORT_CHARGING, "WB_REQ_ABORT_CHARGING");
+        NAMES.put(WB_ABORT_CHARGING, "WB_ABORT_CHARGING");
+        NAMES.put(WB_REQ_AUTO_PHASE_SWITCH_ENABLED, "WB_REQ_AUTO_PHASE_SWITCH_ENABLED");
+        NAMES.put(WB_AUTO_PHASE_SWITCH_ENABLED, "WB_AUTO_PHASE_SWITCH_ENABLED");
+        NAMES.put(WB_REQ_ENERGY_ALL, "WB_REQ_ENERGY_ALL");
+        NAMES.put(WB_REQ_ENERGY_SOLAR, "WB_REQ_ENERGY_SOLAR");
+        NAMES.put(WB_REQ_SOC, "WB_REQ_SOC");
+        NAMES.put(WB_REQ_PM_POWER_L1, "WB_REQ_PM_POWER_L1");
+        NAMES.put(WB_REQ_PM_POWER_L2, "WB_REQ_PM_POWER_L2");
+        NAMES.put(WB_REQ_PM_POWER_L3, "WB_REQ_PM_POWER_L3");
+        NAMES.put(WB_REQ_NUMBER_PHASES, "WB_REQ_NUMBER_PHASES");
+        NAMES.put(WB_REQ_MAX_CHARGE_CURRENT, "WB_REQ_MAX_CHARGE_CURRENT");
+        NAMES.put(WB_REQ_MIN_CHARGE_CURRENT, "WB_REQ_MIN_CHARGE_CURRENT");
+        NAMES.put(WB_REQ_KEY_STATE, "WB_REQ_KEY_STATE");
         NAMES.put(WB_EXTERN_DATA, "WB_EXTERN_DATA");
         NAMES.put(WB_EXTERN_DATA_LEN, "WB_EXTERN_DATA_LEN");
+        NAMES.put(WB_EXTERN_DATA_ALL, "WB_EXTERN_DATA_ALL");
         NAMES.put(WB_ENERGY_ALL, "WB_ENERGY_ALL");
         NAMES.put(WB_ENERGY_SOLAR, "WB_ENERGY_SOLAR");
         NAMES.put(WB_SOC, "WB_SOC");
@@ -549,10 +723,13 @@ public final class RscpTag {
         NAMES.put(WB_MIN_CHARGE_CURRENT, "WB_MIN_CHARGE_CURRENT");
         NAMES.put(WB_KEY_STATE, "WB_KEY_STATE");
         NAMES.put(SE_PARAM_EP_RESERVE, "SE_PARAM_EP_RESERVE");
+        NAMES.put(SE_PARAM_INDEX, "SE_PARAM_INDEX");
+        NAMES.put(SE_PARAM_INT, "SE_PARAM_INT");
         NAMES.put(SE_PARAM_LAST_SOC, "SE_PARAM_LAST_SOC");
         NAMES.put(SE_PARAM_EP_RESERVE_W, "SE_PARAM_EP_RESERVE_W");
         NAMES.put(SE_PARAM_EP_RESERVE_MAX_W, "SE_PARAM_EP_RESERVE_MAX_W");
         NAMES.put(SE_REQ_EP_RESERVE, "SE_REQ_EP_RESERVE");
+        NAMES.put(SE_EP_RESERVE, "SE_EP_RESERVE");
         NAMES.put(SE_REQ_SET_EP_RESERVE, "SE_REQ_SET_EP_RESERVE");
     }
 

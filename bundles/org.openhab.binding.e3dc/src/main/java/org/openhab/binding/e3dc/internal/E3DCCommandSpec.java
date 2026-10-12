@@ -36,34 +36,26 @@ import org.openhab.core.types.Command;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public record E3DCCommandSpec(int tag, RscpType type, int container, boolean switchValue, Kind kind) {
-
-    /** The shape of the request a writable channel produces. */
-    public enum Kind {
-        /** The value travels as its own parameter. */
-        SCALAR,
-        /** The value is one field of the packed wallbox command. */
-        WALLBOX_PACKED
-    }
+public record E3DCCommandSpec(int tag, RscpType type, int container, boolean switchValue) {
 
     /** A boolean parameter in the root container, such as the weather regulated charge flag. */
     public static E3DCCommandSpec flag(int tag) {
-        return new E3DCCommandSpec(tag, RscpType.UCHAR8, 0, true, Kind.SCALAR);
+        return new E3DCCommandSpec(tag, RscpType.UCHAR8, 0, true);
     }
 
     /** A boolean parameter inside a container, sent as the RSCP boolean type. */
     public static E3DCCommandSpec bool(int tag, int container) {
-        return new E3DCCommandSpec(tag, RscpType.BOOL, container, true, Kind.SCALAR);
+        return new E3DCCommandSpec(tag, RscpType.BOOL, container, true);
     }
 
     /** A numeric parameter inside a container, sent as an unsigned 32 bit value. */
     public static E3DCCommandSpec number(int tag, int container) {
-        return new E3DCCommandSpec(tag, RscpType.UINT32, container, false, Kind.SCALAR);
+        return new E3DCCommandSpec(tag, RscpType.UINT32, container, false);
     }
 
     /** A numeric parameter in the root container. */
     public static E3DCCommandSpec number(int tag) {
-        return new E3DCCommandSpec(tag, RscpType.UINT32, 0, false, Kind.SCALAR);
+        return new E3DCCommandSpec(tag, RscpType.UINT32, 0, false);
     }
 
     /**
@@ -74,22 +66,17 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
      * {@code Float32}, so sending it with an integer type would be decoded as a different value.
      */
     public static E3DCCommandSpec floatNumber(int tag, int container) {
-        return new E3DCCommandSpec(tag, RscpType.FLOAT32, container, false, Kind.SCALAR);
+        return new E3DCCommandSpec(tag, RscpType.FLOAT32, container, false);
     }
 
-    /** One switch field of the packed wallbox command. */
-    public static E3DCCommandSpec wallboxFlag(int tag) {
-        return new E3DCCommandSpec(tag, RscpType.UCHAR8, RscpTag.WB_REQ_SET_EXTERN, true, Kind.WALLBOX_PACKED);
+    /** A boolean parameter inside a container that the device expects as an unsigned byte. */
+    public static E3DCCommandSpec uchar8Flag(int tag, int container) {
+        return new E3DCCommandSpec(tag, RscpType.UCHAR8, container, true);
     }
 
-    /** One numeric field of the packed wallbox command. */
-    public static E3DCCommandSpec wallboxNumber(int tag) {
-        return new E3DCCommandSpec(tag, RscpType.UCHAR8, RscpTag.WB_REQ_SET_EXTERN, false, Kind.WALLBOX_PACKED);
-    }
-
-    /** Whether this command is one of the packed wallbox commands. */
-    public boolean isWallboxCommand() {
-        return kind == Kind.WALLBOX_PACKED;
+    /** A numeric parameter inside a container that the device expects as an unsigned byte. */
+    public static E3DCCommandSpec uchar8Number(int tag, int container) {
+        return new E3DCCommandSpec(tag, RscpType.UCHAR8, container, false);
     }
 
     /**
@@ -153,27 +140,36 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
             RscpTag.EMS_MAX_DISCHARGE_POWER, RscpTag.EMS_DISCHARGE_START_POWER,
             RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED };
 
-    /** The settable channels of the power plant. */
+    /**
+     * The settable channels of the power plant.
+     *
+     * <p>
+     * The limits and the two switches live in the power settings container, which the device replaces as a
+     * whole: a write for one of them has to carry the values last read for the others. The remaining channels
+     * name one parameter each. Only {@code set-manual-charge} starts an action rather than setting a value,
+     * so it is the one channel that is not the channel reporting the value.
+     */
     public static E3DCCommandRegistry powerPlant() {
         return new E3DCCommandRegistry()//
                 .group(E3DCBindingConstants.GROUP_BATTERY, Map.of(//
-                        "set-max-charge-power",
+                        "max-charge-power",
                         E3DCCommandSpec.number(RscpTag.EMS_MAX_CHARGE_POWER, RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
-                        "set-max-discharge-power",
+                        "max-discharge-power",
                         E3DCCommandSpec.number(RscpTag.EMS_MAX_DISCHARGE_POWER, RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
-                        "set-discharge-start-power",
+                        "discharge-start-power",
                         E3DCCommandSpec.number(RscpTag.EMS_DISCHARGE_START_POWER, RscpTag.EMS_REQ_SET_POWER_SETTINGS)))//
                 .group(E3DCBindingConstants.GROUP_SYSTEM, Map.of(//
-                        "set-power-limits",
+                        "power-limits-used",
                         E3DCCommandSpec.bool(RscpTag.EMS_POWER_LIMITS_USED, RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
-                        "set-weather-regulated-charge",
-                        E3DCCommandSpec.flag(RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED), //
-                        "set-power-mode", E3DCCommandSpec.number(RscpTag.EMS_REQ_SET_POWER_MODE), //
+                        "weather-regulated-charge",
+                        E3DCCommandSpec.bool(RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED,
+                                RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
+                        "mode", E3DCCommandSpec.number(RscpTag.EMS_REQ_SET_POWER_MODE), //
                         "set-manual-charge", E3DCCommandSpec.number(RscpTag.EMS_REQ_START_MANUAL_CHARGE)))//
                 .group(E3DCBindingConstants.GROUP_RESERVE, Map.of(//
-                        "set-percent",
+                        "percent",
                         E3DCCommandSpec.floatNumber(RscpTag.SE_PARAM_EP_RESERVE, RscpTag.SE_REQ_SET_EP_RESERVE), //
-                        "set-energy",
+                        "energy",
                         E3DCCommandSpec.floatNumber(RscpTag.SE_PARAM_EP_RESERVE_W, RscpTag.SE_REQ_SET_EP_RESERVE)));
     }
 
@@ -181,12 +177,20 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
      * The settable channels of a wallbox.
      *
      * <p>
-     * These map onto fields of the packed command in {@link E3DCWallboxCommand}. The device treats
-     * suspending as a toggle, so that channel reports the change rather than a plain on or off.
+     * The values the wallbox reports are the ones it accepts: every channel below writes the parameter of
+     * that one value inside the wallbox request, which is also how the value is read. One channel per value
+     * therefore reports and sets it, without a second channel for the same value.
      */
     public static E3DCCommandRegistry wallbox() {
         return new E3DCCommandRegistry().group(E3DCBindingConstants.GROUP_WALLBOX, Map.of(//
-                "set-max-charge-current", E3DCCommandSpec.wallboxNumber(RscpTag.WB_MAX_CHARGE_CURRENT), //
-                "set-sun-mode", E3DCCommandSpec.wallboxFlag(E3DCWallboxField.SUN_MODE)));
+                "sun-mode", E3DCCommandSpec.uchar8Flag(RscpTag.WB_REQ_SET_SUN_MODE_ACTIVE, RscpTag.WB_REQ_DATA), //
+                "suspended", E3DCCommandSpec.uchar8Flag(RscpTag.WB_REQ_SET_ABORT_CHARGING, RscpTag.WB_REQ_DATA), //
+                "auto-phase-switch",
+                E3DCCommandSpec.uchar8Flag(RscpTag.WB_REQ_SET_AUTO_PHASE_SWITCH_ENABLED, RscpTag.WB_REQ_DATA), //
+                "max-charge-current",
+                E3DCCommandSpec.uchar8Number(RscpTag.WB_REQ_SET_MAX_CHARGE_CURRENT, RscpTag.WB_REQ_DATA), //
+                "min-charge-current",
+                E3DCCommandSpec.uchar8Number(RscpTag.WB_REQ_SET_MIN_CHARGE_CURRENT, RscpTag.WB_REQ_DATA), //
+                "number-phases", E3DCCommandSpec.uchar8Number(RscpTag.WB_REQ_SET_NUMBER_PHASES, RscpTag.WB_REQ_DATA)));
     }
 }

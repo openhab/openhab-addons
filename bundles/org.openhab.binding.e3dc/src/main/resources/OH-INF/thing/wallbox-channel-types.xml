@@ -50,26 +50,33 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Minimum Charge Current</label>
 		<description>Lowest charging current allowed</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="wallbox-max-charge-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Charge Current</label>
 		<description>Highest charging current allowed</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="wallbox-number-phases">
 		<item-type>Number</item-type>
 		<label>Number of Phases</label>
 		<description>Number of phases used for charging</description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%s">
 			<options>
 				<option value="1">Single phase</option>
 				<option value="3">Three phases</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="wallbox-auto-phase-switch">
+		<item-type>Switch</item-type>
+		<label>Automatic Phase Switch</label>
+		<description>Whether the wallbox changes the number of phases by itself</description>
+		<state/>
 	</channel-type>
 
 	<channel-type id="wallbox-key-state">
@@ -104,27 +111,13 @@
 		<item-type>Switch</item-type>
 		<label>Suspended</label>
 		<description>Charging is currently suspended</description>
-		<state readOnly="true"/>
+		<state/>
 	</channel-type>
 
 	<channel-type id="wallbox-sun-mode">
 		<item-type>Switch</item-type>
 		<label>Sun Mode</label>
 		<description>Charging uses surplus photovoltaic power</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="wallbox-set-max-charge-current">
-		<item-type>Number:ElectricCurrent</item-type>
-		<label>Set Maximum Charge Current</label>
-		<description>Highest charging current allowed for the wallbox</description>
-		<state pattern="%.0f %unit%"/>
-	</channel-type>
-
-	<channel-type id="wallbox-set-sun-mode">
-		<item-type>Switch</item-type>
-		<label>Set Sun Mode</label>
-		<description>Whether wallbox charging uses surplus photovoltaic power</description>
 		<state/>
 	</channel-type>
 

@@ -14,7 +14,7 @@
 	<channel-type id="battery-rsoc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Real State of Charge</label>
-		<description>Battery state of charge from the energy history</description>
+		<description>State of charge the battery reports itself</description>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -36,40 +36,19 @@
 		<item-type>Number:Power</item-type>
 		<label>Maximum Charge Power</label>
 		<description>Configured limit for battery charging</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="battery-max-discharge-power">
 		<item-type>Number:Power</item-type>
 		<label>Maximum Discharge Power</label>
 		<description>Configured limit for battery discharging</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="battery-discharge-start-power">
 		<item-type>Number:Power</item-type>
 		<label>Discharge Start Power</label>
-		<description>Power above which the battery is discharged</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="battery-set-max-charge-power">
-		<item-type>Number:Power</item-type>
-		<label>Set Maximum Charge Power</label>
-		<description>Limit for battery charging</description>
-		<state pattern="%.0f %unit%"/>
-	</channel-type>
-
-	<channel-type id="battery-set-max-discharge-power">
-		<item-type>Number:Power</item-type>
-		<label>Set Maximum Discharge Power</label>
-		<description>Limit for battery discharging</description>
-		<state pattern="%.0f %unit%"/>
-	</channel-type>
-
-	<channel-type id="battery-set-discharge-start-power">
-		<item-type>Number:Power</item-type>
-		<label>Set Discharge Start Power</label>
 		<description>Power above which the battery is discharged</description>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>

@@ -38,12 +38,17 @@ for match in re.finditer(r'private static final List<String> (DIRECT_TAGS|CONTAI
     print('%-16s %d names' % (match.group(1), len(found)))
     names.extend(found)
 
+# the request shapes name their tags through the binding catalogue, which has to be the same tag table
+catalogue_refs = sorted(set(re.findall(r'RscpTag\.([A-Z][A-Z0-9_]+)', probe)))
+print('%-16s %d names (from RscpTag)' % ('container shapes', len(catalogue_refs)))
+
 # the sweep is derived from the catalogue, so it cannot contain unknown names
 sweep = [n for n in index if '_REQ_' in n and any(n.startswith(ns + '_REQ_') for ns in
          ('RSCP', 'INFO', 'EMS', 'PVI', 'BAT', 'PM', 'WB', 'DB', 'HA', 'DCDC', 'SGR', 'SE'))]
 print('%-16s %d names (derived)' % ('catalogue sweep', len(sweep)))
 
 unresolved = sorted(n for n in names if resolve(n) == 0)
+unresolved.extend(sorted(n for n in catalogue_refs if n not in index))
 print()
 print('catalogue tags : %d' % len(index))
 print('hand written   : %d' % len(names))

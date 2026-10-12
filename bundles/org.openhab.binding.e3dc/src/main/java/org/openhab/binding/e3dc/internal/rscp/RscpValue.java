@@ -204,6 +204,28 @@ public final class RscpValue {
         return name + "=" + describeValue();
     }
 
+    /**
+     * This item with all of its descendants, one per line and indented by the nesting.
+     *
+     * <p>
+     * {@link #toString()} names a container only by the number of its children, which does not show what a
+     * device answered. This renders the whole tree, which is what a log needs to tell a wrong request from a
+     * data point the device does not implement. Credentials never appear in a response, so the rendering is
+     * safe to log.
+     */
+    public String describeTree() {
+        StringBuilder tree = new StringBuilder();
+        appendTree(tree, "");
+        return tree.toString().stripTrailing();
+    }
+
+    private void appendTree(StringBuilder tree, String indent) {
+        tree.append(indent).append(this).append(System.lineSeparator());
+        for (RscpValue child : children) {
+            child.appendTree(tree, indent + "    ");
+        }
+    }
+
     /** Renders the value the way it is logged; credentials never appear in a response. */
     public String describeValue() {
         if (value == null) {

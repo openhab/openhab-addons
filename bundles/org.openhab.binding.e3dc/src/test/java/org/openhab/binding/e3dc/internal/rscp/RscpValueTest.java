@@ -128,6 +128,25 @@ class RscpValueTest {
         assertEquals("EMS_GET_POWER_SETTINGS[0]", empty.toString());
     }
 
+    /**
+     * The log needs the whole answer of a device, not only the size of its containers: a wrong request is
+     * told apart from an unsupported data point by the tags and values that actually arrive.
+     */
+    @Test
+    void theTreeRenderingNamesEveryLevelAndValue() {
+        RscpValue tree = RscpValue.container(0,
+                List.of(RscpValue.container(RscpTag.WB_DATA,
+                        List.of(RscpValue.uchar8(RscpTag.WB_INDEX, 0), RscpValue.none(RscpTag.WB_REQ_SOC))),
+                        RscpValue.scalar(RscpTag.WB_EXTERN_DATA, RscpType.BYTEARRAY, new byte[] { 0x00, 0x01 })));
+
+        String separator = System.lineSeparator();
+        assertEquals("UNKNOWN_0x00000000[2]" + separator //
+                + "    WB_DATA[2]" + separator //
+                + "        WB_INDEX=0" + separator //
+                + "        WB_REQ_SOC=<none>" + separator //
+                + "    WB_EXTERN_DATA=0x0001", tree.describeTree());
+    }
+
     @Test
     void theErrorCodeOfAnItemIsExposed() {
         RscpValue error = RscpValue.scalar(0x01000008, RscpType.ERROR, RscpError.ACCESS_DENIED);

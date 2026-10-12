@@ -27,9 +27,6 @@
 			<channel id="weather-regulated-charge" typeId="system-weather-regulated-charge"/>
 			<channel id="power-limits-used" typeId="system-power-limits-used"/>
 			<channel id="powersave" typeId="system-powersave"/>
-			<channel id="set-power-limits" typeId="system-set-power-limits"/>
-			<channel id="set-weather-regulated-charge" typeId="system-set-weather-regulated-charge"/>
-			<channel id="set-power-mode" typeId="system-set-power-mode"/>
 			<channel id="set-manual-charge" typeId="system-set-manual-charge"/>
 			<channel id="derate-at-percent" typeId="system-derate-at-percent"/>
 			<channel id="derate-at-power" typeId="system-derate-at-power"/>

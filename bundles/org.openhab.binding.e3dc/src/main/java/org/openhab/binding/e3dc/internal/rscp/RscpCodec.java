@@ -56,8 +56,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class RscpCodec {
 
-    static final int MAGIC = 0xE3DC;
-    static final int CTRL_CRC = 0x0010;
+    /** The magic of a frame as it travels on the wire. */
+    static final byte[] MAGIC_BYTES = { (byte) 0xE3, (byte) 0xDC };
+    /** The protocol version, carried in the second control byte together with the CRC flag. */
+    static final int VERSION = 0x11;
+
+    /** The bit in the first control byte that announces the trailing CRC32. */
+    static final int CTRL_CRC = 0x10;
+
+    /**
+     * The control bytes of a frame with a CRC, as they travel on the wire.
+     *
+     * <p>
+     * The first byte is zero and the second carries the protocol version together with the CRC
+     * flag. This is what a byte comparison against a client that works on real hardware shows for
+     * the login frame: magic, control {0x00, 0x11} and an identical payload.
+     */
+    static final byte[] CTRL_BYTES = { 0, (byte) VERSION };
     static final int HEADER_LENGTH = 18;
     static final int ITEM_HEADER_LENGTH = 7;
 
@@ -68,7 +83,9 @@ public final class RscpCodec {
     public static List<RscpValue> decodeFrame(byte[] frame) {
         ByteBuffer buffer = ByteBuffer.wrap(frame).order(ByteOrder.LITTLE_ENDIAN);
         buffer.getShort(); // magic
-        int ctrl = buffer.getShort() & 0xFFFF;
+        // the flag sits in the second control byte, which is read from the raw header
+        int ctrl = frame[3] & 0xFF;
+        buffer.getShort(); // control
         buffer.getLong(); // seconds
         buffer.getInt(); // nanos
         int dataLength = buffer.getShort() & 0xFFFF;
@@ -168,18 +185,30 @@ public final class RscpCodec {
         }
     }
 
-    /** Encodes a frame including the CRC32 trailer. */
-    public static byte[] encodeFrame(RscpValue item) throws IOException {
+    /**
+     * Encodes a frame including the CRC32 trailer.
+     *
+     * <p>
+     * A frame carries a list of elements, each one a top level item. There is no outer element with a
+     * tag of its own, so callers pass the items directly; wrapping them in a container would announce a
+     * tag the interface does not have.
+     */
+    public static byte[] encodeFrame(List<RscpValue> items) throws IOException {
         ByteArrayOutputStream payload = new ByteArrayOutputStream();
-        encodeItem(item, payload);
+        for (RscpValue item : items) {
+            encodeItem(item, payload);
+        }
         byte[] data = payload.toByteArray();
         if (data.length > 0xFFFF) {
             throw new IOException("RSCP payload exceeds the maximum frame size: " + data.length);
         }
 
         ByteBuffer frame = ByteBuffer.allocate(HEADER_LENGTH + data.length + 4).order(ByteOrder.LITTLE_ENDIAN);
-        frame.putShort((short) MAGIC);
-        frame.putShort((short) CTRL_CRC);
+        frame.put(MAGIC_BYTES[0]);
+        frame.put(MAGIC_BYTES[1]);
+        // the control bytes are written as they travel
+        frame.put(CTRL_BYTES[0]);
+        frame.put(CTRL_BYTES[1]);
         long now = System.currentTimeMillis();
         frame.putLong(now / 1000);
         frame.putInt((int) ((now % 1000) * 1_000_000));
@@ -208,9 +237,8 @@ public final class RscpCodec {
                 break;
             }
             case CSTRING: {
-                byte[] raw = String.valueOf(item.getValue()).getBytes(StandardCharsets.UTF_8);
-                data = new byte[raw.length + 1];
-                System.arraycopy(raw, 0, data, 0, raw.length);
+                // no trailing NUL: the device expects the bare text, as the reference clients send it
+                data = String.valueOf(item.getValue()).getBytes(StandardCharsets.UTF_8);
                 break;
             }
             case BOOL:
@@ -279,13 +307,13 @@ public final class RscpCodec {
     public static byte[] readFrame(InputStream in) throws IOException {
         byte[] header = readFully(in, HEADER_LENGTH);
         ByteBuffer buffer = ByteBuffer.wrap(header).order(ByteOrder.LITTLE_ENDIAN);
-        int magic = buffer.getShort() & 0xFFFF;
-        if (magic != MAGIC) {
-            throw new IOException(String.format("Not an RSCP frame, magic was 0x%04X", magic));
+        if (header[0] != MAGIC_BYTES[0] || header[1] != MAGIC_BYTES[1]) {
+            throw new IOException(String.format("Not an RSCP frame, magic was %02X %02X", header[0], header[1]));
         }
-        int ctrl = buffer.getShort() & 0xFFFF;
-        buffer.getLong();
-        buffer.getInt();
+        int ctrl = header[3] & 0xFF;
+        buffer.position(4); // past magic and control, which were read from the raw header
+        buffer.getLong(); // seconds
+        buffer.getInt(); // nanos
         int dataLength = buffer.getShort() & 0xFFFF;
         int remaining = dataLength + ((ctrl & CTRL_CRC) != 0 ? 4 : 0);
         byte[] frame = new byte[HEADER_LENGTH + remaining];
