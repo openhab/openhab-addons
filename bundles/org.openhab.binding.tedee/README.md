@@ -606,12 +606,6 @@ The current implementation has been tested successfully with:
 
 ## References
 
-### openHAB
-
-- [openHAB 4.3 binding development](https://v43.openhab.org/docs/developer/bindings/)
-- [openHAB 4.3 Thing and Channel definitions](https://v43.openhab.org/docs/developer/bindings/thing-xml)
-- [openHAB 4.3 Things configuration](https://v43.openhab.org/docs/configuration/things.html)
-
 ### Tedee
 
 - [Tedee Bridge API](https://github.com/tedee-com/tedee-documentation)
