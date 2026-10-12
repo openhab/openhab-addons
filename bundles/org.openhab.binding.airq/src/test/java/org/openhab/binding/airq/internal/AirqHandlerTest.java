@@ -476,6 +476,48 @@ class AirqHandlerTest {
         assertThat(settings.get(key).getAsBoolean(), is(true));
     }
 
+    @ParameterizedTest
+    @CsvSource({ "general#night-mode-brightness-day, BrightnessDay",
+            "general#night-mode-brightness-night, BrightnessNight", "nightModeBrightnessDay, BrightnessDay",
+            "nightModeBrightnessNight, BrightnessNight", "general#nightModeBrightnessDay, BrightnessDay",
+            "general#nightModeBrightnessNight, BrightnessNight" })
+    void nightModeBrightnessCommandsUseNumericDeviceSettings(String channel, String key) throws Exception {
+        for (Command command : List.of(new DecimalType("2.5"), new StringType("2.5"))) {
+            JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), command));
+            JsonObject expectedNightMode = new JsonObject();
+            expectedNightMode.addProperty(key, 2.5);
+            JsonObject expected = new JsonObject();
+            expected.add("NightMode", expectedNightMode);
+
+            assertThat(settings, is(expected));
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "general#night-mode-fan-night-off, FanNightOff", "general#night-mode-wifi-night-off, WifiNightOff",
+            "nightModeFanNightOff, FanNightOff", "nightModeWifiNightOff, WifiNightOff",
+            "general#nightModeFanNightOff, FanNightOff", "general#nightModeWifiNightOff, WifiNightOff" })
+    void nightModeSwitchCommandsUseBooleanDeviceSettings(String channel, String key) throws Exception {
+        for (OnOffType command : List.of(OnOffType.ON, OnOffType.OFF)) {
+            JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), command));
+            JsonObject expectedNightMode = new JsonObject();
+            expectedNightMode.addProperty(key, command == OnOffType.ON);
+            JsonObject expected = new JsonObject();
+            expected.add("NightMode", expectedNightMode);
+
+            assertThat(settings, is(expected));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "general#night-mode-brightness-day", "general#night-mode-brightness-night" })
+    void invalidBrightnessCommandsDoNotSendRequests(String channel) throws Exception {
+        for (Command command : List.of(OnOffType.ON, new StringType("invalid"), new StringType("NaN"),
+                new StringType("Infinity"), new StringType(""))) {
+            assertThat(sendSettings(new ChannelUID(thingUID, channel), command), nullValue());
+        }
+    }
+
     static Stream<Arguments> measurements() {
         return Stream.concat(
                 Stream.of("c2h4o", "nh3_MR100", "ash3", "br2", "ch4s", "cl2_M20", "clo2", "cs2", "ethanol", "c2h4",

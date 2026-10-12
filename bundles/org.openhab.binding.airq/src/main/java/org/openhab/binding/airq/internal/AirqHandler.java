@@ -294,6 +294,29 @@ public class AirqHandler extends BaseThingHandler {
             handleTimeCommand(channelId, command);
             return;
         }
+        if ("nightModeBrightnessDay".equals(channelId) || "nightModeBrightnessNight".equals(channelId)) {
+            BigDecimal brightness;
+            if (command instanceof DecimalType decimal) {
+                brightness = decimal.toBigDecimal();
+            } else if (command instanceof StringType string) {
+                try {
+                    brightness = new BigDecimal(string.toString());
+                } catch (NumberFormatException e) {
+                    logger.debug("Ignoring malformed brightness command for channel {}", channelId);
+                    return;
+                }
+            } else {
+                logger.debug("Ignoring non-numeric brightness command for channel {}", channelId);
+                return;
+            }
+            JsonObject nightMode = new JsonObject();
+            nightMode.addProperty("nightModeBrightnessDay".equals(channelId) ? "BrightnessDay" : "BrightnessNight",
+                    brightness);
+            JsonObject settings = new JsonObject();
+            settings.add("NightMode", nightMode);
+            changeSettings(settings);
+            return;
+        }
         if ((command instanceof OnOffType) || (command instanceof StringType)) {
             JsonObject newobj = new JsonObject();
             JsonObject subjson = new JsonObject();
@@ -349,12 +372,12 @@ public class AirqHandler extends BaseThingHandler {
                 case "ppm_and_ppb":
                     newobj.addProperty("ppm&ppb", command == OnOffType.ON);
                     changeSettings(newobj);
-                case "nightmodeFanNightOff":
+                case "nightModeFanNightOff":
                     subjson.addProperty("FanNightOff", command == OnOffType.ON);
                     newobj.add("NightMode", subjson);
                     changeSettings(newobj);
                     break;
-                case "nightmodeWifiNightOff":
+                case "nightModeWifiNightOff":
                     subjson.addProperty("WifiNightOff", command == OnOffType.ON);
                     newobj.add("NightMode", subjson);
                     changeSettings(newobj);
@@ -385,28 +408,6 @@ public class AirqHandler extends BaseThingHandler {
                     subjson.addProperty("long", pt.getLongitude());
                     newobj.add("geopos", subjson);
                     changeSettings(newobj);
-                    break;
-                case "nightmodeBrightnessDay":
-                    try {
-                        subjson.addProperty("BrightnessDay", Float.parseFloat(command.toString()));
-                        newobj.add("NightMode", subjson);
-                        changeSettings(newobj);
-                    } catch (NumberFormatException exc) {
-                        logger.warn(
-                                "air-Q - airqHandler - handleCommand(): {} only accepts a float value, and {} is not.",
-                                channelUID.getIdWithoutGroup(), command.toString());
-                    }
-                    break;
-                case "nightmodeBrightnessNight":
-                    try {
-                        subjson.addProperty("BrightnessNight", Float.parseFloat(command.toString()));
-                        newobj.add("NightMode", subjson);
-                        changeSettings(newobj);
-                    } catch (NumberFormatException exc) {
-                        logger.warn(
-                                "air-Q - airqHandler - handleCommand(): {} only accepts a float value, and {} is not.",
-                                channelUID.getIdWithoutGroup(), command.toString());
-                    }
                     break;
                 case "roomType":
                     newobj.addProperty("RoomType", command.toString());

@@ -135,10 +135,10 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | location                   | Location                           | rw    | Location of air-Q device                                                                 |
 | night-mode-start-day       | Number:Time                        | rw    | Start of day operation, minutes since midnight UTC                                       |
 | night-mode-start-night     | Number:Time                        | rw    | End of day operation, minutes since midnight UTC                                         |
-| nightmodeBrightnessDay     | Number:Dimensionless               | rw    | Brightness of LED during the day                                                         |
-| nightmodeBrightnessNight   | Number:Dimensionless               | rw    | Brightness of LED at night                                                               |
-| nightmodeFanNightOff       | Switch                             | rw    | Switch off fan at night                                                                  |
-| nightmodeWifiNightOff      | Switch                             | rw    | Switch off WLAN at night                                                                 |
+| night-mode-brightness-day  | Number:Dimensionless               | rw    | Brightness of LED during the day                                                         |
+| night-mode-brightness-night| Number:Dimensionless               | rw    | Brightness of LED at night                                                               |
+| night-mode-fan-night-off   | Switch                             | rw    | Switch off fan at night                                                                  |
+| night-mode-wifi-night-off  | Switch                             | rw    | Switch off WLAN at night                                                                 |
 | device-name                | String                             |       | Device Name                                                                              |
 | room-type                  | String                             | rw    | Type of room                                                                             |
 | log-level                  | String                             | w     | Logging level                                                                            |
