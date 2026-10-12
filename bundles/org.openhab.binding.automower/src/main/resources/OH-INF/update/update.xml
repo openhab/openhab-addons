@@ -649,7 +649,7 @@
 	</thing-type>
 
 	<thing-type uid="automower:work-area">
-		<instruction-set targetVersion="4">
+		<instruction-set targetVersion="5">
 			<!-- Work Area -->
 			<add-channel id="type" groupIds="work-area">
 				<type>automower:workarea-type-type</type>

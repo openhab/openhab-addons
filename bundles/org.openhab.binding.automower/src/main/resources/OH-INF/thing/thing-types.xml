@@ -136,7 +136,7 @@
 			<property name="workareaId">N/A</property>
 			<property name="mowerCuttingHeightMinCm">N/A</property>
 			<property name="mowerCuttingHeightMaxCm">N/A</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 	</thing-type>
 
