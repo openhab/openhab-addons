@@ -77,8 +77,11 @@ If you have one of those inverters and it works, please drop me a message, if it
 ## Channels
 
 The list of channels is not static, it is generated dynamically based on the inverter type selected.
+The default channels on a Thing come from the configured `inverterType` definition; custom channels can also be added.
+The tables below cover `deye_sg04lp3` and `deye_2mppt`; for other inverter types, see the [inverter definitions](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.solarman/src/main/resources/definitions).
+Channel IDs are based on the definition's group and item names; for example, `Inverter` and `Total AC Output Power (Active)` become `inverter-total-ac-output-power--active-`.
 
-This is the list you get for the `deye_sg04lp3` inverter type:
+### `deye_sg04lp3` channels
 
 | Channel                                  | Type   | Read/Write | Description                                                                                                                              |
 |------------------------------------------|--------|------------|------------------------------------------------------------------------------------------------------------------------------------------|
@@ -167,6 +170,51 @@ This is the list you get for the `deye_sg04lp3` inverter type:
 | tou-charge-enable-4                      | String | R/W        | Time Of Use Charge Enable 4 \[0x00AF\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
 | tou-charge-enable-5                      | String | R/W        | Time Of Use Charge Enable 5 \[0x00B0\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
 | tou-charge-enable-6                      | String | R/W        | Time Of Use Charge Enable 6 \[0x00B1\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
+
+### `deye_2mppt` channels
+
+The `deye_2mppt` definition provides the following read-only channels.
+For example, use `inverter-total-ac-output-power--active-` for AC output power; `grid-total-grid-power` is available only with inverter types whose definitions include it.
+
+| Channel | Description |
+|---------|-------------|
+| solar-pv1-voltage | PV1 Voltage |
+| solar-pv2-voltage | PV2 Voltage |
+| solar-pv1-current | PV1 Current |
+| solar-pv2-current | PV2 Current |
+| solar-daily-production | Daily Production |
+| solar-daily-production-1 | Daily Production 1 |
+| solar-daily-production-2 | Daily Production 2 |
+| solar-total-production | Total Production |
+| solar-total-production-1 | Total Production 1 |
+| solar-total-production-2 | Total Production 2 |
+| solar-active-power-regulations | Active Power Regulations |
+| grid-ac-voltage | AC Voltage |
+| grid-grid-current | Grid Current |
+| grid-ac-output-frequency | AC Output Frequency |
+| grid-grid-voltage-upp-limit | Grid Voltage Upp Limit |
+| grid-grid-voltage-lower-limit | Grid Voltage Lower Limit |
+| grid-grid-frequency-upper-limit | Grid Frequency Upper Limit |
+| grid-grid-frequency-lower-limit | Grid Frequency Lower Limit |
+| grid-overfrequency-and-load-reduction-starting-point | Overfrequency And Load Reduction Starting Point |
+| grid-overfrequency-and-load-reduction-percentage | Overfrequency And Load Reduction Percentage |
+| grid-on-off-enable | ON-OFF Enable |
+| grid-island-protection-enable | Island Protection Enable |
+| grid-overfrequency-load-shedding-enable | Overfrequency&Load-shedding Enable |
+| inverter-running-status | Running Status |
+| inverter-total-ac-output-power--active- | Total AC Output Power (Active) |
+| inverter-radiator-temperature | Radiator Temperature |
+| inverter-inverter-id | Inverter ID |
+| inverter-hardware-version | Hardware Version |
+| inverter-dc-master-firmware-version | DC Master Firmware Version |
+| inverter-ac-version--number | AC Version. Number |
+| inverter-rated-power | Rated Power |
+| inverter-communication-protocol-version | Communication Protocol Version |
+| inverter-start-up-self-checking-time | Start-up Self-checking Time |
+| inverter-update-time | Update Time |
+| inverter-soft-start-enable | Soft Start Enable |
+| inverter-power-factor-regulation | Power Factor Regulation |
+| inverter-restore-factory-settings | Restore Factory Settings |
 
 ## Writable Channels
 
