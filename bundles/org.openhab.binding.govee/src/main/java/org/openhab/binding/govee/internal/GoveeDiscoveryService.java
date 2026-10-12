@@ -196,7 +196,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     }
 
     /**
-     * Command the {@link CommunicationManager) to run the scans.
+     * Command the {@link CommunicationManager} to run the scans.
      */
     private void doDiscovery() {
         communicationManager.runDiscoveryForInterfaces(getLocalNetworkInterfaces(), this);

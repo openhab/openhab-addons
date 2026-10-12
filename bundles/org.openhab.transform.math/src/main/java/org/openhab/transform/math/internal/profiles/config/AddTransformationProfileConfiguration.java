@@ -15,7 +15,7 @@ package org.openhab.transform.math.internal.profiles.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Holding configuration data for {@link AddTransformationProfile).
+ * Holding configuration data for {@link AddTransformationProfile}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
