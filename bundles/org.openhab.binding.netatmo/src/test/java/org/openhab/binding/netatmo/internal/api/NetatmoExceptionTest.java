@@ -13,6 +13,8 @@
 package org.openhab.binding.netatmo.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -139,5 +141,17 @@ public class NetatmoExceptionTest {
         NetatmoException exception = new NetatmoException(apiError);
 
         assertEquals("Service temporarily unavailable", exception.getMessage());
+    }
+
+    @Test
+    public void testServerErrorStatusIsAServerError() {
+        assertTrue(new NetatmoException(new ApiError(), 503, "27").isServerError());
+        assertTrue(new NetatmoException(new ApiError(), 500, null).isServerError());
+    }
+
+    @Test
+    public void testRejectedRequestIsNoServerError() {
+        assertFalse(new NetatmoException(new ApiError(), 403, "26").isServerError());
+        assertFalse(new NetatmoException("Not authenticated").isServerError());
     }
 }
