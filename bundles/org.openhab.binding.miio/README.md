@@ -4724,12 +4724,20 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | brightness                 | Dimmer               | Brightness                               |            |
+| ambientBrightness          | Dimmer               | Ambient Brightness                       |            |
 | delayoff                   | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature           | Number               | Color Temperature                        |            |
-| colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode, use the nightlightMode channel for Night Light mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode"]` |
 | name                       | String               | Name                                     |            |
+| ambientPower               | Switch               | Ambient Power                            |            |
+| ambientColor               | Color                | Ambient Color                            |            |
+| ambientColorTemperature    | Number               | Ambient Color Temperature                |            |
+| ambientColorflow           | Switch               | Ambient Color Flow                       |            |
+| ambientColorflowScene      | String               | Ambient Color Flow Scene                 | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | customScene                | String               | Set Scene                                |            |
+| ambientColorMode           | Number               | Ambient Color Mode                       | Value mapping `["1"="RGB mode","2"="CT mode","3"="HSV mode"]` |
 | nightlightBrightness       | Dimmer               | Nightlight Brightness                    |            |
+| nightlightMode             | Switch               | Night Light Mode                         | Switching off returns the light to CT mode |
 
 ### Mi LED Ceiling Light (<a name="yeelink-light-ceiling5">yeelink.light.ceiling5</a>) Channels
 
@@ -5389,8 +5397,6 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorTemperature           | Number               | Color Temperature                        |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                       | String               | Name                                     |            |
-| customScene                | String               | Set Scene                                |            |
-| nightlightBrightness       | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Lightstrip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
 
@@ -6071,35 +6077,34 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["air-purifier-toggle"="Air Purifier Toggle","filter-reset-filter-life"="Filter Reset Filter Life","custom-service-toggle-mode"="Custom Service Toggle Mode","custom-service-toggle-fan-level"="Custom Service Toggle Fan Level"]` |
-| on                         | Switch               | Air Purifier - Switch Status             |            |
-| fault                      | Number               | Air Purifier - Device Fault              | Value mapping `["0"="No Faults","1"="Sensor PM Error","2"="Temp Error","3"="Hum Error","4"="No Filter"]` |
+| actions                    | String               | Actions                                  | Value mapping `["air-purifier-toggle"="Toggle Power","filter-reset-filter-life"="Reset Filter Life","custom-service-toggle-mode"="Toggle Mode","custom-service-toggle-fan-level"="Toggle Fan Level"]` |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Particle Sensor Error","2"="Temperature Sensor Error","3"="Humidity Sensor Error","4"="No Filter Installed"]` |
 | mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite","3"="Manual"]` |
-| fan_level                  | Number               | Air Purifier - Fan Level                 | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
-| anion                      | Switch               | Air Purifier - Anion                     |            |
-| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| pm2_5_density              | Number               | Environment - PM2 5 Density              |            |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
+| anion                      | Switch               | Anion (Negative Ion)                     |            |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
-| filter_used_time           | Number:Time          | Filter - Filter Used Time                |            |
-| filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| brightness                 | Number               | Screen - Brightness                      | Value mapping `["0"="Close","1"="Bright","2"="Brightest"]` |
-| temperature_display_unit   | Number               | Device Display Unit - Temperature Display Unit | Value mapping `["1"="Celsius","2"="Fahrenheit"]` |
-| motor_speed_rpm            | Number               | Custom Service - Motor Speed Rpm         |            |
-| favorite_speed             | Number               | Custom Service - Favorite Speed          |            |
-| motor_set_speed            | Number               | Custom Service - Motor Set Speed         |            |
-| favorite_level             | Number               | Custom Service - Favorite Level          |            |
-| bottom_door                | Switch               | Custom Service - Bottom Door             |            |
-| reboot_cause               | Number               | Custom Service - Reboot Cause            | Value mapping `["0"="REASON-HW-BOOT","1"="REASON-USER-REBOOT","2"="REASON-UPDATE","3"="REASON-WDT"]` |
-| manual_level               | Number               | Custom Service - Manual Level            | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
-| country_code               | Number               | Custom Service - Country Code            | Value mapping `["2"="EU","1"="US","82"="KR","886"="TW","66"="TH","44"="UK","91"="IN"]` |
-| iic_error_count            | Number               | Custom Service - Iic Error Count         |            |
-| filter_used_debug          | Number:Time          | Filter Time - Filter Used Debug          |            |
-| purify_volume              | Number               | Aqi - Purify Volume                      |            |
-| average_aqi                | Number               | Aqi - Average Aqi                        |            |
-| aqi_state                  | Number               | Aqi - Aqi State                          | Value mapping `["0"="AQI-GOOD-L","1"="AQI-GOOD-H","2"="AQI-MID-L","3"="AQI-MID-H","4"="AQI-BAD-L","5"="AQI-BAD-H"]` |
+| filter_life_level          | Number:Dimensionless | Filter Life Level                        |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
+| filter_left_time           | Number:Time          | Filter Remaining Time                    |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| brightness                 | Number               | Screen Brightness                        | Value mapping `["0"="Off","1"="Dim","2"="Bright"]` |
+| temperature_display_unit   | Number               | Temperature Display Unit                 | Value mapping `["1"="Celsius","2"="Fahrenheit"]` |
+| motor_speed_rpm            | Number               | Motor Speed                              |            |
+| favorite_speed             | Number               | Favorite Mode Motor Speed                |            |
+| motor_set_speed            | Number               | Motor Target Speed                       |            |
+| favorite_level             | Number               | Favorite Mode Level                      | Favorite mode speed level 0-11; the Mi Home app shows the recommended room coverage from 5-9 m2 (level 0) to 28-48 m2 (level 11) |
+| bottom_door                | Switch               | Bottom Door                              |            |
+| reboot_cause               | Number               | Reboot Cause                             | Value mapping `["0"="Hardware Boot","1"="User Reboot","2"="Update","3"="Watchdog Timer"]` |
+| manual_level               | Number               | Manual Mode Level                        | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
+| country_code               | Number               | Country Code                             | Value mapping `["2"="EU","1"="US","82"="KR","886"="TW","66"="TH","44"="UK","91"="IN"]` |
+| iic_error_count            | Number               | I2C Error Count                          |            |
+| purify_volume              | Number:Volume        | Purify Volume                            |            |
+| average_aqi                | Number               | Average AQI                              |            |
+| aqi_state                  | Number               | AQI State                                | Value mapping `["0"="Good (Low)","1"="Good (High)","2"="Medium (Low)","3"="Medium (High)","4"="Bad (Low)","5"="Bad (High)"]` |
 
 ### Xiaomi Smart Air Purifier 4 Lite (<a name="zhimi-airp-rmb1">zhimi.airp.rmb1</a>) Channels
 
@@ -6481,21 +6486,15 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
+| mode                       | String               | Mode                                     |            |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | aqi                        | Number               | Air Quality Index                        |            |
-| averageaqi                 | Number               | Average Air Quality Index                |            |
+| brightness                 | Dimmer               | Brightness                               |            |
 | led                        | Switch               | LED Status                               |            |
+| act_det                    | Switch               | Air AutoDetect                           |            |
 | buzzer                     | Switch               | Buzzer Status                            |            |
 | filtermaxlife              | Number               | Filter Max Life                          |            |
-| filterhours                | Number:Time          | Filter Hours used                        |            |
-| usedhours                  | Number:Time          | Run Time                                 |            |
-| motorspeed                 | Number               | Motor Speed                              |            |
-| filterlife                 | Number               | Filter Life                              |            |
-| favoritelevel              | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
-| temperature                | Number:Temperature   | Temperature                              |            |
-| purifyvolume               | Number:Volume        | Purified Volume                          |            |
-| childlock                  | Switch               | Child Lock                               |            |
+| filterlive                 | Number               | Filter Life                              |            |
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
 
@@ -11713,12 +11712,20 @@ note: Autogenerated example. Replace the id (ceiling4) in the channel with your 
 Group G_ceiling4 "Yeelight LED Ceiling Ambi Lamp" <status>
 Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
 Dimmer brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
 Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
 Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
 String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
+Switch ambientPower "Ambient Power" (G_ceiling4) {channel="miio:basic:ceiling4:ambientPower"}
+Color ambientColor "Ambient Color" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorTemperature"}
+Switch ambientColorflow "Ambient Color Flow" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorflow"}
+String ambientColorflowScene "Ambient Color Flow Scene" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorflowScene"}
 String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorMode"}
 Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
+Switch nightlightMode "Night Light Mode" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightMode"}
 ```
 
 ### Mi LED Ceiling Light (yeelink.light.ceiling5) item file lines
@@ -12531,8 +12538,6 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Lightstrip (yeelink.light.strip1) item file lines
@@ -13304,34 +13309,33 @@ note: Autogenerated example. Replace the id (airp) in the channel with your own.
 ```java
 Group G_airp "Xiaomi Smart Air Purifier 4" <status>
 String actions "Actions" (G_airp) {channel="miio:basic:airp:actions"}
-Switch on "Air Purifier - Switch Status" (G_airp) {channel="miio:basic:airp:on"}
-Number fault "Air Purifier - Device Fault" (G_airp) {channel="miio:basic:airp:fault"}
+Switch on "Power" (G_airp) {channel="miio:basic:airp:on"}
+Number fault "Fault" (G_airp) {channel="miio:basic:airp:fault"}
 Number mode "Mode" (G_airp) {channel="miio:basic:airp:mode"}
-Number fan_level "Air Purifier - Fan Level" (G_airp) {channel="miio:basic:airp:fan_level"}
-Switch anion "Air Purifier - Anion" (G_airp) {channel="miio:basic:airp:anion"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airp) {channel="miio:basic:airp:relative_humidity"}
-Number pm2_5_density "Environment - PM2 5 Density" (G_airp) {channel="miio:basic:airp:pm2_5_density"}
+Number fan_level "Fan Level" (G_airp) {channel="miio:basic:airp:fan_level"}
+Switch anion "Anion (Negative Ion)" (G_airp) {channel="miio:basic:airp:anion"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airp) {channel="miio:basic:airp:relative_humidity"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airp) {channel="miio:basic:airp:pm2_5_density"}
 Number:Temperature temperature "Temperature" (G_airp) {channel="miio:basic:airp:temperature"}
-Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airp) {channel="miio:basic:airp:filter_life_level"}
-Number:Time filter_used_time "Filter - Filter Used Time" (G_airp) {channel="miio:basic:airp:filter_used_time"}
-Number:Time filter_left_time "Filter - Filter Left Time" (G_airp) {channel="miio:basic:airp:filter_left_time"}
-Switch alarm "Alarm - Alarm" (G_airp) {channel="miio:basic:airp:alarm"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airp) {channel="miio:basic:airp:physical_controls_locked"}
-Number brightness "Screen - Brightness" (G_airp) {channel="miio:basic:airp:brightness"}
-Number temperature_display_unit "Device Display Unit - Temperature Display Unit" (G_airp) {channel="miio:basic:airp:temperature_display_unit"}
-Number motor_speed_rpm "Custom Service - Motor Speed Rpm" (G_airp) {channel="miio:basic:airp:motor_speed_rpm"}
-Number favorite_speed "Custom Service - Favorite Speed" (G_airp) {channel="miio:basic:airp:favorite_speed"}
-Number motor_set_speed "Custom Service - Motor Set Speed" (G_airp) {channel="miio:basic:airp:motor_set_speed"}
-Number favorite_level "Custom Service - Favorite Level" (G_airp) {channel="miio:basic:airp:favorite_level"}
-Switch bottom_door "Custom Service - Bottom Door" (G_airp) {channel="miio:basic:airp:bottom_door"}
-Number reboot_cause "Custom Service - Reboot Cause" (G_airp) {channel="miio:basic:airp:reboot_cause"}
-Number manual_level "Custom Service - Manual Level" (G_airp) {channel="miio:basic:airp:manual_level"}
-Number country_code "Custom Service - Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
-Number iic_error_count "Custom Service - Iic Error Count" (G_airp) {channel="miio:basic:airp:iic_error_count"}
-Number:Time filter_used_debug "Filter Time - Filter Used Debug" (G_airp) {channel="miio:basic:airp:filter_used_debug"}
-Number purify_volume "Aqi - Purify Volume" (G_airp) {channel="miio:basic:airp:purify_volume"}
-Number average_aqi "Aqi - Average Aqi" (G_airp) {channel="miio:basic:airp:average_aqi"}
-Number aqi_state "Aqi - Aqi State" (G_airp) {channel="miio:basic:airp:aqi_state"}
+Number:Dimensionless filter_life_level "Filter Life Level" (G_airp) {channel="miio:basic:airp:filter_life_level"}
+Number:Time filter_used_time "Filter Used Time" (G_airp) {channel="miio:basic:airp:filter_used_time"}
+Number:Time filter_left_time "Filter Remaining Time" (G_airp) {channel="miio:basic:airp:filter_left_time"}
+Switch alarm "Notification Sound" (G_airp) {channel="miio:basic:airp:alarm"}
+Switch physical_controls_locked "Child Lock" (G_airp) {channel="miio:basic:airp:physical_controls_locked"}
+Number brightness "Screen Brightness" (G_airp) {channel="miio:basic:airp:brightness"}
+Number temperature_display_unit "Temperature Display Unit" (G_airp) {channel="miio:basic:airp:temperature_display_unit"}
+Number motor_speed_rpm "Motor Speed" (G_airp) {channel="miio:basic:airp:motor_speed_rpm"}
+Number favorite_speed "Favorite Mode Motor Speed" (G_airp) {channel="miio:basic:airp:favorite_speed"}
+Number motor_set_speed "Motor Target Speed" (G_airp) {channel="miio:basic:airp:motor_set_speed"}
+Number favorite_level "Favorite Mode Level" (G_airp) {channel="miio:basic:airp:favorite_level"}
+Switch bottom_door "Bottom Door" (G_airp) {channel="miio:basic:airp:bottom_door"}
+Number reboot_cause "Reboot Cause" (G_airp) {channel="miio:basic:airp:reboot_cause"}
+Number manual_level "Manual Mode Level" (G_airp) {channel="miio:basic:airp:manual_level"}
+Number country_code "Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
+Number iic_error_count "I2C Error Count" (G_airp) {channel="miio:basic:airp:iic_error_count"}
+Number:Volume purify_volume "Purify Volume" (G_airp) {channel="miio:basic:airp:purify_volume"}
+Number average_aqi "Average AQI" (G_airp) {channel="miio:basic:airp:average_aqi"}
+Number aqi_state "AQI State" (G_airp) {channel="miio:basic:airp:aqi_state"}
 ```
 
 ### Xiaomi Smart Air Purifier 4 Lite (zhimi.airp.rmb1) item file lines
@@ -13761,18 +13765,12 @@ Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
-Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
+Dimmer brightness "Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch act_det "Air AutoDetect" (G_airpurifier) {channel="miio:basic:airpurifier:act_det"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
-Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
-Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
-Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
-Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
-Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
-Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+Number filterlive "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlive"}
 ```
 
 ### Mi Air Purifier v2 (zhimi.airpurifier.v2) item file lines

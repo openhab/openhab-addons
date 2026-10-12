@@ -90,6 +90,7 @@
 						}
 					}
 				],
+				"category": "settings",
 				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Toggle Power\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"custom-service-toggle-mode\"\u003d\"Toggle Mode\",\"custom-service-toggle-fan-level\"\u003d\"Toggle Fan Level\"]`"
 			},
 			{
@@ -145,6 +146,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "error",
 				"tags": [
 					"Status"
 				],
@@ -184,6 +186,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
 				"tags": [
 					"Control",
 					"Mode"
@@ -220,8 +223,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Level"
 				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
 			},
@@ -238,6 +243,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -257,6 +266,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "humidity",
 				"tags": [
 					"Measurement",
 					"Humidity"
@@ -279,6 +289,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "smoke",
 				"tags": [
 					"Measurement",
 					"ParticulateMatter"
@@ -301,6 +312,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "temperature",
 				"tags": [
 					"Measurement",
 					"Temperature"
@@ -322,7 +334,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
 			},
 			{
 				"property": "filter-used-time",
@@ -340,7 +357,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "filter-left-time",
@@ -358,7 +380,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "alarm",
@@ -373,6 +400,11 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -388,6 +420,11 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -420,6 +457,11 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "screen",
+				"tags": [
+					"Control",
+					"Brightness"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Bright\"]`"
 			},
 			{
@@ -448,6 +490,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "temperature",
+				"tags": [
+					"Control"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Celsius\",\"2\"\u003d\"Fahrenheit\"]`"
 			},
 			{
@@ -465,7 +511,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "favorite-speed",
@@ -486,6 +537,11 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
 				]
 			},
 			{
@@ -503,7 +559,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "favorite-level",
@@ -525,7 +586,12 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Favorite mode speed level 0-11; the Mi Home app shows the recommended room coverage from 5-9 m² (0) to 28-48 m² (11)"
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Favorite mode speed level 0-11; the Mi Home app shows the recommended room coverage from 5-9 m2 (level 0) to 28-48 m2 (level 11)"
 			},
 			{
 				"property": "bottom-door",
@@ -538,7 +604,11 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "door",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "reboot-cause",
@@ -570,6 +640,10 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Hardware Boot\",\"1\"\u003d\"User Reboot\",\"2\"\u003d\"Update\",\"3\"\u003d\"Watchdog Timer\"]`"
 			},
 			{
@@ -602,6 +676,11 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
 			},
 			{
@@ -612,6 +691,7 @@
 				"channel": "country_code",
 				"type": "Number",
 				"stateDescription": {
+					"readOnly": true,
 					"options": [
 						{
 							"value": "2",
@@ -644,11 +724,10 @@
 					]
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
+				"actions": [],
+				"category": "settings",
+				"tags": [
+					"Status"
 				],
 				"readmeComment": "Value mapping `[\"2\"\u003d\"EU\",\"1\"\u003d\"US\",\"82\"\u003d\"KR\",\"886\"\u003d\"TW\",\"66\"\u003d\"TH\",\"44\"\u003d\"UK\",\"91\"\u003d\"IN\"]`"
 			},
@@ -667,28 +746,10 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "filter-used-debug",
-				"siid": 10,
-				"piid": 1,
-				"friendlyName": "Filter Used Time (Debug)",
-				"channel": "filter_used_debug",
-				"type": "Number:Time",
-				"unit": "hours",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 7000,
-					"step": 1,
-					"pattern": "%.0f %unit%"
-				},
-				"refresh": false,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
 				]
 			},
 			{
@@ -697,13 +758,18 @@
 				"piid": 1,
 				"friendlyName": "Purify Volume",
 				"channel": "purify_volume",
-				"type": "Number",
+				"type": "Number:Volume",
+				"unit": "cubic_meter",
 				"stateDescription": {
-					"pattern": "%.0f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "average-aqi",
@@ -721,6 +787,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "smoke",
 				"tags": [
 					"Measurement",
 					"AQI"
@@ -764,6 +831,10 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Status"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Good (Low)\",\"1\"\u003d\"Good (High)\",\"2\"\u003d\"Medium (Low)\",\"3\"\u003d\"Medium (High)\",\"4\"\u003d\"Bad (Low)\",\"5\"\u003d\"Bad (High)\"]`"
 			}
 		],
