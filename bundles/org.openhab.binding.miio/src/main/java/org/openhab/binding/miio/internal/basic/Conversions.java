@@ -390,7 +390,8 @@ public class Conversions {
                     LOGGER.debug("Transformation {} not found. Returning '{}'", transformation, value.toString());
                     return value;
             }
-        } catch (ClassCastException | IllegalStateException e) {
+        } catch (ClassCastException | IllegalStateException | NumberFormatException | UnsupportedOperationException
+                | JsonParseException e) {
             LOGGER.debug("Transformation {} failed. Returning '{}'", transformation, value.toString());
             return value;
         }
