@@ -520,7 +520,7 @@ Local and Cloud bridges can be configured at the same time.
 For example, the same physical lock can be represented through both transports:
 
 ```text
-Bridge tedee:bridge:home "Tedee Bridge" [
+Bridge tedee:local-bridge:home "Tedee Bridge" [
     ip="10.194.83.85",
     port=80,
     apiToken="YOUR_API_TOKEN",
@@ -532,7 +532,7 @@ Bridge tedee:bridge:home "Tedee Bridge" [
     ]
 }
 
-Bridge tedee:cloud:cloud "Tedee Cloud" [
+Bridge tedee:cloud-bridge:cloud "Tedee Cloud" [
     personalAccessKey="YOUR_PERSONAL_ACCESS_KEY",
     pollInterval=300
 ] {
