@@ -234,8 +234,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
 
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Bridge is missing or offline, you need to setup a working MQTT broker first.");
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
             return;
         }
         ThingHandler handler = localBridge.getHandler();
@@ -245,7 +244,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler has no valid broker connection!");
+                updateStatus(ThingStatus.UNKNOWN, "Bridge handler has no valid broker connection!");
                 return;
             }
             this.connection = connection;

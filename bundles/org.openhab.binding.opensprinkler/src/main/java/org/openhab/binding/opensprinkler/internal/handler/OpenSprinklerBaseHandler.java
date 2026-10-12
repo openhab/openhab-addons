@@ -90,7 +90,7 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
     public void initialize() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No HTTP Bridge thing selected");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         bridgeHandler = (OpenSprinklerHttpBridgeHandler) bridge.getHandler();

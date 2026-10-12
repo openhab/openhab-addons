@@ -79,7 +79,8 @@ public class OpenUVReportHandler extends BaseThingHandler {
         } else {
             Bridge bridge = getBridge();
             if (bridge == null) {
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
+                return;
             } else {
                 bridgeHandler = (OpenUVBridgeHandler) bridge.getHandler();
                 updateStatus(ThingStatus.UNKNOWN);

@@ -27,9 +27,11 @@ import org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a convenience class to interact with the Thing's {@link ModbusCommunicationInterface}.
@@ -39,6 +41,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
  */
 @NonNullByDefault
 public abstract class BaseModbusThingHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(BaseModbusThingHandler.class);
     private List<PollTask> periodicPollers = Collections.synchronizedList(new ArrayList<>());
     private List<Future<?>> oneTimePollers = Collections.synchronizedList(new ArrayList<>());
 
@@ -55,12 +58,16 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
 
     @Override
     public final void initialize() {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         try {
             // check if the Bridge is configured correctly (fail-fast)
             getModbus();
             getSlaveId();
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
+            updateStatus(ThingStatus.UNKNOWN, e.getMessage());
         }
 
         modbusInitialize();
@@ -176,12 +183,12 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
     }
 
     private ModbusEndpointThingHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            throw new IllegalStateException("No Bridge configured");
+        }
         try {
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                throw new IllegalStateException("No Bridge configured");
-            }
-
             BridgeHandler handler = bridge.getHandler();
 
             if (handler instanceof ModbusEndpointThingHandler thingHandler) {
@@ -190,7 +197,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
                 throw new IllegalStateException("Not a Modbus Bridge: " + handler);
             }
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
+            updateStatus(ThingStatus.UNKNOWN, e.getMessage());
             throw e;
         }
     }

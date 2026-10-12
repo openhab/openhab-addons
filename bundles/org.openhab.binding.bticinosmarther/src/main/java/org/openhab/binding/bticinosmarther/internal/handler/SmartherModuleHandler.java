@@ -122,20 +122,13 @@ public class SmartherModuleHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Module[{}] Initialize handler", thing.getUID());
 
-        final Bridge localBridge = getBridge();
-        if (localBridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (!(getBridge() instanceof Bridge bridge
+                && bridge.getHandler() instanceof SmartherBridgeHandler bridgeHandler)) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
-        final SmartherBridgeHandler localBridgeHandler = (SmartherBridgeHandler) localBridge.getHandler();
-        this.bridgeHandler = localBridgeHandler;
-        if (localBridgeHandler == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                    "Missing configuration from the Smarther Bridge (UID:%s). Fix configuration or report if this problem remains.",
-                    localBridge.getBridgeUID()));
-            return;
-        }
+        this.bridgeHandler = bridgeHandler;
 
         this.config = getConfigAs(SmartherModuleConfiguration.class);
         if (StringUtil.isBlank(config.getPlantId())) {

@@ -59,11 +59,15 @@ public class TuyaSubDeviceHandler extends BaseTuyaDeviceHandler {
             return;
         }
 
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
 
-        TuyaGatewayHandler gatewayHandler = getGatewayHandler();
-        if (gatewayHandler == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (!(bridge.getHandler() instanceof TuyaGatewayHandler gatewayHandler)) {
+            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
 

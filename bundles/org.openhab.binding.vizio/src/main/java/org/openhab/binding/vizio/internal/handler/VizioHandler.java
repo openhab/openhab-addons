@@ -148,8 +148,7 @@ public class VizioHandler extends BaseThingHandler {
         }
 
         if (authToken == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error-authtoken");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error-authtoken");
             return;
         }
 

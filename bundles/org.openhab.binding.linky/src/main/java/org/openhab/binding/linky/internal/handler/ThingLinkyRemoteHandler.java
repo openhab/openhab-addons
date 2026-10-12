@@ -195,7 +195,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "@text/offline.missing-bridge");
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
             return;
         }
 
@@ -226,7 +226,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-mandatory-settings");
             }
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

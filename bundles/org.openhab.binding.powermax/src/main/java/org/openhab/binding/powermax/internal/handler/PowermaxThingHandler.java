@@ -66,17 +66,21 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
         logger.debug("Initializing handler for thing {}", getThing().getUID());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            initializeThingState(null, null);
-        } else {
-            initializeThingState(bridge.getHandler(), bridge.getStatus());
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         }
+        initializeThingState(bridge.getHandler(), bridge.getStatus());
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Bridge status changed to {} for thing {}", bridgeStatusInfo, getThing().getUID());
         Bridge bridge = getBridge();
-        initializeThingState((bridge == null) ? null : bridge.getHandler(), bridgeStatusInfo.getStatus());
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        initializeThingState(bridge.getHandler(), bridgeStatusInfo.getStatus());
     }
 
     private void initializeThingState(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
@@ -120,7 +124,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 logger.debug("Set handler status to OFFLINE for thing {} (bridge OFFLINE)", getThing().getUID());
             }
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             logger.debug("Set handler status to UNINITIALIZED for thing {}", getThing().getUID());
         }
     }

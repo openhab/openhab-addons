@@ -155,8 +155,7 @@ public class MfFanHandler extends BaseThingHandler {
             updateState(MfFanBindingConstants.CHANNEL_LIGHT_INTENSITY, new DecimalType(dto.getLightBrightness()));
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Null shadow buffer returned.");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Null shadow buffer returned.");
         }
     }
 }

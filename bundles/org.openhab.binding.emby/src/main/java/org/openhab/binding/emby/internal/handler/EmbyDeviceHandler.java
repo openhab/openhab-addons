@@ -417,13 +417,17 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+                return;
+            }
+            updateStatus(ThingStatus.UNKNOWN);
             try {
                 this.config = validateConfiguration();
 
-                if (!(getBridge() instanceof Bridge bridge)
-                        || !(bridge.getHandler() instanceof EmbyBridgeHandler bridgeHandler)) {
+                if (!(bridge.getHandler() instanceof EmbyBridgeHandler bridgeHandler)) {
                     updateStatus(CONFIGURATION_ERROR, "@text/thing.status.device.noBridge");
                     return;
                 }

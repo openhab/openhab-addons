@@ -78,7 +78,7 @@ public class It600Handler extends BaseThingHandler {
         {
             var bridge = getBridge();
             if (bridge == null) {
-                updateStatus(BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.no-bridge");
+                logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
                 return;
             }
             if (!(bridge.getHandler() instanceof AbstractBridgeHandler<?> cloudHandler)) {

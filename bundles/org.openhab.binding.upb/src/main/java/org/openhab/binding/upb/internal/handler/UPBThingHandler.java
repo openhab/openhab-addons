@@ -100,7 +100,7 @@ public class UPBThingHandler extends BaseThingHandler {
 
         final Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_CTLR_OFFLINE);
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         bridgeStatusChanged(bridge.getStatusInfo());

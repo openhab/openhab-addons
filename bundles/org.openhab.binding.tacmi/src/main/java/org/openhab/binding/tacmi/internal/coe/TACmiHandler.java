@@ -166,9 +166,13 @@ public class TACmiHandler extends BaseThingHandler {
         }
 
         final Bridge br = getBridge();
-        final TACmiCoEBridgeHandler bridge = br == null ? null : (TACmiCoEBridgeHandler) br.getHandler();
+        if (br == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        final TACmiCoEBridgeHandler bridge = (TACmiCoEBridgeHandler) br.getHandler();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No Bridge configured!");
+            logger.debug("Bridge handler unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         bridge.registerCMI(this);

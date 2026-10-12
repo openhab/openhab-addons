@@ -68,7 +68,11 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         String option;
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             // Set Filter Speed % min and max speeds
             Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT);
             if (ch != null) {
@@ -127,7 +131,11 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             systemIDs = bridgehandler.evaluateXPath("//Filter/@systemId", xmlResponse);
             String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
@@ -170,7 +178,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -187,6 +195,10 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         String filterMaxRpm = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXRPM);
 
         Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         if (bridge != null) {
             HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
             if (bridgehandler != null) {
@@ -258,7 +270,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                 }
                 this.updateStatus(ThingStatus.ONLINE);
             } else {
-                this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                this.updateStatus(ThingStatus.UNKNOWN);
             }
         }
     }

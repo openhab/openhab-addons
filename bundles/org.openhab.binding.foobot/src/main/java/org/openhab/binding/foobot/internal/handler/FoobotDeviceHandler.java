@@ -208,8 +208,11 @@ public class FoobotDeviceHandler extends BaseThingHandler {
     }
 
     private @Nullable FoobotAccountHandler getBridgeHandler() {
-        return getBridge() != null && getBridge().getHandler() instanceof FoobotAccountHandler
-                ? (FoobotAccountHandler) getBridge().getHandler()
-                : null;
+        var bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return null;
+        }
+        return bridge.getHandler() instanceof FoobotAccountHandler handler ? handler : null;
     }
 }

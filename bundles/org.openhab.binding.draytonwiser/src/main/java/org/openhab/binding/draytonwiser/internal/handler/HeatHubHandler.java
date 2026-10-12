@@ -109,8 +109,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
                 final DomainDTO domain = api.getDomain();
 
                 if (domain == null) {
-                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "No data received");
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "No data received");
                 } else {
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);

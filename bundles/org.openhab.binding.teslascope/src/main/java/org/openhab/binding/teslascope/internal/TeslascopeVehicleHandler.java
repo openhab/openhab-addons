@@ -166,8 +166,12 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             return;
         }
 
-        if (!(getBridge() instanceof Bridge bridge
-                && bridge.getHandler() instanceof TeslascopeAccountHandler accountHandler)) {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof TeslascopeAccountHandler accountHandler)) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }

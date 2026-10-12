@@ -136,7 +136,12 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
         NikoHomeControlAccessConfig config = getConfig().as(NikoHomeControlAccessConfig.class);
         deviceId = config.accessId;
 
-        NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        NikoHomeControlBridgeHandler bridgeHandler = (NikoHomeControlBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-bridge-handler");
@@ -145,8 +150,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        Bridge bridge = getBridge();
-        if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
+        if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
             commStartThread = scheduler.submit(this::startCommunication);

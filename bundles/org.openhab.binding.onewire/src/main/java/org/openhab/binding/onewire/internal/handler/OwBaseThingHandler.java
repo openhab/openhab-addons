@@ -117,7 +117,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
         Map<String, String> properties = thing.getProperties();
 
         if (getBridge() == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "bridge missing");
+            logger.debug("Bridge unavailable while configuring Thing: {}", thing.getUID());
             return false;
         }
         sensors.clear();
@@ -298,7 +298,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
     protected void updateSensorProperties() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "bridge not found");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return;
         }
 

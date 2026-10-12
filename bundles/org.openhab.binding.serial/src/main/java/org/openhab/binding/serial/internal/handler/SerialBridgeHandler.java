@@ -96,8 +96,7 @@ public class SerialBridgeHandler extends CommonBridgeHandler implements SerialPo
         } catch (final PortInUseException e) {
             updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use");
         } catch (final TooManyListenersException e) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Cannot attach listener to port");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Cannot attach listener to port");
         } catch (final UnsupportedCommOperationException e) {
             updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Unsupported port parameters: " + e.getMessage());

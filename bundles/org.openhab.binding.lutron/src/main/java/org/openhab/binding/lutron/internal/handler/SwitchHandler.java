@@ -64,7 +64,7 @@ public class SwitchHandler extends LutronHandler {
         logger.debug("Initializing device state for Switch {}", getIntegrationId());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, "Awaiting initial response");
             queryOutput(TargetType.SWITCH, OutputCommand.ACTION_ZONELEVEL);

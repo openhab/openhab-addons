@@ -92,7 +92,7 @@ public abstract class SDMBaseHandler extends BaseThingHandler implements SDMIden
         ThingStatus bridgeStatus = bridge != null ? bridge.getStatus() : null;
         if (bridge == null) {
             disableRefresh();
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
         } else if (bridgeStatus == ONLINE && thing.getStatus() != ONLINE) {
             enableRefresh();
         } else if (bridgeStatus == OFFLINE) {

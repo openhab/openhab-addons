@@ -83,8 +83,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                         logger.warn("Input command exception on channel {} {}", channelUID, pe.toString());
                         if (pe.getErrorCode() == -99999999) {
                             runDisconnectActions();
-                            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                    pe.getLocalizedMessage());
+                            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, pe.getLocalizedMessage());
                         }
                     }
                 } else if (channelHandler instanceof PigpioDigitalOutputHandler outputHandler) {
@@ -94,8 +93,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                         logger.warn("Output command exception on channel {} {}", channelUID, pe.toString());
                         if (pe.getErrorCode() == -99999999) {
                             runDisconnectActions();
-                            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                    pe.getLocalizedMessage());
+                            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, pe.getLocalizedMessage());
                         }
                     }
                 } else {
@@ -221,8 +219,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                 } catch (PigpioException e) {
                     logger.debug("gpio connection poll : disconnect");
                     runDisconnectActions();
-                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            e.getLocalizedMessage());
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
 
                     // We disconnected, reschedule ourselves to try a reconnect.
                     // First, try a quick reconnect if the user specified a long(ish) interval
@@ -268,8 +265,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                     logger.debug("gpio connection poll : failed, {}", e.getErrorCode());
                     if (currentStatus.equals(ThingStatus.ONLINE) || currentStatus.equals(ThingStatus.INITIALIZING)) {
                         runDisconnectActions();
-                        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                e.getLocalizedMessage());
+                        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
                     }
                 }
             }

@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class PentairBaseThingHandler extends BaseThingHandler {
-    @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(PentairBaseThingHandler.class);
 
     private PentairBaseThingConfig config = new PentairBaseThingConfig();
@@ -63,7 +62,12 @@ public abstract class PentairBaseThingHandler extends BaseThingHandler {
     public void initialize() {
         this.config = getConfigAs(PentairBaseThingConfig.class);
 
-        PentairBaseBridgeHandler bh = getBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        PentairBaseBridgeHandler bh = (PentairBaseBridgeHandler) bridge.getHandler();
 
         if (bh == null) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");

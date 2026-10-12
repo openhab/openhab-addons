@@ -83,7 +83,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
     public void initialize() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No cloud service bridge has been configured");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         ThingHandler handler = bridge.getHandler();

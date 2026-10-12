@@ -32,7 +32,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -275,28 +274,28 @@ public class WLedSegmentHandler extends BaseThingHandler {
         config = getConfigAs(WLedSegmentConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge is selected.");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
+        if (localBridgeHandler == null) {
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
+            return;
+        }
+        WledApi localAPI = localBridgeHandler.api;
+        if (localAPI != null) {
+            updateStatus(ThingStatus.ONLINE);
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
+                // only update the providers once the bridge is ready, otherwise this will be done once it goes
+                // online via bridgeStatusChanged()
+                updateStateDescriptionProviders();
+            }
+            if (!localBridgeHandler.hasWhite) {
+                logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
+                removeWhiteChannels();
+            }
         } else {
-            WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
-            if (localBridgeHandler == null) {
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
-                return;
-            }
-            WledApi localAPI = localBridgeHandler.api;
-            if (localAPI != null) {
-                updateStatus(ThingStatus.ONLINE);
-                if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    // only update the providers once the bridge is ready, otherwise this will be done once it goes
-                    // online via bridgeStatusChanged()
-                    updateStateDescriptionProviders();
-                }
-                if (!localBridgeHandler.hasWhite) {
-                    logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
-                    removeWhiteChannels();
-                }
-            } else {
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            }
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

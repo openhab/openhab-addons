@@ -91,11 +91,19 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
     public void initialize() {
         logger.debug("Initializing Hue group handler.");
         Bridge bridge = getBridge();
-        initializeThing((bridge == null) ? null : bridge.getStatus());
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        initializeThing(bridge.getStatus());
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
         initializeThing(bridgeStatusInfo.getStatus());
     }
@@ -118,7 +126,7 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                     updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatus.UNKNOWN);
             }
         } else {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-group-id");

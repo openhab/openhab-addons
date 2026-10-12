@@ -142,10 +142,11 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
     private void initializeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            initializeHandler(null, null);
-        } else {
-            initializeHandler(bridge.getHandler(), bridge.getStatus());
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            stopReInitJob();
+            return;
         }
+        initializeHandler(bridge.getHandler(), bridge.getStatus());
     }
 
     private void initializeHandler(@Nullable ThingHandler handler, @Nullable ThingStatus bridgeStatus) {
@@ -171,7 +172,7 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
                 stopReInitJob();
             }
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             stopReInitJob();
         }
     }

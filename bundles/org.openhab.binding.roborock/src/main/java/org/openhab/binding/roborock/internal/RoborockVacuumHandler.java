@@ -404,8 +404,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         cloudMetadataRefreshDisabledLogged = false;
         mapUpdateDeduplicator.reset();
 
-        if (!(getBridge() instanceof Bridge bridge
-                && bridge.getHandler() instanceof RoborockAccountHandler accountHandler)) {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof RoborockAccountHandler accountHandler)) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }

@@ -116,16 +116,16 @@ public class AirGradientLocationHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
         locationConfig = getConfigAs(AirGradientLocationConfiguration.class);
 
-        Bridge controller = getBridge();
-        if (controller == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
-        } else if (ThingStatus.OFFLINE.equals(controller.getStatus())) {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+        if (ThingStatus.OFFLINE.equals(bridge.getStatus())) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             updateStatus(ThingStatus.ONLINE);

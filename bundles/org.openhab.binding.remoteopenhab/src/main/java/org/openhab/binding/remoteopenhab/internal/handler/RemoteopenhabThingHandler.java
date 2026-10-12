@@ -73,7 +73,11 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
     public void initialize() {
         logger.debug("initializing remote openHAB handler for thing {}", getThing().getUID());
         Bridge bridge = getBridge();
-        initializeThing(bridge != null ? bridge.getStatus() : null);
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        initializeThing(bridge.getStatus());
     }
 
     @Override
@@ -84,12 +88,16 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
 
     private void initializeThing(@Nullable ThingStatus bridgeStatus) {
         Bridge bridge = getBridge();
-        BridgeHandler bridgeHandler = bridge != null ? bridge.getHandler() : null;
         RemoteopenhabRestClient oldClient = this.restClient;
         if (oldClient != null) {
             oldClient.removeThingsDataListener(this);
             this.restClient = null;
         }
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        BridgeHandler bridgeHandler = bridge.getHandler();
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 config = getConfigAs(RemoteopenhabThingConfiguration.class);
@@ -122,7 +130,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -228,7 +236,11 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
         ThingStatusDetail detail = ThingStatusDetail.valueOf(statusInfo.statusDetail);
         if (detail == ThingStatusDetail.NONE) {
             updateStatus(status, statusInfo.description);
-        } else if (detail == ThingStatusDetail.BRIDGE_UNINITIALIZED) {
+        } else if (detail == ThingStatusDetail.BRIDGE_UNINITIALIZED || detail == ThingStatusDetail.NOT_YET_READY
+                || detail == ThingStatusDetail.HANDLER_MISSING_ERROR
+                || detail == ThingStatusDetail.HANDLER_REGISTERING_ERROR
+                || detail == ThingStatusDetail.HANDLER_INITIALIZING_ERROR
+                || detail == ThingStatusDetail.HANDLER_CONFIGURATION_PENDING || detail == ThingStatusDetail.DISABLED) {
             updateStatus(status, detail, statusInfo.description);
         } else {
             updateStatus(detail, statusInfo.description);

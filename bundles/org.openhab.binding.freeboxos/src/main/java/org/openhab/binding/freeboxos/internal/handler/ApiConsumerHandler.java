@@ -188,21 +188,21 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
 
     private @Nullable FreeboxOsHandler checkBridgeHandler() {
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof FreeboxOsHandler fbOsHandler) {
-                if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    if (statusDrivenByBridge) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                    return fbOsHandler;
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return null;
+        }
+        BridgeHandler handler = bridge.getHandler();
+        if (handler instanceof FreeboxOsHandler fbOsHandler) {
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
+                if (statusDrivenByBridge) {
+                    updateStatus(ThingStatus.ONLINE);
                 }
-                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
-            } else {
-                updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR);
+                return fbOsHandler;
             }
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         return null;
     }

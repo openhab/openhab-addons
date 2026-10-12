@@ -172,7 +172,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler
         logger.trace("Initialize {} with zone '{}'", getThing().getLabel(), zoneConfig.getZoneValue());
 
         Bridge bridge = getBridge();
-        initializeThing(bridge != null ? bridge.getStatus() : null);
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        initializeThing(bridge.getStatus());
     }
 
     protected @Nullable YamahaBridgeHandler getBridgeHandler() {
@@ -205,7 +209,12 @@ public class YamahaZoneThingHandler extends BaseThingHandler
     }
 
     private void initializeThing(@Nullable ThingStatus bridgeStatus) {
-        YamahaBridgeHandler bridgeHandler = getBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        YamahaBridgeHandler bridgeHandler = (YamahaBridgeHandler) bridge.getHandler();
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 if (zoneConfig.getZone() == null) {
@@ -219,14 +228,14 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                         YamahaBridgeHandler brHandler = getBridgeHandler();
                         if (brHandler == null) {
                             logger.warn("Bridge handler not initialized, cannot initialize zone");
-                            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                            updateStatus(ThingStatus.UNKNOWN);
                             return;
                         }
 
                         var protocolFactory = getProtocolFactory();
                         if (protocolFactory == null) {
                             logger.warn("Protocol factory not initialized, cannot initialize zone");
-                            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                            updateStatus(ThingStatus.UNKNOWN);
                             return;
                         }
 
@@ -246,7 +255,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                 zoneAvailableInputs = null;
             }
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

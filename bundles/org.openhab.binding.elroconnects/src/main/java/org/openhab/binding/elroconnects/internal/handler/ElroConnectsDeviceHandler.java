@@ -32,6 +32,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ElroConnectsDeviceHandler} represents the thing handler for an ELRO Connects device.
@@ -40,6 +42,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class ElroConnectsDeviceHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(ElroConnectsDeviceHandler.class);
 
     protected int deviceId;
 
@@ -54,7 +57,6 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
 
         ElroConnectsBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            // Thing status has already been updated in getBridgeHandler()
             return;
         }
 
@@ -97,8 +99,7 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
     protected @Nullable ElroConnectsBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            String msg = String.format("@text/offline.no-bridge [ \"%d\" ]", deviceId);
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return null;
         }
 

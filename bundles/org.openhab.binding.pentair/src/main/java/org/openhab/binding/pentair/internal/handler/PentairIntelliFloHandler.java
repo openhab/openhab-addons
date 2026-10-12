@@ -148,6 +148,10 @@ public class PentairIntelliFloHandler extends PentairBaseThingHandler {
     // checkOtherMaster - check to make sure the system does not have a controller OR that the controller is in
     // servicemode
     private boolean checkOtherMaster() {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while checking Thing: {}", thing.getUID());
+            return true;
+        }
         PentairBaseBridgeHandler bridgeHandler = getBridgeHandler();
 
         if (bridgeHandler == null) {

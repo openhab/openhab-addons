@@ -54,7 +54,7 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
         logger.debug("Initializing device state for Switch {}", getAddress());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
         } else if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             updateStatus(ThingStatus.UNKNOWN, "@text/status.awaiting-initial-response");
             ping(); // handleUpdate() will set thing status to online when response arrives

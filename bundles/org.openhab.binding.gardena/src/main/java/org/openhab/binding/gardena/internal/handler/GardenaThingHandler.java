@@ -349,16 +349,20 @@ public class GardenaThingHandler extends BaseThingHandler {
      * Returns the Gardena smart system implementation if the bridge is available.
      */
     private GardenaSmart getGardenaSmart() throws AccountHandlerNotAvailableException {
-        final Bridge bridge;
+        final Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            throw new AccountHandlerNotAvailableException("Gardena AccountHandler not yet available!");
+        }
         final ThingHandler handler;
-        if ((bridge = getBridge()) != null && (handler = bridge.getHandler()) != null) {
+        if ((handler = bridge.getHandler()) != null) {
             final GardenaSmart gardenaSmart = ((GardenaAccountHandler) handler).getGardenaSmart();
             if (gardenaSmart != null) {
                 return gardenaSmart;
             }
         }
         if (thing.getStatus() != ThingStatus.INITIALIZING) {
-            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         throw new AccountHandlerNotAvailableException("Gardena AccountHandler not yet available!");
     }

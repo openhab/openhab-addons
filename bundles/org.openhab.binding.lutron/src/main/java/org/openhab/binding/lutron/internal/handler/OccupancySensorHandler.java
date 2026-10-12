@@ -64,7 +64,7 @@ public class OccupancySensorHandler extends LutronHandler {
         logger.debug("Initializing device state for Occupancy Sensor {}", getIntegrationId());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE); // can't poll this device, so assume it is online if the bridge is
         } else {

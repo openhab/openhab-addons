@@ -127,7 +127,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
 
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             updateState(channelUID, state);
             return;
         }

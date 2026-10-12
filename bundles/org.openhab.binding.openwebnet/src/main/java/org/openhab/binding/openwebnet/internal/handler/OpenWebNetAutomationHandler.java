@@ -29,7 +29,6 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
@@ -125,8 +124,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         } catch (NumberFormatException e) {
             logger.debug("Wrong configuration: {} setting must be {} or an integer >= 1000",
                     OpenWebNetBindingConstants.CONFIG_PROPERTY_SHUTTER_RUN, AUTO_CALIBRATION);
-            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.wrong-configuration");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "@text/offline.wrong-configuration");
             shutterRun = SHUTTER_RUN_UNDEFINED;
         }
         updateState(CHANNEL_SHUTTER, UnDefType.UNDEF);

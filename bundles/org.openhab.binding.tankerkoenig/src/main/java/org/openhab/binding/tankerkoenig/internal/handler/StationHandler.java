@@ -77,8 +77,7 @@ public class StationHandler extends BaseThingHandler {
         setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
         Bridge b = getBridge();
         if (b == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
-                    "Could not find bridge (tankerkoenig config). Did you select one?");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         WebserviceHandler handler = (WebserviceHandler) b.getHandler();
@@ -172,6 +171,11 @@ public class StationHandler extends BaseThingHandler {
      * Updates the detail-data from tankerkoenig api, actually only the opening times are used.
      */
     public void updateDetailData() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while updating Thing: {}", thing.getUID());
+            return;
+        }
         result = service.getStationDetailData(getApiKey(), locationID, userAgent);
 
         if (result.isOk()) {
@@ -183,7 +187,7 @@ public class StationHandler extends BaseThingHandler {
                 updateData(s);
             }
             updateStatus(ThingStatus.ONLINE);
-            WebserviceHandler handler = (WebserviceHandler) getBridge().getHandler();
+            WebserviceHandler handler = (WebserviceHandler) bridge.getHandler();
             handler.updateStatus(ThingStatus.ONLINE);
             logger.debug("updateDetailData openingTimes: {}", openingTimes);
         } else {

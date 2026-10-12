@@ -85,8 +85,7 @@ public class SerialButtonHandler extends BaseThingHandler implements SerialPortE
         } catch (PortInUseException e) {
             updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use!");
         } catch (TooManyListenersException e) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Cannot attach listener to port!");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Cannot attach listener to port!");
         }
     }
 

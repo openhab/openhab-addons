@@ -80,7 +80,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
@@ -153,12 +152,12 @@ public class EchoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        if (this.getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof AccountHandler handler) {
-            account = handler;
-            updateStatus(ThingStatus.UNKNOWN);
-        } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler not found.");
+        if (!(this.getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof AccountHandler handler)) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         }
+        account = handler;
+        updateStatus(ThingStatus.UNKNOWN);
 
         handlerStartTimestamp = System.currentTimeMillis();
         lastCustomerHistoryRecordTimestamp = 0;

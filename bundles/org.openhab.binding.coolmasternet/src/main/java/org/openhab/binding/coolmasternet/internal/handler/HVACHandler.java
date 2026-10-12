@@ -91,8 +91,8 @@ public class HVACHandler extends BaseThingHandler {
      * Get the controller handler for this bridge.
      *
      * <p>
-     * This method does not raise any exception, but if null is returned it will
-     * always update the Thing status with the reason.
+     * This method does not raise an exception. If the bridge handler is unavailable, it updates the Thing status.
+     * The framework handles a missing bridge.
      *
      * <p>
      * The returned handler may or may not be connected. This method will not
@@ -102,16 +102,9 @@ public class HVACHandler extends BaseThingHandler {
      * @return the controller handler or null if the controller is unavailable
      */
     private @Nullable ControllerHandler getControllerHandler() {
-        final Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "CoolMasterNet Controller bridge not configured");
-            return null;
-        }
 
-        final ControllerHandler handler = (ControllerHandler) bridge.getHandler();
-
-        if (handler == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "CoolMasterNet Controller bridge not initialized");
+        if (!(this.getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof ControllerHandler handler)) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return null;
         }
 

@@ -52,7 +52,16 @@ public class EleroChannelHandler extends BaseThingHandler implements StatusListe
 
     @Override
     public void initialize() {
-        bridge = (EleroTransmitterStickHandler) getBridge().getHandler();
+        var parentBridge = getBridge();
+        if (parentBridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(parentBridge.getHandler() instanceof EleroTransmitterStickHandler handler)) {
+            logger.debug("Bridge handler unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        bridge = handler;
 
         channelId = getConfig().as(EleroChannelConfig.class).channelId;
         bridge.addStatusListener(channelId, this);

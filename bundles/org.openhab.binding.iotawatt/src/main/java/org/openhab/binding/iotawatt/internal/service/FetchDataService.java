@@ -66,8 +66,8 @@ public class FetchDataService {
      * Handles error cases and updates the Thing accordingly.
      */
     public void pollDevice() {
-        Optional.ofNullable(ioTaWattClient).ifPresentOrElse(this::pollDevice, () -> deviceHandlerCallback
-                .updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR));
+        Optional.ofNullable(ioTaWattClient).ifPresentOrElse(this::pollDevice,
+                () -> deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
     }
 
     private void pollDevice(IoTaWattClient client) {

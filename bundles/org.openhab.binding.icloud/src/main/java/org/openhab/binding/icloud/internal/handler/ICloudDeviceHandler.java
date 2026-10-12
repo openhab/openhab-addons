@@ -100,21 +100,21 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         this.deviceId = configuration.deviceId;
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            ICloudAccountBridgeHandler handler = (ICloudAccountBridgeHandler) bridge.getHandler();
-            if (handler != null) {
-                handler.registerListener(this);
-                if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    handler.refreshData();
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
-                }
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        ICloudAccountBridgeHandler handler = (ICloudAccountBridgeHandler) bridge.getHandler();
+        if (handler != null) {
+            handler.registerListener(this);
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
+                handler.refreshData();
+                updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler is not configured");
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not configured");
+            updateStatus(ThingStatus.UNKNOWN, "Bridge handler is not configured");
         }
     }
 

@@ -80,7 +80,11 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     @Override
     public void initialize() {
         Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof TouchWandBridgeHandler)) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof TouchWandBridgeHandler)) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             logger.warn("Trying to initialize {} without a bridge", getThing().getUID());
             return;

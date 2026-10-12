@@ -222,18 +222,26 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     @Override
     public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         serialNumber = getConfigAs(EcovacsVacuumConfiguration.class).serialNumber;
         if (serialNumber.isEmpty()) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.config-error-no-serial");
         } else {
             logger.debug("{}: Initializing handler", serialNumber);
-            updateStatus(ThingStatus.UNKNOWN);
+            if (bridge.getStatus() == ThingStatus.OFFLINE) {
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
             initTask.setNamePrefix(serialNumber);
             reconnectTask.setNamePrefix(serialNumber);
             pollTask.setNamePrefix(serialNumber);
 
-            Bridge bridge = getBridge();
-            if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
                 initTask.submit();
             }
         }
@@ -522,9 +530,22 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     private void initDevice() {
-        final EcovacsApiHandler handler = getApiHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getStatus() != ThingStatus.ONLINE) {
+            if (bridge.getStatus() == ThingStatus.OFFLINE) {
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
+            return;
+        }
+        final EcovacsApiHandler handler = (EcovacsApiHandler) bridge.getHandler();
         if (handler == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
 

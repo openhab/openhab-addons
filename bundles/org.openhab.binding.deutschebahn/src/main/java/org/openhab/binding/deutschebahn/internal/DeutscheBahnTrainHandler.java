@@ -22,7 +22,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -101,13 +100,12 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        this.updateStatus(ThingStatus.UNKNOWN);
-
         if (this.getBridge() == null) {
-            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Please select bridge");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
+        this.updateStatus(ThingStatus.UNKNOWN);
         this.createChannelMapping();
         this.updateStatus(ThingStatus.ONLINE);
     }

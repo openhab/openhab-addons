@@ -198,7 +198,9 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
             this.circuit = circ;
             if (this.circuit.isPresent()) {
                 ThingStatusInfo statusInfo = this.dssBridgeHandler.getThing().getStatusInfo();
-                if (statusInfo.getStatusDetail() == ThingStatusDetail.NONE) {
+                if (statusInfo.getStatus() != ThingStatus.ONLINE && statusInfo.getStatus() != ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.UNKNOWN);
+                } else if (statusInfo.getStatusDetail() == ThingStatusDetail.NONE) {
                     updateStatus(statusInfo.getStatus(), statusInfo.getDescription());
                 } else {
                     updateStatus(statusInfo.getStatusDetail(), statusInfo.getDescription());

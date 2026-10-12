@@ -59,7 +59,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No device bridge has been configured");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
@@ -77,7 +77,10 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
         super.bridgeStatusChanged(bridgeStatusInfo);
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            updateWidget(getBridge().getHandler());
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                updateWidget(bridge.getHandler());
+            }
         }
     }
 
@@ -131,7 +134,15 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
     @Override
     public @Nullable Widget getWidget() {
         if (widget == null) {
-            getBridge().getHandler().initialize();
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable while reading widget for Thing: {}", thing.getUID());
+                return null;
+            }
+            ThingHandler handler = bridge.getHandler();
+            if (handler != null) {
+                handler.initialize();
+            }
         }
         return widget;
     }
@@ -143,6 +154,10 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while handling command for Thing: {}", thing.getUID());
+            return;
+        }
 
         try {
             if (command instanceof RefreshType) {

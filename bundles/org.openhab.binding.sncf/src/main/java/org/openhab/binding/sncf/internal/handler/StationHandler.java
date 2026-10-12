@@ -242,18 +242,20 @@ public class StationHandler extends BaseThingHandler {
 
     private @Nullable SncfBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler != null) {
-                if (handler.getThing().getStatus() == ThingStatus.ONLINE) {
-                    return (SncfBridgeHandler) handler;
-                } else {
-                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
-                    return null;
-                }
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return null;
+        }
+        BridgeHandler handler = bridge.getHandler();
+        if (handler != null) {
+            if (handler.getThing().getStatus() == ThingStatus.ONLINE) {
+                return (SncfBridgeHandler) handler;
+            } else {
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+                return null;
             }
         }
-        updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        updateStatus(ThingStatus.UNKNOWN);
         return null;
     }
 }

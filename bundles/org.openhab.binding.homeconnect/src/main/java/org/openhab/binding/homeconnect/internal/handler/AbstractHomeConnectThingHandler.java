@@ -73,6 +73,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -141,8 +142,13 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     public void initialize() {
         // Mark a new initialization generation; any previously scheduled or running init task becomes stale.
         final long generation = ++initializationGeneration;
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            accessible.set(false);
+            return;
+        }
         if (getBridgeHandler().isEmpty()) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             accessible.set(false);
         } else if (isBridgeOffline()) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
@@ -808,7 +814,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             }
         });
         if (apiClient.isEmpty()) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             accessible.set(false);
         }
     }

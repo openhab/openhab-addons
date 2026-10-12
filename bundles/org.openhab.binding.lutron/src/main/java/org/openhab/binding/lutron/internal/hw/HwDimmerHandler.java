@@ -23,6 +23,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class extends the BaseThingHandler to support HomeWorks Dimmer modules.
@@ -31,6 +33,8 @@ import org.openhab.core.types.Command;
  *
  */
 public class HwDimmerHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(HwDimmerHandler.class);
+
     private String address;
     private Integer fadeTime = 1;
     private Integer defaultLevel = 100;
@@ -52,8 +56,8 @@ public class HwDimmerHandler extends BaseThingHandler {
         fadeTime = config.getFadeTime();
         defaultLevel = config.getDefaultLevel();
 
-        if (getThing().getBridgeUID() == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
@@ -91,9 +95,13 @@ public class HwDimmerHandler extends BaseThingHandler {
     }
 
     private void queryLevel() {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while querying Thing: {}", thing.getUID());
+            return;
+        }
         HwSerialBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No bridge associated");
             return;
         }
 
@@ -102,9 +110,13 @@ public class HwDimmerHandler extends BaseThingHandler {
     }
 
     private void outputLevel(Number level) {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while sending command for Thing: {}", thing.getUID());
+            return;
+        }
         HwSerialBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No bridge associated");
             return;
         }
 

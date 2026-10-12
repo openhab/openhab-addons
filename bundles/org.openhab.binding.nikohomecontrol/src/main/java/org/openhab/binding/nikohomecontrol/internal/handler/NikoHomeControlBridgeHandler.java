@@ -146,8 +146,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      * Take bridge offline when error in communication with Niko Home Control IP-interface.
      */
     protected void bridgeOffline() {
-        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "@text/offline.communication-error");
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "@text/offline.communication-error");
     }
 
     /**

@@ -175,7 +175,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     protected void updateData() {
         // 1) check if there are planes attached return immediately if not
         if (planes.isEmpty()) {
-            updateStatus(ThingStatusDetail.NOT_YET_READY, "@text/solarforecast.site.status.no-planes");
+            updateStatus(ThingStatus.UNKNOWN, "@text/solarforecast.site.status.no-planes");
             return;
         }
         // 2) all planes update their data, dirty flags inside each handler is set if new forecast was fetched

@@ -27,6 +27,7 @@ import org.openhab.binding.onebusaway.internal.config.ChannelConfig;
 import org.openhab.binding.onebusaway.internal.config.RouteConfiguration;
 import org.openhab.binding.onebusaway.internal.handler.ObaStopArrivalResponse.ArrivalAndDeparture;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -84,12 +85,18 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
     public void initialize() {
         logger.debug("Initializing OneBusAway route stop...");
 
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+
         config = loadAndCheckConfiguration();
         if (config == null) {
             logger.debug("Initialization of OneBusAway route stop failed!");
             return;
         }
-        StopHandler stopHandler = getStopHandler();
+        StopHandler stopHandler = (StopHandler) bridge.getHandler();
         if (stopHandler != null) {
             // We will be marked as ONLINE when we get data in our callback, which should be immediately because the
             // StopHandler, our bridge, won't be marked as online until it has data itself.
@@ -131,7 +138,8 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
     }
 
     private StopHandler getStopHandler() {
-        return (StopHandler) getBridge().getHandler();
+        Bridge bridge = getBridge();
+        return bridge == null ? null : (StopHandler) bridge.getHandler();
     }
 
     private RouteConfiguration loadAndCheckConfiguration() {

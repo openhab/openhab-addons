@@ -83,7 +83,7 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
                         } else {
                             logger.warn("Initializing Z-Way device handler failed (virtual device not found): {}",
                                     getThing().getLabel());
-                            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                     "Z-Way virtual device with id " + mConfig.getDeviceId() + " not found.");
                         }
                     } catch (Throwable t) {
@@ -95,16 +95,15 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
                             logger.error("Unexpected error");
                         }
                         if (getThing().getStatus() == ThingStatus.ONLINE) {
-                            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                     "Error occurred when adding device as channel.");
                         }
                     }
                 } else {
-                    updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Devices not loaded");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Devices not loaded");
                 }
             } else {
-                updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "Z-Way bridge handler not found or not ONLINE.");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Z-Way bridge handler not found or not ONLINE.");
             }
         }
     }

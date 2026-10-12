@@ -88,11 +88,19 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         Bridge bridge = getBridge();
-        initializeThing(bridge != null ? bridge.getStatus() : null);
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        initializeThing(bridge.getStatus());
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         initializeThing(bridgeStatusInfo.getStatus());
     }
 
@@ -117,7 +125,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

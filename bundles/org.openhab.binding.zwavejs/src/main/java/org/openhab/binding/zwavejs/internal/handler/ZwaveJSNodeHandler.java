@@ -445,6 +445,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return;
         }
 
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
 
         executorService.execute(() -> {
@@ -465,9 +469,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     private void internalInitialize() {
-        ZwaveJSBridgeHandler handler = getBridgeHandler();
-        if (handler == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof ZwaveJSBridgeHandler handler)) {
+            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
 

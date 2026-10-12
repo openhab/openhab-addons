@@ -41,6 +41,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DigiplexZoneHandler} is responsible for handling commands, which are
@@ -50,6 +52,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class DigiplexZoneHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(DigiplexZoneHandler.class);
 
     private @Nullable DigiplexBridgeHandler bridgeHandler;
     private DigiplexZoneMessageHandler messageHandler = new DigiplexZoneMessageHandler();
@@ -115,7 +118,7 @@ public class DigiplexZoneHandler extends BaseThingHandler {
     public void initialize() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         this.bridgeHandler = (DigiplexBridgeHandler) bridge.getHandler();

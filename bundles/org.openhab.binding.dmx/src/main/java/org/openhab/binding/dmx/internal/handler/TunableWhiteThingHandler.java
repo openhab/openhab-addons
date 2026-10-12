@@ -187,8 +187,7 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
         Bridge bridge = getBridge();
         DmxBridgeHandler bridgeHandler;
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "no bridge assigned");
-            dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         } else {
             bridgeHandler = (DmxBridgeHandler) bridge.getHandler();

@@ -241,11 +241,11 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                         webSocketClientService.connect();
                     } catch (Error e) {
                         if (isUnsatisfiedLinkError(e) && isLinux()) {
-                            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                     "@text/offline.tls-unsupported-glibc [\"" + getOSName() + "\", \"" + getOSArch()
                                             + "\", \"" + CONSCRYPT_REQUIRED_GLIBC_MIN_VERSION + "\"]");
                         } else {
-                            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                     "@text/offline.tls-unsupported [\"" + getOSName() + "\", \"" + getOSArch() + "\"]");
                         }
                         logger.error("Could not initialize {}!", WebSocketTlsConscryptClientService.class.getName(), e);

@@ -104,8 +104,12 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
 
     private void initializeZone() {
         Bridge bridge = getBridge();
-        BridgeHandler handler = bridge == null ? null : bridge.getHandler();
-        if (bridge != null && handler instanceof QolsysIQPartitionHandler partitionHandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        BridgeHandler handler = bridge.getHandler();
+        if (handler instanceof QolsysIQPartitionHandler partitionHandler) {
             if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
@@ -118,7 +122,7 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
             updateZone(z);
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

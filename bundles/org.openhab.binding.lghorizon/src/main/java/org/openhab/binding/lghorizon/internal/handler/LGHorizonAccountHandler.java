@@ -178,8 +178,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             auth.initialize();
             String householdId = auth.getHouseholdId();
             if (householdId == null) {
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.account-missing-household-id");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.account-missing-household-id");
                 return;
             }
             updateProperty(PROPERTY_HOUSEHOLD_ID, householdId);

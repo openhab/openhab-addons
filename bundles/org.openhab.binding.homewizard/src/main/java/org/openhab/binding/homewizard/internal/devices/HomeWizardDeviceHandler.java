@@ -295,12 +295,13 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             return false;
         } else {
             if ("".equals(payload.getProductType())) {
-                updateStatusIfCurrent(generation,ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-no-data");
+                updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-no-data");
                 return false;
             }
 
             if (!supportedTypes.contains(payload.getProductType().toLowerCase(Locale.ROOT))) {
-                updateStatusIfCurrent(generation, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                updateStatusIfCurrent(generation, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.comm-error-device-not-compatible");
                 return false;
             }
