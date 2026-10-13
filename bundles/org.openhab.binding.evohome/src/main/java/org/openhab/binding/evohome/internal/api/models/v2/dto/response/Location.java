@@ -35,6 +35,6 @@ public class Location {
     }
 
     public List<Gateway> getGateways() {
-        return gateways;
+        return gateways == null ? List.of() : gateways;
     }
 }

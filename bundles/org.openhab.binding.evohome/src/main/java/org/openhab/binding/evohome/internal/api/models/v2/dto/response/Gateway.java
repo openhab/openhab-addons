@@ -35,6 +35,6 @@ public class Gateway {
     }
 
     public List<TemperatureControlSystem> getTemperatureControlSystems() {
-        return temperatureControlSystems;
+        return temperatureControlSystems == null ? List.of() : temperatureControlSystems;
     }
 }

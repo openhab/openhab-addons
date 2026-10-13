@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the location info
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Location timezone for temporary override expiry
  *
  */
 public class LocationInfo {
@@ -44,7 +47,7 @@ public class LocationInfo {
     private String locationType;
 
     @SerializedName("useDaylightSaveSwitching")
-    private boolean useDaylightSaveSwitching;
+    private Boolean useDaylightSaveSwitching;
 
     @SerializedName("timeZone")
     private TimeZone timeZone;
@@ -58,5 +61,13 @@ public class LocationInfo {
 
     public String getName() {
         return name;
+    }
+
+    public @Nullable TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    public @Nullable Boolean getUseDaylightSaveSwitching() {
+        return useDaylightSaveSwitching;
     }
 }

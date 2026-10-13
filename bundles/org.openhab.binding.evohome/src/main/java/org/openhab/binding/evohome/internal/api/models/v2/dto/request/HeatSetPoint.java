@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.request;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Request model for the mode
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Temporary overrides and capability-based temperatures
  *
  */
 public class HeatSetPoint {
@@ -37,10 +41,15 @@ public class HeatSetPoint {
      * @param setPoint The target temperature to set the set point to
      */
     HeatSetPoint(double setPoint) {
-        // Make sure that the value is rounded toward the nearest 0.5
-        heatSetpointValue = Math.round(setPoint * 2) / 2.0;
+        heatSetpointValue = setPoint;
         setpointMode = "PermanentOverride";
         timeUntil = null;
+    }
+
+    HeatSetPoint(double setPoint, Instant until) {
+        heatSetpointValue = setPoint;
+        setpointMode = "TemporaryOverride";
+        timeUntil = until.truncatedTo(ChronoUnit.SECONDS).toString();
     }
 
     @SuppressWarnings("unused")
