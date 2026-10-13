@@ -201,7 +201,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void startScan() {
         try {
             if (!profile.isBlu) { // Do not try for BLU devices
-                installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway());
+                installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway(), true);
             }
         } catch (ShellyApiException e) {
             logger.trace("{}: Unable to start/stop {}", thingName, SHELLY2_BLU_GWSCRIPT);
@@ -301,6 +301,20 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     protected void installScript(String script, boolean install) throws ShellyApiException {
+        installScript(script, install, false);
+    }
+
+    /**
+     * Installs, updates or removes a script on the device.
+     *
+     * @param script name of the script
+     * @param install true to install/start the script, false to remove it
+     * @param restart true to restart the script even if the current version is already running. The restart empties
+     *            the scanner's device cache, so already known BLU devices announce themselves again when they send
+     *            their next packet. The Inbox scan uses this.
+     * @throws ShellyApiException on API errors
+     */
+    protected void installScript(String script, boolean install, boolean restart) throws ShellyApiException {
         try {
             ShellyScriptListResponse scriptList = apiRequest(
                     new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_LIST), ShellyScriptListResponse.class);
@@ -371,11 +385,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         logger.debug("{}: A newer script version was found, updating", thingName);
                         upload = true;
                     } else if (running) {
-                        // Same version already running — nothing to do; leave it undisturbed so no
-                        // event gap is created and no risk of a silent restart failure.
-                        logger.debug("{}: Script {} already running with current version, leaving it", thingName,
-                                script);
                         enableScript(script, ourId, true); // ensure auto-start flag is set
+                        if (restart) {
+                            logger.debug("{}: Restarting script {}", thingName, script);
+                            startScript(ourId, false);
+                            if (!startScript(ourId, true)) {
+                                logger.warn("{}: Failed to restart script {}", thingName, script);
+                            }
+                        } else {
+                            // Same version already running — nothing to do; leave it undisturbed so no
+                            // event gap is created and no risk of a silent restart failure.
+                            logger.debug("{}: Script {} already running with current version, leaving it", thingName,
+                                    script);
+                        }
                         return;
                     } else {
                         // Same version but not running — start it
