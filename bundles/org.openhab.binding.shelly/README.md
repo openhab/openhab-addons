@@ -270,7 +270,6 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 `Note:`
 
 - During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
-- Shelly BLU Motion: It may take some time until channels like Lux show up.
 - Ecowitt WS90: The WS90 is solar-powered and broadcasts continuously — no button press is required to add it to the Inbox.
   It will appear automatically once it is within range of a configured BLU gateway.
 
@@ -2570,6 +2569,7 @@ See notes on discovery of Shelly BLU devices above.
 | Group   | Channel       | Type   | read-only | Description                                                                         |
 | ------- | ------------- | ------ | --------- | ----------------------------------------------------------------------------------- |
 | sensors | motion        | Switch | yes       | ON: Motion detected                                                                 |
+|         | lux           | Number | yes       | Brightness in Lux                                                                   |
 | battery | batteryLevel  | Number | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
