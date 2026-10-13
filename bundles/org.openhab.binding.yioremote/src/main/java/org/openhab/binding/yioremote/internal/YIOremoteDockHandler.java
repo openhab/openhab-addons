@@ -80,6 +80,10 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
     private @Nullable ScheduledFuture<?> watchdogJob;
     private ConnectionState connectionState = ConnectionState.DISCONNECTED;
     private boolean dockAlive;
+    // incremented on every initialize() and dispose(), a watchdog run of an older lifecycle does nothing
+    private long lifecycle;
+    // receiver setting requested by the user, restored on the dock after every (re)connect
+    private boolean receiverEnabled;
 
     public YIOremoteDockHandler(Thing thing, WebSocketClient webSocketClient) {
         super(thing);
@@ -106,13 +110,19 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        watchdogJob = scheduler.scheduleWithFixedDelay(this::watchdog, 0, HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        synchronized (this) {
+            long currentLifecycle = ++lifecycle;
+            connectionState = ConnectionState.DISCONNECTED;
+            watchdogJob = scheduler.scheduleWithFixedDelay(() -> watchdog(currentLifecycle), 0,
+                    HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        }
     }
 
     @Override
     public void dispose() {
-        stopWatchdog();
         synchronized (this) {
+            lifecycle++;
+            stopWatchdog();
             closeWebsocket();
             connectionState = ConnectionState.DISCONNECTED;
         }
@@ -130,12 +140,12 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
         }
         if (RECEIVER_SWITCH_CHANNEL.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType onOff) {
             synchronized (this) {
+                receiverEnabled = onOff == OnOffType.ON;
                 if (connectionState != ConnectionState.AUTHENTICATED) {
-                    logger.debug("YIO Dock not connected, cannot switch IR receiver {}", onOff);
+                    logger.debug("YIO Dock not connected, IR receiver will be switched {} after connecting", onOff);
                     return;
                 }
-                sendMessage(
-                        new DockCommandMessage(onOff == OnOffType.ON ? COMMAND_IR_RECEIVE_ON : COMMAND_IR_RECEIVE_OFF));
+                sendReceiverSetting();
             }
         }
     }
@@ -156,7 +166,11 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
 
     // ---- connection handling ----
 
-    private synchronized void watchdog() {
+    private synchronized void watchdog(long watchdogLifecycle) {
+        if (watchdogLifecycle != lifecycle) {
+            // handler was disposed or re-initialized while this run was waiting
+            return;
+        }
         switch (connectionState) {
             case AUTHENTICATED:
                 if (dockAlive) {
@@ -286,6 +300,9 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
             handleAuthenticationRequired();
         } else if (MESSAGE_TYPE_AUTH_OK.equals(dockMessage.type)) {
             handleAuthenticationOk();
+        } else if (MESSAGE_TYPE_AUTH.equals(dockMessage.type) && connectionState == ConnectionState.AUTHENTICATING) {
+            // the dock rejects an invalid token with {"type":"auth","message":"Invalid token"}
+            handleAuthenticationRejected(dockMessage.message);
         } else if (connectionState != ConnectionState.AUTHENTICATED) {
             logger.debug("Ignoring message received before authentication: {}", message);
         } else if (MESSAGE_PONG.equals(dockMessage.message)) {
@@ -309,25 +326,32 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
     }
 
     private void handleAuthenticationRequired() {
-        if (connectionState == ConnectionState.AUTHENTICATING) {
-            // the dock asks again after our token was sent, so the token was not accepted
-            closeWebsocket();
-            connectionState = ConnectionState.AUTHENTICATION_FAILED;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-authentication-failed");
-            return;
-        }
         connectionState = ConnectionState.AUTHENTICATING;
         logger.debug("Sending authentication to YIO Dock");
         sendMessage(new AuthenticationMessage(config.accessToken));
+    }
+
+    private void handleAuthenticationRejected(@Nullable String reason) {
+        logger.debug("YIO Dock rejected the access token: {}", reason);
+        closeWebsocket();
+        // no reconnect until the configuration is changed
+        connectionState = ConnectionState.AUTHENTICATION_FAILED;
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "@text/offline.conf-error-authentication-failed [\"" + Objects.requireNonNullElse(reason, "") + "\"]");
     }
 
     private void handleAuthenticationOk() {
         connectionState = ConnectionState.AUTHENTICATED;
         dockAlive = true;
         updateStatus(ThingStatus.ONLINE);
-        updateGroupState(GROUP_INPUT, RECEIVER_SWITCH_CHANNEL, OnOffType.OFF);
         updateGroupState(GROUP_OUTPUT, STATUS_STRING_CHANNEL, StringType.EMPTY);
+        // the dock keeps its receiver setting across connections, so restore the requested one
+        sendReceiverSetting();
+    }
+
+    private void sendReceiverSetting() {
+        sendMessage(new DockCommandMessage(receiverEnabled ? COMMAND_IR_RECEIVE_ON : COMMAND_IR_RECEIVE_OFF));
+        updateGroupState(GROUP_INPUT, RECEIVER_SWITCH_CHANNEL, OnOffType.from(receiverEnabled));
     }
 
     private void updateGroupState(String group, String channelId, State state) {
