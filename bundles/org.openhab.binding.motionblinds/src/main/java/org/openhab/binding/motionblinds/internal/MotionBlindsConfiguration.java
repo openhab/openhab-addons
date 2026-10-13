@@ -28,7 +28,7 @@ public class MotionBlindsConfiguration {
     public String macAddress = "";
 
     /**
-     * 16 character key from the Connector / Motion Blinds app (including dashes).
+     * Key from the Connector / Motion Blinds app: 16 ASCII characters including the dashes.
      */
     public String key = "";
 

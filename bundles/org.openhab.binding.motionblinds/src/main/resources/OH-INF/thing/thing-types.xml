@@ -32,9 +32,9 @@
 			<parameter name="key" type="text" required="true">
 				<context>password</context>
 				<label>Key</label>
-				<description>16 character key from the app, including dashes. In the Connector or Motion Blinds app go to
-					Settings -
-					About and tap the screen 5 times.</description>
+				<description>Key from the app: 16 ASCII characters including the dashes, e.g. 12ab345c-d67e-8f. In the Connector
+					or
+					Motion Blinds app go to Settings - About and tap the screen 5 times.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="30">
 				<label>Refresh Interval</label>

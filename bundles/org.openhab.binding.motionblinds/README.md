@@ -28,15 +28,15 @@ All requests are authorized with a 16 character key that is shown in the app:
 - **Connector app:** open _Settings_ → _About_ and tap the screen 5 times.
 - **Motion Blinds app:** open _Settings_ → _About_ and tap the screen 5 times.
 
-The key looks like `12ab345c-d67e-8f`.
-Enter it including the dashes.
+The key looks like `12ab345c-d67e-8f`: 16 ASCII characters.
+Enter it exactly as shown, including the dashes.
 
 ## Thing Configuration
 
 | Name              | Type    | Description                                                                                         | Default | Required | Advanced |
 |-------------------|---------|-----------------------------------------------------------------------------------------------------|---------|----------|----------|
 | `macAddress`      | text    | MAC address of the motor (12 hex digits, as found by discovery) | N/A     | yes      | no       |
-| `key`             | text    | Key from the app (16 characters including dashes)               | N/A     | yes      | no       |
+| `key`             | text    | Key from the app (16 ASCII characters including dashes)         | N/A     | yes      | no       |
 | `refreshInterval` | integer | Interval in seconds for polling the status                      | 300     | no       | yes      |
 | `tiltTravel`      | decimal | Travel in percent that turns the slats from closed to closed    | 3       | no       | no       |
 | `tiltSlack`       | decimal | Travel in percent at the bottom that does not turn the slats    | 2       | no       | no       |

@@ -38,5 +38,18 @@ public class AccessTokenCalculatorTest {
                 () -> AccessTokenCalculator.calculate("12ab345cd67e8f", "5Yx9TSv3kUq7Hn2a"));
         assertThrows(IllegalArgumentException.class,
                 () -> AccessTokenCalculator.calculate("12ab345c-d67e-8f", "short"));
+        // 16 characters, but more than 16 bytes
+        assertThrows(IllegalArgumentException.class,
+                () -> AccessTokenCalculator.calculate("12ab345c-d67e-8ä", "5Yx9TSv3kUq7Hn2a"));
+    }
+
+    @Test
+    public void isValidKey() {
+        assertTrue(AccessTokenCalculator.isValidKey("12ab345c-d67e-8f"));
+        assertFalse(AccessTokenCalculator.isValidKey("12ab345c-d67e-8"));
+        assertFalse(AccessTokenCalculator.isValidKey("12ab345c-d67e-8f0"));
+        // 16 characters, but not 16 bytes
+        assertFalse(AccessTokenCalculator.isValidKey("12ab345c-d67e-8ä"));
+        assertFalse(AccessTokenCalculator.isValidKey("12ab345c d67e-8f"));
     }
 }

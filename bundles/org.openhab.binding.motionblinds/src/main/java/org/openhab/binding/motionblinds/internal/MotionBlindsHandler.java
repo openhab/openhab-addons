@@ -111,7 +111,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
                     "@text/offline.config-error-invalid-mac");
             return;
         }
-        if (config.key.length() != 16) {
+        if (!AccessTokenCalculator.isValidKey(config.key)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-invalid-key");
             return;

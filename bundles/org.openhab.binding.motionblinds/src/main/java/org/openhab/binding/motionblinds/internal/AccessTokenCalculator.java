@@ -24,22 +24,32 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link AccessTokenCalculator} calculates the {@code AccessToken} that authorizes read and write requests:
  * the 16 character token received from the motor, AES-128-ECB encrypted with the 16 character app key, as
- * uppercase hex.
+ * uppercase hex. The key is used as the 16 byte AES key, so it must consist of 16 ASCII characters.
  *
  * @author Oleksandr Mishchuk - Initial contribution
  */
 @NonNullByDefault
 public final class AccessTokenCalculator {
 
+    private static final int KEY_LENGTH = 16;
+
     private AccessTokenCalculator() {
     }
 
+    /**
+     * Check the key as shown by the app: 16 printable ASCII characters (e.g. {@code 12ab345c-d67e-8f}), which gives
+     * the 16 bytes of the AES key.
+     */
+    public static boolean isValidKey(String key) {
+        return key.length() == KEY_LENGTH && key.chars().allMatch(c -> c > 0x20 && c < 0x7f);
+    }
+
     public static String calculate(String key, String token) {
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-        byte[] tokenBytes = token.getBytes(StandardCharsets.UTF_8);
-        if (keyBytes.length != 16) {
-            throw new IllegalArgumentException("Key must be 16 characters long");
+        if (!isValidKey(key)) {
+            throw new IllegalArgumentException("Key must consist of 16 ASCII characters");
         }
+        byte[] keyBytes = key.getBytes(StandardCharsets.US_ASCII);
+        byte[] tokenBytes = token.getBytes(StandardCharsets.UTF_8);
         if (tokenBytes.length != 16) {
             throw new IllegalArgumentException("Token must be 16 characters long");
         }

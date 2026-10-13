@@ -170,6 +170,17 @@ public class MotionBlindsHandlerTest {
     }
 
     @Test
+    public void nonAsciiKeyIsRejectedWithoutCommunication() throws IOException {
+        // 16 characters, but not the 16 bytes of an AES key
+        createHandler("12ab345c-d67e-8ä").initialize();
+
+        verify(callback).statusUpdated(any(Thing.class), argThat(info -> info.getStatus() == ThingStatus.OFFLINE
+                && info.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
+        verify(communicationManager, never()).sendRequest(anyString(), any(), anyString());
+        verify(communicationManager, never()).registerListener(anyString(), any());
+    }
+
+    @Test
     public void commandsAreSentAsWriteDevice() throws IOException {
         respond(GET_DEVICE_LIST_ACK, READ_DEVICE_ACK, READ_DEVICE_ACK, READ_DEVICE_ACK);
         createHandler(KEY).initialize();
