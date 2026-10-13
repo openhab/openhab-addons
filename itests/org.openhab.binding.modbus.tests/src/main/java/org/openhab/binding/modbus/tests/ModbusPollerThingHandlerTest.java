@@ -409,7 +409,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         callback.handle(
                 new AsyncModbusReadResult(Mockito.mock(ModbusReadRequestBlueprint.class), new BitArray(false, true)));
 
-        verify(thingCallback).stateUpdated(channelUid, new org.openhab.core.library.types.DecimalType("1"));
+        verify(thingCallback).stateUpdated(channelUid, org.openhab.core.library.types.OnOffType.ON);
     }
 
     @Test
