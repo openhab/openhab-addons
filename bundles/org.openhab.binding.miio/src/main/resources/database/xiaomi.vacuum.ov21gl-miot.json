@@ -3,6 +3,7 @@
 		"id": [
 			"xiaomi.vacuum.ov21gl",
 			"xiaomi.vacuum.ov21cn",
+			"xiaomi.vacuum.ov31gl",
 			"xiaomi.vacuum.ov42gl",
 			"xiaomi.vacuum.ov43gb"
 		],
@@ -1255,7 +1256,8 @@
 				"tags": [
 					"Switch",
 					"Enabled"
-				]
+				],
+				"readmeComment": "Not available on the Robot Vacuum 5 (xiaomi.vacuum.ov31gl)"
 			},
 			{
 				"property": "sweep-carpet-first",
@@ -1275,7 +1277,8 @@
 				"tags": [
 					"Switch",
 					"Enabled"
-				]
+				],
+				"readmeComment": "Not available on the Robot Vacuum 5 (xiaomi.vacuum.ov31gl)"
 			},
 			{
 				"property": "carpet-discriminate",
@@ -1398,7 +1401,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Not available on the H50 and H50 Pro (xiaomi.vacuum.ov43gb, xiaomi.vacuum.ov42gl). Value mapping `[\"0\"\u003d\"Not Full\",\"1\"\u003d\"Full\"]`"
+				"readmeComment": "Not available on the H50 and H50 Pro (xiaomi.vacuum.ov43gb, xiaomi.vacuum.ov42gl); also not available on the Robot Vacuum 5 (xiaomi.vacuum.ov31gl). Value mapping `[\"0\"\u003d\"Not Full\",\"1\"\u003d\"Full\"]`"
 			},
 			{
 				"property": "host-water-tank-status",
