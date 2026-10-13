@@ -21,7 +21,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.core.io.transport.modbus.BitArray;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -31,9 +31,9 @@ import org.openhab.core.types.UnDefType;
 public class Poller2BitChannelTest {
 
     static Stream<Arguments> absoluteBitAddresses() {
-        return Stream.of(Arguments.of(100, new BitArray(true, false, false, true), new DecimalType("1")),
-                Arguments.of(103, new BitArray(true, false, false, true), new DecimalType("1")),
-                Arguments.of(101, new BitArray(true, false, false, true), DecimalType.ZERO));
+        return Stream.of(Arguments.of(100, new BitArray(true, false, false, true), OnOffType.ON),
+                Arguments.of(103, new BitArray(true, false, false, true), OnOffType.ON),
+                Arguments.of(101, new BitArray(true, false, false, true), OnOffType.OFF));
     }
 
     @ParameterizedTest

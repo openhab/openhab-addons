@@ -14,7 +14,8 @@ package org.openhab.binding.modbus.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.modbus.BitArray;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -27,10 +28,16 @@ import org.openhab.core.types.UnDefType;
 public final class Poller2BitChannel {
 
     private final int address;
+    private final boolean contact;
     private final PollerChannelState state;
 
     public Poller2BitChannel(int address, PollerReadFailurePolicy failurePolicy) {
+        this(address, failurePolicy, "Switch");
+    }
+
+    public Poller2BitChannel(int address, PollerReadFailurePolicy failurePolicy, String itemType) {
         this.address = address;
+        this.contact = "Contact".equals(itemType);
         this.state = new PollerChannelState(failurePolicy);
     }
 
@@ -41,7 +48,8 @@ public final class Poller2BitChannel {
             return state.currentState();
         }
         try {
-            state.acceptSuccessfulState(bits.getBit((int) index) ? new DecimalType("1") : DecimalType.ZERO);
+            boolean value = bits.getBit((int) index);
+            state.acceptSuccessfulState(contact ? OpenClosedType.from(value) : OnOffType.from(value));
         } catch (IndexOutOfBoundsException e) {
             state.acceptSuccessfulState(UnDefType.UNDEF);
         }

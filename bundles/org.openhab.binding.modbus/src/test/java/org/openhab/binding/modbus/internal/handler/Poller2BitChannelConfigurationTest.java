@@ -28,6 +28,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 @NonNullByDefault
 public class Poller2BitChannelConfigurationTest {
 
+    @org.junit.jupiter.api.Test
+    public void decodesContactStatesUsingTheAcceptedItemType() {
+        Poller2BitChannel channel = Poller2BitChannelConfiguration
+                .create("contact", Map.of("address", "100"), 100, 4, "Contact").channel().orElseThrow();
+        assertEquals(org.openhab.core.library.types.OpenClosedType.OPEN,
+                channel.acceptBits(new org.openhab.core.io.transport.modbus.BitArray(true), 100));
+        assertEquals(org.openhab.core.library.types.OpenClosedType.CLOSED,
+                channel.acceptBits(new org.openhab.core.io.transport.modbus.BitArray(false), 100));
+    }
+
     static Stream<Arguments> invalidConfigurations() {
         return Stream.of(Arguments.of(Map.of(), "Channel 'coil' is missing required configuration 'address'"),
                 Arguments.of(Map.of("address", "100.1"), "Channel 'coil' has invalid bit address '100.1'; expected X"),

@@ -36,6 +36,11 @@ public final class Poller2BitChannelConfiguration {
 
     public static Poller2BitChannelConfiguration create(String channelId, Map<String, Object> configuration,
             int pollStart, int pollLength) {
+        return create(channelId, configuration, pollStart, pollLength, "Switch");
+    }
+
+    public static Poller2BitChannelConfiguration create(String channelId, Map<String, Object> configuration,
+            int pollStart, int pollLength, String itemType) {
         Object address = configuration.get("address");
         if (!(address instanceof String addressText) || addressText.isBlank()) {
             return error("Channel '%s' is missing required configuration 'address'".formatted(channelId));
@@ -64,7 +69,7 @@ public final class Poller2BitChannelConfiguration {
             return error("Channel '%s': Address %d is outside poll window %d..%d".formatted(channelId, parsedAddress,
                     pollStart, pollEnd));
         }
-        return new Poller2BitChannelConfiguration(new Poller2BitChannel(parsedAddress, PollerReadFailurePolicy.UNDEF),
+        return new Poller2BitChannelConfiguration(new Poller2BitChannel(parsedAddress, PollerReadFailurePolicy.UNDEF, itemType),
                 null);
     }
 
