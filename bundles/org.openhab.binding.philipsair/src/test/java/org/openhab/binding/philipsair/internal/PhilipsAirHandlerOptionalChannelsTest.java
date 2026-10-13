@@ -50,6 +50,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -526,6 +527,51 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
         verify(connection, times(3)).getAirPurifierFiltersStatus(any());
         assertEquals(Set.of("controls#power"), channelIds(handler.getThing().getChannels()));
+    }
+
+    @Test
+    public void failingFilterStatusOfLinkedChannelKeepsTheThingOnline() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
+        when(callback.isChannelLinked(any(ChannelUID.class))).thenReturn(true);
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
+        when(connection.getAirPurifierFiltersStatus(any()))
+                .thenReturn(gson.fromJson(HUMIDIFIER_STATUS, PhilipsAirPurifierFiltersDTO.class))
+                .thenThrow(new PhilipsAirAPIException("busy"));
+
+        // adds the wick filter channel, which is linked
+        handler.updateData(connection);
+        handler.updateData(connection);
+
+        verify(connection, times(2)).getAirPurifierFiltersStatus(any());
+        verify(callback, times(2)).statusUpdated(any(Thing.class),
+                argThat(statusInfo -> statusInfo.getStatus() == ThingStatus.ONLINE));
+        verify(callback, never()).statusUpdated(any(Thing.class),
+                argThat(statusInfo -> statusInfo.getStatus() == ThingStatus.OFFLINE));
+    }
+
+    @Test
+    public void gasIndexOptionIsAddedWhenAnUnknownModelReportsGasLater() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
+        String withoutGas = HUMIDIFIER_STATUS.replace("AC3829", "AC9999");
+        String withGas = withoutGas.replace("\"pm25\":2", "\"pm25\":2,\"tvoc\":1");
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(withoutGas, PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(withoutGas, PhilipsAirPurifierDataDTO.class))
+                .thenReturn(gson.fromJson(withGas, PhilipsAirPurifierDataDTO.class));
+
+        handler.updateData(connection);
+        handler.updateData(connection);
+        // the option stays, also when a status lacks the gas value
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(withoutGas, PhilipsAirPurifierDataDTO.class));
+        handler.updateData(connection);
+
+        assertEquals(List.of(List.of("0", "1"), List.of("0", "1", "2")),
+                allOptions(new ChannelUID(handler.getThing().getUID(), CONTROLS_UI, DISPLAYED_INDEX)));
     }
 
     @Test

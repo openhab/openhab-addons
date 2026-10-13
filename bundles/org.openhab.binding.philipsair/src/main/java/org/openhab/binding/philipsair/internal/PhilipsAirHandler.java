@@ -133,6 +133,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
     private boolean modelOptionsSet;
+    private boolean gasIndexOption;
     // the channels that have the options of a device profile, and the profile these are the options of
     private final Set<ChannelUID> profileOptionChannels = new HashSet<>();
     private @Nullable CoapProfile optionsProfile;
@@ -386,6 +387,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
         long generation = currentGeneration();
         modelOptionsSet = false;
+        gasIndexOption = false;
         int refreshInterval = config.getRefreshInterval();
         logger.debug("Start refresh job for {} at interval {} sec.", thing.getUID(), refreshInterval);
         ScheduledFuture<?> previousJob = refreshJob;
@@ -628,11 +630,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
         PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus(host);
         PhilipsAirPurifierFiltersDTO filters = null;
         List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
-        if (connection.isPushingStatus() || filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
-            // pushing devices report the filter status with the status, so it is available without an extra request
-            filters = connection.getAirPurifierFiltersStatus(host);
-        } else if (startFilterProbe()) {
-            // the filter status is requested to detect the optional wick filter channel, until the device answers
+        // the probe detects the optional wick filter channel
+        if (connection.isPushingStatus() || filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))
+                || startFilterProbe()) {
             try {
                 filters = connection.getAirPurifierFiltersStatus(host);
                 synchronized (updateLock) {
@@ -720,19 +720,24 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
     /**
      * Limits the displayed index and threshold options to those of the model. Decided once the device info is known,
-     * as a single status report may lack optional fields.
+     * as a single status report may lack optional fields. Only the gas index can be added later.
      */
     private void setModelOptions() {
         PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo;
-        if (modelOptionsSet || deviceInfo == null) {
+        if (deviceInfo == null) {
+            return;
+        }
+        boolean gasIndex = gasIndexOption || PhilipsAirModels.supportsGasIndex(deviceInfo, currentData);
+        if (modelOptionsSet && gasIndex == gasIndexOption) {
             return;
         }
         modelOptionsSet = true;
+        gasIndexOption = gasIndex;
 
         List<StateOption> indexOptions = new ArrayList<>(
                 List.of(new StateOption(DISPLAYED_INDEX_ALLERGEN, "Allergen Index"),
                         new StateOption(DISPLAYED_INDEX_PM25, "PM2.5")));
-        if (PhilipsAirModels.supportsGasIndex(deviceInfo, currentData)) {
+        if (gasIndex) {
             indexOptions.add(new StateOption(DISPLAYED_INDEX_GAS, "Gas"));
         }
         stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CONTROLS_UI, DISPLAYED_INDEX),
