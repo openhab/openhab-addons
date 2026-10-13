@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="airpurifier">
+		<label>Samsung Air Purifier</label>
+		<description>Samsung air purifier.</description>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Switch the air purifier on or off when supported by the air purifier.</description>
+			</channel>
+			<channel id="remote-control" typeId="switch-readonly-advanced">
+				<label>Remote Control</label>
+				<description>Whether the air purifier currently permits remote control.</description>
+			</channel>
+			<channel id="airflow" typeId="number">
+				<label>Airflow</label>
+				<description>Fan speed reported by the air purifier.</description>
+			</channel>
+			<channel id="mode" typeId="string">
+				<label>Operating Mode</label>
+				<description>Operating mode of the air purifier.</description>
+			</channel>
+			<channel id="power-consumption" typeId="system.electric-power">
+				<label>Power Consumption</label>
+				<description>Instantaneous electrical power reported by the air purifier.</description>
+			</channel>
+			<channel id="cumulative-energy" typeId="energy-readonly">
+				<label>Cumulative Energy</label>
+				<description>Cumulative energy reported by the air purifier.</description>
+			</channel>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description-ref uri="thing-type:smartthings:device"/>
+	</thing-type>
+</thing:thing-descriptions>
