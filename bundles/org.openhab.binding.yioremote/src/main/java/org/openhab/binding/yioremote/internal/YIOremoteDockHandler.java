@@ -239,9 +239,12 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
 
     @Override
     public synchronized void onConnect(Websocket source) {
-        if (source.equals(websocket)) {
-            logger.debug("Connected to YIO Dock, waiting for authentication request");
+        if (!source.equals(websocket)) {
+            // connection completed after it was replaced or the handler was disposed
+            source.close();
+            return;
         }
+        logger.debug("Connected to YIO Dock, waiting for authentication request");
     }
 
     @Override
@@ -289,8 +292,11 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
             dockAlive = true;
         } else if (COMMAND_IR_SEND.equals(dockMessage.message)) {
             dockAlive = true;
-            updateGroupState(GROUP_OUTPUT, STATUS_STRING_CHANNEL, new StringType(
-                    Boolean.TRUE.equals(dockMessage.success) ? STATUS_IR_SEND_SUCCESS : STATUS_IR_SEND_FAILURE));
+            Boolean success = dockMessage.success;
+            if (success != null) {
+                updateGroupState(GROUP_OUTPUT, STATUS_STRING_CHANNEL,
+                        new StringType(success ? STATUS_IR_SEND_SUCCESS : STATUS_IR_SEND_FAILURE));
+            }
         } else if (COMMAND_IR_RECEIVE.equals(dockMessage.command)) {
             dockAlive = true;
             String code = dockMessage.code;
