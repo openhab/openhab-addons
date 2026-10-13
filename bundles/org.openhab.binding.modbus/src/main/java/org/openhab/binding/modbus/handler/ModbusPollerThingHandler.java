@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ModbusPollerThingHandler extends BaseBridgeHandler {
+    private long callbackGeneration;
 
     /**
      * {@link ModbusReadCallback} that delegates all tasks forward.
@@ -68,11 +69,12 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     private class ReadCallbackDelegator
             implements ModbusReadCallback, ModbusFailureCallback<ModbusReadRequestBlueprint> {
 
+        private final long generation = ++callbackGeneration;
         private volatile @Nullable AtomicStampedValue<PollResult> lastResult;
 
         private void handleResult(PollResult result) {
             // The handler monitor serializes lifecycle changes with decoding and publication.
-            if (this != callbackDelegator || hasConfigurationError() || disposed) {
+            if (generation != callbackGeneration || hasConfigurationError() || disposed) {
                 return;
             }
             if (config.getCacheMillis() >= 0) {
@@ -86,7 +88,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             }
             logger.debug("Thing {} received response {}", thing.getUID(), result);
             notifyChildren(result);
-            if (this != callbackDelegator || disposed) {
+            if (generation != callbackGeneration || disposed) {
                 return;
             }
             if (result.failure != null) {
@@ -102,7 +104,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         @Override
         public void handle(AsyncModbusReadResult result) {
             synchronized (ModbusPollerThingHandler.this) {
-                if (this != callbackDelegator || disposed || hasConfigurationError()) {
+                if (generation != callbackGeneration || disposed || hasConfigurationError()) {
                     return;
                 }
                 // Casting to allow registers.orElse(null) below..
@@ -156,7 +158,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                     handler.handleReadError(failure);
                 }
             });
-            if (this != callbackDelegator || disposed) {
+            if (generation != callbackGeneration || disposed) {
                 return;
             }
             if (result != null) {
