@@ -544,9 +544,14 @@ Currently the miio binding supports more than 410 different models.
 | Xiaomi Robot Vacuum T12            | miio:basic       | [xiaomi.vacuum.b106bk](#xiaomi-vacuum-b106bk) | Yes          | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')` |
 | Xiaomi Robot Vacuum S12            | miio:basic       | [xiaomi.vacuum.b106eu](#xiaomi-vacuum-b106eu) | Yes          | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')` |
 | Xiaomi Robot Vacuum S20+           | miio:basic       | [xiaomi.vacuum.b108gl](#xiaomi-vacuum-b108gl) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Robot Vacuum E10            | miio:basic       | [xiaomi.vacuum.b112](#xiaomi-vacuum-b112) | Experimental | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')`, the cleaning mode (piid 25) is 0 for all areas, 2 for edge and 4 for spiral. The direction channel can only be written, the device does not report its state.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Robot Vacuum E10C           | miio:basic       | [xiaomi.vacuum.b112bk](#xiaomi-vacuum-b112bk) | Experimental | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')`, the cleaning mode (piid 25) is 0 for all areas, 2 for edge and 4 for spiral. The direction channel can only be written, the device does not report its state.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Robot Vacuum E12            | miio:basic       | [xiaomi.vacuum.b112gl](#xiaomi-vacuum-b112gl) | Experimental | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')`, the cleaning mode (piid 25) is 0 for all areas, 2 for edge and 4 for spiral. The direction channel can only be written, the device does not report its state.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Robot Vacuum X20+           | miio:basic       | [xiaomi.vacuum.c102gl](#xiaomi-vacuum-c102gl) | Yes          |            |
 | Mijia Robot Vacuum M30 Pro         | miio:basic       | [xiaomi.vacuum.c107](#xiaomi-vacuum-c107) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Robot Vacuum E5             | miio:basic       | [xiaomi.vacuum.c108](#xiaomi-vacuum-c108) | Experimental | The direction channel can only be written, the device does not report its state.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Robot Vacuum X20 Pro        | miio:basic       | [xiaomi.vacuum.d102gl](#xiaomi-vacuum-d102gl) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Robot Vacuum S20            | miio:basic       | [xiaomi.vacuum.d106gl](#xiaomi-vacuum-d106gl) | Experimental | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')`. The direction, carpet avoidance, carpet display and map upload channels can only be written, the device does not report their state.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Robot Vacuum X20 Max        | miio:basic       | [xiaomi.vacuum.d109gl](#xiaomi-vacuum-d109gl) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Robot Vacuum M40             | miio:basic       | [xiaomi.vacuum.d110ch](#xiaomi-vacuum-d110ch) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Robot Vacuum S40C           | miio:basic       | [xiaomi.vacuum.e101gb](#xiaomi-vacuum-e101gb) | Experimental | Dust collection (the action and the auto dust collection settings) is only available on models with the dust collection base station, like the H40.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -4649,6 +4654,117 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | permanent_map_id           | Number               | Vacuum Map - Permanent Map Id            |            |
 | map_control_switch         | Switch               | Vacuum Map - Map Control Switch          |            |
 
+### Xiaomi Robot Vacuum E10 (<a name="xiaomi-vacuum-b112">xiaomi.vacuum.b112</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-pause-sweeping"="Pause Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging","battery-stop-charge"="Stop Going To Charge","sweep-reset-main-brush"="Reset Main Brush Life","sweep-reset-side-brush"="Reset Side Brush Life","sweep-reset-filter"="Reset Filter Life","sweep-reset-mop"="Reset Mop Life"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Returning To Dock","4"="Charging","5"="Vacuuming","6"="Vacuuming And Mopping","7"="Mopping","8"="Upgrade"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             |            |
+| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop"]` |
+| sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="All Areas","2"="Edge","4"="Spot","5"="Remote Control"]` |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| alarm                      | Number               | Alarm - Locate                           | Value mapping `["1"="Play"]` |
+| volume                     | Number               | Alarm - Volume                           | The volume is set in steps of 10%, 0 mutes the voice prompts. |
+| repeat_state               | Switch               | Sweep - Clean Twice                      |            |
+| door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
+| cloth_state                | Switch               | Sweep - Mop Attached                     |            |
+| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Off","1"="Silent","2"="Standard","3"="Medium","4"="Turbo"]` |
+| water_state                | Number               | Sweep - Water Level                      | Value mapping `["0"="Off","1"="Low","2"="Medium","3"="High"]` |
+| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="S-Shape","1"="Y-Shape"]` |
+| side_brush_life            | Number:Dimensionless | Sweep - Side Brush Life                  |            |
+| side_brush_hours           | Number:Time          | Sweep - Side Brush Time Left             |            |
+| main_brush_life            | Number:Dimensionless | Sweep - Main Brush Life                  |            |
+| main_brush_hours           | Number:Time          | Sweep - Main Brush Time Left             |            |
+| hypa_life                  | Number:Dimensionless | Sweep - Filter Life                      |            |
+| hypa_hours                 | Number:Time          | Sweep - Filter Time Left                 |            |
+| mop_life                   | Number:Dimensionless | Sweep - Mop Life                         |            |
+| mop_hours                  | Number:Time          | Sweep - Mop Time Left                    |            |
+| direction                  | Number               | Sweep - Remote Control Direction         | Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Back","5"="Stop","10"="Exit"]` |
+| cleaning_time              | Number:Time          | Sweep - Cleaning Time                    |            |
+| cleaning_area              | Number:Area          | Sweep - Cleaning Area                    |            |
+| build_map                  | Number               | Map - Mapping Status                     | Value mapping `["0"="None","1"="Mapping","2"="Mapping While Cleaning"]` |
+| map_privacy                | Number               | Map - Map Privacy                        | Value mapping `["0"="Map Enabled","1"="Map Disabled"]` |
+| dnd_enable                 | Switch               | Do Not Disturb - Enabled                 |            |
+| dnd_start_hour             | Number               | Do Not Disturb - Start Hour              |            |
+| dnd_start_minute           | Number               | Do Not Disturb - Start Minute            |            |
+| dnd_end_hour               | Number               | Do Not Disturb - End Hour                |            |
+| dnd_end_minute             | Number               | Do Not Disturb - End Minute              |            |
+
+### Xiaomi Robot Vacuum E10C (<a name="xiaomi-vacuum-b112bk">xiaomi.vacuum.b112bk</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-pause-sweeping"="Pause Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging","battery-stop-charge"="Stop Going To Charge","sweep-reset-main-brush"="Reset Main Brush Life","sweep-reset-side-brush"="Reset Side Brush Life","sweep-reset-filter"="Reset Filter Life","sweep-reset-mop"="Reset Mop Life"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Returning To Dock","4"="Charging","5"="Vacuuming","6"="Vacuuming And Mopping","7"="Mopping","8"="Upgrade"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             |            |
+| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop"]` |
+| sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="All Areas","2"="Edge","4"="Spot","5"="Remote Control"]` |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| alarm                      | Number               | Alarm - Locate                           | Value mapping `["1"="Play"]` |
+| volume                     | Number               | Alarm - Volume                           | The volume is set in steps of 10%, 0 mutes the voice prompts. |
+| repeat_state               | Switch               | Sweep - Clean Twice                      |            |
+| door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
+| cloth_state                | Switch               | Sweep - Mop Attached                     |            |
+| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Off","1"="Silent","2"="Standard","3"="Medium","4"="Turbo"]` |
+| water_state                | Number               | Sweep - Water Level                      | Value mapping `["0"="Off","1"="Low","2"="Medium","3"="High"]` |
+| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="S-Shape","1"="Y-Shape"]` |
+| side_brush_life            | Number:Dimensionless | Sweep - Side Brush Life                  |            |
+| side_brush_hours           | Number:Time          | Sweep - Side Brush Time Left             |            |
+| main_brush_life            | Number:Dimensionless | Sweep - Main Brush Life                  |            |
+| main_brush_hours           | Number:Time          | Sweep - Main Brush Time Left             |            |
+| hypa_life                  | Number:Dimensionless | Sweep - Filter Life                      |            |
+| hypa_hours                 | Number:Time          | Sweep - Filter Time Left                 |            |
+| mop_life                   | Number:Dimensionless | Sweep - Mop Life                         |            |
+| mop_hours                  | Number:Time          | Sweep - Mop Time Left                    |            |
+| direction                  | Number               | Sweep - Remote Control Direction         | Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Back","5"="Stop","10"="Exit"]` |
+| cleaning_time              | Number:Time          | Sweep - Cleaning Time                    |            |
+| cleaning_area              | Number:Area          | Sweep - Cleaning Area                    |            |
+| build_map                  | Number               | Map - Mapping Status                     | Value mapping `["0"="None","1"="Mapping","2"="Mapping While Cleaning"]` |
+| map_privacy                | Number               | Map - Map Privacy                        | Value mapping `["0"="Map Enabled","1"="Map Disabled"]` |
+| dnd_enable                 | Switch               | Do Not Disturb - Enabled                 |            |
+| dnd_start_hour             | Number               | Do Not Disturb - Start Hour              |            |
+| dnd_start_minute           | Number               | Do Not Disturb - Start Minute            |            |
+| dnd_end_hour               | Number               | Do Not Disturb - End Hour                |            |
+| dnd_end_minute             | Number               | Do Not Disturb - End Minute              |            |
+
+### Xiaomi Robot Vacuum E12 (<a name="xiaomi-vacuum-b112gl">xiaomi.vacuum.b112gl</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-pause-sweeping"="Pause Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging","battery-stop-charge"="Stop Going To Charge","sweep-reset-main-brush"="Reset Main Brush Life","sweep-reset-side-brush"="Reset Side Brush Life","sweep-reset-filter"="Reset Filter Life","sweep-reset-mop"="Reset Mop Life"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Returning To Dock","4"="Charging","5"="Vacuuming","6"="Vacuuming And Mopping","7"="Mopping","8"="Upgrade"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             |            |
+| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop"]` |
+| sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="All Areas","2"="Edge","4"="Spot","5"="Remote Control"]` |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| alarm                      | Number               | Alarm - Locate                           | Value mapping `["1"="Play"]` |
+| volume                     | Number               | Alarm - Volume                           | The volume is set in steps of 10%, 0 mutes the voice prompts. |
+| repeat_state               | Switch               | Sweep - Clean Twice                      |            |
+| door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
+| cloth_state                | Switch               | Sweep - Mop Attached                     |            |
+| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Off","1"="Silent","2"="Standard","3"="Medium","4"="Turbo"]` |
+| water_state                | Number               | Sweep - Water Level                      | Value mapping `["0"="Off","1"="Low","2"="Medium","3"="High"]` |
+| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="S-Shape","1"="Y-Shape"]` |
+| side_brush_life            | Number:Dimensionless | Sweep - Side Brush Life                  |            |
+| side_brush_hours           | Number:Time          | Sweep - Side Brush Time Left             |            |
+| main_brush_life            | Number:Dimensionless | Sweep - Main Brush Life                  |            |
+| main_brush_hours           | Number:Time          | Sweep - Main Brush Time Left             |            |
+| hypa_life                  | Number:Dimensionless | Sweep - Filter Life                      |            |
+| hypa_hours                 | Number:Time          | Sweep - Filter Time Left                 |            |
+| mop_life                   | Number:Dimensionless | Sweep - Mop Life                         |            |
+| mop_hours                  | Number:Time          | Sweep - Mop Time Left                    |            |
+| direction                  | Number               | Sweep - Remote Control Direction         | Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Back","5"="Stop","10"="Exit"]` |
+| cleaning_time              | Number:Time          | Sweep - Cleaning Time                    |            |
+| cleaning_area              | Number:Area          | Sweep - Cleaning Area                    |            |
+| build_map                  | Number               | Map - Mapping Status                     | Value mapping `["0"="None","1"="Mapping","2"="Mapping While Cleaning"]` |
+| map_privacy                | Number               | Map - Map Privacy                        | Value mapping `["0"="Map Enabled","1"="Map Disabled"]` |
+| dnd_enable                 | Switch               | Do Not Disturb - Enabled                 |            |
+| dnd_start_hour             | Number               | Do Not Disturb - Start Hour              |            |
+| dnd_start_minute           | Number               | Do Not Disturb - Start Minute            |            |
+| dnd_end_hour               | Number               | Do Not Disturb - End Hour                |            |
+| dnd_end_minute             | Number               | Do Not Disturb - End Minute              |            |
+
 ### Xiaomi Robot Vacuum X20+ (<a name="xiaomi-vacuum-c102gl">xiaomi.vacuum.c102gl</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -4766,6 +4882,33 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
 | filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
 
+### Xiaomi Robot Vacuum E5 (<a name="xiaomi-vacuum-c108">xiaomi.vacuum.c108</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-pause-sweeping"="Pause Cleaning","vacuum-continue-sweep"="Resume Cleaning","go-charging-start-charging"="Go Charging","go-charging-stop-charging"="Stop Going To Charge","identify-identify"="Find Robot"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Standby","2"="Cleaning","3"="Paused","4"="Error","5"="Charging","6"="Returning To Dock","7"="Fully Charged"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Faults","1"="Left Wheel Stuck","2"="Right Wheel Stuck","3"="Bumper Stuck","4"="Side Brush Stuck","5"="Cliff Sensor Error","6"="Wheels Suspended","7"="Fan Error","8"="Low Battery","9"="Return To Dock Failed","10"="Robot Trapped","11"="Left Wheel Error","12"="Right Wheel Error","13"="Side Brush Error","14"="Battery Temperature Error","15"="Slope Detected"]` |
+| sweep_type                 | Number               | Robot Cleaner - Cleanup Range            | Value mapping `["1"="Whole House","2"="Spot","3"="Edge"]` |
+| suction_level              | Number               | Robot Cleaner - Suction Level            | Value mapping `["0"="Silent","1"="Standard","2"="Strong"]` |
+| cleaning_area              | Number:Area          | Robot Cleaner - Cleaning Area            |            |
+| cleaning_time              | Number:Time          | Robot Cleaner - Cleaning Time            |            |
+| last_clean_time            | String               | Robot Cleaner - Last Clean Time          | Day, month, hour and minute of the last cleaning as ddMMHHmm, a day below 10 is reported without leading zero. The year is not reported. |
+| sweep_break_switch         | Switch               | Robot Cleaner - Resume After Charging    |            |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state             | Number               | Battery - Charging State                 | Value mapping `["1"="Not Charging","2"="Charging","3"="Fully Charged"]` |
+| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
+| brush_life_level           | Number:Dimensionless | Side Cleaning Brush - Brush Life Level   |            |
+| brush_left_time            | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
+| no_disturb                 | Switch               | Do Not Disturb - Enabled                 |            |
+| enable_time_period         | String               | Do Not Disturb - Time Period             | Start and end of the do not disturb period as HHMMHHMM, for example 22000700 for 22:00 to 07:00. A start hour below 10 can be reported without leading zero. |
+| total_clean_area           | Number:Area          | Clean Record - Total Clean Area          |            |
+| total_clean_time           | Number:Time          | Clean Record - Total Clean Time          |            |
+| total_clean_count          | Number               | Clean Record - Total Clean Count         |            |
+| direction_key              | Number               | Remote Control - Direction               | Value mapping `["0"="Left","1"="Right","2"="Forward","3"="Backward","4"="Stop"]` |
+| lighting                   | Switch               | Lighting - Light                         |            |
+
 ### Xiaomi Robot Vacuum X20 Pro (<a name="xiaomi-vacuum-d102gl">xiaomi.vacuum.d102gl</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -4814,6 +4957,48 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brush_left_time1           | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
 | filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
 | filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
+
+### Xiaomi Robot Vacuum S20 (<a name="xiaomi-vacuum-d106gl">xiaomi.vacuum.d106gl</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-pause-sweeping"="Pause Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging","battery-stop-charge"="Stop Going To Charge","sweep-reset-main-brush"="Reset Main Brush Life","sweep-reset-side-brush"="Reset Side Brush Life","sweep-reset-filter"="Reset Filter Life","sweep-reset-mop"="Reset Mop Life"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Returning To Dock","4"="Charging","5"="Vacuuming","6"="Vacuuming And Mopping","7"="Mopping","8"="Upgrade","9"="Building Map","10"="Fully Charged"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             |            |
+| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="Vacuum Then Mop"]` |
+| sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="All Areas","1"="Mop","2"="Edge","3"="Area","4"="Spot","5"="Remote Control","6"="Mapping","7"="Room","8"="Floor Type"]` |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| alarm                      | Switch               | Alarm - Locate                           |            |
+| volume                     | Number               | Alarm - Volume                           | The volume is set in steps of 10%, 0 mutes the voice prompts. |
+| repeat_state               | Switch               | Sweep - Clean Twice                      |            |
+| door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
+| cloth_state                | Switch               | Sweep - Mop Attached                     |            |
+| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
+| water_state                | Number               | Sweep - Water Level                      | Value mapping `["0"="Low","1"="Medium","2"="High"]` |
+| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="Standard (S-Shape)","1"="Professional (Y-Shape)"]` |
+| side_brush_life            | Number:Dimensionless | Sweep - Side Brush Life                  |            |
+| side_brush_hours           | Number:Time          | Sweep - Side Brush Time Left             |            |
+| main_brush_life            | Number:Dimensionless | Sweep - Main Brush Life                  |            |
+| main_brush_hours           | Number:Time          | Sweep - Main Brush Time Left             |            |
+| hypa_life                  | Number:Dimensionless | Sweep - Filter Life                      |            |
+| hypa_hours                 | Number:Time          | Sweep - Filter Time Left                 |            |
+| mop_life                   | Number:Dimensionless | Sweep - Mop Life                         |            |
+| mop_hours                  | Number:Time          | Sweep - Mop Time Left                    |            |
+| direction                  | Number               | Sweep - Remote Control Direction         | Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Back","5"="Stop","10"="Exit"]` |
+| cleaning_time              | Number:Time          | Sweep - Cleaning Time                    |            |
+| cleaning_area              | Number:Area          | Sweep - Cleaning Area                    |            |
+| carpet_booster             | Switch               | Sweep - Carpet Boost                     |            |
+| carpet_avoid               | Switch               | Sweep - Carpet Avoidance                 |            |
+| tank_shake                 | Switch               | Sweep - Mop Vibration                    |            |
+| shake_shift                | Number               | Sweep - Mop Vibration Level              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| carpet_show                | Switch               | Sweep - Carpet Display                   |            |
+| build_map                  | Number               | Map - Mapping Status                     | Value mapping `["0"="None","1"="Mapping","2"="Mapping While Cleaning","3"="Cleaning With Map"]` |
+| map_uploads                | Number               | Map - Map Upload                         | Value mapping `["0"="Upload","1"="Do Not Upload"]` |
+| dnd_enable                 | Switch               | Do Not Disturb - Enabled                 |            |
+| dnd_start_hour             | Number               | Do Not Disturb - Start Hour              |            |
+| dnd_start_minute           | Number               | Do Not Disturb - Start Minute            |            |
+| dnd_end_hour               | Number               | Do Not Disturb - End Hour                |            |
+| dnd_end_minute             | Number               | Do Not Disturb - End Minute              |            |
 
 ### Xiaomi Robot Vacuum X20 Max (<a name="xiaomi-vacuum-d109gl">xiaomi.vacuum.d109gl</a>) Channels
 
@@ -12912,6 +13097,126 @@ Number permanent_map_id "Vacuum Map - Permanent Map Id" (G_vacuum) {channel="mii
 Switch map_control_switch "Vacuum Map - Map Control Switch" (G_vacuum) {channel="miio:basic:vacuum:map_control_switch"}
 ```
 
+### Xiaomi Robot Vacuum E10 (xiaomi.vacuum.b112) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Robot Vacuum E10" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number alarm "Alarm - Locate" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch repeat_state "Sweep - Clean Twice" (G_vacuum) {channel="miio:basic:vacuum:repeat_state"}
+Number door_state "Sweep - Installed Box" (G_vacuum) {channel="miio:basic:vacuum:door_state"}
+Switch cloth_state "Sweep - Mop Attached" (G_vacuum) {channel="miio:basic:vacuum:cloth_state"}
+Number suction_state "Sweep - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:suction_state"}
+Number water_state "Sweep - Water Level" (G_vacuum) {channel="miio:basic:vacuum:water_state"}
+Number mop_route "Sweep - Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Dimensionless side_brush_life "Sweep - Side Brush Life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Time side_brush_hours "Sweep - Side Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Dimensionless main_brush_life "Sweep - Main Brush Life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Time main_brush_hours "Sweep - Main Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Dimensionless hypa_life "Sweep - Filter Life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Time hypa_hours "Sweep - Filter Time Left" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Dimensionless mop_life "Sweep - Mop Life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+Number:Time mop_hours "Sweep - Mop Time Left" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number direction "Sweep - Remote Control Direction" (G_vacuum) {channel="miio:basic:vacuum:direction"}
+Number:Time cleaning_time "Sweep - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number:Area cleaning_area "Sweep - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number build_map "Map - Mapping Status" (G_vacuum) {channel="miio:basic:vacuum:build_map"}
+Number map_privacy "Map - Map Privacy" (G_vacuum) {channel="miio:basic:vacuum:map_privacy"}
+Switch dnd_enable "Do Not Disturb - Enabled" (G_vacuum) {channel="miio:basic:vacuum:dnd_enable"}
+Number dnd_start_hour "Do Not Disturb - Start Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_hour"}
+Number dnd_start_minute "Do Not Disturb - Start Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_minute"}
+Number dnd_end_hour "Do Not Disturb - End Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_hour"}
+Number dnd_end_minute "Do Not Disturb - End Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_minute"}
+```
+
+### Xiaomi Robot Vacuum E10C (xiaomi.vacuum.b112bk) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Robot Vacuum E10C" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number alarm "Alarm - Locate" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch repeat_state "Sweep - Clean Twice" (G_vacuum) {channel="miio:basic:vacuum:repeat_state"}
+Number door_state "Sweep - Installed Box" (G_vacuum) {channel="miio:basic:vacuum:door_state"}
+Switch cloth_state "Sweep - Mop Attached" (G_vacuum) {channel="miio:basic:vacuum:cloth_state"}
+Number suction_state "Sweep - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:suction_state"}
+Number water_state "Sweep - Water Level" (G_vacuum) {channel="miio:basic:vacuum:water_state"}
+Number mop_route "Sweep - Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Dimensionless side_brush_life "Sweep - Side Brush Life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Time side_brush_hours "Sweep - Side Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Dimensionless main_brush_life "Sweep - Main Brush Life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Time main_brush_hours "Sweep - Main Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Dimensionless hypa_life "Sweep - Filter Life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Time hypa_hours "Sweep - Filter Time Left" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Dimensionless mop_life "Sweep - Mop Life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+Number:Time mop_hours "Sweep - Mop Time Left" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number direction "Sweep - Remote Control Direction" (G_vacuum) {channel="miio:basic:vacuum:direction"}
+Number:Time cleaning_time "Sweep - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number:Area cleaning_area "Sweep - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number build_map "Map - Mapping Status" (G_vacuum) {channel="miio:basic:vacuum:build_map"}
+Number map_privacy "Map - Map Privacy" (G_vacuum) {channel="miio:basic:vacuum:map_privacy"}
+Switch dnd_enable "Do Not Disturb - Enabled" (G_vacuum) {channel="miio:basic:vacuum:dnd_enable"}
+Number dnd_start_hour "Do Not Disturb - Start Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_hour"}
+Number dnd_start_minute "Do Not Disturb - Start Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_minute"}
+Number dnd_end_hour "Do Not Disturb - End Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_hour"}
+Number dnd_end_minute "Do Not Disturb - End Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_minute"}
+```
+
+### Xiaomi Robot Vacuum E12 (xiaomi.vacuum.b112gl) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Robot Vacuum E12" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number alarm "Alarm - Locate" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch repeat_state "Sweep - Clean Twice" (G_vacuum) {channel="miio:basic:vacuum:repeat_state"}
+Number door_state "Sweep - Installed Box" (G_vacuum) {channel="miio:basic:vacuum:door_state"}
+Switch cloth_state "Sweep - Mop Attached" (G_vacuum) {channel="miio:basic:vacuum:cloth_state"}
+Number suction_state "Sweep - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:suction_state"}
+Number water_state "Sweep - Water Level" (G_vacuum) {channel="miio:basic:vacuum:water_state"}
+Number mop_route "Sweep - Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Dimensionless side_brush_life "Sweep - Side Brush Life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Time side_brush_hours "Sweep - Side Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Dimensionless main_brush_life "Sweep - Main Brush Life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Time main_brush_hours "Sweep - Main Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Dimensionless hypa_life "Sweep - Filter Life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Time hypa_hours "Sweep - Filter Time Left" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Dimensionless mop_life "Sweep - Mop Life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+Number:Time mop_hours "Sweep - Mop Time Left" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number direction "Sweep - Remote Control Direction" (G_vacuum) {channel="miio:basic:vacuum:direction"}
+Number:Time cleaning_time "Sweep - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number:Area cleaning_area "Sweep - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number build_map "Map - Mapping Status" (G_vacuum) {channel="miio:basic:vacuum:build_map"}
+Number map_privacy "Map - Map Privacy" (G_vacuum) {channel="miio:basic:vacuum:map_privacy"}
+Switch dnd_enable "Do Not Disturb - Enabled" (G_vacuum) {channel="miio:basic:vacuum:dnd_enable"}
+Number dnd_start_hour "Do Not Disturb - Start Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_hour"}
+Number dnd_start_minute "Do Not Disturb - Start Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_minute"}
+Number dnd_end_hour "Do Not Disturb - End Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_hour"}
+Number dnd_end_minute "Do Not Disturb - End Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_minute"}
+```
+
 ### Xiaomi Robot Vacuum X20+ (xiaomi.vacuum.c102gl) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -13035,6 +13340,36 @@ Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {
 Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
 ```
 
+### Xiaomi Robot Vacuum E5 (xiaomi.vacuum.c108) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Robot Vacuum E5" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number sweep_type "Robot Cleaner - Cleanup Range" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+Number suction_level "Robot Cleaner - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:suction_level"}
+Number:Area cleaning_area "Robot Cleaner - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number:Time cleaning_time "Robot Cleaner - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+String last_clean_time "Robot Cleaner - Last Clean Time" (G_vacuum) {channel="miio:basic:vacuum:last_clean_time"}
+Switch sweep_break_switch "Robot Cleaner - Resume After Charging" (G_vacuum) {channel="miio:basic:vacuum:sweep_break_switch"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging_state"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+Number:Dimensionless brush_life_level "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level"}
+Number:Time brush_left_time "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time"}
+Switch no_disturb "Do Not Disturb - Enabled" (G_vacuum) {channel="miio:basic:vacuum:no_disturb"}
+String enable_time_period "Do Not Disturb - Time Period" (G_vacuum) {channel="miio:basic:vacuum:enable_time_period"}
+Number:Area total_clean_area "Clean Record - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total_clean_area"}
+Number:Time total_clean_time "Clean Record - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
+Number total_clean_count "Clean Record - Total Clean Count" (G_vacuum) {channel="miio:basic:vacuum:total_clean_count"}
+Number direction_key "Remote Control - Direction" (G_vacuum) {channel="miio:basic:vacuum:direction_key"}
+Switch lighting "Lighting - Light" (G_vacuum) {channel="miio:basic:vacuum:lighting"}
+```
+
 ### Xiaomi Robot Vacuum X20 Pro (xiaomi.vacuum.d102gl) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -13085,6 +13420,51 @@ Number:Dimensionless brush_life_level1 "Side Cleaning Brush - Brush Life Level" 
 Number:Time brush_left_time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time1"}
 Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
 Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+```
+
+### Xiaomi Robot Vacuum S20 (xiaomi.vacuum.d106gl) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Robot Vacuum S20" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Switch alarm "Alarm - Locate" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch repeat_state "Sweep - Clean Twice" (G_vacuum) {channel="miio:basic:vacuum:repeat_state"}
+Number door_state "Sweep - Installed Box" (G_vacuum) {channel="miio:basic:vacuum:door_state"}
+Switch cloth_state "Sweep - Mop Attached" (G_vacuum) {channel="miio:basic:vacuum:cloth_state"}
+Number suction_state "Sweep - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:suction_state"}
+Number water_state "Sweep - Water Level" (G_vacuum) {channel="miio:basic:vacuum:water_state"}
+Number mop_route "Sweep - Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Dimensionless side_brush_life "Sweep - Side Brush Life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Time side_brush_hours "Sweep - Side Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Dimensionless main_brush_life "Sweep - Main Brush Life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Time main_brush_hours "Sweep - Main Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Dimensionless hypa_life "Sweep - Filter Life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Time hypa_hours "Sweep - Filter Time Left" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Dimensionless mop_life "Sweep - Mop Life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+Number:Time mop_hours "Sweep - Mop Time Left" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number direction "Sweep - Remote Control Direction" (G_vacuum) {channel="miio:basic:vacuum:direction"}
+Number:Time cleaning_time "Sweep - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number:Area cleaning_area "Sweep - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Switch carpet_booster "Sweep - Carpet Boost" (G_vacuum) {channel="miio:basic:vacuum:carpet_booster"}
+Switch carpet_avoid "Sweep - Carpet Avoidance" (G_vacuum) {channel="miio:basic:vacuum:carpet_avoid"}
+Switch tank_shake "Sweep - Mop Vibration" (G_vacuum) {channel="miio:basic:vacuum:tank_shake"}
+Number shake_shift "Sweep - Mop Vibration Level" (G_vacuum) {channel="miio:basic:vacuum:shake_shift"}
+Switch carpet_show "Sweep - Carpet Display" (G_vacuum) {channel="miio:basic:vacuum:carpet_show"}
+Number build_map "Map - Mapping Status" (G_vacuum) {channel="miio:basic:vacuum:build_map"}
+Number map_uploads "Map - Map Upload" (G_vacuum) {channel="miio:basic:vacuum:map_uploads"}
+Switch dnd_enable "Do Not Disturb - Enabled" (G_vacuum) {channel="miio:basic:vacuum:dnd_enable"}
+Number dnd_start_hour "Do Not Disturb - Start Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_hour"}
+Number dnd_start_minute "Do Not Disturb - Start Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_minute"}
+Number dnd_end_hour "Do Not Disturb - End Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_hour"}
+Number dnd_end_minute "Do Not Disturb - End Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_minute"}
 ```
 
 ### Xiaomi Robot Vacuum X20 Max (xiaomi.vacuum.d109gl) item file lines
