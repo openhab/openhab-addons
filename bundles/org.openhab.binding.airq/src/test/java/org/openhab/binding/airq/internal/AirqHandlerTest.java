@@ -59,6 +59,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -482,7 +483,8 @@ class AirqHandlerTest {
             "nightModeBrightnessNight, BrightnessNight", "general#nightModeBrightnessDay, BrightnessDay",
             "general#nightModeBrightnessNight, BrightnessNight" })
     void nightModeBrightnessCommandsUseNumericDeviceSettings(String channel, String key) throws Exception {
-        for (Command command : List.of(new DecimalType("2.5"), new StringType("2.5"))) {
+        for (Command command : List.of(new DecimalType("2.5"), new StringType("2.5"),
+                new QuantityType<>(2.5, Units.ONE), new QuantityType<>(250, Units.PERCENT))) {
             JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), command));
             JsonObject expectedNightMode = new JsonObject();
             expectedNightMode.addProperty(key, 2.5);
@@ -513,8 +515,90 @@ class AirqHandlerTest {
     @ValueSource(strings = { "general#night-mode-brightness-day", "general#night-mode-brightness-night" })
     void invalidBrightnessCommandsDoNotSendRequests(String channel) throws Exception {
         for (Command command : List.of(OnOffType.ON, new StringType("invalid"), new StringType("NaN"),
-                new StringType("Infinity"), new StringType(""))) {
+                new StringType("Infinity"), new StringType(""), new QuantityType<>(2.5, Units.SECOND))) {
             assertThat(sendSettings(new ChannelUID(thingUID, channel), command), nullValue());
+        }
+    }
+
+    static Stream<Arguments> settingCommands() {
+        Stream<Arguments> switches = Stream.of(new String[] { "wifi-info", "WifiInfo" },
+                new String[] { "fire-alarm", "FireAlarm" }, new String[] { "cloud-upload", "cloudUpload" },
+                new String[] { "auto-drift-compensation", "AutoDriftCompensation" },
+                new String[] { "auto-update", "AutoUpdate" },
+                new String[] { "advanced-data-processing", "AdvancedDataProcessing" },
+                new String[] { "gas-alarm", "GasAlarm" }, new String[] { "sound-pressure", "SoundInfo" },
+                new String[] { "alarm-forwarding", "AlarmForwarding" }, new String[] { "averaging", "averaging" },
+                new String[] { "error-bars", "ErrorBars" }, new String[] { "ppm-and-ppb", "ppm&ppb" },
+                new String[] { "night-mode-fan-night-off", "FanNightOff" },
+                new String[] { "night-mode-wifi-night-off", "WifiNightOff" })
+                .flatMap(mapping -> Stream.of(OnOffType.ON, OnOffType.OFF).map(command -> {
+                    JsonObject value = new JsonObject();
+                    if ("auto-update".equals(mapping[0])) {
+                        value.addProperty(mapping[1], command == OnOffType.ON ? 1 : 0);
+                    } else {
+                        value.addProperty(mapping[1], command == OnOffType.ON);
+                    }
+                    JsonObject settings = value;
+                    if (mapping[0].startsWith("night-mode-")) {
+                        settings = new JsonObject();
+                        settings.add("NightMode", value);
+                    }
+                    return Arguments.of(mapping[0], command, settings);
+                }));
+        Stream<Arguments> strings = Stream.of(
+                Arguments.of("time-server", new StringType("time.example"), json("{\"timeServer\":\"time.example\"}")),
+                Arguments.of("room-type", new StringType("office"), json("{\"RoomType\":\"office\"}")),
+                Arguments.of("log-level", new StringType("Error"), json("{\"logging\":\"Error\"}")),
+                Arguments.of("log-level", new StringType("Warning"), json("{\"logging\":\"Warning\"}")),
+                Arguments.of("log-level", new StringType("Info"), json("{\"logging\":\"Info\"}")),
+                Arguments.of("power-freq-suppression", new StringType("50Hz"), json("{\"Rejection\":\"50Hz\"}")),
+                Arguments.of("power-freq-suppression", new StringType("60Hz"), json("{\"Rejection\":\"60Hz\"}")),
+                Arguments.of("power-freq-suppression", new StringType("50Hz+60Hz"),
+                        json("{\"Rejection\":\"50Hz+60Hz\"}")),
+                Arguments.of("SSID", new StringType(
+                        "{\"WiFissid\":\"network\",\"WiFipass\":\"secret\",\"WiFibssid\":\"mac\",\"reset\":\"true\"}"),
+                        json("{\"WiFissid\":\"network\",\"WiFipass\":\"secret\",\"WiFibssid\":\"mac\",\"reset\":\"true\"}")));
+        return Stream.concat(Stream.concat(switches, strings),
+                Stream.of(Arguments.of("location", new PointType(new DecimalType(50), new DecimalType(10)),
+                        json("{\"geopos\":{\"lat\":50,\"long\":10}}"))));
+    }
+
+    @ParameterizedTest
+    @MethodSource("settingCommands")
+    void settingsCommandsEncodeOnlyTheirDeviceSetting(String channel, Command command, JsonObject expected)
+            throws Exception {
+        assertThat(sendSettings(channel, command), is(expected));
+    }
+
+    @ParameterizedTest
+    @MethodSource("settingCommands")
+    void settingsCommandsIgnoreWrongDataTypes(String channel, Command accepted, JsonObject expected) throws Exception {
+        for (Command command : List.of(OnOffType.ON, new StringType("invalid"), new DecimalType(1),
+                new QuantityType<>(1, Units.SECOND), new PointType(new DecimalType(50), new DecimalType(10)),
+                RefreshType.REFRESH)) {
+            if (!accepted.getClass().equals(command.getClass())) {
+                assertThat(channel + " must reject " + command.getClass().getSimpleName(),
+                        sendSettings(channel, command), nullValue());
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "wifi", "unknown", "delete-key", "device-name", "initial-cal-finished" })
+    void unwritableOrUnknownChannelsDoNotSendSettings(String channel) throws Exception {
+        for (Command command : List.of(OnOffType.ON, OnOffType.OFF, new StringType("value"), new DecimalType(1),
+                new QuantityType<>(1, Units.SECOND), RefreshType.REFRESH)) {
+            assertThat(sendSettings(channel, command), nullValue());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "night-mode-start-day", "night-mode-start-night", "averaging-rhythm",
+            "night-mode-brightness-day", "night-mode-brightness-night" })
+    void numericSettingsRejectSwitchLocationAndRefreshCommands(String channel) throws Exception {
+        for (Command command : List.of(OnOffType.ON, OnOffType.OFF,
+                new PointType(new DecimalType(50), new DecimalType(10)), RefreshType.REFRESH)) {
+            assertThat(sendSettings(channel, command), nullValue());
         }
     }
 

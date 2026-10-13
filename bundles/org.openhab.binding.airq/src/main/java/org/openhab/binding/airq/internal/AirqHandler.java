@@ -296,7 +296,14 @@ public class AirqHandler extends BaseThingHandler {
         }
         if ("nightModeBrightnessDay".equals(channelId) || "nightModeBrightnessNight".equals(channelId)) {
             BigDecimal brightness;
-            if (command instanceof DecimalType decimal) {
+            if (command instanceof QuantityType<?> quantity) {
+                QuantityType<?> converted = quantity.toUnit(Units.ONE);
+                if (converted == null) {
+                    logger.debug("Ignoring incompatible brightness unit for channel {}", channelId);
+                    return;
+                }
+                brightness = converted.toBigDecimal();
+            } else if (command instanceof DecimalType decimal) {
                 brightness = decimal.toBigDecimal();
             } else if (command instanceof StringType string) {
                 try {
@@ -317,7 +324,16 @@ public class AirqHandler extends BaseThingHandler {
             changeSettings(settings);
             return;
         }
-        if ((command instanceof OnOffType) || (command instanceof StringType)) {
+        boolean acceptedCommand = switch (channelId) {
+            case "wifi", "wifiInfo", "fireAlarm", "cloudUpload", "autoDriftCompensation", "autoUpdate",
+                    "advancedDataProcessing", "gasAlarm", "soundPressure", "alarmForwarding", "averaging", "errorBars",
+                    "ppm_and_ppb", "nightModeFanNightOff", "nightModeWifiNightOff" ->
+                command instanceof OnOffType;
+            case "SSID", "timeServer", "roomType", "logLevel", "powerFreqSuppression" -> command instanceof StringType;
+            case "location" -> command instanceof PointType;
+            default -> false;
+        };
+        if (acceptedCommand) {
             JsonObject newobj = new JsonObject();
             JsonObject subjson = new JsonObject();
             switch (channelId) {
@@ -372,6 +388,7 @@ public class AirqHandler extends BaseThingHandler {
                 case "ppm_and_ppb":
                     newobj.addProperty("ppm&ppb", command == OnOffType.ON);
                     changeSettings(newobj);
+                    break;
                 case "nightModeFanNightOff":
                     subjson.addProperty("FanNightOff", command == OnOffType.ON);
                     newobj.add("NightMode", subjson);
