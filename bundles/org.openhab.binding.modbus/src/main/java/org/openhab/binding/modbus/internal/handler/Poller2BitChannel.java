@@ -49,7 +49,8 @@ public final class Poller2BitChannel {
         }
         try {
             boolean value = bits.getBit((int) index);
-            state.acceptSuccessfulState(contact ? OpenClosedType.from(value) : OnOffType.from(value));
+            state.acceptSuccessfulState(
+                    contact ? (value ? OpenClosedType.OPEN : OpenClosedType.CLOSED) : OnOffType.from(value));
         } catch (IndexOutOfBoundsException e) {
             state.acceptSuccessfulState(UnDefType.UNDEF);
         }

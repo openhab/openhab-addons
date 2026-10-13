@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Exposes a contiguous Modbus register range as uppercase hexadecimal bytes.
@@ -40,7 +39,7 @@ public final class Poller2RawChannel {
     public synchronized State acceptRegisters(ModbusRegisterArray registers, int pollStart) {
         long offset = (long) address - pollStart;
         if (offset < 0 || offset + length > registers.size()) {
-            state.acceptSuccessfulState(UnDefType.UNDEF);
+            state.acceptReadFailure();
             return state.currentState();
         }
         StringBuilder hex = new StringBuilder(length * 4);

@@ -69,8 +69,8 @@ public final class Poller2BitChannelConfiguration {
             return error("Channel '%s': Address %d is outside poll window %d..%d".formatted(channelId, parsedAddress,
                     pollStart, pollEnd));
         }
-        return new Poller2BitChannelConfiguration(new Poller2BitChannel(parsedAddress, PollerReadFailurePolicy.UNDEF, itemType),
-                null);
+        return new Poller2BitChannelConfiguration(
+                new Poller2BitChannel(parsedAddress, PollerReadFailurePolicy.UNDEF, itemType), null);
     }
 
     private static Poller2BitChannelConfiguration error(String message) {

@@ -48,6 +48,15 @@ public final class PollerRegisterCache {
         return Optional.of(new ModbusRegisterArray(result));
     }
 
+    synchronized Optional<ModbusRegisterArray> consumeRegisterBitOverlay(int address, int bit, boolean set) {
+        Optional<ModbusRegisterArray> overlay = overlayRegisterBit(address, bit, set);
+        if (overlay.isPresent()) {
+            // A second read-modify-write must wait for a new successful poll image.
+            registers = null;
+        }
+        return overlay;
+    }
+
     public synchronized Optional<ModbusRegisterArray> overlayRegisterBit(int address, int bit, boolean set) {
         if (bit < 0 || bit >= Short.SIZE) {
             return Optional.empty();

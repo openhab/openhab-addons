@@ -98,7 +98,7 @@ public final class Poller2WriteChannel {
                 return Optional.empty();
             }
             return ModbusBitUtilities.translateCommand2Boolean(transformed.get())
-                    .flatMap(value -> registerCache.overlayRegisterBit(address, bit, value))
+                    .flatMap(value -> registerCache.consumeRegisterBitOverlay(address, bit, value))
                     .map(registers -> new ModbusWriteRegisterRequestBlueprint(slaveId, address, registers,
                             effectiveWriteMultiple, maxTries));
         }

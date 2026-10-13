@@ -35,6 +35,15 @@ public class Poller2RawChannelTest {
     }
 
     @Test
+    public void keepsLastSuccessfulStateWhenResponseIsShort() {
+        Poller2RawChannel channel = new Poller2RawChannel(101, 2, PollerReadFailurePolicy.KEEP_LAST);
+        StringType expected = new StringType("1234ABCD");
+        assertEquals(expected, channel.acceptRegisters(new ModbusRegisterArray(0x0001, 0x1234, 0xABCD), 100));
+        assertEquals(expected, channel.acceptRegisters(new ModbusRegisterArray(0x0001, 0x1234), 100));
+        assertEquals(expected, channel.acceptRegisters(new ModbusRegisterArray(0x0001, 0x1234), 102));
+    }
+
+    @Test
     public void returnsUndefWhenTheConfiguredRangeIsOutsideThePollResult() {
         Poller2RawChannel channel = new Poller2RawChannel(101, 2, PollerReadFailurePolicy.UNDEF);
 

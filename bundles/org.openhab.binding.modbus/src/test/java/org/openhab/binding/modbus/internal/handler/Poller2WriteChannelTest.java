@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -97,7 +96,12 @@ public class Poller2WriteChannelTest {
 
         assertEquals(100, request.getReference());
         assertEquals(expected, request.getRegisters().getRegister(0));
-        assertEquals(Optional.of(new ModbusRegisterArray(original)), cache.read(100, 1));
+        assertTrue(cache.read(100, 1).isEmpty());
+        assertTrue(channel.requestFor(OnOffType.ON, 9, cache).isEmpty());
+        cache.acceptSuccessfulPoll(100, new ModbusRegisterArray(expected));
+        ModbusWriteRegisterRequestBlueprint next = assertInstanceOf(ModbusWriteRegisterRequestBlueprint.class,
+                channel.requestFor(OnOffType.OFF, 9, cache).orElseThrow());
+        assertEquals(expected & ~(1 << bit), next.getRegisters().getRegister(0));
     }
 
     @Test
