@@ -13,6 +13,8 @@
 package org.openhab.binding.miio.internal.miot;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -22,6 +24,10 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.miio.internal.basic.CommandParameterType;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
@@ -288,6 +294,32 @@ public class MiotParserTest {
     public void instanceWithoutVersionOrUrnIsIgnored() throws IOException {
         assertEquals("urn:broken:1", selectUrn(ODD_INSTANCES, "broken.vacuum.model", null));
         assertNull(selectUrn(ODD_INSTANCES, "broken.vacuum.model", 7));
+    }
+
+    @Test
+    public void interruptWhileReadingSpecListIsRestored() {
+        HttpClient httpClient = mock(HttpClient.class);
+        Request request = mock(Request.class);
+        Response response = mock(Response.class);
+        when(httpClient.newRequest(anyString())).thenReturn(request);
+        when(request.timeout(anyLong(), any())).thenReturn(request);
+        doAnswer(invocation -> {
+            invocation.<Response.Listener> getArgument(0).onHeaders(response);
+            return null;
+        }).when(request).send(any());
+        // the headers have arrived, the interrupt hits the read of the content that never arrives
+        when(response.getStatus()).thenAnswer(invocation -> {
+            Thread.currentThread().interrupt();
+            return HttpStatus.OK_200;
+        });
+
+        try {
+            assertThrows(MiotParseException.class, () -> MiotParser.parse("test.vacuum.model", httpClient));
+            assertTrue(Thread.currentThread().isInterrupted(), "the interrupt must not be lost");
+        } finally {
+            Thread.interrupted();
+        }
+        verify(request).abort(any());
     }
 
     private MiIoBasicChannel parseChannel(String channelId) throws MiotParseException {

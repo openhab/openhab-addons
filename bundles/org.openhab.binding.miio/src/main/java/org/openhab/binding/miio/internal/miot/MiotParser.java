@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -58,6 +59,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -114,9 +116,15 @@ public class MiotParser {
             JsonElement urnData = miotParser.getUrnData(urn, httpClient);
             miotParser.getDevice(urnData);
             return miotParser;
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | InterruptedIOException e) {
             Thread.currentThread().interrupt();
             throw new MiotParseException("Interrupted while downloading miot data", e);
+        } catch (JsonIOException e) {
+            // Gson wraps the exception of an interrupted read of the streamed list of specs
+            if (e.getCause() instanceof InterruptedIOException) {
+                Thread.currentThread().interrupt();
+            }
+            throw new MiotParseException("Error parsing miot data: " + e.getMessage(), e);
         } catch (Exception e) {
             throw new MiotParseException("Error parsing miot data: " + e.getMessage(), e);
         }
