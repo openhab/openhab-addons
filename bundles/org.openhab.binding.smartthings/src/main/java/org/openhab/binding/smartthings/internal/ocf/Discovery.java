@@ -46,6 +46,8 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public final class Discovery {
+    static final List<Integer> DEFAULT_CANDIDATE_PORTS = List.of(5683, 49154, 49153, 49152, 49155, 49156, 49157, 49158,
+            49159, 49160);
     private static final Logger LOGGER = LoggerFactory.getLogger(Discovery.class);
 
     public record Descriptor(String deviceId, String name, int securePort, Map<String, String> properties) {
@@ -62,11 +64,7 @@ public final class Discovery {
     }
 
     static Descriptor discover(InetAddress host, int timeoutSeconds) throws IOException {
-        Set<Integer> ports = new LinkedHashSet<>(List.of(5683, 49154, 49153));
-        for (int port = 49152; port <= 49160; port++) {
-            ports.add(port);
-        }
-        return discover(host, ports, timeoutSeconds);
+        return discover(host, new LinkedHashSet<>(DEFAULT_CANDIDATE_PORTS), timeoutSeconds);
     }
 
     static Descriptor discover(InetAddress host, int publicPort, int timeoutSeconds) throws IOException {
@@ -81,7 +79,7 @@ public final class Discovery {
     }
 
     public static Descriptor discoverSamsung(InetAddress host, int timeoutSeconds) throws IOException {
-        return discoverSamsung(host, new LinkedHashSet<>(List.of(5683, 49154, 49153)), timeoutSeconds);
+        return discoverSamsung(host, new LinkedHashSet<>(DEFAULT_CANDIDATE_PORTS), timeoutSeconds);
     }
 
     static Descriptor discoverSamsung(InetAddress host, Set<Integer> ports, int timeoutSeconds) throws IOException {

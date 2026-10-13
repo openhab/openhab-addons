@@ -52,6 +52,12 @@ class DiscoveryTest {
     }
 
     @Test
+    void defaultCandidatesIncludeAllPublicSamsungPorts() {
+        assertEquals(List.of(5683, 49154, 49153, 49152, 49155, 49156, 49157, 49158, 49159, 49160),
+                Discovery.DEFAULT_CANDIDATE_PORTS);
+    }
+
+    @Test
     void discoversLegacySamsungSecurePortFromCborLinks() throws Exception {
         byte[] resources = Cbor.encode(JsonParser.parseString("""
                 [{"di":"12345678-1234-5678-9abc-123456789abc","links":[
