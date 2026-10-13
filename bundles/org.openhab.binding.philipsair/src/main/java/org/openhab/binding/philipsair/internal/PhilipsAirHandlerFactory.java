@@ -16,7 +16,6 @@ import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -37,13 +36,13 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.philipsair", service = ThingHandlerFactory.class)
 public class PhilipsAirHandlerFactory extends BaseThingHandlerFactory {
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
     public PhilipsAirHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -55,7 +54,7 @@ public class PhilipsAirHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
-            return new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider);
+            return new PhilipsAirHandler(thing, httpClientFactory.getCommonHttpClient(), stateDescriptionProvider);
         }
         return null;
     }

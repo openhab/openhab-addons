@@ -45,6 +45,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -436,20 +437,21 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     /**
      * Sends the command to the device. No state is returned, as the device pushes the new state through the observe
      * relation. The command is not sent before the profile of the device is known, as the field names depend on it.
+     *
+     * @throws PhilipsAirAPIException if the command was not sent or the device did not accept it
      */
     @Override
-    public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value) {
+    public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value)
+            throws PhilipsAirAPIException {
         String command = gson.toJson(value);
         CoapProfile profile = this.profile;
         if (profile == null) {
-            logger.debug("Command '{}' not sent to {}, the profile is not known before the device reported its status",
-                    command, host);
-            return null;
+            throw new PhilipsAirAPIException("The profile is not known before the device reported its status");
         }
         JsonObject desired = profile.toDevice((JsonObject) gson.toJsonTree(value));
         if (desired.isEmpty()) {
             logger.warn("Command '{}' is not supported by the {} profile of {}, not sent", command, profile, host);
-            return null;
+            throw new PhilipsAirAPIException("Not supported by the " + profile + " profile");
         }
         try {
             synchronized (exchangeLock) {
@@ -464,9 +466,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                     return null;
                 }
                 if (synced.isEmpty()) {
-                    logger.debug("Counter sync with {} failed, command '{}' ({} profile) not sent", host, command,
-                            profile);
-                    return null;
+                    throw new PhilipsAirAPIException("Counter sync failed, command not sent");
                 }
                 long controlCounter = synced.getAsLong();
                 counter = controlCounter;
@@ -474,19 +474,29 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                 // the counter is 32 bits wide
                 String encrypted = encryptCommand(desired, (controlCounter + 1) & 0xFFFFFFFFL);
                 if (encrypted == null) {
-                    logger.debug("Could not encrypt command '{}'", command);
-                    return null;
+                    throw new PhilipsAirAPIException("Could not encrypt the command");
                 }
                 String response = post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encrypted);
-                if (!"{\"status\":\"success\"}".equals(response)) {
+                if (!isAccepted(response)) {
                     logger.warn("Command '{}' ({} profile) failed for {}, response: '{}'", command, profile, host,
                             response);
+                    throw new PhilipsAirAPIException("Command rejected by the device");
                 }
             }
-        } catch (JsonSyntaxException | ConnectorException | IOException e) {
-            logger.debug("Error sending command '{}': {}", command, e.getMessage());
+        } catch (ConnectorException | IOException e) {
+            throw new PhilipsAirAPIException(e.getMessage(), e);
         }
         return null;
+    }
+
+    private static boolean isAccepted(String response) {
+        try {
+            return JsonParser.parseString(response) instanceof JsonObject reply
+                    && reply.get("status") instanceof JsonPrimitive status && status.isString()
+                    && "success".equals(status.getAsString());
+        } catch (JsonSyntaxException e) {
+            return false;
+        }
     }
 
     private boolean isDisposed() {

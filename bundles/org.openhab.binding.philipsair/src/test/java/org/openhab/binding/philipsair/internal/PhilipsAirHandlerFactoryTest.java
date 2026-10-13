@@ -55,7 +55,6 @@ public class PhilipsAirHandlerFactoryTest {
 
     @BeforeEach
     public void setUp() {
-        when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
         factory = new PhilipsAirHandlerFactory(httpClientFactory, stateDescriptionProvider);
     }
 
@@ -77,6 +76,7 @@ public class PhilipsAirHandlerFactoryTest {
 
     @Test
     public void handlerIsCreatedForSupportedThingTypes() {
+        when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
         for (String thingTypeId : THING_TYPE_IDS) {
             Thing thing = thing(new ThingTypeUID(BINDING_ID, thingTypeId));
 

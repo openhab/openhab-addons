@@ -223,7 +223,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         stubConnectionConfig(connection);
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
-        when(connection.sendCommand(any(), any())).thenReturn(null);
+        when(connection.sendCommand(any(), any())).thenThrow(new PhilipsAirAPIException("rejected"));
         releaseConnection.countDown();
         handler.initialize();
         waitForAssert(() -> verify(connection).ensureConnected());
@@ -238,6 +238,27 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         // the last known state is published again
         verify(callback, timeout(10000)).stateUpdated(POWER_CHANNEL, OnOffType.ON);
         verify(callback, never()).stateUpdated(POWER_CHANNEL, UnDefType.NULL);
+        handler.dispose();
+    }
+
+    @Test
+    public void acceptedCommandOfAPushingDeviceDoesNotPublishTheStateBeforeTheCommand() throws Exception {
+        when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
+        stubStatus();
+        when(connection.sendCommand(any(), any())).thenReturn(null);
+        releaseConnection.countDown();
+        handler.initialize();
+        waitForAssert(() -> verify(connection).ensureConnected());
+        handler.handleCommand(POWER_CHANNEL, RefreshType.REFRESH);
+        verify(callback, timeout(10000)).stateUpdated(POWER_CHANNEL, OnOffType.ON);
+
+        clearInvocations(callback);
+        handler.handleCommand(POWER_CHANNEL, OnOffType.OFF);
+        // the commands are handled in order, so the first one is completely handled when the second one is sent
+        handler.handleCommand(POWER_CHANNEL, OnOffType.OFF);
+
+        verify(connection, timeout(10000).times(2)).sendCommand(any(), any());
+        verify(callback, never()).stateUpdated(any(), any());
         handler.dispose();
     }
 

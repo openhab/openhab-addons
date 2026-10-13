@@ -254,7 +254,7 @@ public enum CoapProfile {
 
     private static final List<String> UNICORN_MODELS = List.of("AC2210", "AC2220", "AC2221", "AC3210", "AC3220",
             "AC3221", "AC4220", "AC4221");
-    private static final String UNICORN_MINI_MODEL = "AC095";
+    private static final List<String> UNICORN_MINI_MODELS = List.of("AC0950", "AC0951");
 
     private final String id;
     private final Generation generation;
@@ -356,38 +356,43 @@ public enum CoapProfile {
         String model;
         switch (generation) {
             case GEN2:
-                model = upperCase(getString(reported, GEN2_MODEL));
-                if (model.startsWith("AC17")) {
+                model = baseModel(getString(reported, GEN2_MODEL));
+                if ("AC1715".equals(model)) {
                     return AC1715;
-                } else if (model.startsWith("AC08")) {
+                } else if ("AC0850".equals(model)) {
                     return AC0850;
                 }
                 return BASIC_GEN2;
             case GEN3:
-                model = upperCase(getString(reported, GEN3_MODEL));
+                model = baseModel(getString(reported, GEN3_MODEL));
                 String range = getString(reported, GEN3_RANGE);
                 Number capabilities = getNumber(reported, GEN3_CAPABILITIES);
                 boolean unicorn = RANGE_UNICORN.equalsIgnoreCase(range);
-                if (model.startsWith(UNICORN_MINI_MODEL)
+                if (UNICORN_MINI_MODELS.contains(model)
                         || unicorn && capabilities != null && capabilities.intValue() == CAPABILITIES_UNICORN_MINI) {
                     return AC0950;
-                } else if (unicorn || UNICORN_MODELS.stream().anyMatch(model::startsWith)) {
+                } else if (unicorn || UNICORN_MODELS.contains(model)) {
                     return UNICORN;
-                } else if (RANGE_CARNATION.equalsIgnoreCase(range) || model.startsWith("AC3737")) {
+                } else if (RANGE_CARNATION.equalsIgnoreCase(range) || "AC3737".equals(model)) {
                     return AC3737;
                 }
                 return BASIC_GEN3;
             default:
-                model = upperCase(getString(reported, CLASSIC_MODEL));
-                if (model.startsWith("AC2939") || RANGE_MARS_LE.equalsIgnoreCase(getString(reported, CLASSIC_RANGE))) {
+                model = baseModel(getString(reported, CLASSIC_MODEL));
+                if ("AC2939".equals(model) || RANGE_MARS_LE.equalsIgnoreCase(getString(reported, CLASSIC_RANGE))) {
                     return AC2939;
                 }
                 return CLASSIC;
         }
     }
 
-    private static String upperCase(@Nullable String value) {
-        return value != null ? value.toUpperCase(Locale.ROOT) : "";
+    /**
+     * @return the model without its region suffix, e.g. AC1715 for ac1715/10
+     */
+    private static String baseModel(@Nullable String value) {
+        String model = value != null ? value.toUpperCase(Locale.ROOT) : "";
+        int suffixIndex = model.indexOf('/');
+        return suffixIndex < 0 ? model : model.substring(0, suffixIndex);
     }
 
     /**

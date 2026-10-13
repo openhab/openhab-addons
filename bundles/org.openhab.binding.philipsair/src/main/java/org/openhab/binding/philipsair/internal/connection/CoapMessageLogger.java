@@ -39,6 +39,9 @@ public class CoapMessageLogger implements MessageInterceptor {
 
     @Override
     public void receiveResponse(@Nullable Response response) {
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
         logger.trace("<<<<< COAP RESPONSE RECEIVED <<<<<");
         if (response == null) {
             logger.trace("Response is null");
@@ -58,6 +61,9 @@ public class CoapMessageLogger implements MessageInterceptor {
 
     @Override
     public void receiveEmptyMessage(@Nullable EmptyMessage message) {
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
         logger.trace("<<<<< COAP EMPTY MESSAGE RECEIVED <<<<<");
         if (message == null) {
             logger.trace("Message is null");
@@ -71,6 +77,9 @@ public class CoapMessageLogger implements MessageInterceptor {
 
     @Override
     public void sendRequest(@Nullable Request request) {
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
         if (request == null) {
             logger.trace("Request is null");
             return;
@@ -91,7 +100,9 @@ public class CoapMessageLogger implements MessageInterceptor {
 
     @Override
     public void sendResponse(@Nullable Response response) {
-        // This is normally server-side only, but let's log just in case
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
         if (response == null) {
             logger.trace("Response is null");
             return;
@@ -102,6 +113,9 @@ public class CoapMessageLogger implements MessageInterceptor {
 
     @Override
     public void sendEmptyMessage(@Nullable EmptyMessage message) {
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
         if (message == null) {
             logger.trace("Message is null");
             return;

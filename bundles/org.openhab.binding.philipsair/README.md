@@ -76,7 +76,7 @@ A profile only applies to a device with the field names it is for, otherwise the
 | `pre-filter-life`, `hepa-filter-life`      | read only                       | read only                                            | read only            | read only        | read only                        |
 | all other channels                         | not supported, they stay `NULL` | not supported                                        | not supported        | not supported    | not supported                    |
 
-- <sup>1</sup> The older field names (`D03-xx`) only support reading the child lock.
+- <sup>1</sup> With the older field names (`D03-xx`) the `basic` profile only reads the child lock; the `ac1715` and `ac0850` profiles also set it.
 - <sup>2</sup> Only the newer field names (`D03xxx`).
 
 Notes on the profiles:

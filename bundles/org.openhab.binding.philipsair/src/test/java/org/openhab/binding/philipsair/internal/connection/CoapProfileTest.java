@@ -98,6 +98,7 @@ public class CoapProfileTest {
                     model);
         }
         assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC4228/10\"}")));
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC32100/10\"}")));
     }
 
     @Test
@@ -106,6 +107,7 @@ public class CoapProfileTest {
         assertEquals(CoapProfile.AC2939, CoapProfile.resolve("auto", parse("{\"modelid\":\"ac2939/10\"}")));
         assertEquals(CoapProfile.AC2939, CoapProfile.resolve("auto", parse("{\"range\":\"MarsLE\"}")));
         assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("auto", parse("{\"modelid\":\"AC2889/10\"}")));
+        assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("auto", parse("{\"modelid\":\"AC29390/10\"}")));
         assertEquals(CoapProfile.AC2939, CoapProfile.resolve("ac2939", parse(CLASSIC_STATUS)));
         assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("classic", parse(AC2939_STATUS)));
     }
@@ -124,6 +126,7 @@ public class CoapProfileTest {
         assertEquals(CoapProfile.AC0950, CoapProfile.resolve("auto", parse(AC0950_STATUS)));
         assertEquals(CoapProfile.AC0950, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC0950/10\"}")));
         assertEquals(CoapProfile.AC0950, CoapProfile.resolve("auto", parse("{\"D01S05\":\"ac0951/10\"}")));
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC0959/10\"}")));
         assertEquals(CoapProfile.AC0950, CoapProfile.resolve("auto", parse("{\"D01S04\":\"Unicorn\",\"D0110C\":18}")));
         // the capabilities only tell the variant of the Unicorn range
         assertEquals(CoapProfile.BASIC_GEN3,
@@ -220,6 +223,15 @@ public class CoapProfileTest {
         assertEquals(CoapProfile.AC1715, CoapProfile.resolve("auto", parse("{\"D01-05\":\"AC1715/10\"}")));
         assertEquals(CoapProfile.AC0850, CoapProfile.resolve("auto", parse("{\"D01-05\":\"AC0850/11\"}")));
         assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("auto", parse("{\"D01-05\":\"AC9999/10\"}")));
+    }
+
+    @Test
+    public void modelProfilesAreOnlyDetectedForTheirOwnModel() {
+        assertEquals(CoapProfile.AC1715, CoapProfile.resolve("auto", parse("{\"D01-05\":\"ac1715\"}")));
+        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("auto", parse("{\"D01-05\":\"AC1750/10\"}")));
+        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("auto", parse("{\"D01-05\":\"AC0860\"}")));
+        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("auto", parse("{\"D01-05\":\"AC17150/10\"}")));
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC37370/10\"}")));
         assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("auto", parse("{\"D01-03\":\"Room\"}")));
     }
 

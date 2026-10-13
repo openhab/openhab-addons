@@ -542,6 +542,19 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
+    public void unknownSwitchValuesAreNull() {
+        PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
+
+        for (String value : List.of("", "2", "on", "true")) {
+            PhilipsAirPurifierDataDTO data = GSON.fromJson("{\"pwr\":\"" + value + "\",\"uil\":\"" + value + "\"}",
+                    PhilipsAirPurifierDataDTO.class);
+            assertNull(handler.getValue(new ChannelUID(THING_UID, "controls#power"), data, null, null), value);
+            assertNull(handler.getValue(new ChannelUID(THING_UID, "controls-ui#button-light"), data, null, null),
+                    value);
+        }
+    }
+
+    @Test
     public void missingValuesAreNull() {
         PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
         PhilipsAirPurifierDataDTO data = GSON.fromJson("{}", PhilipsAirPurifierDataDTO.class);

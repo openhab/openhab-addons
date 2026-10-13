@@ -202,9 +202,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
             Command command, PhilipsAirPurifierWritableDataDTO commandData) {
         logger.debug("Sending {} as {}", channelUID.getId(), command);
         PhilipsAirPurifierDataDTO data = null;
+        boolean failed = false;
         try {
             data = connection.sendCommand(channelUID.getIdWithoutGroup(), commandData);
         } catch (PhilipsAirAPIException e) {
+            failed = true;
             logger.debug("Sending {} to {} failed: {}", command, channelUID, e.getMessage());
         }
         synchronized (updateLock) {
@@ -214,7 +216,10 @@ public class PhilipsAirHandler extends BaseThingHandler {
             if (data != null) {
                 currentData = data;
             }
-            updateChannels();
+            // a pushing device reports the new state itself, the cached state is the one before the command
+            if (failed || data != null || !connection.isPushingStatus()) {
+                updateChannels();
+            }
         }
     }
 
@@ -960,7 +965,10 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     private static @Nullable OnOffType toOnOff(@Nullable String value) {
-        return value != null ? OnOffType.from(!"0".equals(value)) : null;
+        if ("1".equals(value)) {
+            return OnOffType.ON;
+        }
+        return "0".equals(value) ? OnOffType.OFF : null;
     }
 
     private static @Nullable OnOffType toOnOff(@Nullable Boolean value) {

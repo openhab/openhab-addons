@@ -275,7 +275,7 @@ public class PhilipsAirCoapAPIConnectionTest {
     }
 
     @Test
-    public void commandIsSentInTheInitialProfileBeforeAnyStatus() {
+    public void commandIsSentInTheInitialProfileBeforeAnyStatus() throws PhilipsAirAPIException {
         FakeDevice device = new FakeDevice(CoapProfile.BASIC_GEN3);
         try {
             assertEquals(CoapProfile.BASIC_GEN3, device.getDeviceProfile());
@@ -298,12 +298,12 @@ public class PhilipsAirCoapAPIConnectionTest {
     }
 
     @Test
-    public void commandWaitsForTheFirstStatusWithoutInitialProfile() {
+    public void commandWaitsForTheFirstStatusWithoutInitialProfile() throws PhilipsAirAPIException {
         FakeDevice device = new FakeDevice(null);
         try {
             assertNull(device.getDeviceProfile());
 
-            device.sendCommand("power", powerOn());
+            assertThrows(PhilipsAirAPIException.class, () -> device.sendCommand("power", powerOn()));
 
             assertTrue(device.posts.isEmpty());
 
@@ -340,7 +340,7 @@ public class PhilipsAirCoapAPIConnectionTest {
             PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
             command.setMode("P");
 
-            device.sendCommand("mode", command);
+            assertThrows(PhilipsAirAPIException.class, () -> device.sendCommand("mode", command));
 
             assertTrue(device.posts.isEmpty());
         } finally {
@@ -355,7 +355,7 @@ public class PhilipsAirCoapAPIConnectionTest {
             try {
                 device.syncAnswer = answer;
 
-                device.sendCommand("power", powerOn());
+                assertThrows(PhilipsAirAPIException.class, () -> device.sendCommand("power", powerOn()), answer);
 
                 assertEquals(1, device.posts("/sys/dev/sync").size());
                 assertTrue(device.posts("/sys/dev/control").isEmpty());
@@ -367,13 +367,43 @@ public class PhilipsAirCoapAPIConnectionTest {
 
     @Test
     public void rejectedCommandIsSentOnce() {
+        for (String answer : new String[] { "{\"status\":\"failed\"}", "{}", "{\"status\":1}", "success", "{", "" }) {
+            FakeDevice device = new FakeDevice(CoapProfile.BASIC_GEN3);
+            try {
+                device.controlAnswer = answer;
+
+                assertThrows(PhilipsAirAPIException.class, () -> device.sendCommand("power", powerOn()), answer);
+
+                assertEquals(1, device.posts("/sys/dev/control").size());
+            } finally {
+                device.dispose();
+            }
+        }
+    }
+
+    @Test
+    public void acceptedReplyDoesNotDependOnItsFormatting() {
+        for (String answer : new String[] { "{ \"status\" : \"success\" }", "{\"status\":\"success\",\"id\":3}" }) {
+            FakeDevice device = new FakeDevice(CoapProfile.BASIC_GEN3);
+            try {
+                device.controlAnswer = answer;
+
+                assertDoesNotThrow(() -> device.sendCommand("power", powerOn()), answer);
+            } finally {
+                device.dispose();
+            }
+        }
+    }
+
+    @Test
+    public void commandFailsWhenTheDeviceCannotBeReached() {
         FakeDevice device = new FakeDevice(CoapProfile.BASIC_GEN3);
         try {
-            device.controlAnswer = "{\"status\":\"failed\"}";
+            device.syncFailure = new IOException("unreachable");
 
-            device.sendCommand("power", powerOn());
+            assertThrows(PhilipsAirAPIException.class, () -> device.sendCommand("power", powerOn()));
 
-            assertEquals(1, device.posts("/sys/dev/control").size());
+            assertTrue(device.posts("/sys/dev/control").isEmpty());
         } finally {
             device.dispose();
         }
@@ -630,7 +660,7 @@ public class PhilipsAirCoapAPIConnectionTest {
     }
 
     @Test
-    public void disposedConnectionDoesNotContactTheDevice() {
+    public void disposedConnectionDoesNotContactTheDevice() throws PhilipsAirAPIException {
         FakeDevice device = device(CoapProfile.BASIC_GEN3);
         device.dispose();
 
@@ -643,7 +673,7 @@ public class PhilipsAirCoapAPIConnectionTest {
     }
 
     @Test
-    public void noControlPostIsSentWhenTheConnectionIsDisposedDuringTheCounterSync() {
+    public void noControlPostIsSentWhenTheConnectionIsDisposedDuringTheCounterSync() throws PhilipsAirAPIException {
         // the device answers the sync, so only the dispose keeps the command from being posted
         FakeDevice device = device(CoapProfile.BASIC_GEN3);
         device.onSync = device::dispose;
@@ -655,7 +685,7 @@ public class PhilipsAirCoapAPIConnectionTest {
     }
 
     @Test
-    public void counterOfTheDeviceWrapsAroundIn32Bits() {
+    public void counterOfTheDeviceWrapsAroundIn32Bits() throws PhilipsAirAPIException {
         FakeDevice device = device(CoapProfile.BASIC_GEN3);
         device.syncAnswer = "FFFFFFFF";
 
