@@ -83,6 +83,26 @@ class ModbusMigrationWorkflowTest {
                 applier.operations);
     }
 
+    @Test
+    void failedManagedRollbackCanBeRetried() {
+        org.openhab.core.thing.ManagedThingProvider provider = org.mockito.Mockito
+                .mock(org.openhab.core.thing.ManagedThingProvider.class);
+        org.openhab.core.thing.link.ItemChannelLinkRegistry links = org.mockito.Mockito
+                .mock(org.openhab.core.thing.link.ItemChannelLinkRegistry.class);
+        org.openhab.core.thing.ThingUID target = new org.openhab.core.thing.ThingUID("modbus:poller2:tcp:plant");
+        org.mockito.Mockito.when(provider.remove(target)).thenThrow(new IllegalStateException("removal failed"))
+                .thenReturn(null);
+        ModbusMigrationWorkflow workflow = new ModbusMigrationWorkflow(new ModbusMigrationPlanner(),
+                new ManagedModbusMigrationApplier(provider, links));
+        MigrationPreview preview = workflow.preview(List.of(poller()), List.of(data()));
+        workflow.apply(preview.identity(), List.of(poller()), List.of(data()));
+
+        assertThrows(IllegalStateException.class, () -> workflow.rollback(preview.identity()));
+        workflow.rollback(preview.identity());
+        org.mockito.Mockito.verify(provider, org.mockito.Mockito.times(2)).remove(target);
+        assertThrows(IllegalStateException.class, () -> workflow.rollback(preview.identity()));
+    }
+
     private static LegacyPoller poller() {
         return new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",
                 Map.of("start", 100, "length", 2, "type", "holding"));

@@ -28,7 +28,8 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 class ManagedModbusMigrationAdapterTest {
 
     @org.junit.jupiter.params.ParameterizedTest
-    @org.junit.jupiter.params.provider.ValueSource(strings = { "Number", "Switch", "Contact", "DateTime", "Dimmer", "String", "Rollershutter" })
+    @org.junit.jupiter.params.provider.ValueSource(strings = { "Number", "Switch", "Contact", "DateTime", "Dimmer",
+            "String", "Rollershutter" })
     void snapshotPreservesSourceChannelItemType(String itemType) {
         ThingUID pollerUid = new ThingUID("modbus:poller:tcp:plant");
         Thing data = org.openhab.core.thing.binding.builder.ThingBuilder
@@ -36,7 +37,8 @@ class ManagedModbusMigrationAdapterTest {
                 .withBridge(pollerUid)
                 .withChannel(org.openhab.core.thing.binding.builder.ChannelBuilder
                         .create(new org.openhab.core.thing.ChannelUID("modbus:data:tcp:plant:value:typed"))
-                        .withAcceptedItemType(itemType).build()).build();
+                        .withAcceptedItemType(itemType).build())
+                .build();
         ThingRegistry registry = mock(ThingRegistry.class);
         when(registry.getAll()).thenReturn(List.of(data));
         org.openhab.core.thing.ManagedThingProvider provider = mock(org.openhab.core.thing.ManagedThingProvider.class);
@@ -48,8 +50,36 @@ class ManagedModbusMigrationAdapterTest {
         when(links.getAll()).thenReturn(List.of(new org.openhab.core.thing.link.ItemChannelLink("Value",
                 new org.openhab.core.thing.ChannelUID("modbus:data:tcp:plant:value:typed"))));
 
-        assertEquals(itemType, new ManagedModbusMigrationAdapter(registry, links, provider)
-                .snapshot().data().getFirst().links().getFirst().itemType());
+        assertEquals(itemType, new ManagedModbusMigrationAdapter(registry, links, provider).snapshot().data().getFirst()
+                .links().getFirst().itemType());
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = { "tcp", "serial" })
+    void snapshotReportsEndpointWriteOnlyChildrenAsManualWork(String endpointType) {
+        ThingUID endpointUid = new ThingUID("modbus:" + endpointType + ":plant");
+        Thing endpoint = org.openhab.core.thing.binding.builder.BridgeBuilder
+                .create(new ThingTypeUID("modbus", endpointType), endpointUid).build();
+        Thing data = org.openhab.core.thing.binding.builder.ThingBuilder
+                .create(new ThingTypeUID("modbus", "data"), new ThingUID("modbus:data:plant:writer"))
+                .withBridge(endpointUid)
+                .withConfiguration(new org.openhab.core.config.core.Configuration(
+                        java.util.Map.of("writeStart", "100", "writeType", "holding", "writeValueType", "int16")))
+                .build();
+        ThingRegistry registry = mock(ThingRegistry.class);
+        when(registry.getAll()).thenReturn(List.of(data, endpoint));
+        when(registry.get(endpointUid)).thenReturn(endpoint);
+        org.openhab.core.thing.ManagedThingProvider provider = mock(org.openhab.core.thing.ManagedThingProvider.class);
+        when(provider.get(data.getUID())).thenReturn(data);
+        ItemChannelLinkRegistry links = mock(ItemChannelLinkRegistry.class);
+        when(links.getAll()).thenReturn(List.of());
+
+        ManagedModbusMigrationAdapter.Snapshot snapshot = new ManagedModbusMigrationAdapter(registry, links, provider)
+                .snapshot();
+
+        assertEquals(List.of(), snapshot.data());
+        assertEquals(List.of(new ManualMigrationWork(data.getUID().toString(),
+                "legacy data parent is not a poller; writes require manual migration")), snapshot.manualWork());
     }
 
     @Test

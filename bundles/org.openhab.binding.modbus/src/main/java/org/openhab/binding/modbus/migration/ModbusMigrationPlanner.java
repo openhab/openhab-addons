@@ -83,10 +83,12 @@ public final class ModbusMigrationPlanner {
 
     private static Optional<String> unsupportedReason(LegacyData data) {
         if (data.links().stream().map(LegacyLink::channelUid).distinct().count() > 1) {
-            return Optional.of("distinct source channels require manual migration; channel contracts cannot be collapsed");
+            return Optional
+                    .of("distinct source channels require manual migration; channel contracts cannot be collapsed");
         }
         if (data.links().stream().anyMatch(link -> !"Number".equals(link.itemType()))) {
-            return Optional.of("source channel type is unknown or its conversion is not proven compatible; requires manual migration");
+            return Optional.of(
+                    "source channel type is unknown or its conversion is not proven compatible; requires manual migration");
         }
         Map<String, Object> configuration = data.configuration();
         Object writeTransform = configuration.get("writeTransform");

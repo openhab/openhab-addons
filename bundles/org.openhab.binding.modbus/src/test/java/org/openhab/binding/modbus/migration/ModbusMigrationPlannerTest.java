@@ -26,7 +26,8 @@ class ModbusMigrationPlannerTest {
     private final ModbusMigrationPlanner planner = new ModbusMigrationPlanner();
 
     @org.junit.jupiter.params.ParameterizedTest
-    @org.junit.jupiter.params.provider.ValueSource(strings = { "", "Switch", "Contact", "DateTime", "Dimmer", "String", "Rollershutter" })
+    @org.junit.jupiter.params.provider.ValueSource(strings = { "", "Switch", "Contact", "DateTime", "Dimmer", "String",
+            "Rollershutter" })
     void previewRefusesUnprovenTypedChannelConversions(String itemType) {
         LegacyPoller poller = new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",
                 Map.of("start", 100, "length", 2, "type", "holding"));

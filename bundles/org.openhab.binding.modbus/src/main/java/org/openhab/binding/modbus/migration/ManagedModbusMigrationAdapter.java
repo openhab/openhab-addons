@@ -62,6 +62,9 @@ public final class ManagedModbusMigrationAdapter {
                     manual.add(new ManualMigrationWork(thing.getUID().toString(), "legacy Thing is not managed"));
                 } else if (thing.getBridgeUID() == null) {
                     manual.add(new ManualMigrationWork(thing.getUID().toString(), "legacy data Thing has no poller"));
+                } else if (!thing.getBridgeUID().toString().startsWith("modbus:poller:")) {
+                    manual.add(new ManualMigrationWork(thing.getUID().toString(),
+                            "legacy data parent is not a poller; writes require manual migration"));
                 } else {
                     List<LegacyLink> links = links(thing);
                     data.add(new LegacyData(thing.getUID().toString(), thing.getBridgeUID().toString(),

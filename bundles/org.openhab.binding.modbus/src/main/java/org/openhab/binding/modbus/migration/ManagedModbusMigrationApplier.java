@@ -64,7 +64,11 @@ public final class ManagedModbusMigrationApplier implements MigrationApplier {
                 }
             }
         } catch (RuntimeException e) {
-            remove(createdLinks, createdThings);
+            try {
+                remove(createdLinks, createdThings);
+            } catch (RuntimeException compensationFailure) {
+                e.addSuppressed(compensationFailure);
+            }
             throw e;
         }
     }
@@ -84,19 +88,26 @@ public final class ManagedModbusMigrationApplier implements MigrationApplier {
     }
 
     private void remove(List<ItemChannelLink> links, List<ThingUID> things) {
+        List<RuntimeException> failures = new ArrayList<>();
         for (ItemChannelLink link : links) {
             try {
                 linkRegistry.remove(link.getUID());
             } catch (RuntimeException e) {
-                // Continue compensation; callers retain the error that caused rollback.
+                failures.add(e);
             }
         }
         for (ThingUID thing : things.reversed()) {
             try {
                 thingProvider.remove(thing);
             } catch (RuntimeException e) {
-                // Continue compensation; callers retain the error that caused rollback.
+                failures.add(e);
             }
+        }
+        if (!failures.isEmpty()) {
+            IllegalStateException failure = new IllegalStateException(
+                    "Migration target removal failed; retry rollback");
+            failures.forEach(failure::addSuppressed);
+            throw failure;
         }
     }
 
