@@ -15,6 +15,28 @@
   <name>openHAB Add-ons :: Integration Tests :: Modbus Legacy Binding Tests</name>
 
   <dependencies>
+    <!-- Make resolver-index artifacts Maven prerequisites for this Bnd test. -->
+    <dependency>
+      <groupId>org.openhab.addons.bom</groupId>
+      <artifactId>org.openhab.addons.bom.runtime-index</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bom</groupId>
+      <artifactId>org.openhab.addons.bom.test-index</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bom</groupId>
+      <artifactId>org.openhab.addons.bom.openhab-core-index</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.modbus</artifactId>
