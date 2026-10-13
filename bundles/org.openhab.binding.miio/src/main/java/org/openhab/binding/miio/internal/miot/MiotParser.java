@@ -81,6 +81,7 @@ public class MiotParser {
     private static final boolean SKIP_SIID_1 = true;
     private static final String VALUE_TOKEN = "$value$";
     private static final Pattern LEADING_SPACES = Pattern.compile("(?m)^((?: {2})+)");
+    private static final Pattern WHITESPACE = Pattern.compile("[\\s\\p{Z}\\p{Cc}]+");
     private static final Pattern TRAILING_ZERO = Pattern.compile("(\\d)\\.0(,?\n)");
 
     private String model;
@@ -366,7 +367,7 @@ public class MiotParser {
             for (OptionsValueDescriptionsListDTO miotOption : property.valueList) {
                 // miIoBasicChannel.setValueList(property.valueList);
                 OptionsValueListDTO basicOption = new OptionsValueListDTO();
-                basicOption.setLabel(miotOption.getDescription());
+                basicOption.setLabel(cleanText(miotOption.getDescription()));
                 basicOption.setValue(String.valueOf(miotOption.value));
                 channeloptions.add(basicOption);
             }
@@ -378,7 +379,7 @@ public class MiotParser {
             mapping.append("Value mapping [");
 
             for (OptionsValueDescriptionsListDTO valueMap : property.valueList) {
-                mapping.append(String.format("\"%d\"=\"%s\",", valueMap.value, valueMap.description));
+                mapping.append(String.format("\"%d\"=\"%s\",", valueMap.value, cleanText(valueMap.getDescription())));
             }
             mapping.deleteCharAt(mapping.length() - 1);
             mapping.append("]");
@@ -483,8 +484,17 @@ public class MiotParser {
     }
 
     private static String displayName(@Nullable String description, String id) {
-        return description != null && !description.isBlank() && isPureAscii(description) ? captializedName(description)
-                : captializedName(id);
+        String text = description == null ? "" : cleanText(description);
+        return !text.isEmpty() && isPureAscii(text) ? captializedName(text) : captializedName(id);
+    }
+
+    /**
+     * Spec descriptions are display texts that end up in labels, the readme and translation files. They can have
+     * leading, trailing or repeated spaces, so every run of whitespace or control characters (also line breaks and
+     * non-breaking spaces) becomes one space.
+     */
+    private static String cleanText(String text) {
+        return WHITESPACE.matcher(text).replaceAll(" ").strip();
     }
 
     private MiIoBasicChannel actionChannel(Map<ActionDTO, ServiceDTO> deviceActions) {

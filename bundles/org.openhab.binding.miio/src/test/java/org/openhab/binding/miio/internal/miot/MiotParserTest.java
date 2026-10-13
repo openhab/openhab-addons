@@ -153,6 +153,30 @@ public class MiotParserTest {
             }
             """;
 
+    private static final String WHITESPACE_SPEC = """
+            {
+              "type": "urn:miot-spec-v2:device:vacuum:0000A006:test-model:1",
+              "description": "Robot Cleaner",
+              "services": [
+                {
+                  "iid": 2,
+                  "type": "urn:miot-spec-v2:service:vacuum:00007810:test-model:1",
+                  "description": " Robot\\n Cleaner ",
+                  "properties": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:property:status:00000007:test-model:1",
+                      "description": "\\tDevice\\u00a0 Status\\r\\n", "format": "uint8", "access": ["read", "notify"],
+                      "value-list": [ { "value": 10, "description": " In The\\n Dry " },
+                                      { "value": 11, "description": "In\\tThe  Dust\\u00a0" } ] }
+                  ],
+                  "actions": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:action:set-status:00002801:test-model:1",
+                      "description": "  Set \\u3000Status ", "in": [1] }
+                  ]
+                }
+              ]
+            }
+            """;
+
     private static final String DOUBLE_SPACE_SPEC = """
             {
               "type": "urn:miot-spec-v2:device:vacuum:0000A006:test-model:1",
@@ -476,9 +500,29 @@ public class MiotParserTest {
     }
 
     @Test
+    public void whitespaceInDescriptionsIsNormalized() throws MiotParseException {
+        List<MiIoBasicChannel> channels = new MiotParser("test.vacuum.model")
+                .getDevice(JsonParser.parseString(WHITESPACE_SPEC)).getDevice().getChannels();
+
+        assertEquals(List.of("Robot Cleaner - Device Status", "Robot Cleaner - Set Status"),
+                channels.stream().map(MiIoBasicChannel::getFriendlyName).toList());
+        for (MiIoBasicChannel channel : channels) {
+            StateDescriptionDTO stateDescription = channel.getStateDescription();
+            assertNotNull(stateDescription);
+            assertEquals(List.of("In The Dry", "In The Dust"), Objects.requireNonNull(stateDescription.getOptions())
+                    .stream().map(OptionsValueListDTO::getLabel).toList());
+            assertEquals("Value mapping [\"10\"=\"In The Dry\",\"11\"=\"In The Dust\"]", channel.getReadmeComment());
+        }
+    }
+
+    @Test
     public void toJsonKeepsDoubleSpacesInTexts() throws MiotParseException {
         MiIoBasicDevice device = new MiotParser("test.vacuum.model")
                 .getDevice(JsonParser.parseString(DOUBLE_SPACE_SPEC));
+        // a text edited by hand can have a double space, which is not indentation
+        Objects.requireNonNull(
+                Objects.requireNonNull(device.getDevice().getChannels().get(0).getStateDescription()).getOptions())
+                .get(1).setLabel("In The  Dust");
         String json = MiotParser.toJson(device);
 
         assertTrue(json.contains("\"In The  Dust\""), "double space in a text must be preserved");
