@@ -110,6 +110,21 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
                 } else {
                     logger.warn("Command {} not supported for channel {}", command, channelUID);
                 }
+            } else if (CHANNEL_WORKAREA_CUTTING_HEIGHT_CM.equals(channelUID.getId())) {
+                @Nullable
+                Double requestedCuttingHeightCm = null;
+                if (command instanceof QuantityType<?> quantity) {
+                    QuantityType<?> heightCm = quantity.toUnit(MetricPrefix.CENTI(SIUnits.METRE));
+                    if (heightCm != null) {
+                        requestedCuttingHeightCm = heightCm.doubleValue();
+                    }
+                } else if (command instanceof DecimalType number) {
+                    requestedCuttingHeightCm = number.doubleValue();
+                }
+                Byte rawCuttingHeight = mowerHandler.calculateRawCuttingHeightForWorkArea(requestedCuttingHeightCm);
+                if (rawCuttingHeight != null) {
+                    mowerHandler.sendAutomowerWorkAreaCuttingHeight(areaId, rawCuttingHeight);
+                }
             } else if (CHANNEL_WORKAREA_CUTTING_HEIGHT.equals(channelUID.getId())) {
                 if (command instanceof QuantityType cmd) {
                     cmd = cmd.toUnit("%");
@@ -262,7 +277,9 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         }
 
         // remove channels that are now longer required and add new once
-        updateThing(editThing().withChannels(channelAdd).build());
+        if (!channelAdd.equals(thing.getChannels())) {
+            updateThing(editThing().withChannels(channelAdd).build());
+        }
     }
 
     public void updateChannels(WorkArea workArea, List<CalendarTask> calendarTasks, AutomowerHandler mowerHandler) {

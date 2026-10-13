@@ -258,6 +258,12 @@ public class AutomowerHandler extends BaseThingHandler {
     @Nullable
     static Byte calculateRawCuttingHeightForConfiguredRange(@Nullable Number cuttingHeightCm, @Nullable Double minCm,
             @Nullable Double maxCm) {
+        return calculateRawCuttingHeight(cuttingHeightCm, minCm, maxCm, 1, 9);
+    }
+
+    @Nullable
+    private static Byte calculateRawCuttingHeight(@Nullable Number cuttingHeightCm, @Nullable Double minCm,
+            @Nullable Double maxCm, int minRawValue, int maxRawValue) {
         if (cuttingHeightCm == null || minCm == null || maxCm == null || !Double.isFinite(minCm)
                 || !Double.isFinite(maxCm) || minCm >= maxCm) {
             return null;
@@ -268,7 +274,13 @@ public class AutomowerHandler extends BaseThingHandler {
             return null;
         }
 
-        return (byte) Math.round(1.0 + 8.0 * ((requestedHeight - minCm) / (maxCm - minCm)));
+        return (byte) Math
+                .round(minRawValue + (maxRawValue - minRawValue) * ((requestedHeight - minCm) / (maxCm - minCm)));
+    }
+
+    @Nullable
+    Byte calculateRawCuttingHeightForWorkArea(@Nullable Number cuttingHeightCm) {
+        return calculateRawCuttingHeight(cuttingHeightCm, getMinCuttingHeightCm(), getMaxCuttingHeightCm(), 0, 100);
     }
 
     @Nullable
@@ -1249,7 +1261,9 @@ public class AutomowerHandler extends BaseThingHandler {
         }
 
         // remove channels that are now longer required and add new once
-        updateThing(editThing().withChannels(channelAdd).build());
+        if (!channelAdd.equals(thing.getChannels())) {
+            updateThing(editThing().withChannels(channelAdd).build());
+        }
     }
 
     private void updateStatusChannels(Mower mower, Capabilities capabilities) {
@@ -1537,7 +1551,9 @@ public class AutomowerHandler extends BaseThingHandler {
             properties.put(AutomowerBindingConstants.AUTOMOWER_MAX_CUTTING_HEIGHT_CM,
                     maxCuttingHeightCm != null ? String.valueOf(maxCuttingHeightCm) : "N/A");
 
-            updateProperties(properties);
+            if (!properties.equals(getThing().getProperties())) {
+                updateProperties(properties);
+            }
         }
     }
 
