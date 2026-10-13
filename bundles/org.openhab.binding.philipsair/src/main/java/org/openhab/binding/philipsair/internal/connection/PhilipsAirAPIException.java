@@ -27,37 +27,18 @@ public class PhilipsAirAPIException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructs a new exception with null as its detail message.
-     */
     public PhilipsAirAPIException() {
         super();
     }
 
-    /**
-     * Constructs a new exception with the specified detail message.
-     *
-     * @param message Detail message
-     */
     public PhilipsAirAPIException(String message) {
         super(message);
     }
 
-    /**
-     * Constructs a new exception with the specified cause.
-     *
-     * @param cause The cause
-     */
     public PhilipsAirAPIException(Throwable cause) {
         super(cause);
     }
 
-    /**
-     * Constructs a new exception with the specified detail message and cause.
-     *
-     * @param message Detail message
-     * @param cause The cause
-     */
     public PhilipsAirAPIException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }

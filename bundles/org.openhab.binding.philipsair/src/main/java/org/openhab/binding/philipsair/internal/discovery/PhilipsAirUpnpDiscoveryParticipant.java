@@ -154,10 +154,8 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
     }
 
     /**
-     * Maps the UPnP model number to a thing type. Devices report the model number with or without the region suffix
-     * (e.g. 'AC2889' or 'AC2889/10'), so both are matched against the thing type id (e.g. 'ac2889-10'). The base model
-     * has to be equal. The region suffix only has to be equal when both the device and the thing type id have one, so
-     * a thing type id without suffix (e.g. 'ac2729') covers all regions.
+     * Maps the UPnP model number, reported with or without region suffix (AC2889 or AC2889/10), to a thing type. The
+     * base model has to be equal; the region only when both have one, so a type id without suffix covers all regions.
      */
     static ThingTypeUID getThingType(@Nullable String modelNumber) {
         String model = modelNumber != null ? modelNumber.toLowerCase(Locale.ROOT).replace('/', '-') : "";

@@ -254,10 +254,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         properties.put(key, value != null ? value : "");
     }
 
-    /**
-     * Sends the discovery request without waiting for the responses. Responses from all devices are received
-     * asynchronously and create the discovery results.
-     */
+    /** Sends the discovery request without waiting; the responses arrive asynchronously */
     private void mget(CoapClient client, int port, String resourcePath, String host) {
         String uri = "coap://" + host + ":" + port + "/" + resourcePath;
         logger.debug("Send discovery request: {}", uri);
@@ -267,11 +264,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         client.advanced(new DiscoveryCoapHandler(), multicastRequest);
     }
 
-    /**
-     * Handles the discovery responses matched to the request. The responses are only logged here, as they are
-     * processed by the message interceptor, which receives all responses, including those that Californium does not
-     * match to the multicast request.
-     */
+    /** Only logs: the interceptor processes the responses, as it also sees those Californium does not match */
     private class DiscoveryCoapHandler implements CoapHandler {
 
         @Override

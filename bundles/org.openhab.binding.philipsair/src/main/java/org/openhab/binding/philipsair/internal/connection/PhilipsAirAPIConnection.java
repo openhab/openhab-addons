@@ -54,29 +54,17 @@ public abstract class PhilipsAirAPIConnection {
         return this.config;
     }
 
-    /**
-     * Called periodically to maintain the connection, e.g. to (re)establish the subscription for pushed updates.
-     */
     public void ensureConnected() {
     }
 
-    /**
-     * @return true if the device pushes its status, so it does not need to be polled
-     */
     public boolean isPushingStatus() {
         return false;
     }
 
-    /**
-     * @return the profile of the device, or null if the connection has none (the profiles are those of CoAP devices)
-     */
     public @Nullable CoapProfile getDeviceProfile() {
         return null;
     }
 
-    /**
-     * Releases the resources held by this connection. The connection must not be used afterwards.
-     */
     public void dispose() {
     }
 }

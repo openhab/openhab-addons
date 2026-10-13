@@ -45,15 +45,11 @@ public class PhilipsAirBindingConstants {
 
     public static final String SUPPORTED_MODEL_COAP = "coap";
 
-    /**
-     * The product range of devices such as the AC3210, as reported by CoAP devices
-     */
+    /** The product range of devices such as the AC3210, as reported by CoAP devices */
     public static final String RANGE_UNICORN = "Unicorn";
     public static final String RANGE_CARNATION = "Carnation";
 
-    /**
-     * The device profile setting that detects the profile from the device
-     */
+    /** The device profile setting that detects the profile from the device */
     public static final String PROFILE_AUTO = "auto";
 
     // List of all Thing Type UIDs
@@ -99,140 +95,38 @@ public class PhilipsAirBindingConstants {
     public static final String FILTERS = "filters";
 
     // List of all Channel id's
-    /**
-     * PM2.5 particles amount
-     */
     public static final String PM25 = "pm25";
-    /**
-     * Power switch
-     */
     public static final String POWER = "power";
-    /**
-     * Fan speed (s - silent, 1, 2, 3, t - turbo)
-     */
+    /** s - silent, 1, 2, 3, t - turbo */
     public static final String FAN_MODE = "fan-speed";
-    /**
-     * Auto mode : P - auto, B - bacteria, M - manual, A - allergen, S - sleep, N -
-     * night
-     */
+    /** P - auto, B - bacteria, M - manual, A - allergen, S - sleep, N - night */
     public static final String MODE = "mode";
-    /**
-     * Buttons light
-     */
     public static final String BUTTONS_LIGHT = "button-light";
-    /**
-     * Light brightness level
-     */
     public static final String LED_LIGHT_LEVEL = "light-level";
-    /**
-     * Index used to show air quality
-     */
     public static final String DISPLAYED_INDEX = "displayed-index";
-    /**
-     * Allergen index
-     */
     public static final String ALLERGEN_INDEX = "allergen-index";
-
     public static final String AIR_QUALITY_NOTIFICATION_THRESHOLD = "air-quality-threshold";
-    /**
-     * Child lock
-     */
     public static final String CHILD_LOCK = "child-lock";
-    /**
-     * Auto time-off
-     */
     public static final String AUTO_TIMEOFF = "timer";
-    /**
-     * Error code
-     */
     public static final String ERROR_CODE = "error-code";
-    /**
-     * Current minutes left to turn off
-     */
+    /** Minutes left until the timer turns the device off */
     public static final String TIMER_COUNTDOWN = "timer-remaining";
-
-    /**
-     * Total volatile organic compounds level
-     */
     public static final String TVOC = "tvoc";
-
-    /**
-     * Wi-Fi signal strength
-     */
     public static final String RSSI = "rssi";
-
-    /**
-     * Current humidity
-     */
     public static final String HUMIDITY = "humidity";
-
-    /**
-     * Humidity setpoint
-     */
     public static final String HUMIDITY_SETPOINT = "target-humidity";
-
-    /**
-     * Current temperature
-     */
     public static final String TEMPERATURE = "temperature";
-
-    /**
-     * 'P': 'Purification', 'PH': 'Purification & Humidification'
-     */
+    /** P - purification, PH - purification and humidification */
     public static final String FUNCTION = "function";
-
-    /**
-     * water level
-     */
     public static final String WATER_LEVEL = "water-level";
-
-    /**
-     * The beep when a button is pressed
-     */
     public static final String BEEP = "beep";
-
-    /**
-     * Sensors that keep measuring in standby
-     */
     public static final String STANDBY_SENSORS = "standby-sensors";
-
-    /**
-     * Sleep mode that is gentle for allergic people
-     */
     public static final String ALLERGY_SLEEP = "allergy-sleep";
-
-    /**
-     * The display is on
-     */
     public static final String DISPLAY = "display";
-
-    /**
-     * Brightness of the display, with the steps the model has
-     */
     public static final String DISPLAY_BRIGHTNESS = "display-brightness";
-
-    /**
-     * What the lamp shows
-     */
     public static final String LAMP_MODE = "lamp-mode";
-
-    /**
-     * Pre-filter
-     */
     public static final String PRE_FILTER = "pre-filter-life";
-
-    /**
-     * Wicks filter estimated lifetime
-     */
     public static final String WICKS_FILTER = "wick-filter-life";
-
-    /**
-     * Active carbon estimated lifetime
-     */
     public static final String CARBON_FILTER = "carbon-filter-life";
-
-    /**
-     * HEPA estimated lifetime
-     */
     public static final String HEPA_FILTER = "hepa-filter-life";
 }

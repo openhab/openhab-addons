@@ -82,10 +82,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private final CoapClient pingClient = new CoapClient();
     private final CoapEndpoint endpoint;
     private volatile long counter = 1;
-    // Serializes the exchanges with the device that depend on the counter: the sync and the control post of a command,
-    // as the synced counter is only valid until the next exchange, and the sync of the check of the connection. So that
-    // check may wait for a running command. This is not the monitor of ensureConnected(), so a command only waits for
-    // a single exchange of that check, not for the whole check.
+    // Serializes the counter sync and control post of a command, as the synced counter is only valid until the next
+    // exchange. This is not the monitor of ensureConnected(), so a command only waits for one exchange of the check.
     private final Object exchangeLock = new Object();
     // written by the Californium thread on notifications, read when the observe relation is started
     private volatile boolean hasSync = false;
@@ -107,10 +105,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private volatile int mid = NO_MID;
 
     /**
-     * @param config the thing configuration
      * @param listener called with this connection whenever the device reported a new status
-     * @param initialProfile the profile the device had when it was last seen, or null if it is not known (yet). It is
-     *            replaced by the profile of the status the device reports, if that is another one.
+     * @param initialProfile the profile the device had when last seen, replaced once the device reports another one
      */
     public PhilipsAirCoapAPIConnection(PhilipsAirConfiguration config, Consumer<PhilipsAirAPIConnection> listener,
             @Nullable CoapProfile initialProfile) {
@@ -227,10 +223,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     }
 
     /**
-     * Checks that the device is reachable with a counter sync, which it also answers in standby. A device only pushes
-     * its status when something changed, so its last status is still valid as long as it answers.
-     *
-     * @return true if the device answered
+     * Checks the device with a counter sync, which it also answers in standby. A device only pushes changes, so its
+     * last status is still valid as long as it answers.
      */
     boolean pingDevice() {
         long synced;
@@ -301,11 +295,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         }
     }
 
-    /**
-     * Processes the (encrypted) content of a status notification and notifies the listener if it holds a valid status.
-     *
-     * @return true if the notification held a valid status
-     */
+    /** @return true if the (encrypted) notification held a valid status, which is passed to the listener */
     boolean processNotification(String content, String uri) {
         JsonObject status = processResponse(content.trim(), uri);
         if (status == null || status.isEmpty()) {
@@ -384,9 +374,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         return OptionalLong.empty();
     }
 
-    /**
-     * @return the last reported status in the classic scheme, or null if the device did not report a status recently
-     */
+    /** @return the last status in the classic scheme, or null if the device did not report recently */
     private @Nullable JsonObject currentStatus() {
         JsonObject status = lastStatus;
         return status != null && currentTimeMillis() - lastContact < staleAfterMs ? status : null;
@@ -516,12 +504,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         return PhilipsAirCoapCipher.encryptedMsg(commandValue, controlCounter, logger);
     }
 
-    /**
-     * Exchanges the counter with the device. The caller must hold the {@link #exchangeLock}, as the answer is only
-     * valid until the next exchange.
-     *
-     * @return the counter of the device, or empty if the device did not answer with one
-     */
+    /** The caller must hold the {@link #exchangeLock}, as the answer is only valid until the next exchange */
     private OptionalLong exchangeCounter(CoapClient client) throws ConnectorException, IOException {
         return getCounter(post(client, host, COAP_PORT, RESOURCE_PATH_SYNC, String.format("%08X", counter)));
     }

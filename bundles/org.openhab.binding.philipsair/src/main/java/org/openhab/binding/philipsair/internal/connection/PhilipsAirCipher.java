@@ -102,8 +102,7 @@ public class PhilipsAirCipher {
 
     /**
      * Encodes the shared secret as fixed length big-endian byte array, as the device does.
-     * {@link BigInteger#toByteArray()}
-     * returns the minimal two's-complement representation, which may have a leading sign byte or be shorter.
+     * {@link BigInteger#toByteArray()} may add a leading sign byte or return fewer bytes.
      */
     static byte[] toFixedLength(BigInteger value) {
         byte[] bytes = value.toByteArray();

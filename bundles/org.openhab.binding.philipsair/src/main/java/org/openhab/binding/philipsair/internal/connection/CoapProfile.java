@@ -29,32 +29,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
- * The profile of a CoAP device: the naming scheme of its fields and, for the models known to the binding, the
- * encoding of its settings.
- * <p>
- * Recent models report their status with numbered field names instead of the classic ones (e.g. {@code D03-02} or
- * {@code D03102} instead of {@code pwr}), partly with other value encodings. Their status is translated to the classic
- * scheme, so the rest of the binding only handles the classic field names. The field names follow the Philips Air+ app
- * and the <a href="https://github.com/kongo09/philips-airpurifier-coap">philips-airpurifier-coap</a> integration.
- * <p>
- * The profiles of the basic kind translate the fields every model of a generation shares, and the power and child lock
- * commands. The profiles of a model (family) also translate the model specific settings in both directions, like the
- * mode and the fan speed, for which the encodings differ per model. The profile is detected from the device, but can be
- * selected in the thing configuration for models the binding does not know.
+ * The profile of a CoAP device: the naming scheme of its fields and, for known models, the encoding of its settings.
+ * The reported status is translated to the classic field names (e.g. {@code pwr} for {@code D03-02} or
+ * {@code D03102}), so the rest of the binding only handles those. The field names follow the Philips Air+ app and
+ * the <a href="https://github.com/kongo09/philips-airpurifier-coap">philips-airpurifier-coap</a> integration.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
 public enum CoapProfile {
-    /**
-     * Classic field names, e.g. AC2889, AC3829, AC4236. The AC2889 and AC3829 use CoAP with updated firmware, and the
-     * HTTP protocol with early firmware.
-     */
+    /** Classic field names, e.g. AC2889, AC3829, AC4236 */
     CLASSIC("classic", Generation.CLASSIC, Spec.NONE),
-    /**
-     * AC2939 of the MarsLE range: classic field names, with modes of its own. The device selects the fan speed for the
-     * mode itself, so it has no manual mode.
-     */
+    /** MarsLE range: classic field names, with modes of its own and no manual fan speed */
     AC2939("ac2939", Generation.CLASSIC, new Spec().modeOptions(Tables.ac2939ModeOptions())),
     /** Field names like {@code D03-02}, e.g. AC0850, AC1715 */
     BASIC_GEN2("basic", Generation.GEN2, Spec.NONE),
@@ -66,24 +52,17 @@ public enum CoapProfile {
                     .humiditySetpoint()
                     .settings(Setting.BEEP, Setting.STANDBY_SENSORS, Setting.ALLERGY_SLEEP, Setting.DISPLAY_SWITCH)
                     .displayBrightness(Tables.unicornBrightness()).lampModes(Tables.lampModes())),
-    /**
-     * AC0950 and AC0951, the small variant of the Unicorn range: no humidity, temperature and lamp, a display
-     * brightness without the automatic setting, and the four modes of the app with a fan speed that is only reported
-     */
+    /** AC0950 and AC0951, the small variant of the Unicorn range; the fan speed is only reported */
     AC0950("ac0950", Generation.GEN3,
             new Spec().modes(Tables.ac0950Modes()).reportedSpeeds("D0310D", Tables.ac0950Speeds())
                     .timer(new Timer("D03110", 1, 12)).settings(Setting.BEEP, Setting.STANDBY_SENSORS)
                     .displayBrightness(Tables.ac0950Brightness())),
-    /** AC3737 */
     AC3737("ac3737", Generation.GEN3,
             new Spec().modes(Tables.ac3737Modes()).modePowersOn().humiditySetpoint().settings(Setting.ALLERGY_SLEEP)
                     .displayBrightness(Tables.ac3737Brightness())),
-    /** AC1715 */
     AC1715("ac1715", Generation.GEN2, new Spec().modes(Tables.ac1715Modes()).modePowersOn()),
-    /** AC0850 with the field names of the generation 2 */
     AC0850("ac0850", Generation.GEN2, new Spec().modes(Tables.ac0850Modes()).modePowersOn());
 
-    /** The generations of field names reported by the devices */
     enum Generation {
         CLASSIC,
         GEN2,
@@ -91,29 +70,18 @@ public enum CoapProfile {
     }
 
     /**
-     * A combination of the classic mode and fan speed and the device fields that select it.
-     *
-     * @param mode the classic mode: {@code P} (auto), {@code S} (sleep) or {@code M} (manual), or for the models that
-     *            have gentle and turbo as modes of their own {@code GT} (gentle) or {@code T} (turbo)
+     * @param mode the classic mode: P (auto), S (sleep), M (manual), GT (gentle) or T (turbo)
      * @param speed the classic fan speed of the manual mode, null for the other modes
-     * @param fields the device fields that are sent to select this mode
-     * @param readKey the field that tells the device is in this mode, as the other fields are not reported for every
-     *            mode
+     * @param fields the device fields sent to select this mode
+     * @param readKey the field the mode is read from, as the other fields are not reported for every mode
      */
     record ModeEntry(String mode, @Nullable String speed, JsonObject fields, String readKey) {
     }
 
-    /**
-     * The settings with an on and an off value, which are the same for the models that have them.
-     */
     enum Setting {
-        /** The beep when a button is pressed, which is 100 when on */
         BEEP("beep", "D03130", 100, 0),
-        /** Sensors that keep measuring in standby */
         STANDBY_SENSORS("standby", "D03134", 1, 0),
-        /** The sleep mode that is gentle for allergic people */
         ALLERGY_SLEEP("allslp", "D03115", 1, 0),
-        /** The display, which is on when the field is 0 */
         DISPLAY_SWITCH("dispon", "D03112", 0, 1);
 
         final String classicKey;
@@ -129,10 +97,7 @@ public enum CoapProfile {
         }
     }
 
-    /**
-     * What a model profile adds to the translation of the basic profile of its generation. The setters are used when
-     * the profiles are defined.
-     */
+    /** What a model profile adds to the translation of the basic profile of its generation */
     static final class Spec {
         static final Spec NONE = new Spec();
 
@@ -151,7 +116,6 @@ public enum CoapProfile {
         List<StateOption> displayBrightness = List.of();
         List<StateOption> lampModes = List.of();
 
-        /** The modes and fan speeds of the model */
         Spec modes(List<ModeEntry> modes) {
             this.modes = modes;
             return this;
@@ -163,11 +127,7 @@ public enum CoapProfile {
             return this;
         }
 
-        /**
-         * The field with the fan speed of a model that has no manual speeds, and the speed each of its values stands
-         * for.
-         * The speed can only be read, as the model selects it with its mode.
-         */
+        /** The fan speed field of a model without manual speeds; read only, as the mode selects the speed */
         Spec reportedSpeeds(String key, Map<Integer, String> speeds) {
             this.reportedSpeedKey = key;
             this.reportedSpeeds = speeds;
@@ -191,7 +151,6 @@ public enum CoapProfile {
             return this;
         }
 
-        /** The humidity setpoint of the model can be set */
         Spec humiditySetpoint() {
             this.humiditySetpoint = true;
             return this;
@@ -213,13 +172,7 @@ public enum CoapProfile {
         }
     }
 
-    /**
-     * The timer of a device, set as a number of hours that is coded as number of hours plus the offset.
-     *
-     * @param key the field with the timer setting, 0 is off
-     * @param offset the value added to the number of hours
-     * @param maxHours the longest timer
-     */
+    /** A timer set in hours, coded as the number of hours plus the offset; 0 is off */
     record Timer(String key, int offset, int maxHours) {
     }
 
@@ -288,23 +241,14 @@ public enum CoapProfile {
         this.modelProfile = spec != Spec.NONE;
     }
 
-    /**
-     * @return the profile to use for the status reported by the device
-     * @param configured the profile selected in the thing configuration, which is detected when it is
-     *            {@link org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants#PROFILE_AUTO} or
-     *            unknown or does not fit the field names of the device
-     */
+    /** @return the configured profile if it fits the field names of the device, otherwise the detected one */
     static CoapProfile resolve(@Nullable String configured, JsonObject reported) {
         Generation generation = detectGeneration(reported);
         CoapProfile selected = select(configured, generation);
         return selected != null ? selected : detect(generation, reported);
     }
 
-    /**
-     * @return the profile to use before the device reported its status, or null if that is not known yet
-     * @param configured the profile selected in the thing configuration
-     * @param stored the profile resolved earlier for the device, if any
-     */
+    /** @return the profile to use before the device reported its status, or null if that is not known yet */
     static @Nullable CoapProfile initial(@Nullable String configured, @Nullable CoapProfile stored) {
         if (configured == null || PROFILE_AUTO.equals(configured)) {
             return stored;
@@ -326,9 +270,7 @@ public enum CoapProfile {
         return selected;
     }
 
-    /**
-     * @return the configured profile if it fits the generation of the field names, or null if it is to be detected
-     */
+    /** @return the configured profile if it fits the generation, or null if it is to be detected */
     private static @Nullable CoapProfile select(@Nullable String configured, Generation generation) {
         if (configured != null && !PROFILE_AUTO.equals(configured)) {
             for (CoapProfile profile : values()) {
@@ -386,18 +328,13 @@ public enum CoapProfile {
         }
     }
 
-    /**
-     * @return the model without its region suffix, e.g. AC1715 for ac1715/10
-     */
+    /** @return the model without its region suffix, e.g. AC1715 for ac1715/10 */
     private static String baseModel(@Nullable String value) {
         String model = value != null ? value.toUpperCase(Locale.ROOT) : "";
         int suffixIndex = model.indexOf('/');
         return suffixIndex < 0 ? model : model.substring(0, suffixIndex);
     }
 
-    /**
-     * @return the fan speeds of the manual mode the profile offers, empty if the profile has no model specific speeds
-     */
     public List<StateOption> getFanSpeedOptions() {
         List<StateOption> options = new ArrayList<>();
         for (ModeEntry entry : modes) {
@@ -413,9 +350,6 @@ public enum CoapProfile {
         return options;
     }
 
-    /**
-     * @return the modes that can be selected without a fan speed, empty if the profile has no model specific modes
-     */
     public List<StateOption> getModeOptions() {
         if (!modeOptions.isEmpty()) {
             return modeOptions;
@@ -434,9 +368,6 @@ public enum CoapProfile {
         return options;
     }
 
-    /**
-     * @return the timer values in hours the profile offers, empty if the profile has no timer
-     */
     public List<StateOption> getTimerOptions() {
         Timer timer = this.timer;
         List<StateOption> options = new ArrayList<>();
@@ -449,23 +380,15 @@ public enum CoapProfile {
         return options;
     }
 
-    /**
-     * @return the brightness settings of the display, empty if the profile has none
-     */
     public List<StateOption> getDisplayBrightnessOptions() {
         return displayBrightness;
     }
 
-    /**
-     * @return the modes of the lamp, empty if the profile has none
-     */
     public List<StateOption> getLampModeOptions() {
         return lampModes;
     }
 
-    /**
-     * @return a copy of the reported status, with the classic field names added for the translatable fields
-     */
+    /** @return a copy of the reported status, with the classic field names added for the translatable fields */
     JsonObject toClassic(JsonObject reported) {
         JsonObject classic = reported.deepCopy();
         switch (generation) {
@@ -594,9 +517,7 @@ public enum CoapProfile {
         }
     }
 
-    /**
-     * @return the speed of the manual mode, which selects the same value of the field the active mode is selected with
-     */
+    /** @return the manual speed that selects the same value of the field the active mode is read from */
     private @Nullable String findManualSpeed(ModeEntry active, JsonElement value) {
         for (ModeEntry entry : modes) {
             if (entry.speed() != null && value.equals(entry.fields().get(active.readKey()))) {
@@ -622,11 +543,7 @@ public enum CoapProfile {
         }
     }
 
-    /**
-     * Translates the desired state of a command from the classic field names to this profile.
-     *
-     * @return the translated command, empty if the device does not support any of its fields
-     */
+    /** @return the command in the field names of this profile, empty if the device supports none of its fields */
     JsonObject toDevice(JsonObject desired) {
         if (generation == Generation.CLASSIC) {
             return desired;
@@ -720,9 +637,7 @@ public enum CoapProfile {
         }
     }
 
-    /**
-     * @return the mode for the classic mode or, in manual mode, the fan speed; null if the device has no such mode
-     */
+    /** @return the mode for the classic mode or, in manual mode, the fan speed; null if the device has none */
     private @Nullable ModeEntry findMode(@Nullable String mode, @Nullable String speed) {
         boolean manual = mode == null || "M".equals(mode);
         if (manual && speed == null) {
@@ -766,14 +681,8 @@ public enum CoapProfile {
         }
     }
 
-    /**
-     * The mode tables of the model profiles, in a separate class as the profiles are constructed before the fields of
-     * the enum are initialized.
-     */
+    /** A separate class, as the profiles are constructed before the static fields of the enum are initialized */
     private static class Tables {
-        /**
-         * The Unicorn range selects its mode and the fan speed of the manual mode with one field.
-         */
         static List<ModeEntry> unicornModes() {
             List<ModeEntry> modes = new ArrayList<>();
             modes.add(entry("P", null, "D0310C", 0));
@@ -786,33 +695,24 @@ public enum CoapProfile {
             return List.copyOf(modes);
         }
 
-        /**
-         * The AC0950 has an auto, sleep, gentle and turbo mode, selected with the mode field only, as the Philips app
-         * does. The device sets the fan speed field for the mode itself.
-         */
+        /** Gentle and turbo are modes of their own; the device sets the fan speed field for the mode itself */
         static List<ModeEntry> ac0950Modes() {
             return List.of(entry("P", null, "D0310C", 0), entry("S", null, "D0310C", 17),
                     entry("GT", null, "D0310C", 19), entry("T", null, "D0310C", 18));
         }
 
-        /** The fan speeds the AC0950 reports: 1 in auto and sleep mode, 2 in gentle mode and 18 in turbo mode */
+        /** Reported speeds: 1 in auto and sleep mode, 2 in gentle mode and 18 in turbo mode */
         static Map<Integer, String> ac0950Speeds() {
             return Map.of(1, "1", 2, "2", 18, "t");
         }
 
-        /**
-         * The AC3737 selects its mode with the mode field and the function field, which is 3 for the turbo mode.
-         * The mode is read from the mode field only, as the function field also tells if the device humidifies.
-         */
+        /** The function field is 3 for turbo; not read for the mode, as it also tells if the device humidifies */
         static List<ModeEntry> ac3737Modes() {
             return List.of(entry("P", null, "D0310C", 0, "D0310A", 2), entry("S", null, "D0310C", 17, "D0310A", 2),
                     entry("M", "1", "D0310C", 1, "D0310A", 2), entry("M", "2", "D0310C", 2, "D0310A", 2),
                     entry("M", "t", "D0310C", 18, "D0310A", 3));
         }
 
-        /**
-         * The Unicorn range sets the brightness of the display in steps and has an automatic setting.
-         */
         static List<StateOption> unicornBrightness() {
             return List.of(new StateOption("0", "Off"), new StateOption("101", "Auto"), new StateOption("115", "Low"),
                     new StateOption("123", "Bright"));
@@ -848,11 +748,7 @@ public enum CoapProfile {
                     entry("M", "t", "D03-12", "Turbo"));
         }
 
-        /**
-         * @param readKey the field the mode is read from
-         * @param readValue the value the read field has in the mode, a number or a text
-         * @param otherFields the other fields and values that are sent to select the mode, as pairs
-         */
+        /** @param otherFields the other fields and values that are sent to select the mode, as pairs */
         private static ModeEntry entry(String mode, @Nullable String speed, String readKey, Object readValue,
                 Object... otherFields) {
             JsonObject fields = new JsonObject();

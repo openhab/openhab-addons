@@ -78,10 +78,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class PhilipsAirHandler extends BaseThingHandler {
-    /**
-     * Channels only supported by some models (e.g. humidifiers), mapped to their channel group. They are added to the
-     * thing once the device reports the corresponding value.
-     */
+    /** Channels only some models have, with their group; added once the device reports the value */
     private static final List<Map.Entry<String, String>> OPTIONAL_CHANNELS = List.of(Map.entry(AUTO_TIMEOFF, CONTROLS),
             Map.entry(TIMER_COUNTDOWN, CONTROLS), Map.entry(HUMIDITY_SETPOINT, CONTROLS), Map.entry(FUNCTION, CONTROLS),
             Map.entry(HUMIDITY, SENSORS), Map.entry(TEMPERATURE, SENSORS), Map.entry(WATER_LEVEL, SENSORS),
@@ -91,17 +88,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private static final String DISPLAYED_INDEX_ALLERGEN = "0";
     private static final String DISPLAYED_INDEX_PM25 = "1";
     private static final String DISPLAYED_INDEX_GAS = "2";
-    /**
-     * The air quality notification thresholds (good, fair, poor, very poor) as offered by the Philips app. The AC4373
-     * and AC4375 use other values, which they expect as text.
-     */
+    /** As offered by the Philips app; the AC4373 and AC4375 use other values, which they expect as text */
     private static final List<String> THRESHOLD_LABELS = List.of("Good", "Fair", "Poor", "Very poor");
     private static final List<Integer> THRESHOLDS = List.of(1, 4, 7, 10);
     private static final List<Integer> TEXT_THRESHOLDS = List.of(13, 19, 29, 40);
-    /**
-     * The options of the channels as defined by the channel types, which are set again when the options of a device
-     * profile are not used anymore.
-     */
+    /** The options of the channel types, restored when the options of a device profile no longer apply */
     private static final List<StateOption> DEFAULT_FAN_OPTIONS = List.of(new StateOption("s", "Silent"),
             new StateOption("1", "1"), new StateOption("2", "2"), new StateOption("3", "3"),
             new StateOption("t", "Turbo"));
@@ -111,10 +102,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private static final List<StateOption> DEFAULT_TIMER_OPTIONS = List.of(new StateOption("0", "Off"),
             new StateOption("1", "1 h"), new StateOption("2", "2 h"), new StateOption("3", "3 h"),
             new StateOption("4", "4 h"), new StateOption("5", "5 h"));
-    /**
-     * The filter status of devices that are not polled for it is requested this many times to detect the optional wick
-     * filter channel, in case a request fails.
-     */
+    /** Attempts to get the filter status of a device not polled for it, to detect the wick filter channel */
     private static final int MAX_FILTER_PROBE_ATTEMPTS = 3;
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirHandler.class);
     private volatile @Nullable ScheduledFuture<?> refreshJob;
@@ -408,11 +396,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         refreshJob = scheduler.scheduleWithFixedDelay(() -> poll(generation), 0, refreshInterval, TimeUnit.SECONDS);
     }
 
-    /**
-     * Creates a new connection and publishes it, unless the handler was disposed in the meantime.
-     *
-     * @return the new connection, or null if the handler was disposed
-     */
+    /** @return the new connection, or null if the handler was disposed in the meantime */
     private @Nullable PhilipsAirAPIConnection getConnection(PhilipsAirConfiguration config, long generation) {
         // created outside the lock, as the HTTP connection may block on the key exchange
         PhilipsAirAPIConnection newConnection = createConnection(config);
@@ -523,9 +507,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
         return currentGeneration() == generation;
     }
 
-    /**
-     * Called by a connection when the device pushed a new status.
-     */
     void dataReceived(PhilipsAirAPIConnection source) {
         PendingUpdate pending;
         boolean queued;
@@ -550,9 +531,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Runs the update on the scheduler, not on the thread of the connection, as updating calls the framework.
-     */
+    /** Not run on the thread of the connection, as updating calls the framework */
     void executeUpdate(Runnable task) {
         scheduler.execute(task);
     }
@@ -683,9 +662,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Persists the key the connection may have (re)negotiated and publishes the device properties.
-     */
+    /** Persists the key the connection may have (re)negotiated and publishes the device properties */
     private void updateDeviceConfiguration(PhilipsAirAPIConnection connection) {
         Configuration configuration = editConfiguration();
         if (updateConfigValue(configuration, PhilipsAirConfiguration.CONFIG_KEY, connection.getConfig().getKey())) {
@@ -742,9 +719,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     /**
-     * Limits the options of the displayed index and the air quality notification threshold to the values the model
-     * supports. This is decided once after the device reported its status, as a single report may lack optional
-     * fields. The options depend on the model, so they are not decided before the device info is known.
+     * Limits the displayed index and threshold options to those of the model. Decided once the device info is known,
+     * as a single status report may lack optional fields.
      */
     private void setModelOptions() {
         PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo;
@@ -772,10 +748,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         logger.debug("Options of {}: displayed index {}, threshold {}", thing.getUID(), indexOptions, thresholdOptions);
     }
 
-    /**
-     * Sets the options of the settings the device profile offers, when the profile is not the one the options were set
-     * for. The profile is detected from the status of the device or selected in the configuration.
-     */
+    /** Sets the options of the device profile, when it is not the profile the options were set for */
     private void updateProfileOptions(PhilipsAirAPIConnection connection) {
         CoapProfile profile = connection.getDeviceProfile();
         if (profile == optionsProfile) {
@@ -795,10 +768,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         logger.debug("Profile of {}: {}", thing.getUID(), profile);
     }
 
-    /**
-     * Sets the options a profile offers for a channel of the controls. A channel that had the options of another
-     * profile before, because the profile changed, gets the default options again, as options cannot be removed.
-     */
+    /** A channel that had the options of another profile gets the default options again */
     private void setProfileOptions(String group, String channelId, List<StateOption> profileOptions,
             List<StateOption> defaultOptions) {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), group, channelId);

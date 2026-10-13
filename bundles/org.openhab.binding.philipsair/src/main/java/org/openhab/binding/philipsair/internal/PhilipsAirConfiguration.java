@@ -30,16 +30,10 @@ public class PhilipsAirConfiguration {
     public static final String CONFIG_HUMIDITY_OFFSET = "humidityOffset";
     public static final String CONFIG_TEMPERATURE_OFFSET = "temperatureOffset";
 
-    /**
-     * Hostname or IP address of Air Purifier device
-     */
     public static final String CONFIG_HOST = "host";
 
     public static final int MIN_REFRESH_INTERVAL = 5;
 
-    /**
-     * Data retrieval rate from the device
-     */
     private int refreshInterval = 60;
 
     private String host = "";
@@ -97,9 +91,6 @@ public class PhilipsAirConfiguration {
         this.humidityOffset = humidityOffset;
     }
 
-    /**
-     * @return the profile of the model of a CoAP device, or {@code auto} to detect it
-     */
     public String getDeviceProfile() {
         return deviceProfile;
     }
