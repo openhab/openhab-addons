@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.modbus.internal.ModbusHandlerFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.modbus.ModbusManager;
-import org.openhab.core.model.yaml.internal.YamlModelRepositoryImpl;
+import org.openhab.core.model.yaml.YamlModelRepository;
 import org.openhab.core.service.WatchService;
 import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.thing.Bridge;
@@ -56,7 +56,7 @@ public class ModbusPoller2YamlOSGiTest extends JavaOSGiTest {
 
     private @NonNullByDefault({}) ManagedThingProvider thingProvider;
     private @NonNullByDefault({}) ThingRegistry thingRegistry;
-    private @NonNullByDefault({}) YamlModelRepositoryImpl yamlRepository;
+    private @NonNullByDefault({}) WatchService.WatchEventListener yamlRepository;
     private @NonNullByDefault({}) Path yamlFile;
 
     @BeforeEach
@@ -64,7 +64,7 @@ public class ModbusPoller2YamlOSGiTest extends JavaOSGiTest {
         registerVolatileStorageService();
         thingProvider = getService(ManagedThingProvider.class);
         thingRegistry = getService(ThingRegistry.class);
-        yamlRepository = getService(YamlModelRepositoryImpl.class);
+        yamlRepository = (WatchService.WatchEventListener) getService(YamlModelRepository.class);
         assertNotNull(thingProvider);
         assertNotNull(thingRegistry);
         assertNotNull(yamlRepository);
