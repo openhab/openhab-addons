@@ -8,6 +8,8 @@
 	<thing-type id="biowin2" extensible="biowin-value">
 		<label>BioWin 2</label>
 		<description>Windhager BioWin 2 heating system</description>
+		<category>HVAC</category>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">

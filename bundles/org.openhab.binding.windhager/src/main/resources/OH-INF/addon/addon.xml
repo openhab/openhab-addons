@@ -5,6 +5,7 @@
 
 	<type>binding</type>
 	<name>Windhager Binding</name>
-	<description>This is the binding for Windhager.</description>
+	<description>Connects to Windhager BioWin 2 heating systems over the local network.</description>
+	<connection>local</connection>
 
 </addon:addon>

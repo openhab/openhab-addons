@@ -15,11 +15,9 @@ package org.openhab.binding.windhager.internal;
 import static org.openhab.binding.windhager.internal.WindhagerBindingConstants.*;
 
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -41,7 +39,6 @@ import org.osgi.service.component.annotations.Reference;
 public class WindhagerHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOWIN2);
-    private static final AtomicLong CLIENT_SEQUENCE = new AtomicLong();
     private final HttpClientFactory httpClientFactory;
 
     @Activate
@@ -59,9 +56,7 @@ public class WindhagerHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BIOWIN2.equals(thingTypeUID)) {
-            String clientName = "windhager-" + CLIENT_SEQUENCE.incrementAndGet();
-            HttpClient httpClient = httpClientFactory.createHttpClient(clientName);
-            return new WindhagerHandler(thing, httpClient);
+            return new WindhagerHandler(thing, httpClientFactory.createHttpClient("windhager"));
         }
 
         return null;
