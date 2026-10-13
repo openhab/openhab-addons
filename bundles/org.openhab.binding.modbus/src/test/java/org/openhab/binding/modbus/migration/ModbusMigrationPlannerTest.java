@@ -25,6 +25,62 @@ class ModbusMigrationPlannerTest {
 
     private final ModbusMigrationPlanner planner = new ModbusMigrationPlanner();
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = { "", "Switch", "Contact", "DateTime", "Dimmer", "String", "Rollershutter" })
+    void previewRefusesUnprovenTypedChannelConversions(String itemType) {
+        LegacyPoller poller = new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",
+                Map.of("start", 100, "length", 2, "type", "holding"));
+        LegacyData data = new LegacyData("modbus:data:tcp:plant:value", poller.uid(),
+                Map.of("readStart", "100", "readValueType", "int16"),
+                List.of(new LegacyLink("Value", "modbus:data:tcp:plant:value:typed", itemType)));
+
+        MigrationPreview preview = planner.preview(List.of(poller), List.of(data));
+
+        assertTrue(preview.groups().isEmpty());
+        assertEquals(data.uid(), preview.manualWork().getFirst().sourceUid());
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = { "Number", "Switch" })
+    void previewDoesNotCollapseDistinctSourceChannels(String secondType) {
+        LegacyPoller poller = new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",
+                Map.of("start", 100, "length", 2, "type", "holding"));
+        LegacyData data = new LegacyData("modbus:data:tcp:plant:value", poller.uid(),
+                Map.of("readStart", "100", "readValueType", "int16"),
+                List.of(new LegacyLink("Value", "modbus:data:tcp:plant:value:number", "Number"),
+                        new LegacyLink("OtherValue", "modbus:data:tcp:plant:value:other", secondType)));
+
+        MigrationPreview preview = planner.preview(List.of(poller), List.of(data));
+
+        assertTrue(preview.groups().isEmpty());
+        assertEquals(data.uid(), preview.manualWork().getFirst().sourceUid());
+    }
+
+    @Test
+    void previewEmitsNativeYamlThingAndChannelConfiguration() {
+        LegacyPoller poller = new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",
+                Map.of("start", 100, "length", 2, "type", "holding"));
+        LegacyData data = new LegacyData("modbus:data:tcp:plant:temperature", poller.uid(),
+                Map.of("readStart", "100", "readValueType", "int16"), List.of());
+
+        assertEquals("""
+                version: 1
+                things:
+                  modbus:poller2:tcp:plant:
+                    bridge: modbus:tcp:plant
+                    config:
+                      length: 2
+                      start: 100
+                      type: "holding"
+                    channels:
+                      temperature:
+                        itemType: Number
+                        config:
+                          address: "100"
+                          valueType: "int16"
+                """, planner.preview(List.of(poller), List.of(data)).yaml());
+    }
+
     @Test
     void previewGroupsEligibleDataThingsAndEmitsReviewArtifactsWithoutMutatingInput() {
         LegacyPoller poller = new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",

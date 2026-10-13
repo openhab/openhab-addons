@@ -40,7 +40,8 @@ public final class ModbusMigrationPlanner {
             List<MigrationChannel> channels = new ArrayList<>();
             List<MigrationLink> links = new ArrayList<>();
             for (LegacyData data : children) {
-                Optional<String> unsupportedReason = unsupportedReason(data.configuration());
+                Optional<String> unsupportedReason = unsupportedReason(data);
+
                 if (unsupportedReason.isPresent()) {
                     manualWork.add(new ManualMigrationWork(data.uid(), unsupportedReason.get()));
                     continue;
@@ -80,7 +81,14 @@ public final class ModbusMigrationPlanner {
                 impactReport(impacts));
     }
 
-    private static Optional<String> unsupportedReason(Map<String, Object> configuration) {
+    private static Optional<String> unsupportedReason(LegacyData data) {
+        if (data.links().stream().map(LegacyLink::channelUid).distinct().count() > 1) {
+            return Optional.of("distinct source channels require manual migration; channel contracts cannot be collapsed");
+        }
+        if (data.links().stream().anyMatch(link -> !"Number".equals(link.itemType()))) {
+            return Optional.of("source channel type is unknown or its conversion is not proven compatible; requires manual migration");
+        }
+        Map<String, Object> configuration = data.configuration();
         Object writeTransform = configuration.get("writeTransform");
         if (writeTransform instanceof String value && value.contains("JSON")) {
             return Optional.of("JSON write transform requires manual migration");
@@ -110,15 +118,15 @@ public final class ModbusMigrationPlanner {
     private static String yaml(List<MigrationGroup> groups, List<ManualMigrationWork> manualWork) {
         StringBuilder result = new StringBuilder("version: 1\nthings:\n");
         for (MigrationGroup group : groups) {
-            result.append("  ").append(group.targetPollerUid()).append(":\n    type: modbus:poller2\n    bridge: ")
-                    .append(group.targetBridgeUid()).append("\n    configuration:\n");
+            result.append("  ").append(group.targetPollerUid()).append(":\n    bridge: ")
+                    .append(group.targetBridgeUid()).append("\n    config:\n");
             group.configuration().entrySet().stream().sorted(Map.Entry.comparingByKey())
                     .forEach(entry -> result.append("      ").append(entry.getKey()).append(": ")
                             .append(yamlValue(entry.getValue())).append('\n'));
             result.append("    channels:\n");
             for (MigrationChannel channel : group.channels()) {
                 result.append("      ").append(channel.id()).append(":\n        itemType: ").append(channel.itemType())
-                        .append("\n        configuration:\n");
+                        .append("\n        config:\n");
                 channel.configuration().entrySet().stream().sorted(Map.Entry.comparingByKey())
                         .forEach(entry -> result.append("          ").append(entry.getKey()).append(": ")
                                 .append(yamlValue(entry.getValue())).append('\n'));

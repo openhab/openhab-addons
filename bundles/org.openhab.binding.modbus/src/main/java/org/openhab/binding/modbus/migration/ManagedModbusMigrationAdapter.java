@@ -85,8 +85,10 @@ public final class ManagedModbusMigrationAdapter {
         List<LegacyLink> result = new ArrayList<>();
         for (ItemChannelLink link : linkRegistry.getAll()) {
             if (thing.getUID().equals(link.getLinkedUID().getThingUID())) {
-                result.add(new LegacyLink(link.getItemName(), link.getLinkedUID().toString(), "Number",
-                        link.getConfiguration().getProperties()));
+                org.openhab.core.thing.Channel channel = thing.getChannel(link.getLinkedUID().getId());
+                String itemType = channel == null ? null : channel.getAcceptedItemType();
+                result.add(new LegacyLink(link.getItemName(), link.getLinkedUID().toString(),
+                        itemType == null ? "" : itemType, link.getConfiguration().getProperties()));
             }
         }
         return result;
