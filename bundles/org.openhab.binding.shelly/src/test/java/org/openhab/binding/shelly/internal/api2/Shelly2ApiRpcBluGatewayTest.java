@@ -237,9 +237,10 @@ public class Shelly2ApiRpcBluGatewayTest {
 
     private static String bundledScript() throws Exception {
         ClassLoader classLoader = Objects.requireNonNull(Shelly2ApiRpc.class.getClassLoader());
-        try (InputStream in = classLoader.getResourceAsStream(BUNDLE_RESOURCE_SCRIPTS + "/" + SHELLY2_BLU_GWSCRIPT)) {
-            return new BufferedReader(new InputStreamReader(Objects.requireNonNull(in), StandardCharsets.UTF_8)).lines()
-                    .collect(Collectors.joining("\n"));
+        try (InputStream in = classLoader.getResourceAsStream(BUNDLE_RESOURCE_SCRIPTS + "/" + SHELLY2_BLU_GWSCRIPT);
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(Objects.requireNonNull(in), StandardCharsets.UTF_8))) {
+            return reader.lines().collect(Collectors.joining("\n"));
         }
     }
 
