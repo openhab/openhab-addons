@@ -151,7 +151,7 @@ A minimal file for a device with one switch (the `id` is replaced by a placehold
 | `property` | string | empty | Name of the property to read. It is also used to match the response to the channel, so it must be unique among the polled channels. Leave empty for channels without polling. For MIoT it is a freely chosen unique name. |
 | `siid`, `piid` | integer | none | MIoT service and property id. A channel is a MIoT channel when both are present and not both zero. |
 | `refresh` | boolean | false | Read this channel at every polling interval. Also required for channels with a `customRefreshCommand`. |
-| `refreshInterval` | integer | 1 | Read only at every n-th polling cycle. Not to be confused with the `refreshInterval` of the thing, which is in seconds. |
+| `refreshInterval` | integer | 1 | Read only at every n-th polling cycle. A negative value (for example `-1`) reads the channel once, see [What Is Polled](#what-is-polled). Not to be confused with the `refreshInterval` of the thing, which is in seconds. |
 | `customRefreshCommand` | string | none | Read this channel with its own command instead of the `propertyMethod`, see [Custom Refresh Commands](#custom-refresh-commands). |
 | `customRefreshParameters` | JSON | none | Parameters (object or array) appended to the `customRefreshCommand`. |
 | `transformation` | string | none | Conversion applied to the value read, see [Transformations](#transformations). |
@@ -211,6 +211,9 @@ It is ignored when `channelType` refers to an existing channel type.
   A `REFRESH` command on a channel triggers an update of all channels (at most once every 5 seconds).
   Three seconds after a command was sent, all channels are updated as well.
 - With a `refreshInterval` on the channel, for example 2, the channel is read every second polling cycle.
+- With a negative `refreshInterval` on the channel, for example `-1`, the channel is read once instead of at every cycle, for values that do not change, such as a serial number.
+  It is read after the thing is initialized, and again for a `REFRESH` command on that channel.
+  A read that fails, or an answer without value, does not count: the channel is tried again at the next polling cycle.
 
 Supported `propertyMethod` values (answers to other methods are not processed):
 
@@ -230,6 +233,7 @@ The channel also needs `"refresh": true` and must be linked to an item.
 - A command that starts with `/` is a request to the Xiaomi cloud and needs the `cloudServer` of the thing to be set, see `lumi.lock.json`.
 - Variables in the command and parameters are substituted, see [Variables](#variables).
 - The response is stored in the channel.
+  A response without result, or with a `null` result (or a list that starts with `null`), is ignored.
   When the response is a list and there is no `transformation`, the first element is used.
   With a `transformation` the complete list is passed to the transformation.
   A response that is not a list is converted to JSON text first.
@@ -560,13 +564,21 @@ The channel itself has no `siid`/`piid`, an empty `property` and no `refresh`.
   It needs internet access and compiled test classes, run it from the binding folder with `mvn test-compile exec:java -Dexec.mainClass="org.openhab.binding.miio.internal.MiotJsonFileCreator" -Dexec.classpathScope="test" -Dexec.args="<model>"`.
   It writes `src/main/resources/database/<model>-miot.json`.
   An existing file is never overwritten, a counter is added to the name instead (`<model>-0-miot.json`).
+  When the model does not end with a digit, the models with 1 to 12 appended are tried as well.
+  The newest published spec is used: the highest released version, or without a released version the highest preview or debug version.
+  To use another spec version append it to the model, for example `-Dexec.args="viomi.vacuum.v13:1"`.
+- The generator creates a channel for every readable or writable property of the spec (a writable one with a `set_properties` action, a read only one with `readOnly`), except for the properties of service 1 (device information).
+  An action of the spec with exactly one input that is a property of the same service gets a channel of its own, named `<service>_<action>`, which sends the command value as that input with `$value$` in the `parameters`.
+  All other actions are options of the `actions` channel.
 - The generated file needs a review:
   - The generated names and option labels come from the (often machine translated) spec, correct them.
   - Check the `type` against the spec, for example an on/off property is a `Switch`.
   - Remove channels that have no useful data and fix the `unit` and `stateDescription`.
   - Do not change `siid`, `piid`, `aiid` and the `value` of the options, they identify the property or action on the device.
-  - Actions with `"parameterType": "UNKNOWN"` are placeholders of the generator, with the input list of the spec as `parameters`.
+  - Actions with `"parameterType": "UNKNOWN"` are placeholders for actions that cannot be filled from a single channel value (several inputs, or an input that is not a property of the service), with the input list of the spec as `parameters`.
     They are never sent, replace them with a working definition as shown above or remove them.
+    The file written by the experimental channel contains them.
+    The tool class removes them (and an option or channel that is left without action) and logs a warning for each one, so they have to be added by hand when needed.
   - The generator sets `"experimental": true`.
 
 ## Channel Presentation
