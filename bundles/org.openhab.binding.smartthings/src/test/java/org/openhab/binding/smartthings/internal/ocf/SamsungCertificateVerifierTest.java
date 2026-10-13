@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.UUID;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.BasicConstraints;
@@ -72,10 +73,14 @@ class SamsungCertificateVerifierTest {
         var verifier = new SamsungCertificateVerifier(root);
         var intermediateKey = keyPair();
         var intermediate = certificate(intermediateKey, ca, "intermediate", "root", true, true, false);
-        var chained = certificate(keyPair(), intermediateKey, "device", "intermediate", false, true, false);
+        var chained = certificate(keyPair(), intermediateKey, "urn:uuid:fedcba98-7654-3210-fedc-ba9876543210",
+                "intermediate", false, true, false);
         assertNull(verify(verifier, List.of(chained, intermediate, root), false).getException());
         assertNull(verify(verifier, List.of(leaf, root), false).getException());
+        assertEquals(UUID.fromString("01234567-89ab-cdef-0123-456789abcdef"), verifier.serverIdentity());
         assertNull(verify(verifier, List.of(leaf), false).getException());
+        var missingIdentity = certificate(keyPair(), ca, "device", "root", false, true, false);
+        assertNotNull(verify(verifier, List.of(missingIdentity, root), false).getException());
         assertNotNull(verify(verifier, List.of(leaf, root), true).getException());
         var otherCa = keyPair();
         var otherRoot = certificate(otherCa, otherCa, "root", "root", true, true, false);

@@ -34,8 +34,8 @@ Configure these settings under **Settings → Bindings → Samsung SmartThings B
 Example override:
 
 ```properties
-binding.smartthings:discoverySubnet=192.168.1.0/24
-binding.smartthings:discoveryConcurrency=16
+discoverySubnet=192.168.1.0/24
+discoveryConcurrency=16
 ```
 
 ## Thing Configuration

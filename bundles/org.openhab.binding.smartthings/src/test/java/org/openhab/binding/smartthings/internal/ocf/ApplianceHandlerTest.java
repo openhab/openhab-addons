@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -185,6 +187,16 @@ class ApplianceHandlerTest {
     }
 
     @Test
+    void rejectsDeviceIdentityThatDoesNotMatchTheValidatedServerCertificate() throws Exception {
+        transport.peerIdentity = UUID.fromString("01234567-89ab-cdef-0123-456789abcdef");
+        initialize(Map.of("serverFingerprint", ""), Map.of());
+
+        ThingStatusInfo status = awaitStatus(ThingStatus.OFFLINE);
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail());
+        assertEquals(0, changes.size());
+    }
+
+    @Test
     void publishesWasherMeasurementsAsUnitAwareReadOnlyChannels() throws Exception {
         transport.batch = json("""
                 [{"href":"/energy/consumption/vs/0","rep":{
@@ -207,6 +219,19 @@ class ApplianceHandlerTest {
         assertEquals(new QuantityType<>(185500, Units.WATT_HOUR), states.get(energy.getUID().getId()));
         assertEquals(new QuantityType<>(3540, Units.SECOND), states.get(time.getUID().getId()));
         assertEquals(new QuantityType<>(1, Units.PERCENT), states.get(progress.getUID().getId()));
+    }
+
+    @Test
+    void publishesWritableGenericApplianceTimeAsWritableChannel() throws Exception {
+        transport.batch = json("""
+                [{"href":"/remotectrl/0","rep":{"value":true}},
+                 {"href":"/operational/state/vs/0","rep":{"x.com.samsung.da.delayEndTime":"00:30:00"}}]
+                """);
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+
+        Channel delayEnd = channel(handler, "Delay End Time");
+        assertEquals("smartthings:time", requireNonNull(delayEnd.getChannelTypeUID()).toString());
     }
 
     @Test
@@ -1057,6 +1082,7 @@ class ApplianceHandlerTest {
         final Map<String, AtomicInteger> observeAttempts = new ConcurrentHashMap<>();
         final AtomicInteger subscriptionsClosed = new AtomicInteger();
         volatile boolean observe;
+        volatile UUID peerIdentity = UUID.fromString(DEVICE_ID);
         volatile String unobserved = "";
         volatile boolean failRead;
         volatile boolean failPost;
@@ -1084,6 +1110,11 @@ class ApplianceHandlerTest {
             AtomicInteger attempts = observeAttempts.get(href);
             assertNotNull(attempts, href);
             return attempts.get();
+        }
+
+        @Override
+        public @Nullable UUID serverIdentity() {
+            return peerIdentity;
         }
 
         @Override

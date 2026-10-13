@@ -20,7 +20,11 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.UUID;
 
+import javax.naming.NamingException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
 import org.eclipse.californium.scandium.dtls.AlertMessage;
@@ -45,6 +49,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 final class SamsungCertificateVerifier implements NewAdvancedCertificateVerifier {
     private final NewAdvancedCertificateVerifier verifier;
+    private volatile @Nullable UUID serverIdentity;
 
     SamsungCertificateVerifier() throws IOException, GeneralSecurityException {
         this(rootCertificate());
@@ -92,9 +97,42 @@ final class SamsungCertificateVerifier implements NewAdvancedCertificateVerifier
                     new AlertMessage(AlertMessage.AlertLevel.FATAL, AlertMessage.AlertDescription.BAD_CERTIFICATE)),
                     null);
         }
-        // Samsung certificates contain OCF identities, not DNS/IP names. Logical /oic/d identity is checked by the
-        // handler.
-        return verifier.verifyCertificate(cid, serverName, remotePeer, false, false, truncateCertificatePath, message);
+        // Samsung certificates contain OCF identities, not DNS/IP names. Bind the validated certificate identity to
+        // the identity returned over the authenticated /oic/d connection.
+        try {
+            var leafCertificate = chain.getCertificates().getFirst();
+            if (!(leafCertificate instanceof X509Certificate certificate)) {
+                throw new IllegalArgumentException("Appliance certificate is not X.509");
+            }
+            UUID identity = certificateIdentity(certificate);
+            CertificateVerificationResult result = verifier.verifyCertificate(cid, serverName, remotePeer, false, false,
+                    truncateCertificatePath, message);
+            if (result.getException() == null) {
+                serverIdentity = identity;
+            }
+            return result;
+        } catch (NamingException | IllegalArgumentException e) {
+            return new CertificateVerificationResult(cid, new HandshakeException(
+                    "Appliance certificate does not contain a valid OCF identity",
+                    new AlertMessage(AlertMessage.AlertLevel.FATAL, AlertMessage.AlertDescription.BAD_CERTIFICATE)),
+                    null);
+        }
+    }
+
+    @Nullable
+    UUID serverIdentity() {
+        return serverIdentity;
+    }
+
+    private static UUID certificateIdentity(X509Certificate certificate) throws NamingException {
+        var subject = new LdapName(certificate.getSubjectX500Principal().getName(X500Principal.RFC2253));
+        for (Rdn rdn : subject.getRdns()) {
+            if ("CN".equalsIgnoreCase(rdn.getType()) && rdn.getValue() instanceof String commonName
+                    && commonName.startsWith("urn:uuid:")) {
+                return UUID.fromString(commonName.substring("urn:uuid:".length()));
+            }
+        }
+        throw new IllegalArgumentException("Missing OCF identity");
     }
 
     @Override

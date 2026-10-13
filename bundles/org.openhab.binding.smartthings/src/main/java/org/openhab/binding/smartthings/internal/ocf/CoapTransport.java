@@ -76,6 +76,7 @@ final class CoapTransport implements Transport {
     private final int port;
     private final long timeoutMillis;
     private final Endpoint endpoint;
+    private final @Nullable SamsungCertificateVerifier certificateVerifier;
     private final Object lifecycle = new Object();
     private final Set<Request> pending = new HashSet<>();
     private final Set<Observation> observations = new HashSet<>();
@@ -169,7 +170,8 @@ final class CoapTransport implements Transport {
             } else {
                 port = config.port;
             }
-            endpoint = startEndpoint(dtlsConfiguration(config, host));
+            certificateVerifier = config.serverFingerprint.isBlank() ? new SamsungCertificateVerifier() : null;
+            endpoint = startEndpoint(dtlsConfiguration(config, host, certificateVerifier));
         } catch (IllegalArgumentException | GeneralSecurityException e) {
             throw new IOException("Invalid appliance credentials or connection configuration");
         }
@@ -180,6 +182,7 @@ final class CoapTransport implements Transport {
         this.port = port;
         this.timeoutMillis = timeoutMillis;
         this.endpoint = endpoint;
+        this.certificateVerifier = null;
     }
 
     private static Endpoint startEndpoint(DtlsConnectorConfig configuration) throws IOException {
@@ -226,6 +229,14 @@ final class CoapTransport implements Transport {
 
     static DtlsConnectorConfig dtlsConfiguration(ApplianceConfiguration config, InetAddress host)
             throws IOException, GeneralSecurityException {
+        SamsungCertificateVerifier certificateVerifier = config.serverFingerprint.isBlank()
+                ? new SamsungCertificateVerifier()
+                : null;
+        return dtlsConfiguration(config, host, certificateVerifier);
+    }
+
+    private static DtlsConnectorConfig dtlsConfiguration(ApplianceConfiguration config, InetAddress host,
+            @Nullable SamsungCertificateVerifier certificateVerifier) throws IOException, GeneralSecurityException {
         DtlsConnectorConfig.Builder builder = DtlsConnectorConfig.builder(networkConfiguration())
                 .setAddress(new InetSocketAddress(clientPort(config, host)))
                 .set(DtlsConfig.DTLS_ROLE, DtlsRole.CLIENT_ONLY).set(DtlsConfig.DTLS_MAX_CONNECTIONS, 1)
@@ -279,9 +290,8 @@ final class CoapTransport implements Transport {
                     chain = certificates;
                 }
                 builder.setCertificateIdentityProvider(new SingleCertificateProvider(key, chain, CertificateType.X_509))
-                        .setAdvancedCertificateVerifier(
-                                config.serverFingerprint.isBlank() ? new SamsungCertificateVerifier()
-                                        : new PinnedCertificateVerifier(config.fingerprint()))
+                        .setAdvancedCertificateVerifier(certificateVerifier != null ? certificateVerifier
+                                : new PinnedCertificateVerifier(config.fingerprint()))
                         // Samsung advertises CA names even when it authorizes a self-signed client UUID.
                         // Truncating against those names would silently send an empty client certificate.
                         .set(DtlsConfig.DTLS_TRUNCATE_CLIENT_CERTIFICATE_PATH, false)
@@ -293,6 +303,12 @@ final class CoapTransport implements Transport {
             }
         }
         return builder.build();
+    }
+
+    @Override
+    public @Nullable UUID serverIdentity() {
+        SamsungCertificateVerifier verifier = certificateVerifier;
+        return verifier == null ? null : verifier.serverIdentity();
     }
 
     @Override

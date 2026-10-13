@@ -532,7 +532,7 @@ public class ApplianceHandler extends BaseThingHandler {
         }
         if (!received && readFailed) {
             // An optional resource may be unavailable while the authenticated connection is still healthy.
-            verifyIdentity(current, transport.get(IDENTITY));
+            verifyIdentity(current, transport, transport.get(IDENTITY));
         }
         return true;
     }
@@ -555,7 +555,7 @@ public class ApplianceHandler extends BaseThingHandler {
     private void readResources(Session current, Transport transport, Resources resources) throws IOException {
         logger.debug("Appliance {} reading authenticated identity and resource collection", getThing().getUID());
         JsonElement identity = transport.get(IDENTITY);
-        verifyIdentity(current, identity);
+        verifyIdentity(current, transport, identity);
         mergeReadResponse(current, resources, IDENTITY, identity);
         JsonElement payload = transport.get(COLLECTION);
         Resources received = new Resources();
@@ -624,7 +624,7 @@ public class ApplianceHandler extends BaseThingHandler {
         return href.contains("/sec/");
     }
 
-    private void verifyIdentity(Session current, JsonElement payload) throws IOException {
+    private void verifyIdentity(Session current, Transport transport, JsonElement payload) throws IOException {
         if (!payload.isJsonObject()) {
             throw new IOException("Missing authenticated appliance identity");
         }
@@ -650,6 +650,14 @@ public class ApplianceHandler extends BaseThingHandler {
             identity = ApplianceConfiguration.uuid(deviceId.getAsString());
         } catch (IllegalArgumentException e) {
             throw new IOException("Invalid authenticated appliance identity");
+        }
+        UUID certificateIdentity = transport.serverIdentity();
+        if (current.configuration.ownerPsk.isBlank() && current.configuration.serverFingerprint.isBlank()
+                && (certificateIdentity == null || !certificateIdentity.equals(identity))) {
+            throw new IdentityMismatchException();
+        }
+        if (certificateIdentity != null && !certificateIdentity.equals(identity)) {
+            throw new IdentityMismatchException();
         }
         UUID expectedIdentity = current.identity;
         if (expectedIdentity != null && !expectedIdentity.equals(identity)) {
@@ -778,8 +786,10 @@ public class ApplianceHandler extends BaseThingHandler {
                         case "Number:Temperature" -> "Current Temperature".equals(point.label())
                                 ? new ChannelTypeUID("system:indoor-temperature")
                                 : new ChannelTypeUID(BINDING_ID, point.writable() ? type : type + "-readonly");
-                        case "Number:Energy", "Number:Time", "Number:Dimensionless" ->
+                        case "Number:Energy", "Number:Dimensionless" ->
                             new ChannelTypeUID(BINDING_ID, type + "-readonly");
+                        case "Number:Time" ->
+                            new ChannelTypeUID(BINDING_ID, point.writable() ? type : type + "-readonly");
                         default -> new ChannelTypeUID(BINDING_ID, point.advanced() ? type + "-readonly-advanced"
                                 : point.writable() ? type : type + "-readonly");
                     };
