@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="channel-type:modbus:poller2-value">
+		<parameter name="address" type="text" required="true">
+			<label>Read Address</label>
+			<description>Zero-based address inside the poll window. Numeric sub-register values may use X.Y notation.</description>
+		</parameter>
+		<parameter name="valueType" type="text" required="true">
+			<label>Value Type</label>
+			<description>Numeric decoder type, bit for coils/discrete inputs, or raw for String channels.</description>
+		</parameter>
+		<parameter name="length" type="integer" min="1">
+			<label>Raw Register Count</label>
+			<description>Number of registers for a raw String channel.</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="errorPolicy" type="text">
+			<label>Read Error Policy</label>
+			<default>undef</default>
+			<options>
+				<option value="undef">UNDEF</option>
+				<option value="keepLast">Keep Last Successful Value</option>
+			</options>
+		</parameter>
+		<parameter name="writeStart" type="text">
+			<label>Write Address</label>
+			<description>Optional zero-based write address. Holding-register bits use X.Y notation.</description>
+		</parameter>
+		<parameter name="writeValueType" type="text">
+			<label>Write Value Type</label>
+			<description>Numeric encoder type, or bit for coil and holding-register bit writes.</description>
+		</parameter>
+		<parameter name="writeMaxTries" type="integer" min="1">
+			<label>Maximum Write Attempts</label>
+			<default>3</default>
+		</parameter>
+		<parameter name="writeMultipleEvenWithSingleRegisterOrCoil" type="boolean">
+			<label>Use Multiple Write Function</label>
+			<default>false</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

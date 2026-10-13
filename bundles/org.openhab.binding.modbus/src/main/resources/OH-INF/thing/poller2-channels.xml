@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="poller2-number">
+		<item-type>Number</item-type>
+		<label>Register Value</label>
+		<description>Numeric value decoded from the poll window.</description>
+		<config-description-ref uri="channel-type:modbus:poller2-value"/>
+	</channel-type>
+	<channel-type id="poller2-string">
+		<item-type>String</item-type>
+		<label>Raw Registers</label>
+		<description>Register bytes rendered as hexadecimal. Select the raw value type.</description>
+		<config-description-ref uri="channel-type:modbus:poller2-value"/>
+	</channel-type>
+	<channel-type id="poller2-switch">
+		<item-type>Switch</item-type>
+		<label>Coil or Discrete Input</label>
+		<description>Bit value rendered as ON or OFF.</description>
+		<config-description-ref uri="channel-type:modbus:poller2-value"/>
+	</channel-type>
+	<channel-type id="poller2-contact">
+		<item-type>Contact</item-type>
+		<label>Discrete Contact</label>
+		<description>Bit value rendered as OPEN or CLOSED.</description>
+		<config-description-ref uri="channel-type:modbus:poller2-value"/>
+	</channel-type>
+</thing:thing-descriptions>

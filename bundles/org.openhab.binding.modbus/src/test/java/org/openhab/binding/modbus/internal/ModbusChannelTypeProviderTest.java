@@ -28,6 +28,44 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 public class ModbusChannelTypeProviderTest {
 
     @Test
+    public void extensibleChannelTypesHaveEagerConfigurationSchemas() throws Exception {
+        var factory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        var builder = factory.newDocumentBuilder();
+        try (var bridgeStream = requireNonNull(getClass().getResourceAsStream("/OH-INF/thing/bridge-poller2.xml"));
+                var channelsStream = requireNonNull(
+                        getClass().getResourceAsStream("/OH-INF/thing/poller2-channels.xml"))) {
+            var bridge = builder.parse(bridgeStream);
+            var channels = builder.parse(channelsStream);
+            var definitions = channels.getElementsByTagName("channel-type");
+            var ids = new java.util.HashSet<String>();
+            for (int index = 0; index < definitions.getLength(); index++) {
+                var type = (org.w3c.dom.Element) definitions.item(index);
+                ids.add(type.getAttribute("id"));
+                assertEquals(1, type.getElementsByTagName("config-description-ref").getLength());
+            }
+            String extensible = ((org.w3c.dom.Element) bridge.getElementsByTagName("bridge-type").item(0))
+                    .getAttribute("extensible");
+            assertEquals(java.util.Set.of(extensible.split(",")), ids);
+            try (var configStream = requireNonNull(
+                    getClass().getResourceAsStream("/OH-INF/config/poller2-channel.xml"))) {
+                var config = builder.parse(configStream);
+                assertEquals("channel-type:modbus:poller2-value",
+                        ((org.w3c.dom.Element) config.getElementsByTagName("config-description").item(0))
+                                .getAttribute("uri"));
+                var parameters = config.getElementsByTagName("parameter");
+                var required = new java.util.HashSet<String>();
+                for (int index = 0; index < parameters.getLength(); index++) {
+                    var parameter = (org.w3c.dom.Element) parameters.item(index);
+                    if ("true".equals(parameter.getAttribute("required"))) {
+                        required.add(parameter.getAttribute("name"));
+                    }
+                }
+                assertEquals(java.util.Set.of("address", "valueType"), required);
+            }
+        }
+    }
+
+    @Test
     public void reusesOneStableGeneratedChannelTypeForEachAcceptedItemType() {
         ModbusChannelTypeProvider provider = new ModbusChannelTypeProvider();
 
