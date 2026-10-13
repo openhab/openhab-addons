@@ -100,6 +100,25 @@ public class ModbusPoller2ThingHandlerTest {
         verify(fixture.callback).stateUpdated(fixture.channelUID, new org.openhab.core.library.types.DecimalType(42));
     }
 
+    @Test
+    public void submitsWritesOutsideTheLifecycleMonitor() throws EndpointNotInitializedException {
+        LifecycleFixture fixture = new LifecycleFixture();
+        fixture.handler.initialize();
+        org.mockito.Mockito.doAnswer(invocation -> {
+            org.junit.jupiter.api.Assertions.assertFalse(Thread.holdsLock(fixture.handler));
+            return null;
+        }).when(fixture.communication).submitOneTimeWrite(any(), any(), any());
+        fixture.handler.handleCommand(fixture.channelUID, new org.openhab.core.library.types.DecimalType(7));
+        assertEquals(org.openhab.binding.modbus.internal.handler.Poller2WriteResult.ACCEPTED,
+                fixture.handler.submitActionWrite(org.openhab.binding.modbus.internal.handler.Poller2WriteRequest
+                        .holding("value", new org.openhab.core.library.types.DecimalType(8))));
+        verify(fixture.communication, times(2)).submitOneTimeWrite(any(), any(), any());
+        fixture.handler.dispose();
+        org.mockito.Mockito.clearInvocations(fixture.communication);
+        fixture.handler.handleCommand(fixture.channelUID, new org.openhab.core.library.types.DecimalType(9));
+        org.mockito.Mockito.verifyNoInteractions(fixture.communication);
+    }
+
     private static class LifecycleFixture {
         final ChannelUID channelUID = new ChannelUID("modbus:poller2:poller2:value");
         final org.openhab.core.io.transport.modbus.ModbusCommunicationInterface communication = mock(
@@ -125,12 +144,11 @@ public class ModbusPoller2ThingHandlerTest {
             Bridge bridge = BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "poller2")
                     .withConfiguration(new Configuration(java.util.Map.of("type", "holding", "start", 0, "length", 1,
                             "refresh", 1000, "cacheMillis", 0)))
-                    .withChannel(
-                            ChannelBuilder.create(channelUID).withAcceptedItemType("Number")
-                                    .withType(new ChannelTypeUID("modbus", "number"))
-                                    .withConfiguration(new Configuration(java.util.Map.of("address", "0", "valueType",
-                                            "uint16", "writeAddress", "0", "writeValueType", "uint16")))
-                                    .build())
+                    .withChannel(ChannelBuilder.create(channelUID).withAcceptedItemType("Number")
+                            .withType(new ChannelTypeUID("modbus", "number"))
+                            .withConfiguration(new Configuration(java.util.Map.of("address", "0", "valueType", "uint16",
+                                    "writeStart", "0", "writeValueType", "uint16")))
+                            .build())
                     .build();
             Bridge endpoint = mock(Bridge.class);
             org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler endpointHandler = mock(

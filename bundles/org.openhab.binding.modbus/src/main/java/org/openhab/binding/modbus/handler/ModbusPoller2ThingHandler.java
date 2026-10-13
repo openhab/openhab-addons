@@ -86,6 +86,8 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
 
     @Override
     public synchronized void initialize() {
+        // Invalidate callbacks before replacing decoding state, even on invalid configuration.
+        dispose();
         applyGeneratedChannelTypes();
         ModbusPollerConfiguration configuration = getConfigAs(ModbusPollerConfiguration.class);
         String type = configuration.getType();
@@ -184,16 +186,18 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
             refresh();
             return;
         }
-        Poller2WriteChannel writeChannel = writeChannels.get(channelUID);
-        if (writeChannel == null) {
-            return;
+        ModbusCommunicationInterface communication;
+        Optional<ModbusWriteRequestBlueprint> writeRequest;
+        synchronized (this) {
+            Poller2WriteChannel writeChannel = writeChannels.get(channelUID);
+            ModbusReadRequestBlueprint readRequest = getRequest();
+            communication = getCommunicationInterface();
+            if (writeChannel == null || readRequest == null || communication == null) {
+                return;
+            }
+            writeRequest = writeChannel.requestFor(command, readRequest.getUnitID(), registerCache);
         }
-        ModbusReadRequestBlueprint readRequest = getRequest();
-        ModbusCommunicationInterface communication = getCommunicationInterface();
-        if (readRequest == null) {
-            return;
-        }
-        writeChannel.requestFor(command, readRequest.getUnitID(), registerCache).ifPresent(request -> {
+        writeRequest.ifPresent(request -> {
             logger.trace("Submitting poller2 write task {}", request);
             communication.submitOneTimeWrite(request, this::onWriteResponse, this::onWriteFailure);
         });
@@ -205,28 +209,33 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
      * @param actionRequest immutable action request
      * @return whether the write was accepted for asynchronous execution
      */
-    public synchronized Poller2WriteResult submitActionWrite(Poller2WriteRequest actionRequest) {
-        Poller2WriteChannel writeChannel = writeChannels.entrySet().stream()
-                .filter(entry -> entry.getKey().getId().equals(actionRequest.channelId())).map(Map.Entry::getValue)
-                .findFirst().orElse(null);
-        if (writeChannel == null) {
-            return Poller2WriteResult.UNKNOWN_CHANNEL;
-        }
-        boolean coilRequest = actionRequest.type() == Poller2WriteRequest.Type.COIL;
-        if (writeChannel.isCoil() != coilRequest) {
-            return Poller2WriteResult.TYPE_MISMATCH;
-        }
-        ModbusReadRequestBlueprint readRequest = getRequest();
-        if (readRequest == null) {
-            return Poller2WriteResult.NOT_READY;
-        }
-        Optional<ModbusWriteRequestBlueprint> writeRequest = writeChannel.requestFor(actionRequest.command(),
-                readRequest.getUnitID(), registerCache, actionRequest.writeMultiple());
-        if (writeRequest.isEmpty()) {
-            return Poller2WriteResult.INVALID_COMMAND;
+    public Poller2WriteResult submitActionWrite(Poller2WriteRequest actionRequest) {
+        ModbusCommunicationInterface communication;
+        Optional<ModbusWriteRequestBlueprint> writeRequest;
+        synchronized (this) {
+            Poller2WriteChannel writeChannel = writeChannels.entrySet().stream()
+                    .filter(entry -> entry.getKey().getId().equals(actionRequest.channelId())).map(Map.Entry::getValue)
+                    .findFirst().orElse(null);
+            if (writeChannel == null) {
+                return Poller2WriteResult.UNKNOWN_CHANNEL;
+            }
+            boolean coilRequest = actionRequest.type() == Poller2WriteRequest.Type.COIL;
+            if (writeChannel.isCoil() != coilRequest) {
+                return Poller2WriteResult.TYPE_MISMATCH;
+            }
+            ModbusReadRequestBlueprint readRequest = getRequest();
+            communication = getCommunicationInterface();
+            if (readRequest == null || communication == null) {
+                return Poller2WriteResult.NOT_READY;
+            }
+            writeRequest = writeChannel.requestFor(actionRequest.command(), readRequest.getUnitID(), registerCache,
+                    actionRequest.writeMultiple());
+            if (writeRequest.isEmpty()) {
+                return Poller2WriteResult.INVALID_COMMAND;
+            }
         }
         logger.trace("Submitting poller2 action write task {}", writeRequest.get());
-        getCommunicationInterface().submitOneTimeWrite(writeRequest.get(), this::onWriteResponse, this::onWriteFailure);
+        communication.submitOneTimeWrite(writeRequest.get(), this::onWriteResponse, this::onWriteFailure);
         return Poller2WriteResult.ACCEPTED;
     }
 

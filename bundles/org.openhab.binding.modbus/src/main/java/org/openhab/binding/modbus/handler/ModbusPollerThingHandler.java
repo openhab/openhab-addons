@@ -70,9 +70,9 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
         private volatile @Nullable AtomicStampedValue<PollResult> lastResult;
 
-        public synchronized void handleResult(PollResult result) {
-            // Ignore all incoming data and errors if configuration is not correct
-            if (hasConfigurationError() || disposed) {
+        private void handleResult(PollResult result) {
+            // The handler monitor serializes lifecycle changes with decoding and publication.
+            if (this != callbackDelegator || hasConfigurationError() || disposed) {
                 return;
             }
             if (config.getCacheMillis() >= 0) {
@@ -86,6 +86,9 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             }
             logger.debug("Thing {} received response {}", thing.getUID(), result);
             notifyChildren(result);
+            if (this != callbackDelegator || disposed) {
+                return;
+            }
             if (result.failure != null) {
                 Exception error = result.failure.getCause();
                 assert error != null;
@@ -97,17 +100,24 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         }
 
         @Override
-        public synchronized void handle(AsyncModbusReadResult result) {
-            // Casting to allow registers.orElse(null) below..
-            Optional<@Nullable ModbusRegisterArray> registers = (Optional<@Nullable ModbusRegisterArray>) result
-                    .getRegisters();
-            lastPolledDataCache.set(registers.orElse(null));
-            handleResult(new PollResult(result));
+        public void handle(AsyncModbusReadResult result) {
+            synchronized (ModbusPollerThingHandler.this) {
+                if (this != callbackDelegator || disposed || hasConfigurationError()) {
+                    return;
+                }
+                // Casting to allow registers.orElse(null) below..
+                Optional<@Nullable ModbusRegisterArray> registers = (Optional<@Nullable ModbusRegisterArray>) result
+                        .getRegisters();
+                lastPolledDataCache.set(registers.orElse(null));
+                handleResult(new PollResult(result));
+            }
         }
 
         @Override
-        public synchronized void handle(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
-            handleResult(new PollResult(failure));
+        public void handle(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+            synchronized (ModbusPollerThingHandler.this) {
+                handleResult(new PollResult(failure));
+            }
         }
 
         private void resetCommunicationError() {
@@ -146,6 +156,9 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                     handler.handleReadError(failure);
                 }
             });
+            if (this != callbackDelegator || disposed) {
+                return;
+            }
             if (result != null) {
                 onPollResult(result);
             } else if (failure != null) {
@@ -258,6 +271,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     @Override
     public synchronized void initialize() {
+        dispose();
         if (this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
             // If the bridge was online then first change it to offline.
             // this ensures that children will be notified about the change
@@ -265,6 +279,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         }
         this.callbackDelegator.resetCache();
         comms = null;
+        this.callbackDelegator = new ReadCallbackDelegator();
         request = null;
         disposed = false;
         logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
@@ -327,6 +342,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
      */
     public synchronized void unregisterPollTask() {
         logger.trace("unregisterPollTask()");
+        this.callbackDelegator = new ReadCallbackDelegator();
         if (config == null) {
             return;
         }
