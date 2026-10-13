@@ -15,10 +15,11 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"category": "switch"
 			},
 			{
-				"property": "bright",
+				"property": "bri",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
@@ -43,7 +44,7 @@
 				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Brightness"
 				]
 			},
 			{
@@ -58,6 +59,11 @@
 						"command": "set_cct",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"ColorTemperature"
 				]
 			},
 			{
@@ -72,19 +78,64 @@
 						"command": "apply_scene",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
 				]
 			},
 			{
-				"property": "dv",
-				"friendlyName": "DV",
-				"channel": "dv",
-				"type": "Number",
+				"property": "bl",
+				"friendlyName": "Night Light",
+				"channel": "bl",
+				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"parameterType": "EMPTY"
+						"command": "enable_bl",
+						"parameterType": "ONOFFNUMBER"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "ms",
+				"friendlyName": "MiBand Notifications",
+				"channel": "ms",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "enable_mibs",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "mb",
+				"friendlyName": "MiBand",
+				"channel": "mb",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "enable_mb",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -99,21 +150,8 @@
 						"command": "go_night",
 						"parameterType": "EMPTY"
 					}
-				]
-			},
-			{
-				"property": "",
-				"friendlyName": "Delay Off",
-				"channel": "delayoff",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "delay_off",
-						"parameterType": "NUMBER"
-					}
-				]
+				],
+				"category": "switch"
 			},
 			{
 				"property": "",
@@ -127,7 +165,8 @@
 						"command": "toggle",
 						"parameterType": "EMPTY"
 					}
-				]
+				],
+				"category": "switch"
 			}
 		]
 	}

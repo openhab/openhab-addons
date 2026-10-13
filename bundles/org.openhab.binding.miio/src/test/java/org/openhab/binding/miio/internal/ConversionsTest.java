@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,6 +25,8 @@ import org.openhab.binding.miio.internal.basic.Conversions;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
@@ -331,5 +334,18 @@ public class ConversionsTest {
         JsonElement value = JsonParser.parseString(CLOUD_RECIPES);
         assertEquals(JsonParser.parseString("[{\"recipeID\":1},{\"recipeID\":2},{\"recipeID\":3}]"),
                 getJsonElement("recipes[*].{recipeID,recipeCommand.{cookCommand}}", value));
+    }
+
+    @Test
+    public void unsupportedValueIsReturnedUnchangedTest() {
+        Map<String, Object> deviceVariables = Collections.emptyMap();
+        for (String transformation : List.of("/10", "/100", "SecondsToHours", "TankLevel", "YeelightSceneId")) {
+            for (JsonElement value : List.of(new JsonPrimitive("abc"), JsonNull.INSTANCE, new JsonObject())) {
+                assertEquals(value, Conversions.execute(transformation, value, deviceVariables),
+                        transformation + " with " + value);
+            }
+        }
+        JsonElement noJson = new JsonPrimitive("{broken");
+        assertEquals(noJson, Conversions.execute("DeviceDataTab", noJson, deviceVariables));
     }
 }

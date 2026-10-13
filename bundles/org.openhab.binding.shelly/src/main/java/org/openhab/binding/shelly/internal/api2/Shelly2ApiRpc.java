@@ -108,6 +108,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterface, Shelly2RpctInterface {
+    private static final String REALM_WALLDISPLAY = "ShellyWallDisplay";
+
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
     private final ShellyThingTable thingTable;
 
@@ -115,6 +117,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     protected final boolean alwaysOn;
     private @Nullable Shelly2RpcSocket rpcSocket;
     private volatile @Nullable Shelly2AuthChallenge authInfo;
+    // The Wall Display rejects the Digest Authorization header on POST /rpc, it wants the "auth" object in the message
+    private volatile @Nullable Shelly2AuthChallenge bodyAuthInfo;
     // collapses concurrent refreshes of a stale nonce onto one, each extra nonce fills the device's nonce cache
     private final Object authLock = new Object();
     private volatile @Nullable String pendingAsyncMethod;
@@ -1578,25 +1582,32 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
         Shelly2AuthChallenge sentAuth = authInfo; // snapshot of the nonce this request is about to use, if any
+        Shelly2AuthChallenge sentBodyAuth = bodyAuthInfo;
         try {
             // only always-on devices have an RPC WebSocket; battery devices use HTTP RPC only
             if (alwaysOn) {
                 reconnect(); // make sure WS is connected
             }
 
-            json = rpcPost(gson.toJson(req));
+            json = rpcPost(req);
         } catch (ShellyApiException e) {
             ShellyApiResult res = e.getApiResult();
             String auth = getString(res.authChallenge);
-            if (res.isHttpAccessUnauthorized() && !auth.isEmpty()) {
+            Shelly2AuthChallenge bodyChallenge = parseBodyAuthChallenge(res.getHttpResponse());
+            boolean authInBody = bodyChallenge != null && getString(bodyChallenge.realm).startsWith(REALM_WALLDISPLAY);
+            if (res.isHttpAccessUnauthorized() && (!auth.isEmpty() || authInBody)) {
                 synchronized (authLock) {
                     // identity check: another thread may already have refreshed the nonce meanwhile
-                    if (authInfo == sentAuth) { // NOPMD CompareObjectsWithEquals
+                    if (authInBody) {
+                        if (bodyAuthInfo == sentBodyAuth) { // NOPMD CompareObjectsWithEquals
+                            bodyAuthInfo = bodyChallenge;
+                        }
+                    } else if (authInfo == sentAuth) { // NOPMD CompareObjectsWithEquals
                         authInfo = parseAuthChallenge(auth);
                     }
                 }
                 req = buildRequest(method, params); // update RPC message id
-                json = rpcPost(gson.toJson(req));
+                json = rpcPost(req);
             } else {
                 // a 429 is retried by handleApiException() after the device's throttle window
                 throw e;
@@ -1631,8 +1642,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         apiRequest(request.method, request.params, Shelly2RpcBaseMessage.class);
     }
 
-    private String rpcPost(String postData) throws ShellyApiException {
-        return httpPost(authInfo, postData);
+    private String rpcPost(Shelly2RpcBaseMessage request) throws ShellyApiException {
+        Shelly2AuthChallenge bodyAuth = bodyAuthInfo;
+        if (bodyAuth != null) { // Wall Display: authenticate inside the message, not with an Authorization header
+            request.auth = buildChannelAuthResponse(bodyAuth, SHELLY2_AUTHDEF_USER, config.getPassword());
+            return httpPost((Shelly2AuthChallenge) null, gson.toJson(request));
+        }
+        return httpPost(authInfo, gson.toJson(request));
     }
 
     private void reconnect() throws ShellyApiException {

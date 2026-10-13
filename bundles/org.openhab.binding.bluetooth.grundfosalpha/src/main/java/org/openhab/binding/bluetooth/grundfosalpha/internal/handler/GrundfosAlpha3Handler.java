@@ -40,6 +40,7 @@ import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.GeniReadReq
 import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.GeniResponseDecoder;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -63,7 +64,9 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
     private static final UUID UUID_CHARACTERISTIC_GENI = UUID.fromString("859cffd1-036e-432a-aa28-1a0085b87ba9");
 
     private static final Set<String> FLOW_HEAD_CHANNELS = Set.of(CHANNEL_FLOW_RATE, CHANNEL_PUMP_HEAD);
-    private static final Set<String> POWER_CHANNELS = Set.of(CHANNEL_VOLTAGE_AC, CHANNEL_POWER, CHANNEL_MOTOR_SPEED);
+    private static final Set<String> MOTOR_CHANNELS = Set.of(CHANNEL_VOLTAGE_AC, CHANNEL_POWER, CHANNEL_MOTOR_SPEED,
+            CHANNEL_MOTOR_CURRENT);
+    private static final Set<String> COUNTER_CHANNELS = Set.of(CHANNEL_OPERATING_TIME, CHANNEL_START_COUNT);
 
     private static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 30;
 
@@ -134,8 +137,12 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
 
         if (FLOW_HEAD_CHANNELS.contains(channelUID.getId())) {
             sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.FlowHead));
-        } else if (POWER_CHANNELS.contains(channelUID.getId())) {
-            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Power));
+        } else if (MOTOR_CHANNELS.contains(channelUID.getId())) {
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Motor));
+        } else if (CHANNEL_ENERGY.equals(channelUID.getId())) {
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Energy));
+        } else if (COUNTER_CHANNELS.contains(channelUID.getId())) {
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Counters));
         }
     }
 
@@ -210,8 +217,16 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
             sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.FlowHead));
         }
 
-        if (POWER_CHANNELS.stream().anyMatch(this::isLinked)) {
-            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Power));
+        if (MOTOR_CHANNELS.stream().anyMatch(this::isLinked)) {
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Motor));
+        }
+
+        if (isLinked(CHANNEL_ENERGY)) {
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Energy));
+        }
+
+        if (COUNTER_CHANNELS.stream().anyMatch(this::isLinked)) {
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Counters));
         }
     }
 
@@ -223,8 +238,12 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
                 case Flow -> updateState(CHANNEL_FLOW_RATE, quantity);
                 case Head -> updateState(CHANNEL_PUMP_HEAD, quantity);
                 case VoltageAC -> updateState(CHANNEL_VOLTAGE_AC, quantity);
-                case PowerConsumption -> updateState(CHANNEL_POWER, quantity);
+                case MotorCurrent -> updateState(CHANNEL_MOTOR_CURRENT, quantity);
                 case MotorSpeed -> updateState(CHANNEL_MOTOR_SPEED, quantity);
+                case PowerConsumption -> updateState(CHANNEL_POWER, quantity);
+                case Energy -> updateState(CHANNEL_ENERGY, quantity);
+                case OperatingTime -> updateState(CHANNEL_OPERATING_TIME, quantity);
+                case StartCount -> updateState(CHANNEL_START_COUNT, new DecimalType(stateValue));
             }
         }
     }

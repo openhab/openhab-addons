@@ -13,6 +13,7 @@
 package org.openhab.binding.miio.internal.basic;
 
 import java.awt.Color;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -163,6 +164,19 @@ public class ActionConditions {
         return null;
     }
 
+    /**
+     * Convert a text value to lower case, for devices that only accept lower case values.
+     *
+     * @param value
+     * @return the value in lower case, other values are returned unchanged
+     */
+    private static @Nullable JsonElement lowerCase(@Nullable JsonElement value) {
+        if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+            return new JsonPrimitive(value.getAsString().toLowerCase(Locale.ROOT));
+        }
+        return value;
+    }
+
     public static @Nullable JsonElement executeAction(MiIoDeviceActionCondition condition,
             @Nullable Map<String, Object> deviceVariables, @Nullable JsonElement value, @Nullable Command command) {
         switch (condition.getName().toUpperCase()) {
@@ -178,6 +192,8 @@ public class ActionConditions {
                 return hsbOnly(command, value);
             case "MATCHVALUE":
                 return matchValue(condition, command, value);
+            case "LOWERCASE":
+                return lowerCase(value);
             default:
                 LOGGER.debug("Condition {} not found. Returning '{}'", condition,
                         value != null ? value.toString() : "");

@@ -19,6 +19,11 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_SETTING_CUTTING_HEIGHT_CM;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_WORKAREA_CUTTING_HEIGHT_CM;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.CHANNEL_WORKAREA_ID;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_WORKAREA;
 
 import java.lang.reflect.Field;
 import java.time.ZoneId;
@@ -55,13 +60,82 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Stay
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.WorkArea;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.UnDefType;
 
 @SuppressWarnings("all")
 class AutomowerHandlerCacheTest {
+    @Test
+    void workAreaIdChannelPublishesNumericApiId() {
+        assertWorkAreaIdPublished(17746L);
+    }
+
+    @Test
+    void workAreaIdChannelPublishesMainAreaZeroId() {
+        assertWorkAreaIdPublished(0L);
+    }
+
+    @Test
+    void mowerCmChannelClearsWhenConversionIsUnavailable() throws Exception {
+        TestContext context = createContext(false, false, true);
+        try {
+            context.handler.updateAutomowerStateViaREST(context.mower);
+
+            verify(context.callback).stateUpdated(new ChannelUID(context.thingUID, CHANNEL_SETTING_CUTTING_HEIGHT_CM),
+                    UnDefType.NULL);
+        } finally {
+            context.handler.dispose();
+        }
+    }
+
+    @Test
+    void workAreaCmChannelClearsWhenConversionIsUnavailable() {
+        ThingUID bridgeUID = new ThingUID(THING_TYPE_BRIDGE, "bridge-1");
+        ThingUID thingUID = new ThingUID(THING_TYPE_WORKAREA, bridgeUID, "mower-1-17746");
+        ChannelUID channelUID = new ChannelUID(thingUID, CHANNEL_WORKAREA_CUTTING_HEIGHT_CM);
+        Thing thing = ThingBuilder.create(THING_TYPE_WORKAREA, thingUID).withBridge(bridgeUID)
+                .withChannel(ChannelBuilder.create(channelUID, "Number:Length").build()).build();
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        AutomowerWorkAreaHandler handler = new AutomowerWorkAreaHandler(thing);
+        handler.setCallback(callback);
+        AutomowerHandler mowerHandler = mock(AutomowerHandler.class);
+        when(mowerHandler.calculateCuttingHeightCmForWorkArea(any())).thenReturn(null);
+        WorkArea workArea = new WorkArea();
+        workArea.setWorkAreaId(17746L);
+        workArea.setName("Test Area");
+
+        handler.updateChannels(workArea, List.of(), mowerHandler);
+
+        verify(callback).stateUpdated(channelUID, UnDefType.NULL);
+    }
+
+    private void assertWorkAreaIdPublished(long workAreaId) {
+        ThingUID bridgeUID = new ThingUID(THING_TYPE_BRIDGE, "bridge-1");
+        ThingUID thingUID = new ThingUID(THING_TYPE_WORKAREA, bridgeUID, "mower-1-" + workAreaId);
+        Thing thing = ThingBuilder.create(THING_TYPE_WORKAREA, thingUID).withBridge(bridgeUID).withChannel(
+                ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_WORKAREA_ID), CoreItemFactory.NUMBER).build())
+                .build();
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        AutomowerWorkAreaHandler handler = new AutomowerWorkAreaHandler(thing);
+        handler.setCallback(callback);
+        WorkArea workArea = new WorkArea();
+        workArea.setWorkAreaId(workAreaId);
+        workArea.setName(workAreaId == 0L ? "" : "Test Area");
+
+        handler.updateChannels(workArea, List.of(), mock(AutomowerHandler.class));
+
+        verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_WORKAREA_ID), new DecimalType(workAreaId));
+    }
+
     @Test
     void successfulCalendarUpdateReplacesOnlyTargetWorkAreaTasks() throws Exception {
         TestContext context = createContext(true, false);
@@ -163,12 +237,24 @@ class AutomowerHandlerCacheTest {
     }
 
     private TestContext createContext(boolean hasWorkAreas, boolean hasStayOutZones) throws Exception {
+        return createContext(hasWorkAreas, hasStayOutZones, false);
+    }
+
+    private TestContext createContext(boolean hasWorkAreas, boolean hasStayOutZones, boolean includeCmChannel)
+            throws Exception {
         Thing thing = mock(Thing.class);
         Bridge bridge = mock(Bridge.class);
         AutomowerBridgeHandler bridgeHandler = mock(AutomowerBridgeHandler.class);
         AutomowerBridge automowerBridge = mock(AutomowerBridge.class);
         ThingUID bridgeUID = new ThingUID("automower:bridge:bridge-1");
-        when(thing.getUID()).thenReturn(new ThingUID("automower:automower:mower-1"));
+        ThingUID thingUID = new ThingUID("automower:automower:mower-1");
+        when(thing.getUID()).thenReturn(thingUID);
+        if (includeCmChannel) {
+            Channel channel = ChannelBuilder
+                    .create(new ChannelUID(thingUID, CHANNEL_SETTING_CUTTING_HEIGHT_CM), "Number:Length").build();
+            when(thing.getChannel(CHANNEL_SETTING_CUTTING_HEIGHT_CM)).thenReturn(channel);
+            when(thing.getChannels()).thenReturn(List.of(channel));
+        }
         when(thing.getBridgeUID()).thenReturn(bridgeUID);
         when(thing.getThingTypeUID()).thenReturn(AutomowerHandler.SUPPORTED_THING_TYPES.iterator().next());
         when(bridge.getHandler()).thenReturn(bridgeHandler);
@@ -222,7 +308,7 @@ class AutomowerHandlerCacheTest {
         data.setStayOutZones(stayOutZones);
         mower.setAttributes(data);
         setField(handler, "mowerState", mower);
-        return new TestContext(handler, automowerBridge, mower);
+        return new TestContext(handler, automowerBridge, mower, callback, thingUID);
     }
 
     private Capabilities capabilities(boolean hasWorkAreas, boolean hasStayOutZones) throws Exception {
@@ -246,6 +332,7 @@ class AutomowerHandlerCacheTest {
         field.set(target, value);
     }
 
-    private record TestContext(AutomowerHandler handler, AutomowerBridge automowerBridge, Mower mower) {
+    private record TestContext(AutomowerHandler handler, AutomowerBridge automowerBridge, Mower mower,
+            ThingHandlerCallback callback, ThingUID thingUID) {
     }
 }
