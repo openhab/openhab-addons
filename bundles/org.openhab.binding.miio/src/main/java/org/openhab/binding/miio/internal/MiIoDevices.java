@@ -329,6 +329,8 @@ public enum MiIoDevices {
     XIAOMI_VACUUM_B106EU("xiaomi.vacuum.b106eu", "Xiaomi Robot Vacuum S12", THING_TYPE_BASIC),
     XIAOMI_VACUUM_B108GL("xiaomi.vacuum.b108gl", "Xiaomi Robot Vacuum S20+", THING_TYPE_BASIC),
     XIAOMI_VACUUM_C102GL("xiaomi.vacuum.c102gl", "Xiaomi Robot Vacuum X20+", THING_TYPE_BASIC),
+    XIAOMI_VACUUM_D102GL("xiaomi.vacuum.d102gl", "Xiaomi Robot Vacuum X20 Pro", THING_TYPE_BASIC),
+    XIAOMI_VACUUM_D109GL("xiaomi.vacuum.d109gl", "Xiaomi Robot Vacuum X20 Max", THING_TYPE_BASIC),
     XIAOMI_VACUUM_E101GB("xiaomi.vacuum.e101gb", "Xiaomi Robot Vacuum S40C", THING_TYPE_BASIC),
     XIAOMI_VACUUM_OV21CN("xiaomi.vacuum.ov21cn", "Mijia Robot Vacuum 5 Pro", THING_TYPE_BASIC),
     XIAOMI_VACUUM_OV21GL("xiaomi.vacuum.ov21gl", "Xiaomi Robot Vacuum 5 Pro", THING_TYPE_BASIC),
