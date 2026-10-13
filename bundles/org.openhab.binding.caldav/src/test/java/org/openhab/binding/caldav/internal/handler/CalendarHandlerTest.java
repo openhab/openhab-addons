@@ -35,12 +35,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -51,6 +53,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.caldav.internal.client.CalDavHttpException;
+import org.openhab.binding.caldav.internal.client.CalDavXml;
 import org.openhab.binding.caldav.internal.client.DavTransport;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
 import org.openhab.core.config.core.Configuration;
@@ -65,6 +68,9 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -82,71 +88,149 @@ import com.google.gson.JsonParser;
  * @author Andreas Vilippus - Structured failure and retained data regression tests
  * @author Andreas Vilippus - Calendar color channel and metadata lifecycle tests
  * @author Andreas Vilippus - Localized Thing status and plain Item error tests
+ * @author Andreas Vilippus - Horizon rollover persistence and restart tests
+ * @author Andreas Vilippus - Calendar representation property lifecycle tests
+ * @author Andreas Vilippus - Account context and identity publication race regressions
  */
 @NonNullByDefault
 @Timeout(15)
 class CalendarHandlerTest {
+    private static final ThingUID DEFAULT_BRIDGE = new ThingUID("caldav:account:test");
+
+    /** In-memory calendar cache used to exercise persistence without a running openHAB instance. */
     private static final class MemoryStorage implements Storage<String> {
         private final Map<String, @Nullable String> values = new HashMap<>();
 
+        /**
+         * Updates the in-memory storage entry used by persistence tests.
+         *
+         * @param key storage entry key
+         * @param value replacement stored value, or null
+         * @return the value previously stored under the key, if any
+         */
         @Override
         public @Nullable String put(String key, @Nullable String value) {
             return values.put(key, value);
         }
 
+        /**
+         * Reads a persisted fixture value without a running storage service.
+         *
+         * @param key storage entry key
+         * @return the stored value, if present
+         */
         @Override
         public @Nullable String get(String key) {
             return values.get(key);
         }
 
+        /**
+         * Removes a stored fixture entry.
+         *
+         * @param key storage entry key
+         * @return the removed value, if present
+         */
         @Override
         public @Nullable String remove(String key) {
             return values.remove(key);
         }
 
+        /**
+         * Checks whether the in-memory storage contains the entry.
+         *
+         * @param key storage entry key
+         * @return whether the entry is present
+         */
         @Override
         public boolean containsKey(String key) {
             return values.containsKey(key);
         }
 
+        /**
+         * Returns the keys currently held by the fixture storage.
+         *
+         * @return the currently stored entry keys
+         */
         @Override
         public Collection<String> getKeys() {
             return values.keySet();
         }
 
+        /**
+         * Returns the values currently held by the fixture storage.
+         *
+         * @return the currently stored values
+         */
         @Override
         public Collection<@Nullable String> getValues() {
             return values.values();
         }
     }
 
+    /** Handler fixture that captures channel or Thing status publications for assertions. */
     private static final class Handler extends CalendarHandler {
+        /** Latest channel states captured from the calendar handler. */
         final Map<String, State> published = new java.util.concurrent.ConcurrentHashMap<>();
+        /** Signals that usable event JSON has been published. */
         final CountDownLatch restored = new CountDownLatch(1);
-        private final @Nullable Bridge bridge;
+        /** Calendar representations present at each captured ONLINE publication. */
+        final List<String> onlineIdentities = new CopyOnWriteArrayList<>();
+        private @Nullable Bridge bridge;
+        /** Most recently captured Thing status. */
         volatile ThingStatus status = ThingStatus.UNKNOWN;
+        /** Most recently captured Thing status detail. */
         volatile ThingStatusDetail detail = ThingStatusDetail.NONE;
+        /** Most recently captured Thing status description. */
         volatile @Nullable String description;
 
+        /** Creates a handler fixture that records state and status publications. */
         Handler() {
             this(new MemoryStorage(), null);
         }
 
+        /**
+         * Creates a handler fixture that records state and status publications.
+         *
+         * @param storage calendar cache storage
+         * @param bridge associated account bridge
+         */
         Handler(Storage<String> storage, @Nullable Bridge bridge) {
             this(thing(), storage, bridge, () -> ZoneOffset.UTC, Clock.systemUTC(), null);
         }
 
+        /**
+         * Creates a handler fixture that records state and status publications.
+         *
+         * @param thing calendar or account Thing to handle
+         * @param storage calendar cache storage
+         * @param bridge associated account bridge
+         * @param zone time zone used for event projection
+         * @param clock clock used for event and range calculations
+         * @param scheduler scheduler used by the fixture, or null to use the handler scheduler
+         */
         Handler(Thing thing, Storage<String> storage, @Nullable Bridge bridge, TimeZoneProvider zone, Clock clock,
                 @Nullable ScheduledExecutorService scheduler) {
             super(thing, zone, storage, clock, scheduler);
-            this.bridge = bridge;
+            this.bridge = bridge == null ? identityBridge("test") : bridge;
+            setCallback(Objects.requireNonNull(mock(ThingHandlerCallback.class)));
         }
 
+        /**
+         * Supplies the account bridge associated with the test calendar.
+         *
+         * @return the account bridge used by the fixture
+         */
         @Override
         protected @Nullable Bridge getBridge() {
             return bridge;
         }
 
+        /**
+         * Captures calendar channel state without publishing to the runtime.
+         *
+         * @param channel channel receiving the command or state
+         * @param state published channel state
+         */
         @Override
         protected void updateState(ChannelUID channel, State state) {
             published.put(channel.getId(), state);
@@ -155,6 +239,13 @@ class CalendarHandlerTest {
             }
         }
 
+        /**
+         * Captures valid binding statuses and the representation present when ONLINE is published.
+         *
+         * @param status new Thing status
+         * @param detail status detail
+         * @param description status description, if present
+         */
         @Override
         protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
             switch (status) {
@@ -162,55 +253,138 @@ class CalendarHandlerTest {
                     this.status = status;
                     this.detail = detail;
                     this.description = description;
+                    if (status == ThingStatus.ONLINE) {
+                        onlineIdentities.add(getThing().getProperties().getOrDefault("calendarIdentity", "<missing>"));
+                    }
                 }
                 default -> throw new IllegalArgumentException("Illegal binding status: " + status);
             }
         }
     }
 
+    /** Controllable UTC clock for deterministic calendar range and event transition tests. */
     private static final class MutableClock extends Clock {
         private Instant now = Instant.parse("2026-09-18T09:00:00Z");
 
+        /**
+         * Supplies UTC for deterministic local time calculations.
+         *
+         * @return UTC for this controllable test clock
+         */
         @Override
         public ZoneId getZone() {
             return ZoneOffset.UTC;
         }
 
+        /**
+         * Creates a fixed clock in the requested zone without advancing time.
+         *
+         * @param zone time zone used for event projection
+         * @return a fixed clock at the current instant in the requested zone
+         */
         @Override
         public Clock withZone(@Nullable ZoneId zone) {
             return Clock.fixed(now, Objects.requireNonNull(zone));
         }
 
+        /**
+         * Supplies the current controllable test instant.
+         *
+         * @return the current test instant
+         */
         @Override
         public Instant instant() {
             return now;
         }
 
+        /**
+         * Moves the fixture clock forward without waiting for wall-clock time.
+         *
+         * @param seconds number of seconds to advance the test clock
+         */
         void advance(long seconds) {
             now = now.plusSeconds(seconds);
         }
     }
 
+    /** A captured local calendar update with its delay and cancellation handle. */
     private record ClockJob(Runnable task, long delay, ScheduledFuture<?> future) {
     }
 
+    /** Calendar setup with controllable time, persistent cache and captured scheduled jobs. */
     private static final class Fixture implements AutoCloseable {
+        /** Controllable clock used for local calendar updates. */
         final MutableClock clock = new MutableClock();
+        /** Time zone supplied to calendar range calculations. */
         final AtomicReference<ZoneId> zone = new AtomicReference<>(ZoneOffset.UTC);
+        /** Captured local update jobs and their requested delays. */
         final List<ClockJob> jobs = new ArrayList<>();
+        /** Persistent calendar cache shared across fixture restarts. */
         final MemoryStorage storage;
+        /** Handler under test using the fixture dependencies. */
         final Handler handler;
+        /** Core handler callback used to observe or persist Thing updates. */
+        final ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
 
+        /**
+         * Initializes a calendar with controllable time, cache storage and captured update jobs.
+         *
+         * @param configuration captured configuration used by the handler
+         */
         Fixture(Map<String, Object> configuration) {
             this(configuration, new MemoryStorage(), null);
         }
 
+        /**
+         * Initializes a calendar with controllable time, cache storage and captured update jobs.
+         *
+         * @param configuration captured configuration used by the handler
+         * @param storage calendar cache storage
+         * @param bridge associated account bridge
+         */
         Fixture(Map<String, Object> configuration, MemoryStorage storage, @Nullable Bridge bridge) {
             this(configuration, storage, bridge, "Calendar", Map.of());
         }
 
+        /**
+         * Initializes a calendar with controllable time, cache storage and captured update jobs.
+         *
+         * @param configuration captured configuration used by the handler
+         * @param storage calendar cache storage
+         * @param bridge associated account bridge
+         * @param label calendar label
+         * @param properties calendar metadata supplied to the fixture
+         */
         Fixture(Map<String, Object> configuration, MemoryStorage storage, @Nullable Bridge bridge, String label,
                 Map<String, String> properties) {
+            this(configuration, storage, bridge, label, properties, Instant.parse("2026-09-18T09:00:00Z"));
+        }
+
+        /**
+         * Initializes a calendar with controllable time, cache storage and captured update jobs.
+         *
+         * @param configuration captured configuration used by the handler
+         * @param storage calendar cache storage
+         * @param bridge associated account bridge
+         * @param now initial instant of the controllable clock
+         */
+        Fixture(Map<String, Object> configuration, MemoryStorage storage, @Nullable Bridge bridge, Instant now) {
+            this(configuration, storage, bridge, "Calendar", Map.of(), now);
+        }
+
+        /**
+         * Initializes a calendar with controllable time, cache storage and captured update jobs.
+         *
+         * @param configuration captured configuration used by the handler
+         * @param storage calendar cache storage
+         * @param bridge associated account bridge
+         * @param label calendar label
+         * @param properties calendar metadata supplied to the fixture
+         * @param now initial instant of the controllable clock
+         */
+        Fixture(Map<String, Object> configuration, MemoryStorage storage, @Nullable Bridge bridge, String label,
+                Map<String, String> properties, Instant now) {
+            clock.now = now;
             this.storage = storage;
             ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
             doAnswer(invocation -> {
@@ -226,14 +400,377 @@ class CalendarHandlerTest {
                     Map.of("path", "https://example.org/calendar/", "rangeStartOffset", -1, "rangeEndOffset", 1));
             values.putAll(configuration);
             Thing thing = ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), "test")
-                    .withConfiguration(new Configuration(values)).withLabel(label).withProperties(properties).build();
+                    .withBridge(bridgeUID(bridge)).withConfiguration(new Configuration(values)).withLabel(label)
+                    .withProperties(properties).build();
             handler = new Handler(thing, storage, bridge, () -> Objects.requireNonNull(zone.get()), clock, scheduler);
+            handler.setCallback(callback);
             handler.initialize();
         }
 
+        /** Disposes fixture handlers and releases any local server resources. */
         @Override
         public void close() {
             handler.dispose();
+        }
+    }
+
+    private static Bridge identityBridge(String id) {
+        return BridgeBuilder.create(new ThingTypeUID("caldav", "account"), id).withConfiguration(
+                new Configuration(Map.of("url", "https://example.org/dav/", "username", "user", "password", "secret")))
+                .build();
+    }
+
+    private static ThingUID bridgeUID(@Nullable Bridge bridge) {
+        ThingUID uid = bridge == null ? null : bridge.getUID();
+        return uid == null ? DEFAULT_BRIDGE : uid;
+    }
+
+    private static Thing reconfigured(Handler handler, @Nullable Bridge bridge, Map<String, Object> changes) {
+        Thing current = handler.getThing();
+        Configuration values = new Configuration(current.getConfiguration());
+        changes.forEach(values::put);
+        return ThingBuilder.create(current.getThingTypeUID(), current.getUID())
+                .withBridge(bridge == null ? null : bridge.getUID()).withConfiguration(values)
+                .withLabel(current.getLabel()).withProperties(current.getProperties()).build();
+    }
+
+    /**
+     * Checks that live synchronization cannot publish ONLINE before the current calendar representation is established.
+     */
+    @Test
+    @Timeout(30)
+    void initializationCannotPublishOnlineBeforeCurrentIdentity() throws Exception {
+        Bridge bridge = identityBridge("account-a");
+        AccountHandler accountHandler = Objects.requireNonNull(mock(AccountHandler.class));
+        AccountConfiguration account = account();
+        bridge.setHandler(accountHandler);
+        CountDownLatch calculating = new CountDownLatch(1), release = new CountDownLatch(1);
+        AtomicBoolean pause = new AtomicBoolean();
+        when(accountHandler.configuration()).thenAnswer(invocation -> {
+            if (pause.compareAndSet(true, false)) {
+                calculating.countDown();
+                assertTrue(release.await(10, TimeUnit.SECONDS));
+            }
+            return account;
+        });
+        var executor = Executors.newFixedThreadPool(2);
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            pause.set(true);
+            var initializing = executor.submit(() -> fixture.handler
+                    .thingUpdated(reconfigured(fixture.handler, bridge, Map.of("path", "/calendar/family/"))));
+            assertTrue(calculating.await(10, TimeUnit.SECONDS));
+            AtomicInteger requests = new AtomicInteger();
+            DavTransport transport = (method, uri, body, depth) -> {
+                requests.incrementAndGet();
+                return response(true);
+            };
+            executor.submit(() -> {
+                fixture.handler.synchronize(transport, account, () -> true);
+                return null;
+            }).get(10, TimeUnit.SECONDS);
+            assertTrue(fixture.handler.onlineIdentities.isEmpty(), "ONLINE must follow current identity publication");
+            assertEquals(0, requests.get());
+            release.countDown();
+            initializing.get(10, TimeUnit.SECONDS);
+            assertEquals("caldav:account:account-a|/calendar/family/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+            fixture.handler.synchronize(transport, account, () -> true);
+            assertEquals(List.of("caldav:account:account-a|/calendar/family/"), fixture.handler.onlineIdentities);
+            assertEquals(1, requests.get());
+        } finally {
+            release.countDown();
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+        }
+    }
+
+    /** Checks that delayed initialization cannot overwrite a newer calendar representation. */
+    @Test
+    @Timeout(30)
+    void obsoleteInitializationCannotReplaceNewerGenerationIdentity() throws Exception {
+        Bridge bridge = identityBridge("account-a");
+        AccountHandler accountHandler = Objects.requireNonNull(mock(AccountHandler.class));
+        bridge.setHandler(accountHandler);
+        CountDownLatch calculating = new CountDownLatch(1), release = new CountDownLatch(1);
+        AtomicBoolean pause = new AtomicBoolean();
+        when(accountHandler.configuration()).thenAnswer(invocation -> {
+            if (pause.compareAndSet(true, false)) {
+                calculating.countDown();
+                assertTrue(release.await(10, TimeUnit.SECONDS));
+            }
+            return account();
+        });
+        var executor = Executors.newSingleThreadExecutor();
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            pause.set(true);
+            var obsolete = executor.submit(() -> fixture.handler
+                    .thingUpdated(reconfigured(fixture.handler, bridge, Map.of("path", "/calendar/family/"))));
+            assertTrue(calculating.await(10, TimeUnit.SECONDS));
+            fixture.handler.thingUpdated(reconfigured(fixture.handler, bridge, Map.of("path", "/calendar/newest/")));
+            release.countDown();
+            obsolete.get(10, TimeUnit.SECONDS);
+            assertEquals("caldav:account:account-a|/calendar/newest/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+            fixture.handler.synchronize((method, uri, body, depth) -> response(true), account(), () -> true);
+            assertEquals(List.of("caldav:account:account-a|/calendar/newest/"), fixture.handler.onlineIdentities);
+        } finally {
+            release.countDown();
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+        }
+    }
+
+    /** Checks that an account origin change invalidates an old absolute path without reinitializing the calendar. */
+    @Test
+    void currentAccountRejectsOldAbsolutePathWithoutCalendarReinitialization() throws Exception {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "https://example.org/calendar/work/"), new MemoryStorage(),
+                bridge, "Calendar",
+                Map.of("calendarColor", "#123456", "calendarDescription", "Work", "calendarPrivileges", "read"))) {
+            fixture.handler.synchronize((method, uri, body, depth) -> response(true), account(), () -> true);
+            AccountConfiguration changed = account();
+            changed.url = "https://server-b.example/dav/";
+            bridge.getConfiguration().put("url", changed.url);
+            fixture.handler.synchronize((method, uri, body, depth) -> {
+                fail("Invalid cross-origin path must not reach the server");
+                return "";
+            }, changed, () -> true);
+            assertFalse(fixture.handler.getThing().getProperties().containsKey("calendarIdentity"));
+            assertEquals(ThingStatus.OFFLINE, fixture.handler.status);
+            assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, fixture.handler.detail);
+            assertEquals(List.of("caldav:account:account-a|/calendar/work/"), fixture.handler.onlineIdentities);
+            assertEquals("#123456", fixture.handler.getThing().getProperties().get("calendarColor"));
+            assertEquals("Work", fixture.handler.getThing().getProperties().get("calendarDescription"));
+            assertEquals("read", fixture.handler.getThing().getProperties().get("calendarPrivileges"));
+        }
+    }
+
+    /** Checks that stable origin-relative paths avoid redundant representation writes after account changes. */
+    @Test
+    void rootRelativePathSurvivesAccountChangeWithoutAnotherPropertyWrite() throws Exception {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            List<URI> requests = new ArrayList<>();
+            DavTransport transport = (method, uri, body, depth) -> {
+                requests.add(uri);
+                return response(true);
+            };
+            fixture.handler.synchronize(transport, account(), () -> true);
+            AccountConfiguration changed = account();
+            changed.url = "https://server-b.example/dav/";
+            bridge.getConfiguration().put("url", changed.url);
+            fixture.handler.synchronize(transport, changed, () -> true);
+            assertEquals(List.of(URI.create("https://example.org/calendar/work/"),
+                    URI.create("https://server-b.example/calendar/work/")), requests);
+            assertEquals(
+                    List.of("caldav:account:account-a|/calendar/work/", "caldav:account:account-a|/calendar/work/"),
+                    fixture.handler.onlineIdentities);
+            Objects.requireNonNull(verify(fixture.callback, times(1))).thingUpdated(any(Thing.class));
+        }
+    }
+
+    /** Checks that invalid account settings remove calendar representation without a calendar lifecycle restart. */
+    @Test
+    void invalidCurrentAccountRemovesIdentityWithoutCalendarReinitialization() throws Exception {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            AccountConfiguration invalid = account();
+            invalid.url = "ftp://example.org/";
+            fixture.handler.synchronize((method, uri, body, depth) -> {
+                fail("Invalid account must not reach the server");
+                return "";
+            }, invalid, () -> true);
+            assertFalse(fixture.handler.getThing().getProperties().containsKey("calendarIdentity"));
+            assertEquals(ThingStatus.OFFLINE, fixture.handler.status);
+            assertTrue(fixture.handler.onlineIdentities.isEmpty());
+        }
+    }
+
+    /** Checks that relative calendar paths are re-resolved before successful synchronization publishes ONLINE. */
+    @Test
+    void changedAccountBaseDirectoryUpdatesRelativeIdentityBeforeOnline() throws Exception {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "work/"), new MemoryStorage(), bridge)) {
+            AccountConfiguration changed = account();
+            changed.url = "https://example.org/new-base/";
+            bridge.getConfiguration().put("url", changed.url);
+            fixture.handler.synchronize((method, uri, body, depth) -> response(true), changed, () -> true);
+            assertEquals(List.of("caldav:account:account-a|/new-base/work/"), fixture.handler.onlineIdentities);
+            Objects.requireNonNull(verify(fixture.callback, times(2))).thingUpdated(any(Thing.class));
+        }
+    }
+
+    /** Checks that reentrant disposal during property publication cannot reactivate calendar initialization. */
+    @Test
+    void disposalFromPropertyCallbackCannotReactivateInitialization() throws Exception {
+        Bridge bridge = identityBridge("account-a");
+        AccountHandler accountHandler = Objects.requireNonNull(mock(AccountHandler.class));
+        when(accountHandler.configuration()).thenReturn(account());
+        bridge.setHandler(accountHandler);
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            Objects.requireNonNull(doAnswer(invocation -> {
+                fixture.handler.dispose();
+                return null;
+            }).when(fixture.callback)).thingUpdated(any(Thing.class));
+            fixture.handler.thingUpdated(reconfigured(fixture.handler, bridge, Map.of("path", "/calendar/family/")));
+            fixture.handler.synchronize((method, uri, body, depth) -> {
+                fail("Disposed generation must stay inactive");
+                return "";
+            }, account(), () -> true);
+            assertTrue(fixture.handler.onlineIdentities.isEmpty());
+            verify(accountHandler, times(1)).requestSync();
+        }
+    }
+
+    /** Checks that a disposed calendar cannot publish representation data during account revalidation. */
+    @Test
+    void disposedHandlerCannotPublishAccountContextMetadata() {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            fixture.handler.dispose();
+            AccountConfiguration changed = account();
+            changed.url = "https://other.example/";
+            assertFalse(fixture.handler.accountConfigurationChanged(bridge.getUID(), changed, () -> true));
+            Objects.requireNonNull(verify(fixture.callback, times(1))).thingUpdated(any(Thing.class));
+            assertTrue(fixture.handler.onlineIdentities.isEmpty());
+        }
+    }
+
+    /**
+     * Checks that valid configuration supplies representation metadata without a running account handler or network
+     * access.
+     */
+    @Test
+    void identityIsAvailableWithoutAnAccountHandlerOrLiveSynchronization() {
+        Bridge bridge = identityBridge("account-a");
+        assertNull(bridge.getHandler());
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            assertEquals("caldav:account:account-a|/calendar/work/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+            assertFalse(fixture.handler.getThing().getProperties().containsKey("calendarUid"));
+            assertFalse(fixture.handler.getThing().getConfiguration().containsKey("calendarIdentity"));
+            assertEquals(ThingStatus.UNKNOWN, fixture.handler.status);
+            assertTrue(fixture.storage.getKeys().isEmpty());
+            assertTrue(fixture.jobs.isEmpty());
+            Objects.requireNonNull(verify(fixture.callback)).thingUpdated(fixture.handler.getThing());
+        }
+    }
+
+    /** Checks that successful publication of an unchanged representation is not repeated. */
+    @Test
+    void unchangedIdentityDoesNotCauseRepeatedPropertyWrites() {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            fixture.handler.initialize();
+            fixture.handler.initialize();
+            assertEquals("caldav:account:account-a|/calendar/work/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+            Objects.requireNonNull(verify(fixture.callback, times(1))).thingUpdated(fixture.handler.getThing());
+        }
+    }
+
+    /** Checks that a changed collection path replaces the calendar representation. */
+    @Test
+    void pathReconfigurationReplacesTheRepresentationProperty() {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            assertEquals("caldav:account:account-a|/calendar/work/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+            fixture.handler.thingUpdated(reconfigured(fixture.handler, bridge, Map.of("path", "/calendar/family/")));
+            assertEquals("caldav:account:account-a|/calendar/family/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+        }
+    }
+
+    /** Checks that reassociating a calendar changes the owning bridge in its representation. */
+    @Test
+    void bridgeReassociationChangesTheRepresentationScope() {
+        Bridge first = identityBridge("account-a");
+        Bridge second = identityBridge("account-b");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), first)) {
+            fixture.handler.bridge = second;
+            fixture.handler.thingUpdated(reconfigured(fixture.handler, second, Map.of()));
+            assertEquals("caldav:account:account-b|/calendar/work/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+        }
+    }
+
+    /** Checks that invalid calendar settings remove a previously valid representation. */
+    @Test
+    void invalidCalendarReconfigurationRemovesTheStaleIdentity() {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            for (Map<String, Object> invalid : List.<Map<String, Object>> of(Map.of("path", ""),
+                    Map.of("path", "https://foreign.example/calendar/work/"),
+                    Map.of("path", "https://user:secret@example.org/calendar/work/"),
+                    Map.of("path", "/calendar/work/#fragment"), Map.of("maxEvents", new BigDecimal("1.5")),
+                    Map.of("maxEvents", 0), Map.of("rangeStartOffset", 2, "rangeEndOffset", 1))) {
+                assertEquals("caldav:account:account-a|/calendar/work/",
+                        fixture.handler.getThing().getProperties().get("calendarIdentity"));
+                fixture.handler.thingUpdated(reconfigured(fixture.handler, bridge, invalid));
+                assertFalse(fixture.handler.getThing().getProperties().containsKey("calendarIdentity"),
+                        invalid.toString());
+                fixture.handler.thingUpdated(reconfigured(fixture.handler, bridge, Map.of("path", "/calendar/work/",
+                        "maxEvents", 500, "rangeStartOffset", -1, "rangeEndOffset", 1)));
+            }
+        }
+    }
+
+    /** Checks that account endpoint changes preserve an unchanged logical collection reference within the bridge. */
+    @Test
+    void accountUrlChangeKeepsTheSameLogicalBridgeReference() {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            bridge.getConfiguration().put("url", "https://different.example:8443/other-account/");
+            fixture.handler.initialize();
+            assertEquals("caldav:account:account-a|/calendar/work/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+            Objects.requireNonNull(verify(fixture.callback, times(1))).thingUpdated(fixture.handler.getThing());
+        }
+    }
+
+    /** Checks that credentials and unrelated account settings do not enter the calendar representation. */
+    @Test
+    void credentialsAndOtherAccountSettingsDoNotChangeIdentity() {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            bridge.getConfiguration().put("username", "other-user");
+            bridge.getConfiguration().put("password", "other-password");
+            bridge.getConfiguration().put("authType", "DIGEST");
+            bridge.getConfiguration().put("discoveryMode", "DIRECT");
+            fixture.handler.initialize();
+            assertEquals("caldav:account:account-a|/calendar/work/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+            Objects.requireNonNull(verify(fixture.callback, times(1))).thingUpdated(fixture.handler.getThing());
+        }
+    }
+
+    /** Checks that calendar labels and optional server metadata do not affect representation identity. */
+    @Test
+    void calendarMetadataAndLabelDoNotChangeIdentity() {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            Thing current = fixture.handler.getThing();
+            Map<String, String> properties = new HashMap<>(current.getProperties());
+            properties.putAll(Map.of("calendarDescription", "Changed", "calendarColor", "#123456", "calendarPrivileges",
+                    "read,write"));
+            fixture.handler.thingUpdated(ThingBuilder.create(current.getThingTypeUID(), current.getUID())
+                    .withBridge(bridge.getUID()).withConfiguration(current.getConfiguration()).withLabel("Renamed")
+                    .withProperties(properties).build());
+            assertEquals("caldav:account:account-a|/calendar/work/",
+                    fixture.handler.getThing().getProperties().get("calendarIdentity"));
+            Objects.requireNonNull(verify(fixture.callback, times(1))).thingUpdated(current);
+        }
+    }
+
+    /** Checks that a calendar without an associated bridge loses its stale representation. */
+    @Test
+    void removingTheBridgeRemovesTheStaleRepresentationProperty() {
+        Bridge bridge = identityBridge("account-a");
+        try (Fixture fixture = new Fixture(Map.of("path", "/calendar/work/"), new MemoryStorage(), bridge)) {
+            fixture.handler.bridge = null;
+            fixture.handler.thingUpdated(reconfigured(fixture.handler, null, Map.of()));
+            assertFalse(fixture.handler.getThing().getProperties().containsKey("calendarIdentity"));
         }
     }
 
@@ -254,8 +791,23 @@ class CalendarHandlerTest {
         return result.append("</d:multistatus>").toString();
     }
 
+    private static String requestedToken(String body) {
+        return assertDoesNotThrow(
+                () -> CalDavXml.parse(body).getElementsByTagNameNS("DAV:", "sync-token").item(0).getTextContent());
+    }
+
+    private static String syncResponse(String token, String members) {
+        return "<d:multistatus xmlns:d=\"DAV:\">" + members + "<d:sync-token>" + token
+                + "</d:sync-token></d:multistatus>";
+    }
+
+    private static String syncMember(String name, String etag) {
+        return "<d:response><d:href>/calendar/" + name + ".ics</d:href><d:propstat><d:prop><d:getetag>" + etag
+                + "</d:getetag></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response>";
+    }
+
     private static Thing thing() {
-        return ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), "test")
+        return ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), "test").withBridge(DEFAULT_BRIDGE)
                 .withConfiguration(new Configuration(
                         Map.of("path", "https://example.org/calendar/", "rangeStartOffset", -1, "rangeEndOffset", 1)))
                 .build();
@@ -281,6 +833,7 @@ class CalendarHandlerTest {
                 + "</d:multistatus>";
     }
 
+    /** Checks that a valid calendar starts in a waiting state instead of an artificial communication error. */
     @Test
     void initializationWaitsForSynchronizationWithoutError() {
         Handler h = new Handler();
@@ -296,6 +849,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that invalid integer configuration is rejected before conversion or scheduled calendar work. */
     @Test
     void invalidRawIntegerValuesAreRejectedBeforeSchedulingOrDtoConversion() throws Exception {
         AccountHandler accountHandler = mock(AccountHandler.class);
@@ -329,6 +883,7 @@ class CalendarHandlerTest {
         verify(accountHandler, never()).requestSync();
     }
 
+    /** Checks that exact integer strings remain accepted calendar configuration values. */
     @Test
     void exactIntegerStringsRemainValidForCalendarConfiguration() throws Exception {
         try (Fixture fixture = new Fixture(Map.of("rangeStartOffset", "-1", "rangeEndOffset", "1", "maxEvents", "1"))) {
@@ -342,6 +897,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that invalid reconfiguration clears old event data and corrected settings permit recovery. */
     @Test
     void invalidIntegerReinitializationClearsDataAndAllowsCorrection() throws Exception {
         try (Fixture fixture = new Fixture(Map.of())) {
@@ -370,12 +926,14 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that the first live fetch keeps the calendar UNKNOWN until successful completion. */
     @Test
     @Timeout(30)
     void initialFetchRemainsUnknownUntilSuccess() throws Exception {
         checkStatusDuringFetch(false);
     }
 
+    /** Checks that later synchronization does not take an already confirmed calendar offline while fetching. */
     @Test
     @Timeout(30)
     void subsequentFetchRemainsOnline() throws Exception {
@@ -426,6 +984,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that a failed initial fetch preserves the specific synchronization diagnosis. */
     @Test
     void firstFetchFailureKeepsExistingErrorDetails() throws Exception {
         checkFirstFailure((m, u, b, d) -> {
@@ -455,6 +1014,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks event-range publication, clearing absent selections and REFRESH without additional server requests. */
     @Test
     void publishesRangeClearsMissingEventsAndRefreshesLocally() throws Exception {
         Handler h = new Handler();
@@ -477,6 +1037,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that failures retain usable events and successful recovery replaces their cached state. */
     @Test
     void communicationFailureKeepsCacheAndRecoveryReplacesIt() throws Exception {
         Handler h = new Handler();
@@ -500,6 +1061,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that a fetch completing after disposal cannot publish calendar state. */
     @Test
     void completionAfterDisposeCannotPublish() throws Exception {
         Handler h = new Handler();
@@ -532,6 +1094,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that restart recovery publishes stored events and Thing removal deletes their persistent cache. */
     @Test
     void restoresPersistentCacheBeforeLiveSyncAndRemovesItWithThing() throws Exception {
         MemoryStorage storage = new MemoryStorage();
@@ -570,6 +1133,114 @@ class CalendarHandlerTest {
         }
     }
 
+    /**
+     * Checks that restart into a new day reuses persisted collection state instead of downloading unchanged resources.
+     */
+    @Test
+    void restartReusesPersistedTokenAfterCalendarDayRollover() throws Exception {
+        MemoryStorage storage = new MemoryStorage();
+        AccountConfiguration configuration = account();
+        configuration.syncMode = "SYNC_TOKEN";
+        configuration.maxPastDays = 1;
+        configuration.maxFutureDays = 1;
+        String uid;
+        String raw;
+        try (Fixture first = new Fixture(Map.of(), storage, null)) {
+            first.handler.synchronize((method, uri, body, depth) -> {
+                if ("REPORT".equals(method)) {
+                    assertEquals("", requestedToken(body));
+                    return syncResponse("T1", syncMember("one", "a"));
+                }
+                assertEquals("GET", method);
+                return calendar("future", "DTSTART:20260920T090000Z\nDURATION:PT1H\n");
+            }, configuration, () -> true);
+            assertEquals("0", Objects.requireNonNull(first.handler.published.get("events#count")).toString());
+            uid = first.handler.getThing().getUID().toString();
+            raw = Objects.requireNonNull(storage.get(uid));
+        }
+        var before = JsonParser.parseString(raw).getAsJsonObject().getAsJsonObject("snapshot");
+        assertEquals("T1", before.get("token").getAsString());
+        assertEquals("2026-09-17T00:00:00Z/2026-09-20T00:00:00Z/Z", before.get("horizon").getAsString());
+        try (Fixture restarted = new Fixture(Map.of(), storage, bridge(configuration),
+                Instant.parse("2026-09-19T09:00:00Z"))) {
+            assertEquals(ThingStatus.UNKNOWN, restarted.handler.status);
+            assertEquals("1", Objects.requireNonNull(restarted.handler.published.get("events#count")).toString());
+            assertEquals(raw, storage.get(uid));
+            List<String> requests = new ArrayList<>();
+            restarted.handler.synchronize((method, uri, body, depth) -> {
+                requests.add(method);
+                assertEquals("REPORT", method);
+                assertEquals("T1", requestedToken(body));
+                return syncResponse("T2", "");
+            }, configuration, () -> true);
+            assertEquals(List.of("REPORT"), requests);
+            assertEquals(ThingStatus.ONLINE, restarted.handler.status);
+            assertEquals("1", Objects.requireNonNull(restarted.handler.published.get("events#count")).toString());
+            assertTrue(Objects.requireNonNull(restarted.handler.published.get("events#json")).toString()
+                    .contains("future"));
+            var after = JsonParser.parseString(Objects.requireNonNull(storage.get(uid))).getAsJsonObject()
+                    .getAsJsonObject("snapshot");
+            assertEquals("T2", after.get("token").getAsString());
+            assertEquals("2026-09-18T00:00:00Z/2026-09-21T00:00:00Z/Z", after.get("horizon").getAsString());
+            assertEquals(before.getAsJsonObject("resources"), after.getAsJsonObject("resources"));
+        }
+    }
+
+    /** Checks that failed synchronization after a horizon change preserves persistence until a complete recovery. */
+    @Test
+    void rolloverFailureKeepsPersistedStateUntilTransactionalRecovery() throws Exception {
+        try (Fixture fixture = new Fixture(Map.of())) {
+            AccountConfiguration configuration = account();
+            configuration.syncMode = "SYNC_TOKEN";
+            configuration.maxPastDays = 1;
+            configuration.maxFutureDays = 1;
+            AtomicInteger reports = new AtomicInteger();
+            DavTransport transport = (method, uri, body, depth) -> {
+                if ("REPORT".equals(method)) {
+                    int request = reports.incrementAndGet();
+                    assertEquals(request == 1 ? "" : "T1", requestedToken(body));
+                    return switch (request) {
+                        case 1 ->
+                            syncResponse("T1", syncMember("a", "a") + syncMember("b", "b") + syncMember("c", "c"));
+                        case 2 -> syncResponse("T2", syncMember("b", "changed") + syncMember("d", "d")
+                                + "<d:response><d:href>/calendar/c.ics</d:href><d:status>HTTP/1.1 404 Not Found</d:status></d:response>");
+                        case 3 -> syncResponse("T3", "");
+                        default -> throw new IOException("Unexpected REPORT");
+                    };
+                }
+                assertEquals("GET", method);
+                String properties = "DTSTART:20260918T080000Z\nDURATION:PT2H\n";
+                return switch (uri.getPath()) {
+                    case "/calendar/a.ics" -> calendar("a", properties);
+                    case "/calendar/b.ics" -> calendar(reports.get() == 1 ? "b" : "updated-b", properties);
+                    case "/calendar/c.ics" -> calendar("c", properties);
+                    case "/calendar/d.ics" -> throw new IOException("offline");
+                    default -> throw new IOException("Unexpected GET");
+                };
+            };
+            Handler h = fixture.handler;
+            h.synchronize(transport, configuration, () -> true);
+            String uid = h.getThing().getUID().toString();
+            String before = Objects.requireNonNull(fixture.storage.get(uid));
+            fixture.clock.advance(24 * 3600);
+            h.synchronize(transport, configuration, () -> true);
+            assertEquals("ERROR", Objects.requireNonNull(h.published.get("sync#status")).toString());
+            assertEquals(before, fixture.storage.get(uid));
+            h.synchronize(transport, configuration, () -> true);
+            assertEquals(3, reports.get());
+            assertEquals("OK", Objects.requireNonNull(h.published.get("sync#status")).toString());
+            assertEquals("3", Objects.requireNonNull(h.published.get("events#count")).toString());
+            assertFalse(Objects.requireNonNull(h.published.get("events#json")).toString().contains("updated-b"));
+            var original = JsonParser.parseString(before).getAsJsonObject().getAsJsonObject("snapshot");
+            var recovered = JsonParser.parseString(Objects.requireNonNull(fixture.storage.get(uid))).getAsJsonObject()
+                    .getAsJsonObject("snapshot");
+            assertEquals("T3", recovered.get("token").getAsString());
+            assertEquals(original.getAsJsonObject("resources"), recovered.getAsJsonObject("resources"));
+            assertNotEquals(original.get("horizon"), recovered.get("horizon"));
+        }
+    }
+
+    /** Checks that partial results publish usable events while retaining the timestamp of the last complete success. */
     @Test
     void partialSnapshotsPublishHealthyResourcesAndOnlyCompleteSyncAdvancesLast() throws Exception {
         String healthy = calendar("healthy", "DTSTART:20260918T080000Z\nDURATION:PT2H\nSUMMARY:Healthy\n");
@@ -600,6 +1271,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that unsupported recurrence modifications cannot publish a misleading unmodified event series. */
     @Test
     void unsupportedRecurrenceRangeDoesNotPublishAnUnmodifiedSeries() throws Exception {
         String unsupported = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:series\n"
@@ -617,6 +1289,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that local clock updates preserve the waiting or failure state until actual synchronization succeeds. */
     @Test
     @Timeout(30)
     void coldStartRetryWaitsUnknownAndRecoveryAfterLiveSyncStaysOffline() throws Exception {
@@ -658,6 +1331,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that selected event channels use the full event set and preserve empty optional text. */
     @Test
     void currentAndNextUseEventsBeyondJsonLimitAndMissingTextsStayEmpty() throws Exception {
         try (Fixture fixture = new Fixture(Map.of("maxEvents", 1))) {
@@ -680,6 +1354,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that calendar color metadata is published without altering its server-provided syntax. */
     @Test
     void publishesServerCalendarColorsWithoutConversion() {
         for (String color : List.of("#CEE7FFFF", "#CEE7FF", "#cee7ff", "#cee7ffff", "blue", "DarkGreen", "nonsense")) {
@@ -693,6 +1368,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that color output trims whitespace without mutating the underlying Thing property. */
     @Test
     void trimsCalendarColorWithoutChangingDiscoveryMetadata() {
         String raw = "  #CEE7FFFF  ";
@@ -701,11 +1377,13 @@ class CalendarHandlerTest {
             assertEquals("#CEE7FFFF",
                     Objects.requireNonNull(fixture.handler.published.get("calendar-color")).toString());
             assertEquals(
-                    Map.of("calendarColor", raw, "calendarPrivileges", "read,write", "calendarDescription", "Family"),
+                    Map.of("calendarColor", raw, "calendarPrivileges", "read,write", "calendarDescription", "Family",
+                            "calendarIdentity", "caldav:account:test|/calendar/"),
                     fixture.handler.getThing().getProperties());
         }
     }
 
+    /** Checks that unavailable or blank calendar colors publish UNDEF. */
     @Test
     void absentOrBlankCalendarColorPublishesUndef() {
         for (Map<String, String> properties : List.of(Map.<String, String> of(), Map.of("calendarColor", ""),
@@ -716,6 +1394,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that unsafe control characters cause UNDEF rather than a repaired color value. */
     @Test
     void rejectsControlCharactersWithoutRepairingCalendarColor() {
         for (String raw : List.of("#CEE7FF\nblue", "blue\r", "\tblue", "blue\u0000", "blue\u001B", "blue\u007F",
@@ -728,6 +1407,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that Thing metadata updates republish changed or removed calendar color. */
     @Test
     void thingUpdatesRepublishChangedAndRemovedCalendarColor() {
         try (Fixture fixture = new Fixture(Map.of(), new MemoryStorage(), null, "Calendar",
@@ -738,7 +1418,8 @@ class CalendarHandlerTest {
                     Map.of("calendarColor", "DarkGreen"))) {
                 Thing current = h.getThing();
                 Thing updated = ThingBuilder.create(current.getThingTypeUID(), current.getUID())
-                        .withConfiguration(current.getConfiguration()).withProperties(properties).build();
+                        .withBridge(current.getBridgeUID()).withConfiguration(current.getConfiguration())
+                        .withProperties(properties).build();
                 h.thingUpdated(updated);
                 String raw = properties.get("calendarColor");
                 assertEquals(raw == null ? UnDefType.UNDEF : new StringType(raw.trim()),
@@ -749,6 +1430,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that color REFRESH uses current local metadata without a calendar request. */
     @Test
     void calendarColorRefreshReadsCurrentMetadataWithoutFetchingEvents() throws Exception {
         AtomicInteger requests = new AtomicInteger();
@@ -774,6 +1456,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that color REFRESH cannot publish state after disposal. */
     @Test
     void disposedCalendarDoesNotPublishColorOnRefresh() {
         try (Fixture fixture = new Fixture(Map.of(), new MemoryStorage(), null, "Calendar",
@@ -787,6 +1470,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that REFRESH and unsupported write commands never cause calendar network access. */
     @Test
     void allRefreshChannelsAndWriteCommandsAreLocal() throws Exception {
         AtomicInteger requests = new AtomicInteger();
@@ -807,6 +1491,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that old fetch results cannot publish, persist or schedule updates after reinitialization. */
     @Test
     @Timeout(30)
     void reinitializationRejectsOldFetchPublicationCacheAndTimer() throws Exception {
@@ -850,6 +1535,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks deterministic local event transitions and rejection of disposed timer work without network access. */
     @Test
     void localClockPublishesStartEndAndRejectsDisposedJobsWithoutNetwork() throws Exception {
         AtomicInteger requests = new AtomicInteger();
@@ -881,6 +1567,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that local scheduling updates moving output ranges and midnight boundaries. */
     @Test
     void movingRangeAndMidnightAreUpdatedByLocalClock() throws Exception {
         try (Fixture fixture = new Fixture(Map.of("rangeAnchor", "NOW", "rangeStartOffset", 0, "rangeEndOffset", 0))) {
@@ -908,6 +1595,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that a changed openHAB time zone clears incompatible projections until live synchronization. */
     @Test
     void localZoneChangeClearsOldDataUntilSuccessfulSynchronization() throws Exception {
         try (Fixture fixture = new Fixture(Map.of())) {
@@ -926,6 +1614,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that unusable cached data cannot establish a successful live calendar state. */
     @Test
     void corruptForeignAndOversizedCachesDoNotInventLiveSuccess() throws Exception {
         MemoryStorage storage = new MemoryStorage();
@@ -959,6 +1648,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that restored events honor current selection settings while leaving connectivity unconfirmed. */
     @Test
     void restoredCacheAppliesCurrentRangeAndIncludeCancelledWithoutClaimingLiveSuccess() throws Exception {
         MemoryStorage storage = new MemoryStorage();
@@ -989,6 +1679,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that a concurrent time-zone change prevents publication or persistence of an obsolete projection. */
     @Test
     @Timeout(30)
     void zoneChangeWhileFetchingCannotPublishOrPersistOldZoneData() throws Exception {
@@ -1029,6 +1720,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that exhausted cached coverage is reported locally and repaired by successful synchronization. */
     @Test
     void expiredLocalHorizonIsReportedAndLiveSyncRepairsIt() throws Exception {
         try (Fixture fixture = new Fixture(Map.of())) {
@@ -1064,6 +1756,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that equivalent account and collection URI forms share a cache identity. */
     @Test
     void cacheIdentityUsesCanonicalAccountAndCollectionUris() throws Exception {
         String identity = savedIdentity(account(), "https://example.org/calendar/", ZoneOffset.UTC);
@@ -1079,6 +1772,7 @@ class CalendarHandlerTest {
         assertNotEquals(identity, savedIdentity(account(), "/calendar/?view=2", ZoneOffset.UTC));
     }
 
+    /** Checks that cache identity includes the relevant account and projection context while excluding passwords. */
     @Test
     void cacheIdentityRetainsUserEndpointAndZoneContextButExcludesPassword() throws Exception {
         AccountConfiguration original = account();
@@ -1095,6 +1789,7 @@ class CalendarHandlerTest {
         assertNotEquals(identity, savedIdentity(original, "/calendar/", ZoneId.of("Europe/Berlin")));
     }
 
+    /** Checks that a versioned compact resource snapshot restores for equivalent manual collection references. */
     @Test
     void versionedCompactSnapshotRestoresAcrossEquivalentManualPaths() throws Exception {
         MemoryStorage storage = new MemoryStorage();
@@ -1124,6 +1819,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that incompatible or partly corrupt cache snapshots are discarded transactionally and rebuilt. */
     @Test
     void incompatibleAndPartlyCorruptSnapshotsAreDiscardedInFullThenRebuilt() throws Exception {
         MemoryStorage storage = new MemoryStorage();
@@ -1142,6 +1838,16 @@ class CalendarHandlerTest {
         var unversioned = JsonParser.parseString(raw).getAsJsonObject();
         unversioned.remove("version");
         invalid.add(unversioned.toString());
+        for (String field : List.of("horizon", "token")) {
+            var json = JsonParser.parseString(raw).getAsJsonObject();
+            json.getAsJsonObject("snapshot").remove(field);
+            invalid.add(json.toString());
+        }
+        for (String field : List.of("etag", "data")) {
+            var json = JsonParser.parseString(raw).getAsJsonObject();
+            json.getAsJsonObject("snapshot").getAsJsonObject("resources").getAsJsonObject("0.ics").remove(field);
+            invalid.add(json.toString());
+        }
         for (int version : new int[] { 0, 2 }) {
             var json = JsonParser.parseString(raw).getAsJsonObject();
             json.addProperty("version", version);
@@ -1182,6 +1888,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that presentation metadata changes do not prevent restoration of compatible calendar resources. */
     @Test
     void cacheRestoreIgnoresLabelsAndOptionalDiscoveryMetadata() throws Exception {
         MemoryStorage storage = new MemoryStorage();
@@ -1200,6 +1907,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that an unconfirmed account bridge does not produce a fabricated calendar communication error. */
     @Test
     void unknownBridgeDoesNotInventACommunicationFailure() {
         try (Fixture fixture = new Fixture(Map.of())) {
@@ -1212,42 +1920,49 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that calendar authentication errors retain usable events and expose a safe specific diagnosis. */
     @Test
     void http401ExplainsAuthenticationFailureAndPreservesLastUsableData() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 401), ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/status.calendar.authentication", "Authentication failed (HTTP 401)", true);
     }
 
+    /** Checks that forbidden calendar access receives the correct specific diagnosis. */
     @Test
     void http403ExplainsForbiddenCalendarAccess() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 403), ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/status.calendar.forbidden", "Calendar access forbidden (HTTP 403)", true);
     }
 
+    /** Checks that an initially absent calendar collection is reported as a configuration error. */
     @Test
     void http404BeforeFirstSuccessReportsConfigurationError() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 404), ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/status.calendar.not-found", "Calendar collection was not found (HTTP 404)", false);
     }
 
+    /** Checks that a previously working collection reports GONE while retaining its last usable data. */
     @Test
     void http404AfterLiveSuccessReportsGoneAndPreservesLastUsableData() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 404), ThingStatusDetail.GONE, "@text/status.calendar.gone",
                 "Calendar collection is no longer available (HTTP 404)", true);
     }
 
+    /** Checks that server failures preserve calendar data and receive a specific safe diagnosis. */
     @Test
     void http500ExplainsServerFailureAndPreservesLastUsableData() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 500), ThingStatusDetail.COMMUNICATION_ERROR,
                 "@text/status.calendar.http-error [\"500\"]", "Server returned HTTP 500", true);
     }
 
+    /** Checks that rejected calendar reports retain their structured HTTP status. */
     @Test
     void rejectedReportPreservesHttpStatus() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 405), ThingStatusDetail.COMMUNICATION_ERROR,
                 "@text/status.calendar.http-error [\"405\"]", "Server returned HTTP 405", true);
     }
 
+    /** Checks that network causes produce specific diagnostics without revealing raw exception text. */
     @Test
     void structuredNetworkFailuresExplainCauseWithoutExposingExceptionText() throws Exception {
         for (Exception timeout : List.of(new TimeoutException("private-host password"),
@@ -1301,6 +2016,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that a missing event resource is not misclassified as a missing calendar collection. */
     @Test
     void eventGet404RemainsCommunicationErrorAfterLiveSuccess() throws Exception {
         try (Fixture fixture = new Fixture(Map.of())) {
@@ -1331,6 +2047,7 @@ class CalendarHandlerTest {
         }
     }
 
+    /** Checks that account failure preserves a calendar's own GONE diagnosis until successful calendar recovery. */
     @Test
     void bridgeOfflineDoesNotOverwriteOwnGoneDiagnosisAndRecoveryClearsIt() throws Exception {
         try (Fixture fixture = new Fixture(Map.of())) {

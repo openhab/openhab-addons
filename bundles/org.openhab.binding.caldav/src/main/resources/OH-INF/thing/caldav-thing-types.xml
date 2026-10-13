@@ -133,6 +133,8 @@
 			<property name="thingTypeVersion">1</property>
 		</properties>
 
+		<representation-property>calendarIdentity</representation-property>
+
 		<config-description>
 			<parameter-group name="calendar">
 				<label>Calendar</label>

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,18 +45,28 @@ import org.openhab.binding.caldav.internal.client.CalendarCollection;
 import org.openhab.binding.caldav.internal.client.CalendarDiscoveryParser;
 import org.openhab.binding.caldav.internal.client.DavPrivilege;
 import org.openhab.binding.caldav.internal.handler.AccountHandler;
+import org.openhab.binding.caldav.internal.handler.CalendarHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultFlag;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.config.discovery.inbox.Inbox;
+import org.openhab.core.config.discovery.internal.AutomaticInboxProcessor;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.internal.BridgeImpl;
+import org.openhab.core.thing.type.ThingType;
+import org.openhab.core.thing.type.ThingTypeRegistry;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -67,41 +78,142 @@ import com.sun.net.httpserver.HttpServer;
  * @author Andreas Vilippus - Canonical discovery identity and reference regressions
  * @author Andreas Vilippus - Metadata and account-wide label regressions
  * @author Andreas Vilippus - Pending scan cancellation regressions
+ * @author Andreas Vilippus - Calendar representation and Core Inbox matching regressions
  */
 @NonNullByDefault
 @Timeout(30)
 class CalDavDiscoveryServiceTest {
+    /** Typed storage contract used by calendar test fixtures and mocks. */
+    private interface CalendarStorage extends Storage<String> {
+    }
+
+    /** Discovery fixture that records scan requests and published Inbox results. */
     private static final class Service extends CalDavDiscoveryService {
+        /** Discovery results captured in publication order. */
         final LinkedBlockingQueue<DiscoveryResult> results = new LinkedBlockingQueue<>();
+        /** Number of scan requests passed to the discovery service. */
         final AtomicInteger scans = new AtomicInteger();
 
+        /** Records the scan request before executing the normal discovery implementation. */
         @Override
         public void startScan() {
             scans.incrementAndGet();
             super.startScan();
         }
 
+        /**
+         * Captures an Inbox result for publication and cancellation assertions.
+         *
+         * @param result discovered calendar result
+         */
         @Override
         protected void thingDiscovered(DiscoveryResult result) {
             results.add(result);
         }
     }
 
+    /** Verifies that Core ignores a discovery result matching a manual calendar under a different Thing UID. */
+    @Test
+    void manualCalendarMatchesDiscoveryDespiteDifferentThingUidsAndPathForms() {
+        Bridge bridge = representationBridge("metadata");
+        CalendarCollection collection = calendar("/calendar/work/", "Work");
+        DiscoveryResult result = Objects.requireNonNull(discover(List.of(collection)).get(collection.uri()));
+        assertEquals("calendarIdentity", result.getRepresentationProperty());
+        assertEquals("caldav:account:metadata|/calendar/work/", result.getProperties().get("calendarIdentity"));
+        for (String path : List.of("/calendar/work/", "https://example.org/calendar/work/",
+                "https://EXAMPLE.org:443/calendar/%77ork/")) {
+            for (String id : List.of("my-calendar", "another-calendar")) {
+                CalendarHandler handler = manualCalendar(bridge, id, path);
+                try {
+                    Thing manual = handler.getThing();
+                    assertNotEquals(manual.getUID(), result.getThingUID());
+                    assertEquals(result.getProperties().get("calendarIdentity"),
+                            manual.getProperties().get("calendarIdentity"));
+                    assertFalse(manual.getProperties().containsKey("calendarUid"));
+                    assertNotEquals(ThingStatus.ONLINE, manual.getStatus());
+                    assertInboxMatch(manual, result, true);
+                } finally {
+                    handler.dispose();
+                }
+            }
+        }
+    }
+
+    /** Checks that Core representation matching keeps different collections, accounts and Thing types separate. */
+    @Test
+    void coreMatchingSeparatesCalendarPathsBridgeScopesAndThingTypes() {
+        Bridge first = representationBridge("metadata");
+        Bridge second = representationBridge("other-account");
+        assertEquals(first.getConfiguration(), second.getConfiguration());
+        CalendarCollection collection = calendar("/calendar/work/", "Work");
+        DiscoveryResult result = Objects.requireNonNull(discover(List.of(collection)).get(collection.uri()));
+        for (Bridge bridge : List.of(first, second)) {
+            String path = bridge.getUID().equals(first.getUID()) ? "/calendar/family/" : "/calendar/work/";
+            CalendarHandler handler = manualCalendar(bridge, "manual", path);
+            try {
+                assertNotEquals(result.getProperties().get("calendarIdentity"),
+                        handler.getThing().getProperties().get("calendarIdentity"));
+                assertInboxMatch(handler.getThing(), result, false);
+            } finally {
+                handler.dispose();
+            }
+        }
+        Thing differentType = ThingBuilder.create(new ThingTypeUID("caldav", "account"), "different-type")
+                .withProperties(Map.of("calendarIdentity", "caldav:account:metadata|/calendar/work/")).build();
+        assertInboxMatch(differentType, result, false);
+    }
+
+    private static Bridge representationBridge(String id) {
+        return BridgeBuilder.create(new ThingTypeUID("caldav", "account"), id)
+                .withConfiguration(new Configuration(
+                        Map.of("url", "https://example.org/caldav/", "username", "user", "password", "secret")))
+                .build();
+    }
+
+    private static CalendarHandler manualCalendar(Bridge bridge, String id, String path) {
+        ThingUID uid = new ThingUID(new ThingTypeUID("caldav", "calendar"), bridge.getUID(), id);
+        Thing thing = ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), uid).withBridge(bridge.getUID())
+                .withConfiguration(new Configuration(Map.of("path", path))).build();
+        CalendarHandler handler = new CalendarHandler(thing, () -> ZoneOffset.UTC,
+                Objects.requireNonNull(mock(CalendarStorage.class)));
+        ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+        when(callback.getBridge(bridge.getUID())).thenReturn(bridge);
+        handler.setCallback(callback);
+        handler.initialize();
+        return handler;
+    }
+
+    private static void assertInboxMatch(Thing existing, DiscoveryResult result, boolean expected) {
+        ThingType type = Objects.requireNonNull(mock(ThingType.class));
+        when(type.getRepresentationProperty()).thenReturn("calendarIdentity");
+        ThingTypeRegistry types = Objects.requireNonNull(mock(ThingTypeRegistry.class));
+        when(types.getThingType(existing.getThingTypeUID())).thenReturn(type);
+        ThingRegistry things = Objects.requireNonNull(mock(ThingRegistry.class));
+        when(things.stream()).thenAnswer(invocation -> java.util.stream.Stream.of(existing));
+        Inbox inbox = Objects.requireNonNull(mock(Inbox.class));
+        new AutomaticInboxProcessor(types, things, inbox).thingAdded(inbox, result);
+        verify(inbox, times(expected ? 1 : 0)).setFlag(result.getThingUID(), DiscoveryResultFlag.IGNORED);
+    }
+
+    /** Checks that early discovery service registration produces one initialization scan. */
     @Test
     void serviceInitializedBeforeAccountStillDiscoversOnce() throws Exception {
         checkInitialization(true, true, false);
     }
 
+    /** Checks that late discovery service registration still produces one initialization scan. */
     @Test
     void serviceInitializedAfterAccountDiscoversOnce() throws Exception {
         checkInitialization(false, true, false);
     }
 
+    /** Checks that disabling automatic discovery leaves explicit Inbox scans available. */
     @Test
     void disabledBackgroundDiscoveryStillAllowsInboxScan() throws Exception {
         checkInitialization(true, false, false);
     }
 
+    /** Checks that DIRECT discovery accepts same-origin collections outside the account directory. */
     @Test
     void directDiscoveryOutsideAccountPathStoresOriginRelativePath() throws Exception {
         checkInitialization(true, true, true);
@@ -136,7 +248,15 @@ class CalDavDiscoveryServiceTest {
         String url = "http://127.0.0.1:" + server.getAddress().getPort() + "/";
         Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "test")
                 .withConfiguration(new Configuration(Map.of("url", url + "home/", "discoveryMode", "DIRECT"))).build();
-        AccountHandler handler = new AccountHandler(bridge, factory) {
+        AccountHandler handler = new AccountHandler(bridge, factory, Objects.requireNonNull(mock(ThingRegistry.class)),
+                () -> ZoneOffset.UTC) {
+            /**
+             * Ignores account status in tests concerned only with collection discovery.
+             *
+             * @param status new Thing status
+             * @param detail status detail
+             * @param description status description, if present
+             */
             @Override
             protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
             }
@@ -164,8 +284,9 @@ class CalDavDiscoveryServiceTest {
             assertEquals(1, service.scans.get());
             assertEquals(1, requests.get());
             assertCollectionRequest(Objects.requireNonNull(requestBodies.poll()));
-            assertEquals(Map.of("path", collectionPath), result.getProperties());
-            assertNull(result.getRepresentationProperty());
+            assertEquals(Map.of("path", collectionPath, "calendarIdentity", "caldav:account:test|" + collectionPath),
+                    result.getProperties());
+            assertEquals("calendarIdentity", result.getRepresentationProperty());
             assertEquals(bridge.getUID(), result.getBridgeUID());
             assertEquals("Calendar", result.getLabel());
             service.startScan(null);
@@ -175,7 +296,7 @@ class CalDavDiscoveryServiceTest {
             assertEquals(result.getBridgeUID(), repeated.getBridgeUID());
             assertEquals(result.getLabel(), repeated.getLabel());
             assertEquals(result.getProperties(), repeated.getProperties());
-            assertNull(repeated.getRepresentationProperty());
+            assertEquals("calendarIdentity", repeated.getRepresentationProperty());
             assertEquals(2, service.scans.get());
             assertEquals(2, requests.get());
         } finally {
@@ -186,6 +307,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that discovery UID generation separates identical paths belonging to different account bridges. */
     @Test
     void sameCalendarPathOnDifferentAccountBridgesProducesDistinctThings() {
         String path = "https://example.org/dav/calendars/shared/";
@@ -213,8 +335,10 @@ class CalDavDiscoveryServiceTest {
             DiscoveryResult authenticated = authenticatedService.results.poll();
             assertNotNull(anonymous);
             assertNotNull(authenticated);
-            assertEquals(Map.of("path", "/dav/calendars/shared/"), anonymous.getProperties());
-            assertEquals(Map.of("path", "/dav/calendars/shared/"), authenticated.getProperties());
+            assertEquals(Map.of("path", "/dav/calendars/shared/", "calendarIdentity",
+                    "caldav:account:account-a|/dav/calendars/shared/"), anonymous.getProperties());
+            assertEquals(Map.of("path", "/dav/calendars/shared/", "calendarIdentity",
+                    "caldav:account:account-b|/dav/calendars/shared/"), authenticated.getProperties());
             assertNotEquals(anonymous.getThingUID(), authenticated.getThingUID());
             assertEquals(anonymousBridge.getUID(), anonymous.getBridgeUID());
             assertEquals(authenticatedBridge.getUID(), authenticated.getBridgeUID());
@@ -222,14 +346,15 @@ class CalDavDiscoveryServiceTest {
             assertEquals(List.of("account-a"), anonymous.getThingUID().getBridgeIds());
             assertEquals(List.of("account-b"), authenticated.getThingUID().getBridgeIds());
             assertEquals(anonymous.getThingUID().getId(), authenticated.getThingUID().getId());
-            assertNull(anonymous.getRepresentationProperty());
-            assertNull(authenticated.getRepresentationProperty());
+            assertEquals("calendarIdentity", anonymous.getRepresentationProperty());
+            assertEquals("calendarIdentity", authenticated.getRepresentationProperty());
         } finally {
             anonymousService.dispose();
             authenticatedService.dispose();
         }
     }
 
+    /** Checks that separate collections retain independent discovery identities across scans. */
     @Test
     void distinctCollectionsProduceIndependentStableThings() {
         URI first = URI.create("https://example.org/calendar/Aa/");
@@ -259,6 +384,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that canonical URI aliases preserve a collection's discovery UID across scans. */
     @Test
     void equivalentCollectionUriSpellingsKeepSameThingAcrossScans() {
         Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "aliases")
@@ -279,7 +405,8 @@ class CalDavDiscoveryServiceTest {
                         .accept(List.of(new CalendarCollection(URI.create(spelling), "Calendar")));
                 DiscoveryResult result = Objects.requireNonNull(service.results.poll());
                 assertEquals(expected, result.getThingUID(), spelling);
-                assertEquals(Map.of("path", "/calendar/J/"), result.getProperties(), spelling);
+                assertEquals(Map.of("path", "/calendar/J/", "calendarIdentity", "caldav:account:aliases|/calendar/J/"),
+                        result.getProperties(), spelling);
                 assertTrue(service.results.isEmpty());
             }
         } finally {
@@ -287,6 +414,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that canonicalization preserves URI distinctions significant to DAV collection identity. */
     @Test
     void canonicalIdentityPreservesReservedEscapesPathCaseQueryAndTrailingSlash() {
         Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "distinct")
@@ -317,6 +445,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that discovered calendar configuration uses a reference relative to the server origin. */
     @Test
     void discoveryStoresOriginRelativePath() {
         Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "outside")
@@ -329,7 +458,8 @@ class CalDavDiscoveryServiceTest {
             Objects.requireNonNull(callbacks.poll()).accept(List.of(
                     new CalendarCollection(URI.create("HTTPS://EXAMPLE.ORG:443/calendars/user/9/family/"), "Family")));
             DiscoveryResult result = Objects.requireNonNull(service.results.poll());
-            assertEquals(Map.of("path", "/calendars/user/9/family/"), result.getProperties());
+            assertEquals(Map.of("path", "/calendars/user/9/family/", "calendarIdentity",
+                    "caldav:account:outside|/calendars/user/9/family/"), result.getProperties());
             assertEquals("calendar-0971e33ca8a9bf714b0aa7ab6465aef0162403635864457de5406418ac7c7996",
                     result.getThingUID().getId());
             assertEquals("Family", result.getLabel());
@@ -342,6 +472,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that stored discovery paths reconstruct the intended canonical collection URI. */
     @Test
     void discoveredRelativePathsRoundTripToCanonicalCollections() {
         URI account = URI.create("https://example.org/caldav/?old=value");
@@ -378,6 +509,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that manual path spelling does not alter the canonical discovery UID. */
     @Test
     void configuredPathRepresentationDoesNotAffectCanonicalDiscoveryId() {
         URI account = URI.create("https://example.org/caldav/");
@@ -399,7 +531,9 @@ class CalDavDiscoveryServiceTest {
                         .of(new CalendarCollection(URI.create("https://EXAMPLE.org:443/calendar/%4a/"), "Calendar")));
                 DiscoveryResult result = Objects.requireNonNull(service.results.poll());
                 assertEquals(uid, result.getThingUID(), path);
-                assertEquals(Map.of("path", "/calendar/J/"), result.getProperties());
+                assertEquals(
+                        Map.of("path", "/calendar/J/", "calendarIdentity", "caldav:account:configured|/calendar/J/"),
+                        result.getProperties());
                 assertEquals(canonical, CalDavUris.canonicalize(CalDavUris.resolve(account, path)));
                 assertEquals(path, calendar.getConfiguration().get("path"));
             } finally {
@@ -408,6 +542,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that unsafe collection URLs are rejected before any Inbox publication. */
     @Test
     void discoveryRejectsUnsafeCollectionUrisBeforePublication() {
         URI account = URI.create("https://localhost/caldav/");
@@ -432,6 +567,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that malformed server collection references cannot become Inbox results. */
     @Test
     void discoveryRejectsMalformedCollectionHrefsBeforePublication() {
         URI account = URI.create("https://example.org/home/");
@@ -461,6 +597,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that an origin-relative collection reference cannot become a foreign URI authority. */
     @Test
     void originRelativePathCannotBeReinterpretedAsAnAuthority() {
         URI account = URI.create("https://example.org/caldav/");
@@ -484,6 +621,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that a manual Thing name does not introduce account-independent path matching. */
     @Test
     void manuallyNamedThingDoesNotCreateGlobalPathMatching() {
         URI uri = URI.create("https://example.org/calendar/");
@@ -501,12 +639,13 @@ class CalDavDiscoveryServiceTest {
             Objects.requireNonNull(callbacks.poll()).accept(List.of(new CalendarCollection(uri, "Calendar")));
             DiscoveryResult result = Objects.requireNonNull(service.results.poll());
             assertNotEquals(manual, result.getThingUID());
-            assertNull(result.getRepresentationProperty());
+            assertEquals("calendarIdentity", result.getRepresentationProperty());
         } finally {
             service.dispose();
         }
     }
 
+    /** Checks that stopped or disposed discovery generations cannot publish delayed results. */
     @Test
     void stoppedScansAndDisposedServiceRejectLateResults() throws Exception {
         AccountHandler handler = Objects.requireNonNull(mock(AccountHandler.class));
@@ -556,6 +695,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that scan cancellation waits for an already-started publication to finish. */
     @Test
     void stopWaitsForPublicationAlreadyInProgress() throws Exception {
         Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "publishing")
@@ -565,6 +705,11 @@ class CalDavDiscoveryServiceTest {
         CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
         LinkedBlockingQueue<String> order = new LinkedBlockingQueue<>();
         CalDavDiscoveryService service = new CalDavDiscoveryService() {
+            /**
+             * Captures an Inbox result for publication and cancellation assertions.
+             *
+             * @param result discovered calendar result
+             */
             @Override
             protected void thingDiscovered(DiscoveryResult result) {
                 entered.countDown();
@@ -613,6 +758,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that cancellation during result preparation prevents later Inbox publication. */
     @Test
     void stopDuringResultPreparationPreventsPublication() throws Exception {
         Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "preparing")
@@ -646,6 +792,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that already unique calendar display names require no disambiguation suffix. */
     @Test
     void uniqueDisplayNamesRemainUnchanged() {
         List<CalendarCollection> collections = List.of(calendar("/calendar/1/", "Privat"),
@@ -655,6 +802,7 @@ class CalDavDiscoveryServiceTest {
                 Objects.requireNonNull(results.get(collection.uri())).getLabel()));
     }
 
+    /** Checks that equal display names are distinguished by their collection path suffix. */
     @Test
     void duplicateDisplayNamesGetUniqueLastSegment() {
         Map<URI, DiscoveryResult> results = discover(
@@ -665,6 +813,7 @@ class CalDavDiscoveryServiceTest {
                 Objects.requireNonNull(results.get(URI.create("https://example.org/calendar/456/"))).getLabel());
     }
 
+    /** Checks that label disambiguation includes enough path segments to distinguish collections. */
     @Test
     void duplicateLastSegmentsUseMorePathSegments() {
         Map<URI, DiscoveryResult> results = discover(
@@ -675,6 +824,7 @@ class CalDavDiscoveryServiceTest {
                 Objects.requireNonNull(results.get(URI.create("https://example.org/users/b/family/"))).getLabel());
     }
 
+    /** Checks that query-distinguished collections receive distinct digest-based labels. */
     @Test
     void duplicatePathsWithDifferentQueriesUseDigestFallback() {
         Map<URI, DiscoveryResult> results = discover(
@@ -688,6 +838,7 @@ class CalDavDiscoveryServiceTest {
         assertEquals(2, labels.size());
     }
 
+    /** Checks that colliding short digests are extended until labels become distinct. */
     @Test
     void digestPrefixCollisionExtendsPrefix() {
         Map<URI, DiscoveryResult> results = discover(
@@ -702,6 +853,7 @@ class CalDavDiscoveryServiceTest {
         assertEquals(2, labels.size());
     }
 
+    /** Checks that label suffixes preserve reserved escapes and empty path segments. */
     @Test
     void reservedEscapesAndEmptySegmentsRemainDistinctInSuffixes() {
         Map<URI, DiscoveryResult> results = discover(
@@ -717,6 +869,7 @@ class CalDavDiscoveryServiceTest {
                 Objects.requireNonNull(results.get(URI.create("https://example.org/users/b/family/"))).getLabel());
     }
 
+    /** Checks that display names differing only in case remain unchanged. */
     @Test
     void caseDifferentDisplayNamesRemainUnmodified() {
         Map<URI, DiscoveryResult> results = discover(
@@ -725,6 +878,7 @@ class CalDavDiscoveryServiceTest {
                 new HashSet<>(results.values().stream().map(DiscoveryResult::getLabel).toList()));
     }
 
+    /** Checks that unnamed calendars receive a compact, unique fallback label. */
     @Test
     void missingDisplayNameUsesUniqueCompactFallback() {
         Map<URI, DiscoveryResult> results = discover(List.of(calendar("/users/a/family/", ""),
@@ -744,6 +898,7 @@ class CalDavDiscoveryServiceTest {
         assertEquals(root.getThingUID().getId().substring(9, 17), root.getLabel());
     }
 
+    /** Checks that long collection paths use bounded digest-based label suffixes. */
     @Test
     void longPathSuffixUsesCompactDigestFallback() {
         List<CalendarCollection> collections = List.of(calendar("/" + "a".repeat(81) + "/", "Kalender"),
@@ -753,6 +908,7 @@ class CalDavDiscoveryServiceTest {
                         result.getLabel()));
     }
 
+    /** Checks that server label changes do not alter discovery identity or configured path. */
     @Test
     void labelChangesDoNotChangeThingUidOrPath() {
         CalendarCollection original = calendar("/calendar/123/", "Kalender");
@@ -765,6 +921,7 @@ class CalDavDiscoveryServiceTest {
         assertEquals(before.getProperties(), after.getProperties());
     }
 
+    /** Checks that available calendar metadata and recognized privileges are published consistently. */
     @Test
     void discoveryPublishesOptionalMetadataWithStableSortedPrivileges() {
         CalendarCollection calendar = new CalendarCollection(URI.create("https://example.org/calendar/"), "Family",
@@ -772,19 +929,22 @@ class CalDavDiscoveryServiceTest {
         DiscoveryResult result = Objects.requireNonNull(discover(List.of(calendar)).get(calendar.uri()));
         assertEquals(Map.of("path", "/calendar/", "calendarDescription", "https://foreign.example/description/",
                 "calendarColor", "unusual color text", "calendarPrivileges",
-                "bind,read,unbind,write,write-content,write-properties"), result.getProperties());
+                "bind,read,unbind,write,write-content,write-properties", "calendarIdentity",
+                "caldav:account:metadata|/calendar/"), result.getProperties());
         assertEquals("Family", result.getLabel());
-        assertNull(result.getRepresentationProperty());
+        assertEquals("calendarIdentity", result.getRepresentationProperty());
         assertEquals(new ThingUID("caldav:account:metadata"), result.getBridgeUID());
     }
 
+    /** Checks that missing optional metadata does not create synthetic Thing properties. */
     @Test
     void absentOptionalMetadataIsNotPublished() {
         CalendarCollection calendar = calendar("/calendar/", "Family");
-        assertEquals(Map.of("path", "/calendar/"),
+        assertEquals(Map.of("path", "/calendar/", "calendarIdentity", "caldav:account:metadata|/calendar/"),
                 Objects.requireNonNull(discover(List.of(calendar)).get(calendar.uri())).getProperties());
     }
 
+    /** Checks that metadata changes leave the calendar identity and configured collection reference stable. */
     @Test
     void changedDescriptionColorAndPrivilegesDoNotChangeIdentityOrPath() {
         CalendarCollection original = calendar("/calendar/", "Family");
@@ -796,10 +956,12 @@ class CalDavDiscoveryServiceTest {
             DiscoveryResult after = Objects.requireNonNull(discover(List.of(changed)).get(changed.uri()));
             assertEquals(before.getThingUID(), after.getThingUID());
             assertEquals(before.getProperties().get("path"), after.getProperties().get("path"));
+            assertEquals(before.getProperties().get("calendarIdentity"), after.getProperties().get("calendarIdentity"));
             assertEquals(before.getLabel(), after.getLabel());
         }
     }
 
+    /** Checks that dynamic discovery metadata is not exposed as calendar configuration parameters. */
     @Test
     void onlyPathIsDeclaredAsConfigurationAmongDiscoveryProperties() throws Exception {
         try (var input = Objects
@@ -820,17 +982,24 @@ class CalDavDiscoveryServiceTest {
                 assertFalse(names.contains("calendarDescription"));
                 assertFalse(names.contains("calendarColor"));
                 assertFalse(names.contains("calendarPrivileges"));
+                assertFalse(names.contains("calendarIdentity"));
+                assertFalse(names.contains("calendarUid"));
+                var representation = type.getElementsByTagName("representation-property");
+                assertEquals(1, representation.getLength());
+                assertEquals("calendarIdentity", representation.item(0).getTextContent());
                 return;
             }
             fail("Calendar Thing type is missing");
         }
     }
 
+    /** Checks that labels are disambiguated across every home set belonging to an account. */
     @Test
     void duplicateNamesAcrossDifferentHomesAreResolvedAccountWide() throws Exception {
         checkMultipleHomes(false);
     }
 
+    /** Checks that a collection advertised through several home sets is deduplicated before label generation. */
     @Test
     void sameCanonicalCollectionThroughMultipleHomesDoesNotCollideWithItself() throws Exception {
         checkMultipleHomes(true);
@@ -875,7 +1044,15 @@ class CalDavDiscoveryServiceTest {
                 .withConfiguration(
                         new Configuration(Map.of("url", "http://127.0.0.1:" + server.getAddress().getPort() + "/")))
                 .build();
-        AccountHandler handler = new AccountHandler(bridge, factory) {
+        AccountHandler handler = new AccountHandler(bridge, factory, Objects.requireNonNull(mock(ThingRegistry.class)),
+                () -> ZoneOffset.UTC) {
+            /**
+             * Ignores account status in tests concerned only with collection discovery.
+             *
+             * @param status new Thing status
+             * @param detail status detail
+             * @param description status description, if present
+             */
             @Override
             protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
             }
@@ -887,7 +1064,8 @@ class CalDavDiscoveryServiceTest {
             handler.initialize();
             DiscoveryResult first = Objects.requireNonNull(service.results.poll(10, TimeUnit.SECONDS));
             assertEquals(sameCollection ? "Kalender" : "Kalender (123)", first.getLabel());
-            assertEquals(Map.of("path", "/calendar/123/"), first.getProperties());
+            assertEquals(Map.of("path", "/calendar/123/", "calendarIdentity", "caldav:account:homes|/calendar/123/"),
+                    first.getProperties());
             if (!sameCollection) {
                 DiscoveryResult second = Objects.requireNonNull(service.results.poll(10, TimeUnit.SECONDS));
                 assertEquals("Kalender (456)", second.getLabel());
@@ -949,7 +1127,15 @@ class CalDavDiscoveryServiceTest {
 
     private AccountHandler callbackHandler(Bridge bridge,
             LinkedBlockingQueue<Consumer<List<CalendarCollection>>> callbacks) {
-        return new AccountHandler(bridge, Objects.requireNonNull(mock(HttpClientFactory.class))) {
+        return new AccountHandler(bridge, Objects.requireNonNull(mock(HttpClientFactory.class)),
+                Objects.requireNonNull(mock(ThingRegistry.class)), () -> ZoneOffset.UTC) {
+            /**
+             * Captures the discovery callback so the test can control result publication.
+             *
+             * @param callback consumer receiving discovered calendar collections
+             * @param valid check that the queued scan is still current
+             * @param cancel hook invalidating the associated scan when its session ends
+             */
             @Override
             public void discover(Consumer<List<CalendarCollection>> callback, BooleanSupplier valid, Runnable cancel) {
                 callbacks.add(callback::accept);
@@ -957,6 +1143,7 @@ class CalDavDiscoveryServiceTest {
         };
     }
 
+    /** Checks that a new scan supersedes pending callbacks from its predecessor. */
     @Test
     void replacementScanInvalidatesPendingPreviousScan() {
         AccountHandler handler = Objects.requireNonNull(mock(AccountHandler.class));
@@ -981,6 +1168,7 @@ class CalDavDiscoveryServiceTest {
         }
     }
 
+    /** Checks that account cancellation cannot invalidate a later independent discovery scan. */
     @Test
     void accountCancellationOnlyInvalidatesItsOwnScan() {
         AccountHandler handler = Objects.requireNonNull(mock(AccountHandler.class));

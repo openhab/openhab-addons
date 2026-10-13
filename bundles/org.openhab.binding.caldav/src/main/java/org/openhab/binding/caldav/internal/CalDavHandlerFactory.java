@@ -26,6 +26,7 @@ import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -44,6 +45,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Lifecycle-managed service dependencies
  * @author Andreas Vilippus - Calendar color channel creation
+ * @author Andreas Vilippus - Registry access for handlerless calendar representation updates
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class)
@@ -55,20 +57,45 @@ public class CalDavHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpFactory;
     private final TimeZoneProvider timeZoneProvider;
     private final Storage<String> storage;
+    private final ThingRegistry thingRegistry;
 
+    /**
+     * Creates handlers using Core networking, time-zone, storage and Thing registry services.
+     *
+     * @param httpFactory Core factory for account HTTP clients
+     * @param timeZoneProvider provider of the configured openHAB time zone
+     * @param storageService Core service supplying persistent calendar cache storage
+     * @param thingRegistry registry of configured calendar Things
+     */
     @Activate
     public CalDavHandlerFactory(@Reference HttpClientFactory httpFactory, @Reference TimeZoneProvider timeZoneProvider,
-            @Reference StorageService storageService) {
+            @Reference StorageService storageService, @Reference ThingRegistry thingRegistry) {
         this.httpFactory = httpFactory;
         this.timeZoneProvider = timeZoneProvider;
         this.storage = storageService.getStorage("caldav-calendar-cache");
+        this.thingRegistry = thingRegistry;
     }
 
+    /**
+     * Checks whether this factory supports the requested CalDAV Thing type.
+     *
+     * @param thingTypeUID requested Thing type
+     * @return whether the requested Thing type is supported
+     */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
+    /**
+     * Creates a CalDAV Thing and supplies the ungrouped calendar color channel when needed.
+     *
+     * @param thingTypeUID requested Thing type
+     * @param configuration captured configuration used by the handler
+     * @param thingUID requested Thing UID, or null for Core-generated identification
+     * @param bridgeUID owning account bridge UID, if present
+     * @return the created Thing, or null if the type cannot be created
+     */
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
@@ -86,13 +113,19 @@ public class CalDavHandlerFactory extends BaseThingHandlerFactory {
         return created;
     }
 
+    /**
+     * Creates an account or calendar handler with the required Core services.
+     *
+     * @param thing calendar or account Thing to handle
+     * @return the appropriate handler, or null for an unsupported Thing type
+     */
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (!supportsThingType(thing.getThingTypeUID())) {
             return null;
         }
         if (thing instanceof Bridge bridge) {
-            return new AccountHandler(bridge, httpFactory);
+            return new AccountHandler(bridge, httpFactory, thingRegistry, timeZoneProvider);
         }
         return new CalendarHandler(thing, timeZoneProvider, storage);
     }

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -43,54 +44,100 @@ import org.openhab.binding.caldav.internal.model.CalendarEvent;
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Bounded transactional sync paging
  * @author Andreas Vilippus - Compact resource references and snapshot validation
+ * @author Andreas Vilippus - Synchronization state reuse across calendar windows
  */
 @NonNullByDefault
 public final class CalendarSynchronizer {
     private static final int MAX_SYNC_PAGES = 100;
     private final DavTransport transport;
     private final URI collection;
-    private Snapshot snapshot = new Snapshot("", "", Map.of());
+    private Snapshot snapshot;
 
+    /**
+     * Creates a synchronizer with no prior collection state.
+     *
+     * @param transport transport used for calendar resource requests
+     * @param collection same-origin calendar collection URI
+     */
     public CalendarSynchronizer(DavTransport transport, URI collection) {
-        this.transport = transport;
-        this.collection = CalDavUris.canonicalize(collection);
+        this(transport, collection, new Snapshot("", "", Map.of()));
     }
 
+    /**
+     * Restores validated collection synchronization state independently of the next event projection window.
+     *
+     * @param transport the account worker's DAV transport
+     * @param collection the collection to which the snapshot belongs
+     * @param snapshot the previous collection state, including its sync token and cached resources
+     */
+    public CalendarSynchronizer(DavTransport transport, URI collection, Snapshot snapshot) {
+        this.transport = transport;
+        this.collection = CalDavUris.canonicalize(collection);
+        validateSnapshot(snapshot, this.collection);
+        this.snapshot = snapshot;
+    }
+
+    /** Server version and iCalendar content retained for one calendar resource. */
     public record CachedResource(String etag, String data) {
     }
 
+    /**
+     * The horizon records the last event projection; it does not determine collection synchronization compatibility.
+     */
     public record Snapshot(String horizon, String token, Map<String, CachedResource> resources) {
+        /**
+         * Captures collection state with an immutable, deterministically ordered resource map.
+         *
+         * @param horizon serialized key of the last event projection horizon
+         * @param token collection synchronization token
+         * @param resources cached calendar resources keyed by their compact references
+         */
         public Snapshot {
             resources = Collections.unmodifiableMap(new TreeMap<>(resources));
         }
     }
 
+    /** Projected events, rejected-resource count and the collection state produced by a synchronization attempt. */
     public record Result(List<CalendarEvent> events, int failedResources, Snapshot snapshot) {
     }
 
+    /**
+     * Returns the last successfully committed collection state for persistence or recovery.
+     *
+     * @return the current immutable collection snapshot
+     */
     public Snapshot snapshot() {
         return snapshot;
     }
 
+    /**
+     * Retrieves collection changes and commits their state only after event expansion succeeds.
+     *
+     * @param horizon time range in which event instances are expanded
+     * @param zone time zone used for event projection
+     * @param mode configured synchronization strategy
+     * @param includeCancelled whether cancelled instances are included
+     * @return projected events and their committed collection snapshot
+     * @throws Exception if resource retrieval or bounded event expansion fails
+     */
     public Result synchronize(CalendarWindow horizon, ZoneId zone, String mode, boolean includeCancelled)
             throws Exception {
         String key = horizon.start().toInstant() + "/" + horizon.end().toInstant() + "/" + zone;
         Snapshot previous = snapshot;
-        boolean sameHorizon = previous.horizon().equals(key);
         Snapshot candidate;
         if ("FULL".equals(mode)) {
             candidate = full(horizon, key);
         } else if ("ETAG".equals(mode)) {
-            candidate = etag(horizon, key, sameHorizon ? previous.resources() : Map.of());
+            candidate = etag(horizon, key, previous.resources());
         } else {
             try {
-                candidate = token(key, sameHorizon ? previous : new Snapshot(key, "", Map.of()));
+                candidate = token(key, previous);
             } catch (CalDavHttpException e) {
                 if (e.invalidSyncToken()) {
                     candidate = token(key, new Snapshot(key, "", Map.of()));
                 } else if ("AUTO".equals(mode) && unsupported(e)) {
                     try {
-                        candidate = etag(horizon, key, sameHorizon ? previous.resources() : Map.of());
+                        candidate = etag(horizon, key, previous.resources());
                     } catch (CalDavHttpException fallback) {
                         if (!unsupported(fallback)) {
                             throw fallback;
@@ -148,7 +195,9 @@ public final class CalendarSynchronizer {
     }
 
     private Snapshot token(String key, Snapshot previous) throws Exception {
-        Map<String, CachedResource> resources = new HashMap<>(previous.resources());
+        // An empty token requests a complete listing without deletions, including after a query-based cache restore.
+        Map<String, CachedResource> resources = previous.token().isEmpty() ? new HashMap<>()
+                : new HashMap<>(previous.resources());
         Set<String> tokens = new HashSet<>();
         String token = previous.token();
         tokens.add(token);
@@ -210,9 +259,12 @@ public final class CalendarSynchronizer {
     }
 
     /**
-     * Rejects a persisted snapshot unless every key is the exact compact, lossless representation for this collection.
+     * Rejects incomplete persisted state and resource keys that are not exact compact, lossless references for this
+     * collection.
      */
     public static void validateSnapshot(Snapshot snapshot, URI collection) {
+        Objects.requireNonNull(snapshot.horizon());
+        Objects.requireNonNull(snapshot.token());
         validateCache(snapshot);
         for (String reference : snapshot.resources().keySet()) {
             URI target = CalDavUris.reconstruct(collection, reference);
@@ -223,6 +275,15 @@ public final class CalendarSynchronizer {
         }
     }
 
+    /**
+     * Projects cached resources into the requested event horizon and counts individually rejected resources.
+     *
+     * @param snapshot validated collection synchronization state
+     * @param horizon time range in which event instances are expanded
+     * @param zone time zone used for event projection
+     * @param includeCancelled whether cancelled instances are included
+     * @return usable projected events and the number of rejected resources
+     */
     public static Result expand(Snapshot snapshot, CalendarWindow horizon, ZoneId zone, boolean includeCancelled) {
         validateCache(snapshot);
         List<CalendarEvent> events = new ArrayList<>();
@@ -260,6 +321,7 @@ public final class CalendarSynchronizer {
             throw new CalendarLimitException("Too many calendar resources");
         }
         for (CachedResource resource : candidate.resources().values()) {
+            Objects.requireNonNull(resource.etag());
             int size = resource.data().getBytes(StandardCharsets.UTF_8).length;
             bytes += size;
             if (size > ICalendarParser.MAX_RESOURCE_SIZE || bytes > 8 * 1024 * 1024) {

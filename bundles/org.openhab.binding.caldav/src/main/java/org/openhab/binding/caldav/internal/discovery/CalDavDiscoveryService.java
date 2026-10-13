@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.caldav.internal.CalendarIdentity;
 import org.openhab.binding.caldav.internal.client.CalDavUris;
 import org.openhab.binding.caldav.internal.client.CalendarCollection;
 import org.openhab.binding.caldav.internal.client.DavPrivilege;
@@ -49,6 +50,7 @@ import org.osgi.service.component.annotations.ServiceScope;
  * @author Andreas Vilippus - Collection metadata and account-wide discovery labels
  * @author Andreas Vilippus - Cancel pending discovery retries with the scan generation
  * @author Andreas Vilippus - Cancel result preparation when the account session ends
+ * @author Andreas Vilippus - Bridge-scoped calendar representation
  */
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = CalDavDiscoveryService.class)
@@ -58,11 +60,13 @@ public class CalDavDiscoveryService extends AbstractThingHandlerDiscoveryService
     private final AtomicLong generation = new AtomicLong();
     private final Object publicationLock = new Object();
 
+    /** Creates a prototype collection discovery service for CalDAV account handlers. */
     @Activate
     public CalDavDiscoveryService() {
         super(AccountHandler.class, TYPES, 300, true);
     }
 
+    /** Requests account-wide collection discovery and publishes results only for the current scan. */
     @Override
     public void startScan() {
         long current = nextGeneration();
@@ -90,6 +94,8 @@ public class CalDavDiscoveryService extends AbstractThingHandlerDiscoveryService
                 CalendarCollection collection = entry.getValue();
                 Map<String, Object> properties = new HashMap<>();
                 properties.put("path", CalDavUris.originRelative(accountUrl, uri));
+                properties.put(PROPERTY_CALENDAR_IDENTITY,
+                        CalendarIdentity.create(handler.getThing().getUID(), accountUrl, uri));
                 if (!collection.description().isBlank()) {
                     properties.put("calendarDescription", collection.description());
                 }
@@ -103,7 +109,8 @@ public class CalDavDiscoveryService extends AbstractThingHandlerDiscoveryService
                 ThingUID uid = new ThingUID(new ThingTypeUID(BINDING_ID, CALENDAR_THING_TYPE),
                         handler.getThing().getUID(), "calendar-" + CalDavDiscoveryLabels.digest(uri));
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(handler.getThing().getUID())
-                        .withLabel(Objects.requireNonNull(labels.get(uri))).withProperties(properties).build();
+                        .withLabel(Objects.requireNonNull(labels.get(uri))).withProperties(properties)
+                        .withRepresentationProperty(PROPERTY_CALENDAR_IDENTITY).build();
                 if (!publishIfCurrent(current, result)) {
                     return;
                 }
@@ -111,24 +118,28 @@ public class CalDavDiscoveryService extends AbstractThingHandlerDiscoveryService
         }, () -> generation.get() == current, () -> cancelScan(current));
     }
 
+    /** Registers one-time initialization discovery with the account handler. */
     @Override
     protected void startBackgroundDiscovery() {
         // Core registers the discovery service before initializing the account handler.
         thingHandler.registerDiscoveryService(this);
     }
 
+    /** Unregisters initialization discovery and invalidates outstanding results. */
     @Override
     protected void stopBackgroundDiscovery() {
         thingHandler.unregisterDiscoveryService(this);
         nextGeneration();
     }
 
+    /** Invalidates pending scan results before disposing the discovery service. */
     @Override
     public void dispose() {
         stopScan();
         super.dispose();
     }
 
+    /** Cancels publication from the current scan while retaining later scan generations. */
     @Override
     public void stopScan() {
         nextGeneration();

@@ -21,8 +21,12 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.openhab.binding.caldav.internal.discovery.CalDavDiscoveryService;
+import org.openhab.binding.caldav.internal.handler.AccountHandler;
 import org.openhab.core.config.core.ConfigDescriptionRegistry;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -31,9 +35,12 @@ import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingFactory;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -45,18 +52,49 @@ import org.openhab.core.thing.type.ThingTypeBuilder;
  * Calendar channel creation preserves existing Thing structure and metadata.
  *
  * @author Andreas Vilippus - Initial contribution
+ * @author Andreas Vilippus - Registry dependency wiring for calendar metadata
  */
 @NonNullByDefault
 class CalDavHandlerFactoryTest {
+    /** Typed storage contract used by calendar test fixtures and mocks. */
     private interface CalendarStorage extends Storage<String> {
     }
 
+    /** Handler factory fixture with a fixed Thing type and supplied Core service dependencies. */
     private static final class Factory extends CalDavHandlerFactory {
         private final ThingType type;
 
+        /**
+         * Creates a factory fixture with a predefined Thing type and supplied Core services.
+         *
+         * @param type Thing type returned by the factory fixture
+         */
         Factory(ThingType type) {
-            super(mock(HttpClientFactory.class), () -> ZoneOffset.UTC, storageService());
+            this(type, Objects.requireNonNull(mock(ThingRegistry.class)),
+                    Objects.requireNonNull(mock(HttpClientFactory.class)));
+        }
+
+        /**
+         * Creates a factory fixture with a predefined Thing type and supplied Core services.
+         *
+         * @param type Thing type returned by the factory fixture
+         * @param registry registry used for calendar representation updates
+         * @param httpFactory Core factory for account HTTP clients
+         */
+        Factory(ThingType type, ThingRegistry registry, HttpClientFactory httpFactory) {
+            super(httpFactory, () -> ZoneOffset.UTC, storageService(), registry);
             this.type = type;
+        }
+
+        /**
+         * Exposes handler creation for dependency wiring assertions.
+         *
+         * @param thing calendar or account Thing to handle
+         * @return the handler created for the supplied Thing
+         */
+        @Nullable
+        ThingHandler handler(Thing thing) {
+            return createHandler(thing);
         }
 
         private static StorageService storageService() {
@@ -65,17 +103,54 @@ class CalDavHandlerFactoryTest {
             return service;
         }
 
+        /**
+         * Supplies the fixture Thing type without a running type registry.
+         *
+         * @param uid requested Thing type UID
+         * @return the fixture Thing type when its UID matches
+         */
         @Override
         protected @Nullable ThingType getThingTypeByUID(ThingTypeUID uid) {
             return type.getUID().equals(uid) ? type : null;
         }
 
+        /**
+         * Disables configuration-description lookup in the factory fixture.
+         *
+         * @return null because this fixture does not resolve configuration descriptions
+         */
         @Override
         protected @Nullable ConfigDescriptionRegistry getConfigDescriptionRegistry() {
             return null;
         }
     }
 
+    /** Verifies that configured calendars are read from the injected registry before discovery starts. */
+    @Test
+    void accountHandlerUsesInjectedRegistryBeforeDiscovery() {
+        ThingType type = ThingTypeBuilder.instance("caldav", "account", "Account").buildBridge();
+        ThingRegistry registry = Objects.requireNonNull(mock(ThingRegistry.class));
+        HttpClientFactory httpFactory = Objects.requireNonNull(mock(HttpClientFactory.class));
+        when(httpFactory.createHttpClient(anyString(), any(SslContextFactory.Client.class)))
+                .thenReturn(Objects.requireNonNull(mock(HttpClient.class)));
+        Thing bridge = BridgeBuilder.create(type.getUID(), "wired")
+                .withConfiguration(new Configuration(Map.of("url", "https://example.org/"))).build();
+        AccountHandler account = assertInstanceOf(AccountHandler.class,
+                new Factory(type, registry, httpFactory).handler(bridge));
+        account.setCallback(Objects.requireNonNull(mock(ThingHandlerCallback.class)));
+        CalDavDiscoveryService discovery = Objects.requireNonNull(mock(CalDavDiscoveryService.class));
+        account.registerDiscoveryService(discovery);
+        try {
+            account.initialize();
+            var order = inOrder(registry, discovery);
+            order.verify(registry).getAll();
+            order.verify(discovery).startScan();
+        } finally {
+            account.dispose();
+        }
+    }
+
+    /** Checks that calendar creation adds one ungrouped color channel while preserving the existing Thing structure. */
     @Test
     void addsSingleStringColorChannelAndPreservesGroupedChannelsAndMetadata() {
         ThingType type = ThingTypeBuilder.instance("caldav", "calendar", "Calendar").build();
@@ -108,6 +183,7 @@ class CalDavHandlerFactoryTest {
         }
     }
 
+    /** Checks that creation preserves an existing color channel without duplication. */
     @Test
     void alreadyPresentCalendarColorIsNotDuplicated() {
         ThingType type = ThingTypeBuilder.instance("caldav", "calendar", "Calendar").build();
@@ -124,6 +200,7 @@ class CalDavHandlerFactoryTest {
         }
     }
 
+    /** Checks that account bridges do not receive a calendar color channel. */
     @Test
     void accountCreationDoesNotAddCalendarColor() {
         ThingType type = ThingTypeBuilder.instance("caldav", "account", "Account").buildBridge();
@@ -137,6 +214,7 @@ class CalDavHandlerFactoryTest {
         }
     }
 
+    /** Checks that calendar types from other bindings remain untouched. */
     @Test
     void calendarTypeFromAnotherBindingIsNotModified() {
         ThingType type = ThingTypeBuilder.instance("other", "calendar", "Other Calendar").build();
@@ -150,6 +228,7 @@ class CalDavHandlerFactoryTest {
         }
     }
 
+    /** Checks that missing Thing metadata prevents creation rather than producing an incomplete Thing. */
     @Test
     void unavailableThingTypeStillReturnsNull() {
         ThingType type = ThingTypeBuilder.instance("caldav", "account", "Account").buildBridge();

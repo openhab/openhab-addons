@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.caldav.internal.handler;
 
+import static org.openhab.binding.caldav.internal.CalDavBindingConstants.PROPERTY_CALENDAR_IDENTITY;
+
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -32,6 +34,7 @@ import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.caldav.internal.CalendarIdentity;
 import org.openhab.binding.caldav.internal.client.CalDavHttpException;
 import org.openhab.binding.caldav.internal.client.CalDavUris;
 import org.openhab.binding.caldav.internal.client.DavTransport;
@@ -56,6 +59,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -76,6 +80,10 @@ import com.google.gson.Gson;
  * @author Andreas Vilippus - Structured synchronization error details
  * @author Andreas Vilippus - Calendar color metadata channel
  * @author Andreas Vilippus - Localized Thing status descriptions
+ * @author Andreas Vilippus - Restored synchronization state reuse
+ * @author Andreas Vilippus - Configuration-derived calendar representation
+ * @author Andreas Vilippus - Generation-bound identity publication and account revalidation
+ * @author Andreas Vilippus - Retry failed calendar representation persistence
  */
 @NonNullByDefault
 public class CalendarHandler extends BaseThingHandler {
@@ -90,6 +98,8 @@ public class CalendarHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> clockJob;
     private long generation;
     private boolean active;
+    private boolean initializing;
+    private boolean identityPublicationPending;
     private boolean loaded;
     private boolean synchronizedOnce;
     private CalDavErrors.@Nullable Failure synchronizationFailure;
@@ -103,10 +113,26 @@ public class CalendarHandler extends BaseThingHandler {
     private final Gson gson = new Gson();
     private String cacheIdentity = "";
 
+    /**
+     * Creates a calendar handler with persistent cache and local event projection services.
+     *
+     * @param thing calendar or account Thing to handle
+     * @param timeZoneProvider provider of the configured openHAB time zone
+     * @param storage calendar cache storage
+     */
     public CalendarHandler(Thing thing, TimeZoneProvider timeZoneProvider, Storage<String> storage) {
         this(thing, timeZoneProvider, storage, Clock.systemUTC(), null);
     }
 
+    /**
+     * Creates a calendar handler with persistent cache and local event projection services.
+     *
+     * @param thing calendar or account Thing to handle
+     * @param timeZoneProvider provider of the configured openHAB time zone
+     * @param storage calendar cache storage
+     * @param clock clock used for event and range calculations
+     * @param clockScheduler scheduler for local event updates, or null to use the handler scheduler
+     */
     CalendarHandler(Thing thing, TimeZoneProvider timeZoneProvider, Storage<String> storage, Clock clock,
             @Nullable ScheduledExecutorService clockScheduler) {
         super(thing);
@@ -116,11 +142,17 @@ public class CalendarHandler extends BaseThingHandler {
         this.clockScheduler = clockScheduler == null ? scheduler : clockScheduler;
     }
 
+    /** Validates the calendar representation and prepares local cache recovery before live synchronization. */
     @Override
     public void initialize() {
         dispose();
+        CalendarConfiguration configured;
+        long current;
+        ThingUID bridgeUID;
         synchronized (lifecycle) {
-            generation++;
+            current = ++generation;
+            initializing = true;
+            bridgeUID = getThing().getBridgeUID();
             clearEvents();
             publishCalendarColor();
             cacheIdentity = "";
@@ -133,24 +165,153 @@ public class CalendarHandler extends BaseThingHandler {
                 set("sync#status", new StringType("ERROR"));
                 set("sync#error", new StringType(failure.description()));
                 updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
-                return;
             }
-            active = true;
-            set("sync#status", new StringType("SYNCING"));
-            set("sync#error", new StringType(""));
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.calendar.waiting");
+            configured = configuration;
         }
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof AccountHandler account) {
-            long current;
-            synchronized (lifecycle) {
-                current = generation;
+        AccountHandler handler = bridge != null && bridge.getHandler() instanceof AccountHandler account ? account
+                : null;
+        long accountGeneration = handler == null ? 0 : handler.contextGeneration();
+        BooleanSupplier accountValid = () -> handler == null || handler.contextGeneration() == accountGeneration;
+        AccountConfiguration account = null;
+        if (configured != null && bridge != null) {
+            try {
+                if (handler != null) {
+                    account = handler.configuration();
+                } else {
+                    Configuration captured = new Configuration(bridge.getConfiguration());
+                    CalDavConfiguration.validateIntegerValues(captured, "refreshInterval", "requestTimeout",
+                            "maxPastDays", "maxFutureDays");
+                    account = captured.as(AccountConfiguration.class);
+                }
+            } catch (IllegalArgumentException e) {
+                // An invalid account context must remove the previous representation, too.
             }
-            clockScheduler.execute(() -> restoreAtStartup(account.configuration(), current));
-            account.requestSync();
+        }
+        if (prepareIdentity(current, bridgeUID, configured, account, accountValid, configured != null)
+                && handler != null && account != null) {
+            AccountConfiguration captured = account;
+            clockScheduler.execute(() -> {
+                if (accountValid.getAsBoolean()) {
+                    restoreAtStartup(captured, current);
+                }
+            });
+            handler.requestSync();
         }
     }
 
+    /**
+     * Revalidates this calendar's parsed configuration before discovery uses the new account context.
+     *
+     * @return whether the current context was applied, including a locally invalid calendar with no identity
+     */
+    boolean accountConfigurationChanged(ThingUID bridgeUID, @Nullable AccountConfiguration account,
+            BooleanSupplier accountValid) {
+        long current;
+        @Nullable
+        CalendarConfiguration config;
+        synchronized (lifecycle) {
+            if (!bridgeUID.equals(getThing().getBridgeUID()) || !accountValid.getAsBoolean()) {
+                return false;
+            }
+            CalendarConfiguration configured = configuration;
+            if (configured == null && !(initializing && identityPublicationPending)) {
+                return !initializing && !identityPublicationPending && getThing().getStatus() == ThingStatus.OFFLINE
+                        && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR
+                        && !getThing().getProperties().containsKey(PROPERTY_CALENDAR_IDENTITY);
+            }
+            current = ++generation;
+            config = configured;
+            active = false;
+            initializing = true;
+            ScheduledFuture<?> previous = clockJob;
+            if (previous != null) {
+                previous.cancel(false);
+                clockJob = null;
+            }
+        }
+        prepareIdentity(current, bridgeUID, config, account, accountValid, config != null);
+        synchronized (lifecycle) {
+            return currentContext(current, bridgeUID, accountValid) && !initializing;
+        }
+    }
+
+    private boolean prepareIdentity(long current, @Nullable ThingUID bridgeUID, @Nullable CalendarConfiguration config,
+            @Nullable AccountConfiguration account, BooleanSupplier accountValid, boolean activate) {
+        String identity = null;
+        IllegalArgumentException error = null;
+        try {
+            if (bridgeUID == null || config == null || account == null) {
+                throw new IllegalArgumentException("Calendar requires a valid account bridge configuration");
+            }
+            CalDavConfiguration.validate(account);
+            URI uri = CalDavConfiguration.validate(config, account);
+            ZoneId zone = timeZoneProvider.getTimeZone();
+            ZonedDateTime now = ZonedDateTime.ofInstant(clock.instant(), zone);
+            CalDavConfiguration.validate(CalendarWindow.from(config, zone, now),
+                    CalDavConfiguration.horizon(account, zone, now));
+            identity = CalendarIdentity.create(bridgeUID, URI.create(account.url), uri);
+        } catch (IllegalArgumentException e) {
+            error = e;
+        }
+        synchronized (lifecycle) {
+            if (!currentContext(current, bridgeUID, accountValid)) {
+                return false;
+            }
+            updateCalendarIdentity(identity);
+            // Core property callbacks are synchronous. Reentrant disposal must not reactivate this generation.
+            if (!currentContext(current, bridgeUID, accountValid)) {
+                return false;
+            }
+            initializing = false;
+            active = activate && identity != null;
+            if (activate) {
+                if (error != null) {
+                    configurationFailed(error);
+                } else {
+                    set("sync#status", new StringType("SYNCING"));
+                    set("sync#error", new StringType(""));
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.calendar.waiting");
+                }
+            }
+            return active && currentContext(current, bridgeUID, accountValid);
+        }
+    }
+
+    private boolean currentContext(long current, @Nullable ThingUID bridgeUID, BooleanSupplier accountValid) {
+        return generation == current && Objects.equals(bridgeUID, getThing().getBridgeUID())
+                && accountValid.getAsBoolean();
+    }
+
+    private void updateCalendarIdentity(@Nullable String identity) {
+        // BaseThingHandler's property callback marks self-updates; Core does not reinitialize this handler for them.
+        // Publish under the lifecycle lock so no competing generation can overwrite the property before activation.
+        boolean changed = !Objects.equals(identity, getThing().getProperties().get(PROPERTY_CALENDAR_IDENTITY));
+        if (!changed && !identityPublicationPending) {
+            return;
+        }
+        long current = generation;
+        identityPublicationPending = true;
+        var callback = getCallback();
+        if (callback == null) {
+            throw new IllegalStateException("Calendar handler callback is unavailable");
+        }
+        if (changed) {
+            updateProperty(PROPERTY_CALENDAR_IDENTITY, identity);
+        } else {
+            // Core changes the in-memory property before invoking the callback; retry a failed provider publication.
+            callback.thingUpdated(getThing());
+        }
+        if (current == generation) {
+            identityPublicationPending = false;
+        }
+    }
+
+    /**
+     * Reflects an account bridge failure without replacing a calendar-specific diagnosis.
+     *
+     * @param info updated account bridge status
+     */
     @Override
     public void bridgeStatusChanged(ThingStatusInfo info) {
         if (info.getStatus() != ThingStatus.ONLINE && info.getStatus() != ThingStatus.UNKNOWN) {
@@ -158,10 +319,16 @@ public class CalendarHandler extends BaseThingHandler {
         }
     }
 
+    /** Publishes bridge-offline state while retaining calendar-specific errors and usable events. */
     public void bridgeConnectionFailed() {
         bridgeConnectionFailed(() -> true);
     }
 
+    /**
+     * Publishes bridge-offline state while retaining calendar-specific errors and usable events.
+     *
+     * @param accountValid nonblocking check that the captured account context still permits publication
+     */
     public void bridgeConnectionFailed(BooleanSupplier accountValid) {
         synchronized (lifecycle) {
             CalendarConfiguration configured = configuration;
@@ -182,6 +349,12 @@ public class CalendarHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Republishes local channel state for REFRESH without issuing calendar requests.
+     *
+     * @param channel channel receiving the command or state
+     * @param command command received from the framework
+     */
     @Override
     public void handleCommand(ChannelUID channel, Command command) {
         if (command != RefreshType.REFRESH) {
@@ -199,28 +372,56 @@ public class CalendarHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Synchronizes and publishes a calendar snapshot only while its calendar and account contexts remain current.
+     *
+     * @param client transport belonging to the current account session
+     * @param account validated account settings captured for this synchronization
+     * @param accountValid nonblocking check that the captured account context still permits publication
+     * @throws InterruptedException if the account work is interrupted
+     */
     public void synchronize(DavTransport client, AccountConfiguration account, BooleanSupplier accountValid)
             throws InterruptedException {
         long current;
         CalendarConfiguration config;
+        ThingUID bridgeUID;
         synchronized (lifecycle) {
             CalendarConfiguration configured = configuration;
-            if (!active || configured == null) {
+            if (initializing || configured == null) {
                 return;
             }
             current = generation;
             config = configured;
+            bridgeUID = getThing().getBridgeUID();
         }
+        boolean configurationValidated = false;
         try {
+            CalDavConfiguration.validate(account);
             ZoneId zone = timeZoneProvider.getTimeZone();
             ZonedDateTime now = ZonedDateTime.ofInstant(clock.instant(), zone);
             URI uri = CalDavUris.canonicalize(CalDavConfiguration.validate(config, account));
             CalendarWindow horizon = CalDavConfiguration.horizon(account, zone, now);
             CalDavConfiguration.validate(CalendarWindow.from(config, zone, now), horizon);
+            if (bridgeUID == null) {
+                throw new IllegalArgumentException("Calendar requires an account bridge");
+            }
+            String representation = CalendarIdentity.create(bridgeUID, URI.create(account.url), uri);
+            synchronized (lifecycle) {
+                if (!currentContext(current, bridgeUID, accountValid)) {
+                    return;
+                }
+                updateCalendarIdentity(representation);
+                if (!currentContext(current, bridgeUID, accountValid)) {
+                    return;
+                }
+                active = true;
+            }
+            configurationValidated = true;
             String identity = identity(account, uri, zone);
             boolean restoreNeeded;
             synchronized (lifecycle) {
-                restoreNeeded = !identity.equals(cacheIdentity);
+                restoreNeeded = !identity.equals(cacheIdentity) || synchronizer == null || !client.equals(transport)
+                        || !uri.equals(collection);
             }
             Restored restored = restoreNeeded ? readCache(identity, uri, horizon, zone, config) : null;
             CalendarSynchronizer worker;
@@ -239,7 +440,8 @@ public class CalendarHandler extends BaseThingHandler {
                     applyCache(restored, zone, config);
                 }
                 if (synchronizer == null || !client.equals(transport) || !uri.equals(collection)) {
-                    synchronizer = new CalendarSynchronizer(client, uri);
+                    synchronizer = restored == null ? new CalendarSynchronizer(client, uri)
+                            : new CalendarSynchronizer(client, uri, restored.snapshot());
                     transport = client;
                     collection = uri;
                 }
@@ -282,8 +484,28 @@ public class CalendarHandler extends BaseThingHandler {
             Thread.currentThread().interrupt();
             throw e;
         } catch (Exception e) {
-            failed(current, accountValid, e);
+            if (!configurationValidated) {
+                synchronized (lifecycle) {
+                    if (currentContext(current, bridgeUID, accountValid)) {
+                        active = false;
+                        updateCalendarIdentity(null);
+                        if (currentContext(current, bridgeUID, accountValid)) {
+                            configurationFailed(e);
+                        }
+                    }
+                }
+            } else {
+                failed(current, accountValid, e);
+            }
         }
+    }
+
+    private void configurationFailed(Exception error) {
+        var failure = CalDavErrors.calendar(error, synchronizedOnce);
+        synchronizationFailure = failure;
+        set("sync#status", new StringType("ERROR"));
+        set("sync#error", new StringType(failure.description()));
+        updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
     }
 
     private void failed(long current, BooleanSupplier accountValid, Exception error) {
@@ -478,6 +700,7 @@ public class CalendarHandler extends BaseThingHandler {
         publishEvent("next", null, timeZoneProvider.getTimeZone());
     }
 
+    /** Versioned calendar resources and last successful synchronization retained across restarts. */
     private record Persisted(int version, String identity, CalendarSynchronizer.Snapshot snapshot, String lastSync) {
     }
 
@@ -487,7 +710,9 @@ public class CalendarHandler extends BaseThingHandler {
                 gson.toJson(new Persisted(CACHE_VERSION, cacheIdentity, snapshot, last)));
     }
 
-    private record Restored(List<CalendarEvent> events, CalendarWindow horizon, State lastSync) {
+    /** Validated persisted resources with their event projection, coverage and last successful synchronization. */
+    private record Restored(List<CalendarEvent> events, CalendarWindow horizon, State lastSync,
+            CalendarSynchronizer.Snapshot snapshot) {
     }
 
     private @Nullable Restored readCache(String identity, URI collection, CalendarWindow horizon, ZoneId zone,
@@ -509,7 +734,7 @@ public class CalendarHandler extends BaseThingHandler {
             State lastSync = "UNDEF".equals(persisted.lastSync()) || "NULL".equals(persisted.lastSync())
                     ? UnDefType.UNDEF
                     : new DateTimeType(persisted.lastSync());
-            return new Restored(parsed.events(), storedHorizon, lastSync);
+            return new Restored(parsed.events(), storedHorizon, lastSync, persisted.snapshot());
         } catch (RuntimeException e) {
             // Persisted data is an optional recovery source; a server sync replaces an unusable cache.
             return null;
@@ -529,6 +754,7 @@ public class CalendarHandler extends BaseThingHandler {
         scheduleClock(generation);
     }
 
+    /** Disposes the calendar and removes its persistent cache when the Thing is deleted. */
     @Override
     public void handleRemoval() {
         dispose();
@@ -536,10 +762,12 @@ public class CalendarHandler extends BaseThingHandler {
         super.handleRemoval();
     }
 
+    /** Invalidates calendar work and cancels local update jobs before releasing synchronization references. */
     @Override
     public void dispose() {
         synchronized (lifecycle) {
             active = false;
+            initializing = false;
             generation++;
             ScheduledFuture<?> previous = clockJob;
             if (previous != null) {
