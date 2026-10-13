@@ -18,7 +18,6 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
@@ -58,10 +57,12 @@ class URIMetaDataProcessorTest {
         assertTrue(result.matches("<DIDL-Lite.+</DIDL-Lite>"));
         assertTrue(result.contains(">" + MP3_STREAM_URL + "</res></item></DIDL-Lite>"));
         assertTrue(result.contains("protocolInfo=\"http-get:*:audio/mpeg:*\""));
+        assertFalse(result.contains("nrAudioChannels="));
+        assertFalse(result.contains("sampleFrequency="));
+        assertFalse(result.contains("bitrate="));
     }
 
     @Test
-    @Disabled("https://github.com/openhab/openhab-addons/issues/21926")
     void generateShouldReturnXMLWithAllFormatAttributes() {
         AudioFormat audioFormat = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, true, 8, 192000,
                 48000L, 2);
