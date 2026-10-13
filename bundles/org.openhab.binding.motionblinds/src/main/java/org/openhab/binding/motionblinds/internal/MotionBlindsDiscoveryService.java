@@ -14,8 +14,6 @@ package org.openhab.binding.motionblinds.internal;
 
 import static org.openhab.binding.motionblinds.internal.MotionBlindsBindingConstants.*;
 
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.motionblinds.internal.MotionBlindsCommunicationManager.DiscoveryListener;
@@ -66,17 +64,28 @@ public class MotionBlindsDiscoveryService extends AbstractDiscoveryService imple
         super.deactivate();
     }
 
+    /**
+     * Start a scan; {@link AbstractDiscoveryService} calls {@link #stopScan()} after the scan timeout.
+     */
     @Override
     protected void startScan() {
         logger.debug("Starting discovery of Wi-Fi motors");
         communicationManager.startDiscovery(this);
-        scheduler.schedule(() -> communicationManager.stopDiscovery(this), SCAN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
     protected synchronized void stopScan() {
         communicationManager.stopDiscovery(this);
         super.stopScan();
+    }
+
+    /**
+     * An aborted scan does not call {@link #stopScan()}, so stop receiving discovery responses here as well.
+     */
+    @Override
+    public void abortScan() {
+        super.abortScan();
+        communicationManager.stopDiscovery(this);
     }
 
     @Override
