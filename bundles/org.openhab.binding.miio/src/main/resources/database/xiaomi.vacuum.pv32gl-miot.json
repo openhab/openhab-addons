@@ -30,18 +30,6 @@
 							"label": "Resume Cleaning"
 						},
 						{
-							"value": "vacuum-start-only-sweep",
-							"label": "Start Vacuuming Only"
-						},
-						{
-							"value": "vacuum-start-sweep-mop",
-							"label": "Start Vacuuming And Mopping"
-						},
-						{
-							"value": "vacuum-start-custom-sweep",
-							"label": "Start Custom Cleaning"
-						},
-						{
 							"value": "vacuum-start-build-map",
 							"label": "Start Mapping"
 						},
@@ -56,10 +44,6 @@
 						{
 							"value": "vacuum-stop-build-map-and-gocharge",
 							"label": "Stop Mapping And Go Charging"
-						},
-						{
-							"value": "battery-start-charge",
-							"label": "Go Charging"
 						},
 						{
 							"value": "vacuum-stop-and-gocharge",
@@ -181,48 +165,6 @@
 						"command": "action",
 						"parameterType": "EMPTY",
 						"siid": 2,
-						"aiid": 4,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "vacuum-start-only-sweep"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 2,
-						"aiid": 6,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "vacuum-start-sweep-mop"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 2,
-						"aiid": 9,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "vacuum-start-custom-sweep"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 2,
 						"aiid": 17,
 						"condition": {
 							"name": "matchValue",
@@ -271,20 +213,6 @@
 							"parameters": [
 								{
 									"matchValue": "vacuum-stop-build-map-and-gocharge"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 3,
-						"aiid": 1,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "battery-start-charge"
 								}
 							]
 						}
@@ -487,7 +415,7 @@
 					}
 				],
 				"category": "cleaningrobot",
-				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Cleaning\",\"vacuum-stop-sweeping\"\u003d\"Stop Cleaning\",\"vacuum-pause-sweeping\"\u003d\"Pause Cleaning\",\"vacuum-continue-sweep\"\u003d\"Resume Cleaning\",\"vacuum-start-only-sweep\"\u003d\"Start Vacuuming Only\",\"vacuum-start-sweep-mop\"\u003d\"Start Vacuuming And Mopping\",\"vacuum-start-custom-sweep\"\u003d\"Start Custom Cleaning\",\"vacuum-start-build-map\"\u003d\"Start Mapping\",\"vacuum-pause-build-map\"\u003d\"Pause Mapping\",\"vacuum-continue-build-map\"\u003d\"Resume Mapping\",\"vacuum-stop-build-map-and-gocharge\"\u003d\"Stop Mapping And Go Charging\",\"battery-start-charge\"\u003d\"Go Charging\",\"vacuum-stop-and-gocharge\"\u003d\"Stop And Go Charging\",\"vacuum-start-dust-arrest\"\u003d\"Start Dust Collection\",\"roller-start-wash-roller\"\u003d\"Start Mop Washing\",\"roller-stop-wash-roller\"\u003d\"Stop Mop Washing\",\"vacuum-back-mop-wash\"\u003d\"Return To Wash Mop\",\"vacuum-start-dry\"\u003d\"Start Mop Drying\",\"vacuum-stop-dry\"\u003d\"Stop Mop Drying\",\"vacuum-try-listen\"\u003d\"Test Voice\",\"identify-identify\"\u003d\"Find Robot\",\"roller-reset-roller-life\"\u003d\"Reset Roller Mop Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush Life\",\"brush-cleaner-reset-brush-life1\"\u003d\"Reset Side Brush Life\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"dust-bag-reset-dust-bag-life\"\u003d\"Reset Dust Bag Life\"]`"
+				"readmeComment": "Start Cleaning uses the cleaning type set with the `sweep_mop_type` channel. Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Cleaning\",\"vacuum-stop-sweeping\"\u003d\"Stop Cleaning\",\"vacuum-pause-sweeping\"\u003d\"Pause Cleaning\",\"vacuum-continue-sweep\"\u003d\"Resume Cleaning\",\"vacuum-start-build-map\"\u003d\"Start Mapping\",\"vacuum-pause-build-map\"\u003d\"Pause Mapping\",\"vacuum-continue-build-map\"\u003d\"Resume Mapping\",\"vacuum-stop-build-map-and-gocharge\"\u003d\"Stop Mapping And Go Charging\",\"vacuum-stop-and-gocharge\"\u003d\"Stop And Go Charging\",\"vacuum-start-dust-arrest\"\u003d\"Start Dust Collection\",\"roller-start-wash-roller\"\u003d\"Start Mop Washing\",\"roller-stop-wash-roller\"\u003d\"Stop Mop Washing\",\"vacuum-back-mop-wash\"\u003d\"Return To Wash Mop\",\"vacuum-start-dry\"\u003d\"Start Mop Drying\",\"vacuum-stop-dry\"\u003d\"Stop Mop Drying\",\"vacuum-try-listen\"\u003d\"Test Voice\",\"identify-identify\"\u003d\"Find Robot\",\"roller-reset-roller-life\"\u003d\"Reset Roller Mop Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush Life\",\"brush-cleaner-reset-brush-life1\"\u003d\"Reset Side Brush Life\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"dust-bag-reset-dust-bag-life\"\u003d\"Reset Dust Bag Life\"]`"
 			},
 			{
 				"property": "vacuum-frameware-version",
@@ -1255,26 +1183,6 @@
 					"Enabled"
 				],
 				"readmeComment": "The app only shows this option when the station reports an automatic water supply kit"
-			},
-			{
-				"property": "auto-mop-dry",
-				"siid": 2,
-				"piid": 34,
-				"friendlyName": "Robot Cleaner - Auto Mop Drying",
-				"channel": "auto_mop_dry",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFBOOL"
-					}
-				],
-				"category": "switch",
-				"tags": [
-					"Switch",
-					"Enabled"
-				]
 			},
 			{
 				"property": "drying-time",
