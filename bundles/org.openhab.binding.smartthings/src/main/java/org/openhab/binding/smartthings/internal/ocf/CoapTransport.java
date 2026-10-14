@@ -321,6 +321,7 @@ final class CoapTransport implements Transport {
     @Override
     public void post(String href, JsonObject fields) throws IOException {
         Request request = Request.newPost().setURI(resourceUri(host, port, href));
+        request.setConfirmable(false);
         request.getOptions().setAccept(MediaTypeRegistry.APPLICATION_CBOR)
                 .setContentFormat(MediaTypeRegistry.APPLICATION_CBOR);
         request.setPayload(Cbor.encode(fields));
