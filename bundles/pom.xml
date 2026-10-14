@@ -75,7 +75,6 @@
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.atmofrance</module>
     <module>org.openhab.binding.autelis</module>
-    <module>org.openhab.binding.autoblind</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.awattar</module>
@@ -330,6 +329,7 @@
     <module>org.openhab.binding.nikobus</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.nobohub</module>
+    <module>org.openhab.binding.norman</module>
     <module>org.openhab.binding.novafinedust</module>
     <module>org.openhab.binding.ntfy</module>
     <module>org.openhab.binding.ntp</module>
