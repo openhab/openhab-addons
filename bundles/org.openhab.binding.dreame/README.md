@@ -187,6 +187,8 @@ A manual inbox scan can be used to repeat discovery.
 
 European country codes such as `de`, `fr` or `nl` are routed to the selected service's European cloud.
 The minimum refresh interval is 15 seconds. MQTT continues to deliver immediate updates independently of this interval.
+The account bridge refreshes cloud device metadata every 15 minutes. The binding stores the current model and firmware
+version as Thing properties and uses them when selecting firmware-dependent vacuum state mappings.
 
 ## Channels
 
@@ -410,9 +412,10 @@ The vacuum model identifiers are derived from the MIT-licensed
 [foXaCe/dreame-vacuum device database](https://github.com/foXaCe/dreame-vacuum/tree/d32732d1175d9b3e90e5f8f38651370effea8fe0),
 as documented in the binding's `NOTICE` file.
 
-The latest L50 test confirms `DRYING` and `SLEEPING` and observes state codes 9, 12 and 20 during a mop session.
-These map to `WASHING`, `SWEEPING_AND_MOPPING` and `CLEAN_ADD_WATER`, following the reference state enumeration.
-The tester directly identified code 9 as mop washing; code 20 still needs confirmation against the physical operation.
+Physical testing with the L50 Ultra Pro confirmed `DRYING` and `SLEEPING` and observed state codes 9, 12 and 20 during
+a mop session. These map to `WASHING`, `SWEEPING_AND_MOPPING` and `CLEAN_ADD_WATER`, following the reference state
+enumeration. Code 9 was directly identified as mop washing; the physical operation represented by code 20 still needs
+independent confirmation.
 
 ### Vacuum map
 
