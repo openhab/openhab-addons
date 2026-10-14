@@ -5,34 +5,18 @@ The Tedee binding integrates Tedee Smart Locks with openHAB through either:
 - the local Tedee Bridge API, or
 - the Tedee Cloud API.
 
-
-Local communication does not require the Tedee Cloud API for normal operation. 
+Local communication does not require the Tedee Cloud API for normal operation.
 Cloud access is available as an optional alternative and can be used without a local Tedee Bridge.
+Tedee also requires the Bridge itself to have internet connectivity so that it can obtain and refresh access certificates for paired devices.
 
-## Supported Features
-
-- Tedee local Bridge
-- Tedee Cloud
-- Tedee Lock
-- Automatic Lock discovery
-- Lock, unlock and pull commands
-- `UNLOCK_NO_PULL`
-- Lock status polling
-- Manual `REFRESH`
-- Battery, charging, jammed and connection state
-- Firmware/software version and Thing properties
-- Tedee device settings as read-only channels
-- Local Tedee Bridge webhooks for `lock-status-changed`
-- Automatic local webhook callback registration
-- Cloud polling without local webhooks
+Cloud or local bridges control their assigned lock devices. 
+Cloud and local bridge an operate on the same locks simultaneously. 
 
 ## Supported Things
 
 ### Tedee Local Bridge
 
-**Thing type:** `tedee:bridge`
-
-The Bridge represents the physical Tedee Bridge used for local API communication with Tedee locks.
+**Thing type:** `tedee:local-bridge`
 
 #### Configuration
 
@@ -40,18 +24,12 @@ The Bridge represents the physical Tedee Bridge used for local API communication
 |---|---|---:|---:|---|
 | `ip` | text | Yes | — | IP address of the Tedee Bridge |
 | `port` | integer | No | `80` | HTTP port of the Tedee Bridge |
-| `apiToken` | password | Yes | — | Tedee Bridge API token |
+| `apiToken` | password | Yes | — | Tedee Bridge API token, encryption set to ON |
 | `pollInterval` | integer | No | `300` | Configured interval in seconds for bridge monitoring |
 
-The Bridge must be reachable from the openHAB server. 
-The Tedee Bridge API is local to the LAN.
-Tedee also requires the Bridge itself to have internet connectivity so that it can obtain and refresh access certificates for paired devices.
+### Tedee Cloud Bridge
 
-### Tedee Cloud
-
-**Thing type:** `tedee:cloud`
-
-The Cloud Bridge provides direct communication with the Tedee Cloud API and does not require a local Tedee Bridge.
+**Thing type:** `tedee:cloud-bridge`
 
 #### Configuration
 
@@ -65,10 +43,6 @@ The Personal Access Key should be treated as a secret and must not be published 
 ### Tedee Lock
 
 **Thing type:** `tedee:lock`
-
-A Lock represents an individual Tedee lock.
-
-A Lock can be configured below either a local `tedee:bridge` or a `tedee:cloud` Bridge.
 
 #### Configuration
 
@@ -141,7 +115,6 @@ When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also 
 | `4` | `UNCALIBRATED` |
 
 A physical door sensor is required for meaningful door-state testing. 
-The current test installation does not have such a sensor.
 
 ### Device Settings
 
@@ -175,29 +148,9 @@ The Lock Thing exposes these properties:
 | `deviceType` | Tedee device type |
 | `firmwareVersion` | Firmware/software version reported by the Tedee API |
 
-## Configuration Through MainUI
-
-The binding can be configured through the openHAB UI.
-
-### Local Connection
-
-1. Install the Tedee binding.
-1. Add a **Tedee Bridge**.
-1. Enter the Bridge IP address and API token.
-1. Wait until the Bridge becomes `ONLINE`.
-1. Add a Tedee Lock below the Bridge or use autodiscovery.
-
-### Cloud Connection
-
-1. Install the Tedee binding.
-1. Add a **Tedee Cloud** Bridge.
-1. Enter the Tedee Personal Access Key.
-1. Wait until the Cloud Bridge becomes `ONLINE`.
-1. Add a Tedee Lock below the Cloud Bridge or use Cloud discovery.
-
 ## Text `.things` Configuration
 
-The same Things can be defined in a `.things` file.
+The Things can be defined in a `.things` file.
 
 ### Local Tedee Bridge
 
@@ -208,7 +161,7 @@ Bridge tedee:local-bridge:home "Tedee Bridge" [
     apiToken="YOUR_API_TOKEN",
     pollInterval=300
 ] {
-    Thing lock:lockname "Foxy Home" [
+    Thing lock:lockname "lock label" [
         deviceId=XXX,
         pollInterval=300
     ]
@@ -222,7 +175,7 @@ Bridge tedee:cloud-bridge:cloud "Tedee Cloud" [
     personalAccessKey="YOUR_PERSONAL_ACCESS_KEY",
     pollInterval=300
 ] {
-    Thing lock:foxyhomecloud "Lock Home Cloud" [
+    Thing lock:lockname "Lock label" [
         deviceId=XXXX,
         pollInterval=300
     ]
@@ -335,7 +288,7 @@ PULL
 
 `UNLOCK_NO_PULL` is useful when automatic pull spring is enabled but the desired operation is to unlock without pulling the spring.
 
-The Tedee APIs return an acknowledgement as soon as the operation has started. 
+The Tedee APIs return an acknowledgement as soon as the operation has started.
 The final state is reported later through polling and/or local callback events.
 
 ## Rules Examples
@@ -344,25 +297,19 @@ The final state is reported later through polling and/or local callback events.
 
 DSL-style rule:
 
-```text
+```java
 sendCommand(Tedee_Action, "UNLOCK_NO_PULL")
-```
-
-JS Scripting:
-
-```text
-items.getItem("Tedee_Action").sendCommand("UNLOCK_NO_PULL");
 ```
 
 ### Lock
 
-```text
+```java
 sendCommand(Tedee_Action, "LOCK")
 ```
 
 ### Pull Spring
 
-```text
+```java
 sendCommand(Tedee_Action, "PULL")
 ```
 
@@ -382,7 +329,7 @@ or:
 openhab:send Tedee_Action REFRESH
 ```
 
-A refresh triggers a complete lock refresh rather than updating only the requested channel. 
+A refresh triggers a complete lock refresh rather than updating only the requested channel.
 The API response contains multiple values, so all lock channels and properties are updated together.
 
 The default lock polling interval is currently 300 seconds.
@@ -410,7 +357,6 @@ The Tedee Bridge can POST status events to this endpoint.
 ```
 
 The callback must point to the LAN address of the openHAB server, not `localhost` or `127.0.0.1`.
-
 The local Bridge Handler manages the callback automatically and removes stale or duplicate binding callbacks.
 
 ### Implemented Webhook Event
@@ -457,7 +403,7 @@ Tedee documents additional events that are useful for the binding:
 - `device-battery-stop-charging`
 - `device-battery-fully-charged`
 
-These events are not yet processed individually by the current servlet implementation. 
+These events are not yet processed individually by the current servlet implementation.
 The normal polling/refresh mechanism remains available as the fallback for the corresponding values.
 
 ## Local API
@@ -479,22 +425,16 @@ http://<BRIDGE-IP>/v1.0
 | `POST` | `/v1.0/lock/{id}/unlock` | Unlock |
 | `POST` | `/v1.0/lock/{id}/pull` | Pull spring |
 | `POST` | `/v1.0/lock/{id}/unlock?mode=3` | Unlock without pull |
+| `POST` | `/v1.0/lock/{id}/unlock?mode=4` | Decision whether unlock or pull action is performed, based on lockposition |
 | `GET` | `/v1.0/callback` | Read callbacks |
 | `POST` | `/v1.0/callback` | Register callback |
 | `DELETE` | `/v1.0/callback/{callbackId}` | Remove callback |
 
 The `mode=3` unlock operation is used for `UNLOCK_NO_PULL`.
 
-Tedee documents lock, unlock and pull as asynchronous operations. 
+Tedee documents lock, unlock and pull as asynchronous operations.
 The initial HTTP response confirms that the operation has started; the final state can be observed through a subsequent refresh, polling cycle or callback event.
 
-## Cloud API
-
-The Cloud binding communicates directly with the Tedee Cloud API.
-
-### Cloud Authentication
-
-Cloud requests use the Personal Access Key configured on the `tedee:cloud` Bridge.
 
 ### Cloud Operations
 
@@ -510,24 +450,22 @@ Cloud lock status is retrieved by polling. No local webhook or callback registra
 ### Cloud Discovery
 
 The Cloud Bridge provides automatic lock discovery from the Tedee account.
-
 Discovered locks use their Tedee `deviceId` as the representation property and are created below the Cloud Bridge.
 
 ## Local and Cloud in Parallel
 
 Local and Cloud bridges can be configured at the same time.
-
 For example, the same physical lock can be represented through both transports:
 
 ```text
 Bridge tedee:local-bridge:home "Tedee Bridge" [
-    ip="10.194.83.85",
+    ip="BRIDGE_IP",
     port=80,
     apiToken="YOUR_API_TOKEN",
     pollInterval=300
 ] {
-    Thing lock:foxyhome "Foxy Home Local" [
-        deviceId=14196,
+    Thing lock:lockname "Lock label" [
+        deviceId=XXXXXX,
         pollInterval=300
     ]
 }
@@ -536,8 +474,8 @@ Bridge tedee:cloud-bridge:cloud "Tedee Cloud" [
     personalAccessKey="YOUR_PERSONAL_ACCESS_KEY",
     pollInterval=300
 ] {
-    Thing lock:foxyhomecloud "Foxy Home Cloud" [
-        deviceId=14196,
+    Thing lock:lockname "Lock label" [
+        deviceId=XXXXXX,
         pollInterval=300
     ]
 }
@@ -545,26 +483,11 @@ Bridge tedee:cloud-bridge:cloud "Tedee Cloud" [
 
 The two Things are independent and use different transport paths to the same Tedee device.
 The api token for the local bridge can be extracted from the bridge in your tedee APP.
-The Personal Access Key can be retrieved from the tedee web portal.
-
-## Development Status
-
-The current implementation has been tested successfully with:
-
-- Openhab 5.3.0 / 4.3.5
-- Tedee Bridge
-- Tedee PRO Lock
-- local webhook events
-- local lock discovery
-- lock, unlock and pull commands
-- `UNLOCK_NO_PULL`
-- polling and `REFRESH`
-- device settings
-- Cloud API support and Cloud discovery
+The Personal Access Key can be retrieved from the tedee web 
 
 ## Known Limitations
 
-- Door state cannot be fully validated without a supported door sensor.
+- Door state cannot be fully validated as no supported door sensor available.
 - Additional device information such as RSSI and device revision is not currently exposed as channels or properties.
 - Device settings are currently read-only.
 - Local webhook processing is currently focused on `lock-status-changed`; other documented webhook events continue to be handled through polling/refresh.
@@ -577,3 +500,6 @@ The current implementation has been tested successfully with:
 - [Tedee Bridge API – getting started](https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/overview/getting_started.md)
 - [Tedee Bridge API – lock operations](https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/howtos/operate_locks.md)
 - [Tedee Bridge API – webhook events](https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/webhooks/events.md)
+
+## Full example
+xxx
