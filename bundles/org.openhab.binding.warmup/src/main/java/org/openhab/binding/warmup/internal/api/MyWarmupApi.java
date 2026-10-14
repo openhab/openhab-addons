@@ -18,10 +18,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -186,15 +186,17 @@ public class MyWarmupApi {
 
             request.method(HttpMethod.POST);
 
-            request.getHeaders().remove(HttpHeader.USER_AGENT);
-            request.header(HttpHeader.USER_AGENT, WarmupBindingConstants.USER_AGENT);
-            request.header(HttpHeader.CONTENT_TYPE, "application/json");
-            request.header("App-Token", WarmupBindingConstants.APP_TOKEN);
+            request.headers(h -> {
+                h.remove(HttpHeader.USER_AGENT);
+                h.add(HttpHeader.USER_AGENT, WarmupBindingConstants.USER_AGENT);
+            });
+            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
+            request.headers(h -> h.add("App-Token", WarmupBindingConstants.APP_TOKEN));
             if (authenticated) {
-                request.header("Warmup-Authorization", authToken);
+                request.headers(h -> h.add("Warmup-Authorization", authToken));
             }
 
-            request.content(new StringContentProvider(body));
+            request.body(new StringRequestContent(body));
 
             request.timeout(10, TimeUnit.SECONDS);
 

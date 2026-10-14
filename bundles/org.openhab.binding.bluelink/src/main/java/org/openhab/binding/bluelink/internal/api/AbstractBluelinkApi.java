@@ -25,9 +25,10 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.bluelink.internal.dto.Token;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
@@ -341,5 +342,15 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
 
     static boolean isServerError(final int status) {
         return status >= 500 && status < 600;
+    }
+
+    protected static Request withHeader(final Request request, final HttpHeader name, final String value) {
+        request.headers(headers -> headers.put(name, value));
+        return request;
+    }
+
+    protected static Request withHeader(final Request request, final String name, final String value) {
+        request.headers(headers -> headers.put(name, value));
+        return request;
     }
 }

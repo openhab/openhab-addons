@@ -22,8 +22,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Actions;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.ActionsCollection;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceCollection;

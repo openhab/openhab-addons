@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
@@ -66,6 +64,8 @@ import org.openhab.core.types.RefreshType;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * The {@link VeSyncDeviceAirPurifierHandler} is responsible for handling commands, which are

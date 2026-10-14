@@ -25,13 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.core.config.core.ConfigParser;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -39,10 +38,11 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 
 /**
  * The {@link SpotifyAuthService} class to manage the servlets and bind authorization servlet to bridges.

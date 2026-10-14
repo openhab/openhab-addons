@@ -13,8 +13,12 @@
 package org.openhab.binding.orbitbhyve.internal.net;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.openhab.binding.orbitbhyve.internal.handler.OrbitBhyveBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +30,8 @@ import org.slf4j.LoggerFactory;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class OrbitBhyveSocket extends WebSocketAdapter {
+@WebSocket
+public class OrbitBhyveSocket {
     private final Logger logger = LoggerFactory.getLogger(OrbitBhyveSocket.class);
     private OrbitBhyveBridgeHandler handler;
 
@@ -34,12 +39,24 @@ public class OrbitBhyveSocket extends WebSocketAdapter {
         this.handler = handler;
     }
 
-    @Override
-    public void onWebSocketText(@Nullable String message) {
-        super.onWebSocketText(message);
-        if (message != null) {
-            logger.trace("Got message: {}", message);
-            handler.processStatusResponse(message);
-        }
+    @OnWebSocketOpen
+    public void onOpen(Session session) {
+        logger.debug("WebSocket connected");
+    }
+
+    @OnWebSocketMessage
+    public void onMessage(String message) {
+        logger.trace("Got message: {}", message);
+        handler.processStatusResponse(message);
+    }
+
+    @OnWebSocketClose
+    public void onClose(int statusCode, String reason) {
+        logger.debug("WebSocket closed: {} {}", statusCode, reason);
+    }
+
+    @OnWebSocketError
+    public void onError(Throwable cause) {
+        logger.debug("WebSocket error: {}", cause.getMessage());
     }
 }

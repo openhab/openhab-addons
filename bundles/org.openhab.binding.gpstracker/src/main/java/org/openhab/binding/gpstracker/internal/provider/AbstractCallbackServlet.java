@@ -16,10 +16,6 @@ import java.io.BufferedReader;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
@@ -29,6 +25,10 @@ import org.openhab.binding.gpstracker.internal.message.dto.LocationMessage;
 import org.openhab.binding.gpstracker.internal.message.dto.TransitionMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Abstract callback servlet used by the trackers.
@@ -93,6 +93,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      * @param resp HTTP response
      */
     @Override
+    @NonNullByDefault({})
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
             StringBuilder jb = new StringBuilder();

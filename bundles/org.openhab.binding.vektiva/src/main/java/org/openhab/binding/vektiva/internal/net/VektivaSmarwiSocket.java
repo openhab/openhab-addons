@@ -14,7 +14,8 @@ package org.openhab.binding.vektiva.internal.net;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.openhab.binding.vektiva.internal.handler.VektivaSmarwiHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,8 @@ import org.slf4j.LoggerFactory;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class VektivaSmarwiSocket extends WebSocketAdapter {
+@WebSocket
+public class VektivaSmarwiSocket {
     private final Logger logger = LoggerFactory.getLogger(VektivaSmarwiSocket.class);
     private final VektivaSmarwiHandler handler;
 
@@ -34,9 +36,8 @@ public class VektivaSmarwiSocket extends WebSocketAdapter {
         this.handler = handler;
     }
 
-    @Override
+    @OnWebSocketMessage
     public void onWebSocketText(@Nullable String message) {
-        super.onWebSocketText(message);
         if (message != null) {
             logger.trace("Got message: {}", message);
             handler.processStatusResponse(message);

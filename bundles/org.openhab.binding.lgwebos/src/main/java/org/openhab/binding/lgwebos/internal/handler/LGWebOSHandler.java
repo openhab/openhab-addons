@@ -188,7 +188,7 @@ public class LGWebOSHandler extends BaseThingHandler
         ScheduledFuture<?> job = keepAliveJob;
         if (job == null || job.isCancelled()) {
             // half of idle time out setting
-            long keepAliveInterval = this.webSocketClient.getMaxIdleTimeout() / 2;
+            long keepAliveInterval = this.webSocketClient.getIdleTimeout().toMillis() / 2;
 
             // it is irrelevant which service is queried. Only need to send some packets over the wire
 

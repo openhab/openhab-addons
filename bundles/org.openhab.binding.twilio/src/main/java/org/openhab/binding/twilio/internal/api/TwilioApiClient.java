@@ -25,9 +25,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -219,7 +219,7 @@ public class TwilioApiClient {
         try {
             ContentResponse response = httpClient.newRequest(url) //
                     .method(HttpMethod.GET) //
-                    .header(HttpHeader.AUTHORIZATION, authHeader) //
+                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, authHeader)) //
                     .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                     .send();
             return handleResponse(response);
@@ -236,8 +236,8 @@ public class TwilioApiClient {
         try {
             ContentResponse response = httpClient.newRequest(url) //
                     .method(HttpMethod.POST) //
-                    .header(HttpHeader.AUTHORIZATION, authHeader) //
-                    .content(new StringContentProvider("application/x-www-form-urlencoded", formBody,
+                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, authHeader)) //
+                    .body(new StringRequestContent("application/x-www-form-urlencoded", formBody,
                             StandardCharsets.UTF_8)) //
                     .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                     .send();

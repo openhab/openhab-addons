@@ -22,31 +22,26 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorBaseHandler;
-import org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorHandlerFactory;
 import org.openhab.binding.dahuadoor.internal.sip.SipClient;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 /**
- * The {@link PlayStreamServlet} is an HTTP servlet registered with the OSGi {@link HttpService}
+ * The {@link PlayStreamServlet} is an HTTP servlet registered at
  * at {@value DahuaDoorBindingConstants#WEBRTC_SERVLET_PATH}.
  *
  * <p>
@@ -91,7 +86,6 @@ public class PlayStreamServlet extends HttpServlet {
     /** Fallback timeout for ACTIVE locks if SIP state callbacks are not observed. */
     private static final long ACTIVE_STALE_MS = 30 * 60_000L;
 
-    private final HttpService httpService;
     private final DahuaDoorHandlerFactory handlerFactory;
 
     /**
@@ -117,8 +111,7 @@ public class PlayStreamServlet extends HttpServlet {
     /** Number of currently registered streams; used to decide when to unregister the servlet. */
     private volatile int registrationCount = 0;
 
-    public PlayStreamServlet(HttpService httpService, DahuaDoorHandlerFactory handlerFactory) {
-        this.httpService = httpService;
+    public PlayStreamServlet(DahuaDoorHandlerFactory handlerFactory) {
         this.handlerFactory = handlerFactory;
     }
 
@@ -183,7 +176,12 @@ public class PlayStreamServlet extends HttpServlet {
     // -------------------------------------------------------------------------
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @NonNullByDefault({})
+    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
+        if (req == null || resp == null) {
+            return;
+        }
         addCorsHeaders(resp);
 
         // Path info is /{streamName}
@@ -384,7 +382,12 @@ public class PlayStreamServlet extends HttpServlet {
     }
 
     @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @NonNullByDefault({})
+    protected void doOptions(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
+        if (resp == null) {
+            return;
+        }
         addCorsHeaders(resp);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
@@ -394,25 +397,12 @@ public class PlayStreamServlet extends HttpServlet {
     // -------------------------------------------------------------------------
 
     private boolean activate() {
-        Dictionary<String, String> params = new Hashtable<>();
-        try {
-            httpService.registerServlet(DahuaDoorBindingConstants.WEBRTC_SERVLET_PATH, this, params,
-                    httpService.createDefaultHttpContext());
-            LOGGER.debug("PlayStreamServlet registered at {}", DahuaDoorBindingConstants.WEBRTC_SERVLET_PATH);
-            return true;
-        } catch (ServletException | NamespaceException e) {
-            LOGGER.error("Failed to register PlayStreamServlet: {}", e.getMessage(), e);
-            return false;
-        }
+        LOGGER.debug("PlayStreamServlet activation requested");
+        return true;
     }
 
     private void deactivate() {
-        try {
-            httpService.unregister(DahuaDoorBindingConstants.WEBRTC_SERVLET_PATH);
-            LOGGER.debug("PlayStreamServlet unregistered");
-        } catch (IllegalArgumentException e) {
-            LOGGER.trace("PlayStreamServlet was not registered: {}", e.getMessage());
-        }
+        LOGGER.debug("PlayStreamServlet deactivated");
     }
 
     // -------------------------------------------------------------------------

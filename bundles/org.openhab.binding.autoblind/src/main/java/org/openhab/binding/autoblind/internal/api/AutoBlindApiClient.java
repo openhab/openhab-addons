@@ -19,9 +19,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.autoblind.internal.AutoBlindBindingConstants;
 import org.openhab.binding.autoblind.internal.api.dto.AllPeripheralResponse;
@@ -82,8 +82,8 @@ public class AutoBlindApiClient {
     private String post(String path, String jsonBody, int timeoutSec)
             throws InterruptedException, TimeoutException, ExecutionException {
         ContentResponse response = httpClient.newRequest(baseUrl + path).method(HttpMethod.POST)
-                .header(HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON).content(new StringContentProvider(jsonBody))
-                .timeout(timeoutSec, TimeUnit.SECONDS).send();
+                .body(new StringRequestContent(CONTENT_TYPE_JSON, jsonBody)).timeout(timeoutSec, TimeUnit.SECONDS)
+                .send();
         return response.getContentAsString();
     }
 

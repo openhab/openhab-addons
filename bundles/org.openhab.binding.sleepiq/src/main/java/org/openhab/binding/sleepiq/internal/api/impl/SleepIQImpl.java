@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sleepiq.internal.api.impl;
 
-import java.net.CookieStore;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -24,12 +23,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -85,7 +85,7 @@ public class SleepIQImpl implements SleepIQ {
     private final Logger logger = LoggerFactory.getLogger(SleepIQImpl.class);
 
     private final HttpClient httpClient;
-    private final CookieStore cookieStore;
+    private final HttpCookieStore cookieStore;
 
     protected final Configuration config;
 
@@ -95,14 +95,14 @@ public class SleepIQImpl implements SleepIQ {
     public SleepIQImpl(Configuration config, HttpClient httpClient) {
         this.config = config;
         this.httpClient = httpClient;
-        cookieStore = httpClient.getCookieStore();
+        cookieStore = httpClient.getHttpCookieStore();
         loginRequest.setLogin(config.getUsername());
         loginRequest.setPassword(config.getPassword());
     }
 
     @Override
     public void shutdown() {
-        cookieStore.removeAll();
+        cookieStore.clear();
     }
 
     @Override
@@ -112,9 +112,9 @@ public class SleepIQImpl implements SleepIQ {
             synchronized (this) {
                 if (loginInfo == null) {
                     Request request = httpClient.newRequest(config.getBaseUri()).path(Endpoints.login())
-                            .agent(USER_AGENT).header(HttpHeader.CONTENT_TYPE, "application/json")
+                            .agent(USER_AGENT).headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
                             .timeout(10, TimeUnit.SECONDS).method(HttpMethod.PUT)
-                            .content(new StringContentProvider(GSON.toJson(loginRequest)), "application/json");
+                            .body(new StringRequestContent("application/json", GSON.toJson(loginRequest)));
                     logger.trace("SleepIQ: login: request url={}", request.getURI());
 
                     try {
@@ -344,8 +344,8 @@ public class SleepIQImpl implements SleepIQ {
             throws CommunicationException, LoginException {
         LoginInfo login = login();
         Request request = httpClient.newRequest(config.getBaseUri()).path(endpoint).param(PARAM_KEY, login.getKey())
-                .agent(USER_AGENT).header(HttpHeader.CONTENT_TYPE, "application/json").timeout(10, TimeUnit.SECONDS)
-                .method(HttpMethod.GET);
+                .agent(USER_AGENT).headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
+                .timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET);
         return doRequest(request, parameters);
     }
 
@@ -353,8 +353,9 @@ public class SleepIQImpl implements SleepIQ {
             throws CommunicationException, LoginException {
         LoginInfo login = login();
         Request request = httpClient.newRequest(config.getBaseUri()).path(endpoint).param(PARAM_KEY, login.getKey())
-                .agent(USER_AGENT).header(HttpHeader.CONTENT_TYPE, "application/json").timeout(10, TimeUnit.SECONDS)
-                .method(HttpMethod.PUT).content(new StringContentProvider(body), "application/json");
+                .agent(USER_AGENT).headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
+                .timeout(10, TimeUnit.SECONDS).method(HttpMethod.PUT)
+                .body(new StringRequestContent("application/json", body));
         return doRequest(request, parameters);
     }
 
@@ -395,7 +396,7 @@ public class SleepIQImpl implements SleepIQ {
     }
 
     private void addCookiesToRequest(Request request) {
-        cookieStore.get(config.getBaseUri()).forEach(cookie -> {
+        cookieStore.match(config.getBaseUri()).forEach(cookie -> {
             request.cookie(cookie);
         });
     }

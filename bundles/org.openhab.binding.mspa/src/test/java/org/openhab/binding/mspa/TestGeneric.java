@@ -25,6 +25,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -83,8 +85,10 @@ class TestGeneric {
         configMap.put("password", "pwd");
         configMap.put("region", "ROW");
 
-        SslContextFactory sslContextFactory = new SslContextFactory.Client(true);
-        HttpClient client = new HttpClient(sslContextFactory);
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client(true);
+        ClientConnector clientConnector = new ClientConnector();
+        clientConnector.setSslContextFactory(sslContextFactory);
+        HttpClient client = new HttpClient(new HttpClientTransportDynamic(clientConnector));
         try {
             client.start();
             MSpaVisitorAccount account = new MSpaVisitorAccount(thing, client, mock(MSpaDiscoveryService.class),

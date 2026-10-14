@@ -12,24 +12,24 @@
  */
 package org.openhab.io.neeo.internal.net;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.ProcessingException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.ProcessingException;
 
 /**
  * This class represents an HTTP session with a httpClient
@@ -61,12 +61,12 @@ public class HttpRequest implements AutoCloseable {
     public HttpResponse sendGetCommand(String uri) {
         NeeoUtil.requireNotEmpty(uri, "uri cannot be empty");
         try {
-            final org.eclipse.jetty.client.api.Request request = httpClient.newRequest(uri);
+            final Request request = httpClient.newRequest(uri);
             request.method(HttpMethod.GET);
             request.timeout(10, TimeUnit.SECONDS);
             ContentResponse refreshResponse = request.send();
             return new HttpResponse(refreshResponse);
-        } catch (IOException | IllegalStateException | ProcessingException e) {
+        } catch (IllegalStateException | ProcessingException e) {
             String message = e.getMessage();
             return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, message != null ? message : "");
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -88,14 +88,14 @@ public class HttpRequest implements AutoCloseable {
         Objects.requireNonNull(body, "body cannot be null");
 
         try {
-            final org.eclipse.jetty.client.api.Request request = httpClient.newRequest(uri);
-            request.content(new StringContentProvider(body));
-            request.header(HttpHeader.CONTENT_TYPE, "application/json");
+            final Request request = httpClient.newRequest(uri);
+            request.body(new StringRequestContent("application/json", body));
+            request.headers(h -> h.put(HttpHeader.CONTENT_TYPE, "application/json"));
             request.method(HttpMethod.POST);
             request.timeout(10, TimeUnit.SECONDS);
             ContentResponse refreshResponse = request.send();
             return new HttpResponse(refreshResponse);
-        } catch (IOException | IllegalStateException | ProcessingException e) {
+        } catch (IllegalStateException | ProcessingException e) {
             String message = e.getMessage();
             return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, message != null ? message : "");
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

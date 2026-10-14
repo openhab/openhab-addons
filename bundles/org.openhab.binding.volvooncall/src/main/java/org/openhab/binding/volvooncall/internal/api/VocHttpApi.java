@@ -21,11 +21,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -83,14 +82,15 @@ public class VocHttpApi {
 
     private @Nullable String getResponse(HttpMethod method, String url, @Nullable String body) {
         try {
-            Request request = httpClient.newRequest(url).header(HttpHeader.CACHE_CONTROL, "no-cache")
-                    .header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE).header(HttpHeader.ACCEPT, "*/*")
-                    .header(HttpHeader.AUTHORIZATION, configuration.getAuthorization()).header("x-device-id", "Device")
-                    .header("x-originator-type", "App").header("x-os-type", "Android").header("x-os-version", "22")
+            Request request = httpClient.newRequest(url).headers(h -> h.add(HttpHeader.CACHE_CONTROL, "no-cache"))
+                    .headers(h -> h.add(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE))
+                    .headers(h -> h.add(HttpHeader.ACCEPT, "*/*"))
+                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, configuration.getAuthorization()))
+                    .headers(h -> h.add("x-device-id", "Device")).headers(h -> h.add("x-originator-type", "App"))
+                    .headers(h -> h.add("x-os-type", "Android")).headers(h -> h.add("x-os-version", "22"))
                     .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (body != null) {
-                ContentProvider content = new StringContentProvider(JSON_CONTENT_TYPE, body, StandardCharsets.UTF_8);
-                request = request.content(content);
+                request = request.body(new StringRequestContent(JSON_CONTENT_TYPE, body, StandardCharsets.UTF_8));
             }
             ContentResponse contentResponse = request.method(method).send();
             return contentResponse.getContentAsString();

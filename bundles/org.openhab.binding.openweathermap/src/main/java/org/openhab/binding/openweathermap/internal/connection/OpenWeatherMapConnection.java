@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapAPIConfiguration;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonAirPollutionData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyForecastData;

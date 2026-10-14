@@ -32,9 +32,9 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.audio.AudioFormat;
@@ -257,12 +257,12 @@ public class MimicTTSService extends AbstractCachedTTSService {
         // prepare the response as an inputstream
         InputStreamResponseListener inputStreamResponseListener = new InputStreamResponseListener();
         // we will use a POST method for the text
-        StringContentProvider textContentProvider = new StringContentProvider(text, StandardCharsets.UTF_8);
+        StringRequestContent textContentProvider = new StringRequestContent(text, StandardCharsets.UTF_8);
         if (text.startsWith("<speak>")) {
-            httpClient.POST(urlTTS).header("Content-Type", "application/ssml+xml").content(textContentProvider)
-                    .accept("audio/wav").send(inputStreamResponseListener);
+            httpClient.POST(urlTTS).headers(headers -> headers.put("Content-Type", "application/ssml+xml"))
+                    .body(textContentProvider).accept("audio/wav").send(inputStreamResponseListener);
         } else {
-            httpClient.POST(urlTTS).content(textContentProvider).accept("audio/wav").send(inputStreamResponseListener);
+            httpClient.POST(urlTTS).body(textContentProvider).accept("audio/wav").send(inputStreamResponseListener);
         }
 
         // compute the estimated timeout using a "stupid" method based on text length, as the response time depends on

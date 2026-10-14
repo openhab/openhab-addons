@@ -15,10 +15,10 @@ package org.openhab.binding.mielecloud.internal.config.servlet;
 import java.io.IOException;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Servlet showing the pair account page.

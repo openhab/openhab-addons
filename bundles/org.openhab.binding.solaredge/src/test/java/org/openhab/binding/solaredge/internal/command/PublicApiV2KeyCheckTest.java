@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;

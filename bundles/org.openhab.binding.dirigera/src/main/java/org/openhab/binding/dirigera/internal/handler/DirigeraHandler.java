@@ -33,10 +33,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
@@ -397,8 +397,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             String url = String.format(TOKEN_URL, config.ipAddress);
             String urlEncoded = UrlEncoded.encode(baseParams, StandardCharsets.UTF_8, false);
             Request tokenRequest = httpClient.POST(url)
-                    .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                    .content(new StringContentProvider("application/x-www-form-urlencoded", urlEncoded,
+                    .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"))
+                    .body(new StringRequestContent("application/x-www-form-urlencoded", urlEncoded,
                             StandardCharsets.UTF_8))
                     .followRedirects(true).timeout(10, TimeUnit.SECONDS);
 

@@ -28,10 +28,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.binding.nest.internal.sdm.dto.SDMCommands.SDMCommandRequest;
 import org.openhab.binding.nest.internal.sdm.dto.SDMCommands.SDMCommandResponse;
 import org.openhab.binding.nest.internal.sdm.dto.SDMDevice;
@@ -164,8 +164,8 @@ public class SDMAPI {
 
             Request request = httpClient.newRequest(url) //
                     .method(GET) //
-                    .header(ACCEPT, IMAGE_JPEG) //
-                    .header(AUTHORIZATION, token) //
+                    .headers(h -> h.add(ACCEPT, IMAGE_JPEG)) //
+                    .headers(h -> h.add(AUTHORIZATION, token)) //
                     .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS);
 
             if (imageWidth != null) {
@@ -307,10 +307,11 @@ public class SDMAPI {
     private String getJson(String url) throws FailedSendingSDMDataException, InvalidSDMAccessTokenException {
         try {
             logger.debug("Getting JSON from: {}", url);
+            final String authHeader = getAuthorizationHeader();
             ContentResponse contentResponse = httpClient.newRequest(url) //
                     .method(GET) //
-                    .header(ACCEPT, APPLICATION_JSON) //
-                    .header(AUTHORIZATION, getAuthorizationHeader()) //
+                    .headers(h -> h.add(ACCEPT, APPLICATION_JSON)) //
+                    .headers(h -> h.add(AUTHORIZATION, authHeader)) //
                     .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS) //
                     .send();
             logResponseErrors(contentResponse);
@@ -331,11 +332,12 @@ public class SDMAPI {
             throws FailedSendingSDMDataException, InvalidSDMAccessTokenException {
         try {
             logger.debug("Posting JSON to: {}", url);
+            final String authHeader = getAuthorizationHeader();
             ContentResponse contentResponse = httpClient.newRequest(url) //
                     .method(POST) //
-                    .header(ACCEPT, APPLICATION_JSON) //
-                    .header(AUTHORIZATION, getAuthorizationHeader()) //
-                    .content(new StringContentProvider(requestContent), APPLICATION_JSON) //
+                    .headers(h -> h.add(ACCEPT, APPLICATION_JSON)) //
+                    .headers(h -> h.add(AUTHORIZATION, authHeader)) //
+                    .body(new StringRequestContent(APPLICATION_JSON, requestContent)) //
                     .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS) //
                     .send();
             logResponseErrors(contentResponse);

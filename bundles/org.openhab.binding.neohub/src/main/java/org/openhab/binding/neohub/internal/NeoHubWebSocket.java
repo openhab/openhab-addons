@@ -22,11 +22,12 @@ import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
@@ -176,7 +177,7 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
             try {
                 // send the request
                 logger.debug("hub '{}' sending characters:{}", hubId, requestOuter.length());
-                session.getRemote().sendString(requestOuter);
+                session.sendText(requestOuter, Callback.NOOP);
                 logger.trace("hub '{}' sent:{}", hubId, requestOuter);
 
                 // sleep and loop until we get a response, the socket is closed, or it times out
@@ -254,7 +255,7 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         }
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         logger.debug("hub '{}' onConnect() ok", hubId);
     }

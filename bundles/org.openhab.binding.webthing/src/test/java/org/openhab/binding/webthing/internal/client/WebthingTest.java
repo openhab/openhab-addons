@@ -13,21 +13,17 @@
 package org.openhab.binding.webthing.internal.client;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,19 +31,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.websocket.api.BatchMode;
-import org.eclipse.jetty.websocket.api.CloseStatus;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.SuspendToken;
-import org.eclipse.jetty.websocket.api.UpgradeRequest;
-import org.eclipse.jetty.websocket.api.UpgradeResponse;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
-import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
 
@@ -293,171 +279,30 @@ public class WebthingTest {
             var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
             var webSocket = new WebSocketImpl(webSocketConnection);
             webSocketRef.set(webSocket);
-            webSocketConnection.onWebSocketConnect(webSocket);
+            webSocketConnection.onWebSocketOpen(webSocket.getSession());
             return webSocketConnection;
         }
     }
 
-    public static final class WebSocketImpl implements Session {
-        private final WebSocketListener listener;
-        private final WebSocketPingPongListener pongListener;
+    public static final class WebSocketImpl {
+        private final Session.Listener listener;
         public AtomicBoolean ignorePing = new AtomicBoolean(false);
+        private final Session sessionMock;
 
         WebSocketImpl(WebSocketConnectionImpl connection) {
             this.listener = connection;
-            this.pongListener = connection;
+            this.sessionMock = mock(Session.class);
+            doAnswer(inv -> {
+                if (!ignorePing.get()) {
+                    ByteBuffer payload = inv.getArgument(0);
+                    listener.onWebSocketPong(payload);
+                }
+                return null;
+            }).when(sessionMock).sendPing(any(ByteBuffer.class), any(Callback.class));
         }
 
-        @Override
-        public void close() {
-        }
-
-        @Override
-        public void close(@Nullable CloseStatus closeStatus) {
-        }
-
-        @Override
-        public void close(int statusCode, @Nullable String reason) {
-        }
-
-        @Override
-        public void disconnect() throws IOException {
-        }
-
-        @Override
-        public long getIdleTimeout() {
-            return 0;
-        }
-
-        @Override
-        public InetSocketAddress getLocalAddress() {
-            return InetSocketAddress.createUnresolved("test", 23);
-        }
-
-        @Override
-        public WebSocketPolicy getPolicy() {
-            return WebSocketPolicy.newClientPolicy();
-        }
-
-        @Override
-        public String getProtocolVersion() {
-            return "1";
-        }
-
-        @Override
-        public RemoteEndpoint getRemote() {
-            return new RemoteEndpoint() {
-                @Override
-                public void sendBytes(@Nullable ByteBuffer data) throws IOException {
-                }
-
-                @Override
-                public Future sendBytesByFuture(@Nullable ByteBuffer data) {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public void sendBytes(@Nullable ByteBuffer data, @Nullable WriteCallback callback) {
-                }
-
-                @Override
-                public void sendPartialBytes(@Nullable ByteBuffer fragment, boolean isLast) throws IOException {
-                }
-
-                @Override
-                public void sendPartialString(@Nullable String fragment, boolean isLast) throws IOException {
-                }
-
-                @Override
-                public void sendPing(@Nullable ByteBuffer applicationData) throws IOException {
-                    if (!ignorePing.get()) {
-                        pongListener.onWebSocketPong(applicationData);
-                    }
-                }
-
-                @Override
-                public void sendPong(@Nullable ByteBuffer applicationData) throws IOException {
-                }
-
-                @Override
-                public void sendString(@Nullable String text) throws IOException {
-                }
-
-                @Override
-                public Future sendStringByFuture(@Nullable String text) {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public void sendString(@Nullable String text, @Nullable WriteCallback callback) {
-                }
-
-                @Override
-                public BatchMode getBatchMode() {
-                    return BatchMode.AUTO;
-                }
-
-                @Override
-                public void setBatchMode(@Nullable BatchMode mode) {
-                }
-
-                @Override
-                public InetSocketAddress getInetSocketAddress() {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public void flush() throws IOException {
-                }
-
-                @Override
-                public int getMaxOutgoingFrames() {
-                    return 0;
-                }
-
-                @Override
-                public void setMaxOutgoingFrames(int maxOutgoingFrames) {
-                }
-            };
-        }
-
-        @Override
-        public InetSocketAddress getRemoteAddress() {
-            return InetSocketAddress.createUnresolved("test", 12);
-        }
-
-        @Override
-        public UpgradeRequest getUpgradeRequest() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public UpgradeResponse getUpgradeResponse() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isOpen() {
-            return false;
-        }
-
-        @Override
-        public boolean isSecure() {
-            return false;
-        }
-
-        @Override
-        public void setIdleTimeout(long ms) {
-        }
-
-        @Override
-        public SuspendToken suspend() {
-            return new SuspendToken() {
-
-                @Override
-                public void resume() {
-                }
-            };
+        public Session getSession() {
+            return sessionMock;
         }
 
         public void sendToClient(PropertyStatusMessage message) {
@@ -467,14 +312,6 @@ public class WebthingTest {
 
         public void sendCloseToClient() {
             listener.onWebSocketClose(200, "");
-        }
-
-        public CompletableFuture<WebSocket> sendPing(String message) {
-            if (!ignorePing.get()) {
-                var bytes = message.getBytes(StandardCharsets.UTF_8);
-                listener.onWebSocketBinary(bytes, 0, bytes.length);
-            }
-            return CompletableFuture.completedFuture(null);
         }
     }
 

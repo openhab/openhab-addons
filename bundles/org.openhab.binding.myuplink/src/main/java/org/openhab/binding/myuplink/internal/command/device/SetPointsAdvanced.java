@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.myuplink.internal.command.AbstractWriteCommand;
 import org.openhab.binding.myuplink.internal.command.JsonResultProcessor;
@@ -59,9 +59,9 @@ public class SetPointsAdvanced extends AbstractWriteCommand {
     protected Request prepareWriteRequest(Request requestToPrepare) throws ValidationException {
         requestToPrepare.method(HttpMethod.PATCH);
 
-        StringContentProvider cp = new StringContentProvider(WEB_REQUEST_PATCH_CONTENT_TYPE,
+        StringRequestContent cp = new StringRequestContent(WEB_REQUEST_PATCH_CONTENT_TYPE,
                 buildJsonObject(getChannelId(), getChannelValue()), StandardCharsets.UTF_8);
-        requestToPrepare.content(cp);
+        requestToPrepare.body(cp);
 
         return requestToPrepare;
     }

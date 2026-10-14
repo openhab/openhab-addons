@@ -33,9 +33,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -80,7 +80,7 @@ public class WebInterfaceTest {
                 .thenReturn(mock(ScheduledFuture.class));
         when(httpClient.newRequest(anyString())).thenReturn(request);
         when(request.timeout(anyLong(), eq(TimeUnit.SECONDS))).thenReturn(request);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         when(request.followRedirects(false)).thenReturn(request);
         when(request.method(HttpMethod.GET)).thenReturn(request);
 
