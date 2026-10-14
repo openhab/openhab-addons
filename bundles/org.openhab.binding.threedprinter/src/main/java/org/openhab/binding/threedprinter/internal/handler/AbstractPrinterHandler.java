@@ -21,10 +21,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.library.types.DecimalType;
@@ -127,7 +127,7 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         try {
             Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(10, TimeUnit.SECONDS);
             if (!apiKey.isBlank()) {
-                request.header("X-Api-Key", apiKey);
+                request.headers(h -> h.add("X-Api-Key", apiKey));
             }
             ContentResponse response = request.send();
             int status = response.getStatus();
@@ -153,10 +153,10 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         try {
             Request request = httpClient.newRequest(url).method(HttpMethod.POST).timeout(10, TimeUnit.SECONDS);
             if (!apiKey.isBlank()) {
-                request.header("X-Api-Key", apiKey);
+                request.headers(h -> h.add("X-Api-Key", apiKey));
             }
             if (!jsonBody.isEmpty()) {
-                request.content(new StringContentProvider(jsonBody), "application/json");
+                request.body(new StringRequestContent("application/json", jsonBody));
             }
             return request.send().getStatus();
         } catch (TimeoutException | ExecutionException e) {
@@ -176,7 +176,7 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         try {
             Request request = httpClient.newRequest(url).method(HttpMethod.DELETE).timeout(10, TimeUnit.SECONDS);
             if (!apiKey.isBlank()) {
-                request.header("X-Api-Key", apiKey);
+                request.headers(h -> h.add("X-Api-Key", apiKey));
             }
             return request.send().getStatus();
         } catch (TimeoutException | ExecutionException e) {
@@ -196,10 +196,10 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         try {
             Request request = httpClient.newRequest(url).method(HttpMethod.PUT).timeout(10, TimeUnit.SECONDS);
             if (!apiKey.isBlank()) {
-                request.header("X-Api-Key", apiKey);
+                request.headers(h -> h.add("X-Api-Key", apiKey));
             }
             if (!jsonBody.isEmpty()) {
-                request.content(new StringContentProvider(jsonBody), "application/json");
+                request.body(new StringRequestContent("application/json", jsonBody));
             }
             return request.send().getStatus();
         } catch (TimeoutException | ExecutionException e) {
@@ -219,7 +219,7 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         try {
             Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(10, TimeUnit.SECONDS);
             if (!apiKey.isBlank()) {
-                request.header("X-Api-Key", apiKey);
+                request.headers(h -> h.add("X-Api-Key", apiKey));
             }
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.OK_200) {
