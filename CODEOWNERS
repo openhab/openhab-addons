@@ -321,6 +321,7 @@
 /bundles/org.openhab.binding.pegelonline/ @weymann
 /bundles/org.openhab.binding.pentair/ @jsjames
 /bundles/org.openhab.binding.phc/ @gnlpfjh
+/bundles/org.openhab.binding.philipsair/ @marcelrv
 /bundles/org.openhab.binding.pihole/ @magx2
 /bundles/org.openhab.binding.pilight/ @stefanroellin @niklasdoerfler
 /bundles/org.openhab.binding.pioneeravr/ @Stratehm
