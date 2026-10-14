@@ -373,7 +373,8 @@
 				"category": "cleaningrobot",
 				"tags": [
 					"Measurement"
-				]
+				],
+				"readmeComment": "The MIoT spec describes this value in units of 0.01 m², but the Mi Home app shows it unscaled as m². This channel follows the app."
 			},
 			{
 				"property": "cleaning-time",

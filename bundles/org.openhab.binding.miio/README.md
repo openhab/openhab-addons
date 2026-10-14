@@ -4893,7 +4893,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | fault                      | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Faults","1"="Left Wheel Stuck","2"="Right Wheel Stuck","3"="Bumper Stuck","4"="Side Brush Stuck","5"="Cliff Sensor Error","6"="Wheels Suspended","7"="Fan Error","8"="Low Battery","9"="Return To Dock Failed","10"="Robot Trapped","11"="Left Wheel Error","12"="Right Wheel Error","13"="Side Brush Error","14"="Battery Temperature Error","15"="Slope Detected"]` |
 | sweep_type                 | Number               | Robot Cleaner - Cleanup Range            | Value mapping `["1"="Whole House","2"="Spot","3"="Edge"]` |
 | suction_level              | Number               | Robot Cleaner - Suction Level            | Value mapping `["0"="Silent","1"="Standard","2"="Strong"]` |
-| cleaning_area              | Number:Area          | Robot Cleaner - Cleaning Area            |            |
+| cleaning_area              | Number:Area          | Robot Cleaner - Cleaning Area            | The MIoT spec describes this value in units of 0.01 m², but the Mi Home app shows it unscaled as m². This channel follows the app. |
 | cleaning_time              | Number:Time          | Robot Cleaner - Cleaning Time            |            |
 | last_clean_time            | String               | Robot Cleaner - Last Clean Time          | Day, month, hour and minute of the last cleaning as ddMMHHmm, a day below 10 is reported without leading zero. The year is not reported. |
 | sweep_break_switch         | Switch               | Robot Cleaner - Resume After Charging    |            |
