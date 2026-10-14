@@ -23,12 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -68,6 +70,7 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
     static final int MAX_CONCURRENCY = 32;
     static final int HOST_TIMEOUT_SECONDS = 3;
     static final int SCAN_TIMEOUT_SECONDS = 210;
+    private static final int DEACTIVATION_TIMEOUT_SECONDS = 5;
 
     @FunctionalInterface
     interface Probe {
@@ -95,10 +98,10 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
     }
 
     // Lifecycle transitions and publication are serialized; network requests never occupy this executor.
-    private boolean active;
+    private volatile boolean active;
     private @Nullable Object configuredSubnet;
     private boolean discoverUnclassified;
-    private @Nullable Scan scan;
+    private volatile @Nullable Scan scan;
 
     @Activate
     public ApplianceDiscoveryService(@Reference NetworkAddressService networkAddressService) {
@@ -242,7 +245,7 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Starting Samsung appliance discovery: {} addresses, {} workers, {} seconds per host",
                 addresses.size(), current.concurrency, HOST_TIMEOUT_SECONDS);
         // Own the timeout so completion, cancellation and disposal release every scheduled task.
-        current.tasks.add(control.schedule(() -> execute(() -> {
+        current.addTask(control.schedule(() -> execute(() -> {
             if (current.equals(scan)) {
                 logger.debug("Samsung appliance discovery timed out; discarding incomplete scan results");
                 stopScanInternal();
@@ -258,7 +261,7 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
         if (delayNanos == 0) {
             submitWorker(current, offset);
         } else {
-            current.tasks.add(control.schedule(() -> submitWorker(current, offset), delayNanos, TimeUnit.NANOSECONDS));
+            current.addTask(control.schedule(() -> submitWorker(current, offset), delayNanos, TimeUnit.NANOSECONDS));
         }
     }
 
@@ -267,7 +270,7 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
             return;
         }
         try {
-            current.tasks.add(workers.submit(() -> probeHosts(current, offset)));
+            current.addTask(workers.submit(() -> probeHosts(current, offset)));
         } catch (RejectedExecutionException e) {
             logger.warn("Unable to schedule Samsung appliance discovery probe", e);
             current.failed = true;
@@ -405,8 +408,7 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
         if (current != null) {
             logger.debug("Stopping Samsung appliance discovery workers; {} advertisements collected",
                     current.results.size());
-            current.cancelled = true;
-            current.tasks.forEach(task -> task.cancel(true));
+            current.cancelTasks();
             workers.purge();
             synchronized (workerGate) {
                 workerGate.notifyAll();
@@ -427,17 +429,30 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
     @Deactivate
     @Override
     protected void deactivate() {
-        execute(() -> {
-            active = false;
-            try {
-                abortScanInternal();
-            } finally {
-                control.shutdown();
-                if (ownsWorkers) {
-                    workers.shutdownNow();
-                }
-            }
-        });
+        active = false;
+        cancelWorkers();
+        if (ownsWorkers) {
+            workers.shutdownNow();
+        }
+        if (control.isShutdown()) {
+            return;
+        }
+        try {
+            control.submit(this::abortScanInternal).get(DEACTIVATION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | RejectedExecutionException | TimeoutException e) {
+            logger.warn("Unable to complete Samsung discovery cleanup during deactivation", e);
+        } finally {
+            shutdownExecutors();
+        }
+    }
+
+    private void shutdownExecutors() {
+        control.shutdownNow();
+        if (ownsWorkers) {
+            workers.shutdownNow();
+        }
     }
 
     private static final class Scan {
@@ -455,6 +470,19 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
             this.concurrency = concurrency;
             deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(timeoutSeconds);
             remaining = new AtomicInteger(concurrency);
+        }
+
+        synchronized void addTask(Future<?> task) {
+            if (cancelled) {
+                task.cancel(true);
+            } else {
+                tasks.add(task);
+            }
+        }
+
+        synchronized void cancelTasks() {
+            cancelled = true;
+            tasks.forEach(task -> task.cancel(true));
         }
     }
 }

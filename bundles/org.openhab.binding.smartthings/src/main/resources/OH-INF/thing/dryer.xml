@@ -25,7 +25,7 @@
 			</channel>
 			<channel id="dryer-mode" typeId="string">
 				<label>Dryer Mode</label>
-				<description>Current dryer course; supported courses can be selected when Remote Control is enabled.</description>
+				<description>Current dryer course.</description>
 			</channel>
 			<channel id="cycle-control" typeId="string">
 				<label>Cycle Control</label>

@@ -445,10 +445,8 @@ public class Resources {
         String encoded = string(rep.get(DRYER_MODE_FIELD));
         String course = decodeDryerCourse(encoded);
         if (course != null) {
-            add(points, channelIds,
-                    new Point("dryer-mode", href, DRYER_MODE_FIELD, "String", "Dryer Mode",
-                            "Current dryer course. Commands are limited to the supported Table_03 courses.",
-                            !course.equals(encoded) && remoteEnabled(prefix(href, DRYER_COURSE))));
+            add(points, channelIds, new Point("dryer-mode", href, DRYER_MODE_FIELD, "String", "Dryer Mode",
+                    "Current dryer course.", false));
         }
     }
 
@@ -528,9 +526,6 @@ public class Resources {
         }
         if (point.href().endsWith(DRYER_OPERATIONAL_STATE) && CYCLE_STATE_FIELD.equals(point.field())) {
             return List.of("Run", "Pause", "Ready").stream().map(value -> new StateOption(value, value)).toList();
-        }
-        if (point.href().endsWith(DRYER_COURSE) && DRYER_MODE_FIELD.equals(point.field())) {
-            return DRYER_COURSES.values().stream().sorted().map(value -> new StateOption(value, value)).toList();
         }
         if (point.href().endsWith(DRYER_SETTINGS) && DRY_LEVEL_FIELD.equals(point.field())) {
             JsonObject rep = resources.get(point.href());
@@ -614,7 +609,7 @@ public class Resources {
             throw new IllegalArgumentException("Resource channel is read-only");
         }
         String href = current.href();
-        if (href.endsWith(DRYER_OPERATIONAL_STATE) || href.endsWith(DRYER_COURSE) || href.endsWith(DRYER_SETTINGS)) {
+        if (href.endsWith(DRYER_OPERATIONAL_STATE) || href.endsWith(DRYER_SETTINGS)) {
             return dryerCommand(current, command);
         }
         ModeResource mode = modeResource(href);
@@ -701,10 +696,8 @@ public class Resources {
     private JsonObject dryerCommand(Point point, Command command) {
         JsonObject result = new JsonObject();
         String href = point.href();
-        String base;
         if (href.endsWith(DRYER_OPERATIONAL_STATE)) {
-            base = prefix(href, DRYER_OPERATIONAL_STATE);
-            if (!remoteEnabled(base)) {
+            if (!remoteEnabled(prefix(href, DRYER_OPERATIONAL_STATE))) {
                 throw new IllegalArgumentException("Remote Control is not explicitly enabled");
             }
             if (CYCLE_STATE_FIELD.equals(point.field()) && command instanceof StringType text
@@ -727,22 +720,6 @@ public class Resources {
             }
             return result;
         }
-        if (href.endsWith(DRYER_COURSE)) {
-            base = prefix(href, DRYER_COURSE);
-            if (!remoteEnabled(base)) {
-                throw new IllegalArgumentException("Remote Control is not explicitly enabled");
-            }
-            if (!DRYER_MODE_FIELD.equals(point.field()) || !(command instanceof StringType text)) {
-                throw new IllegalArgumentException("Expected a supported dryer course");
-            }
-            String code = encodeDryerCourse(text.toString());
-            if (code == null) {
-                throw new IllegalArgumentException("Dryer course is not supported");
-            }
-            result.addProperty(DRYER_MODE_FIELD, "Table_03_Course_" + code);
-            return result;
-        }
-        base = prefix(href, DRYER_SETTINGS);
         if (!dryerSettingWritable(href)) {
             throw new IllegalArgumentException("Dryer setting is not writable without Remote Control");
         }
@@ -1167,11 +1144,6 @@ public class Resources {
         }
         String code = encoded.substring("Table_03_Course_".length()).toUpperCase(java.util.Locale.ROOT);
         return DRYER_COURSES.getOrDefault(code, encoded);
-    }
-
-    private static @Nullable String encodeDryerCourse(String course) {
-        return DRYER_COURSES.entrySet().stream().filter(entry -> entry.getValue().equals(course)).map(Map.Entry::getKey)
-                .findFirst().orElse(null);
     }
 
     private static List<String> supportedDryLevels(JsonObject rep) {

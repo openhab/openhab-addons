@@ -22,6 +22,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
@@ -92,53 +97,70 @@ public final class Discovery {
             throw new IOException("Invalid appliance discovery address or timeout");
         }
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(timeoutSeconds);
-        var scheduler = CoapTransport.scheduler();
-        int remainingProbes = ports.size();
-        for (int port : ports) {
-            if (Thread.currentThread().isInterrupted()) {
-                throw new IOException("Appliance discovery interrupted");
-            }
-            long now = System.nanoTime();
-            if (now >= deadline) {
-                break;
-            }
-            // Bound the entire probe, including metadata requests, so an incomplete port cannot consume
-            // the time reserved for the remaining ports. The last port can use all remaining time.
-            long probeDeadline = remainingProbes > 1
-                    ? now + Math.min((deadline - now) / remainingProbes, TimeUnit.SECONDS.toNanos(1))
-                    : deadline;
-            remainingProbes--;
-            // A closed UDP port can leave an ICMP socket error for the next send on macOS.
-            // Isolate probes so an unavailable port cannot poison discovery of a working one.
-            CoapEndpoint endpoint = new CoapEndpoint.Builder()
-                    .setConfiguration(CoapTransport.networkConfiguration().set(CoapConfig.MAX_ACTIVE_PEERS, 16))
-                    .setPort(0).build();
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            CompletionService<Descriptor> completions = new ExecutorCompletionService<>(executor);
+            List<Future<Descriptor>> probes = new ArrayList<>();
             try {
-                endpoint.setExecutors(scheduler, scheduler);
-                endpoint.start();
-                JsonElement resources = get(endpoint, host, port, "/oic/res", "rt=oic.r.doxm", probeDeadline);
-                JsonElement device = get(endpoint, host, port, "/oic/d", "", probeDeadline);
-                Descriptor descriptor = descriptor(resources, device, host);
-                if (samsungOnly) {
-                    Map<String, String> properties = new LinkedHashMap<>(descriptor.properties());
-                    properties.putAll(verifySamsung(get(endpoint, host, port, "/oic/p", "", probeDeadline),
-                            descriptor.deviceId()));
-                    descriptor = new Descriptor(descriptor.deviceId(), descriptor.name(), descriptor.securePort(),
-                            properties);
+                for (int port : ports) {
+                    probes.add(completions.submit(() -> probe(host, port, deadline, samsungOnly)));
                 }
-                return descriptor;
-            } catch (IOException e) {
-                if (Thread.currentThread().isInterrupted()) {
-                    throw e;
+                for (int completed = 0; completed < probes.size(); completed++) {
+                    long remaining = deadline - System.nanoTime();
+                    if (remaining <= 0) {
+                        break;
+                    }
+                    Future<Descriptor> result = completions.poll(remaining, TimeUnit.NANOSECONDS);
+                    if (result == null) {
+                        break;
+                    }
+                    try {
+                        return result.get();
+                    } catch (ExecutionException e) {
+                        if (e.getCause() instanceof IOException) {
+                            continue;
+                        }
+                        throw new IOException("Appliance discovery failed");
+                    }
                 }
-                // Probe other public ports, but never guess a secure port or modify ownership.
-            } catch (RuntimeException e) {
-                throw new IOException("Appliance discovery failed");
+                throw new IOException("No usable appliance endpoint was advertised");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IOException("Appliance discovery interrupted");
             } finally {
-                endpoint.destroy();
+                probes.forEach(probe -> probe.cancel(true));
             }
         }
-        throw new IOException("No usable appliance endpoint was advertised");
+    }
+
+    private static Descriptor probe(InetAddress host, int port, long deadline, boolean samsungOnly) throws IOException {
+        if (Thread.currentThread().isInterrupted()) {
+            throw new IOException("Appliance discovery interrupted");
+        }
+        // A closed UDP port can leave an ICMP socket error for the next send on macOS.
+        // Isolate probes so an unavailable port cannot poison discovery of a working one.
+        CoapEndpoint endpoint = new CoapEndpoint.Builder()
+                .setConfiguration(CoapTransport.networkConfiguration().set(CoapConfig.MAX_ACTIVE_PEERS, 16)).setPort(0)
+                .build();
+        try {
+            var scheduler = CoapTransport.scheduler();
+            endpoint.setExecutors(scheduler, scheduler);
+            endpoint.start();
+            JsonElement resources = get(endpoint, host, port, "/oic/res", "rt=oic.r.doxm", deadline);
+            JsonElement device = get(endpoint, host, port, "/oic/d", "", deadline);
+            Descriptor descriptor = descriptor(resources, device, host);
+            if (samsungOnly) {
+                Map<String, String> properties = new LinkedHashMap<>(descriptor.properties());
+                properties.putAll(
+                        verifySamsung(get(endpoint, host, port, "/oic/p", "", deadline), descriptor.deviceId()));
+                descriptor = new Descriptor(descriptor.deviceId(), descriptor.name(), descriptor.securePort(),
+                        properties);
+            }
+            return descriptor;
+        } catch (RuntimeException e) {
+            throw new IOException("Appliance discovery failed");
+        } finally {
+            endpoint.destroy();
+        }
     }
 
     private static JsonElement get(CoapEndpoint endpoint, InetAddress host, int port, String path, String query,

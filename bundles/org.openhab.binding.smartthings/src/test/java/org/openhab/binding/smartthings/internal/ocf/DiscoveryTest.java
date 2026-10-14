@@ -248,7 +248,7 @@ class DiscoveryTest {
 
     @Test
     @Timeout(15)
-    void lastDiscoveryPortCanUseTheRemainingConfiguredTimeout() throws Exception {
+    void laterDiscoveryPortCanUseTheConfiguredTimeout() throws Exception {
         InetAddress loopback = InetAddress.getLoopbackAddress();
         var endpoint = new CoapEndpoint.Builder().setConfiguration(CoapTransport.networkConfiguration())
                 .setInetSocketAddress(new InetSocketAddress(loopback, 0)).build();
@@ -280,7 +280,17 @@ class DiscoveryTest {
         server.add(oic);
         try {
             server.start();
-            var found = Discovery.discover(loopback, new LinkedHashSet<>(List.of(endpoint.getAddress().getPort())), 6);
+            var ports = new LinkedHashSet<Integer>();
+            while (ports.size() < 9) {
+                try (var socket = new DatagramSocket(new InetSocketAddress(loopback, 0))) {
+                    int candidate = socket.getLocalPort();
+                    if (candidate != endpoint.getAddress().getPort()) {
+                        ports.add(candidate);
+                    }
+                }
+            }
+            ports.add(endpoint.getAddress().getPort());
+            var found = Discovery.discover(loopback, ports, 6);
             assertEquals(IDENTITY, found.deviceId());
         } finally {
             responses.shutdownNow();

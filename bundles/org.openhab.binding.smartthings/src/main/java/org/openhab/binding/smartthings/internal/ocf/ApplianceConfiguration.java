@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smartthings.internal.ocf;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.HexFormat;
 import java.util.UUID;
 
@@ -40,6 +42,15 @@ public class ApplianceConfiguration {
         if (host.isBlank() || !host.matches("[A-Za-z0-9_.:%-]+") || port < 0 || port > 65535 || clientPort < 0
                 || clientPort > 65535 || refreshInterval < 10 || timeout < 1 || timeout > 60) {
             throw new IllegalArgumentException("Check host, ports, refresh interval and timeout");
+        }
+        if (!keyStore.isBlank()) {
+            try {
+                if (!Path.of(keyStore).isAbsolute()) {
+                    throw new IllegalArgumentException("Client key store path must be absolute");
+                }
+            } catch (InvalidPathException e) {
+                throw new IllegalArgumentException("Invalid client key store path");
+            }
         }
         if (!deviceId.isBlank()) {
             uuid(deviceId);

@@ -14,6 +14,7 @@ package org.openhab.binding.smartthings.internal.ocf;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,10 +37,12 @@ class ApplianceConfigurationTest {
         assertDoesNotThrow(config::validate);
         config.ownerPsk = "";
         config.ownerId = "";
-        config.keyStore = "client.p12";
+        config.keyStore = Path.of("client.p12").toAbsolutePath().toString();
         config.serverFingerprint = "ab:".repeat(31) + "ab";
         assertDoesNotThrow(config::validate);
         assertEquals(32, config.fingerprint().length);
+        config.keyStore = "relative/client.p12";
+        assertThrows(IllegalArgumentException.class, config::validate);
     }
 
     @Test
@@ -61,7 +64,7 @@ class ApplianceConfigurationTest {
             assertNull(error.getCause());
         }
         config.ownerId = CoapTransportTest.configuration().ownerId;
-        config.keyStore = "client.p12";
+        config.keyStore = Path.of("client.p12").toAbsolutePath().toString();
         assertThrows(IllegalArgumentException.class, config::validate);
         config.ownerPsk = "";
         config.serverFingerprint = "";
@@ -79,7 +82,7 @@ class ApplianceConfigurationTest {
         config.serverFingerprint = "ab".repeat(32);
         assertDoesNotThrow(config::validate);
         config.serverFingerprint = "";
-        config.keyStore = "client.p12";
+        config.keyStore = Path.of("client.p12").toAbsolutePath().toString();
         config.keyStorePassword = "test-password";
         assertDoesNotThrow(config::validate);
         config.keyStore = "";

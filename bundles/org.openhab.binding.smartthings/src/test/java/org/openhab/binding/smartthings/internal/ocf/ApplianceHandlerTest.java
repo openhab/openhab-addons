@@ -21,6 +21,7 @@ import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstan
 import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_DRYER;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -113,8 +114,9 @@ class ApplianceHandlerTest {
 
     private ApplianceHandler initialize(org.openhab.core.thing.ThingTypeUID thingType, Map<String, Object> overrides,
             Map<String, String> properties, List<String> channelIds) throws Exception {
-        Map<String, Object> settings = new ConcurrentHashMap<>(Map.of("host", "127.0.0.1", "port", 5684, "keyStore",
-                "unused.p12", "serverFingerprint", "00".repeat(32), "refreshInterval", 10));
+        Map<String, Object> settings = new ConcurrentHashMap<>(
+                Map.of("host", "127.0.0.1", "port", 5684, "keyStore", Path.of("unused.p12").toAbsolutePath().toString(),
+                        "serverFingerprint", "00".repeat(32), "refreshInterval", 10));
         settings.putAll(overrides);
         ThingUID thingUID = new ThingUID(thingType, "test");
         List<Channel> channels = channelIds.stream().map(id -> ChannelBuilder

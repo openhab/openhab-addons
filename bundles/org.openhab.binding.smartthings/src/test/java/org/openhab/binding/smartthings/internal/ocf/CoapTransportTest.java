@@ -84,7 +84,7 @@ class CoapTransportTest {
 
     @Test
     void certificateProfileAcceptsOneImportedPrivateKeyWithPinOrCaTrust() throws Exception {
-        Path directory = Path.of("target", "certificate-profile-test");
+        Path directory = Path.of("target", "certificate-profile-test").toAbsolutePath();
         Files.createDirectories(directory);
         Path file = directory.resolve("client.p12");
         Process keytool = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "keytool").toString(),

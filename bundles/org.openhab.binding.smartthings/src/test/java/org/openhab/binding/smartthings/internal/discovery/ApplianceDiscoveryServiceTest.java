@@ -28,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -545,6 +546,36 @@ class ApplianceDiscoveryServiceTest {
         assertTrue(interrupted.await(5, TimeUnit.SECONDS));
         drain();
         assertTrue(results.isEmpty());
+    }
+
+    @Test
+    void deactivationWaitsForControllerCleanupBeforeReturning() throws Exception {
+        var current = create(Map.of(), (host, timeout) -> descriptor(IDENTITY));
+        CountDownLatch controllerBlocked = new CountDownLatch(1);
+        CountDownLatch releaseController = new CountDownLatch(1);
+        control.submit(() -> {
+            controllerBlocked.countDown();
+            try {
+                releaseController.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+        assertTrue(controllerBlocked.await(5, TimeUnit.SECONDS));
+
+        CountDownLatch deactivationStarted = new CountDownLatch(1);
+        CompletableFuture<Void> deactivation = CompletableFuture.runAsync(() -> {
+            deactivationStarted.countDown();
+            current.deactivate();
+        });
+        assertTrue(deactivationStarted.await(5, TimeUnit.SECONDS));
+        try {
+            assertThrows(TimeoutException.class, () -> deactivation.get(200, TimeUnit.MILLISECONDS));
+        } finally {
+            releaseController.countDown();
+        }
+        deactivation.get(5, TimeUnit.SECONDS);
+        assertTrue(control.isShutdown());
     }
 
     @Test

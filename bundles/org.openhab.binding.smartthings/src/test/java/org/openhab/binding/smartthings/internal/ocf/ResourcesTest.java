@@ -461,8 +461,10 @@ class ResourcesTest {
                 "progress", "kidslock");
         List<Point> points = resources.points(channelIds);
         assertEquals(channelIds, Set.copyOf(points.stream().map(Point::id).toList()));
-        assertTrue(points.stream().filter(candidate -> candidate.id().equals("dryer-mode")).findFirst().orElseThrow()
-                .writable());
+        Point dryerMode = points.stream().filter(candidate -> candidate.id().equals("dryer-mode")).findFirst()
+                .orElseThrow();
+        assertFalse(dryerMode.writable());
+        assertTrue(stateDescription(dryerMode).getOptions().isEmpty());
         assertEquals(new StringType("Cotton"),
                 resources.state(point("/st/dryercourse/vs/0", "x.com.samsung.da.st.dryerMode")));
         assertEquals(new QuantityType<>(50, Units.PERCENT),
@@ -491,9 +493,9 @@ class ResourcesTest {
         resources.update("/st/dryercourse/vs/0", json("{\"x.com.samsung.da.st.dryerMode\":\"Table_03_Course_16\"}"));
         Point course = point("/st/dryercourse/vs/0", "x.com.samsung.da.st.dryerMode");
         assertEquals(new StringType("Cotton"), resources.state(course));
-        assertEquals(json("{\"x.com.samsung.da.st.dryerMode\":\"Table_03_Course_16\"}"),
-                resources.command(course, new StringType("Cotton")));
-        assertThrows(IllegalArgumentException.class, () -> resources.command(course, new StringType("Unknown")));
+        assertFalse(course.writable());
+        assertTrue(stateDescription(course).getOptions().isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> resources.command(course, new StringType("Cotton")));
 
         resources.update("/washer/vs/0", json("""
                 {"x.com.samsung.da.dryLevel":"2","x.com.samsung.da.supportedDryLevel":["1","2","3"],

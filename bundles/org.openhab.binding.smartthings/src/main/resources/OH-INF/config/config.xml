@@ -78,8 +78,9 @@
 			<label>Server Certificate SHA-256 Fingerprint</label>
 			<description>Explicitly trusted appliance leaf certificate fingerprint obtained through an authenticated,
 				out-of-band
-				source. Leave empty to validate against the bundled Samsung OCF CA. Hexadecimal, with optional colon
-				separators.</description>
+				source. Leave empty to trust the bundled Samsung OCF CA, which is community-sourced and whose
+				manufacturer provenance
+				has not been independently authenticated. Hexadecimal, with optional colon separators.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="ownerId" type="text">

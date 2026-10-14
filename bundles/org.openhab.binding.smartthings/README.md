@@ -56,7 +56,7 @@ All Thing types use the following configuration parameters:
 | `deviceId` | text | Expected appliance UUID. If omitted, the first authenticated UUID is remembered and checked on later connections. | — | no | yes |
 | `keyStore` | text | Absolute path to a PKCS12 key store containing an already-authorized client private key and certificate chain. Leave empty to use the generated identity. | — | no | yes |
 | `keyStorePassword` | password | Password for the imported key store and private key. | — | no | yes |
-| `serverFingerprint` | text | Independently verified SHA-256 fingerprint of the appliance's leaf certificate. Leave empty to validate against the bundled Samsung OCF CA. | — | no | yes |
+| `serverFingerprint` | text | Independently verified SHA-256 fingerprint of the appliance's leaf certificate. Leave empty to validate against the bundled Samsung OCF CA, which is community-sourced and whose manufacturer provenance has not been independently authenticated. Use an independently verified fingerprint if this provenance is insufficient for your deployment. | — | no | yes |
 | `ownerId` | text | Owner UUID associated with an imported `ownerPsk`; this is not the appliance UUID. | — | no | yes |
 | `ownerPsk` | password | Previously provisioned, authorized OwnerPSK: 16 or 32 bytes encoded as hexadecimal. Mutually exclusive with certificate authentication. | — | no | yes |
 
@@ -64,7 +64,7 @@ Changing `host` does not authorize a different appliance. If `deviceId` is omitt
 
 ## Channels
 
-The tables list the channels declared by each concrete Thing. A declared channel is removed when the connected appliance does not support it. A `y` marks a read-only channel. An `n` marks a channel that accepts commands when supported; the appliance's current capabilities and Remote Control setting may limit write access. Consult the channel description for valid commands and limits. All reported units and command options come from the appliance.
+The tables list the channels declared by each concrete Thing. A declared channel is removed when the connected appliance does not support it. A `y` marks a read-only channel. An `n` marks a channel that accepts commands when supported; the appliance's current capabilities and Remote Control setting may limit write access. Consult the channel description for valid commands and limits. Reported units and command options are derived from live appliance capabilities when they are advertised; the dryer course channel is read-only because supported-course capabilities are not advertised.
 
 ### Air conditioner (`smartthings:airconditioner`)
 
@@ -114,7 +114,7 @@ The tables list the channels declared by each concrete Thing. A declared channel
 | `remote-control` | Switch | y | Whether remote control is enabled. |
 | `power-consumption` | Number:Power | y | Instantaneous electrical power. |
 | `cumulative-energy` | Number:Energy | y | Cumulative energy in the unit reported by the appliance. |
-| `dryer-mode` | String | n | Select a supported dryer course. |
+| `dryer-mode` | String | y | Current dryer course. Known course codes are displayed with readable names. |
 | `cycle-control` | String | n | Set the cycle to `Run`, `Pause`, or `Ready`. |
 | `delay-end-time` | Number:Time | n | Delay end in seconds, from 0 to 24 hours in 30-minute increments. |
 | `dry-level` | String | n | Select a live value from the dryer's `supportedDryLevel` list. |
