@@ -22,16 +22,22 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.robonect.internal.RobonectClient;
@@ -128,12 +134,17 @@ import com.google.gson.JsonSyntaxException;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Ajax UI compatibility
  * @author Nico Brüttner - Dynamic telemetry and push trigger channels
+ * @author Nico Brüttner - Command responses and delayed state refresh
  */
 public class RobonectHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RobonectHandler.class);
 
     private ScheduledFuture<?> pollingJob;
+    private final ScheduledExecutorService commandScheduler;
+    private final Map<String, CommandRefresh> commandRefreshJobs = new ConcurrentHashMap<>();
+    private final ThreadLocal<BooleanSupplier> commandRefreshActive = new ThreadLocal<>();
+    private volatile boolean disposed;
 
     private HttpClient httpClient;
     private TimeZoneProvider timeZoneProvider;
@@ -153,8 +164,9 @@ public class RobonectHandler extends BaseThingHandler {
     private static final Pattern BATTERY_CHANNEL_PATTERN = Pattern.compile("battery-\\d+-.+");
     private static final Pattern TIMER_CHANNEL_PATTERN = Pattern.compile("timer-\\d+-.+");
     private static final Pattern WIRE_CHANNEL_PATTERN = Pattern.compile("wire-sensor-\\d+-.+");
-    private static final Pattern PUSH_TRIGGER_CHANNEL_PATTERN = Pattern
-            .compile("push-trigger-(\\d+)-(name|enter|leave)");
+    private static final Pattern PUSH_TRIGGER_CHANNEL_PATTERN = Pattern.compile("push-trigger-(.+)-(name|enter|leave)");
+    private static final Pattern PUSH_TRIGGER_COMMAND_PATTERN = Pattern
+            .compile("push-trigger-(\\d+)-[a-z0-9_-]+-(enter|leave)");
     private static final Pattern REMOTE_CHANNEL_PATTERN = Pattern
             .compile("remote-([1-5])-(name|distance|proportion|visible|path|corridor-cut)");
 
@@ -164,7 +176,13 @@ public class RobonectHandler extends BaseThingHandler {
 
     public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider,
             @Nullable RobonectPushServlet pushServlet) {
+        this(thing, httpClientFactory, timeZoneProvider, pushServlet, null);
+    }
+
+    RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider,
+            @Nullable RobonectPushServlet pushServlet, @Nullable ScheduledExecutorService commandScheduler) {
         super(thing);
+        this.commandScheduler = commandScheduler == null ? scheduler : commandScheduler;
         httpClient = httpClientFactory
                 .createHttpClient(ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null));
         this.timeZoneProvider = timeZoneProvider;
@@ -173,6 +191,9 @@ public class RobonectHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (disposed) {
+            return;
+        }
         try {
             if (command instanceof RefreshType) {
                 refreshChannels(channelUID);
@@ -317,9 +338,11 @@ public class RobonectHandler extends BaseThingHandler {
         } else {
             return;
         }
+        cancelCommandRefresh("remote");
         RemoteInfo result = robonectClient.updateRemoteStart(remoteStart, name, distance, proportion);
         if (result.isSuccessful()) {
-            refreshRemoteInfo();
+            applyRemoteInfo(result);
+            scheduleCommandRefresh("remote", this::refreshRemoteInfo);
         }
     }
 
@@ -344,16 +367,32 @@ public class RobonectHandler extends BaseThingHandler {
             case 5 -> info.getRemoteStart5();
             default -> null;
         };
-        if (!info.isSuccessful() || remote == null || remote.getName() == null || remote.getProportion() == null
-                || remote.getDistance() == null || remote.getPath() == null || remote.getVisible() == null
-                || remote.getCorridorcut() == null) {
+        if (!info.isSuccessful() || remote == null) {
             logger.debug("Cannot update remote start {} because its current settings are incomplete", remoteStart);
             return;
         }
 
-        boolean visible = remote.getVisible();
-        boolean corridorCut = remote.getCorridorcut();
-        int path = remote.getPath();
+        @Nullable
+        String name = remote.getName();
+        @Nullable
+        Integer proportion = remote.getProportion();
+        @Nullable
+        Integer distance = remote.getDistance();
+        @Nullable
+        Integer currentPath = remote.getPath();
+        @Nullable
+        Boolean currentVisible = remote.getVisible();
+        @Nullable
+        Boolean currentCorridorCut = remote.getCorridorcut();
+        if (name == null || proportion == null || distance == null || currentPath == null || currentVisible == null
+                || currentCorridorCut == null) {
+            logger.debug("Cannot update remote start {} because its current settings are incomplete", remoteStart);
+            return;
+        }
+
+        boolean visible = currentVisible;
+        boolean corridorCut = currentCorridorCut;
+        int path = currentPath;
         if (setting.equals("visible")) {
             visible = command == OnOffType.ON;
         } else if (setting.equals("corridor-cut")) {
@@ -366,9 +405,10 @@ public class RobonectHandler extends BaseThingHandler {
                 return;
             }
         }
-        robonectClient.updateRemoteStartViaWebInterface(remoteStart, remote.getName(), remote.getProportion(),
-                remote.getDistance(), path, visible, corridorCut);
-        refreshRemoteInfo();
+        cancelCommandRefresh("remote");
+        robonectClient.updateRemoteStartViaWebInterface(remoteStart, name, proportion, distance, path, visible,
+                corridorCut);
+        scheduleCommandRefresh("remote", this::refreshRemoteInfo);
     }
 
     /** Updates a single setting for a configurable timer. */
@@ -411,11 +451,15 @@ public class RobonectHandler extends BaseThingHandler {
             } else {
                 return;
             }
+            cancelCommandRefresh("timer");
             TimerInfo result = robonectClient.updateTimer(timer, parameter, value);
-            if (result.isSuccessful() && result.getTimer() != null)
-                updateTimerState(result.getTimer());
-            else
-                refreshTimersInfo();
+            if (result.isSuccessful()) {
+                TimerFull updatedTimer = result.getTimer();
+                if (updatedTimer != null) {
+                    updateTimerState(updatedTimer);
+                }
+                scheduleCommandRefresh("timer", this::refreshTimersInfo);
+            }
         } catch (NumberFormatException e) {
             logger.debug("Ignoring malformed timer channel {}", channelId);
         }
@@ -506,29 +550,125 @@ public class RobonectHandler extends BaseThingHandler {
         updateThing(editThing().withChannels(channels).build());
     }
 
+    private void addDynamicChannels(List<Channel> desiredChannels) {
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        Set<ChannelUID> existing = channels.stream().map(Channel::getUID).collect(Collectors.toSet());
+        for (Channel channel : desiredChannels) {
+            if (existing.add(channel.getUID())) {
+                channels.add(channel);
+            }
+        }
+        if (channels.size() == getThing().getChannels().size()) {
+            return;
+        }
+        updateThing(editThing().withChannels(channels).build());
+    }
+
+    private void cancelCommandRefresh(String endpoint) {
+        CommandRefresh previous = commandRefreshJobs.remove(endpoint);
+        if (previous != null) {
+            previous.cancel();
+        }
+    }
+
+    private void scheduleCommandRefresh(String endpoint, Runnable refresh) {
+        if (disposed) {
+            return;
+        }
+        CommandRefresh pending = new CommandRefresh();
+        CommandRefresh previous = commandRefreshJobs.put(endpoint, pending);
+        if (previous != null) {
+            previous.cancel();
+        }
+        BooleanSupplier active = () -> !disposed && commandRefreshJobs.get(endpoint) == pending;
+        ScheduledFuture<?> job = commandScheduler.schedule(() -> {
+            commandRefreshActive.set(active);
+            try {
+                if (active.getAsBoolean()) {
+                    refresh.run();
+                }
+            } catch (RobonectCommunicationException e) {
+                logger.debug("Could not refresh {} after a command: {}", endpoint, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } finally {
+                commandRefreshActive.remove();
+                commandRefreshJobs.remove(endpoint, pending);
+            }
+        }, 5, TimeUnit.SECONDS);
+        pending.job = job;
+        if (!active.getAsBoolean()) {
+            job.cancel(true);
+            commandRefreshJobs.remove(endpoint, pending);
+        }
+    }
+
+    @NonNullByDefault
+    private static class CommandRefresh {
+        private volatile @Nullable ScheduledFuture<?> job;
+
+        private void cancel() {
+            ScheduledFuture<?> current = job;
+            if (current != null) {
+                current.cancel(true);
+            }
+        }
+    }
+
+    private boolean canPublishState() {
+        // A delayed read can finish after disposal or after a newer command supersedes it.
+        BooleanSupplier active = commandRefreshActive.get();
+        return !disposed && (active == null || active.getAsBoolean());
+    }
+
+    @Override
+    protected void updateState(ChannelUID channelUID, State state) {
+        if (canPublishState()) {
+            super.updateState(channelUID, state);
+        }
+    }
+
+    @Override
+    protected void updateThing(Thing thing) {
+        if (canPublishState()) {
+            super.updateThing(thing);
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
+        if (canPublishState()) {
+            super.updateStatus(status, detail, description);
+        }
+    }
+
     /**
      * Updates the weather measurements and current mowing restriction.
      */
     private void refreshWeatherInfo() {
-        WeatherInfo info = robonectClient.getWeatherInfo();
+        applyWeatherInfo(robonectClient.getWeatherInfo());
+    }
+
+    private void applyWeatherInfo(WeatherInfo info) {
         Weather weather = info.getWeather();
-        if (!info.isSuccessful() || weather == null) {
+        if (!info.isSuccessful()) {
             return;
         }
-        updateSwitch(CHANNEL_WEATHER_BREAK, weather.getWeatherBreak());
-        updateWeatherNumber(CHANNEL_WEATHER_RAIN, weather.getRain());
-        Integer temperature = weather.getTemperature();
-        if (temperature != null)
-            updateState(CHANNEL_WEATHER_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
-        Integer humidity = weather.getHumidity();
-        if (humidity != null)
-            updateState(CHANNEL_WEATHER_HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
-        updateSwitch(CHANNEL_WEATHER_DAY, weather.getDay());
-        if (weather.getCity() != null)
-            updateState(CHANNEL_WEATHER_CITY, new StringType(weather.getCity()));
-        Integer remaining = weather.getRemaining();
-        if (remaining != null)
-            updateState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(remaining, Units.SECOND));
+        if (weather != null) {
+            updateSwitch(CHANNEL_WEATHER_BREAK, weather.getWeatherBreak());
+            updateWeatherNumber(CHANNEL_WEATHER_RAIN, weather.getRain());
+            Integer temperature = weather.getTemperature();
+            if (temperature != null)
+                updateState(CHANNEL_WEATHER_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
+            Integer humidity = weather.getHumidity();
+            if (humidity != null)
+                updateState(CHANNEL_WEATHER_HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
+            updateSwitch(CHANNEL_WEATHER_DAY, weather.getDay());
+            if (weather.getCity() != null)
+                updateState(CHANNEL_WEATHER_CITY, new StringType(weather.getCity()));
+            Integer remaining = weather.getRemaining();
+            if (remaining != null)
+                updateState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(remaining, Units.SECOND));
+        }
         WeatherService service = info.getService();
         if (service != null) {
             updateSwitch(CHANNEL_WEATHER_ENABLED, service.getEnable());
@@ -577,9 +717,11 @@ public class RobonectHandler extends BaseThingHandler {
         if (parameter == null) {
             return;
         }
+        cancelCommandRefresh("weather");
         WeatherInfo result = robonectClient.updateWeather(parameter, value);
         if (result.isSuccessful()) {
-            refreshWeatherInfo();
+            applyWeatherInfo(result);
+            scheduleCommandRefresh("weather", this::refreshWeatherInfo);
         }
     }
 
@@ -665,7 +807,10 @@ public class RobonectHandler extends BaseThingHandler {
 
     /** Updates non-sensitive push-service settings. */
     private void refreshPushInfo() {
-        PushInfo info = robonectClient.getPushInfo();
+        applyPushInfo(robonectClient.getPushInfo(), true);
+    }
+
+    private void applyPushInfo(PushInfo info, boolean fullResponse) {
         Push push = info.getPush();
         if (!info.isSuccessful() || push == null) {
             return;
@@ -683,28 +828,47 @@ public class RobonectHandler extends BaseThingHandler {
             if (interval != null)
                 updateState(CHANNEL_PUSH_INTERVAL, new QuantityType<>(interval, Units.SECOND));
             List<Channel> channels = new ArrayList<>();
-            for (String number : triggers.getTriggers().keySet()) {
-                String prefix = "push-trigger-" + number + "-";
-                channels.add(createChannel(prefix + "name", "String", "pushTriggerNameType"));
+            Map<String, PushTriggers.Trigger> namedTriggers = getNamedPushTriggers(triggers);
+            for (String name : namedTriggers.keySet().stream().sorted().toList()) {
+                String prefix = "push-trigger-" + name + "-";
                 channels.add(createChannel(prefix + "enter", "Switch", "pushTriggerSwitchType"));
                 channels.add(createChannel(prefix + "leave", "Switch", "pushTriggerSwitchType"));
             }
-            updateDynamicChannels(PUSH_TRIGGER_CHANNEL_PATTERN, channels);
-            for (Map.Entry<String, PushTriggers.Trigger> entry : triggers.getTriggers().entrySet()) {
+            // A write response may contain only the updated trigger; preserve other dynamic channels.
+            if (fullResponse) {
+                updateDynamicChannels(PUSH_TRIGGER_CHANNEL_PATTERN, channels);
+            } else {
+                addDynamicChannels(channels);
+            }
+            for (Map.Entry<String, PushTriggers.Trigger> entry : namedTriggers.entrySet()) {
                 String prefix = "push-trigger-" + entry.getKey() + "-";
                 PushTriggers.Trigger trigger = entry.getValue();
-                if (trigger.getName() != null) {
-                    updateState(prefix + "name", new StringType(trigger.getName()));
-                }
                 updateSwitch(prefix + "enter", trigger.getEnter());
                 updateSwitch(prefix + "leave", trigger.getLeave());
             }
         }
     }
 
+    private Map<String, PushTriggers.Trigger> getNamedPushTriggers(PushTriggers triggers) {
+        Map<String, PushTriggers.Trigger> namedTriggers = new HashMap<>();
+        for (Map.Entry<String, PushTriggers.Trigger> entry : triggers.getTriggers().entrySet()) {
+            String name = entry.getValue().getName();
+            if (name == null || name.isBlank()) {
+                continue;
+            }
+            String channelName = name.toLowerCase(Locale.ROOT).replace(' ', '_');
+            if (!channelName.matches("[a-z0-9_-]+")) {
+                logger.debug("Ignoring push trigger {} with an invalid channel name", entry.getKey());
+                continue;
+            }
+            namedTriggers.put(entry.getKey() + "-" + channelName, entry.getValue());
+        }
+        return namedTriggers;
+    }
+
     private void updatePushTrigger(String channelId, Command command) {
-        Matcher matcher = PUSH_TRIGGER_CHANNEL_PATTERN.matcher(channelId);
-        if (!matcher.matches() || !(command instanceof OnOffType onOff) || matcher.group(2).equals("name")) {
+        Matcher matcher = PUSH_TRIGGER_COMMAND_PATTERN.matcher(channelId);
+        if (!matcher.matches() || !(command instanceof OnOffType onOff)) {
             return;
         }
         PushInfo info = robonectClient.getPushInfo();
@@ -717,8 +881,11 @@ public class RobonectHandler extends BaseThingHandler {
         boolean enter = matcher.group(2).equals("enter") ? onOff == OnOffType.ON : trigger.getEnter();
         boolean leave = matcher.group(2).equals("leave") ? onOff == OnOffType.ON : trigger.getLeave();
         int value = (enter ? 1 : 0) | (leave ? 2 : 0);
-        if (robonectClient.updatePush("trigger" + matcher.group(1), Integer.toString(value)).isSuccessful()) {
-            refreshPushInfo();
+        cancelCommandRefresh("push");
+        PushInfo result = robonectClient.updatePush("trigger" + matcher.group(1), Integer.toString(value));
+        if (result.isSuccessful()) {
+            applyPushInfo(result, false);
+            scheduleCommandRefresh("push", this::refreshPushInfo);
         }
     }
 
@@ -735,8 +902,14 @@ public class RobonectHandler extends BaseThingHandler {
         } else {
             return;
         }
-        if (parameter != null && robonectClient.updatePush(parameter, value).isSuccessful())
-            refreshPushInfo();
+        if (parameter != null) {
+            cancelCommandRefresh("push");
+            PushInfo result = robonectClient.updatePush(parameter, value);
+            if (result.isSuccessful()) {
+                applyPushInfo(result, false);
+                scheduleCommandRefresh("push", this::refreshPushInfo);
+            }
+        }
     }
 
     private void updateExtension(String prefix, @Nullable Extension extension) {
@@ -760,7 +933,10 @@ public class RobonectHandler extends BaseThingHandler {
 
     /** Updates door channels from the optional door-system response. */
     private void refreshDoorInfo() {
-        DoorInfo info = robonectClient.getDoorInfo();
+        applyDoorInfo(robonectClient.getDoorInfo());
+    }
+
+    private void applyDoorInfo(DoorInfo info) {
         Door door = info.getDoor();
         if (!info.isSuccessful() || door == null) {
             return;
@@ -771,7 +947,9 @@ public class RobonectHandler extends BaseThingHandler {
         if (door.getArrested() != null) {
             updateState(CHANNEL_DOOR_ARRESTED, OnOffType.from(door.getArrested()));
         }
-        updateDoorState(door.getState(), door.getPending());
+        if (door.getState() != null || door.getPending() != null) {
+            updateDoorState(door.getState(), door.getPending());
+        }
     }
 
     private void updateDoorState(@Nullable DoorState state, @Nullable DoorState pending) {
@@ -790,6 +968,7 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void handleJobCommand(ChannelUID channelUID, Command command) {
+        cancelCommandRefresh("status");
         JobChannelConfig jobConfig = getThing().getChannel(channelUID.getId()).getConfiguration()
                 .as(JobChannelConfig.class);
         if (command == OnOffType.ON) {
@@ -800,7 +979,10 @@ public class RobonectHandler extends BaseThingHandler {
         } else if (command == OnOffType.OFF) {
             robonectClient.stopJob(
                     new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode())));
+        } else {
+            return;
         }
+        refreshMowerInfo();
     }
 
     private void refreshChannels(ChannelUID channelUID) {
@@ -868,11 +1050,9 @@ public class RobonectHandler extends BaseThingHandler {
     private void setMowerMode(Command command) {
         String modeStr = command.toFullString();
         ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
-        if (robonectClient.setMode(newMode).isSuccessful()) {
-            updateState(CHANNEL_STATUS_MODE, new StringType(newMode.name()));
-        } else {
-            refreshMowerInfo();
-        }
+        cancelCommandRefresh("status");
+        robonectClient.setMode(newMode);
+        refreshMowerInfo();
     }
 
     private void logErrorFromResponse(RobonectAnswer result) {
@@ -882,9 +1062,10 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void resetErrors() {
+        cancelCommandRefresh("status");
         RobonectAnswer answer = robonectClient.resetErrors();
         if (answer.isSuccessful()) {
-            refreshMowerInfo();
+            scheduleCommandRefresh("status", this::refreshMowerInfo);
         } else {
             logger.debug("Could not reset mower errors. Robonect error message: {}", answer.getErrorMessage());
         }
@@ -905,6 +1086,7 @@ public class RobonectHandler extends BaseThingHandler {
 
     /** Controls the optional door system. */
     private void handleDoorCommand(Command command) {
+        cancelCommandRefresh("door");
         DoorInfo answer;
         if (command == UpDownType.UP) {
             answer = robonectClient.setDoorDirection(Direction.OPEN);
@@ -918,27 +1100,32 @@ public class RobonectHandler extends BaseThingHandler {
             return;
         }
         if (answer.isSuccessful()) {
-            refreshDoorInfo();
+            applyDoorInfo(answer);
+            scheduleCommandRefresh("door", this::refreshDoorInfo);
         } else {
             logger.debug("Could not control the door. Robonect error message: {}", answer.getErrorMessage());
         }
     }
 
     private void handleStartStop(final OnOffType command) {
-        RobonectAnswer answer = command == OnOffType.ON ? robonectClient.start() : robonectClient.stop();
-        if (answer.isSuccessful()) {
-            updateState(CHANNEL_MOWER_START, command);
+        cancelCommandRefresh("status");
+        if (command == OnOffType.ON) {
+            robonectClient.start();
         } else {
-            logErrorFromResponse(answer);
-            refreshMowerInfo();
+            robonectClient.stop();
         }
+        refreshMowerInfo();
     }
 
     private void updateName(StringType command) {
         String newName = command.toFullString();
+        cancelCommandRefresh("status");
         Name name = robonectClient.setName(newName);
         if (name.isSuccessful()) {
-            updateState(CHANNEL_MOWER_NAME, new StringType(name.getName()));
+            if (name.getName() != null) {
+                updateState(CHANNEL_MOWER_NAME, new StringType(name.getName()));
+            }
+            scheduleCommandRefresh("status", this::refreshMowerInfo);
         } else {
             logErrorFromResponse(name);
             refreshMowerInfo();
@@ -947,6 +1134,9 @@ public class RobonectHandler extends BaseThingHandler {
 
     private void refreshMowerInfo() {
         MowerInfo info = robonectClient.getMowerInfo();
+        if (!canPublishState()) {
+            return;
+        }
         Status status = info.getStatus();
         if (info.isSuccessful() && status != null) {
             if (info.getError() != null) {
@@ -1270,7 +1460,10 @@ public class RobonectHandler extends BaseThingHandler {
      * Updates the five remote-start point configurations when available.
      */
     private void refreshRemoteInfo() {
-        RemoteInfo info = robonectClient.getRemoteInfo();
+        applyRemoteInfo(robonectClient.getRemoteInfo());
+    }
+
+    private void applyRemoteInfo(RemoteInfo info) {
         if (!info.isSuccessful()) {
             logger.debug("Could not retrieve remote-start information: {}", info.getErrorMessage());
             return;
@@ -1325,8 +1518,8 @@ public class RobonectHandler extends BaseThingHandler {
             if (address.getUrl() != null)
                 updateState(CHANNEL_PORTAL_URL, new StringType(address.getUrl()));
             Host host = address.getHost();
-            if (host != null && host.getFriendly() != null)
-                updateState(CHANNEL_PORTAL_HOST, new StringType(host.getFriendly()));
+            if (host != null && host.getDefault() != null)
+                updateState(CHANNEL_PORTAL_HOST, new StringType(host.getDefault()));
         }
     }
 
@@ -1488,7 +1681,10 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void refreshLastErrorInfo() {
-        ErrorList errorList = robonectClient.errorList();
+        applyLastErrorInfo(robonectClient.errorList());
+    }
+
+    private void applyLastErrorInfo(ErrorList errorList) {
         if (errorList.isSuccessful()) {
             List<ErrorEntry> errors = errorList.getErrors();
             if (errors != null && !errors.isEmpty()) {
@@ -1516,6 +1712,7 @@ public class RobonectHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        disposed = false;
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
         ajaxUiScraping = robonectConfig.isAjaxUiScraping();
         useUnofficialApi = robonectConfig.isUseUnofficialApi();
@@ -1554,6 +1751,9 @@ public class RobonectHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        disposed = true;
+        commandRefreshJobs.values().forEach(CommandRefresh::cancel);
+        commandRefreshJobs.clear();
         if (pushServlet != null) {
             pushServlet.unregisterHandler(getThing().getUID());
         }

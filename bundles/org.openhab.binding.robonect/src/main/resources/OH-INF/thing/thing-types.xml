@@ -125,10 +125,18 @@
 			<channel id="remote-5-proportion" typeId="remoteProportionType"/>
 			<channel id="remote-5-distance" typeId="remoteDistanceType"/>
 			<channel id="remote-5-corridor-cut" typeId="remoteSwitchType"/>
-			<channel id="portal-enabled" typeId="portalSwitchType"/>
-			<channel id="portal-connected" typeId="portalSwitchType"/>
-			<channel id="portal-url" typeId="portalStringType"/>
-			<channel id="portal-host" typeId="portalStringType"/>
+			<channel id="portal-enabled" typeId="portalSwitchType">
+				<description>Indicates whether the remote service should be used.</description>
+			</channel>
+			<channel id="portal-connected" typeId="portalSwitchType">
+				<description>Indicates whether the remote service is connected.</description>
+			</channel>
+			<channel id="portal-url" typeId="portalStringType">
+				<description>URL for remote access to the web interface, available only when the remote service is connected.</description>
+			</channel>
+			<channel id="portal-host" typeId="portalStringType">
+				<description>Desired host name for the remote service.</description>
+			</channel>
 			<channel id="weather-break" typeId="weatherSwitchType"/>
 			<channel id="weather-rain" typeId="weatherRainType"/>
 			<channel id="weather-temperature" typeId="weatherTemperatureType"/>
@@ -528,11 +536,6 @@
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Push Service Interval</label>
 		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="pushTriggerNameType">
-		<item-type>String</item-type>
-		<label>Push Trigger Name</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="pushTriggerSwitchType">
 		<item-type>Switch</item-type>

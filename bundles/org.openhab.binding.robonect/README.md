@@ -94,9 +94,20 @@ truncates longer names and logs a warning. The visible, path, and corridor-cut c
 firmware update. Its save request includes the current remote-start settings to preserve values not being changed.
 Remaining battery and remote-start telemetry channels are read-only.
 
-Each numbered push trigger in the response creates `push-trigger-<number>-name`, `-enter`, and `-leave` channels. The
-enter and leave Switch channels are writable; changing one preserves the other setting. The `prevent` Number
+Each push trigger in the response creates `push-trigger-<id>-<name>-enter` and `push-trigger-<id>-<name>-leave` channels.
+The name is converted to lowercase and spaces are replaced with underscores, for example `Way home` becomes
+`way_home`. For trigger ID 2, the channels are `push-trigger-2-way_home-enter` and `push-trigger-2-way_home-leave`.
+Existing Item links must be updated. No separate name channel is created. Triggers with missing or invalid names
+are ignored. Duplicate normalized names remain distinct through their numeric IDs. Valid normalized names
+contain only lowercase ASCII letters, digits, underscores, and hyphens. Renaming a trigger changes its channel IDs.
+The enter and leave Switch channels are writable; commands extract the numeric ID from the channel ID and read the
+current settings to preserve the other setting. The `prevent` Number
 channel reports the raw mowing prevention code, and the `home` Switch reports whether the mower is at home.
+
+Successful configuration and door commands apply the returned channel values immediately and request a follow-up
+read after five seconds to fill in data omitted from the response. A newer command to the same endpoint replaces
+its pending follow-up read. Mode changes (including HOME), job commands, and start/stop commands request mower
+status immediately after the write returns instead of waiting five seconds.
 
 The `statistics-seek` and `statistics-mowing` String channels contain comma-separated recent durations in minutes.
 Each also has `-min`, `-max`, and `-average` `Number:Time` channels with a minute unit hint.

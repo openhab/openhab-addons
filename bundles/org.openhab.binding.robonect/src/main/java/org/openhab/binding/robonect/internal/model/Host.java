@@ -15,6 +15,8 @@ package org.openhab.binding.robonect.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Portal host reported by the Robonect API.
  *
@@ -24,7 +26,14 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Host {
     private @Nullable String friendly;
 
+    @SerializedName("default")
+    private @Nullable String defaultHost;
+
     public @Nullable String getFriendly() {
         return friendly;
+    }
+
+    public @Nullable String getDefault() {
+        return defaultHost;
     }
 }
