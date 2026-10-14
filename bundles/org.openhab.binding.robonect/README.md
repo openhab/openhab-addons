@@ -116,6 +116,9 @@ A newer command to the same endpoint replaces
 its pending follow-up read. Mode changes (including HOME), job commands, and start/stop commands request mower
 status immediately after the write returns instead of waiting five seconds.
 
+Timer and job start/end times use the binding's configured `timezone` (default: `Europe/Berlin`). Timer DateTime
+commands are converted back to the mower's local time in the same zone.
+
 The `statistics-seek` and `statistics-mowing` String channels contain comma-separated recent durations in minutes.
 Each also has `-min`, `-max`, and `-average` `Number:Time` channels with a minute unit hint.
 

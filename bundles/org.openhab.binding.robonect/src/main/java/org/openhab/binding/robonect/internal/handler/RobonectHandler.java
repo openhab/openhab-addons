@@ -17,6 +17,7 @@ import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -149,7 +150,7 @@ public class RobonectHandler extends BaseThingHandler {
     private HttpClient httpClient;
     private TimeZoneProvider timeZoneProvider;
 
-    private ZoneId timeZone;
+    private volatile ZoneId timeZone;
 
     private RobonectClient robonectClient;
     private final @Nullable RobonectPushServlet pushServlet;
@@ -187,6 +188,7 @@ public class RobonectHandler extends BaseThingHandler {
         httpClient = httpClientFactory
                 .createHttpClient(ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null));
         this.timeZoneProvider = timeZoneProvider;
+        timeZone = timeZoneProvider.getTimeZone();
         this.pushServlet = pushServlet;
     }
 
@@ -441,7 +443,7 @@ public class RobonectHandler extends BaseThingHandler {
                 };
                 value = onOff == OnOffType.ON ? "1" : "0";
             } else if (command instanceof DateTimeType dateTime && (setting.equals("start") || setting.equals("end"))) {
-                LocalTime time = dateTime.getZonedDateTime(ZoneOffset.UTC).toLocalTime();
+                LocalTime time = dateTime.getZonedDateTime(timeZone).toLocalTime();
                 parameter = setting;
                 value = time.format(DateTimeFormatter.ofPattern("HH:mm"));
             } else if (command instanceof DecimalType decimal && (setting.equals("start") || setting.equals("end"))) {
@@ -1360,7 +1362,7 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private DateTimeType toTimeOnlyDateTime(LocalTime time) {
-        return new DateTimeType(Instant.ofEpochSecond(time.toSecondOfDay()));
+        return new DateTimeType(LocalDate.ofEpochDay(0).atTime(time).atZone(timeZone));
     }
 
     /**
@@ -1698,11 +1700,7 @@ public class RobonectHandler extends BaseThingHandler {
         // provide correct results.
         Instant rawInstant = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
 
-        ZoneId timeZoneOfThing = timeZone;
-        if (timeZoneOfThing == null) {
-            timeZoneOfThing = timeZoneProvider.getTimeZone();
-        }
-        ZoneOffset offsetToConfiguredZone = timeZoneOfThing.getRules().getOffset(rawInstant);
+        ZoneOffset offsetToConfiguredZone = timeZone.getRules().getOffset(rawInstant);
         long adjustedTime = rawInstant.getEpochSecond() - offsetToConfiguredZone.getTotalSeconds();
         Instant adjustedInstant = Instant.ofEpochMilli(adjustedTime * 1000);
 
@@ -1778,6 +1776,7 @@ public class RobonectHandler extends BaseThingHandler {
                 robonectConfig.getPassword());
 
         String timeZoneString = robonectConfig.getTimezone();
+        timeZone = timeZoneProvider.getTimeZone();
         try {
             if (timeZoneString != null) {
                 timeZone = ZoneId.of(timeZoneString);

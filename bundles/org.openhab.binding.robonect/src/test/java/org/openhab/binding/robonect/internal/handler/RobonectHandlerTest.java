@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -500,12 +503,12 @@ public class RobonectHandlerTest {
         verify(callbackMock).stateUpdated(
                 eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_JOB_END)),
                 jobEndCaptor.capture());
-        ZonedDateTime jobStart = ((DateTimeType) jobStartCaptor.getValue()).getZonedDateTime(ZoneId.of("UTC"));
+        ZonedDateTime jobStart = ((DateTimeType) jobStartCaptor.getValue()).getZonedDateTime(TIME_ZONE);
         assertEquals(1970, jobStart.getYear());
         assertEquals(1, jobStart.getDayOfYear());
         assertEquals(10, jobStart.getHour());
         assertEquals(0, jobStart.getMinute());
-        ZonedDateTime jobEnd = ((DateTimeType) jobEndCaptor.getValue()).getZonedDateTime(ZoneId.of("UTC"));
+        ZonedDateTime jobEnd = ((DateTimeType) jobEndCaptor.getValue()).getZonedDateTime(TIME_ZONE);
         assertEquals(1970, jobEnd.getYear());
         assertEquals(1, jobEnd.getDayOfYear());
         assertEquals(12, jobEnd.getHour());
@@ -888,6 +891,40 @@ public class RobonectHandlerTest {
         });
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "push-mode"), RefreshType.REFRESH);
         verify(callbackMock, never()).stateUpdated(any(), any());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "00:00", "08:15", "23:59" })
+    public void shouldPreserveTimerLocalTimeOnReadAndWrite(String time) {
+        ThingUID uid = new ThingUID("1:2:3");
+        subject = new RobonectHandler(ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid).build(),
+                httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject.setCallback(callbackMock);
+        subject.setRobonectClient(robonectClientMock);
+        when(robonectClientMock.getTimersInfo()).thenReturn(new ModelParser().parse("""
+                {"successful":true,"timer":[{"id":1,"start":"%s","end":"%s"}]}
+                """.formatted(time, time), TimersInfo.class));
+        ChannelUID start = new ChannelUID(uid, "timer-1-start");
+        subject.handleCommand(start, RefreshType.REFRESH);
+        var value = ArgumentCaptor.forClass(State.class);
+        verify(callbackMock).stateUpdated(eq(start), value.capture());
+        DateTimeType state = (DateTimeType) value.getValue();
+        assertEquals(LocalTime.parse(time), state.getZonedDateTime(TIME_ZONE).toLocalTime());
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, "timer-1-end"), state);
+        when(robonectClientMock.updateTimer(1, "start", time))
+                .thenReturn(new ModelParser().parse("{\"successful\":true}", TimerInfo.class));
+        subject.handleCommand(start, state);
+        verify(robonectClientMock).updateTimer(1, "start", time);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 7 })
+    public void shouldConvertTimerCommandsInBindingTimeZoneInWinterAndSummer(int month) {
+        when(robonectClientMock.updateTimer(1, "start", "08:15"))
+                .thenReturn(new ModelParser().parse("{\"successful\":true}", TimerInfo.class));
+        DateTimeType command = new DateTimeType(ZonedDateTime.of(2026, month, 15, 8, 15, 0, 0, TIME_ZONE).toInstant());
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "timer-1-start"), command);
+        verify(robonectClientMock).updateTimer(1, "start", "08:15");
     }
 
     private void runScheduledRefresh() {
