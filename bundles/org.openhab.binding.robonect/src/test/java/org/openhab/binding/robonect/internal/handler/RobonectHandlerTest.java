@@ -801,6 +801,95 @@ public class RobonectHandlerTest {
         verify(callbackMock, never()).stateUpdated(any(), any());
     }
 
+    @Test
+    public void shouldCreateAndRemovePushModeChannelWithUnofficialApi() {
+        useRealThingForPushMode();
+        subject.configureUnofficialChannels(true);
+        var channel = subject.getThing().getChannel("push-mode");
+        assertNotNull(channel);
+        assertEquals("Number", channel.getAcceptedItemType());
+        subject.configureUnofficialChannels(true);
+        assertEquals(1, subject.getThing().getChannels().size());
+        subject.configureUnofficialChannels(false);
+        assertNull(subject.getThing().getChannel("push-mode"));
+        verifyNoInteractions(robonectClientMock);
+    }
+
+    @Test
+    public void shouldRefreshAndCommandPushModeOnlyWhenUnofficialApiEnabled() {
+        ChannelUID uid = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
+        subject.handleCommand(uid, RefreshType.REFRESH);
+        subject.handleCommand(uid, new DecimalType(2));
+        verifyNoInteractions(robonectClientMock);
+        useRealThingForPushMode();
+        subject.configureUnofficialChannels(true);
+        when(robonectClientMock.getPushModeViaWebInterface()).thenReturn(1);
+        subject.handleCommand(uid, RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(uid, new DecimalType(1));
+        when(robonectClientMock.updatePushModeViaWebInterface(2)).thenReturn(2);
+        subject.handleCommand(uid, new DecimalType(2));
+        verify(callbackMock).stateUpdated(uid, new DecimalType(2));
+        verify(robonectClientMock).getPushModeViaWebInterface();
+        verifyNoInteractions(commandScheduler);
+        verify(robonectClientMock, never()).getPushInfo();
+    }
+
+    @Test
+    public void shouldRejectNonIntegerAndOutOfRangePushModeCommands() {
+        useRealThingForPushMode();
+        subject.configureUnofficialChannels(true);
+        ChannelUID uid = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
+        for (String value : new String[] { "-1", "3", "1.5", "2147483648" }) {
+            subject.handleCommand(uid, new DecimalType(value));
+        }
+        verifyNoInteractions(robonectClientMock, commandScheduler);
+    }
+
+    @Test
+    public void shouldLeaveMissingPushModeUndefinedAndRecoverOnLaterRead() {
+        useRealThingForPushMode();
+        subject.configureUnofficialChannels(true);
+        ChannelUID uid = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
+        when(robonectClientMock.getPushModeViaWebInterface()).thenReturn(null, 0);
+        subject.handleCommand(uid, RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(uid, UnDefType.UNDEF);
+        subject.handleCommand(uid, RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(uid, new DecimalType(0));
+    }
+
+    @Test
+    public void shouldApplyMissingPushModeWriteResponseWithoutSchedulingRead() {
+        useRealThingForPushMode();
+        subject.configureUnofficialChannels(true);
+        when(robonectClientMock.updatePushModeViaWebInterface(2)).thenReturn(null);
+        ChannelUID uid = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
+        subject.handleCommand(uid, new DecimalType(2));
+        verify(callbackMock).stateUpdated(uid, UnDefType.UNDEF);
+        verifyNoInteractions(commandScheduler);
+        verify(robonectClientMock, never()).getPushModeViaWebInterface();
+    }
+
+    private void useRealThingForPushMode() {
+        subject = new RobonectHandler(
+                ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, new ThingUID("1:2:3")).build(),
+                httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject.setCallback(callbackMock);
+        subject.setRobonectClient(robonectClientMock);
+    }
+
+    @Test
+    public void shouldDiscardPushModeResponseWhenApiConfigurationChangesDuringRequest() {
+        useRealThingForPushMode();
+        subject.configureUnofficialChannels(true);
+        when(robonectClientMock.getPushModeViaWebInterface()).thenAnswer(invocation -> {
+            subject.configureUnofficialChannels(false);
+            subject.configureUnofficialChannels(true);
+            return 2;
+        });
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "push-mode"), RefreshType.REFRESH);
+        verify(callbackMock, never()).stateUpdated(any(), any());
+    }
+
     private void runScheduledRefresh() {
         var refresh = ArgumentCaptor.forClass(Runnable.class);
         verify(commandScheduler).schedule(refresh.capture(), eq(5L), eq(TimeUnit.SECONDS));

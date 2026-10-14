@@ -27,6 +27,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.robonect.internal.model.AjaxInfo;
@@ -43,6 +45,7 @@ import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
  * by mocking the module responses.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Push mode web interface tests
  */
 @ExtendWith(MockitoExtension.class)
 public class RobonectClientTest {
@@ -307,6 +310,63 @@ public class RobonectClientTest {
         MowerInfo info = subject.getMowerInfo();
         assertEquals("Utanför arbetsområdet", info.getError().getErrorMessage());
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=status");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 1, 2 })
+    public void shouldReadSelectedPushModeFromHtml(int mode)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        mockWebResponse("http://123.456.789.123/push", """
+                <html><body><table><tr><td>Modus:</td><td>
+                <input type="radio" name="mode" value="0">
+                <input type="radio" name="mode" value="1">
+                <input type="radio" name="mode" value="2">
+                <input value='%d' checked='checked' id='selected' name='mode' type='radio'>
+                </td></tr></table></body></html>
+                """.formatted(mode));
+        assertEquals(mode, subject.getPushModeViaWebInterface());
+        verify(httpClientMock).newRequest("http://123.456.789.123/push");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "<html>Login required</html>", "<input type='radio' name='mode' value='1'>",
+            "<input type='checkbox' name='mode' checked='checked' value='1'>",
+            "<input type='radio' name='other' checked='checked' value='1'>",
+            "<input type='radio' name='mode' checked='false' value='1'>",
+            "<input type='radio' name='mode' checked='checked'>",
+            "<input type='radio' name='mode' checked='checked' value='3'>",
+            "<input type='radio' name='mode' checked='checked' value='bad'>" })
+    public void shouldIgnoreMissingOrInvalidPushModeSelections(String html)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        mockWebResponse("http://123.456.789.123/push", html);
+        assertNull(subject.getPushModeViaWebInterface());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 1, 2 })
+    public void shouldSetPushModeAndParseReturnedSelection(int mode)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        String url = "http://123.456.789.123/push&mode=" + mode;
+        mockWebResponse(url, "<input type='radio' name='mode' checked='checked' value='" + mode + "'>");
+        assertEquals(mode, subject.updatePushModeViaWebInterface(mode));
+        verify(httpClientMock).newRequest(url);
+    }
+
+    @Test
+    public void shouldRejectInvalidPushModeBeforeSendingRequest() {
+        assertThrows(IllegalArgumentException.class, () -> subject.updatePushModeViaWebInterface(-1));
+        assertThrows(IllegalArgumentException.class, () -> subject.updatePushModeViaWebInterface(3));
+        verifyNoInteractions(httpClientMock);
+    }
+
+    private void mockWebResponse(String url, String html)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        when(httpClientMock.newRequest(url)).thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString()).thenReturn(html);
     }
 
     @Test

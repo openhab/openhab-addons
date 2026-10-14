@@ -154,7 +154,8 @@ public class RobonectHandler extends BaseThingHandler {
     private RobonectClient robonectClient;
     private final @Nullable RobonectPushServlet pushServlet;
     private boolean ajaxUiScraping;
-    private boolean useUnofficialApi;
+    private volatile boolean useUnofficialApi;
+    private volatile Object unofficialApiToken = new Object();
 
     private static final Set<String> JOB_TIMER_LABELS = Set.of("Auftrag", "Job", "Travail", "Ordine", "Jobb");
     private static final Set<String> END_OF_DAY_LABELS = Set.of("Feierabend", "End of day", "Fin de journée de travail",
@@ -278,6 +279,9 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_PUSH_USERNAME:
             case CHANNEL_PUSH_INTERVAL:
                 updatePush(channelUID.getId(), command);
+                break;
+            case CHANNEL_PUSH_MODE:
+                updatePushMode(command);
                 break;
             default:
                 if (REMOTE_CHANNEL_PATTERN.matcher(channelUID.getId()).matches()) {
@@ -580,7 +584,7 @@ public class RobonectHandler extends BaseThingHandler {
         if (previous != null) {
             previous.cancel();
         }
-        BooleanSupplier active = () -> !disposed && commandRefreshJobs.get(endpoint) == pending;
+        BooleanSupplier active = () -> !disposed && pending.equals(commandRefreshJobs.get(endpoint));
         ScheduledFuture<?> job = commandScheduler.schedule(() -> {
             commandRefreshActive.set(active);
             try {
@@ -810,6 +814,56 @@ public class RobonectHandler extends BaseThingHandler {
         applyPushInfo(robonectClient.getPushInfo(), true);
     }
 
+    void configureUnofficialChannels(boolean enabled) {
+        unofficialApiToken = new Object();
+        useUnofficialApi = enabled;
+        updateDynamicChannels(Pattern.compile(CHANNEL_PUSH_MODE),
+                enabled ? List.of(createChannel(CHANNEL_PUSH_MODE, "Number", "pushModeType")) : List.of());
+    }
+
+    private void refreshPushMode() {
+        Object token = unofficialApiToken;
+        if (!useUnofficialApi || !canPublishState()) {
+            return;
+        }
+        try {
+            Integer mode = robonectClient.getPushModeViaWebInterface();
+            if (token.equals(unofficialApiToken)) {
+                applyPushMode(mode);
+            }
+        } catch (RobonectCommunicationException e) {
+            logger.debug("Could not retrieve push mode from the web interface: {}", e.getMessage());
+        }
+    }
+
+    private void applyPushMode(@Nullable Integer mode) {
+        if (useUnofficialApi) {
+            updateState(CHANNEL_PUSH_MODE, mode == null ? UnDefType.UNDEF : new DecimalType(mode));
+        }
+    }
+
+    private void updatePushMode(Command command) {
+        Object token = unofficialApiToken;
+        if (!useUnofficialApi || !(command instanceof DecimalType decimal)) {
+            return;
+        }
+        int mode;
+        try {
+            mode = decimal.toBigDecimal().intValueExact();
+        } catch (ArithmeticException e) {
+            logger.debug("Ignoring non-integer push mode {}", command);
+            return;
+        }
+        if (mode < 0 || mode > 2) {
+            logger.debug("Ignoring invalid push mode {}", mode);
+            return;
+        }
+        Integer selected = robonectClient.updatePushModeViaWebInterface(mode);
+        if (token.equals(unofficialApiToken) && useUnofficialApi) {
+            applyPushMode(selected);
+        }
+    }
+
     private void applyPushInfo(PushInfo info, boolean fullResponse) {
         Push push = info.getPush();
         if (!info.isSuccessful() || push == null) {
@@ -987,6 +1041,10 @@ public class RobonectHandler extends BaseThingHandler {
 
     private void refreshChannels(ChannelUID channelUID) {
         String channelId = channelUID.getId();
+        if (channelId.equals(CHANNEL_PUSH_MODE)) {
+            refreshPushMode();
+            return;
+        }
         if (channelId.startsWith("timer-") && !channelId.equals(CHANNEL_TIMER_NEXT_TIMER)
                 && !channelId.equals(CHANNEL_TIMER_STATUS)) {
             refreshTimersInfo();
@@ -1715,7 +1773,7 @@ public class RobonectHandler extends BaseThingHandler {
         disposed = false;
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
         ajaxUiScraping = robonectConfig.isAjaxUiScraping();
-        useUnofficialApi = robonectConfig.isUseUnofficialApi();
+        configureUnofficialChannels(robonectConfig.isUseUnofficialApi());
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
 
@@ -1825,7 +1883,11 @@ public class RobonectHandler extends BaseThingHandler {
                     loadVersionInfo = false;
                 }
                 refreshMowerInfo();
-                if (detailedInfo && detailedInfoPollCount++ % detailedInfoInterval == 0) {
+                boolean refreshDetailed = detailedInfoPollCount++ % detailedInfoInterval == 0;
+                if (useUnofficialApi && refreshDetailed) {
+                    refreshPushMode();
+                }
+                if (detailedInfo && refreshDetailed) {
                     refreshBatteryInfo();
                     refreshMotorInfo();
                     refreshHourInfo();

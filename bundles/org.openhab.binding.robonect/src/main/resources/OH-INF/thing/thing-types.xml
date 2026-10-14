@@ -271,8 +271,9 @@
 			<parameter name="useUnofficialApi" type="boolean" required="false">
 				<label>Use Unofficial Web Interface API</label>
 				<default>false</default>
-				<description>Allow changing remote-start visibility, path, and corridor cut through the unofficial Robonect web
-					interface API.</description>
+				<description>Allow changing remote-start visibility, path, and corridor cut and expose the push-service mode
+					through
+					the unofficial Robonect web interface API.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -541,6 +542,18 @@
 		<item-type>Switch</item-type>
 		<label>Push Trigger Setting</label>
 		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="pushModeType">
+		<item-type>Number</item-type>
+		<label>Push Service Mode</label>
+		<description>Push-service request mode, available when the unofficial web interface API is enabled.</description>
+		<state readOnly="false" pattern="%d">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">GET</option>
+				<option value="2">POST</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="idType">

@@ -132,6 +132,7 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_PUSH_URL = "push-url";
     public static final String CHANNEL_PUSH_USERNAME = "push-username";
     public static final String CHANNEL_PUSH_INTERVAL = "push-interval";
+    public static final String CHANNEL_PUSH_MODE = "push-mode";
 
     public static final String CHANNEL_JOB = "job";
     public static final String CHANNEL_JOB_START = "job-start";

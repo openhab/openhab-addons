@@ -28,6 +28,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
@@ -86,6 +88,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Ajax UI compatibility
+ * @author Nico Brüttner - Push mode web interface support
  */
 public class RobonectClient {
 
@@ -471,6 +474,34 @@ public class RobonectClient {
         return parser.parse(sendCommand(new PushCommand().withValue(parameter, value)), PushInfo.class);
     }
 
+    /** Returns the selected push-service mode from the unofficial web interface, or null if it is absent or invalid. */
+    public @Nullable Integer getPushModeViaWebInterface() {
+        return requestPushMode(null);
+    }
+
+    /** Updates the push-service mode and returns the selection from the returned HTML. */
+    public @Nullable Integer updatePushModeViaWebInterface(int mode) {
+        if (mode < 0 || mode > 2) {
+            throw new IllegalArgumentException("Push mode must be between 0 and 2");
+        }
+        return requestPushMode(mode);
+    }
+
+    private @Nullable Integer requestPushMode(@Nullable Integer mode) {
+        // The push settings page can contain credentials, so its response body must not be logged.
+        String html = sendCommand(base -> base + "/push" + (mode == null ? "" : "&mode=" + mode), webBaseUrl, false);
+        Element selected = Jsoup.parse(html).selectFirst("input[type=radio][name=mode][checked=checked]");
+        if (selected == null) {
+            return null;
+        }
+        return switch (selected.attr("value")) {
+            case "0" -> 0;
+            case "1" -> 1;
+            case "2" -> 2;
+            default -> null;
+        };
+    }
+
     /**
      * Returns all timer configurations reported by the mower.
      *
@@ -553,6 +584,10 @@ public class RobonectClient {
     }
 
     private String sendCommand(Command command, String commandBaseUrl) {
+        return sendCommand(command, commandBaseUrl, true);
+    }
+
+    private String sendCommand(Command command, String commandBaseUrl, boolean logResponseBody) {
         try {
             if (logger.isDebugEnabled()) {
                 logger.debug("send HTTP GET to: {} ", command.toCommandURL(commandBaseUrl));
@@ -570,7 +605,7 @@ public class RobonectClient {
                 responseString = response.getContentAsString();
             }
 
-            if (logger.isDebugEnabled()) {
+            if (logResponseBody && logger.isDebugEnabled()) {
                 logger.debug("Response body was: {} ", responseString);
             }
             return responseString;

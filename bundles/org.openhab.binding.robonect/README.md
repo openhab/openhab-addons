@@ -94,6 +94,12 @@ truncates longer names and logs a warning. The visible, path, and corridor-cut c
 firmware update. Its save request includes the current remote-start settings to preserve values not being changed.
 Remaining battery and remote-start telemetry channels are read-only.
 
+Enabling `useUnofficialApi` also creates the writable `push-mode` Number channel with options `0` (Off), `1` (GET),
+and `2` (POST). Disabling it removes the channel. The binding reads `/push` and extracts the selected mode radio
+input from the returned HTML. Commands use `/push&mode=<value>` and apply the mode selected in the returned HTML
+without an additional read. Missing or invalid selections produce `UNDEF`. Mode polling uses
+`detailedInfoInterval` even when `detailedInfo` is disabled.
+
 Each push trigger in the response creates `push-trigger-<id>-<name>-enter` and `push-trigger-<id>-<name>-leave` channels.
 The name is converted to lowercase and spaces are replaced with underscores, for example `Way home` becomes
 `way_home`. For trigger ID 2, the channels are `push-trigger-2-way_home-enter` and `push-trigger-2-way_home-leave`.
@@ -104,8 +110,9 @@ The enter and leave Switch channels are writable; commands extract the numeric I
 current settings to preserve the other setting. The `prevent` Number
 channel reports the raw mowing prevention code, and the `home` Switch reports whether the mower is at home.
 
-Successful configuration and door commands apply the returned channel values immediately and request a follow-up
-read after five seconds to fill in data omitted from the response. A newer command to the same endpoint replaces
+Successful configuration commands (except `push-mode`) and door commands apply the returned channel values
+immediately and request a follow-up read after five seconds to fill in data omitted from the response.
+A newer command to the same endpoint replaces
 its pending follow-up read. Mode changes (including HOME), job commands, and start/stop commands request mower
 status immediately after the write returns instead of waiting five seconds.
 
