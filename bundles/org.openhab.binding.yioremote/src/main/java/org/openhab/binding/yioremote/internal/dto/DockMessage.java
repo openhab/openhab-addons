@@ -13,31 +13,18 @@
 package org.openhab.binding.yioremote.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link IRCode} the IRCode DTO
- *
+ * The {@link DockMessage} is a message received from the YIO Dock.
  *
  * @author Michael Loercher - Initial contribution
  */
 @NonNullByDefault
-public class IRCode {
-    private String code = "0;0x0;0;0";
-    private String format = "hex";
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
+public class DockMessage {
+    public @Nullable String type;
+    public @Nullable String message;
+    public @Nullable String command;
+    public @Nullable String code;
+    public @Nullable Boolean success;
 }
