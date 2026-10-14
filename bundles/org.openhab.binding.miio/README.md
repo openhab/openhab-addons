@@ -542,6 +542,7 @@ Currently the miio binding supports more than 390 different models.
 | Mijia Smart Air Purifier Elite     | miio:basic       | [xiaomi.airp.meb2](#xiaomi-airp-meb2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Wi-Fi Repeater 2                | miio:unsupported | xiaomi.repeater.v2     | No           |            |
 | Xiaomi Robot Vacuum T12            | miio:basic       | [xiaomi.vacuum.b106bk](#xiaomi-vacuum-b106bk) | Yes          | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')` |
+| Xiaomi Robot Vacuum S12            | miio:basic       | [xiaomi.vacuum.b106eu](#xiaomi-vacuum-b106eu) | Yes          | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')` |
 | Xiaomi Robot Vacuum S20+           | miio:basic       | [xiaomi.vacuum.b108gl](#xiaomi-vacuum-b108gl) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Robot Vacuum X20+           | miio:basic       | [xiaomi.vacuum.c102gl](#xiaomi-vacuum-c102gl) | Yes          |            |
 | Mi Network Speaker                 | miio:unsupported | xiaomi.wifispeaker.v1  | No           |            |
@@ -2761,31 +2762,30 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| vacuumaction               | String               | Vacuum Action                            | This channel accepts `start`, `stop`, `findme` and `dock`. |
-| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Idle","2"="Sweeping","3"="Paused","4"="Error","5"="Charging","6"="Go Charging"]` |
-| fault                      | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Faults","1"="Left-wheel-error","2"="Right-wheel-error","3"="Cliff-error","4"="Low-battery-error","5"="Bump-error","6"="Main-brush-error","7"="Side-brush-error","8"="Fan-motor-error","9"="Dustbin-error","10"="Charging-error","11"="No-wate-error","12"="Pick-up-error"]` |
-| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["1"="Auto-clean","2"="Spot-clean","3"="Wallflow-clean"]` |
-| target-water-level         | Number               | Robot Cleaner - Target Water Level       | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
-| fan-level                  | Number               | Robot Cleaner - Fan Level                | Value mapping `["0"="Silence","1"="Stanrd","2"="Middle","3"="Enchance"]` |
-| battery-level              | Number:Dimensionless | Battery - Battery Level                  |            |
-| charging-state             | Number               | Battery - Charging State                 | Value mapping `["0"="Not-charging","1"="Charging","2"="Charging-competely"]` |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
+| actions                    | String               | Actions                                  | Value mapping `["start"="Start Cleaning","stop"="Pause Cleaning","dock"="Return To Dock","stopdock"="Stop Returning To Dock","findme"="Find Robot"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Idle","2"="Cleaning","3"="Paused","4"="Error","5"="Charging","6"="Go Charging"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Fault","1"="Left Wheel Error","2"="Right Wheel Error","3"="Cliff Sensor Error","4"="Low Battery","5"="Collision Sensor Error","6"="Main Brush Error","7"="Side Brush Error","8"="Fan Error","9"="Dust Compartment Or Water Tank Missing","10"="Charging Error","11"="Insufficient Water","12"="Robot Off The Floor"]` |
+| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["1"="Auto Clean","2"="Spot Clean","3"="Edge Clean"]` |
+| target_water_level         | Number               | Robot Cleaner - Mop Water Level          | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| fan_level                  | Number               | Robot Cleaner - Suction Level            | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state             | Number               | Battery - Charging State                 | Value mapping `["0"="Not Charging","1"="Charging","2"="Charging Complete"]` |
+| alarm                      | Switch               | Alarm - Voice Prompts                    |            |
 | volume                     | Number:Dimensionless | Alarm - Volume                           |            |
 | filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
-| filter-left-time           | Number:Time          | Filter - Filter Left Time                |            |
-| brush-life-level           | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
-| brush-left-time            | Number:Time          | Brush Cleaner - Brush Left Time          |            |
-| brush-life-level1          | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
-| brush-left-time1           | Number:Time          | Brush Cleaner - Brush Left Time          |            |
-| direction_key              | Number               | Remote Control - Direction Key           | Value mapping `["0"="direction 0","1"="direction 1","2"="direction 2","3"="direction 3","4"="direction 4"]` |
-| clean-area                 | Number:Area          | Clean Record - Clean Area                |            |
-| clean_time                 | Number               | Clean Record - Clean Time                |            |
-| total-clean-area           | Number:Area          | Clean Record - Total Clean Area          |            |
-| total-clean-time           | Number               | Clean Record - Total Clean Time          |            |
-| total-clean-count          | Number               | Clean Record - Total Clean Count         |            |
-| language                   | Number               | Language - Language                      | Value mapping `["0"="English","1"="Chinese","2"="Spanish","3"="Russian","4"="Italian","5"="French","6"="German","7"="Korean","8"="Polish"]` |
-| not-disturb-switch         | Switch               | Language - Not Disturb Switch            |            |
-| mop-status                 | Number               | Other Status - Mop Status                | Value mapping `["0"="Mop Uninstall","1"="Mop Install"]` |
+| filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
+| brush_life_level           | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
+| brush_left_time            | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
+| brush_life_level1          | Number:Dimensionless | Side Cleaning Brush - Brush Life Level   |            |
+| brush_left_time1           | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
+| clean_area                 | Number:Area          | Clean Record - Clean Area                |            |
+| clean_time                 | Number:Time          | Clean Record - Clean Time                |            |
+| total_clean_area           | Number:Area          | Clean Record - Total Clean Area          |            |
+| total_clean_time           | Number:Time          | Clean Record - Total Clean Time          |            |
+| total_clean_count          | Number               | Clean Record - Total Clean Count         |            |
+| language                   | Number               | Voice - Language                         | Value mapping `["0"="English","1"="Chinese","2"="Spanish","3"="Russian","4"="Italian","5"="French","6"="German","7"="Korean","8"="Polish"]` |
+| not_disturb_switch         | Switch               | Voice - Do Not Disturb                   |            |
+| mop_status                 | Switch               | Other Status - Mop Installed             |            |
 
 ### Mijia Smart Pet Water Dispenser (<a name="mmgg-pet_waterer-s1">mmgg.pet_waterer.s1</a>) Channels
 
@@ -4500,14 +4500,57 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Robot Cleaner - Actions                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging"]` |
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging"]` |
 | status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Mopping","7"="Sweeping and Mopping","8"="Upgrade"]` |
 | fault                      | Number               | Robot Cleaner - Device Fault             |            |
 | mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
 | sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Global","1"="Mop","2"="Edge","3"="Area","4"="Point","5"="Remote Control","6"="Explore","7"="Room","8"="Floor Type"]` |
 | battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
-| alarm                      | Switch               | Alarm - Locate                           |            |
-| volume                     | Number:Dimensionless | Alarm - Volume                           |            |
+| alarm                      | Switch               | Alarm - Find Robot                       |            |
+| volume                     | Number               | Alarm - Volume                           | Volume level 0-10; the Mi Home app shows it as 0-100% |
+| repeat_state               | Switch               | Sweep - Clean Twice                      |            |
+| door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
+| cloth_state                | Switch               | Sweep - Mop Attached                     |            |
+| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| water_state                | Number               | Sweep - Water Level                      | Value mapping `["0"="Low","1"="Medium","2"="High"]` |
+| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="S-Shape","1"="Y-Shape"]` |
+| side_brush_life            | Number:Dimensionless | Sweep - Side Brush Life                  |            |
+| side_brush_hours           | Number:Time          | Sweep - Side Brush Time Left             |            |
+| main_brush_life            | Number:Dimensionless | Sweep - Main Brush Life                  |            |
+| main_brush_hours           | Number:Time          | Sweep - Main Brush Time Left             |            |
+| hypa_life                  | Number:Dimensionless | Sweep - Filter Life                      |            |
+| hypa_hours                 | Number:Time          | Sweep - Filter Time Left                 |            |
+| mop_life                   | Number:Dimensionless | Sweep - Mop Life                         |            |
+| mop_hours                  | Number:Time          | Sweep - Mop Time Left                    |            |
+| direction                  | Number               | Sweep - Remote Control Direction         | Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Back","5"="Stop","10"="Exit"]` |
+| cleaning_time              | Number:Time          | Sweep - Cleaning Time                    |            |
+| cleaning_area              | Number:Area          | Sweep - Cleaning Area                    |            |
+| dirt_recognize             | Switch               | Sweep - Dirt Detection                   |            |
+| pet_recognize              | Switch               | Sweep - Pet Mode                         |            |
+| ai_recognize               | Switch               | Sweep - AI Obstacle Recognition          |            |
+| carpet_booster             | Switch               | Sweep - Carpet Boost                     |            |
+| carpet_avoid               | Switch               | Sweep - Carpet Avoidance                 |            |
+| tank_shake                 | Switch               | Sweep - Mop Vibration                    |            |
+| shake_shift                | Number               | Sweep - Mop Vibration Level              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| build_map                  | Number               | Map - Mapping Status                     | Value mapping `["0"="None","1"="Mapping","2"="Mapping While Cleaning"]` |
+| dnd_enable                 | Switch               | Do Not Disturb - Enabled                 |            |
+| dnd_start_hour             | Number               | Do Not Disturb - Start Hour              |            |
+| dnd_start_minute           | Number               | Do Not Disturb - Start Minute            |            |
+| dnd_end_hour               | Number               | Do Not Disturb - End Hour                |            |
+| dnd_end_minute             | Number               | Do Not Disturb - End Minute              |            |
+
+### Xiaomi Robot Vacuum S12 (<a name="xiaomi-vacuum-b106eu">xiaomi.vacuum.b106eu</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Mopping","7"="Sweeping and Mopping","8"="Upgrade"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             |            |
+| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
+| sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Global","1"="Mop","2"="Edge","3"="Area","4"="Point","5"="Remote Control","6"="Explore","7"="Room","8"="Floor Type"]` |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| alarm                      | Switch               | Alarm - Find Robot                       |            |
+| volume                     | Number               | Alarm - Volume                           | Volume level 0-10; the Mi Home app shows it as 0-100% |
 | repeat_state               | Switch               | Sweep - Clean Twice                      |            |
 | door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
 | cloth_state                | Switch               | Sweep - Mop Attached                     |            |
@@ -4554,7 +4597,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | suction_level              | Number               | Robot Cleaner - Suction Level            | Value mapping `["1"="Silent","2"="Basic","3"="Strong","4"="Full Speed"]` |
 | mop_water_output_level     | Number               | Robot Cleaner - Mop Water Output Level   | Value mapping `["0"="Off","1"="Level 1","2"="Level 2","3"="Level 3"]` |
 | zone_ids                   | String               | Robot Cleaner - Zone IDs                 |            |
-| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["1"="Silent","2"="Basic","3"="Strong"]` |
+| mode                       | Number               | Robot Cleaner - Mode                     | Not used by the Mi Home app, which sets the suction level with `suction_level`. Value mapping `["1"="Silent","2"="Basic","3"="Strong"]` |
 | edge_swing_tail_sweep      | Switch               | Robot Cleaner - Edge Swing Tail Sweep    |            |
 | edge_sweep_frequency       | Number               | Robot Cleaner - Edge Sweep Frequency     | Value mapping `["1"="Every 7 Cleanings","2"="Every Cleaning"]` |
 | notice                     | String               | Robot Cleaner - Notice                   |            |
@@ -4592,10 +4635,10 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","vacuum-start-room-sweep"="Vacuum Start Room Sweep","vacuum-start-dust-arrest"="Vacuum Start Dust Arrest","vacuum-start-mop-wash"="Vacuum Start Mop Wash","vacuum-start-dry"="Vacuum Start Dry","vacuum-stop-dry"="Vacuum Stop Dry","vacuum-start-eject"="Vacuum Start Eject","battery-start-charge"="Battery Start Charge","brush-cleaner-reset-brush-life"="Main Cleaning Brush Reset Brush Life","brush-cleaner-reset-brush-life1"="Side Cleaning Brush Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","mop-reset-mop-life"="Mop Reset Mop Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer"]` |
-| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping","8"="Drying","9"="Washing","10"="Go Washing","11"="Building","12"="Sweeping And Mopping","13"="Charging Completed","14"="Upgrading","19"="WaterInspecting","21"="WashingMopPause","22"="DustCollecting","23"="RemoteClean"]` |
-| fault                      | Number               | Robot Cleaner - Device Fault             |            |
-| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-start-dust-arrest"="Start Dust Collection","vacuum-start-mop-wash"="Start Mop Washing","vacuum-start-dry"="Start Mop Drying","vacuum-stop-dry"="Stop Mop Drying","battery-start-charge"="Return To Dock","brush-cleaner-reset-brush-life"="Reset Main Brush Life","brush-cleaner-reset-brush-life1"="Reset Side Brush Life","filter-reset-filter-life"="Reset Filter Life","mop-reset-mop-life"="Reset Mop Life","vacuum-extend-start-fast-mapping"="Start Fast Mapping (Replaces Map)","vacuum-extend-stop-clean"="Stop Cleaning (Extended)","audio-position"="Find Robot","audio-play-sound"="Play Test Sound"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping","8"="Drying Mop","9"="Washing Mop","10"="Go Washing Mop","11"="Building Map","12"="Sweeping And Mopping","13"="Charging Completed","14"="Upgrading","15"="Summoned Mop Cleaning","16"="Station Reset","17"="Go Install Mop","18"="Go Remove Mop","19"="Water Inspecting","20"="Washing Mop And Refilling Water","21"="Washing Mop Paused","22"="Dust Collecting","23"="Remote Control Cleaning","24"="Smart Charging","25"="Second Mop Cleaning","26"="Following Human","30"="Station Self Cleaning"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Fault","1"="Wheels Suspended (Drop)","2"="Robot Suspended","3"="Bumper Stuck (Collision)","4"="Robot Tilted","5"="Bumper Stuck (Repeated Collision)","6"="Wheels Suspended (Repeated Drop)","7"="Internal Sensor Error (Code 7)","8"="Dust Box Not Installed","12"="Main Brush Entangled","13"="Side Brush Entangled","15"="Stuck Or Wheels Blocked (Left Wheel Motor)","16"="Stuck Or Wheels Blocked (Right Wheel Motor)","17"="Blocked Or Stuck (Turning)","18"="Blocked Or Stuck (Forward)","20"="Low Battery","21"="Charging Error","23"="Internal Sensor Error (Code 23)","25"="Internal Sensor Error (Code 25)","30"="Internal Sensor Error (Code 30)","31"="Stuck Or Wheels Blocked (Left Wheel Speed)","32"="Stuck Or Wheels Blocked (Right Wheel Speed)","33"="Internal Sensor Error (Code 33)","34"="Internal Sensor Error (Code 34)","35"="Internal Sensor Error (Code 35)","36"="Internal Sensor Error (Code 36)","37"="Internal Sensor Error (Code 37)","38"="Internal Sensor Error (Code 38)","39"="Internal Sensor Error (Code 39)","40"="Internal Sensor Error (Code 40)","48"="Laser Sensor Bumper Error","49"="Laser Sensor Bumper Stuck","51"="Filter Wet Or Blocked","54"="Edge Sensor Error","58"="Ultrasonic Sensor Error","61"="Unable To Reach Area (Obstacle)","62"="Unable To Reach Area (Virtual Wall)","63"="Cleaning Path Blocked (Door Closed)","64"="Cleaning Path Blocked (Out Of Range)","65"="In Restricted Area","69"="Mop Tray Removed (Mop Check)","70"="Mop Tray Removed (Mop Check Fast Mapping)","71"="Mop Tray Stuck (Mop Motor)","72"="Mop Tray Stuck (Mop Motor Current)","101"="Dust Bag Full Or Vent Blocked (Full)","102"="Dust Bag Not Installed","103"="Dust Collector Lid Open","104"="Dust Bag Full Or Vent Blocked (Blocked)","105"="Clean Water Tank Empty (Not Installed)","106"="Dirty Water Tank Error (Not Installed)","107"="Clean Water Tank Empty (No Water)","108"="Dirty Water Tank Error (Full)","111"="Cleaning Tray Not Installed","112"="Cleaning Tray Water Level High (Code 112)","116"="Clean Water Tank Empty (Code 116)","118"="Dirty Water Tank Error (Code 118)","119"="Cleaning Tray Water Level High (Code 119)"]` |
+| mode                       | Number               | Robot Cleaner - Mode                     | Not used by the Mi Home app, which sets the suction level with `cleaning_mode`. Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
 | dry_left_time              | Number:Time          | Robot Cleaner - Dry Left Time            |            |
 | battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
 | charging_state             | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
@@ -4607,39 +4650,36 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
 | mop_life_level             | Number:Dimensionless | Mop - Mop Life Level                     |            |
 | mop_left_time              | Number:Time          | Mop - Mop Left Time                      |            |
-| work_mode                  | Number               | Vacuum Extend - Work Mode                |            |
+| work_mode                  | Number               | Vacuum Extend - Work Mode                | Value mapping `["0"="Idle","1"="Paused","2"="Auto Clean","3"="Back Home","4"="Partial Clean","5"="Follow Wall","6"="Charging","7"="Firmware Update","8"="Factory Test","9"="WiFi Setup","10"="Power Off","11"="Factory","12"="Error Report","13"="Remote Control","14"="Sleep","15"="Self Test","16"="Factory Function Test","17"="Standby","18"="Room Clean","19"="Zone Clean","20"="Spot Clean","21"="Fast Mapping","24"="Summoned Clean","1501"="Water Self Check"]` |
 | cleaning_time              | Number:Time          | Vacuum Extend - Cleaning Time            |            |
-| cleaning_area              | Number               | Vacuum Extend - Cleaning Area            |            |
-| cleaning_mode              | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
-| mop_mode                   | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
-| waterbox_status            | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="No","1"="Yes"]` |
-| task_status                | Number               | Vacuum Extend - Task Status              |            |
-| clean_extend_data          | String               | Vacuum Extend - Clean Extend Data        |            |
-| break_point_restart        | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Close","1"="Open"]` |
-| carpet_press               | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="Close","1"="Open"]` |
+| cleaning_area              | Number:Area          | Vacuum Extend - Cleaning Area            |            |
+| cleaning_mode              | Number               | Vacuum Extend - Suction Level            | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
+| mop_mode                   | Number               | Vacuum Extend - Mop Water Level          | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| waterbox_status            | Switch               | Vacuum Extend - Mop Installed            |            |
+| task_status                | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Completed","1"="Auto Cleaning","2"="Zone Cleaning","3"="Room Cleaning","4"="Spot Cleaning","5"="Fast Mapping","6"="Auto Cleaning Paused","7"="Zone Cleaning Paused","8"="Room Cleaning Paused","9"="Spot Cleaning Paused","10"="Map Cleaning Paused","11"="Charging Paused","12"="Back Washing Paused","13"="Room Back Washing Paused","14"="Zone Back Washing Paused","15"="Auto Back Washing Paused","16"="Auto Charging Paused","17"="Selected Charging Paused","18"="Zone Charging Paused","19"="Spot Charging Paused","27"="Station Self Cleaning","28"="Station Self Cleaning Waiting To Return","29"="Station Self Cleaning Going To Charge","31"="Auto Clean Wash Paused","32"="Room Clean Wash Paused","33"="Zone Clean Wash Paused"]` |
+| break_point_restart        | Switch               | Vacuum Extend - Resume After Charging    |            |
+| carpet_press               | Switch               | Vacuum Extend - Carpet Boost             |            |
 | serial_number              | String               | Vacuum Extend - Serial Number            |            |
-| remote_state               | String               | Vacuum Extend - Remote State             |            |
-| clean_rags_tip             | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
+| clean_rags_tip             | Number:Time          | Vacuum Extend - Clean Rags Tip           | Not used by the Mi Home app, which only resets it to 0 |
 | keep_sweeper_time          | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
 | faults                     | String               | Vacuum Extend - Faults                   |            |
 | nation_matched             | String               | Vacuum Extend - Nation Matched           |            |
 | relocation_status          | Number               | Vacuum Extend - Relocation Status        |            |
-| wash_station               | Number               | Vacuum Extend - Wash Station             |            |
-| child_lock                 | Number               | Vacuum Extend - Child Lock               | Value mapping `["0"="Close","1"="Open"]` |
+| wash_station               | Number               | Vacuum Extend - Wash Station             | Value mapping `["0"="Idle","1"="Washing","2"="Drying","3"="Go Washing","4"="Paused","5"="Washing And Refilling Water","6"="Refilling Water"]` |
+| child_lock                 | Switch               | Vacuum Extend - Child Lock               |            |
 | clean_cancel               | Number               | Vacuum Extend - Clean Cancel             |            |
 | enable                     | Switch               | Do Not Disturb - Enable                  |            |
-| start_time                 | String               | Do Not Disturb - Start Time              |            |
-| end_time                   | String               | Do Not Disturb - End Time                |            |
-| volume                     | Number               | Audio - Volume                           |            |
+| start_time                 | String               | Do Not Disturb - Start Time              | Time of day in 24-hour format `HH:MM`, for example `22:00` |
+| end_time                   | String               | Do Not Disturb - End Time                | Time of day in 24-hour format `HH:MM`, for example `08:00` |
+| volume                     | Number:Dimensionless | Audio - Volume                           |            |
 | voice_packet_id            | String               | Audio - Voice Packet Id                  |            |
 | voice_change_state         | String               | Audio - Voice Change State               |            |
-| set_voice                  | String               | Audio - Set Voice                        |            |
 | time_zone                  | String               | Time - Time Zone                         |            |
-| timer_clean                | String               | Time - Timer Clean                       |            |
-| first_clean_time           | Number               | Clean Logs - First Clean Time            |            |
+| timer_clean                | String               | Time - Timer Clean                       | Scheduled cleaning timers, separated by `;`. Each timer is `id-enabled-HH:MM-weekdays-repeat-mapId-mode-mop-areas`; empty when no timer is set. Read-only: creating a timer needs the map and area ids of the robot, which the Mi Home app supplies |
+| first_clean_time           | Number               | Clean Logs - First Clean Time            | Unix timestamp in seconds |
 | total_clean_time           | Number:Time          | Clean Logs - Total Clean Time            |            |
 | total_clean_times          | Number               | Clean Logs - Total Clean Times           |            |
-| total_clean_area           | Number               | Clean Logs - Total Clean Area            |            |
+| total_clean_area           | Number:Area          | Clean Logs - Total Clean Area            |            |
 
 ### Uclean Smart Toilet Seat (<a name="xjx-toilet-pro">xjx.toilet.pro</a>) Channels
 
@@ -9687,31 +9727,30 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 
 ```java
 Group G_vacuum "Mi Robot Vacuum-Mop Essential" <status>
-String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
 Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
 Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
-Number target_water_level "Robot Cleaner - Target Water Level" (G_vacuum) {channel="miio:basic:vacuum:target-water-level"}
-Number fan_level "Robot Cleaner - Fan Level" (G_vacuum) {channel="miio:basic:vacuum:fan-level"}
-Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
-Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging-state"}
-Switch alarm "Alarm - Alarm" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number target_water_level "Robot Cleaner - Mop Water Level" (G_vacuum) {channel="miio:basic:vacuum:target_water_level"}
+Number fan_level "Robot Cleaner - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:fan_level"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging_state"}
+Switch alarm "Alarm - Voice Prompts" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
 Number:Dimensionless volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
 Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
-Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
-Number:Dimensionless brush_life_level "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
-Number:Time brush_left_time "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
-Number:Dimensionless brush_life_level1 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
-Number:Time brush_left_time1 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
-Number direction_key "Remote Control - Direction Key" (G_vacuum) {channel="miio:basic:vacuum:direction_key"}
-Number:Area clean_area "Clean Record - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
-Number clean_time "Clean Record - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
-Number:Area total_clean_area "Clean Record - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
-Number total_clean_time "Clean Record - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
-Number total_clean_count "Clean Record - Total Clean Count" (G_vacuum) {channel="miio:basic:vacuum:total-clean-count"}
-Number language "Language - Language" (G_vacuum) {channel="miio:basic:vacuum:language"}
-Switch not_disturb_switch "Language - Not Disturb Switch" (G_vacuum) {channel="miio:basic:vacuum:not-disturb-switch"}
-Number mop_status "Other Status - Mop Status" (G_vacuum) {channel="miio:basic:vacuum:mop-status"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+Number:Dimensionless brush_life_level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level"}
+Number:Time brush_left_time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time"}
+Number:Dimensionless brush_life_level1 "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level1"}
+Number:Time brush_left_time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time1"}
+Number:Area clean_area "Clean Record - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean_area"}
+Number:Time clean_time "Clean Record - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Number:Area total_clean_area "Clean Record - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total_clean_area"}
+Number:Time total_clean_time "Clean Record - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
+Number total_clean_count "Clean Record - Total Clean Count" (G_vacuum) {channel="miio:basic:vacuum:total_clean_count"}
+Number language "Voice - Language" (G_vacuum) {channel="miio:basic:vacuum:language"}
+Switch not_disturb_switch "Voice - Do Not Disturb" (G_vacuum) {channel="miio:basic:vacuum:not_disturb_switch"}
+Switch mop_status "Other Status - Mop Installed" (G_vacuum) {channel="miio:basic:vacuum:mop_status"}
 ```
 
 ### Mijia Smart Pet Water Dispenser (mmgg.pet_waterer.s1) item file lines
@@ -11702,14 +11741,60 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 
 ```java
 Group G_vacuum "Xiaomi Robot Vacuum T12" <status>
-String actions "Robot Cleaner - Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
 Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
 Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
 Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
-Switch alarm "Alarm - Locate" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
-Number:Dimensionless volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch alarm "Alarm - Find Robot" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch repeat_state "Sweep - Clean Twice" (G_vacuum) {channel="miio:basic:vacuum:repeat_state"}
+Number door_state "Sweep - Installed Box" (G_vacuum) {channel="miio:basic:vacuum:door_state"}
+Switch cloth_state "Sweep - Mop Attached" (G_vacuum) {channel="miio:basic:vacuum:cloth_state"}
+Number suction_state "Sweep - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:suction_state"}
+Number water_state "Sweep - Water Level" (G_vacuum) {channel="miio:basic:vacuum:water_state"}
+Number mop_route "Sweep - Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Dimensionless side_brush_life "Sweep - Side Brush Life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Time side_brush_hours "Sweep - Side Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Dimensionless main_brush_life "Sweep - Main Brush Life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Time main_brush_hours "Sweep - Main Brush Time Left" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Dimensionless hypa_life "Sweep - Filter Life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Time hypa_hours "Sweep - Filter Time Left" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Dimensionless mop_life "Sweep - Mop Life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+Number:Time mop_hours "Sweep - Mop Time Left" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number direction "Sweep - Remote Control Direction" (G_vacuum) {channel="miio:basic:vacuum:direction"}
+Number:Time cleaning_time "Sweep - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number:Area cleaning_area "Sweep - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Switch dirt_recognize "Sweep - Dirt Detection" (G_vacuum) {channel="miio:basic:vacuum:dirt_recognize"}
+Switch pet_recognize "Sweep - Pet Mode" (G_vacuum) {channel="miio:basic:vacuum:pet_recognize"}
+Switch ai_recognize "Sweep - AI Obstacle Recognition" (G_vacuum) {channel="miio:basic:vacuum:ai_recognize"}
+Switch carpet_booster "Sweep - Carpet Boost" (G_vacuum) {channel="miio:basic:vacuum:carpet_booster"}
+Switch carpet_avoid "Sweep - Carpet Avoidance" (G_vacuum) {channel="miio:basic:vacuum:carpet_avoid"}
+Switch tank_shake "Sweep - Mop Vibration" (G_vacuum) {channel="miio:basic:vacuum:tank_shake"}
+Number shake_shift "Sweep - Mop Vibration Level" (G_vacuum) {channel="miio:basic:vacuum:shake_shift"}
+Number build_map "Map - Mapping Status" (G_vacuum) {channel="miio:basic:vacuum:build_map"}
+Switch dnd_enable "Do Not Disturb - Enabled" (G_vacuum) {channel="miio:basic:vacuum:dnd_enable"}
+Number dnd_start_hour "Do Not Disturb - Start Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_hour"}
+Number dnd_start_minute "Do Not Disturb - Start Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_minute"}
+Number dnd_end_hour "Do Not Disturb - End Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_hour"}
+Number dnd_end_minute "Do Not Disturb - End Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_minute"}
+```
+
+### Xiaomi Robot Vacuum S12 (xiaomi.vacuum.b106eu) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Robot Vacuum S12" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Switch alarm "Alarm - Find Robot" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
 Switch repeat_state "Sweep - Clean Twice" (G_vacuum) {channel="miio:basic:vacuum:repeat_state"}
 Number door_state "Sweep - Installed Box" (G_vacuum) {channel="miio:basic:vacuum:door_state"}
 Switch cloth_state "Sweep - Mop Attached" (G_vacuum) {channel="miio:basic:vacuum:cloth_state"}
@@ -11817,37 +11902,34 @@ Number:Dimensionless mop_life_level "Mop - Mop Life Level" (G_vacuum) {channel="
 Number:Time mop_left_time "Mop - Mop Left Time" (G_vacuum) {channel="miio:basic:vacuum:mop_left_time"}
 Number work_mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work_mode"}
 Number:Time cleaning_time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
-Number cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
-Number cleaning_mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning_mode"}
-Number mop_mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop_mode"}
-Number waterbox_status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
+Number:Area cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number cleaning_mode "Vacuum Extend - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:cleaning_mode"}
+Number mop_mode "Vacuum Extend - Mop Water Level" (G_vacuum) {channel="miio:basic:vacuum:mop_mode"}
+Switch waterbox_status "Vacuum Extend - Mop Installed" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
 Number task_status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task_status"}
-String clean_extend_data "Vacuum Extend - Clean Extend Data" (G_vacuum) {channel="miio:basic:vacuum:clean_extend_data"}
-Number break_point_restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break_point_restart"}
-Number carpet_press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet_press"}
+Switch break_point_restart "Vacuum Extend - Resume After Charging" (G_vacuum) {channel="miio:basic:vacuum:break_point_restart"}
+Switch carpet_press "Vacuum Extend - Carpet Boost" (G_vacuum) {channel="miio:basic:vacuum:carpet_press"}
 String serial_number "Vacuum Extend - Serial Number" (G_vacuum) {channel="miio:basic:vacuum:serial_number"}
-String remote_state "Vacuum Extend - Remote State" (G_vacuum) {channel="miio:basic:vacuum:remote_state"}
 Number:Time clean_rags_tip "Vacuum Extend - Clean Rags Tip" (G_vacuum) {channel="miio:basic:vacuum:clean_rags_tip"}
 Number:Time keep_sweeper_time "Vacuum Extend - Keep Sweeper Time" (G_vacuum) {channel="miio:basic:vacuum:keep_sweeper_time"}
 String faults "Vacuum Extend - Faults" (G_vacuum) {channel="miio:basic:vacuum:faults"}
 String nation_matched "Vacuum Extend - Nation Matched" (G_vacuum) {channel="miio:basic:vacuum:nation_matched"}
 Number relocation_status "Vacuum Extend - Relocation Status" (G_vacuum) {channel="miio:basic:vacuum:relocation_status"}
 Number wash_station "Vacuum Extend - Wash Station" (G_vacuum) {channel="miio:basic:vacuum:wash_station"}
-Number child_lock "Vacuum Extend - Child Lock" (G_vacuum) {channel="miio:basic:vacuum:child_lock"}
+Switch child_lock "Vacuum Extend - Child Lock" (G_vacuum) {channel="miio:basic:vacuum:child_lock"}
 Number clean_cancel "Vacuum Extend - Clean Cancel" (G_vacuum) {channel="miio:basic:vacuum:clean_cancel"}
 Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
 String start_time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start_time"}
 String end_time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end_time"}
-Number volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number:Dimensionless volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
 String voice_packet_id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice_packet_id"}
 String voice_change_state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice_change_state"}
-String set_voice "Audio - Set Voice" (G_vacuum) {channel="miio:basic:vacuum:set_voice"}
 String time_zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time_zone"}
 String timer_clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer_clean"}
 Number first_clean_time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first_clean_time"}
 Number:Time total_clean_time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
 Number total_clean_times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total_clean_times"}
-Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total_clean_area"}
+Number:Area total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total_clean_area"}
 ```
 
 ### Uclean Smart Toilet Seat (xjx.toilet.pro) item file lines
