@@ -26,4 +26,10 @@ public record DreameMqttConfiguration(String host, int port, String clientId, St
         return host.equals(other.host) && port == other.port && username.equals(other.username)
                 && password.equals(other.password) && topic.equals(other.topic);
     }
+
+    @Override
+    public String toString() {
+        return "DreameMqttConfiguration[host=" + host + ", port=" + port
+                + ", clientId=***, username=***, password=***, topic=***]";
+    }
 }

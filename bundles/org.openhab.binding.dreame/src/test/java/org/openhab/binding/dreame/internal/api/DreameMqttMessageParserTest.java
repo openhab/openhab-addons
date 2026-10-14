@@ -58,6 +58,24 @@ class DreameMqttMessageParserTest {
     }
 
     @Test
+    void mqttPropertyChangeIgnoresFailedProperties() throws DreameCloudException {
+        String payload = """
+                {"data":{"method":"properties_changed","params":[
+                  {"siid":2,"piid":1,"code":-1,"value":0},
+                  {"siid":3,"piid":1,"code":0,"value":76},
+                  {"siid":1,"piid":50,"code":-1,"value":{}}
+                ]}}
+                """;
+
+        DreameStatus status = new DreameMqttMessageParser().parse(payload,
+                List.of(DreameProperty.STATE, DreameProperty.BATTERY_LEVEL));
+
+        assertNull(status.value(DreameProperty.STATE));
+        assertEquals(76, status.integer(DreameProperty.BATTERY_LEVEL, -1));
+        assertFalse(status.mapChanged());
+    }
+
+    @Test
     void mqttParserKeepsMovaDndStatusAndTimeWindow() throws DreameCloudException {
         String payload = """
                 {"data":{"method":"properties_changed","params":[

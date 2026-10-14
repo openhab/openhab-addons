@@ -93,6 +93,17 @@ class DreameMqttClientTest {
         assertFalse(client.isConnected());
     }
 
+    @Test
+    void configurationToStringRedactsSensitiveFields() {
+        String value = configuration().toString();
+
+        assertFalse(value.contains("mqtt-password"));
+        assertFalse(value.contains("mqtt-user"));
+        assertFalse(value.contains("mqtt-client"));
+        assertFalse(value.contains("device/topic"));
+        assertTrue(value.contains("password=***"));
+    }
+
     private static DreameMqttConfiguration configuration() {
         return new DreameMqttConfiguration("mqtt.example.org", 8883, "mqtt-client", "mqtt-user", "mqtt-password",
                 "device/topic");

@@ -56,7 +56,7 @@ final class DreameMqttMessageParser {
             }
             for (JsonElement element : data.getAsJsonArray("params")) {
                 if (element instanceof JsonObject parameter && parameter.has("siid") && parameter.has("piid")
-                        && parameter.has("value")) {
+                        && parameter.has("value") && isSuccessful(parameter)) {
                     parseParameter(parameter, requested, status);
                 }
             }
@@ -64,6 +64,12 @@ final class DreameMqttMessageParser {
         } catch (JsonParseException | IllegalStateException e) {
             throw new DreameCloudException("Dreame MQTT payload is invalid", e);
         }
+    }
+
+    private boolean isSuccessful(JsonObject parameter) {
+        JsonElement code = parameter.get("code");
+        return code == null || code instanceof JsonPrimitive primitive && primitive.isNumber()
+                && primitive.getAsBigDecimal().signum() == 0;
     }
 
     private void parseParameter(JsonObject parameter, List<DreameProperty> requested, DreameStatus status) {

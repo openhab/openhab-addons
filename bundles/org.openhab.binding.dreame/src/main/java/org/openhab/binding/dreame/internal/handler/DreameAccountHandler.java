@@ -47,12 +47,14 @@ import org.slf4j.LoggerFactory;
 public class DreameAccountHandler extends BaseBridgeHandler {
 
     private static final long DEVICE_METADATA_REFRESH_MINUTES = 15;
+    private static final long INITIAL_RETRY_MINUTES = 1;
 
     private final Logger logger = LoggerFactory.getLogger(DreameAccountHandler.class);
     private final DreameMowerApi apiClient;
     private final AtomicInteger lifecycleGeneration = new AtomicInteger();
+    private final Object lifecycleLock = new Object();
     private volatile List<DreameDevice> devices = List.of();
-    private volatile @Nullable ScheduledFuture<?> deviceMetadataRefreshJob;
+    private volatile @Nullable ScheduledFuture<?> scheduledJob;
     private volatile @Nullable DreameMowerDiscoveryService discoveryService;
     private volatile @Nullable DreameVacuumDiscoveryService vacuumDiscoveryService;
 
@@ -68,8 +70,11 @@ public class DreameAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        stopDeviceMetadataRefresh();
-        int generation = lifecycleGeneration.incrementAndGet();
+        int generation;
+        synchronized (lifecycleLock) {
+            stopScheduledJob();
+            generation = lifecycleGeneration.incrementAndGet();
+        }
         DreameAccountConfiguration config = getConfigAs(DreameAccountConfiguration.class);
         if (config.cloudService.isBlank() || config.username.isBlank() || config.password.isBlank()
                 || config.country.isBlank()) {
@@ -79,10 +84,13 @@ public class DreameAccountHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> connect(config, generation));
+        scheduler.execute(() -> connect(config, generation, INITIAL_RETRY_MINUTES));
     }
 
-    private void connect(DreameAccountConfiguration config, int generation) {
+    private void connect(DreameAccountConfiguration config, int generation, long retryMinutes) {
+        if (generation != lifecycleGeneration.get()) {
+            return;
+        }
         DreameCloudService cloudService;
         try {
             cloudService = DreameCloudService.fromConfiguration(config.cloudService);
@@ -103,8 +111,7 @@ public class DreameAccountHandler extends BaseBridgeHandler {
             if (vacuumDiscovery != null) {
                 vacuumDiscovery.discoverDevices();
             }
-            deviceMetadataRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshDeviceMetadata(generation),
-                    DEVICE_METADATA_REFRESH_MINUTES, DEVICE_METADATA_REFRESH_MINUTES, TimeUnit.MINUTES);
+            scheduleMetadataRefresh(generation);
         } catch (DreameCloudException e) {
             if (generation != lifecycleGeneration.get()) {
                 return;
@@ -112,10 +119,14 @@ public class DreameAccountHandler extends BaseBridgeHandler {
             logger.debug("Cloud connection failed: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.cloud");
+            scheduleConnectionRetry(config, generation, retryMinutes);
         }
     }
 
     private void refreshDeviceMetadata(int generation) {
+        if (generation != lifecycleGeneration.get()) {
+            return;
+        }
         try {
             List<DreameDevice> refreshedDevices = List.copyOf(apiClient.getDevices());
             if (generation != lifecycleGeneration.get()) {
@@ -180,8 +191,10 @@ public class DreameAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        lifecycleGeneration.incrementAndGet();
-        stopDeviceMetadataRefresh();
+        synchronized (lifecycleLock) {
+            lifecycleGeneration.incrementAndGet();
+            stopScheduledJob();
+        }
         discoveryService = null;
         vacuumDiscoveryService = null;
         devices = List.of();
@@ -189,9 +202,32 @@ public class DreameAccountHandler extends BaseBridgeHandler {
         super.dispose();
     }
 
-    private void stopDeviceMetadataRefresh() {
-        ScheduledFuture<?> job = deviceMetadataRefreshJob;
-        deviceMetadataRefreshJob = null;
+    private void scheduleMetadataRefresh(int generation) {
+        synchronized (lifecycleLock) {
+            if (generation != lifecycleGeneration.get()) {
+                return;
+            }
+            stopScheduledJob();
+            scheduledJob = scheduler.scheduleWithFixedDelay(() -> refreshDeviceMetadata(generation),
+                    DEVICE_METADATA_REFRESH_MINUTES, DEVICE_METADATA_REFRESH_MINUTES, TimeUnit.MINUTES);
+        }
+    }
+
+    private void scheduleConnectionRetry(DreameAccountConfiguration config, int generation, long retryMinutes) {
+        synchronized (lifecycleLock) {
+            if (generation != lifecycleGeneration.get()) {
+                return;
+            }
+            stopScheduledJob();
+            long nextRetryMinutes = Math.min(retryMinutes * 2, DEVICE_METADATA_REFRESH_MINUTES);
+            scheduledJob = scheduler.schedule(() -> connect(config, generation, nextRetryMinutes), retryMinutes,
+                    TimeUnit.MINUTES);
+        }
+    }
+
+    private void stopScheduledJob() {
+        ScheduledFuture<?> job = scheduledJob;
+        scheduledJob = null;
         if (job != null) {
             job.cancel(false);
         }
