@@ -51,6 +51,7 @@ The prices thing does not need any configuration.
 | length        | number of best price hours to find within the range. This value has to be at least `1` and below `rangeDuration` Default: `1`                                                                                |
 | consecutive   | if `true`, the thing identifies the cheapest consecutive range of `length` hours within the lookup range. Otherwise, the thing contains the cheapest `length` hours within the lookup range. Default: `true` |
 | inverted      | if `true`, the worst prices will be searched instead of the best. Does currently not work in combination with 'consecutive'. Default: `false`                                                                |
+| preferCheapStart | if `true`, earlier hours of a consecutive range are weighted higher (first hour with weight `length`, last hour with weight `1`), so ranges starting with the cheapest hours are preferred. Useful for devices that often finish before the full `length` is used. Only applies if `consecutive` is `true`. Default: `false` |
 
 #### Limitations
 

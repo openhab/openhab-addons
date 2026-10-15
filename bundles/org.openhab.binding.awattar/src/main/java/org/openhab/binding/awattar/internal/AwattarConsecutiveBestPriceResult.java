@@ -35,6 +35,20 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
     private final ZoneId zoneId;
 
     public AwattarConsecutiveBestPriceResult(List<AwattarPrice> prices, int length, ZoneId zoneId) {
+        this(prices, length, false, zoneId);
+    }
+
+    /**
+     * Calculates the consecutive range of length hours with the lowest price.
+     *
+     * @param prices the prices to search
+     * @param length the number of consecutive hours
+     * @param preferCheapStart if true, earlier hours of a range are weighted higher (first hour with weight length,
+     *            last hour with weight 1), so ranges starting with the cheapest hours are preferred.
+     * @param zoneId the time zone
+     */
+    public AwattarConsecutiveBestPriceResult(List<AwattarPrice> prices, int length, boolean preferCheapStart,
+            ZoneId zoneId) {
         this.zoneId = zoneId;
 
         // sort the prices by timerange
@@ -46,7 +60,8 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
         for (int i = 0; i <= prices.size() - length; i++) {
             double sum = 0;
             for (int j = 0; j < length; j++) {
-                sum += prices.get(i + j).netPrice();
+                double weight = preferCheapStart ? length - j : 1;
+                sum += weight * prices.get(i + j).netPrice();
             }
             if (sum < minPrice) {
                 minPrice = sum;
