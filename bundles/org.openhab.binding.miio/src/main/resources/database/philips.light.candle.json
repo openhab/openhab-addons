@@ -76,14 +76,36 @@
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "apply_scene",
+						"command": "apply_fixed_scene",
 						"parameterType": "NUMBER"
 					}
 				],
 				"tags": [
 					"Control",
 					"Mode"
-				]
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Bright"
+						},
+						{
+							"value": "2",
+							"label": "TV"
+						},
+						{
+							"value": "3",
+							"label": "Warm"
+						},
+						{
+							"value": "4",
+							"label": "Midnight"
+						}
+					]
+				},
+				"category": "light",
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Bright\",\"2\"\u003d\"TV\",\"3\"\u003d\"Warm\",\"4\"\u003d\"Midnight\"]`"
 			},
 			{
 				"property": "dv",
@@ -130,22 +152,8 @@
 					"Duration"
 				],
 				"readmeComment": "Turns the light off after the set time, 0 cancels the timer"
-			},
-			{
-				"property": "",
-				"friendlyName": "Toggle",
-				"channel": "toggle",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "toggle",
-						"parameterType": "EMPTY"
-					}
-				],
-				"category": "switch"
 			}
-		]
+		],
+		"experimental": false
 	}
 }

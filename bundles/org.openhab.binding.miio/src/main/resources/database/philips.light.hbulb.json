@@ -93,6 +93,7 @@
 				],
 				"readmeComment": "Turns the light off after the set time, 0 cancels the timer"
 			}
-		]
+		],
+		"experimental": false
 	}
 }

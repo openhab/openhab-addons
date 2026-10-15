@@ -65,7 +65,25 @@
 				"tags": [
 					"Control",
 					"Mode"
-				]
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Teens Study"
+						},
+						{
+							"value": "2",
+							"label": "Adults Reading"
+						},
+						{
+							"value": "3",
+							"label": "Phone / Computer"
+						}
+					]
+				},
+				"category": "light",
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Teens Study\",\"2\"\u003d\"Adults Reading\",\"3\"\u003d\"Phone / Computer\"]`"
 			},
 			{
 				"property": "ambstatus",
@@ -80,10 +98,7 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "light"
 			},
 			{
 				"property": "ambvalue",
@@ -125,7 +140,8 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -143,7 +159,8 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -161,7 +178,8 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -191,6 +209,7 @@
 				],
 				"readmeComment": "Turns the light off after the set time, 0 cancels the timer"
 			}
-		]
+		],
+		"experimental": false
 	}
 }
