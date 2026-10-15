@@ -1,6 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
+			"viomi.vacuum.v15",
 			"viomi.vacuum.v17",
 			"viomi.vacuum.v18",
 			"viomi.vacuum.v20",

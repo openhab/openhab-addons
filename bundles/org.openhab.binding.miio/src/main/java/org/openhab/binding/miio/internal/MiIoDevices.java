@@ -278,6 +278,7 @@ public enum MiIoDevices {
     VIOMI_VACUUM_V11("viomi.vacuum.v11", "Viomi V-SLAM Robot Vacuum", THING_TYPE_BASIC),
     VIOMI_VACUUM_V12("viomi.vacuum.v12", "Viomi Cleaning Robot X2", THING_TYPE_BASIC),
     VIOMI_VACUUM_V13("viomi.vacuum.v13", "Viomi V3", THING_TYPE_BASIC),
+    VIOMI_VACUUM_V15("viomi.vacuum.v15", "VIOMI Alpha 2 Pro", THING_TYPE_BASIC),
     VIOMI_VACUUM_V17("viomi.vacuum.v17", "Viomi Robot Vacuum-Mop JC", THING_TYPE_BASIC),
     VIOMI_VACUUM_V18("viomi.vacuum.v18", "Viomi S9", THING_TYPE_BASIC),
     VIOMI_VACUUM_V19("viomi.vacuum.v19", "Viomi SE", THING_TYPE_BASIC),
