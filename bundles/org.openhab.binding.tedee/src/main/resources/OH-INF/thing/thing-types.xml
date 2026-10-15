@@ -58,27 +58,168 @@
 
 		<label>Tedee Lock</label>
 		<description>Tedee smart lock connected through a Tedee Bridge.</description>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 
 		<channels>
-			<channel id="lock" typeId="lock-switch"/>
-			<channel id="state" typeId="lock-state"/>
-			<channel id="doorState" typeId="door-state"/>
-			<channel id="battery" typeId="battery-level"/>
-			<channel id="charging" typeId="charging"/>
-			<channel id="jammed" typeId="jammed"/>
-			<channel id="connected" typeId="connected"/>
-			<channel id="action" typeId="action"/>
-			<channel id="autoLockEnabled" typeId="setting-switch"/>
-			<channel id="autoLockDelay" typeId="setting-number"/>
-			<channel id="autoLockImplicitEnabled" typeId="setting-switch"/>
-			<channel id="autoLockImplicitDelay" typeId="setting-number"/>
-			<channel id="pullSpringEnabled" typeId="setting-switch"/>
-			<channel id="pullSpringDuration" typeId="setting-number"/>
-			<channel id="autoPullSpringEnabled" typeId="setting-switch"/>
-			<channel id="postponedLockEnabled" typeId="setting-switch"/>
-			<channel id="postponedLockDelay" typeId="setting-number"/>
-			<channel id="buttonLockEnabled" typeId="setting-switch"/>
-			<channel id="buttonUnlockEnabled" typeId="setting-switch"/>
+			<channel-type id="lock-switch">
+				<item-type>Switch</item-type>
+				<label>Lock</label>
+				<description>Lock or unlock the Tedee lock.</description>
+				<tags>
+					<tag>Control</tag>
+					<tag>LockState</tag>
+				</tags>
+				<state readOnly="false"/>
+			</channel-type>
+
+			<channel-type id="lock-state">
+				<item-type>String</item-type>
+				<label>Lock State</label>
+				<description>Current internal state of the Tedee lock.</description>
+				<tags>
+					<tag>Status</tag>
+					<tag>LockState</tag>
+				</tags>
+				<state readOnly="true">
+					<!-- Keep your existing options unchanged -->
+				</state>
+			</channel-type>
+
+			<channel-type id="door-state">
+				<item-type>String</item-type>
+				<label>Door State</label>
+				<description>Current door state reported by the Tedee lock.</description>
+				<tags>
+					<tag>Status</tag>
+					<tag>OpenState</tag>
+				</tags>
+				<state readOnly="true">
+					<!-- Keep your existing options unchanged -->
+				</state>
+			</channel-type>
+			<channel-type id="battery-level">
+				<item-type>Number</item-type>
+				<label>Battery Level</label>
+				<description>Battery level of the Tedee lock in percent.</description>
+				<category>Battery</category>
+				<tags>
+					<tag>Measurement</tag>
+					<tag>Energy</tag>
+				</tags>
+				<state min="0" max="100" readOnly="true" pattern="%d %%"/>
+			</channel-type>
+
+			<channel-type id="charging">
+				<item-type>Switch</item-type>
+				<label>Charging</label>
+				<description>Indicates whether the Tedee lock is charging.</description>
+				<tags>
+					<tag>Status</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+
+			<channel-type id="jammed">
+				<item-type>Switch</item-type>
+				<label>Jammed</label>
+				<description>Indicates whether the Tedee lock is jammed.</description>
+				<tags>
+					<tag>Alarm</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+
+			<channel-type id="connected">
+				<item-type>Switch</item-type>
+				<label>Connected</label>
+				<description>Indicates whether the Tedee lock is connected to the Tedee Bridge.</description>
+				<tags>
+					<tag>Status</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="action" typeId="action">
+				<tags>
+					<tag>Control</tag>
+				</tags>
+			</channel-type>
+			<channel-type id="autoLockEnabled" typeId="setting-switch">
+				<tags>
+					<tag>Status</tag>
+					<tag>Enabled</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="autoLockDelay" typeId="setting-number">
+				<tags>
+					<tag>Setpoint</tag>
+					<tag>Duration</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="autoLockImplicitEnabled" typeId="setting-switch">
+				<tags>
+					<tag>Status</tag>
+					<tag>Enabled</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="autoLockImplicitDelay" typeId="setting-number">
+				<tags>
+					<tag>Setpoint</tag>
+					<tag>Duration</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="pullSpringEnabled" typeId="setting-switch">
+					<tags>
+						<tag>Status</tag>
+						<tag>Enabled</tag>
+					</tags>
+					<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="pullSpringDuration" typeId="setting-number">
+				    <tags>
+						<tag>Setpoint</tag>
+						<tag>Duration</tag>
+					</tags>
+					<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="autoPullSpringEnabled" typeId="setting-switch">
+				<tags>
+					<tag>Status</tag>
+					<tag>Enabled</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="postponedLockEnabled" typeId="setting-switch">
+				<tags>
+					<tag>Status</tag>
+					<tag>Enabled</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="postponedLockDelay" typeId="setting-number">
+					<tags>
+						<tag>Setpoint</tag>
+						<tag>Duration</tag>
+					</tags>
+					<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="buttonLockEnabled" typeId="setting-switch">
+				<tags>
+					<tag>Status</tag>
+					<tag>Enabled</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
+			<channel-type id="buttonUnlockEnabled" typeId="setting-switch">
+				<tags>
+					<tag>Status</tag>
+					<tag>Enabled</tag>
+				</tags>
+				<state readOnly="true"/>
+			</channel-type>
 		</channels>
 
 		<properties>
