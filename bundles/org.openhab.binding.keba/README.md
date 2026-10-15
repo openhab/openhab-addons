@@ -86,6 +86,13 @@ automatically returns supplemental polling to the slow interval. Mixed reports/e
 the shorter interval required by their values; slower values in those responses update incidentally.
 Initial identification, five-minute discovery retries, and on-demand commands do not use these polling intervals.
 
+After UDP has been online, one or two consecutive failed report 2 polls are tolerated. The third consecutive
+failure marks UDP unavailable; the Thing goes offline only if no other protocol is online. A successful report 2
+resets the failure count. During this grace period, Items retain their last received values, which may be stale.
+An identified wallbox continues to be polled at the normal interval, even while offline, so recovery does not
+wait for the five-minute discovery retry. The per-request timeout remains unchanged, and commands are not
+automatically retried.
+
 Polling is **not serialized across protocols**. Modbus enforces a 500 ms delay between its transactions and
 five seconds between writes, but those delays do not apply to UDP or REST. The independent polling jobs can
 overlap, including at startup. Avoiding duplicate reads and polling only required data reduces traffic, but does

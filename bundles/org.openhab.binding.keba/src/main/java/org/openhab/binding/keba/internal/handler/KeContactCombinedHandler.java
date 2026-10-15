@@ -68,6 +68,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class KeContactCombinedHandler extends BaseThingHandler {
+    private static final int UDP_FAILURE_THRESHOLD = 3;
 
     enum Protocol {
         MODBUS,
@@ -135,6 +136,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         long nextUdpPoll;
         long nextUdpSupplementalPoll;
         long nextRestRetry;
+        int udpFailures;
         @Nullable
         KeContactModbusHandler modbus;
         @Nullable
@@ -739,15 +741,20 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             }
             boolean report2 = operationalDue || !baseline && supplementalDue && needsReport(localSession, UDP_REPORT_2);
             if (report2) {
-                localSession.udpOnline = udp.readReport(2);
-                localSession.udpCommands = localSession.udpOnline;
-                if (!localSession.udpOnline) {
-                    localSession.udpIdentified = false;
+                if (!udp.readReport(2)) {
+                    localSession.udpFailures = Math.min(localSession.udpFailures + 1, UDP_FAILURE_THRESHOLD);
+                    if (!localSession.udpOnline || localSession.udpFailures >= UDP_FAILURE_THRESHOLD) {
+                        localSession.udpOnline = false;
+                        localSession.udpCommands = false;
+                        updateProperty("udpAvailable", "unavailable");
+                    }
                     localSession.udpPending = false;
-                    updateProperty("udpAvailable", "unavailable");
                     updateCombinedStatus(localSession);
                     return;
                 }
+                localSession.udpFailures = 0;
+                localSession.udpOnline = true;
+                localSession.udpCommands = true;
                 updateProperty("udpAvailable", "available");
             }
             if (supplementalDue && needsReport(localSession, UDP_REPORT_1)) {

@@ -578,6 +578,80 @@ class KeContactCombinedHandlerTest {
 
     @Test
     @Timeout(40)
+    void udpToleratesTransientFailuresAndRecoversWithoutRediscovery() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:udpoutages");
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "modbusEnabled", false,
+                        "refreshInterval", 10, "refreshIntervalSlow", 60)))
+                .build();
+        AtomicLong clock = new AtomicLong();
+        AtomicBoolean reachable = new AtomicBoolean();
+        BlockingQueue<String> requests = new LinkedBlockingQueue<>();
+        KeContactTransceiver transceiver = new KeContactTransceiver() {
+            @Override
+            public void registerHandler(KeContactHandler handler) {
+            }
+
+            @Override
+            protected @Nullable ByteBuffer send(String message, KeContactHandler handler) {
+                requests.add(message);
+                if (!reachable.get() && !"report 1".equals(message)) {
+                    return null;
+                }
+                String response = "report 1".equals(message) ? "{\"ID\":1,\"Product\":\"P30\"}"
+                        : "{\"ID\":2,\"State\":3}";
+                return ByteBuffer.wrap(response.getBytes(StandardCharsets.US_ASCII));
+            }
+        };
+        KeContactCombinedHandler handler = new KeContactCombinedHandler(thing,
+                Objects.requireNonNull(mock(ModbusManager.class)), transceiver) {
+            @Override
+            long pollingTime() {
+                return clock.get();
+            }
+        };
+        ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+        handler.setCallback(callback);
+        try {
+            handler.initialize();
+            assertEquals("report 1", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("report 2", requests.poll(5, TimeUnit.SECONDS));
+            assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
+            verify(callback, atLeastOnce()).statusUpdated(any(),
+                    argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
+            assertEquals("unavailable", handler.getThing().getProperties().get("udpAvailable"));
+
+            clearInvocations(callback);
+            reachable.set(true);
+            clock.set(TimeUnit.SECONDS.toNanos(10));
+            assertEquals("report 2", requests.poll(5, TimeUnit.SECONDS));
+            assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
+            verify(callback, atLeastOnce()).statusUpdated(any(),
+                    eq(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null)));
+
+            List<Boolean> responses = List.of(false, true, false, false, true, false, false, false, true);
+            for (int poll = 0; poll < responses.size(); poll++) {
+                clearInvocations(callback);
+                reachable.set(responses.get(poll));
+                clock.set(TimeUnit.SECONDS.toNanos((poll + 2) * 10L));
+                assertEquals("report 2", requests.poll(5, TimeUnit.SECONDS));
+                assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
+                ThingStatus expected = poll == 7 ? ThingStatus.OFFLINE : ThingStatus.ONLINE;
+                verify(callback, atLeastOnce()).statusUpdated(any(), argThat(status -> status.getStatus() == expected));
+                if (expected == ThingStatus.ONLINE) {
+                    verify(callback, never()).statusUpdated(any(),
+                            argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
+                }
+                assertEquals(expected == ThingStatus.ONLINE ? "available" : "unavailable",
+                        handler.getThing().getProperties().get("udpAvailable"));
+            }
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(40)
     void udpSupplementalPollingAndCommandChecksDoNotPreventFastFailover() throws Exception {
         ThingUID uid = new ThingUID("keba:kecontact:udpfailover");
         ChannelUID input = new ChannelUID(uid, "input");
