@@ -57,6 +57,13 @@ public interface ZwaveNodeListener {
     void onNodeAlive(Event event);
 
     /**
+     * This method is called when a node wakes up.
+     *
+     * @param event the event that contains information about the status change
+     */
+    void onNodeAwake(Event event);
+
+    /**
      * This method is called when a node is removed from the Z-Wave network.
      *
      * @param event the event that contains information about the removed node
