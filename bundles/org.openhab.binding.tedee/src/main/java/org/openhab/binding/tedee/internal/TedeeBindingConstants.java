@@ -28,23 +28,33 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public final class TedeeBindingConstants {
     public static final String ID = "tedee";
+
     public static final ThingTypeUID BRIDGE = new ThingTypeUID(ID, "local-bridge");
     public static final ThingTypeUID LOCK = new ThingTypeUID(ID, "lock");
     public static final ThingTypeUID CLOUD = new ThingTypeUID(ID, "cloud-bridge");
+
     public static final Set<ThingTypeUID> SUPPORTED = Set.of(BRIDGE, CLOUD, LOCK);
-    public static final String C_LOCK = "lock", C_STATE = "state", C_DOOR = "doorState", C_BATTERY = "battery",
-            C_CHARGING = "charging", C_JAMMED = "jammed", C_CONNECTED = "connected", C_ACTION = "action";
-    public static final String C_AUTO_LOCK_ENABLED = "autoLockEnabled";
-    public static final String C_AUTO_LOCK_DELAY = "autoLockDelay";
-    public static final String C_AUTO_LOCK_IMPLICIT_ENABLED = "autoLockImplicitEnabled";
-    public static final String C_AUTO_LOCK_IMPLICIT_DELAY = "autoLockImplicitDelay";
-    public static final String C_PULL_SPRING_ENABLED = "pullSpringEnabled";
-    public static final String C_PULL_SPRING_DURATION = "pullSpringDuration";
-    public static final String C_AUTO_PULL_SPRING_ENABLED = "autoPullSpringEnabled";
-    public static final String C_POSTPONED_LOCK_ENABLED = "postponedLockEnabled";
-    public static final String C_POSTPONED_LOCK_DELAY = "postponedLockDelay";
-    public static final String C_BUTTON_LOCK_ENABLED = "buttonLockEnabled";
-    public static final String C_BUTTON_UNLOCK_ENABLED = "buttonUnlockEnabled";
+
+    public static final String C_LOCK = "lock";
+    public static final String C_STATE = "state";
+    public static final String C_DOOR = "door-state";
+    public static final String C_BATTERY = "battery";
+    public static final String C_CHARGING = "charging";
+    public static final String C_JAMMED = "jammed";
+    public static final String C_CONNECTED = "connected";
+    public static final String C_ACTION = "action";
+
+    public static final String C_AUTO_LOCK_ENABLED = "auto-lock-enabled";
+    public static final String C_AUTO_LOCK_DELAY = "auto-lock-delay";
+    public static final String C_AUTO_LOCK_IMPLICIT_ENABLED = "auto-lock-implicit-enabled";
+    public static final String C_AUTO_LOCK_IMPLICIT_DELAY = "auto-lock-implicit-delay";
+    public static final String C_PULL_SPRING_ENABLED = "pull-spring-enabled";
+    public static final String C_PULL_SPRING_DURATION = "pull-spring-duration";
+    public static final String C_AUTO_PULL_SPRING_ENABLED = "auto-pull-spring-enabled";
+    public static final String C_POSTPONED_LOCK_ENABLED = "postponed-lock-enabled";
+    public static final String C_POSTPONED_LOCK_DELAY = "postponed-lock-delay";
+    public static final String C_BUTTON_LOCK_ENABLED = "button-lock-enabled";
+    public static final String C_BUTTON_UNLOCK_ENABLED = "button-unlock-enabled";
 
     private TedeeBindingConstants() {
     }
