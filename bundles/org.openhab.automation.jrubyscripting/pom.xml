@@ -14,7 +14,7 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: JRuby Scripting</name>
 
   <properties>
-    <jruby.version>10.1.1.0</jruby.version>
+    <jruby.version>10.1.2.0</jruby.version>
 
     <bnd.importpackage><![CDATA[org.crac;resolution:=optional,\
   com.dylibso.chicory.annotations;resolution:=optional,\
