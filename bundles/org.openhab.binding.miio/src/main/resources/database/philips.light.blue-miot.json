@@ -144,7 +144,7 @@
 				"tags": [
 					"Setpoint"
 				],
-				"readmeComment": "The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`."
+				"readmeComment": "The 3 scenes the wall switch cycles through, as a JSON array of 3 scene numbers. The app writes them as `1,2,3`."
 			},
 			{
 				"property": "",

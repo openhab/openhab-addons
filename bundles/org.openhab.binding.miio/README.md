@@ -3146,7 +3146,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | mode                       | Number               | Scene                                    | Value mapping `["1"="Morning","2"="Noon","3"="Afternoon","4"="Sunset","5"="Evening","6"="Rainy"]` |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       | Changes the scene when the lamp is turned on again with the wall switch within 3 seconds after turning it off. |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as a JSON array of 3 scene numbers. The app writes them as `1,2,3`. |
 | actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
 
 ### Philips Blue Sky G2 (<a name="philips-light-blue1">philips.light.blue1</a>) Channels
@@ -4337,7 +4337,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode                  | Number               | Color Mode                               | Value mapping `["0"="White","1"="Color"]` |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[3,scene,color mode,brightness,color temperature or RGB,...]`: a fixed scene is `scene,0,0,0`, a custom scene is `0,color mode,brightness,color temperature or RGB`. |
 | actions                    | String               | Actions                                  | Value mapping `["brightness-down"="Brightness Down","brightness-up"="Brightness Up","toggle"="Toggle","temperature-down"="Color Temperature Down","temperature-up"="Color Temperature Up"]` |
 
 ### Xiaomi Smart Lightstrip Pro (<a name="philips-light-strip3">philips.light.strip3</a>) Channels
