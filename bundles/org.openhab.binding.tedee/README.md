@@ -9,8 +9,8 @@ Local communication does not require the Tedee Cloud API for normal operation.
 Cloud access is available as an optional alternative and can be used without a local Tedee Bridge.
 Tedee also requires the Bridge itself to have internet connectivity so that it can obtain and refresh access certificates for paired devices.
 
-Cloud or local bridges control their assigned lock devices. 
-Cloud and local bridge an operate on the same locks simultaneously. 
+Cloud or local bridges control their assigned lock devices.
+Cloud and local bridge an operate on the same locks simultaneously.
 
 ## Supported Things
 
@@ -74,7 +74,7 @@ The `action` channel provides explicit actions:
 - `UNLOCK_NO_PULL`
 - `PULL`
 
-When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also perform the pull spring operation. 
+When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also perform the pull spring operation.
 `UNLOCK_NO_PULL` unlocks without pulling the spring.
 
 ### Lock State
@@ -114,7 +114,7 @@ When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also 
 | `3` | `CLOSED` |
 | `4` | `UNCALIBRATED` |
 
-A physical door sensor is required for meaningful door-state testing. 
+A physical door sensor is required for meaningful door-state testing.
 
 ### Device Settings
 
@@ -134,7 +134,7 @@ The following Tedee device settings are exposed as read-only channels:
 | `buttonLockEnabled` | Switch | Physical button locking enabled |
 | `buttonUnlockEnabled` | Switch | Physical button unlocking enabled |
 
-These settings are read from the Tedee lock response and refreshed by polling or `REFRESH`. 
+These settings are read from the Tedee lock response and refreshed by polling or `REFRESH`.
 Writing settings is not currently implemented.
 
 ### Thing Properties
@@ -435,7 +435,6 @@ The `mode=3` unlock operation is used for `UNLOCK_NO_PULL`.
 Tedee documents lock, unlock and pull as asynchronous operations.
 The initial HTTP response confirms that the operation has started; the final state can be observed through a subsequent refresh, polling cycle or callback event.
 
-
 ### Cloud Operations
 
 The Cloud transport supports the same lock operations exposed by the local transport:
@@ -483,7 +482,7 @@ Bridge tedee:cloud-bridge:cloud "Tedee Cloud" [
 
 The two Things are independent and use different transport paths to the same Tedee device.
 The api token for the local bridge can be extracted from the bridge in your tedee APP.
-The Personal Access Key can be retrieved from the tedee web 
+The Personal Access Key can be retrieved from the tedee web.
 
 ## Known Limitations
 
@@ -502,4 +501,5 @@ The Personal Access Key can be retrieved from the tedee web
 - [Tedee Bridge API – webhook events](https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/webhooks/events.md)
 
 ## Full example
+
 xxx
