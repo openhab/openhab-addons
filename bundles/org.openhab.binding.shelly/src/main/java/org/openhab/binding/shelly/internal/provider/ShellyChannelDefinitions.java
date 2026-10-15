@@ -111,6 +111,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_COLOR = CHANNEL_GROUP_COLOR_CONTROL;
     private static final String CHGR_WHITE = CHANNEL_GROUP_WHITE_CONTROL;
     private static final String CHGR_LORA = CHANNEL_GROUP_LORA;
+    private static final String CHGR_DIAG = CHANNEL_GROUP_DIAG;
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
     public static final String PREFIX_CHANNEL = "channel-type." + BINDING_ID + ".";
@@ -209,6 +210,19 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE, "deviceFirmware", ITEMT_STRING))
+
+                // Diagnostics (Gen2+ only)
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_TOTALMEM, "diagTotalMem", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_FREEMEM, "diagFreeMem", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_TOTALFS, "diagTotalFS", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_FREEFS, "diagFreeFS", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_RESTARTREQ, "diagRestartReq", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_RESTARTS, "diagRestarts", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_TIMEOUTERRORS, "diagTimeoutErrors", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_ALARMS, "diagAlarms", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_LASTALARM, "diagLastAlarm", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_PROTOCOLERRORS, "diagProtocolErrors", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_MAXITEMP, "diagMaxInternalTemp", ITEMT_TEMP))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -483,6 +497,7 @@ public class ShellyChannelDefinitions {
                 hasTemp = false;
             }
             addChannel(thing, add, hasTemp, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
+            addChannel(thing, add, hasTemp && profile.isGen2 && !profile.isBlu, CHGR_DIAG, CHANNEL_DIAG_MAXITEMP);
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
@@ -517,6 +532,35 @@ public class ShellyChannelDefinitions {
         if (!profile.isBlu) { // currently not supported for BLU devices
             addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
         }
+        add.putAll(createDiagnosticsChannels(thing, profile, status));
+        return add;
+    }
+
+    /**
+     * Auto-create device utilization/diagnostics channels (Gen2+ only): device-reported utilization fields plus the
+     * binding-computed health stats.
+     *
+     * @return channels to be added to the thing, keyed by channel id
+     */
+    public static Map<String, Channel> createDiagnosticsChannels(final Thing thing, final ShellyDeviceProfile profile,
+            final ShellySettingsStatus status) {
+        Map<String, Channel> add = new LinkedHashMap<>();
+        if (!profile.isGen2 || profile.isBlu) {
+            return add;
+        }
+
+        addChannel(thing, add, status.ramTotal != null, CHGR_DIAG, CHANNEL_DIAG_TOTALMEM);
+        addChannel(thing, add, status.ramFree != null, CHGR_DIAG, CHANNEL_DIAG_FREEMEM);
+        addChannel(thing, add, status.fsSize != null, CHGR_DIAG, CHANNEL_DIAG_TOTALFS);
+        addChannel(thing, add, status.fsFree != null, CHGR_DIAG, CHANNEL_DIAG_FREEFS);
+        addChannel(thing, add, status.restartRequired != null, CHGR_DIAG, CHANNEL_DIAG_RESTARTREQ);
+
+        // Binding-computed health stats, always tracked once a Gen2+ Thing is initialized
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_RESTARTS);
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_TIMEOUTERRORS);
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_ALARMS);
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_LASTALARM);
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_PROTOCOLERRORS);
         return add;
     }
 
