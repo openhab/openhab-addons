@@ -178,11 +178,6 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.autoblind</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.automower</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -1439,6 +1434,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.nobohub</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.norman</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
