@@ -82,7 +82,7 @@ When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also 
 | Channel ID | Item Type | Description |
 |---|---|---|
 | `state` | String | Internal Tedee lock state |
-| `doorState` | String | Door sensor state, if supported by the lock/sensor setup |
+| `door-state` | String | Door sensor state, if supported by the lock/sensor setup |
 | `battery` | Number | Battery level in percent |
 | `charging` | Switch | Whether the lock is charging |
 | `jammed` | Switch | Whether the lock reports a jam |
@@ -122,17 +122,17 @@ The following Tedee device settings are exposed as read-only channels:
 
 | Channel ID | Item Type | Description |
 |---|---|---|
-| `autoLockEnabled` | Switch | Automatic lock enabled |
-| `autoLockDelay` | Number | Automatic lock delay |
-| `autoLockImplicitEnabled` | Switch | Implicit automatic lock enabled |
-| `autoLockImplicitDelay` | Number | Implicit automatic lock delay |
-| `pullSpringEnabled` | Switch | Pull spring feature enabled |
-| `pullSpringDuration` | Number | Pull spring duration |
-| `autoPullSpringEnabled` | Switch | Automatic pull spring enabled |
-| `postponedLockEnabled` | Switch | Postponed lock enabled |
-| `postponedLockDelay` | Number | Postponed lock delay |
-| `buttonLockEnabled` | Switch | Physical button locking enabled |
-| `buttonUnlockEnabled` | Switch | Physical button unlocking enabled |
+| `auto-lock-enabled` | Switch | Automatic lock enabled |
+| `auto-lock-delay` | Number | Automatic lock delay |
+| `auto-lock-implicit-enabled` | Switch | Implicit automatic lock enabled |
+| `auto-lock-implicit-delay` | Number | Implicit automatic lock delay |
+| `pull-spring-enabled` | Switch | Pull spring feature enabled |
+| `pull-spring-duration` | Number | Pull spring duration |
+| `auto-pull-spring-enabled` | Switch | Automatic pull spring enabled |
+| `postponed-lock-enabled` | Switch | Postponed lock enabled |
+| `postponed-lock-delay` | Number | Postponed lock delay |
+| `button-lock-enabled` | Switch | Physical button locking enabled |
+| `button-unlock-enabled` | Switch | Physical button unlocking enabled |
 
 These settings are read from the Tedee lock response and refreshed by polling or `REFRESH`.
 Writing settings is not currently implemented.
@@ -192,7 +192,7 @@ Channels need to be linked to Items before their states are consumed by openHAB 
 |---|---|---|---|
 | `Tedee_Lock` | Switch | `lock` | Lock/unlock control |
 | `Tedee_State` | String | `state` | Lock state |
-| `Tedee_Door_State` | String | `doorState` | Door sensor state |
+| `Tedee_Door_State` | String | `door-state` | Door sensor state |
 | `Tedee_Battery` | Number | `battery` | Battery level |
 | `Tedee_Charging` | Switch | `charging` | Charging state |
 | `Tedee_Jammed` | Switch | `jammed` | Jam status |
@@ -206,7 +206,7 @@ Switch Tedee_Lock "Lock" {channel="tedee:lock:home:locknamehome:lock"}
 
 String Tedee_State "Lock State [%s]" {channel="tedee:lock:home:locknamehome:state"}
 
-String Tedee_Door_State "Door State [%s]" {channel="tedee:lock:home:locknamehome:doorState"}
+String Tedee_Door_State "Door State [%s]" {channel="tedee:lock:home:locknamehome:door-state"}
 
 Number Tedee_Battery "Battery [%.0f %%]" {channel="tedee:lock:home:locknamehome:battery"}
 
@@ -235,42 +235,42 @@ Switch Tedee_Cloud_Connected "Cloud Lock Connected" {channel="tedee:lock:cloud:l
 
 | Item | Type | Channel | Description |
 |---|---|---|---|
-| `Tedee_AutoLockEnabled` | Switch | `autoLockEnabled` | Automatic lock |
-| `Tedee_AutoLockDelay` | Number | `autoLockDelay` | Automatic lock delay |
-| `Tedee_AutoLockImplicitEnabled` | Switch | `autoLockImplicitEnabled` | Implicit automatic lock |
-| `Tedee_AutoLockImplicitDelay` | Number | `autoLockImplicitDelay` | Implicit automatic lock delay |
-| `Tedee_PullSpringEnabled` | Switch | `pullSpringEnabled` | Pull spring enabled |
-| `Tedee_PullSpringDuration` | Number | `pullSpringDuration` | Pull spring duration |
-| `Tedee_AutoPullSpringEnabled` | Switch | `autoPullSpringEnabled` | Automatic pull spring |
-| `Tedee_PostponedLockEnabled` | Switch | `postponedLockEnabled` | Postponed locking |
-| `Tedee_PostponedLockDelay` | Number | `postponedLockDelay` | Postponed lock delay |
-| `Tedee_ButtonLockEnabled` | Switch | `buttonLockEnabled` | Button locking |
-| `Tedee_ButtonUnlockEnabled` | Switch | `buttonUnlockEnabled` | Button unlocking |
+| `Tedee_AutoLockEnabled` | Switch | `auto-lock-enabled` | Automatic lock |
+| `Tedee_AutoLockDelay` | Number | `auto-lock-dela` | Automatic lock delay |
+| `Tedee_AutoLockImplicitEnabled` | Switch | `auto-lock-implicit-enabled` | Implicit automatic lock |
+| `Tedee_AutoLockImplicitDelay` | Number | `auto-Lock-implicit-delay` | Implicit automatic lock delay |
+| `Tedee_PullSpringEnabled` | Switch | `pull-spring-enabled` | Pull spring enabled |
+| `Tedee_PullSpringDuration` | Number | `pull-spring-duration` | Pull spring duration |
+| `Tedee_AutoPullSpringEnabled` | Switch | `auto-pull-spring-enabled` | Automatic pull spring |
+| `Tedee_PostponedLockEnabled` | Switch | `postponed-lock-enabled` | Postponed locking |
+| `Tedee_PostponedLockDelay` | Number | `postponed-lock-delay` | Postponed lock delay |
+| `Tedee_ButtonLockEnabled` | Switch | `button-lock-enabled` | Button locking |
+| `Tedee_ButtonUnlockEnabled` | Switch | `button-unlock-enabled` | Button unlocking |
 
 ### Device Settings Items Example
 
 ```java
-Switch Tedee_AutoLockEnabled "Auto Lock Enabled" {channel="tedee:lock:home:locknamehome:autoLockEnabled"}
+Switch Tedee_AutoLockEnabled "Auto Lock Enabled" {channel="tedee:lock:home:locknamehome:auto-lock-enabled"}
 
-Number Tedee_AutoLockDelay "Auto Lock Delay" {channel="tedee:lock:home:locknamehome:autoLockDelay"}
+Number Tedee_AutoLockDelay "Auto Lock Delay" {channel="tedee:lock:home:locknamehome:auto-lock-delay"}
 
-Switch Tedee_AutoLockImplicitEnabled "Auto Lock Implicit Enabled" {channel="tedee:lock:home:locknamehome:autoLockImplicitEnabled"}
+Switch Tedee_PullSpringEnabled "Pull Spring Enabled" {channel="tedee:lock:home:locknamehome:pull-spring-enabled"}
 
-Number Tedee_AutoLockImplicitDelay "Auto Lock Implicit Delay" {channel="tedee:lock:home:locknamehome:autoLockImplicitDelay"}
+Number Tedee_PullSpringDuration "Pull Spring Duration" {channel="tedee:lock:home:locknamehome:pull-spring-duration"}
 
-Switch Tedee_PullSpringEnabled "Pull Spring Enabled" {channel="tedee:lock:home:locknamehome:pullSpringEnabled"}
+Switch Tedee_Tedee_AutoLockImplicitEnabled "Auto Lock Implicit Enabled" {channel="tedee:lock:home:locknamehome:auto-lock-implicit-enabled"}
 
-Number Tedee_PullSpringDuration "Pull Spring Duration" {channel="tedee:lock:home:locknamehome:pullSpringDuration"}
+Number Tedee_AutoLockImplicitDelay "Auto Lock Implicit Delay" {channel="tedee:lock:home:locknamehome:auto-Lock-implicit-delay"}
 
-Switch Tedee_AutoPullSpringEnabled "Auto Pull Spring Enabled" {channel="tedee:lock:home:locknamehome:autoPullSpringEnabled"}
+Switch Tedee_AutoPullSpringEnabled "Auto Pull Spring Enabled" {channel="tedee:lock:home:locknamehome:auto-pull-spring-enabled"}
 
-Switch Tedee_PostponedLockEnabled "Postponed Lock Enabled" {channel="tedee:lock:home:locknamehome:postponedLockEnabled"}
+Switch Tedee_PostponedLockEnabled "Postponed Lock Enabled" {channel="tedee:lock:home:locknamehome:postponed-lock-enabled"}
 
-Number Tedee_PostponedLockDelay "Postponed Lock Delay" {channel="tedee:lock:home:locknamehome:postponedLockDelay"}
+Number Tedee_PostponedLockDelay "Postponed Lock Delay" {channel="tedee:lock:home:locknamehome:postponed-lock-delay"}
 
-Switch Tedee_ButtonLockEnabled "Button Lock Enabled" {channel="tedee:lock:home:locknamehome:buttonLockEnabled"}
+Switch Tedee_ButtonLockEnabled "Button Lock Enabled" {channel="tedee:lock:home:locknamehome:button-lock-enabled"}
 
-Switch Tedee_ButtonUnlockEnabled "Button Unlock Enabled" {channel="tedee:lock:home:locknamehome:buttonUnlockEnabled"}
+Switch Tedee_ButtonUnlockEnabled "Button Unlock Enabled" {channel="tedee:lock:home:locknamehome:button-unlock-enabled"}
 ```
 
 ## Commands
