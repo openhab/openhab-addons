@@ -51,9 +51,10 @@
 			},
 			{
 				"property": "cct",
-				"friendlyName": "Correlated Color Temperature",
+				"friendlyName": "Color Temperature",
 				"channel": "cct",
-				"type": "Dimmer",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -63,10 +64,12 @@
 					}
 				],
 				"category": "colorlight",
-				"tags": [
-					"Control",
-					"ColorTemperature"
-				]
+				"stateDescription": {
+					"minimum": 1882,
+					"maximum": 7000,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				}
 			},
 			{
 				"property": "snm",
@@ -77,52 +80,65 @@
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "apply_scene",
+						"command": "apply_fixed_scene",
 						"parameterType": "NUMBER"
 					}
 				],
 				"tags": [
 					"Control",
 					"Mode"
-				]
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Reading"
+						},
+						{
+							"value": "2",
+							"label": "Warm"
+						},
+						{
+							"value": "3",
+							"label": "Midnight"
+						},
+						{
+							"value": "4",
+							"label": "Ambilight"
+						}
+					]
+				},
+				"category": "light",
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Reading\",\"2\"\u003d\"Warm\",\"3\"\u003d\"Midnight\",\"4\"\u003d\"Ambilight\"]`"
 			},
 			{
 				"property": "cid",
-				"friendlyName": "Color",
+				"friendlyName": "Hue",
 				"channel": "cid",
-				"type": "Color",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_cid",
-						"parameterType": "COLOR"
+						"parameterType": "NUMBER"
 					}
 				],
 				"category": "colorlight",
 				"tags": [
 					"Control",
 					"Color"
-				]
-			},
-			{
-				"property": "",
-				"friendlyName": "Switch Scene",
-				"channel": "switchscene",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "switch_the_scene",
-						"parameterType": "EMPTY"
-					}
 				],
-				"category": "switch"
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 359,
+					"step": 1,
+					"pattern": "%.0f"
+				}
 			},
 			{
 				"property": "",
-				"friendlyName": "Wall Switch Enabled",
+				"friendlyName": "Wall Switch Scenes",
 				"channel": "switch_en",
 				"type": "Switch",
 				"refresh": false,
@@ -135,10 +151,12 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				],
 				"readmeComment": "Enables switching between scenes with the wall switch"
 			}
-		]
+		],
+		"experimental": false
 	}
 }
