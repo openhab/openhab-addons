@@ -84,12 +84,14 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
 
         api = new TedeeApi(client, cfg.ip, cfg.port, cfg.apiToken);
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         scheduler.execute(this::ensureCallback);
 
         callbackJob = scheduler.scheduleWithFixedDelay(this::ensureCallback, 60, CALLBACK_CHECK_INTERVAL_SECONDS,
                 TimeUnit.SECONDS);
 
-        job = scheduler.scheduleWithFixedDelay(this::check, 30, 30, TimeUnit.SECONDS);
+        job = scheduler.scheduleWithFixedDelay(this::check, 0, 30, TimeUnit.SECONDS);
     }
 
     public @Nullable TedeeApi getApi() {
@@ -106,8 +108,13 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
     }
 
     private void check() {
+        TedeeApi currentApi = api;
+        if (currentApi == null) {
+            return;
+        }
+
         try {
-            if (api.bridgeStatus() == 200) {
+            if (currentApi.bridgeStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge HTTP error");
