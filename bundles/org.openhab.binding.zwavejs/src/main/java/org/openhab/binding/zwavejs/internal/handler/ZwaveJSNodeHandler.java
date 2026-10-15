@@ -25,6 +25,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.measure.Unit;
@@ -73,6 +75,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -92,11 +95,22 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeListener {
 
+    private static final long NODE_DEFINITION_DEBOUNCE_MILLIS = 250;
+    private static final Set<String> GENERATED_CHANNEL_CONFIGURATION = Set.of(CONFIG_CHANNEL_COMMANDCLASS_NAME,
+            CONFIG_CHANNEL_COMMANDCLASS_ID, CONFIG_CHANNEL_ENDPOINT, CONFIG_CHANNEL_PROPERTY_KEY_STR,
+            CONFIG_CHANNEL_PROPERTY_KEY_INT, CONFIG_CHANNEL_READ_PROPERTY, CONFIG_CHANNEL_WRITE_PROPERTY_STR,
+            CONFIG_CHANNEL_WRITE_PROPERTY_INT);
+
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSNodeHandler.class);
     private final ZwaveJSTypeGenerator typeGenerator;
     private ZwaveJSNodeConfiguration config = new ZwaveJSNodeConfiguration();
     private boolean configurationAsChannels = false;
     protected ScheduledExecutorService executorService = scheduler;
+    private final Object nodeDefinitionUpdateLock = new Object();
+    private @Nullable ScheduledFuture<?> pendingNodeDefinitionUpdate;
+    private long nodeDefinitionUpdateGeneration;
+    private boolean updateStatusAfterNodeDefinitionChange;
+    private boolean disposed;
 
     // Nodes may contain multiple lighting endpoints; this map holds each one's ColorCapability.
     private Map<Integer, ColorCapability> colorCapabilities = new HashMap<>();
@@ -140,6 +154,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         if (node == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.no-node-details");
+            return;
+        }
+        if (!node.ready) {
+            logger.debug("Node {}. Deferring configuration update until the node is ready", config.id);
             return;
         }
 
@@ -440,6 +458,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     @Override
     public void initialize() {
+        long initializationGeneration;
+        synchronized (nodeDefinitionUpdateLock) {
+            disposed = false;
+            initializationGeneration = ++nodeDefinitionUpdateGeneration;
+            updateStatusAfterNodeDefinitionChange = false;
+            cancelPendingNodeDefinitionUpdate();
+        }
         ZwaveJSNodeConfiguration config = this.config = getConfigAs(ZwaveJSNodeConfiguration.class);
 
         if (!config.isValid()) {
@@ -450,9 +475,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        executorService.execute(() -> {
-            internalInitialize();
-        });
+        executorService.execute(() -> internalInitialize(initializationGeneration));
     }
 
     public @Nullable ZwaveJSBridgeHandler getBridgeHandler() {
@@ -468,34 +491,59 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     private void internalInitialize() {
+        long generation;
+        synchronized (nodeDefinitionUpdateLock) {
+            if (disposed) {
+                return;
+            }
+            generation = ++nodeDefinitionUpdateGeneration;
+            updateStatusAfterNodeDefinitionChange = false;
+            cancelPendingNodeDefinitionUpdate();
+        }
+        internalInitialize(generation);
+    }
+
+    private void internalInitialize(long generation) {
+        if (!isNodeDefinitionUpdateCurrent(generation)) {
+            return;
+        }
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
             return;
         }
 
         if (!handler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
             return;
         }
-        handler.registerNodeListener(this);
+        synchronized (nodeDefinitionUpdateLock) {
+            if (!isNodeDefinitionUpdateCurrentLocked(generation)) {
+                return;
+            }
+            handler.registerNodeListener(this);
+        }
         Node nodeDetails = handler.requestNodeDetails(config.id);
         if (nodeDetails == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.no-node-details");
             return;
         }
         if (Status.DEAD == nodeDetails.status) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.dead-node");
             return;
         }
-        if (!setupThing(nodeDetails)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        if (!nodeDetails.ready) {
+            logger.debug("Node {}. Deferring setup until the node is ready", config.id);
+            return;
+        }
+        if (!setupThing(nodeDetails, generation)) {
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.build-channels-failed");
             return;
         }
-        updateStatus(ThingStatus.ONLINE);
+        updateStatusIfCurrent(generation, ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
     }
 
     @Override
@@ -724,6 +772,105 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     @Override
+    public void onNodeReady(Node node) {
+        logger.debug("Node {}. Ready, rebuilding channels and configuration", config.id);
+        if (node.nodeId != config.id || !node.ready) {
+            logger.debug("Node {}. Ignoring invalid ready state for node {}", config.id, node.nodeId);
+            return;
+        }
+        scheduleNodeDefinitionUpdate(node, 0, true);
+    }
+
+    @Override
+    public void onNodeDefinitionChanged(Node node) {
+        logger.debug("Node {}. Definition changed, reconciling channels and configuration", config.id);
+        if (node.nodeId != config.id || !node.ready) {
+            logger.debug("Node {}. Ignoring invalid definition update for node {}", config.id, node.nodeId);
+            return;
+        }
+        scheduleNodeDefinitionUpdate(node, NODE_DEFINITION_DEBOUNCE_MILLIS, false);
+    }
+
+    private void scheduleNodeDefinitionUpdate(Node node, long delayMillis, boolean updateStatus) {
+        synchronized (nodeDefinitionUpdateLock) {
+            if (disposed) {
+                return;
+            }
+            updateStatusAfterNodeDefinitionChange |= updateStatus;
+            long generation = ++nodeDefinitionUpdateGeneration;
+            cancelPendingNodeDefinitionUpdate();
+            pendingNodeDefinitionUpdate = executorService.schedule(() -> reconcileNodeDefinition(node, generation),
+                    delayMillis, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void reconcileNodeDefinition(Node node, long generation) {
+        if (!isNodeDefinitionUpdateCurrent(generation)) {
+            return;
+        }
+        boolean successful = setupThing(node, generation);
+        NodeDefinitionUpdateCompletion completion = completeNodeDefinitionUpdate(generation);
+        if (!completion.current()) {
+            return;
+        }
+        if (!successful) {
+            if (completion.updateStatus()) {
+                updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error.build-channels-failed");
+                return;
+            }
+            logger.debug("Node {}. Unable to reconcile updated definition", config.id);
+            return;
+        }
+        if (completion.updateStatus()) {
+            updateStatusIfCurrent(generation, ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+        }
+    }
+
+    private NodeDefinitionUpdateCompletion completeNodeDefinitionUpdate(long generation) {
+        synchronized (nodeDefinitionUpdateLock) {
+            if (disposed || generation != nodeDefinitionUpdateGeneration) {
+                return new NodeDefinitionUpdateCompletion(false, false);
+            }
+            pendingNodeDefinitionUpdate = null;
+            boolean updateStatus = updateStatusAfterNodeDefinitionChange;
+            return new NodeDefinitionUpdateCompletion(true, updateStatus);
+        }
+    }
+
+    private void updateStatusIfCurrent(long generation, ThingStatus status, ThingStatusDetail statusDetail,
+            @Nullable String description) {
+        synchronized (nodeDefinitionUpdateLock) {
+            if (!isNodeDefinitionUpdateCurrentLocked(generation)) {
+                return;
+            }
+            updateStatusAfterNodeDefinitionChange = false;
+            updateStatus(status, statusDetail, description);
+        }
+    }
+
+    private boolean isNodeDefinitionUpdateCurrent(long generation) {
+        synchronized (nodeDefinitionUpdateLock) {
+            return isNodeDefinitionUpdateCurrentLocked(generation);
+        }
+    }
+
+    private boolean isNodeDefinitionUpdateCurrentLocked(long generation) {
+        return !disposed && generation == nodeDefinitionUpdateGeneration;
+    }
+
+    private void cancelPendingNodeDefinitionUpdate() {
+        ScheduledFuture<?> pendingUpdate = pendingNodeDefinitionUpdate;
+        if (pendingUpdate != null) {
+            pendingUpdate.cancel(false);
+            pendingNodeDefinitionUpdate = null;
+        }
+    }
+
+    private record NodeDefinitionUpdateCompletion(boolean current, boolean updateStatus) {
+    }
+
+    @Override
     public void onStatisticsUpdated(Statistics statistics) {
         Map<String, String> properties = thing.getProperties();
         String lastSeenPropString = properties.getOrDefault(PROPERTY_NODE_LASTSEEN, "");
@@ -742,59 +889,84 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         return this.config.id;
     }
 
-    private boolean setupThing(Node node) {
+    private boolean setupThing(Node node, long generation) {
         logger.debug("Node {}. Building channels and configuration, containing {} values", node.nodeId,
                 node.values.size());
 
-        configurationAsChannels = Objects.requireNonNull(getBridge()).getConfiguration()
+        boolean generatedConfigurationAsChannels = Objects.requireNonNull(getBridge()).getConfiguration()
                 .as(ZwaveJSBridgeConfiguration.class).configurationChannels;
 
         ZwaveJSTypeGeneratorResult result;
         try {
-            result = typeGenerator.generate(thing.getUID(), node, configurationAsChannels);
+            result = typeGenerator.generate(thing.getUID(), node, generatedConfigurationAsChannels);
         } catch (Exception e) {
             logger.warn("Node {}. Error generating type information", node.nodeId, e);
             return false;
         }
 
-        ThingBuilder builder = editThing();
+        // Definition events and disposal invalidate generations under this lock. Keep the publication phase under the
+        // same lock so a generation cannot be revoked between validation and a framework update.
+        synchronized (nodeDefinitionUpdateLock) {
+            if (!isNodeDefinitionUpdateCurrentLocked(generation)) {
+                return true;
+            }
 
-        // Update location if needed
-        if (!result.location.equals(getThing().getLocation()) && !result.location.isBlank()) {
-            builder.withLocation(result.location);
+            configurationAsChannels = generatedConfigurationAsChannels;
+            ThingBuilder builder = editThing();
+            boolean thingChanged = false;
+
+            // Update location if needed
+            if (!result.location.equals(getThing().getLocation()) && !result.location.isBlank()) {
+                builder.withLocation(result.location);
+                thingChanged = true;
+            }
+
+            // Update channels
+            ChannelUpdate channelUpdate = updateChannels(builder, result);
+            builder = channelUpdate.builder();
+            thingChanged |= channelUpdate.changed();
+
+            colorCapabilities = result.colorCapabilities;
+            if (logger.isDebugEnabled()) {
+                colorCapabilities.forEach((e, c) -> logger.debug("Node {}. Endpoint {}, {}", node.nodeId, e, c));
+            }
+            rollerShutterCapabilities = result.rollerShutterCapabilities;
+            if (logger.isDebugEnabled()) {
+                rollerShutterCapabilities
+                        .forEach((e, c) -> logger.debug("Node {}. Endpoint {}, {}", node.nodeId, e, c));
+            }
+            if (thingChanged) {
+                updateThing(builder.build());
+            }
+
+            if (!isNodeDefinitionUpdateCurrentLocked(generation)) {
+                return true;
+            }
+
+            // Initialize state for channels and configuration
+            initializeChannelAndConfigState(node, result);
+
+            if (!isNodeDefinitionUpdateCurrentLocked(generation)) {
+                return true;
+            }
+
+            // Update properties in case the device had a firmware update or something
+            updateNodeProperties(node);
+
+            return true;
         }
-
-        // Update channels
-        builder = updateChannels(builder, result);
-
-        colorCapabilities = result.colorCapabilities;
-        if (logger.isDebugEnabled()) {
-            colorCapabilities.forEach((e, c) -> logger.debug("Node {}. Endpoint {}, {}", node.nodeId, e, c));
-        }
-        rollerShutterCapabilities = result.rollerShutterCapabilities;
-        if (logger.isDebugEnabled()) {
-            rollerShutterCapabilities.forEach((e, c) -> logger.debug("Node {}. Endpoint {}, {}", node.nodeId, e, c));
-        }
-        updateThing(builder.build());
-
-        // Initialize state for channels and configuration
-        initializeChannelAndConfigState(node, result);
-
-        // Update properties in case the device had a firmware update or something
-        updateNodeProperties(node);
-
-        return true;
     }
 
     /**
      * Updates the channels of a ThingBuilder based on the provided ZwaveJSTypeGeneratorResult.
-     * Does not touch existing Thing channels and their configuration.
+     * Replaces changed generated channel definitions while preserving user-controlled configuration.
      * 
      * <p>
      * This method performs the following actions:
      * <ul>
      * <li>Removes channels from the ThingBuilder that are no longer part of the result.</li>
      * <li>Adds new channels from the result that are not already present in the ThingBuilder.</li>
+     * <li>Replaces channels whose generated definition changed, retaining user configuration.</li>
      * <li>Sets a semantic equipment tag for the ThingBuilder if applicable.</li>
      * </ul>
      * 
@@ -802,35 +974,67 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
      * @param result The {@link ZwaveJSTypeGeneratorResult} containing the updated channel information.
      * @return The updated {@link ThingBuilder}.
      */
-    private ThingBuilder updateChannels(ThingBuilder builder, ZwaveJSTypeGeneratorResult result) {
+    private ChannelUpdate updateChannels(ThingBuilder builder, ZwaveJSTypeGeneratorResult result) {
         Map<String, Channel> existingChannelEntries = thing.getChannels().stream()
                 .collect(Collectors.toMap(channel -> channel.getUID().getId(), channel -> channel));
+        boolean changed = false;
 
         // remove channels that are no longer part of the thing
         for (Map.Entry<String, Channel> existingEntry : existingChannelEntries.entrySet()) {
             if (!result.channels.containsKey(existingEntry.getKey())) {
                 logger.trace("Node {}. Removing {} channel", this.config.id, existingEntry.getKey());
                 builder.withoutChannel(existingEntry.getValue().getUID());
+                changed = true;
             }
         }
 
         // Add new channels that are not already present
         for (Map.Entry<String, Channel> newEntry : result.channels.entrySet()) {
-            if (!existingChannelEntries.containsKey(newEntry.getKey())) {
+            Channel existingChannel = existingChannelEntries.get(newEntry.getKey());
+            if (existingChannel == null) {
                 logger.trace("Node {}. Adding {} channel", this.config.id, newEntry.getKey());
                 builder.withChannel(newEntry.getValue());
+                changed = true;
+            } else {
+                Channel updatedChannel = preserveUserConfiguration(existingChannel, newEntry.getValue());
+                if (!existingChannel.equals(updatedChannel)) {
+                    logger.trace("Node {}. Updating {} channel", this.config.id, newEntry.getKey());
+                    builder.withoutChannel(existingChannel.getUID());
+                    builder.withChannel(updatedChannel);
+                    changed = true;
+                }
             }
         }
 
         SemanticTag equipmentTag = getEquipmentTag(result.channels.values());
         if (equipmentTag != null) {
             logger.debug("Node {}. Setting semantic equipment tag {}", this.config.id, equipmentTag);
-            builder.withSemanticEquipmentTag(equipmentTag);
+            if (!equipmentTag.getName().equals(thing.getSemanticEquipmentTag())) {
+                builder.withSemanticEquipmentTag(equipmentTag);
+                changed = true;
+            }
         } else {
             logger.debug("Node {}. No semantic equipment tag set", this.config.id);
         }
 
-        return builder;
+        return new ChannelUpdate(builder, changed);
+    }
+
+    private Channel preserveUserConfiguration(Channel existingChannel, Channel generatedChannel) {
+        Configuration configuration = new Configuration(existingChannel.getConfiguration());
+        Configuration generatedConfiguration = generatedChannel.getConfiguration();
+
+        for (String key : GENERATED_CHANNEL_CONFIGURATION) {
+            configuration.remove(key);
+            if (generatedConfiguration.containsKey(key)) {
+                configuration.put(key, generatedConfiguration.get(key));
+            }
+        }
+
+        return ChannelBuilder.create(generatedChannel).withConfiguration(configuration).build();
+    }
+
+    private record ChannelUpdate(ThingBuilder builder, boolean changed) {
     }
 
     private void initializeChannelAndConfigState(Node node, ZwaveJSTypeGeneratorResult result) {
@@ -912,6 +1116,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     @Override
     public void dispose() {
+        synchronized (nodeDefinitionUpdateLock) {
+            disposed = true;
+            nodeDefinitionUpdateGeneration++;
+            updateStatusAfterNodeDefinitionChange = false;
+            cancelPendingNodeDefinitionUpdate();
+        }
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof ZwaveJSBridgeHandler handler) {
             handler.unregisterNodeListener(this);
