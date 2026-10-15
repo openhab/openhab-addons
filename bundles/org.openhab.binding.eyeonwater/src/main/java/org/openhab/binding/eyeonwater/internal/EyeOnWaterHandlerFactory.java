@@ -34,8 +34,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EyeOnWaterHandlerFactory} is responsible for creating things and thing handlers.
@@ -47,8 +45,6 @@ import org.slf4j.LoggerFactory;
 public class EyeOnWaterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_METER);
-
-    private final Logger logger = LoggerFactory.getLogger(EyeOnWaterHandlerFactory.class);
 
     private @Nullable BundleContext bundleContext;
 

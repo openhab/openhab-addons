@@ -219,28 +219,26 @@ public class EyeOnWaterClient {
             List<HitDTO> hits = hitsWrapper.hits;
             if (hits != null) {
                 for (HitDTO hit : hits) {
-                    if (hit != null && hit.source != null) {
-                        SourceDTO source = hit.source;
-                        if (source != null) {
-                            String meterUuid = null;
-                            String meterId = null;
-                            if (source.meter != null) {
-                                MeterDTO meter = source.meter;
-                                if (meter != null) {
-                                    meterUuid = meter.meterUuid;
-                                    meterId = meter.meterId;
-                                }
+                    SourceDTO source = hit.source;
+                    if (source != null) {
+                        String meterUuid = null;
+                        String meterId = null;
+                        if (source.meter != null) {
+                            MeterDTO meter = source.meter;
+                            if (meter != null) {
+                                meterUuid = meter.meterUuid;
+                                meterId = meter.meterId;
                             }
-                            if (meterUuid == null) {
-                                meterUuid = source.meterUuid;
-                            }
-                            if (meterId == null) {
-                                meterId = source.meterId;
-                            }
+                        }
+                        if (meterUuid == null) {
+                            meterUuid = source.meterUuid;
+                        }
+                        if (meterId == null) {
+                            meterId = source.meterId;
+                        }
 
-                            if (meterUuid != null && meterId != null) {
-                                meters.add(new EyeOnWaterMeterData(meterUuid, meterId));
-                            }
+                        if (meterUuid != null && meterId != null) {
+                            meters.add(new EyeOnWaterMeterData(meterUuid, meterId));
                         }
                     }
                 }
@@ -275,7 +273,7 @@ public class EyeOnWaterClient {
                 throw new IOException("Matched JSON content was null.");
             }
             JsonElement parsedElement = JsonParser.parseString(jsonPart);
-            if (parsedElement == null || !parsedElement.isJsonArray()) {
+            if (!parsedElement.isJsonArray()) {
                 throw new IOException("Invalid or non-array JSON for MeterPicker.meters.");
             }
             JsonArray meterInfos = parsedElement.getAsJsonArray();
@@ -333,21 +331,17 @@ public class EyeOnWaterClient {
         }
 
         HitDTO firstHit = hits.get(0);
-        if (firstHit == null || firstHit.source == null) {
+        SourceDTO source = firstHit.source;
+        if (source == null) {
             throw new IOException("Meter source payload was null or invalid");
         }
-        SourceDTO source = firstHit.source;
 
-        if (source == null || source.register == null) {
+        RegisterDTO register = source.register;
+        if (register == null) {
             throw new IOException("Meter source is missing register_0 data");
         }
-        RegisterDTO register = source.register;
 
-        if (register == null || register.latestRead == null) {
-            throw new IOException("Meter register_0 is missing latest_read");
-        }
         LatestReadDTO latestRead = register.latestRead;
-
         if (latestRead == null) {
             throw new IOException("Meter register_0 is missing latest_read");
         }
@@ -373,26 +367,28 @@ public class EyeOnWaterClient {
         meterData.setReadTime(readTime);
 
         // Fetch Alert Flags
-        if (register != null && register.flags != null) {
-            FlagsDTO flags = register.flags;
-            if (flags != null) {
-                if (flags.leak != null) {
-                    meterData.setLeakAlert(flags.leak);
-                }
-                if (flags.lowBattery != null) {
-                    meterData.setLowBatteryAlert(flags.lowBattery);
-                }
-                if (flags.reverseFlow != null) {
-                    meterData.setReverseFlowAlert(flags.reverseFlow);
-                }
+        FlagsDTO flags = register.flags;
+        if (flags != null) {
+            Boolean leak = flags.leak;
+            if (leak != null) {
+                meterData.setLeakAlert(leak);
+            }
+            Boolean lowBattery = flags.lowBattery;
+            if (lowBattery != null) {
+                meterData.setLowBatteryAlert(lowBattery);
+            }
+            Boolean reverseFlow = flags.reverseFlow;
+            if (reverseFlow != null) {
+                meterData.setReverseFlowAlert(reverseFlow);
             }
         }
 
         // Fetch Leak Flow rate
-        if (register != null && register.leak != null) {
-            LeakDTO leak = register.leak;
-            if (leak != null && leak.rate != null) {
-                meterData.setLeakRate(leak.rate);
+        LeakDTO leak = register.leak;
+        if (leak != null) {
+            Double leakRate = leak.rate;
+            if (leakRate != null) {
+                meterData.setLeakRate(leakRate);
             }
         }
 
