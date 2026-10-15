@@ -30,8 +30,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public final class DreameVacuumCapabilities {
-    // Model identifiers synchronized with foXaCe/dreame-vacuum DEVICE_INFO at commit
-    // d32732d1175d9b3e90e5f8f38651370effea8fe0.
+    // Model identifiers derived from Tasshack/dreame-vacuum DEVICE_INFO, most recently checked at commit
+    // f5b8472b8e2e4bb3dff7bc2a81a5fd594eca9585.
     private static final Set<String> SUPPORTED_MODELS = Set.copyOf(Arrays.asList("""
             dreame.vacuum.c102cn
             dreame.vacuum.c102gl
@@ -321,6 +321,7 @@ public final class DreameVacuumCapabilities {
             dreame.vacuum.r2584g
             dreame.vacuum.r500a
             dreame.vacuum.r5016
+            dreame.vacuum.r5039a
             dreame.vacuum.r510a
             dreame.vacuum.r5117
             dreame.vacuum.r5345b

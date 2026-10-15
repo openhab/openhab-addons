@@ -25,6 +25,12 @@ import org.junit.jupiter.api.Test;
 @NonNullByDefault
 class DreameVacuumCapabilitiesTest {
     @Test
+    void recognizesReferencedVacuumModels() {
+        assertTrue(DreameVacuumCapabilities.isSupported("dreame.vacuum.r5039a"));
+        assertFalse(DreameVacuumCapabilities.isSupported("dreame.vacuum.unknown"));
+    }
+
+    @Test
     void selectsOldAndNewStateSchemasByModel() {
         assertFalse(DreameVacuumCapabilities.usesNewStateSchema(device("dreame.vacuum.r2228o", "4.3.9_1609")));
         assertTrue(DreameVacuumCapabilities.usesNewStateSchema(device("dreame.vacuum.r9445d", "4.3.9_1609")));
