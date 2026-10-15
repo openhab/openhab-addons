@@ -79,22 +79,16 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         logger.debug("Command '{}' received on channel '{}' for Tedee lock {}", x, c.getId(), cfg.deviceId);
 
-        TedeeTransportProvider provider = transportProvider();
+       TedeeTransportProvider provider = transportProvider();
         if (provider == null || !provider.ready()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport offline");
             return;
         }
 
-        TedeeClient client = provider.getClient();
-        if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport API not initialized");
-            return;
-        }
-
         if (TedeeBindingConstants.C_LOCK.equals(c.getId()) && x instanceof OnOffType) {
-            o(client, x);
+            send(provider, x == OnOffType.ON ? "LOCK" : "UNLOCK");
         } else if (TedeeBindingConstants.C_ACTION.equals(c.getId()) && x instanceof StringType) {
-            send(client, x.toString().toUpperCase(Locale.ROOT));
+            send(provider, x.toString().toUpperCase(Locale.ROOT));
         }
     }
 
@@ -102,12 +96,12 @@ public class TedeeLockHandler extends BaseThingHandler {
         send(client, x == OnOffType.ON ? "LOCK" : "UNLOCK");
     }
 
-    private void send(TedeeClient client, String action) {
+     private void send(TedeeTransportProvider provider, String action) {
         scheduler.execute(() -> {
             try {
                 logger.debug("Sending Tedee action '{}' to lock {}", action, cfg.deviceId);
 
-                executeAction(client, cfg.deviceId, action);
+                executeAction(provider, cfg.deviceId, action);
 
                 logger.debug("Tedee action '{}' accepted for lock {}", action, cfg.deviceId);
 
@@ -120,16 +114,22 @@ public class TedeeLockHandler extends BaseThingHandler {
                         e.getStatus() == 401 || e.getStatus() == 403 ? ThingStatusDetail.CONFIGURATION_ERROR
                                 : ThingStatusDetail.COMMUNICATION_ERROR,
                         e.getMessage());
+            } catch (IllegalStateException e) {
+                logger.warn("Tedee transport unavailable for lock {}: {}", cfg.deviceId, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             }
+
         });
     }
 
-    void executeAction(TedeeClient client, int deviceId, String action) throws TedeeApiException {
+    void executeAction(TedeeTransportProvider provider, int deviceId, String action)
+            throws TedeeApiException {
         switch (action) {
-            case "LOCK" -> client.lock(deviceId);
-            case "UNLOCK" -> client.unlockOrPull(deviceId);
-            case "UNLOCK_NO_PULL" -> client.unlockWithoutPull(deviceId);
-            case "PULL" -> client.pull(deviceId);
+            case "LOCK" -> provider.lock(deviceId);
+            case "UNLOCK" -> provider.unlockOrPull(deviceId);
+            case "UNLOCK_NO_PULL" -> provider.unlockWithoutPull(deviceId);
+            case "UNLOCK_OR_PULL" -> provider.unlockOrPull(deviceId);
+            case "PULL" -> provider.pull(deviceId);
             default -> logger.warn("Unsupported Tedee action '{}'", action);
         }
     }
@@ -143,14 +143,8 @@ public class TedeeLockHandler extends BaseThingHandler {
             return;
         }
 
-        TedeeClient client = provider.getClient();
-        if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport API not initialized");
-            return;
-        }
-
         try {
-            TedeeLock l = client.getLock(cfg.deviceId);
+            TedeeLock l = provider.getLock(cfg.deviceId);
             logger.debug(
                     "Tedee lock {} status: state={}, doorState={}, battery={}%, charging={}, jammed={}, connected={}, firmware='{}'",
                     cfg.deviceId, l.state, l.doorState, l.batteryLevel, l.isCharging, l.jammed, l.isConnected,

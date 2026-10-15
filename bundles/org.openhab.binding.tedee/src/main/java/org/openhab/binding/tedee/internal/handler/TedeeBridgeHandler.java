@@ -25,8 +25,10 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tedee.internal.api.TedeeApi;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
 import org.openhab.binding.tedee.internal.api.TedeeClient;
+import org.openhab.binding.tedee.internal.api.TedeeLock;
 import org.openhab.binding.tedee.internal.configuration.TedeeBridgeConfiguration;
 import org.openhab.binding.tedee.internal.discovery.TedeeDiscoveryService;
+
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -125,6 +127,52 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
     public boolean ready() {
         return api != null && getThing().getStatus() == ThingStatus.ONLINE;
     }
+
+  
+    private TedeeApi apiOrThrow() {
+        TedeeApi currentApi = api;
+        if (currentApi == null) {
+            throw new IllegalStateException("Tedee API is not initialized");
+        }
+        return currentApi;
+    }
+
+    @Override
+    public TedeeLock getLock(int id) throws TedeeApiException {
+        return apiOrThrow().getLock(id);
+    }
+
+    @Override
+    public List<TedeeLock> getLocks() throws TedeeApiException {
+        return apiOrThrow().getLocks();
+    }
+
+    @Override
+    public void lock(int id) throws TedeeApiException {
+        apiOrThrow().lock(id);
+    }
+
+    @Override
+    public void unlock(int id) throws TedeeApiException {
+        apiOrThrow().unlock(id);
+    }
+
+    @Override
+    public void unlockWithoutPull(int id) throws TedeeApiException {
+        apiOrThrow().unlockWithoutPull(id);
+    }
+
+    @Override
+    public void pull(int id) throws TedeeApiException {
+        apiOrThrow().pull(id);
+    }
+
+    @Override
+    public void unlockOrPull(int id) throws TedeeApiException {
+        apiOrThrow().unlockOrPull(id);
+    }
+
+
 
     private void check() {
         TedeeApi currentApi = api;
