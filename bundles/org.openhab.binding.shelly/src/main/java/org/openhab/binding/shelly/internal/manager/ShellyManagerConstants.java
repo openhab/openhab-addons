@@ -59,6 +59,8 @@ public class ShellyManagerConstants {
     public static final String ACTION_OTACHECK = "otacheck";
     public static final String ACTION_ENDEBUG = "endebug";
     public static final String ACTION_DISDEBUG = "disdebug";
+    public static final String ACTION_ENDEBUGLOG = "endebuglog";
+    public static final String ACTION_DISDEBUGLOG = "disdebuglog";
     public static final String ACTION_GETDEB = "getdebug";
     public static final String ACTION_GETDEB1 = "getdebug1";
     public static final String ACTION_NONE = "-";
