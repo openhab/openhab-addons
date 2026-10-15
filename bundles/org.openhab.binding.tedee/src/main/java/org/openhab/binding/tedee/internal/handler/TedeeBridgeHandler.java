@@ -121,11 +121,6 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         }
     }       
 
-    
-    @Override
-    public @Nullable TedeeClient getClient() {
-        return api;
-    }
 
     public boolean ready() {
         return api != null && getThing().getStatus() == ThingStatus.ONLINE;
@@ -244,6 +239,11 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         }
 
         return "http://" + host + ":" + port + CALLBACK_PATH;
+    }
+
+    public boolean isBridgeReachable() throws TedeeApiException {
+        TedeeApi currentApi = api;
+        return currentApi != null && currentApi.bridgeStatus() == 200;
     }
 
     private static boolean isBindingCallback(String url) {

@@ -14,21 +14,15 @@
 package org.openhab.binding.tedee.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tedee.internal.api.TedeeClient;
 
 /**
- * 1
- * Handler for a Cloud connection to the Tedee Cloud
+ * Provides Tedee operations to child handlers through a bridge handler.
  *
  * @author Alex Goll - Initial contribution
  */
-
 @NonNullByDefault
-public interface TedeeTransportProvider {
-
-    @Nullable
-    TedeeClient getClient();
+public interface TedeeTransportProvider extends TedeeClient {
 
     boolean ready();
 }
