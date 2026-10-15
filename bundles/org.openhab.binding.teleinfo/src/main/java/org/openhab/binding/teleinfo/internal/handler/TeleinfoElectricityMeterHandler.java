@@ -308,7 +308,9 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
         }
 
         this.updateProperties(props);
-        updateCalcVars(urms, sinst);
+        if (frame.containsInitializedKey(Label.URMS1) && frame.containsInitializedKey(Label.SINSTS)) {
+            updateCalcVars(urms, sinst);
+        }
         updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
     }
 
