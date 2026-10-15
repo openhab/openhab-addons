@@ -40,6 +40,7 @@ import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
 import org.openhab.binding.enphase.internal.dto.EnvoyErrorDTO;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
+import org.openhab.binding.enphase.internal.dto.LivedataStatusDTO;
 import org.openhab.binding.enphase.internal.dto.PdmDeviceDataDTO;
 import org.openhab.binding.enphase.internal.dto.ProductionJsonDTO;
 import org.openhab.binding.enphase.internal.exception.EnphaseException;
@@ -59,6 +60,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  * @author Cedric Boon - Added support for detailed inverter stats
+ * @author Cedric Boon - Added support for IQ batteries
  */
 @NonNullByDefault
 public class EnvoyConnector {
@@ -72,6 +74,8 @@ public class EnvoyConnector {
     private static final String CONSUMPTION_URL = "/api/v1/consumption";
     private static final String INVERTERS_URL = PRODUCTION_URL + "/inverters";
     private static final String DEVICE_DATA_URL = "/ivp/pdm/device_data";
+    private static final String ENSEMBLE_INVENTORY_URL = "/ivp/ensemble/inventory";
+    private static final String LIVEDATA_STATUS_URL = "/ivp/livedata/status";
     private static final String INFO_XML = "/info.xml";
     private static final String JSON_KEY_SERIAL_NUMBER = "sn";
 
@@ -190,6 +194,21 @@ public class EnvoyConnector {
      */
     public List<InventoryJsonDTO> getInventoryJson() throws EnphaseException {
         return retrieveData(INVENTORY_JSON_URL, this::jsonToEnvoyInventoryJson);
+    }
+
+    /**
+     * @return Returns the inventory of the ensemble devices (e.g. IQ Batteries) from the Envoy gateway.
+     */
+    public List<InventoryJsonDTO> getEnsembleInventory() throws EnphaseException {
+        return retrieveData(ENSEMBLE_INVENTORY_URL, this::jsonToEnvoyInventoryJson);
+    }
+
+    /**
+     * @return Returns the live status data, which contains the aggregated battery storage data, from the Envoy
+     *         gateway.
+     */
+    public LivedataStatusDTO getLivedataStatus() throws EnphaseException {
+        return retrieveData(LIVEDATA_STATUS_URL, json -> gson.fromJson(json, LivedataStatusDTO.class));
     }
 
     private @Nullable List<InventoryJsonDTO> jsonToEnvoyInventoryJson(final String json) {
