@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tedee.internal.TedeeBindingConstants;
-import org.openhab.binding.tedee.internal.api.TedeeApi;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
 import org.openhab.binding.tedee.internal.api.TedeeLock;
 import org.openhab.binding.tedee.internal.handler.TedeeBridgeHandler;
@@ -37,8 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
- * Configuration for the Tedee Discovery Service.
+ * Discovers Tedee locks connected to a local Tedee Bridge and adds them as
+ * child Things.
  *
  * @author Alex Goll - Initial contribution
  */
@@ -55,16 +54,25 @@ public class TedeeDiscoveryService extends AbstractThingHandlerDiscoveryService<
     private @Nullable ThingUID bridgeUID;
     private @Nullable ScheduledFuture<?> discoveryJob;
 
+    /**
+     * Creates a discovery service for locks connected to a local Tedee Bridge.
+     */
     public TedeeDiscoveryService() {
         super(TedeeBridgeHandler.class, Set.of(TedeeBindingConstants.LOCK), SCAN_TIMEOUT_SECONDS, true);
     }
 
+    /**
+     * Initializes the discovery service and records the UID of the associated bridge.
+     */
     @Override
     public void initialize() {
         bridgeUID = thingHandler.getThing().getUID();
         super.initialize();
     }
 
+    /**
+     * Starts periodic discovery of locks connected to the bridge.
+     */
     @Override
     protected void startBackgroundDiscovery() {
         if (discoveryJob == null || discoveryJob.isCancelled()) {
@@ -73,6 +81,9 @@ public class TedeeDiscoveryService extends AbstractThingHandlerDiscoveryService<
         }
     }
 
+    /**
+     * Stops periodic lock discovery and cancels the scheduled discovery job.
+     */
     @Override
     protected void stopBackgroundDiscovery() {
         ScheduledFuture<?> currentJob = discoveryJob;
@@ -82,6 +93,9 @@ public class TedeeDiscoveryService extends AbstractThingHandlerDiscoveryService<
         }
     }
 
+    /**
+     * Starts an immediate scan for locks connected to the bridge.
+     */
     @Override
     public void startScan() {
         discoverLocks();
@@ -93,14 +107,13 @@ public class TedeeDiscoveryService extends AbstractThingHandlerDiscoveryService<
             return;
         }
 
-        TedeeApi api = thingHandler.getApi();
-        if (api == null) {
-            logger.debug("Tedee discovery skipped because bridge API is not initialized");
+        if (!thingHandler.ready()) {
+            logger.debug("Tedee discovery skipped because bridge is not ready");
             return;
         }
 
         try {
-            List<TedeeLock> locks = api.getLocks();
+            List<TedeeLock> locks = thingHandler.getLocks();
 
             logger.debug("Tedee discovery found {} lock(s) on bridge {}", locks.size(), currentBridgeUID);
 
@@ -139,6 +152,10 @@ public class TedeeDiscoveryService extends AbstractThingHandlerDiscoveryService<
         logger.debug("Discovered Tedee lock {} '{}' as {}", lock.id, label, thingUID);
     }
 
+    /**
+     * Cancels the scheduled discovery job and releases the resources associated
+     * with this service.
+     */
     @Override
     public void dispose() {
         ScheduledFuture<?> currentJob = discoveryJob;

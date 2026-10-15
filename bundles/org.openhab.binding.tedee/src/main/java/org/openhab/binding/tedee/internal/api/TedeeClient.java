@@ -69,15 +69,6 @@ public interface TedeeClient {
     void unlockWithoutPull(int id) throws TedeeApiException;
 
     /**
-     * Sends a command to unlock the specified Tedee lock without pulling the
-     * latch.
-     *
-     * @param id the identifier of the lock
-     * @throws TedeeApiException if the command fails
-     */
-    void unlockWithoutPull(int id) throws TedeeApiException;
-
-    /**
      * Sends a command to pull the latch of the specified Tedee lock.
      *
      * @param id the identifier of the lock
