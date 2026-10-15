@@ -273,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 430 different models.
+Currently the miio binding supports more than 470 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -403,11 +403,14 @@ Currently the miio binding supports more than 430 different models.
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | NWT Internet Dehumidifier 30L      | miio:basic       | [nwt.derh.330ef](#nwt-derh-330ef) | Yes          | Reported to work only when the thing is configured to communicate via the cloud. |
 | NWT Internet Dehumidifier 18L      | miio:basic       | [nwt.derh.wdh318efw1](#nwt-derh-wdh318efw1) | Yes          |            |
+| Xiaomi Smart Sleep and Wake-up Light | miio:basic       | [philips.light.aibed](#philips-light-aibed) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Living room 80W | miio:basic       | [philips.light.bceil](#philips-light-bceil) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Bedroom 40W | miio:basic       | [philips.light.bceil1](#philips-light-bceil1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Bedroom 28W | miio:basic       | [philips.light.bceil2](#philips-light-bceil2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Bedroom 40W | miio:basic       | [philips.light.bceiling1](#philips-light-bceiling1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Bedroom 28W | miio:basic       | [philips.light.bceiling2](#philips-light-bceiling2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips BlueSky Lamp               | miio:basic       | [philips.light.blue](#philips-light-blue) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Blue Sky G2                | miio:basic       | [philips.light.blue1](#philips-light-blue1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips ZhiYi Ceiling lamp FL2 80W | miio:basic       | [philips.light.boc1](#philips-light-boc1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips ZhiYi Ceiling lamp FL2 40W | miio:basic       | [philips.light.boc2](#philips-light-boc2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips ZhiYi Ceiling lamp FL2 28W | miio:basic       | [philips.light.boc3](#philips-light-boc3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -416,15 +419,40 @@ Currently the miio binding supports more than 430 different models.
 | Philips ZhiRui E14 Candle Lamp Crystal version | miio:basic       | [philips.light.candle2](#philips-light-candle2) | Yes          |            |
 | Mijia Philips Color Bulb           | miio:basic       | [philips.light.cbulb](#philips-light-cbulb) | Yes          |            |
 | Philips Light                      | miio:basic       | [philips.light.cbulbs](#philips-light-cbulbs) | Yes          |            |
+| Philips PingYi Ceiling Light 130W  | miio:basic       | [philips.light.ce130c](#philips-light-ce130c) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips YingLe Ceiling Light 130W  | miio:basic       | [philips.light.ce130x](#philips-light-ce130x) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips ZhiBai Ceiling Light 130W  | miio:basic       | [philips.light.ce13zx](#philips-light-ce13zx) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips XingHuan Ceiling Light 36W | miio:basic       | [philips.light.ce36c](#philips-light-ce36c) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips YingLe Ceiling Light 36W   | miio:basic       | [philips.light.ce36x](#philips-light-ce36x) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips XingHuan Ceiling Light 48W | miio:basic       | [philips.light.ce48c](#philips-light-ce48c) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips ZhiBai Ceiling Light 48W   | miio:basic       | [philips.light.ce48x](#philips-light-ce48x) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips XingHuan Ceiling Light 80W | miio:basic       | [philips.light.ce80c](#philips-light-ce80c) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips YingLe Ceiling Light 80W   | miio:basic       | [philips.light.ce80yc](#philips-light-ce80yc) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi & Philips Ceiling Lamp Lamina 33W | miio:basic       | [philips.light.ceil33](#philips-light-ceil33) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Smart Light                | miio:basic       | [philips.light.ceilfi](#philips-light-ceilfi) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Connected Ceiling          | miio:basic       | [philips.light.ceiling](#philips-light-ceiling) | Yes          |            |
+| Mi & Philips Ceiling Lamp Lamina 80W | miio:basic       | [philips.light.ceilp](#philips-light-ceilp) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Jianyue G2 Bedroom S | miio:basic       | [philips.light.ceilz](#philips-light-ceilz) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Jianyue G2 Bedroom L | miio:basic       | [philips.light.ceilz1](#philips-light-ceilz1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Jianyue G2 Living Room S | miio:basic       | [philips.light.ceilz2](#philips-light-ceilz2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Jianyue G2 Living Room L | miio:basic       | [philips.light.ceilz3](#philips-light-ceilz3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Light                      | miio:basic       | [philips.light.dcolor](#philips-light-dcolor) | Yes          |            |
 | ZhiRui Dimmable Downlight          | miio:basic       | [philips.light.dlight](#philips-light-dlight) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips ZhiRui Downlight           | miio:basic       | [philips.light.downlight](#philips-light-downlight) | Yes          |            |
+| Philips C9 Ceiling Light 120W      | miio:basic       | [philips.light.eceil](#philips-light-eceil) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips C9 Ceiling Light 55W       | miio:basic       | [philips.light.ecl01](#philips-light-ecl01) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips C9 Panel Light 24W         | miio:basic       | [philips.light.epan](#philips-light-epan) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips F9 Lite Floor Light        | miio:basic       | [philips.light.fl](#philips-light-fl) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zeeray Fall Detection Panel Light | miio:basic       | [philips.light.flat](#philips-light-flat) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Wi-Fi bulb E27 White       | miio:basic       | [philips.light.hbulb](#philips-light-hbulb) | Yes          |            |
 | Philips ZhiYi Ceiling Lamp FL 40W  | miio:basic       | [philips.light.lnblight1](#philips-light-lnblight1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips ZhiYi Ceiling Lamp FL 28W  | miio:basic       | [philips.light.lnblight2](#philips-light-lnblight2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips ZhiYi Ceiling Lamp FL 80W  | miio:basic       | [philips.light.lnlrlight](#philips-light-lnlrlight) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Living room 80W | miio:basic       | [philips.light.lrceiling](#philips-light-lrceiling) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Liuying G2 Living Room L | miio:basic       | [philips.light.lying1](#philips-light-lying1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Liuying G2 Living Room S | miio:basic       | [philips.light.lying2](#philips-light-lying2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Liuying G2 Bedroom L | miio:basic       | [philips.light.lying3](#philips-light-lying3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Liuying G2 Bedroom S | miio:basic       | [philips.light.lying4](#philips-light-lying4) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Nordic 80W     | miio:basic       | [philips.light.mceil](#philips-light-mceil) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Nordic 40W     | miio:basic       | [philips.light.mceilm](#philips-light-mceilm) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Nordic 28W     | miio:basic       | [philips.light.mceils](#philips-light-mceils) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -436,12 +464,25 @@ Currently the miio binding supports more than 430 different models.
 | Zhirui Ceiling Lamp Black 80W      | miio:basic       | [philips.light.obceil](#philips-light-obceil) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Black 40W      | miio:basic       | [philips.light.obceim](#philips-light-obceim) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Black 28W      | miio:basic       | [philips.light.obceis](#philips-light-obceis) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart LED Ceiling Light Pro (Living Room) | miio:basic       | [philips.light.pceil](#philips-light-pceil) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips sustainable pendent light  | miio:basic       | [philips.light.pceil1](#philips-light-pceil1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart LED Ceiling Light Pro (Bedroom) | miio:basic       | [philips.light.pceilb](#philips-light-pceilb) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Piano Light            | miio:basic       | [philips.light.piano](#philips-light-piano) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Philips Study Desk Lamp      | miio:basic       | [philips.light.rwread](#philips-light-rwread) | Yes          |            |
 | Zhirui Ceiling Lamp Starry 80W     | miio:basic       | [philips.light.sceil](#philips-light-sceil) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Starry 40W     | miio:basic       | [philips.light.sceilm](#philips-light-sceilm) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Starry 28W     | miio:basic       | [philips.light.sceils](#philips-light-sceils) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips EyeCare Connected Desk Lamp gen2. | miio:basic       | [philips.light.sread1](#philips-light-sread1) | Yes          |            |
 | Mijia Philips Desk Lamp 2S         | miio:basic       | [philips.light.sread2](#philips-light-sread2) | Yes          |            |
+| Mijia Philips Desk Lamp 3          | miio:basic       | [philips.light.sread3](#philips-light-sread3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| ZhiRui read & write Desk Lamp Wi-Fi | miio:basic       | [philips.light.sread4](#philips-light-sread4) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Desk Lamp 2S        | miio:basic       | [philips.light.sread6](#philips-light-sread6) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhixiu Desk Lamp           | miio:basic       | [philips.light.sread8](#philips-light-sread8) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart LED Desk Lamp Pro (Reading Version) | miio:basic       | [philips.light.sread9](#philips-light-sread9) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips F9 Floor Light             | miio:basic       | [philips.light.street](#philips-light-street) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| ZhiRui RGB strip                   | miio:basic       | [philips.light.strip2](#philips-light-strip2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Lightstrip Pro        | miio:basic       | [philips.light.strip3](#philips-light-strip3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Lightstrip Pro        | miio:basic       | [philips.light.strip5](#philips-light-strip5) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Connected Lights           | miio:basic       | [philips.light.virtual](#philips-light-virtual) | Yes          |            |
 | Zhirui Ceiling Lamp Gorgeous 80W   | miio:basic       | [philips.light.xzceil](#philips-light-xzceil) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Gorgeous 40W   | miio:basic       | [philips.light.xzceim](#philips-light-xzceim) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -2986,6 +3027,37 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | fanst                      | Number               | Fan St                                   |            |
 | alarm                      | String               | Alarm                                    |            |
 
+### Xiaomi Smart Sleep and Wake-up Light (<a name="philips-light-aibed">philips.light.aibed</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| color                      | Color                | Color                                    |            |
+| colorMode                  | Number               | Color Mode                               | Value mapping `["0"="Color Temperature","1"="Color"]` |
+| modeMain                   | Number               | Mode                                     | Value mapping `["0"="Light Mode","1"="Sleep Mode","2"="Scene Mode"]` |
+| modeLight                  | Number               | Light Mode Preset                        | Index of the light mode preset; the presets are configured in the Mi Home app. |
+| modeSleep                  | Number               | Sleep Mode Preset                        | Value mapping `["0"="Sunset","1"="Cozy Bonfire","2"="Wonderful Journey","3"="Hill Rain"]` |
+| modeScene                  | Number               | Scene Mode Preset                        | Value mapping `["0"="Wonderful Journey","1"="Cozy Bonfire","2"="Breathing and Meditation","3"="Hill Rain","4"="Northern European Aurora","5"="Beach Walk","6"="Early Spring","7"="Midsummer Lime","8"="Late Fall","9"="Winter Sunshine"]` |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| sleepDuration              | Number:Time          | Sleep Mode Duration                      | In sleep mode the brightness decreases progressively until the light turns off after this time. |
+| sleepRemainTime            | Number:Time          | Sleep Mode Remaining Time                |            |
+| sleepStartBrightness       | Number:Dimensionless | Sleep Mode Starting Brightness           |            |
+| sleepVolume                | Dimmer               | Sleep Mode Volume                        |            |
+| sceneVolume                | Dimmer               | Scene Mode Volume                        |            |
+| nightLight                 | Switch               | Night Light Mode                         | The lamp switches to night light mode (2200 K, 1%) when turned on between the start and end time. |
+| nightStartHour             | Number               | Night Light Start Hour                   |            |
+| nightStartMinute           | Number               | Night Light Start Minute                 |            |
+| nightEndHour               | Number               | Night Light End Hour                     |            |
+| nightEndMinute             | Number               | Night Light End Minute                   |            |
+| wakeupAlarm1               | Switch               | Wake-up Alarm 1                          | The alarms themselves are set in the Mi Home app. |
+| wakeupAlarm2               | Switch               | Wake-up Alarm 2                          |            |
+| wakeupAlarm3               | Switch               | Wake-up Alarm 3                          |            |
+| sleepState                 | Number               | Sleep State                              | Value mapping `["-1"="Sleep Break","0"="Sleep End","1"="Sleep Start"]` |
+| wakeupState                | Number               | Wake-up State                            | Value mapping `["-1"="Wake-up Break","0"="Wake-up End","1"="Wake-up Start"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","brightness-up"="Brightness Up","brightness-down"="Brightness Down","cct-up"="Color Temperature Up","cct-down"="Color Temperature Down"]` |
+
 ### Philips Zhirui Ceiling Lamp Living room 80W (<a name="philips-light-bceil">philips.light.bceil</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -3065,6 +3137,50 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | mb                         | Switch               | Auto On/Off when Mi Band is Nearby       |            |
 | switch_en                  | Switch               | Wall Switch Scenes                       | Enables switching between scenes with the wall switch |
 | delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
+
+### Philips BlueSky Lamp (<a name="philips-light-blue">philips.light.blue</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["1"="Morning","2"="Noon","3"="Afternoon","4"="Sunset","5"="Evening","6"="Rainy"]` |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       | Changes the scene when the lamp is turned on again with the wall switch within 3 seconds after turning it off. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips Blue Sky G2 (<a name="philips-light-blue1">philips.light.blue1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["1"="Sunrise","2"="Noon","3"="Sunset","4"="Mid-night","5"="Custom"]` |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       | Switches between the scenes Sunrise, Noon and Sunset when the wall switch is turned off and on within 3 seconds. |
+| upLightMode                | Switch               | Uplight RGB Mode                         | On selects the RGB color (color set in the Mi Home app), Off selects white light. |
+| upLightColorBrightness     | Dimmer               | Uplight RGB Brightness                   |            |
+| upLightCct                 | Number:Temperature   | Uplight Color Temperature                |            |
+| upLightWhiteBrightness     | Dimmer               | Uplight White Brightness                 |            |
+| downLightMode              | Switch               | Downlight RGB Mode                       | On selects the RGB color (color set in the Mi Home app), Off selects white light. |
+| downLightColorBrightness   | Dimmer               | Downlight RGB Brightness                 |            |
+| downLightCct               | Number:Temperature   | Downlight Color Temperature              |            |
+| downLightWhiteBrightness   | Dimmer               | Downlight White Brightness               |            |
+| skyBrightness              | Dimmer               | Sky Brightness                           |            |
+| sunCct                     | Number:Temperature   | Sunlight Color Temperature               |            |
+| sunBrightness              | Dimmer               | Sunlight Brightness                      |            |
+| circadianRhythm            | Switch               | Circadian Rhythm                         | Switches the preset modes automatically during the day. |
+| circadianRhythmTimes       | String               | Circadian Rhythm Times                   | Start times of the circadian rhythm periods. Set them in the Mi Home app. |
+| circadianAuto              | Switch               | Circadian Rhythm Auto Adjustment         | Adjusts the circadian rhythm times based on the location; the Mi Home app sends the phone location to the lamp. |
+| sleepMode                  | Switch               | Sleep Mode                               | The light dims down and turns off after the sleep mode time. |
+| sleepTime                  | Number:Time          | Sleep Mode Time                          |            |
+| sleepRemainTime            | Number:Time          | Sleep Mode Remaining Time                |            |
+| sleepUnavailable           | Switch               | Sleep Mode Unavailable                   |            |
+| nightLight                 | Switch               | Night Light                              | The lamp switches to the Mid-night mode when turned on between the start and end time. |
+| nightStartTime             | Number:Time          | Night Light Start Time                   | Time of day in minutes after midnight. |
+| nightEndTime               | Number:Time          | Night Light End Time                     | Time of day in minutes after midnight. |
+| sunriseAlarm1              | Switch               | Sunrise Alarm 1                          | The alarms themselves are set in the Mi Home app. |
+| sunriseAlarm2              | Switch               | Sunrise Alarm 2                          |            |
+| sunriseAlarm3              | Switch               | Sunrise Alarm 3                          |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
 
 ### Philips ZhiYi Ceiling lamp FL2 80W (<a name="philips-light-boc1">philips.light.boc1</a>) Channels
 
@@ -3169,6 +3285,225 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cid                        | Number               | Hue                                      |            |
 | switch_en                  | Switch               | Wall Switch Scenes                       | Enables switching between scenes with the wall switch |
 
+### Philips PingYi Ceiling Light 130W (<a name="philips-light-ce130c">philips.light.ce130c</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips YingLe Ceiling Light 130W (<a name="philips-light-ce130x">philips.light.ce130x</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips ZhiBai Ceiling Light 130W (<a name="philips-light-ce13zx">philips.light.ce13zx</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips XingHuan Ceiling Light 36W (<a name="philips-light-ce36c">philips.light.ce36c</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips YingLe Ceiling Light 36W (<a name="philips-light-ce36x">philips.light.ce36x</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips XingHuan Ceiling Light 48W (<a name="philips-light-ce48c">philips.light.ce48c</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips ZhiBai Ceiling Light 48W (<a name="philips-light-ce48x">philips.light.ce48x</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips XingHuan Ceiling Light 80W (<a name="philips-light-ce80c">philips.light.ce80c</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips YingLe Ceiling Light 80W (<a name="philips-light-ce80yc">philips.light.ce80yc</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Mi & Philips Ceiling Lamp Lamina 33W (<a name="philips-light-ceil33">philips.light.ceil33</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| flexSwitch                 | Switch               | Flex Switch                              | Enable only when the light is used with a Flex Switch (momentary wall switch). |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| mibandSleep                | Switch               | Mi Band Sleep Turn-off                   | Turns the light off when the paired Mi Band detects sleep. Pair the band in the Mi Home app. |
+| MibandStatus               | String               | Mi Band Status                           |            |
+| nightLight                 | Switch               | Smart Midnight Light                     | Turning the light on between 23:00 and 6:00 starts the Midnight scene. |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
+
+### Philips Smart Light (<a name="philips-light-ceilfi">philips.light.ceilfi</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Reading","2"="Leisure","3"="Night Light"]` |
+| defaultPowerOnState        | Number               | Default Power On State                   | Value mapping `["0"="Default","1"="On"]` |
+| nightLightSwitch           | Switch               | Smart Night Light                        | During the set time period, turning the light on with the app starts the Night Light scene. |
+| nightLightPeriod           | String               | Smart Night Light Time Period            | Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`. |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
 ### Philips Connected Ceiling (<a name="philips-light-ceiling">philips.light.ceiling</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -3184,6 +3519,80 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | mb                         | Switch               | Auto On/Off when Mi Band is Nearby       |            |
 | switch_en                  | Switch               | Wall Switch Scenes                       | Enables switching between scenes with the wall switch |
 | delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
+
+### Mi & Philips Ceiling Lamp Lamina 80W (<a name="philips-light-ceilp">philips.light.ceilp</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| flexSwitch                 | Switch               | Flex Switch                              | Enable only when the light is used with a Flex Switch (momentary wall switch). |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| mibandSleep                | Switch               | Mi Band Sleep Turn-off                   | Turns the light off when the paired Mi Band detects sleep. Pair the band in the Mi Home app. |
+| MibandStatus               | String               | Mi Band Status                           |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
+
+### Philips Zhirui Ceiling Lamp Jianyue G2 Bedroom S (<a name="philips-light-ceilz">philips.light.ceilz</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delayOff                   | String               | Delayed Turn-off                         | Send the delay in seconds (`0` cancels). The state shows `start-seconds`, the start as Unix timestamp and the delay in seconds. |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
+
+### Philips Zhirui Ceiling Lamp Jianyue G2 Bedroom L (<a name="philips-light-ceilz1">philips.light.ceilz1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delayOff                   | String               | Delayed Turn-off                         | Send the delay in seconds (`0` cancels). The state shows `start-seconds`, the start as Unix timestamp and the delay in seconds. |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
+
+### Philips Zhirui Ceiling Lamp Jianyue G2 Living Room S (<a name="philips-light-ceilz2">philips.light.ceilz2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delayOff                   | String               | Delayed Turn-off                         | Send the delay in seconds (`0` cancels). The state shows `start-seconds`, the start as Unix timestamp and the delay in seconds. |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
+
+### Philips Zhirui Ceiling Lamp Jianyue G2 Living Room L (<a name="philips-light-ceilz3">philips.light.ceilz3</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delayOff                   | String               | Delayed Turn-off                         | Send the delay in seconds (`0` cancels). The state shows `start-seconds`, the start as Unix timestamp and the delay in seconds. |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
 
 ### Philips Light (<a name="philips-light-dcolor">philips.light.dcolor</a>) Channels
 
@@ -3222,6 +3631,136 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | scene                      | Number               | Scene                                    | Value mapping `["1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
 | dv                         | Number:Time          | Delay Off Countdown                      |            |
 | delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
+
+### Philips C9 Ceiling Light 120W (<a name="philips-light-eceil">philips.light.eceil</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="TV","2"="Leisure","3"="Reading","4"="Energetic"]` |
+| flexSwitch                 | Switch               | Momentary Contact Switch                 | Enable only when the light is used with a momentary contact wall switch. |
+| detectionSensitivity       | Number               | Fall Detection Sensitivity               | Value mapping `["1"="Low","2"="High"]` |
+| fallCondition              | Number               | Fall Status                              | While a fall is reported the app blocks light control; reset it with the `elderly-care-stop-alert` action. Value mapping `["0"="Normal","1"="Fall"]` |
+| delayCall                  | Number:Time          | Fall Alert Delay                         | No alert is raised when the person gets up within this time. |
+| fallAlert                  | Switch               | Fall Alert                               | Calls the emergency contact set in the Mi Home app when a fall is detected. |
+| sensorStatus               | Number               | Sensor Status                            | Value mapping `["0"="Normal","1"="Polluted or Blocked"]` |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene4                 | String               | Wall Switch Scene 4                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| nightMode                  | Number               | Smart Night Light Mode                   | In Auto mode the night light turns on in the dark when a person is detected. Value mapping `["0"="Constant Off","1"="Constant On","2"="Auto"]` |
+| nightBrightness            | Number:Dimensionless | Night Light Brightness                   | The app uses 20, 40, 60, 80 and 100. |
+| nightOn                    | Switch               | Night Light                              |            |
+| changeSpeedEnable          | Switch               | Gradual Brightness Adjustment            |            |
+| changeSpeed                | Number               | Gradual Brightness Adjustment Speed      | Value mapping `["0"="Slow","1"="Medium","2"="Fast"]` |
+| bedMonitoring              | Switch               | Bedtime Monitoring                       | Raises an alert when a person stays in bed too long during the monitoring period. |
+| bedMonitoringPeriod        | String               | Bedtime Monitoring Period                | Format `HH:MM-HH:MM`, e.g. `22:00-07:00`. |
+| bedMonitoringAlert         | Switch               | Abnormal Behavior Alert                  | Sends a Mi Home push notification on abnormal behavior. |
+| bedDuration                | Number:Time          | Bedtime Duration                         |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","elderly-care-stop-alert"="Reset Fall Alert"]` |
+
+### Philips C9 Ceiling Light 55W (<a name="philips-light-ecl01">philips.light.ecl01</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="TV","2"="Leisure","3"="Reading","4"="Energetic"]` |
+| flexSwitch                 | Switch               | Momentary Contact Switch                 | Enable only when the light is used with a momentary contact wall switch. |
+| detectionSensitivity       | Number               | Fall Detection Sensitivity               | Value mapping `["1"="Low","2"="High"]` |
+| fallCondition              | Number               | Fall Status                              | While a fall is reported the app blocks light control; reset it with the `elderly-care-stop-alert` action. Value mapping `["0"="Normal","1"="Fall"]` |
+| delayCall                  | Number:Time          | Fall Alert Delay                         | No alert is raised when the person gets up within this time. |
+| fallAlert                  | Switch               | Fall Alert                               | Calls the emergency contact set in the Mi Home app when a fall is detected. |
+| sensorStatus               | Number               | Sensor Status                            | Value mapping `["0"="Normal","1"="Polluted or Blocked"]` |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| wallScene1                 | String               | Wall Switch Scene 1                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene2                 | String               | Wall Switch Scene 2                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene3                 | String               | Wall Switch Scene 3                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| wallScene4                 | String               | Wall Switch Scene 4                      | Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature. |
+| nightMode                  | Number               | Smart Night Light Mode                   | In Auto mode the night light turns on in the dark when a person is detected. Value mapping `["0"="Constant Off","1"="Constant On","2"="Auto"]` |
+| nightBrightness            | Number:Dimensionless | Night Light Brightness                   | The app uses 20, 40, 60, 80 and 100. |
+| nightOn                    | Switch               | Night Light                              |            |
+| changeSpeedEnable          | Switch               | Gradual Brightness Adjustment            |            |
+| changeSpeed                | Number               | Gradual Brightness Adjustment Speed      | Value mapping `["0"="Slow","1"="Medium","2"="Fast"]` |
+| bedMonitoring              | Switch               | Bedtime Monitoring                       | Raises an alert when a person stays in bed too long during the monitoring period. |
+| bedMonitoringPeriod        | String               | Bedtime Monitoring Period                | Format `HH:MM-HH:MM`, e.g. `22:00-07:00`. |
+| bedMonitoringAlert         | Switch               | Abnormal Behavior Alert                  | Sends a Mi Home push notification on abnormal behavior. |
+| bedDuration                | Number:Time          | Bedtime Duration                         |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","elderly-care-stop-alert"="Reset Fall Alert"]` |
+
+### Philips C9 Panel Light 24W (<a name="philips-light-epan">philips.light.epan</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Day Mode","1"="Night Mode"]` |
+| flexSwitch                 | Switch               | Momentary Contact Switch                 | Enable when the light is installed with a momentary contact (push button) wall switch. |
+| fallAlert                  | Switch               | Fall Alert                               | Calls the emergency contact set in the Mi Home app when a fall is detected. |
+| fallStatus                 | Number               | Fall Status                              | Value mapping `["0"="Normal","1"="Fall Detected"]` |
+| fallAlertDelay             | Number:Time          | Fall Alert Delay                         | No alert is sent when the person gets up within this time. |
+| detectionSensitivity       | Number               | Fall Detection Sensitivity               | Value mapping `["1"="Low","2"="High"]` |
+| sensorStatus               | Number               | Sensor Status                            | Value mapping `["0"="Normal","1"="Polluted or Obstructed"]` |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene1                 | String               | Wall Switch Scene 1                      | Set it in the Mi Home app. Format `scene-brightness-color temperature`. |
+| WallScene2                 | String               | Wall Switch Scene 2                      |            |
+| autoOnOff                  | Switch               | Auto On/Off                              | Turns the light on when someone is detected and off when nobody is detected. |
+| autoOffDelay               | Number:Time          | Auto Off Delay                           | Turns off after nobody is detected for this time. |
+| autoOnDistance             | Number               | Auto On Distance                         | Distance in cm within which a person turns the light on. |
+| autoOnAmbientBrightness    | Number               | Auto On Ambient Brightness               | Turns on only when the ambient light is below this level. Value mapping `["0"="None","1"="Dark","2"="Dim","3"="Bright"]` |
+| nightLight                 | Switch               | Automatic Night Light                    | Within the set time the light turns on when someone is detected and off when nobody is detected. |
+| nightLightTime             | String               | Automatic Night Light Time               | Time period as `HH:MM-HH:MM`. |
+| gradualAdjust              | Switch               | Gradual Brightness Adjustment            |            |
+| gradualSpeed               | Number               | Gradual Brightness Speed                 | Value mapping `["0"="Slow","1"="Fast"]` |
+| toiletMonitor              | Switch               | Toilet Monitoring                        | Alerts when the bathroom is visited too often within the monitoring period. |
+| toiletMonitorTime          | String               | Toilet Monitoring Time                   | Time period as `HH:MM-HH:MM`. |
+| toiletMonitorUsers         | Number               | Toilet Monitoring Users                  |            |
+| toiletMonitorAlert         | Switch               | Toilet Monitoring Alert                  |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","stop-alert"="Reset Fall Alert"]` |
+
+### Philips F9 Lite Floor Light (<a name="philips-light-fl">philips.light.fl</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="None","1"="Desk Reading","2"="Screen Reading","3"="Focus Enhancement","4"="Creation and Invention","5"="Picture Books Reading"]` |
+| upOn                       | Switch               | Uplight                                  |            |
+| upBrightness               | Dimmer               | Uplight Brightness                       |            |
+| downOn                     | Switch               | Downlight                                |            |
+| downBrightness             | Dimmer               | Downlight Brightness                     |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| autoEn                     | Switch               | Auto Dimming                             |            |
+| nightLight                 | Switch               | Smart Night Light                        | The lamp switches to night light mode when turned on between the start and end time. |
+| nightStartTime             | Number:Time          | Night Light Start Time                   | Time of day in minutes after midnight. |
+| nightEndTime               | Number:Time          | Night Light End Time                     | Time of day in minutes after midnight. |
+| isNight                    | Switch               | Night Light Active                       |            |
+| syncSunlight               | Switch               | Sync with Sunlight                       | Follows the color temperature of the sunlight. The Mi Home app sends the phone location to the lamp when this is enabled. |
+| sunriseAlarm               | Switch               | Sunrise Alarm                            |            |
+| sunriseAlarmSetting        | String               | Sunrise Alarm Setting                    | Raw alarm setting as stored on the lamp. Set the alarm in the Mi Home app. |
+| lux                        | Number:Illuminance   | Illuminance                              |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips Zeeray Fall Detection Panel Light (<a name="philips-light-flat">philips.light.flat</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="None","1"="Bright","2"="Warm","3"="Night Light","4"="Custom"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| customBrightness           | Dimmer               | Custom Scene Brightness                  | Brightness of the custom scene, setting it activates the custom scene. |
+| nightLight                 | Switch               | Night Light Period                       | The light turns on in night light mode within the set time. |
+| nightStart                 | Number               | Night Light Start                        | Minutes after midnight. |
+| nightEnd                   | Number               | Night Light End                          | Minutes after midnight. |
+| guardStatus                | Number               | Room Status                              | Value mapping `["0"="Room Free","1"="Room Occupied","2"="Prolonged Stay","3"="Someone Falls","4"="Device Error"]` |
+| activeEvent                | Number               | Last Event                               | Value mapping `["0"="Enter","1"="Left","2"="Someone Falls","3"="Stand Up","4"="Device Error","5"="Device Back to Normal","6"="Prolonged Stay","7"="Prolonged Stay Cleared"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","brightness-up"="Brightness Up","brightness-down"="Brightness Down","reset-guard-status"="Clear the Alert"]` |
 
 ### Philips Wi-Fi bulb E27 White (<a name="philips-light-hbulb">philips.light.hbulb</a>) Channels
 
@@ -3295,6 +3834,62 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | mb                         | Switch               | Auto On/Off when Mi Band is Nearby       |            |
 | switch_en                  | Switch               | Wall Switch Scenes                       | Enables switching between scenes with the wall switch |
 | delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
+
+### Philips Zhirui Ceiling Lamp Liuying G2 Living Room L (<a name="philips-light-lying1">philips.light.lying1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delayOff                   | String               | Delayed Turn-off                         | Send the delay in seconds (`0` cancels). The state shows `start-seconds`, the start as Unix timestamp and the delay in seconds. |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
+
+### Philips Zhirui Ceiling Lamp Liuying G2 Living Room S (<a name="philips-light-lying2">philips.light.lying2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delayOff                   | String               | Delayed Turn-off                         | Send the delay in seconds (`0` cancels). The state shows `start-seconds`, the start as Unix timestamp and the delay in seconds. |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
+
+### Philips Zhirui Ceiling Lamp Liuying G2 Bedroom L (<a name="philips-light-lying3">philips.light.lying3</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delayOff                   | String               | Delayed Turn-off                         | Send the delay in seconds (`0` cancels). The state shows `start-seconds`, the start as Unix timestamp and the delay in seconds. |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
+
+### Philips Zhirui Ceiling Lamp Liuying G2 Bedroom S (<a name="philips-light-lying4">philips.light.lying4</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Bright","2"="TV","3"="Warm","4"="Midnight"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delayOff                   | String               | Delayed Turn-off                         | Send the delay in seconds (`0` cancels). The state shows `start-seconds`, the start as Unix timestamp and the delay in seconds. |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle","light-temperature-down"="Light Color Temperature Down","light-temperature-up"="Light Color Temperature Up"]` |
 
 ### Zhirui Ceiling Lamp Nordic 80W (<a name="philips-light-mceil">philips.light.mceil</a>) Channels
 
@@ -3461,6 +4056,87 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
+### Mijia Smart LED Ceiling Light Pro (Living Room) (<a name="philips-light-pceil">philips.light.pceil</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="None","1"="Bright","2"="TV","3"="Warm","4"="Night Light"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| powerOnState               | Number               | Power-on State                           | Value mapping `["1"="Default","2"="On"]` |
+| workMode                   | Number               | Light Work Mode                          | Value mapping `["1"="Multi Lighting","2"="Atmosphere"]` |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene1                 | String               | Wall Switch Scene 1                      | Set it in the Mi Home app. Format `work mode-brightness-color temperature`, a brightness of 0 means the preset scene in the last field. |
+| WallScene2                 | String               | Wall Switch Scene 2                      |            |
+| WallScene3                 | String               | Wall Switch Scene 3                      |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","brightness-up"="Brightness Up","brightness-down"="Brightness Down","cct-up"="Color Temperature Up","cct-down"="Color Temperature Down"]` |
+
+### Philips sustainable pendent light (<a name="philips-light-pceil1">philips.light.pceil1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Custom","1"="Reading","2"="Lighting","3"="Leisure"]` |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       | Off: the wall switch only turns the light on and off. |
+| WallScene1                 | String               | Wall Switch Scene 1                      | Set it in the Mi Home app. Format `scene-brightness-color temperature`, scene 0 is a custom brightness and color temperature. |
+| WallScene2                 | String               | Wall Switch Scene 2                      |            |
+| WallScene3                 | String               | Wall Switch Scene 3                      |            |
+| autoCct                    | Switch               | Circadian Light                          | Adjusts the color temperature to the time and season. The location is set by the Mi Home app when it is enabled there. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","toggle-light-mode"="Next Scene"]` |
+
+### Mijia Smart LED Ceiling Light Pro (Bedroom) (<a name="philips-light-pceilb">philips.light.pceilb</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="None","1"="Bright","2"="TV","3"="Warm","4"="Night Light"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| powerOnState               | Number               | Power-on State                           | Value mapping `["1"="Default","2"="On"]` |
+| workMode                   | Number               | Light Work Mode                          | Value mapping `["1"="Multi Lighting","2"="Atmosphere"]` |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene1                 | String               | Wall Switch Scene 1                      | Set it in the Mi Home app. Format `work mode-brightness-color temperature`, a brightness of 0 means the preset scene in the last field. |
+| WallScene2                 | String               | Wall Switch Scene 2                      |            |
+| WallScene3                 | String               | Wall Switch Scene 3                      |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","brightness-up"="Brightness Up","brightness-down"="Brightness Down","cct-up"="Color Temperature Up","cct-down"="Color Temperature Down"]` |
+
+### Mijia Smart Piano Light (<a name="philips-light-piano">philips.light.piano</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="None","1"="Focus","2"="Eye Protection"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delay                      | Switch               | Delayed Turn-off                         | Turns off the light and the metronome after the delay time. |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| metronome                  | Switch               | Metronome                                |            |
+| metronomeBeat              | Number               | Metronome Time Signature                 | Value mapping `["0"="-/4","1"="1/4","2"="2/4","3"="3/4","4"="4/4","5"="3/8","6"="6/8"]` |
+| metronomeBpm               | Number               | Metronome Tempo                          |            |
+| metronomeVolume            | Dimmer               | Metronome Volume                         |            |
+| remoteLowBattery           | Switch               | Remote Control Low Battery               |            |
+| seatAutoOn                 | Switch               | Sit to Turn On Light                     |            |
+| seatAutoOff                | Switch               | Leave to Turn Off                        | The light and the metronome turn off when the seat has been left for the set time. |
+| seatAwayTime               | Number:Time          | Time After Leaving Seat                  |            |
+| autoSensitivity            | Number               | Seat Detection Sensitivity               | Value mapping `["0"="High","1"="Medium","2"="Low"]` |
+| tuningReminder             | Switch               | Tuning Reminder                          | The Mi Home app sends a tuning reminder six months after the last tuning date. |
+| lastTuningDate             | String               | Last Tuning Date                         |            |
+| tuningReminderExpired      | Switch               | Tuning Reminder Expired                  |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","brightness-up"="Brightness Up","brightness-down"="Brightness Down","cct-up"="Color Temperature Up","cct-down"="Color Temperature Down"]` |
+
 ### Mijia Philips Study Desk Lamp (<a name="philips-light-rwread">philips.light.rwread</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -3549,6 +4225,160 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | notifyuser                 | Switch               | Eye Fatigue Reminder                     |            |
 | bl                         | Switch               | Night Light                              |            |
 | delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
+
+### Mijia Philips Desk Lamp 3 (<a name="philips-light-sread3">philips.light.sread3</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Custom","1"="Child Mode","2"="Adult Reading","3"="Mobile Phone/Computer"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| eyecare                    | Switch               | Eye Protection Mode                      | Eye protection mode; the scene (mode) is only applied while eye protection is on. |
+| notifyUser                 | Switch               | Eye Strain Notification                  |            |
+| notifyTime                 | Number:Time          | Eye Strain Notification Interval         |            |
+| lastDv                     | Number:Time          | Last Delayed Turn-off Time               | Last delayed turn-off time set on the lamp; the Mi Home app uses it as default in its delay picker. |
+| nightLight                 | Switch               | Night Light                              |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
+
+### ZhiRui read & write Desk Lamp Wi-Fi (<a name="philips-light-sread4">philips.light.sread4</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Custom","1"="AA Level","2"="Adult Reading","3"="Child Mode","4"="Mobile Phone/Computer"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| notifyUser                 | Switch               | Eye Strain Notification                  |            |
+| notifyTime                 | Number:Time          | Eye Strain Notification Interval         |            |
+| lastDv                     | Number:Time          | Last Delayed Turn-off Time               | Last delayed turn-off time set on the lamp; the Mi Home app uses it as default in its delay picker. |
+| actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
+
+### Philips Zhirui Desk Lamp 2S (<a name="philips-light-sread6">philips.light.sread6</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Custom","1"="Child Mode","2"="Adult Reading","3"="Mobile Phone/Computer"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| nightLight                 | Switch               | Night Light                              |            |
+| notifyUser                 | Switch               | Eye Strain Notification                  | Blinks the lamp every 40 minutes as a reminder to rest the eyes. |
+| eyecare                    | Switch               | Eye Protection Mode                      | Eye protection mode; the scene (mode) is only applied while eye protection is on. |
+| ambientPower               | Switch               | Ambient Light                            |            |
+| ambientBrightness          | Dimmer               | Ambient Light Brightness                 | Contrast between the main light and the ambient light. |
+| lastDv                     | Number:Time          | Last Delayed Turn-off Time               | Last delayed turn-off time set on the lamp; the Mi Home app uses it as default in its delay picker. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Philips Zhixiu Desk Lamp (<a name="philips-light-sread8">philips.light.sread8</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Custom","1"="Child Mode","2"="Adult Reading","3"="Mobile Phone/Computer"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| nightLight                 | Switch               | Night Light                              |            |
+| notifyUser                 | Switch               | Eye Strain Notification                  | Blinks the lamp every 40 minutes as a reminder to rest the eyes. |
+| eyecare                    | Switch               | Eye Protection Mode                      | Eye protection mode; the scene (mode) is only applied while eye protection is on. |
+| ambientPower               | Switch               | Ambient Light                            |            |
+| ambientBrightness          | Dimmer               | Ambient Light Brightness                 | Contrast between the main light and the ambient light. |
+| lastDv                     | Number:Time          | Last Delayed Turn-off Time               | Last delayed turn-off time set on the lamp; the Mi Home app uses it as default in its delay picker. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### Mijia Smart LED Desk Lamp Pro (Reading Version) (<a name="philips-light-sread9">philips.light.sread9</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="None","1"="Office","2"="Reading","3"="Baby","4"="Warmth"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| notifyUser                 | Switch               | Eye Strain Notification                  |            |
+| notifyTime                 | Number:Time          | Eye Strain Notification Interval         |            |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","brightness-up"="Brightness Up","brightness-down"="Brightness Down","cct-up"="Color Temperature Up","cct-down"="Color Temperature Down"]` |
+
+### Philips F9 Floor Light (<a name="philips-light-street">philips.light.street</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="None","1"="Desk Reading","2"="Screen Reading","3"="Focus Enhancement","4"="Creation and Invention","5"="Picture Books Reading"]` |
+| upOn                       | Switch               | Uplight                                  |            |
+| upBrightness               | Dimmer               | Uplight Brightness                       |            |
+| downOn                     | Switch               | Downlight                                |            |
+| downBrightness             | Dimmer               | Downlight Brightness                     |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| delay                      | Switch               | Delayed Turn-off                         |            |
+| delayTime                  | Number:Time          | Delayed Turn-off Time                    |            |
+| delayRemainTime            | Number:Time          | Delayed Turn-off Remaining Time          |            |
+| autoEn                     | Switch               | Auto Detection                           |            |
+| nightLight                 | Switch               | Smart Night Light                        | The lamp switches to night light mode when turned on between the start and end time. |
+| nightStartTime             | Number:Time          | Night Light Start Time                   | Time of day in minutes after midnight. |
+| nightEndTime               | Number:Time          | Night Light End Time                     | Time of day in minutes after midnight. |
+| isNight                    | Switch               | Night Light Active                       |            |
+| syncSunlight               | Switch               | Sync with Sunlight                       | Follows the color temperature of the sunlight. The Mi Home app sends the phone location to the lamp when this is enabled. |
+| sunriseAlarm               | Switch               | Sunrise Alarm                            |            |
+| sunriseAlarmSetting        | String               | Sunrise Alarm Setting                    | Raw alarm setting as stored on the lamp. Set the alarm in the Mi Home app. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle"]` |
+
+### ZhiRui RGB strip (<a name="philips-light-strip2">philips.light.strip2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | Value mapping `["0"="Manual","1"="Passion Party","2"="Romantic Time","3"="Bright","4"="Warm"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| cct                        | Number:Temperature   | Color Temperature                        |            |
+| color                      | Color                | Color                                    | RGB color of the light. The brightness part of a color command scales the RGB value, use the brightness channel to dim the light. |
+| colorMode                  | Number               | Color Mode                               | Value mapping `["0"="White","1"="Color"]` |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| actions                    | String               | Actions                                  | Value mapping `["brightness-down"="Brightness Down","brightness-up"="Brightness Up","toggle"="Toggle","temperature-down"="Color Temperature Down","temperature-up"="Color Temperature Up"]` |
+
+### Xiaomi Smart Lightstrip Pro (<a name="philips-light-strip3">philips.light.strip3</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | 0 is the color set with the color channel or a custom mode selected with the custom mode channel. Value mapping `["0"="Custom","1"="Feeling of Love","2"="Cozy Bonfire","3"="Northern European Aurora","4"="Beach Walk","5"="Dreamlike Colors","6"="Midsummer","7"="Rapid Changes","8"="Seasons"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color                      | Color                | Color                                    | RGB color of the light. The brightness part of a color command scales the RGB value, use the brightness channel to dim the light. |
+| musicSync                  | Switch               | Music Sync                               | Interaction of light and sound. |
+| tvSync                     | Switch               | TV Sync                                  | The color follows the picture of a connected Xiaomi TV. The Mi Home app of the strip5 and of strip3 with firmware up to 2.1.8_0026 does not offer to switch it. |
+| tvConnected                | Switch               | TV Connected                             |            |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| rhythmColor                | String               | Music Sync Colors                        | Custom colors are shown as a `#RRGGBB` value. Value mapping `["A"="Rainbow","B"="Passion","C"="Freshness","D"="Sunshine","E"="Romance"]` |
+| rhythmSensitivity          | Number               | Music Sync Sensitivity                   | Value mapping `["0"="Gentle","1"="Lyric","2"="Dynamic"]` |
+| rhythmAnimation            | Number               | Music Sync Effect                        | Value mapping `["0"="Breathing","1"="Flashing","2"="Random","3"="Blooming"]` |
+| diyId                      | Number               | Custom Mode                              | Number of a custom mode created in the Mi Home app, 0 when no custom mode is active. |
+| stripLength                | Number               | Strip Length                             |            |
+| controlScene               | String               | Control Box Modes                        | The 3 modes the mode button of the control box cycles through, as a JSON array, e.g. `[1,2,3]`. 1-8 are the scenes of the scene channel, 100 + n is custom mode n. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","brightness-up"="Brightness Up","brightness-down"="Brightness Down"]` |
+
+### Xiaomi Smart Lightstrip Pro (<a name="philips-light-strip5">philips.light.strip5</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| mode                       | Number               | Scene                                    | 0 is the color set with the color channel or a custom mode selected with the custom mode channel. Value mapping `["0"="Custom","1"="Feeling of Love","2"="Cozy Bonfire","3"="Northern European Aurora","4"="Beach Walk","5"="Dreamlike Colors","6"="Midsummer","7"="Rapid Changes","8"="Seasons"]` |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color                      | Color                | Color                                    | RGB color of the light. The brightness part of a color command scales the RGB value, use the brightness channel to dim the light. |
+| musicSync                  | Switch               | Music Sync                               | Interaction of light and sound. |
+| tvSync                     | Switch               | TV Sync                                  | The color follows the picture of a connected Xiaomi TV. The Mi Home app of the strip5 and of strip3 with firmware up to 2.1.8_0026 does not offer to switch it. |
+| tvConnected                | Switch               | TV Connected                             |            |
+| dv                         | Number:Time          | Delayed Turn-off                         |            |
+| rhythmColor                | String               | Music Sync Colors                        | Custom colors are shown as a `#RRGGBB` value. Value mapping `["A"="Rainbow","B"="Passion","C"="Freshness","D"="Sunshine","E"="Romance"]` |
+| rhythmSensitivity          | Number               | Music Sync Sensitivity                   | Value mapping `["0"="Gentle","1"="Lyric","2"="Dynamic"]` |
+| rhythmAnimation            | Number               | Music Sync Effect                        | Value mapping `["0"="Breathing","1"="Flashing","2"="Random","3"="Blooming"]` |
+| diyId                      | Number               | Custom Mode                              | Number of a custom mode created in the Mi Home app, 0 when no custom mode is active. |
+| stripLength                | Number               | Strip Length                             |            |
+| controlScene               | String               | Control Box Modes                        | The 3 modes the mode button of the control box cycles through, as a JSON array, e.g. `[1,2,3]`. 1-8 are the scenes of the scene channel, 100 + n is custom mode n. |
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","brightness-up"="Brightness Up","brightness-down"="Brightness Down"]` |
 
 ### Philips Connected Lights (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
 
@@ -11551,6 +12381,40 @@ Number fanst "Fan St" (G_derh) {channel="miio:basic:derh:fanst"}
 String alarm "Alarm" (G_derh) {channel="miio:basic:derh:alarm"}
 ```
 
+### Xiaomi Smart Sleep and Wake-up Light (philips.light.aibed) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Xiaomi Smart Sleep and Wake-up Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Color color "Color" (G_light) {channel="miio:basic:light:color"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Number modeMain "Mode" (G_light) {channel="miio:basic:light:modeMain"}
+Number modeLight "Light Mode Preset" (G_light) {channel="miio:basic:light:modeLight"}
+Number modeSleep "Sleep Mode Preset" (G_light) {channel="miio:basic:light:modeSleep"}
+Number modeScene "Scene Mode Preset" (G_light) {channel="miio:basic:light:modeScene"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Number:Time sleepDuration "Sleep Mode Duration" (G_light) {channel="miio:basic:light:sleepDuration"}
+Number:Time sleepRemainTime "Sleep Mode Remaining Time" (G_light) {channel="miio:basic:light:sleepRemainTime"}
+Number:Dimensionless sleepStartBrightness "Sleep Mode Starting Brightness" (G_light) {channel="miio:basic:light:sleepStartBrightness"}
+Dimmer sleepVolume "Sleep Mode Volume" (G_light) {channel="miio:basic:light:sleepVolume"}
+Dimmer sceneVolume "Scene Mode Volume" (G_light) {channel="miio:basic:light:sceneVolume"}
+Switch nightLight "Night Light Mode" (G_light) {channel="miio:basic:light:nightLight"}
+Number nightStartHour "Night Light Start Hour" (G_light) {channel="miio:basic:light:nightStartHour"}
+Number nightStartMinute "Night Light Start Minute" (G_light) {channel="miio:basic:light:nightStartMinute"}
+Number nightEndHour "Night Light End Hour" (G_light) {channel="miio:basic:light:nightEndHour"}
+Number nightEndMinute "Night Light End Minute" (G_light) {channel="miio:basic:light:nightEndMinute"}
+Switch wakeupAlarm1 "Wake-up Alarm 1" (G_light) {channel="miio:basic:light:wakeupAlarm1"}
+Switch wakeupAlarm2 "Wake-up Alarm 2" (G_light) {channel="miio:basic:light:wakeupAlarm2"}
+Switch wakeupAlarm3 "Wake-up Alarm 3" (G_light) {channel="miio:basic:light:wakeupAlarm3"}
+Number sleepState "Sleep State" (G_light) {channel="miio:basic:light:sleepState"}
+Number wakeupState "Wake-up State" (G_light) {channel="miio:basic:light:wakeupState"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
 ### Philips Zhirui Ceiling Lamp Living room 80W (philips.light.bceil) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -11644,6 +12508,56 @@ Switch ac "Auto Color Temperature" (G_light) {channel="miio:basic:light:ac"}
 Switch mb "Auto On/Off when Mi Band is Nearby" (G_light) {channel="miio:basic:light:mb"}
 Switch switch_en "Wall Switch Scenes" (G_light) {channel="miio:basic:light:switch_en"}
 Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+```
+
+### Philips BlueSky Lamp (philips.light.blue) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips BlueSky Lamp" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Blue Sky G2 (philips.light.blue1) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Blue Sky G2" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+Switch upLightMode "Uplight RGB Mode" (G_light) {channel="miio:basic:light:upLightMode"}
+Dimmer upLightColorBrightness "Uplight RGB Brightness" (G_light) {channel="miio:basic:light:upLightColorBrightness"}
+Number:Temperature upLightCct "Uplight Color Temperature" (G_light) {channel="miio:basic:light:upLightCct"}
+Dimmer upLightWhiteBrightness "Uplight White Brightness" (G_light) {channel="miio:basic:light:upLightWhiteBrightness"}
+Switch downLightMode "Downlight RGB Mode" (G_light) {channel="miio:basic:light:downLightMode"}
+Dimmer downLightColorBrightness "Downlight RGB Brightness" (G_light) {channel="miio:basic:light:downLightColorBrightness"}
+Number:Temperature downLightCct "Downlight Color Temperature" (G_light) {channel="miio:basic:light:downLightCct"}
+Dimmer downLightWhiteBrightness "Downlight White Brightness" (G_light) {channel="miio:basic:light:downLightWhiteBrightness"}
+Dimmer skyBrightness "Sky Brightness" (G_light) {channel="miio:basic:light:skyBrightness"}
+Number:Temperature sunCct "Sunlight Color Temperature" (G_light) {channel="miio:basic:light:sunCct"}
+Dimmer sunBrightness "Sunlight Brightness" (G_light) {channel="miio:basic:light:sunBrightness"}
+Switch circadianRhythm "Circadian Rhythm" (G_light) {channel="miio:basic:light:circadianRhythm"}
+String circadianRhythmTimes "Circadian Rhythm Times" (G_light) {channel="miio:basic:light:circadianRhythmTimes"}
+Switch circadianAuto "Circadian Rhythm Auto Adjustment" (G_light) {channel="miio:basic:light:circadianAuto"}
+Switch sleepMode "Sleep Mode" (G_light) {channel="miio:basic:light:sleepMode"}
+Number:Time sleepTime "Sleep Mode Time" (G_light) {channel="miio:basic:light:sleepTime"}
+Number:Time sleepRemainTime "Sleep Mode Remaining Time" (G_light) {channel="miio:basic:light:sleepRemainTime"}
+Switch sleepUnavailable "Sleep Mode Unavailable" (G_light) {channel="miio:basic:light:sleepUnavailable"}
+Switch nightLight "Night Light" (G_light) {channel="miio:basic:light:nightLight"}
+Number:Time nightStartTime "Night Light Start Time" (G_light) {channel="miio:basic:light:nightStartTime"}
+Number:Time nightEndTime "Night Light End Time" (G_light) {channel="miio:basic:light:nightEndTime"}
+Switch sunriseAlarm1 "Sunrise Alarm 1" (G_light) {channel="miio:basic:light:sunriseAlarm1"}
+Switch sunriseAlarm2 "Sunrise Alarm 2" (G_light) {channel="miio:basic:light:sunriseAlarm2"}
+Switch sunriseAlarm3 "Sunrise Alarm 3" (G_light) {channel="miio:basic:light:sunriseAlarm3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Philips ZhiYi Ceiling lamp FL2 80W (philips.light.boc1) item file lines
@@ -11773,6 +12687,258 @@ Number cid "Hue" (G_light) {channel="miio:basic:light:cid"}
 Switch switch_en "Wall Switch Scenes" (G_light) {channel="miio:basic:light:switch_en"}
 ```
 
+### Philips PingYi Ceiling Light 130W (philips.light.ce130c) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips PingYi Ceiling Light 130W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips YingLe Ceiling Light 130W (philips.light.ce130x) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips YingLe Ceiling Light 130W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips ZhiBai Ceiling Light 130W (philips.light.ce13zx) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips ZhiBai Ceiling Light 130W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips XingHuan Ceiling Light 36W (philips.light.ce36c) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips XingHuan Ceiling Light 36W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips YingLe Ceiling Light 36W (philips.light.ce36x) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips YingLe Ceiling Light 36W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips XingHuan Ceiling Light 48W (philips.light.ce48c) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips XingHuan Ceiling Light 48W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips ZhiBai Ceiling Light 48W (philips.light.ce48x) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips ZhiBai Ceiling Light 48W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips XingHuan Ceiling Light 80W (philips.light.ce80c) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips XingHuan Ceiling Light 80W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips YingLe Ceiling Light 80W (philips.light.ce80yc) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips YingLe Ceiling Light 80W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Mi & Philips Ceiling Lamp Lamina 33W (philips.light.ceil33) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Mi & Philips Ceiling Lamp Lamina 33W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Switch flexSwitch "Flex Switch" (G_light) {channel="miio:basic:light:flexSwitch"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+Switch mibandSleep "Mi Band Sleep Turn-off" (G_light) {channel="miio:basic:light:mibandSleep"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+Switch nightLight "Smart Midnight Light" (G_light) {channel="miio:basic:light:nightLight"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Smart Light (philips.light.ceilfi) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Smart Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Number defaultPowerOnState "Default Power On State" (G_light) {channel="miio:basic:light:defaultPowerOnState"}
+Switch nightLightSwitch "Smart Night Light" (G_light) {channel="miio:basic:light:nightLightSwitch"}
+String nightLightPeriod "Smart Night Light Time Period" (G_light) {channel="miio:basic:light:nightLightPeriod"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
 ### Philips Connected Ceiling (philips.light.ceiling) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -11790,6 +12956,95 @@ Switch ac "Auto Color Temperature" (G_light) {channel="miio:basic:light:ac"}
 Switch mb "Auto On/Off when Mi Band is Nearby" (G_light) {channel="miio:basic:light:mb"}
 Switch switch_en "Wall Switch Scenes" (G_light) {channel="miio:basic:light:switch_en"}
 Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+```
+
+### Mi & Philips Ceiling Lamp Lamina 80W (philips.light.ceilp) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Mi & Philips Ceiling Lamp Lamina 80W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Switch flexSwitch "Flex Switch" (G_light) {channel="miio:basic:light:flexSwitch"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+Switch mibandSleep "Mi Band Sleep Turn-off" (G_light) {channel="miio:basic:light:mibandSleep"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zhirui Ceiling Lamp Jianyue G2 Bedroom S (philips.light.ceilz) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhirui Ceiling Lamp Jianyue G2 Bedroom S" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+String delayOff "Delayed Turn-off" (G_light) {channel="miio:basic:light:delayOff"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zhirui Ceiling Lamp Jianyue G2 Bedroom L (philips.light.ceilz1) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhirui Ceiling Lamp Jianyue G2 Bedroom L" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+String delayOff "Delayed Turn-off" (G_light) {channel="miio:basic:light:delayOff"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zhirui Ceiling Lamp Jianyue G2 Living Room S (philips.light.ceilz2) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhirui Ceiling Lamp Jianyue G2 Living Room S" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+String delayOff "Delayed Turn-off" (G_light) {channel="miio:basic:light:delayOff"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zhirui Ceiling Lamp Jianyue G2 Living Room L (philips.light.ceilz3) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhirui Ceiling Lamp Jianyue G2 Living Room L" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+String delayOff "Delayed Turn-off" (G_light) {channel="miio:basic:light:delayOff"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Philips Light (philips.light.dcolor) item file lines
@@ -11837,6 +13092,151 @@ Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:c
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+```
+
+### Philips C9 Ceiling Light 120W (philips.light.eceil) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips C9 Ceiling Light 120W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Switch flexSwitch "Momentary Contact Switch" (G_light) {channel="miio:basic:light:flexSwitch"}
+Number detectionSensitivity "Fall Detection Sensitivity" (G_light) {channel="miio:basic:light:detectionSensitivity"}
+Number fallCondition "Fall Status" (G_light) {channel="miio:basic:light:fallCondition"}
+Number:Time delayCall "Fall Alert Delay" (G_light) {channel="miio:basic:light:delayCall"}
+Switch fallAlert "Fall Alert" (G_light) {channel="miio:basic:light:fallAlert"}
+Number sensorStatus "Sensor Status" (G_light) {channel="miio:basic:light:sensorStatus"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String wallScene4 "Wall Switch Scene 4" (G_light) {channel="miio:basic:light:wallScene4"}
+Number nightMode "Smart Night Light Mode" (G_light) {channel="miio:basic:light:nightMode"}
+Number:Dimensionless nightBrightness "Night Light Brightness" (G_light) {channel="miio:basic:light:nightBrightness"}
+Switch nightOn "Night Light" (G_light) {channel="miio:basic:light:nightOn"}
+Switch changeSpeedEnable "Gradual Brightness Adjustment" (G_light) {channel="miio:basic:light:changeSpeedEnable"}
+Number changeSpeed "Gradual Brightness Adjustment Speed" (G_light) {channel="miio:basic:light:changeSpeed"}
+Switch bedMonitoring "Bedtime Monitoring" (G_light) {channel="miio:basic:light:bedMonitoring"}
+String bedMonitoringPeriod "Bedtime Monitoring Period" (G_light) {channel="miio:basic:light:bedMonitoringPeriod"}
+Switch bedMonitoringAlert "Abnormal Behavior Alert" (G_light) {channel="miio:basic:light:bedMonitoringAlert"}
+Number:Time bedDuration "Bedtime Duration" (G_light) {channel="miio:basic:light:bedDuration"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips C9 Ceiling Light 55W (philips.light.ecl01) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips C9 Ceiling Light 55W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Switch flexSwitch "Momentary Contact Switch" (G_light) {channel="miio:basic:light:flexSwitch"}
+Number detectionSensitivity "Fall Detection Sensitivity" (G_light) {channel="miio:basic:light:detectionSensitivity"}
+Number fallCondition "Fall Status" (G_light) {channel="miio:basic:light:fallCondition"}
+Number:Time delayCall "Fall Alert Delay" (G_light) {channel="miio:basic:light:delayCall"}
+Switch fallAlert "Fall Alert" (G_light) {channel="miio:basic:light:fallAlert"}
+Number sensorStatus "Sensor Status" (G_light) {channel="miio:basic:light:sensorStatus"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String wallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:wallScene1"}
+String wallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:wallScene2"}
+String wallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:wallScene3"}
+String wallScene4 "Wall Switch Scene 4" (G_light) {channel="miio:basic:light:wallScene4"}
+Number nightMode "Smart Night Light Mode" (G_light) {channel="miio:basic:light:nightMode"}
+Number:Dimensionless nightBrightness "Night Light Brightness" (G_light) {channel="miio:basic:light:nightBrightness"}
+Switch nightOn "Night Light" (G_light) {channel="miio:basic:light:nightOn"}
+Switch changeSpeedEnable "Gradual Brightness Adjustment" (G_light) {channel="miio:basic:light:changeSpeedEnable"}
+Number changeSpeed "Gradual Brightness Adjustment Speed" (G_light) {channel="miio:basic:light:changeSpeed"}
+Switch bedMonitoring "Bedtime Monitoring" (G_light) {channel="miio:basic:light:bedMonitoring"}
+String bedMonitoringPeriod "Bedtime Monitoring Period" (G_light) {channel="miio:basic:light:bedMonitoringPeriod"}
+Switch bedMonitoringAlert "Abnormal Behavior Alert" (G_light) {channel="miio:basic:light:bedMonitoringAlert"}
+Number:Time bedDuration "Bedtime Duration" (G_light) {channel="miio:basic:light:bedDuration"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips C9 Panel Light 24W (philips.light.epan) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips C9 Panel Light 24W" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Switch flexSwitch "Momentary Contact Switch" (G_light) {channel="miio:basic:light:flexSwitch"}
+Switch fallAlert "Fall Alert" (G_light) {channel="miio:basic:light:fallAlert"}
+Number fallStatus "Fall Status" (G_light) {channel="miio:basic:light:fallStatus"}
+Number:Time fallAlertDelay "Fall Alert Delay" (G_light) {channel="miio:basic:light:fallAlertDelay"}
+Number detectionSensitivity "Fall Detection Sensitivity" (G_light) {channel="miio:basic:light:detectionSensitivity"}
+Number sensorStatus "Sensor Status" (G_light) {channel="miio:basic:light:sensorStatus"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:WallScene1"}
+String WallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:WallScene2"}
+Switch autoOnOff "Auto On/Off" (G_light) {channel="miio:basic:light:autoOnOff"}
+Number:Time autoOffDelay "Auto Off Delay" (G_light) {channel="miio:basic:light:autoOffDelay"}
+Number autoOnDistance "Auto On Distance" (G_light) {channel="miio:basic:light:autoOnDistance"}
+Number autoOnAmbientBrightness "Auto On Ambient Brightness" (G_light) {channel="miio:basic:light:autoOnAmbientBrightness"}
+Switch nightLight "Automatic Night Light" (G_light) {channel="miio:basic:light:nightLight"}
+String nightLightTime "Automatic Night Light Time" (G_light) {channel="miio:basic:light:nightLightTime"}
+Switch gradualAdjust "Gradual Brightness Adjustment" (G_light) {channel="miio:basic:light:gradualAdjust"}
+Number gradualSpeed "Gradual Brightness Speed" (G_light) {channel="miio:basic:light:gradualSpeed"}
+Switch toiletMonitor "Toilet Monitoring" (G_light) {channel="miio:basic:light:toiletMonitor"}
+String toiletMonitorTime "Toilet Monitoring Time" (G_light) {channel="miio:basic:light:toiletMonitorTime"}
+Number toiletMonitorUsers "Toilet Monitoring Users" (G_light) {channel="miio:basic:light:toiletMonitorUsers"}
+Switch toiletMonitorAlert "Toilet Monitoring Alert" (G_light) {channel="miio:basic:light:toiletMonitorAlert"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips F9 Lite Floor Light (philips.light.fl) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips F9 Lite Floor Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Switch upOn "Uplight" (G_light) {channel="miio:basic:light:upOn"}
+Dimmer upBrightness "Uplight Brightness" (G_light) {channel="miio:basic:light:upBrightness"}
+Switch downOn "Downlight" (G_light) {channel="miio:basic:light:downOn"}
+Dimmer downBrightness "Downlight Brightness" (G_light) {channel="miio:basic:light:downBrightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch autoEn "Auto Dimming" (G_light) {channel="miio:basic:light:autoEn"}
+Switch nightLight "Smart Night Light" (G_light) {channel="miio:basic:light:nightLight"}
+Number:Time nightStartTime "Night Light Start Time" (G_light) {channel="miio:basic:light:nightStartTime"}
+Number:Time nightEndTime "Night Light End Time" (G_light) {channel="miio:basic:light:nightEndTime"}
+Switch isNight "Night Light Active" (G_light) {channel="miio:basic:light:isNight"}
+Switch syncSunlight "Sync with Sunlight" (G_light) {channel="miio:basic:light:syncSunlight"}
+Switch sunriseAlarm "Sunrise Alarm" (G_light) {channel="miio:basic:light:sunriseAlarm"}
+String sunriseAlarmSetting "Sunrise Alarm Setting" (G_light) {channel="miio:basic:light:sunriseAlarmSetting"}
+Number:Illuminance lux "Illuminance" (G_light) {channel="miio:basic:light:lux"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zeeray Fall Detection Panel Light (philips.light.flat) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zeeray Fall Detection Panel Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer customBrightness "Custom Scene Brightness" (G_light) {channel="miio:basic:light:customBrightness"}
+Switch nightLight "Night Light Period" (G_light) {channel="miio:basic:light:nightLight"}
+Number nightStart "Night Light Start" (G_light) {channel="miio:basic:light:nightStart"}
+Number nightEnd "Night Light End" (G_light) {channel="miio:basic:light:nightEnd"}
+Number guardStatus "Room Status" (G_light) {channel="miio:basic:light:guardStatus"}
+Number activeEvent "Last Event" (G_light) {channel="miio:basic:light:activeEvent"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Philips Wi-Fi bulb E27 White (philips.light.hbulb) item file lines
@@ -11925,6 +13325,74 @@ Switch ac "Auto Color Temperature" (G_light) {channel="miio:basic:light:ac"}
 Switch mb "Auto On/Off when Mi Band is Nearby" (G_light) {channel="miio:basic:light:mb"}
 Switch switch_en "Wall Switch Scenes" (G_light) {channel="miio:basic:light:switch_en"}
 Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+```
+
+### Philips Zhirui Ceiling Lamp Liuying G2 Living Room L (philips.light.lying1) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhirui Ceiling Lamp Liuying G2 Living Room L" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+String delayOff "Delayed Turn-off" (G_light) {channel="miio:basic:light:delayOff"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zhirui Ceiling Lamp Liuying G2 Living Room S (philips.light.lying2) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhirui Ceiling Lamp Liuying G2 Living Room S" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+String delayOff "Delayed Turn-off" (G_light) {channel="miio:basic:light:delayOff"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zhirui Ceiling Lamp Liuying G2 Bedroom L (philips.light.lying3) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhirui Ceiling Lamp Liuying G2 Bedroom L" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+String delayOff "Delayed Turn-off" (G_light) {channel="miio:basic:light:delayOff"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zhirui Ceiling Lamp Liuying G2 Bedroom S (philips.light.lying4) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhirui Ceiling Lamp Liuying G2 Bedroom S" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+String delayOff "Delayed Turn-off" (G_light) {channel="miio:basic:light:delayOff"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Zhirui Ceiling Lamp Nordic 80W (philips.light.mceil) item file lines
@@ -12125,6 +13593,99 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
+### Mijia Smart LED Ceiling Light Pro (Living Room) (philips.light.pceil) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Mijia Smart LED Ceiling Light Pro (Living Room)" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number powerOnState "Power-on State" (G_light) {channel="miio:basic:light:powerOnState"}
+Number workMode "Light Work Mode" (G_light) {channel="miio:basic:light:workMode"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:WallScene1"}
+String WallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:WallScene2"}
+String WallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:WallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips sustainable pendent light (philips.light.pceil1) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips sustainable pendent light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:WallScene1"}
+String WallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:WallScene2"}
+String WallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:WallScene3"}
+Switch autoCct "Circadian Light" (G_light) {channel="miio:basic:light:autoCct"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Mijia Smart LED Ceiling Light Pro (Bedroom) (philips.light.pceilb) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Mijia Smart LED Ceiling Light Pro (Bedroom)" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number powerOnState "Power-on State" (G_light) {channel="miio:basic:light:powerOnState"}
+Number workMode "Light Work Mode" (G_light) {channel="miio:basic:light:workMode"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene1 "Wall Switch Scene 1" (G_light) {channel="miio:basic:light:WallScene1"}
+String WallScene2 "Wall Switch Scene 2" (G_light) {channel="miio:basic:light:WallScene2"}
+String WallScene3 "Wall Switch Scene 3" (G_light) {channel="miio:basic:light:WallScene3"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Mijia Smart Piano Light (philips.light.piano) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Mijia Smart Piano Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch metronome "Metronome" (G_light) {channel="miio:basic:light:metronome"}
+Number metronomeBeat "Metronome Time Signature" (G_light) {channel="miio:basic:light:metronomeBeat"}
+Number metronomeBpm "Metronome Tempo" (G_light) {channel="miio:basic:light:metronomeBpm"}
+Dimmer metronomeVolume "Metronome Volume" (G_light) {channel="miio:basic:light:metronomeVolume"}
+Switch remoteLowBattery "Remote Control Low Battery" (G_light) {channel="miio:basic:light:remoteLowBattery"}
+Switch seatAutoOn "Sit to Turn On Light" (G_light) {channel="miio:basic:light:seatAutoOn"}
+Switch seatAutoOff "Leave to Turn Off" (G_light) {channel="miio:basic:light:seatAutoOff"}
+Number:Time seatAwayTime "Time After Leaving Seat" (G_light) {channel="miio:basic:light:seatAwayTime"}
+Number autoSensitivity "Seat Detection Sensitivity" (G_light) {channel="miio:basic:light:autoSensitivity"}
+Switch tuningReminder "Tuning Reminder" (G_light) {channel="miio:basic:light:tuningReminder"}
+String lastTuningDate "Last Tuning Date" (G_light) {channel="miio:basic:light:lastTuningDate"}
+Switch tuningReminderExpired "Tuning Reminder Expired" (G_light) {channel="miio:basic:light:tuningReminderExpired"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
 ### Mijia Philips Study Desk Lamp (philips.light.rwread) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -12230,6 +13791,187 @@ Switch eyecare "Eyecare" (G_light) {channel="miio:basic:light:eyecare"}
 Switch notifyuser "Eye Fatigue Reminder" (G_light) {channel="miio:basic:light:notifyuser"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+```
+
+### Mijia Philips Desk Lamp 3 (philips.light.sread3) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Mijia Philips Desk Lamp 3" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch eyecare "Eye Protection Mode" (G_light) {channel="miio:basic:light:eyecare"}
+Switch notifyUser "Eye Strain Notification" (G_light) {channel="miio:basic:light:notifyUser"}
+Number:Time notifyTime "Eye Strain Notification Interval" (G_light) {channel="miio:basic:light:notifyTime"}
+Number:Time lastDv "Last Delayed Turn-off Time" (G_light) {channel="miio:basic:light:lastDv"}
+Switch nightLight "Night Light" (G_light) {channel="miio:basic:light:nightLight"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### ZhiRui read & write Desk Lamp Wi-Fi (philips.light.sread4) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "ZhiRui read & write Desk Lamp Wi-Fi" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch notifyUser "Eye Strain Notification" (G_light) {channel="miio:basic:light:notifyUser"}
+Number:Time notifyTime "Eye Strain Notification Interval" (G_light) {channel="miio:basic:light:notifyTime"}
+Number:Time lastDv "Last Delayed Turn-off Time" (G_light) {channel="miio:basic:light:lastDv"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zhirui Desk Lamp 2S (philips.light.sread6) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhirui Desk Lamp 2S" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch nightLight "Night Light" (G_light) {channel="miio:basic:light:nightLight"}
+Switch notifyUser "Eye Strain Notification" (G_light) {channel="miio:basic:light:notifyUser"}
+Switch eyecare "Eye Protection Mode" (G_light) {channel="miio:basic:light:eyecare"}
+Switch ambientPower "Ambient Light" (G_light) {channel="miio:basic:light:ambientPower"}
+Dimmer ambientBrightness "Ambient Light Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number:Time lastDv "Last Delayed Turn-off Time" (G_light) {channel="miio:basic:light:lastDv"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips Zhixiu Desk Lamp (philips.light.sread8) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips Zhixiu Desk Lamp" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch nightLight "Night Light" (G_light) {channel="miio:basic:light:nightLight"}
+Switch notifyUser "Eye Strain Notification" (G_light) {channel="miio:basic:light:notifyUser"}
+Switch eyecare "Eye Protection Mode" (G_light) {channel="miio:basic:light:eyecare"}
+Switch ambientPower "Ambient Light" (G_light) {channel="miio:basic:light:ambientPower"}
+Dimmer ambientBrightness "Ambient Light Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number:Time lastDv "Last Delayed Turn-off Time" (G_light) {channel="miio:basic:light:lastDv"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Mijia Smart LED Desk Lamp Pro (Reading Version) (philips.light.sread9) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Mijia Smart LED Desk Lamp Pro (Reading Version)" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch notifyUser "Eye Strain Notification" (G_light) {channel="miio:basic:light:notifyUser"}
+Number:Time notifyTime "Eye Strain Notification Interval" (G_light) {channel="miio:basic:light:notifyTime"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Philips F9 Floor Light (philips.light.street) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Philips F9 Floor Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Switch upOn "Uplight" (G_light) {channel="miio:basic:light:upOn"}
+Dimmer upBrightness "Uplight Brightness" (G_light) {channel="miio:basic:light:upBrightness"}
+Switch downOn "Downlight" (G_light) {channel="miio:basic:light:downOn"}
+Dimmer downBrightness "Downlight Brightness" (G_light) {channel="miio:basic:light:downBrightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Switch delay "Delayed Turn-off" (G_light) {channel="miio:basic:light:delay"}
+Number:Time delayTime "Delayed Turn-off Time" (G_light) {channel="miio:basic:light:delayTime"}
+Number:Time delayRemainTime "Delayed Turn-off Remaining Time" (G_light) {channel="miio:basic:light:delayRemainTime"}
+Switch autoEn "Auto Detection" (G_light) {channel="miio:basic:light:autoEn"}
+Switch nightLight "Smart Night Light" (G_light) {channel="miio:basic:light:nightLight"}
+Number:Time nightStartTime "Night Light Start Time" (G_light) {channel="miio:basic:light:nightStartTime"}
+Number:Time nightEndTime "Night Light End Time" (G_light) {channel="miio:basic:light:nightEndTime"}
+Switch isNight "Night Light Active" (G_light) {channel="miio:basic:light:isNight"}
+Switch syncSunlight "Sync with Sunlight" (G_light) {channel="miio:basic:light:syncSunlight"}
+Switch sunriseAlarm "Sunrise Alarm" (G_light) {channel="miio:basic:light:sunriseAlarm"}
+String sunriseAlarmSetting "Sunrise Alarm Setting" (G_light) {channel="miio:basic:light:sunriseAlarmSetting"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### ZhiRui RGB strip (philips.light.strip2) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "ZhiRui RGB strip" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Color color "Color" (G_light) {channel="miio:basic:light:color"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Xiaomi Smart Lightstrip Pro (philips.light.strip3) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Xiaomi Smart Lightstrip Pro" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Color color "Color" (G_light) {channel="miio:basic:light:color"}
+Switch musicSync "Music Sync" (G_light) {channel="miio:basic:light:musicSync"}
+Switch tvSync "TV Sync" (G_light) {channel="miio:basic:light:tvSync"}
+Switch tvConnected "TV Connected" (G_light) {channel="miio:basic:light:tvConnected"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+String rhythmColor "Music Sync Colors" (G_light) {channel="miio:basic:light:rhythmColor"}
+Number rhythmSensitivity "Music Sync Sensitivity" (G_light) {channel="miio:basic:light:rhythmSensitivity"}
+Number rhythmAnimation "Music Sync Effect" (G_light) {channel="miio:basic:light:rhythmAnimation"}
+Number diyId "Custom Mode" (G_light) {channel="miio:basic:light:diyId"}
+Number stripLength "Strip Length" (G_light) {channel="miio:basic:light:stripLength"}
+String controlScene "Control Box Modes" (G_light) {channel="miio:basic:light:controlScene"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+```
+
+### Xiaomi Smart Lightstrip Pro (philips.light.strip5) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Xiaomi Smart Lightstrip Pro" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Scene" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Color color "Color" (G_light) {channel="miio:basic:light:color"}
+Switch musicSync "Music Sync" (G_light) {channel="miio:basic:light:musicSync"}
+Switch tvSync "TV Sync" (G_light) {channel="miio:basic:light:tvSync"}
+Switch tvConnected "TV Connected" (G_light) {channel="miio:basic:light:tvConnected"}
+Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+String rhythmColor "Music Sync Colors" (G_light) {channel="miio:basic:light:rhythmColor"}
+Number rhythmSensitivity "Music Sync Sensitivity" (G_light) {channel="miio:basic:light:rhythmSensitivity"}
+Number rhythmAnimation "Music Sync Effect" (G_light) {channel="miio:basic:light:rhythmAnimation"}
+Number diyId "Custom Mode" (G_light) {channel="miio:basic:light:diyId"}
+Number stripLength "Strip Length" (G_light) {channel="miio:basic:light:stripLength"}
+String controlScene "Control Box Modes" (G_light) {channel="miio:basic:light:controlScene"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Philips Connected Lights (philips.light.virtual) item file lines

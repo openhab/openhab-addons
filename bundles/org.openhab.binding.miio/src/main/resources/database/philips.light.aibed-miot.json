@@ -61,7 +61,7 @@
 					"minimum": 1800,
 					"maximum": 4000,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"category": "colorlight"
 			},

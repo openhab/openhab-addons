@@ -110,7 +110,7 @@
 					"minimum": 2700,
 					"maximum": 5700,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"category": "colorlight"
 			},
@@ -190,15 +190,43 @@
 				"channel": "WallScene",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"stateDescription": {
-					"readOnly": true
-				},
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
 				"category": "text",
 				"tags": [
-					"Status"
+					"Setpoint"
 				],
-				"readmeComment": "The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app."
+				"readmeComment": "The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`."
+			},
+			{
+				"property": "dimming-period",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Dimming Period",
+				"channel": "dimmingPeriod",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
 			},
 			{
 				"property": "auto-cct",

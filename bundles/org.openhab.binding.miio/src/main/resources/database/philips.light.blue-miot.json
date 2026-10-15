@@ -134,16 +134,17 @@
 				"channel": "WallScene",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"stateDescription": {
-					"readOnly": true
-				},
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
 				"category": "text",
 				"tags": [
-					"Status",
-					"Info"
+					"Setpoint"
 				],
-				"readmeComment": "The 3 scenes the wall switch cycles through, as a JSON array of scene numbers. Set them in the Mi Home app."
+				"readmeComment": "The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`."
 			},
 			{
 				"property": "",

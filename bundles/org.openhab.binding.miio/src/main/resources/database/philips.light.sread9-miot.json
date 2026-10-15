@@ -110,7 +110,7 @@
 					"minimum": 2700,
 					"maximum": 5500,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"category": "colorlight"
 			},
