@@ -20,6 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class DaysetConfiguration {
+public class DaysetConfiguration extends WeekendConfiguration {
     public String name = "";
 }
