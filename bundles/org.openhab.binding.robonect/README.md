@@ -86,7 +86,7 @@ and service operations. Unsupported endpoints are ignored, so these channels can
 
 The binding creates `battery-<slot>-*` and `wire-sensor-<slot>-*` channels from the returned lists, with slots numbered
 from 1. Battery groups expose ID, charge, voltage, current, temperature, full capacity, and remaining capacity; wire
-groups expose label, quality, and the `a`, `n`, `f`, and `g1` diagnostic values. The existing unnumbered `battery-*`
+groups expose label, quality, and the `a`, `n`, `f`, `g1`, and `g2` diagnostic values. The existing unnumbered `battery-*`
 and remote-start name, distance, and proportion channels are writable where supported by the Robonect API. Remote-start
 names are limited to 16 characters; distances are limited to 0-300 metres and proportions to 0-100 percent. The binding
 truncates longer names and logs a warning. The visible, path, and corridor-cut channels can be written by enabling the

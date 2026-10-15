@@ -130,14 +130,19 @@ public class RobonectHandlerTest {
         subject.setRobonectClient(robonectClientMock);
         ModelParser parser = new ModelParser();
         when(robonectClientMock.getWireInfo()).thenReturn(parser.parse("""
-                {"successful":true,"sensors":[{"description":"Left","quality":70},
-                {"description":"Right","quality":80},{"description":"Rear","quality":90},
-                {"description":"Extra","quality":60},{"description":"Fifth","quality":50}]}
+                {"successful":true,"sensors":[{"description":"Left","quality":70,"g2":0},
+                {"description":"Right","quality":80,"g2":-25},{"description":"Rear","quality":90},
+                {"description":"Extra","quality":60},{"description":"Fifth","quality":50,"g2":50}]}
                 """, WireInfo.class));
-        subject.handleCommand(new ChannelUID(thing.getUID(), "wire-sensor-1-label"), RefreshType.REFRESH);
+        subject.handleCommand(new ChannelUID(thing.getUID(), "wire-sensor-1-g2"), RefreshType.REFRESH);
         ArgumentCaptor<Thing> updated = ArgumentCaptor.forClass(Thing.class);
         verify(callbackMock).thingUpdated(updated.capture());
         assertNotNull(updated.getValue().getChannel("wire-sensor-5-label"));
+        assertNotNull(updated.getValue().getChannel("wire-sensor-5-g2"));
+        verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-1-g2"), new DecimalType(0));
+        verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-2-g2"), new DecimalType(-25));
+        verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-5-g2"), new DecimalType(50));
+        verify(callbackMock, never()).stateUpdated(eq(new ChannelUID(thing.getUID(), "wire-sensor-3-g2")), any());
 
         when(robonectClientMock.getBatteryInfo()).thenReturn(parser.parse("""
                 {"successful":true,"batteries":[{"id":0,"charge":70},{"id":1,"charge":80}]}
@@ -155,6 +160,8 @@ public class RobonectHandlerTest {
         subject.handleCommand(new ChannelUID(thing.getUID(), "wire-sensor-1-label"), RefreshType.REFRESH);
         verify(callbackMock, atLeastOnce()).thingUpdated(updated.capture());
         assertNull(updated.getValue().getChannel("wire-sensor-5-label"));
+        assertNull(updated.getValue().getChannel("wire-sensor-5-g2"));
+        verify(callbackMock).stateUpdated(eq(new ChannelUID(thing.getUID(), "wire-sensor-1-g2")), any());
         assertNotNull(updated.getValue().getChannel("battery-2-charge"));
     }
 

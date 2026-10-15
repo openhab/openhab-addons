@@ -28,6 +28,7 @@ public class Sensor {
     private @Nullable Integer n;
     private @Nullable Integer f;
     private @Nullable Integer g1;
+    private @Nullable Integer g2;
 
     public @Nullable String getDescription() {
         return description;
@@ -51,5 +52,9 @@ public class Sensor {
 
     public @Nullable Integer getG1() {
         return g1;
+    }
+
+    public @Nullable Integer getG2() {
+        return g2;
     }
 }

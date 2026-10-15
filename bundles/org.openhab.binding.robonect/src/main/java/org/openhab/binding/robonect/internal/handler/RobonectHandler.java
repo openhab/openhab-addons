@@ -1562,7 +1562,7 @@ public class RobonectHandler extends BaseThingHandler {
             String prefix = "wire-sensor-" + (index + 1) + "-";
             channels.add(createChannel(prefix + "label", "String", "wireSensorLabelType"));
             channels.add(createChannel(prefix + "quality", "Number:Dimensionless", "wireSensorQualityType"));
-            for (String measurement : List.of("a", "n", "f", "g1")) {
+            for (String measurement : List.of("a", "n", "f", "g1", "g2")) {
                 channels.add(createChannel(prefix + measurement, "Number", "wireSensorValueType"));
             }
         }
@@ -1614,6 +1614,9 @@ public class RobonectHandler extends BaseThingHandler {
         Integer g1 = sensor.getG1();
         if (g1 != null)
             updateState(prefix + "g1", new DecimalType(g1));
+        Integer g2 = sensor.getG2();
+        if (g2 != null)
+            updateState(prefix + "g2", new DecimalType(g2));
     }
 
     private void updateRemoteStart(int number, @Nullable Remote remote) {
