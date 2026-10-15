@@ -290,6 +290,7 @@ public enum MiIoDevices {
     VIOMI_VACUUM_V27("viomi.vacuum.v27", "VIOMI Alpha 2 Plus", THING_TYPE_BASIC),
     VIOMI_VACUUM_V29("viomi.vacuum.v29", "VIOMI Eagle", THING_TYPE_BASIC),
     VIOMI_VACUUM_V35("viomi.vacuum.v35", "Viomi V2 Max", THING_TYPE_BASIC),
+    VIOMI_VACUUM_V36("viomi.vacuum.v36", "Viomi V5", THING_TYPE_BASIC),
     VIOMI_VACUUM_V37("viomi.vacuum.v37", "Viomi Alpha Lite", THING_TYPE_BASIC),
     VIOMI_VACUUM_V38("viomi.vacuum.v38", "Viomi V5 Pro", THING_TYPE_BASIC),
     VIOMI_VACUUM_V40("viomi.vacuum.v40", "Viomi Alpha 2 Pro(WH)", THING_TYPE_BASIC),
