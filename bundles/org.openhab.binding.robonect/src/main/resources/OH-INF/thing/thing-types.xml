@@ -167,6 +167,7 @@
 			<channel id="extension-output-2-status" typeId="extensionSwitchType"/>
 			<channel id="push-url" typeId="pushStringType"/>
 			<channel id="push-username" typeId="pushStringType"/>
+			<channel id="push-password" typeId="pushPasswordType"/>
 			<channel id="push-interval" typeId="pushIntervalType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
@@ -536,6 +537,13 @@
 	<channel-type id="pushIntervalType">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Push Service Interval</label>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="pushPasswordType">
+		<item-type>String</item-type>
+		<label>Push Service Password</label>
+		<description>Write-only password for the push service. The password cannot be read back; the state remains undefined.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="pushTriggerSwitchType">

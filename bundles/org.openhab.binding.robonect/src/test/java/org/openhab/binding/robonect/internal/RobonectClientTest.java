@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -39,6 +40,12 @@ import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 
 /**
  * The goal of this class is to test the functionality of the RobonectClient,
@@ -376,7 +383,12 @@ public class RobonectClientTest {
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenThrow(new InterruptedException("Mock Interrupted Exception"));
-        assertThrows(RobonectCommunicationException.class, () -> subject.getMowerInfo());
+        try {
+            assertThrows(RobonectCommunicationException.class, () -> subject.getMowerInfo());
+            assertTrue(Thread.currentThread().isInterrupted());
+        } finally {
+            Thread.interrupted();
+        }
     }
 
     @Test
@@ -387,6 +399,72 @@ public class RobonectClientTest {
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenThrow(new ExecutionException(new Exception("Mock Exception")));
         assertThrows(RobonectCommunicationException.class, () -> subject.getMowerInfo());
+    }
+
+    @Test
+    public void shouldEncodePushPasswordAndParseOtherSettings()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        String url = "http://123.456.789.123/json?cmd=push&pass=a+b%26%3F%23%3D%C3%A4";
+        mockWebResponse(url, "{\"successful\":true,\"push\":{\"trigger\":{\"interval\":30}}}");
+        var result = subject.updatePush("pass", "a b&?#=ä");
+        assertTrue(result.isSuccessful());
+        assertEquals(30, Objects.requireNonNull(Objects.requireNonNull(result.getPush()).getTrigger()).getInterval());
+        verify(httpClientMock).newRequest(url);
+    }
+
+    @Test
+    public void shouldNotExposePushPasswordInTransportException()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        String password = "test-secret";
+        String url = "http://123.456.789.123/json?cmd=push&pass=" + password;
+        when(httpClientMock.newRequest(url)).thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenThrow(new ExecutionException(new IllegalStateException(url)));
+        var error = assertThrows(RobonectCommunicationException.class, () -> subject.updatePush("pass", password));
+        assertFalse(error.toString().contains(password));
+        assertFalse(error.toString().contains("pass="));
+        assertNull(error.getCause());
+    }
+
+    @Test
+    public void shouldNotLogPushPasswordUrlOrResponseAtDebugLevel()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        Logger logger = (Logger) LoggerFactory.getLogger(RobonectClient.class);
+        Level previousLevel = logger.getLevel();
+        ListAppender<ILoggingEvent> events = new ListAppender<>();
+        events.start();
+        logger.addAppender(events);
+        logger.setLevel(Level.DEBUG);
+        try {
+            mockWebResponse("http://123.456.789.123/json?cmd=push&pass=test-secret",
+                    "{\"successful\":true,\"unexpected\":\"test-secret\"}");
+            assertTrue(subject.updatePush("pass", "test-secret").isSuccessful());
+            assertTrue(events.list.stream().noneMatch(event -> event.getFormattedMessage().contains("test-secret")
+                    || event.getFormattedMessage().contains("pass=")));
+        } finally {
+            logger.detachAppender(events);
+            logger.setLevel(previousLevel);
+            events.stop();
+        }
+    }
+
+    @Test
+    public void shouldNotExposePushPasswordInRequestConstructionException() {
+        String url = "http://123.456.789.123/json?cmd=push&pass=test-secret";
+        when(httpClientMock.newRequest(url)).thenThrow(new IllegalArgumentException(url));
+        var error = assertThrows(RobonectCommunicationException.class, () -> subject.updatePush("pass", "test-secret"));
+        assertFalse(error.toString().contains("test-secret"));
+        assertNull(error.getCause());
+    }
+
+    @Test
+    public void shouldNotExposePasswordInMalformedResponseException()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        mockWebResponse("http://123.456.789.123/json?cmd=push&pass=test-secret", "not-json test-secret");
+        var error = assertThrows(RobonectCommunicationException.class, () -> subject.updatePush("pass", "test-secret"));
+        assertFalse(error.toString().contains("test-secret"));
+        assertNull(error.getCause());
     }
 
     @Test

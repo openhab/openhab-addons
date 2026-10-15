@@ -127,8 +127,14 @@ start and end times and recognizes end-of-day mode where the JSON API reports on
 change with a Robonect firmware update and varies by language, it is disabled by default; failures fall back to normal
 JSON polling.
 
-The weather, timer, push, and service channels can change mower configuration. Push credentials are intentionally not
-exposed as channels. To receive a push notification, configure the Robonect push URL as
+The weather, timer, push, and service channels can change mower configuration. The write-only `push-password` String
+channel accepts a new push-service password as a command. Its state remains `UNDEF`; the password cannot be read back.
+Automatic state prediction is disabled for this channel; also set `autoupdate="false"` on its Item. The binding applies
+the other push settings returned by the password update and reads them again after five seconds. Password request
+URLs and responses are excluded from binding logs, but openHAB Item commands can appear in event logs. The example
+sitemap includes a plain text password input for testing; it does not mask the password.
+
+To receive a push notification, configure the Robonect push URL as
 `http://<openhab-host>:8080/robonect/robonect:mower:<thing-id>`. A received notification triggers an immediate status
 refresh; it does not expose the notification payload to openHAB.
 

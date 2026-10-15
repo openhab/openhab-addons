@@ -25,8 +25,8 @@ public class Status {
     private MowerStatus status;
     private MowerMode mode;
     private boolean stopped;
-    private Boolean home;
-    private Integer prevent;
+    private boolean home;
+    private int prevent;
     private int distance;
 
     /**
@@ -71,11 +71,11 @@ public class Status {
         return stopped;
     }
 
-    public Boolean getHome() {
+    public boolean getHome() {
         return home;
     }
 
-    public Integer getPrevent() {
+    public int getPrevent() {
         return prevent;
     }
 

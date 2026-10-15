@@ -927,6 +927,45 @@ public class RobonectHandlerTest {
         verify(robonectClientMock).updateTimer(1, "start", "08:15");
     }
 
+    @Test
+    public void shouldWritePushPasswordWithoutPublishingItAndApplyReturnedSettings() {
+        var response = new ModelParser().parse("""
+                {"successful":true,"push":{"server":{"name":"push-user"}}}
+                """, PushInfo.class);
+        when(robonectClientMock.updatePush("pass", "new-password")).thenReturn(response);
+        when(robonectClientMock.getPushInfo()).thenReturn(response);
+        ChannelUID password = new ChannelUID(new ThingUID("1:2:3"), "push-password");
+        subject.handleCommand(password, new StringType("new-password"));
+        verify(robonectClientMock).updatePush("pass", "new-password");
+        verify(callbackMock).stateUpdated(password, UnDefType.UNDEF);
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "push-username"),
+                new StringType("push-user"));
+        verify(callbackMock, never()).stateUpdated(eq(password), any(StringType.class));
+        verify(robonectClientMock, never()).getPushInfo();
+        runScheduledRefresh();
+        verify(robonectClientMock).getPushInfo();
+    }
+
+    @Test
+    public void shouldKeepPushPasswordUndefinedOnLinkAndRefreshWithoutReadingDevice() {
+        ChannelUID password = new ChannelUID(new ThingUID("1:2:3"), "push-password");
+        subject.channelLinked(password);
+        subject.handleCommand(password, RefreshType.REFRESH);
+        verify(callbackMock, times(2)).stateUpdated(password, UnDefType.UNDEF);
+        verifyNoInteractions(robonectClientMock, commandScheduler);
+    }
+
+    @Test
+    public void shouldKeepPushPasswordUndefinedAfterRejectedWrite() {
+        when(robonectClientMock.updatePush("pass", "new-password"))
+                .thenReturn(new ModelParser().parse("{\"successful\":false}", PushInfo.class));
+        ChannelUID password = new ChannelUID(new ThingUID("1:2:3"), "push-password");
+        subject.handleCommand(password, new StringType("new-password"));
+        verify(callbackMock).stateUpdated(password, UnDefType.UNDEF);
+        verify(callbackMock, never()).stateUpdated(eq(password), any(StringType.class));
+        verifyNoInteractions(commandScheduler);
+    }
+
     private void runScheduledRefresh() {
         var refresh = ArgumentCaptor.forClass(Runnable.class);
         verify(commandScheduler).schedule(refresh.capture(), eq(5L), eq(TimeUnit.SECONDS));

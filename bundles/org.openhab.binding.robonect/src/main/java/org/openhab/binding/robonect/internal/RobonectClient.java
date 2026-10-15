@@ -80,6 +80,8 @@ import org.openhab.binding.robonect.internal.model.cmd.WlanCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonParseException;
+
 /**
  * The {@link RobonectClient} class is responsible to communicate with the robonect module via it's HTTP interface.
  *
@@ -89,6 +91,7 @@ import org.slf4j.LoggerFactory;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Ajax UI compatibility
  * @author Nico Brüttner - Push mode web interface support
+ * @author Nico Brüttner - Write-only push password commands
  */
 public class RobonectClient {
 
@@ -471,7 +474,17 @@ public class RobonectClient {
 
     /** Updates one push-service property. */
     public PushInfo updatePush(String parameter, String value) {
-        return parser.parse(sendCommand(new PushCommand().withValue(parameter, value)), PushInfo.class);
+        boolean sensitive = "pass".equals(parameter);
+        try {
+            return parser.parse(
+                    sendCommand(new PushCommand().withValue(parameter, value), baseUrl, !sensitive, sensitive),
+                    PushInfo.class);
+        } catch (JsonParseException e) {
+            if (sensitive) {
+                throw new RobonectCommunicationException("Could not parse response to push-service password update");
+            }
+            throw e;
+        }
     }
 
     /** Returns the selected push-service mode from the unofficial web interface, or null if it is absent or invalid. */
@@ -588,8 +601,12 @@ public class RobonectClient {
     }
 
     private String sendCommand(Command command, String commandBaseUrl, boolean logResponseBody) {
+        return sendCommand(command, commandBaseUrl, logResponseBody, false);
+    }
+
+    private String sendCommand(Command command, String commandBaseUrl, boolean logResponseBody, boolean sensitive) {
         try {
-            if (logger.isDebugEnabled()) {
+            if (!sensitive && logger.isDebugEnabled()) {
                 logger.debug("send HTTP GET to: {} ", command.toCommandURL(commandBaseUrl));
             }
             ContentResponse response = httpClient.newRequest(command.toCommandURL(commandBaseUrl))
@@ -610,8 +627,20 @@ public class RobonectClient {
             }
             return responseString;
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            if (sensitive) {
+                // Transport exceptions can contain the request URL, so do not retain their causes here.
+                throw new RobonectCommunicationException("Could not update push-service password");
+            }
             throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(commandBaseUrl),
                     e);
+        } catch (RuntimeException e) {
+            if (sensitive) {
+                throw new RobonectCommunicationException("Could not update push-service password");
+            }
+            throw e;
         }
     }
 

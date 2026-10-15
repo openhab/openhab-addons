@@ -136,6 +136,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Nico Brüttner - Ajax UI compatibility
  * @author Nico Brüttner - Dynamic telemetry and push trigger channels
  * @author Nico Brüttner - Command responses and delayed state refresh
+ * @author Nico Brüttner - Write-only push password channel
  */
 public class RobonectHandler extends BaseThingHandler {
 
@@ -279,6 +280,7 @@ public class RobonectHandler extends BaseThingHandler {
                 break;
             case CHANNEL_PUSH_URL:
             case CHANNEL_PUSH_USERNAME:
+            case CHANNEL_PUSH_PASSWORD:
             case CHANNEL_PUSH_INTERVAL:
                 updatePush(channelUID.getId(), command);
                 break;
@@ -946,11 +948,18 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void updatePush(String channelId, Command command) {
+        if (channelId.equals(CHANNEL_PUSH_PASSWORD)) {
+            updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
+        }
         String parameter;
         String value;
         if (command instanceof StringType string) {
-            parameter = channelId.equals(CHANNEL_PUSH_URL) ? "url"
-                    : channelId.equals(CHANNEL_PUSH_USERNAME) ? "name" : null;
+            parameter = switch (channelId) {
+                case CHANNEL_PUSH_URL -> "url";
+                case CHANNEL_PUSH_USERNAME -> "name";
+                case CHANNEL_PUSH_PASSWORD -> "pass";
+                default -> null;
+            };
             value = string.toFullString();
         } else if (command instanceof QuantityType<?> quantity && channelId.equals(CHANNEL_PUSH_INTERVAL)) {
             parameter = "interval";
@@ -1043,6 +1052,10 @@ public class RobonectHandler extends BaseThingHandler {
 
     private void refreshChannels(ChannelUID channelUID) {
         String channelId = channelUID.getId();
+        if (channelId.equals(CHANNEL_PUSH_PASSWORD)) {
+            updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
+            return;
+        }
         if (channelId.equals(CHANNEL_PUSH_MODE)) {
             refreshPushMode();
             return;
@@ -1769,6 +1782,7 @@ public class RobonectHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         disposed = false;
+        updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
         ajaxUiScraping = robonectConfig.isAjaxUiScraping();
         configureUnofficialChannels(robonectConfig.isUseUnofficialApi());
