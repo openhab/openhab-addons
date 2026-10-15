@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -98,7 +99,8 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
     public void initialize() {
         cfg = getConfigAs(TedeeBridgeConfiguration.class);
         if (cfg.ip.isBlank() || cfg.apiToken.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP and API token required");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        "@text/status.local-bridge.configuration-required");
             return;
         }
 
@@ -246,10 +248,13 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
             if (currentApi.bridgeStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge HTTP error");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        "@text/status.local-bridge.http-error");
             }
         } catch (TedeeApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        localizedStatusDescription("status.api-communication-error",
+                Objects.toString(e.getMessage(), "Unknown error")));
         }
     }
 
@@ -403,6 +408,12 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         }
 
         return value != null && !value.isJsonNull() ? value.getAsString() : null;
+    }
+
+    private static String localizedStatusDescription(String key, String detail) {
+        JsonArray arguments = new JsonArray();
+        arguments.add(detail);
+        return "@text/" + key + " " + arguments;
     }
 
     /**

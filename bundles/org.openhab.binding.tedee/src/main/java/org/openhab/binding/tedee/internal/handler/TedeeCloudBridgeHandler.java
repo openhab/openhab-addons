@@ -17,6 +17,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+
+import com.google.gson.JsonArray;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,6 +36,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +86,8 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
         cfg = getConfigAs(TedeeCloudConfiguration.class);
 
         if (cfg.personalAccessKey.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Personal Access Key required");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        "@text/status.cloud-bridge.access-key-required");
             return;
         }
 
@@ -209,11 +214,21 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
                     ? ThingStatusDetail.CONFIGURATION_ERROR
                     : ThingStatusDetail.COMMUNICATION_ERROR;
 
-            updateStatus(ThingStatus.OFFLINE, detail, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, detail,
+        localizedStatusDescription("status.api-communication-error",
+                Objects.toString(e.getMessage(), "Unknown error")));
         } catch (RuntimeException e) {
             logger.error("Unexpected error while checking Tedee Cloud", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            localizedStatusDescription("status.cloud-bridge.unexpected-error",
+            Objects.toString(e.getMessage(), "Unknown error")));
         }
+    }
+
+    private static String localizedStatusDescription(String key, String detail) {
+        JsonArray arguments = new JsonArray();
+        arguments.add(detail);
+        return "@text/" + key + " " + arguments;
     }
 
     /**
