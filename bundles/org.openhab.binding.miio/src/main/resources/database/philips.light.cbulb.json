@@ -68,7 +68,7 @@
 					"minimum": 1882,
 					"maximum": 7000,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				}
 			},
 			{

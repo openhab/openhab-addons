@@ -2996,7 +2996,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3011,7 +3012,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3026,7 +3028,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3073,7 +3076,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3088,7 +3092,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3103,7 +3108,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3200,7 +3206,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3299,7 +3306,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3314,7 +3322,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3329,7 +3338,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3344,7 +3354,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3359,7 +3370,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3374,7 +3386,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3410,7 +3423,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3425,7 +3439,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3440,7 +3455,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3468,7 +3484,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3483,7 +3500,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3498,7 +3516,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3552,7 +3571,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3567,7 +3587,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3582,7 +3603,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3597,7 +3619,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3612,7 +3635,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -3627,7 +3651,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cct                        | Number:Temperature   | Color Temperature                        |            |
 | dv                         | Number:Time          | Delayed Turn-off                         |            |
 | WallSceneEn                | Switch               | Wall Switch Scenes                       |            |
-| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. Set them in the Mi Home app. |
+| WallScene                  | String               | Wall Switch Scene List                   | The 3 scenes the wall switch cycles through, as `[[0,scene],[brightness,color temperature],...]`. |
+| dimmingPeriod              | Number               | Dimming Period                           |            |
 | autoCct                    | String               | Automatic Color Temperature              | Follows the time of day. Value mapping `["true"="On","false"="Off"]` |
 | MibandStatus               | String               | Mi Band Status                           |            |
 | actions                    | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
@@ -11539,6 +11564,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11557,6 +11583,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11575,6 +11602,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11631,6 +11659,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11649,6 +11678,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11667,6 +11697,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11788,6 +11819,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11908,6 +11940,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11926,6 +11959,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11944,6 +11978,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11962,6 +11997,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11980,6 +12016,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -11998,6 +12035,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12043,6 +12081,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12061,6 +12100,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12079,6 +12119,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12113,6 +12154,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12131,6 +12173,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12149,6 +12192,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12215,6 +12259,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12233,6 +12278,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12251,6 +12297,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12269,6 +12316,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12287,6 +12335,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
@@ -12305,6 +12354,7 @@ Number:Temperature cct "Color Temperature" (G_light) {channel="miio:basic:light:
 Number:Time dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Switch Scenes" (G_light) {channel="miio:basic:light:WallSceneEn"}
 String WallScene "Wall Switch Scene List" (G_light) {channel="miio:basic:light:WallScene"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String autoCct "Automatic Color Temperature" (G_light) {channel="miio:basic:light:autoCct"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
