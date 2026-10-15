@@ -404,8 +404,7 @@ public class EyeOnWaterClient {
      */
     private String getUserAgent() {
         org.osgi.framework.Bundle bundle = FrameworkUtil.getBundle(this.getClass());
-        String version = bundle != null ? bundle.getVersion().toString() : "5.3.0-SNAPSHOT";
-        return "openHAB/" + version;
+        return bundle != null ? "openHAB/" + bundle.getVersion().toString() : "openHAB";
     }
 
     /**
