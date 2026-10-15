@@ -282,7 +282,9 @@ Currently the miio binding supports more than 430 different models.
 | Mi Smart Air Fryer (3.5L)          | miio:basic       | [careli.fryer.maf02](#careli-fryer-maf02) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Frying Pan                  | miio:basic       | [careli.fryer.maf03](#careli-fryer-maf03) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Air Fryer 6.5L        | miio:basic       | [careli.fryer.maf10a](#careli-fryer-maf10a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Qingping Air Monitor Lite          | miio:basic       | [cgllc.airm.cgd1st](#cgllc-airm-cgd1st) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Qingping Air Monitor Lite          | miio:basic       | [cgllc.airm.cgdn1](#cgllc-airm-cgdn1) | Yes          |            |
+| Qingping Air Monitor 2             | miio:basic       | [cgllc.airm.cgs2](#cgllc-airm-cgs2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Multifunction Air Monitor       | miio:basic       | [cgllc.airmonitor.b1](#cgllc-airmonitor-b1) | Yes          |            |
 | Qingping Air Monitor               | miio:basic       | [cgllc.airmonitor.s1](#cgllc-airmonitor-s1) | Yes          |            |
 | Mi Universal Remote                | miio:unsupported | chuangmi.ir.v2         | No           |            |
@@ -892,33 +894,81 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | reservation_left_time      | Number:Time          | Air Fryer - Scheduled Start Left Time    |            |
 | cooking_weight             | Number               | Air Fryer - Cooking Weight               |            |
 
+### Qingping Air Monitor Lite (<a name="cgllc-airm-cgd1st">cgllc.airm.cgd1st</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| pm10_density               | Number:Density       | PM10 Density                             |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| co2_density                | Number:Dimensionless | CO2 Density                              |            |
+| tvoc_density               | Number               | TVOC Density                             | Read by the Mi Home app, not in the released MIoT spec. |
+| battery_level              | Number:Dimensionless | Battery Level                            |            |
+| charging_state             | Number               | Charging State                           | Value mapping `["1"="Charging","2"="Not charging","3"="Not chargeable"]` |
+| start_time                 | Number               | Screen Off Start Time                    | Minutes after midnight (480 is 08:00). The screen is switched off between the start and end time; a start time of 0 disables it. |
+| end_time                   | Number               | Screen Off End Time                      | Minutes after midnight (480 is 08:00). The screen is switched off between the start and end time; a start time of 0 disables it. |
+| monitoring_frequency       | Number               | PM2.5 and PM10 Detection Frequency       | Value mapping `["1"="Every second","60"="Every minute","300"="Every 5 minutes","600"="Every 10 minutes"]` |
+| screen_off                 | Number               | Screen Off After                         | Value mapping `["0"="Never","15"="15 seconds","30"="30 seconds","60"="1 minute","300"="5 minutes","600"="10 minutes"]` |
+| tempature_unit             | String               | Temperature Unit                         | Value mapping `["c"="Celsius","f"="Fahrenheit"]` |
+| screensaver_start          | Number               | Screen Saver Start                       | Value mapping `["60"="After 1 minute","120"="After 2 minutes","300"="After 5 minutes","600"="After 10 minutes"]` |
+| screensaver_style          | Number               | Screen Saver Style                       | Value mapping `["1"="Current reading","0"="All readings, rotating","3"="Clock with current reading","2"="Clock with rotating readings"]` |
+| auto_power_off             | Number               | Auto Power Off (on Battery)              | Value mapping `["0"="Never","300"="After 5 minutes","600"="After 10 minutes","1800"="After 30 minutes","3600"="After 1 hour"]` |
+| time_format                | Number               | Screen Time Format                       | Value mapping `["1"="12-hour","0"="24-hour"]` |
+| grading_standard           | Number               | Grading Standard                         | Value mapping `["0"="China","1"="US"]` |
+| actions                    | String               | Actions                                  | CO2 calibration takes 90 seconds; place the device next to an open window. Value mapping `["calibrate-co2"="Calibrate CO2 Sensor"]` |
+
 ### Qingping Air Monitor Lite (<a name="cgllc-airm-cgdn1">cgllc.airm.cgdn1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["settings-set-start-time"="Set Start Time","settings-set-end-time"="Set End Time","settings-set-frequency"="Set Frequency","settings-set-screen-off"="Set Screen Off","settings-set-device-off"="Set Device Off","settings-set-temp-unit"="Set Temp Unit"]` |
-| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| pm2_5_density              | Number:Density       | Environment - PM2 5 Density              |            |
-| pm10_density               | Number:Density       | Environment - PM10 Density               |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| co2_density                | Number:Density       | Environment - CO2 Density                |            |
-| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
-| charging_state             | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not charging","3"="Not chargeable"]` |
-| voltage                    | Number:ElectricPotential | Battery - Voltage                        |            |
-| mac                        | String               | Mac - Mac                                |            |
-| monitoring_frequency       | Number:Time          | Settings - Monitoring Frequency          | Value mapping `["1"="Second","60"="Second","300"="Second","600"="Second","0"="Null"]` |
-| screen_off                 | Number:Time          | Settings - Screen Off                    | Value mapping `["15"="Second","30"="Second","60"="Second","300"="Second","0"="Null"]` |
-| device_off                 | Number:Time          | Settings - Device Off                    | Value mapping `["15"="Minute","30"="Minute","60"="Minute","0"="Null"]` |
-| tempature_unit             | String               | Settings - Tempature Unit                |            |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| pm10_density               | Number:Density       | PM10 Density                             |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| co2_density                | Number:Dimensionless | CO2 Density                              |            |
+| battery_level              | Number:Dimensionless | Battery Level                            |            |
+| charging_state             | Number               | Charging State                           | Value mapping `["1"="Charging","2"="Not charging","3"="Not chargeable"]` |
+| voltage                    | Number:ElectricPotential | Battery Voltage                          | Not shown in the Mi Home app; the spec gives no unit, millivolt is assumed. |
+| mac                        | String               | MAC Address                              |            |
+| start_time                 | Number               | Screen Off Start Time                    | Minutes after midnight (480 is 08:00). The screen is switched off between the start and end time; a start time of 0 disables it. |
+| end_time                   | Number               | Screen Off End Time                      | Minutes after midnight (480 is 08:00). The screen is switched off between the start and end time; a start time of 0 disables it. |
+| monitoring_frequency       | Number               | PM2.5 and PM10 Detection Frequency       | Value mapping `["1"="Every second","60"="Every minute","300"="Every 5 minutes","600"="Every 10 minutes"]` |
+| screen_off                 | Number               | Screen Off After                         | Value mapping `["15"="15 seconds","30"="30 seconds","60"="1 minute","300"="5 minutes"]` |
+| device_off                 | Number               | Power Off After (on Battery, Old Setting) | Used by older versions of the app; the current app sets Auto Power Off (auto_power_off). Value mapping `["15"="15 minutes","30"="30 minutes","60"="60 minutes","0"="Never"]` |
+| tempature_unit             | String               | Temperature Unit                         | Value mapping `["c"="Celsius","f"="Fahrenheit"]` |
+| screensaver_start          | Number               | Screen Saver Start                       | Screen saver; needs a firmware with screen saver support (the app hides it for older firmware). Value mapping `["60"="After 1 minute","120"="After 2 minutes","300"="After 5 minutes","600"="After 10 minutes"]` |
+| screensaver_style          | Number               | Screen Saver Style                       | Screen saver; needs a firmware with screen saver support (the app hides it for older firmware). Value mapping `["1"="Current reading","0"="All readings, rotating","3"="Clock with current reading","2"="Clock with rotating readings"]` |
+| auto_power_off             | Number               | Auto Power Off (on Battery)              | Value mapping `["0"="Never","300"="After 5 minutes","600"="After 10 minutes","1800"="After 30 minutes","3600"="After 1 hour"]` |
+| actions                    | String               | Actions                                  | CO2 calibration takes 90 seconds; place the device next to an open window. Value mapping `["calibrate-co2"="Calibrate CO2 Sensor"]` |
+
+### Qingping Air Monitor 2 (<a name="cgllc-airm-cgs2">cgllc.airm.cgs2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| pm10_density               | Number:Density       | PM10 Density                             |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| co2_density                | Number:Dimensionless | CO2 Density                              |            |
+| tvoc_density               | Number               | TVOC Density                             | The unit is given by the TVOC Unit channel. |
+| battery_level              | Number:Dimensionless | Battery Level                            |            |
+| charging_state             | Number               | Charging State                           | Value mapping `["1"="Charging","2"="Not charging","3"="Not chargeable"]` |
+| noise_decibel              | Number               | Noise Level                              |            |
+| temperature_unit           | Number               | Temperature Unit                         | Value mapping `["12289"="Celsius","12290"="Fahrenheit"]` |
+| tvoc_unit                  | Number               | TVOC Unit                                | Value mapping `["12296"="VOC index","12293"="ppb","12292"="mg/m3"]` |
+| time_mode                  | Switch               | 24-Hour Clock                            | ON when the screen clock uses the 24-hour format. |
+| standard                   | Number               | Air Quality Grading Standard             | Value mapping `["16384"="China","16385"="US"]` |
+| sensor_states              | String               | Sensor States                            | JSON text with the state of each sensor, for example InitializingState, DisableState, NotInstallState or AbnormalState. |
 
 ### Mi Multifunction Air Monitor (<a name="cgllc-airmonitor-b1">cgllc.airmonitor.b1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | battery                    | Number               | Battery                                  |            |
-| pm25                       | Number               | PM2.5                                    |            |
-| co2                        | Number               | CO2e                                     |            |
-| tvoc                       | Number               | tVOC                                     |            |
+| pm25                       | Number:Density       | PM2.5                                    |            |
+| co2                        | Number:Dimensionless | CO2e                                     |            |
+| tvoc                       | Number               | tVOC                                     | The unit (ppb or mg/m3) is set in the Mi Home app. |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
 
@@ -927,11 +977,14 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | battery                    | Number               | Battery                                  | The device with firmware "4.1.8_9999" stops recognizing parameter "battery" in "get_value" command. The "battery" value request was extracted to separate command in order to keep backward compatibility to the devices with older firmware. |
-| pm25                       | Number               | PM2.5                                    |            |
-| co2                        | Number               | CO2                                      |            |
-| tvoc                       | Number               | tVOC                                     |            |
+| pm25                       | Number:Density       | PM2.5                                    |            |
+| co2                        | Number:Dimensionless | CO2                                      |            |
+| tvoc                       | Number               | tVOC                                     | The unit (ppb or mg/m3) is set in the Mi Home app. |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
+| aqi                        | Number               | Air Quality Index                        |            |
+| tvoc_unit                  | String               | tVOC Unit                                | Value mapping `["ppb"="ppb","mg_m3"="mg/m3"]` |
+| temperature_unit           | String               | Temperature Unit                         | Value mapping `["c"="Celsius","f"="Fahrenheit"]` |
 
 ### Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway) (<a name="chuangmi-plug-212a01">chuangmi.plug.212a01</a>) Channels
 
@@ -7784,11 +7837,11 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | power                      | Switch               | Power                                    |            |
 | aqi                        | Number               | Air Quality Index                        |            |
 | battery                    | Number               | Battery                                  |            |
-| usb_state                  | Switch               | USB State                                |            |
-| time_state                 | Switch               | Time State                               |            |
-| night_state                | Switch               | Night State                              |            |
-| night_begin                | Number               | Night Begin Time                         |            |
-| night_end                  | Number               | Night End Time                           |            |
+| usb_state                  | Switch               | USB Power Connected                      |            |
+| time_state                 | Switch               | Show Clock                               |            |
+| night_state                | Switch               | Night Mode                               |            |
+| night_begin                | Number               | Night Mode Start Time                    | Seconds after midnight (28800 is 08:00). |
+| night_end                  | Number               | Night Mode End Time                      | Seconds after midnight (28800 is 08:00). |
 
 ### Xiaomi Smart Air Purifier 4 Compact (<a name="zhimi-airp-cpa4">zhimi.airp.cpa4</a>) Channels
 
@@ -9136,26 +9189,80 @@ Number:Time reservation_left_time "Air Fryer - Scheduled Start Left Time" (G_fry
 Number cooking_weight "Air Fryer - Cooking Weight" (G_fryer) {channel="miio:basic:fryer:cooking_weight"}
 ```
 
+### Qingping Air Monitor Lite (cgllc.airm.cgd1st) item file lines
+
+note: Autogenerated example. Replace the id (airm) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airm "Qingping Air Monitor Lite" <status>
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airm) {channel="miio:basic:airm:relative_humidity"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airm) {channel="miio:basic:airm:pm2_5_density"}
+Number:Density pm10_density "PM10 Density" (G_airm) {channel="miio:basic:airm:pm10_density"}
+Number:Temperature temperature "Temperature" (G_airm) {channel="miio:basic:airm:temperature"}
+Number:Dimensionless co2_density "CO2 Density" (G_airm) {channel="miio:basic:airm:co2_density"}
+Number tvoc_density "TVOC Density" (G_airm) {channel="miio:basic:airm:tvoc_density"}
+Number:Dimensionless battery_level "Battery Level" (G_airm) {channel="miio:basic:airm:battery_level"}
+Number charging_state "Charging State" (G_airm) {channel="miio:basic:airm:charging_state"}
+Number start_time "Screen Off Start Time" (G_airm) {channel="miio:basic:airm:start_time"}
+Number end_time "Screen Off End Time" (G_airm) {channel="miio:basic:airm:end_time"}
+Number monitoring_frequency "PM2.5 and PM10 Detection Frequency" (G_airm) {channel="miio:basic:airm:monitoring_frequency"}
+Number screen_off "Screen Off After" (G_airm) {channel="miio:basic:airm:screen_off"}
+String tempature_unit "Temperature Unit" (G_airm) {channel="miio:basic:airm:tempature_unit"}
+Number screensaver_start "Screen Saver Start" (G_airm) {channel="miio:basic:airm:screensaver_start"}
+Number screensaver_style "Screen Saver Style" (G_airm) {channel="miio:basic:airm:screensaver_style"}
+Number auto_power_off "Auto Power Off (on Battery)" (G_airm) {channel="miio:basic:airm:auto_power_off"}
+Number time_format "Screen Time Format" (G_airm) {channel="miio:basic:airm:time_format"}
+Number grading_standard "Grading Standard" (G_airm) {channel="miio:basic:airm:grading_standard"}
+String actions "Actions" (G_airm) {channel="miio:basic:airm:actions"}
+```
+
 ### Qingping Air Monitor Lite (cgllc.airm.cgdn1) item file lines
 
 note: Autogenerated example. Replace the id (airm) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airm "Qingping Air Monitor Lite" <status>
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airm) {channel="miio:basic:airm:relative_humidity"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airm) {channel="miio:basic:airm:pm2_5_density"}
+Number:Density pm10_density "PM10 Density" (G_airm) {channel="miio:basic:airm:pm10_density"}
+Number:Temperature temperature "Temperature" (G_airm) {channel="miio:basic:airm:temperature"}
+Number:Dimensionless co2_density "CO2 Density" (G_airm) {channel="miio:basic:airm:co2_density"}
+Number:Dimensionless battery_level "Battery Level" (G_airm) {channel="miio:basic:airm:battery_level"}
+Number charging_state "Charging State" (G_airm) {channel="miio:basic:airm:charging_state"}
+Number:ElectricPotential voltage "Battery Voltage" (G_airm) {channel="miio:basic:airm:voltage"}
+String mac "MAC Address" (G_airm) {channel="miio:basic:airm:mac"}
+Number start_time "Screen Off Start Time" (G_airm) {channel="miio:basic:airm:start_time"}
+Number end_time "Screen Off End Time" (G_airm) {channel="miio:basic:airm:end_time"}
+Number monitoring_frequency "PM2.5 and PM10 Detection Frequency" (G_airm) {channel="miio:basic:airm:monitoring_frequency"}
+Number screen_off "Screen Off After" (G_airm) {channel="miio:basic:airm:screen_off"}
+Number device_off "Power Off After (on Battery, Old Setting)" (G_airm) {channel="miio:basic:airm:device_off"}
+String tempature_unit "Temperature Unit" (G_airm) {channel="miio:basic:airm:tempature_unit"}
+Number screensaver_start "Screen Saver Start" (G_airm) {channel="miio:basic:airm:screensaver_start"}
+Number screensaver_style "Screen Saver Style" (G_airm) {channel="miio:basic:airm:screensaver_style"}
+Number auto_power_off "Auto Power Off (on Battery)" (G_airm) {channel="miio:basic:airm:auto_power_off"}
 String actions "Actions" (G_airm) {channel="miio:basic:airm:actions"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airm) {channel="miio:basic:airm:relative_humidity"}
-Number:Density pm2_5_density "Environment - PM2 5 Density" (G_airm) {channel="miio:basic:airm:pm2_5_density"}
-Number:Density pm10_density "Environment - PM10 Density" (G_airm) {channel="miio:basic:airm:pm10_density"}
-Number:Temperature temperature "Environment - Temperature" (G_airm) {channel="miio:basic:airm:temperature"}
-Number:Density co2_density "Environment - CO2 Density" (G_airm) {channel="miio:basic:airm:co2_density"}
-Number:Dimensionless battery_level "Battery - Battery Level" (G_airm) {channel="miio:basic:airm:battery_level"}
-Number charging_state "Battery - Charging State" (G_airm) {channel="miio:basic:airm:charging_state"}
-Number:ElectricPotential voltage "Battery - Voltage" (G_airm) {channel="miio:basic:airm:voltage"}
-String mac "Mac - Mac" (G_airm) {channel="miio:basic:airm:mac"}
-Number:Time monitoring_frequency "Settings - Monitoring Frequency" (G_airm) {channel="miio:basic:airm:monitoring_frequency"}
-Number:Time screen_off "Settings - Screen Off" (G_airm) {channel="miio:basic:airm:screen_off"}
-Number:Time device_off "Settings - Device Off" (G_airm) {channel="miio:basic:airm:device_off"}
-String tempature_unit "Settings - Tempature Unit" (G_airm) {channel="miio:basic:airm:tempature_unit"}
+```
+
+### Qingping Air Monitor 2 (cgllc.airm.cgs2) item file lines
+
+note: Autogenerated example. Replace the id (airm) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airm "Qingping Air Monitor 2" <status>
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airm) {channel="miio:basic:airm:relative_humidity"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airm) {channel="miio:basic:airm:pm2_5_density"}
+Number:Density pm10_density "PM10 Density" (G_airm) {channel="miio:basic:airm:pm10_density"}
+Number:Temperature temperature "Temperature" (G_airm) {channel="miio:basic:airm:temperature"}
+Number:Dimensionless co2_density "CO2 Density" (G_airm) {channel="miio:basic:airm:co2_density"}
+Number tvoc_density "TVOC Density" (G_airm) {channel="miio:basic:airm:tvoc_density"}
+Number:Dimensionless battery_level "Battery Level" (G_airm) {channel="miio:basic:airm:battery_level"}
+Number charging_state "Charging State" (G_airm) {channel="miio:basic:airm:charging_state"}
+Number noise_decibel "Noise Level" (G_airm) {channel="miio:basic:airm:noise_decibel"}
+Number temperature_unit "Temperature Unit" (G_airm) {channel="miio:basic:airm:temperature_unit"}
+Number tvoc_unit "TVOC Unit" (G_airm) {channel="miio:basic:airm:tvoc_unit"}
+Switch time_mode "24-Hour Clock" (G_airm) {channel="miio:basic:airm:time_mode"}
+Number standard "Air Quality Grading Standard" (G_airm) {channel="miio:basic:airm:standard"}
+String sensor_states "Sensor States" (G_airm) {channel="miio:basic:airm:sensor_states"}
 ```
 
 ### Mi Multifunction Air Monitor (cgllc.airmonitor.b1) item file lines
@@ -9165,8 +9272,8 @@ note: Autogenerated example. Replace the id (airmonitor) in the channel with you
 ```java
 Group G_airmonitor "Mi Multifunction Air Monitor" <status>
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
-Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
-Number co2 "CO2e" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
+Number:Density pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
+Number:Dimensionless co2 "CO2e" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
 Number tvoc "tVOC" (G_airmonitor) {channel="miio:basic:airmonitor:tvoc"}
 Number:Dimensionless humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidity"}
 Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic:airmonitor:temperature"}
@@ -9179,11 +9286,14 @@ note: Autogenerated example. Replace the id (airmonitor) in the channel with you
 ```java
 Group G_airmonitor "Qingping Air Monitor" <status>
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
-Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
-Number co2 "CO2" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
+Number:Density pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
+Number:Dimensionless co2 "CO2" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
 Number tvoc "tVOC" (G_airmonitor) {channel="miio:basic:airmonitor:tvoc"}
 Number:Dimensionless humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidity"}
 Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic:airmonitor:temperature"}
+Number aqi "Air Quality Index" (G_airmonitor) {channel="miio:basic:airmonitor:aqi"}
+String tvoc_unit "tVOC Unit" (G_airmonitor) {channel="miio:basic:airmonitor:tvoc_unit"}
+String temperature_unit "Temperature Unit" (G_airmonitor) {channel="miio:basic:airmonitor:temperature_unit"}
 ```
 
 ### Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway) (chuangmi.plug.212a01) item file lines
@@ -16993,11 +17103,11 @@ Group G_airmonitor "Mi PM2.5 Air Quality Monitor" <status>
 Switch power "Power" (G_airmonitor) {channel="miio:basic:airmonitor:power"}
 Number aqi "Air Quality Index" (G_airmonitor) {channel="miio:basic:airmonitor:aqi"}
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
-Switch usb_state "USB State" (G_airmonitor) {channel="miio:basic:airmonitor:usb_state"}
-Switch time_state "Time State" (G_airmonitor) {channel="miio:basic:airmonitor:time_state"}
-Switch night_state "Night State" (G_airmonitor) {channel="miio:basic:airmonitor:night_state"}
-Number night_begin "Night Begin Time" (G_airmonitor) {channel="miio:basic:airmonitor:night_begin"}
-Number night_end "Night End Time" (G_airmonitor) {channel="miio:basic:airmonitor:night_end"}
+Switch usb_state "USB Power Connected" (G_airmonitor) {channel="miio:basic:airmonitor:usb_state"}
+Switch time_state "Show Clock" (G_airmonitor) {channel="miio:basic:airmonitor:time_state"}
+Switch night_state "Night Mode" (G_airmonitor) {channel="miio:basic:airmonitor:night_state"}
+Number night_begin "Night Mode Start Time" (G_airmonitor) {channel="miio:basic:airmonitor:night_begin"}
+Number night_end "Night Mode End Time" (G_airmonitor) {channel="miio:basic:airmonitor:night_end"}
 ```
 
 ### Xiaomi Smart Air Purifier 4 Compact (zhimi.airp.cpa4) item file lines
