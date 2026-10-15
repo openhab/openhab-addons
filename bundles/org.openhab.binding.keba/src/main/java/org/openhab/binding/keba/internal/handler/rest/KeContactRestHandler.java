@@ -66,6 +66,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
 
     private static final String API_PREFIX = "/v2";
     private static final int CONNECT_TIMEOUT_SECONDS = 5;
+    private static final int MAX_CONSECUTIVE_POLL_FAILURES = 3;
 
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactRestHandler.class));
     private KeContactCombinedConfiguration config = new KeContactCombinedConfiguration();
@@ -75,6 +76,8 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable Long lastWallboxPoll;
     private long nextSupplementalPoll;
+    private int consecutivePollFailures;
+    private boolean online;
     private final boolean supplemental;
     private final Object lifecycleLock = new Object();
     private final Object requestLock = new Object();
@@ -143,6 +146,8 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                         serialNumber = resolvedSerialNumber;
                         lastWallboxPoll = null;
                         nextSupplementalPoll = 0;
+                        consecutivePollFailures = 0;
+                        online = false;
                         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                             if (expectedGeneration == generation.get()) {
                                 synchronized (requestLock) {
@@ -261,6 +266,8 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
             if (wallboxDue) {
                 lastWallboxPoll = now;
                 JsonObject wallbox = request("/wallboxes/" + serialNumber(), "GET", null, true);
+                consecutivePollFailures = 0;
+                online = true;
                 updateStatus(ThingStatus.ONLINE);
                 updateWallbox(wallbox);
             }
@@ -275,9 +282,6 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                 try {
                     updateSession();
                 } catch (Exception e) {
-                    if (!supplemental) {
-                        throw e;
-                    }
                     logger.debug("Failed to read supplemental REST session: {}", e.getMessage());
                 }
             }
@@ -286,8 +290,12 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
             }
         } catch (Exception e) {
             logger.debug("REST polling failed: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-rest [\"" + messageOf(e) + "\"]");
+            consecutivePollFailures = Math.min(consecutivePollFailures + 1, MAX_CONSECUTIVE_POLL_FAILURES);
+            if (!online || consecutivePollFailures >= MAX_CONSECUTIVE_POLL_FAILURES) {
+                online = false;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-rest [\"" + messageOf(e) + "\"]");
+            }
         }
     }
 

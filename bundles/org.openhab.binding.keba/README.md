@@ -93,6 +93,12 @@ An identified wallbox continues to be polled at the normal interval, even while 
 wait for the five-minute discovery retry. The per-request timeout remains unchanged, and commands are not
 automatically retried.
 
+REST uses the same three-failure threshold for operational wallbox polls after it has been online. A successful
+operational poll resets the count and restores availability. Supplemental endpoint failures do not affect this
+count. Polling continues at the configured interval during outages; the request timeout remains five seconds.
+Items may retain stale values during the grace period. Initial connection failures are reported immediately,
+and communication failures do not cause commands to be automatically retried.
+
 Polling is **not serialized across protocols**. Modbus enforces a 500 ms delay between its transactions and
 five seconds between writes, but those delays do not apply to UDP or REST. The independent polling jobs can
 overlap, including at startup. Avoiding duplicate reads and polling only required data reduces traffic, but does

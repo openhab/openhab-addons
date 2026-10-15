@@ -1204,6 +1204,37 @@ class KeContactCombinedHandlerTest {
     }
 
     @Test
+    @Timeout(15)
+    void restInitialOperationalFailureIsOfflineImmediately() throws Exception {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:reststartupfailure"))
+                .build();
+        KeContactProtocolHandler.Listener listener = Objects
+                .requireNonNull(mock(KeContactProtocolHandler.Listener.class));
+        KeContactRestHandler rest = new KeContactRestHandler(thing,
+                new Configuration(Map.of("ipAddress", "192.0.2.1", "restEnabled", true, "password", "test-password")),
+                listener) {
+            @Override
+            protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated)
+                    throws IOException {
+                return switch (path) {
+                    case "/jwt/login" -> JsonParser.parseString("{\"accessToken\":\"test-token\"}").getAsJsonObject();
+                    case "/serialnumber" -> JsonParser.parseString("{\"value\":\"12345\"}").getAsJsonObject();
+                    default -> throw new IOException("Test connection failure");
+                };
+            }
+        };
+        try {
+            rest.initialize();
+            verify(listener, timeout(5000)).statusUpdated(eq(ThingStatus.OFFLINE),
+                    eq(ThingStatusDetail.COMMUNICATION_ERROR), anyString());
+            verify(listener, never()).statusUpdated(eq(ThingStatus.ONLINE), any(), any());
+        } finally {
+            rest.dispose();
+        }
+    }
+
+    @Test
     @Timeout(40)
     void restOperationalPollingAdaptsWithoutSpeedingUpSupplementalRequests() throws Exception {
         AtomicLong clock = new AtomicLong();
@@ -1287,19 +1318,30 @@ class KeContactCombinedHandlerTest {
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
             assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
 
-            statuses.clear();
-            failWallbox.set(true);
-            clock.set(TimeUnit.SECONDS.toNanos(90));
-            assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
-            assertEquals(ThingStatus.OFFLINE, statuses.poll(5, TimeUnit.SECONDS));
+            List<Boolean> failures = List.of(true, false, true, true, false, true, true, true);
+            for (int poll = 0; poll < failures.size(); poll++) {
+                statuses.clear();
+                failWallbox.set(failures.get(poll));
+                clock.set(TimeUnit.SECONDS.toNanos(90 + poll * 10L));
+                assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+                assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
+                if (!failures.get(poll)) {
+                    assertEquals(ThingStatus.ONLINE, statuses.poll(5, TimeUnit.SECONDS));
+                    assertFalse(statuses.contains(ThingStatus.OFFLINE));
+                } else if (poll == failures.size() - 1) {
+                    assertEquals(ThingStatus.OFFLINE, statuses.poll(5, TimeUnit.SECONDS));
+                } else {
+                    assertTrue(statuses.isEmpty());
+                }
+            }
             primary.set(false);
-            clock.set(TimeUnit.SECONDS.toNanos(120));
+            clock.set(TimeUnit.SECONDS.toNanos(180));
             assertEquals("/wallboxes/dipswitch/12345", requests.poll(5, TimeUnit.SECONDS));
             assertTrue(Objects.requireNonNull(requests.poll(5, TimeUnit.SECONDS)).startsWith("/sessions?"));
             assertNull(statuses.poll(1200, TimeUnit.MILLISECONDS));
             failWallbox.set(false);
             primary.set(true);
-            clock.set(TimeUnit.SECONDS.toNanos(130));
+            clock.set(TimeUnit.SECONDS.toNanos(190));
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
             assertEquals(ThingStatus.ONLINE, statuses.poll(5, TimeUnit.SECONDS));
             rest.dispose();
