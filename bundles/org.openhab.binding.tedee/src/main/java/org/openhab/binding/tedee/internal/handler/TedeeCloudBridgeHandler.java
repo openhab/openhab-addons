@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
-import org.openhab.binding.tedee.internal.api.TedeeClient;
 import org.openhab.binding.tedee.internal.api.TedeeCloudApi;
+import org.openhab.binding.tedee.internal.api.TedeeLock;
 import org.openhab.binding.tedee.internal.configuration.TedeeCloudConfiguration;
 import org.openhab.binding.tedee.internal.discovery.TedeeCloudDiscoveryService;
 import org.openhab.core.thing.Bridge;
@@ -37,12 +37,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
- * Configuration for the Tedee Cloud Bridge.
+ * Handles the Tedee Cloud bridge, including API communication, connection
+ * monitoring, and access to Tedee lock operations for child Things.
  *
  * @author Alex Goll - Initial contribution
  */
-
 @NonNullByDefault
 public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeTransportProvider {
 
@@ -53,16 +52,31 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
     private @Nullable ScheduledFuture<?> job;
     private TedeeCloudConfiguration cfg = new TedeeCloudConfiguration();
 
+    /**
+     * Creates a handler for the Tedee Cloud bridge.
+     *
+     * @param bridge the Tedee Cloud bridge Thing
+     * @param client the HTTP client used for API communication
+     */
     public TedeeCloudBridgeHandler(Bridge bridge, HttpClient client) {
         super(bridge);
         this.client = client;
     }
 
+    /**
+     * Returns the handler services provided by this bridge.
+     *
+     * @return the collection of supported handler service classes
+     */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(TedeeCloudDiscoveryService.class);
     }
 
+    /**
+     * Initializes the cloud bridge, validates its configuration, creates the
+     * API client, and schedules periodic connectivity checks.
+     */
     @Override
     public void initialize() {
         cfg = getConfigAs(TedeeCloudConfiguration.class);
@@ -79,11 +93,100 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
         job = scheduler.scheduleWithFixedDelay(this::check, cfg.pollInterval, cfg.pollInterval, TimeUnit.SECONDS);
     }
 
-    @Override
-    public @Nullable TedeeClient getClient() {
-        return api;
+    private TedeeCloudApi apiOrThrow() {
+        TedeeCloudApi currentApi = api;
+        if (currentApi == null) {
+            throw new IllegalStateException("Tedee Cloud API is not initialized");
+        }
+        return currentApi;
     }
 
+    /**
+     * Retrieves information about a Tedee lock through the cloud API.
+     *
+     * @param id the identifier of the lock
+     * @return the lock information
+     * @throws TedeeApiException if the API request fails
+     */
+    @Override
+    public TedeeLock getLock(int id) throws TedeeApiException {
+        return apiOrThrow().getLock(id);
+    }
+
+    /**
+     * Retrieves the Tedee locks accessible through the cloud account.
+     *
+     * @return the list of accessible locks
+     * @throws TedeeApiException if the API request fails
+     */
+    @Override
+    public List<TedeeLock> getLocks() throws TedeeApiException {
+        return apiOrThrow().getLocks();
+    }
+
+    /**
+     * Sends a command to lock the specified Tedee lock.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
+    @Override
+    public void lock(int id) throws TedeeApiException {
+        apiOrThrow().lock(id);
+    }
+
+    /**
+     * Sends a command to unlock the specified Tedee lock.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
+    @Override
+    public void unlock(int id) throws TedeeApiException {
+        apiOrThrow().unlock(id);
+    }
+
+    /**
+     * Sends a command to unlock the specified Tedee lock without pulling the
+     * latch.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
+    @Override
+    public void unlockWithoutPull(int id) throws TedeeApiException {
+        apiOrThrow().unlockWithoutPull(id);
+    }
+
+    /**
+     * Sends a command to pull the latch of the specified Tedee lock.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
+    @Override
+    public void pull(int id) throws TedeeApiException {
+        apiOrThrow().pull(id);
+    }
+
+    /**
+     * Sends a command to unlock the specified Tedee lock or pull the latch,
+     * according to the supported device operation.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
+    @Override
+    public void unlockOrPull(int id) throws TedeeApiException {
+        apiOrThrow().unlockOrPull(id);
+    }
+
+    /**
+     * Indicates whether the cloud bridge is initialized and online.
+     *
+     * @return {@code true} if the API client is initialized and the bridge is online;
+     *         {@code false} otherwise
+     */
     @Override
     public boolean ready() {
         return api != null && getThing().getStatus() == ThingStatus.ONLINE;
@@ -113,10 +216,23 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
         }
     }
 
+    /**
+     * Handles commands received by the cloud bridge.
+     *
+     * <p>The bridge does not currently expose command channels, so commands
+     * received here are not processed.
+     *
+     * @param channel the channel on which the command was received
+     * @param command the command to handle
+     */
     @Override
     public void handleCommand(ChannelUID channel, Command command) {
     }
 
+    /**
+     * Cancels the scheduled connectivity check and releases the API client
+     * reference when the bridge handler is disposed.
+     */
     @Override
     public void dispose() {
         ScheduledFuture<?> currentJob = job;

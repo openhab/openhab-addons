@@ -16,8 +16,8 @@ package org.openhab.binding.tedee.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * 
- * Exception thrown when communication with the Tedee Bridge API fails.
+ * Represents an error encountered when communicating with the Tedee API or
+ * processing an API response.
  *
  * @author Alex Goll - Initial contribution
  */
@@ -26,16 +26,35 @@ public class TedeeApiException extends Exception {
     private static final long serialVersionUID = 1L;
     private final int status;
 
-    public TedeeApiException(String m, int s) {
-        super(m);
-        status = s;
+    /**
+     * Creates an exception with a message and an associated status code.
+     *
+     * @param message a description of the error
+     * @param status the HTTP status code or corresponding status code associated with the error
+     */
+    public TedeeApiException(String message, int status) {
+        super(message);
+        this.status = status;
     }
 
-    public TedeeApiException(String m, int s, Throwable t) {
-        super(m, t);
-        status = s;
+    /**
+     * Creates an exception with a message, an associated status code, and the
+     * underlying cause.
+     *
+     * @param message a description of the error
+     * @param status the HTTP status code or corresponding status code associated with the error
+     * @param cause the underlying cause of the error
+     */
+    public TedeeApiException(String message, int status, Throwable cause) {
+        super(message, cause);
+        this.status = status;
     }
 
+    /**
+     * Returns the status code associated with this error.
+     *
+     * @return the HTTP status code or corresponding status code associated with the error
+     */
     public int getStatus() {
         return status;
     }

@@ -39,8 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
- * Handler for a Tedee lock.
+ * Handles a Tedee lock Thing, including polling its status, processing commands,
+ * and applying updates received through webhooks.
  *
  * @author Alex Goll - Initial contribution
  */
@@ -50,10 +50,21 @@ public class TedeeLockHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> job;
     private final Logger logger = LoggerFactory.getLogger(TedeeLockHandler.class);
 
+
+
+    /**
+     * Creates a handler for a Tedee lock.
+     *
+     * @param t the Tedee lock Thing
+     */
     public TedeeLockHandler(Thing t) {
         super(t);
     }
 
+    /**
+     * Initializes the handler, validates the lock configuration, and schedules
+     * periodic status polling.
+     */
     @Override
     public void initialize() {
         cfg = getConfigAs(TedeeLockConfiguration.class);
@@ -69,6 +80,16 @@ public class TedeeLockHandler extends BaseThingHandler {
         job = scheduler.scheduleWithFixedDelay(this::refresh, 0, n, TimeUnit.SECONDS);
     }
 
+
+    /**
+     * Handles commands received on the Tedee lock's channels.
+     *
+     * A refresh command schedules a status update. Lock and action commands
+     * are forwarded to the bridge handler when the transport is available.
+     *
+     * @param c the channel on which the command was received
+     * @param x the command to handle
+     */
     @Override
     public void handleCommand(ChannelUID c, Command x) {
         if (x instanceof RefreshType) {
@@ -92,9 +113,6 @@ public class TedeeLockHandler extends BaseThingHandler {
         }
     }
 
-    private void o(TedeeClient client, Command x) {
-        send(client, x == OnOffType.ON ? "LOCK" : "UNLOCK");
-    }
 
      private void send(TedeeTransportProvider provider, String action) {
         scheduler.execute(() -> {
@@ -122,11 +140,19 @@ public class TedeeLockHandler extends BaseThingHandler {
         });
     }
 
+    /**
+     * Executes a lock action through the associated bridge's transport provider.
+     *
+     * @param provider the provider used to communicate with the lock
+     * @param deviceId the identifier of the Tedee lock
+     * @param action the action to execute
+     * @throws TedeeApiException if the API request fails
+     */
     void executeAction(TedeeTransportProvider provider, int deviceId, String action)
             throws TedeeApiException {
         switch (action) {
             case "LOCK" -> provider.lock(deviceId);
-            case "UNLOCK" -> provider.unlockOrPull(deviceId);
+            case "UNLOCK" -> provider.unlock(deviceId);
             case "UNLOCK_NO_PULL" -> provider.unlockWithoutPull(deviceId);
             case "UNLOCK_OR_PULL" -> provider.unlockOrPull(deviceId);
             case "PULL" -> provider.pull(deviceId);
@@ -208,6 +234,13 @@ public class TedeeLockHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Applies a webhook update containing the lock state, door state, and jammed status.
+     *
+     * @param state the lock state reported by Tedee
+     * @param doorState the door state reported by Tedee
+     * @param jammed the jammed status reported by Tedee, where zero means not jammed
+     */
     void handleWebhook(int state, int doorState, int jammed) {
         logger.debug("Applying Tedee webhook to lock {}: state={}, doorState={}, jammed={}", cfg.deviceId, state,
                 doorState, jammed);
@@ -225,6 +258,11 @@ public class TedeeLockHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    /**
+     * Applies a webhook update for the lock's bridge connectivity.
+     *
+     * @param isConnected the connection status reported by Tedee, where zero means disconnected
+     */
     void handleConnectionWebhook(int isConnected) {
         logger.debug("Applying Tedee connection webhook to lock {}: isConnected={}", cfg.deviceId, isConnected);
 
@@ -232,6 +270,11 @@ public class TedeeLockHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    /**
+     * Applies a webhook update for the lock's battery level.
+     *
+     * @param batteryLevel the battery level reported by Tedee, as a percentage
+     */
     void handleBatteryWebhook(int batteryLevel) {
         logger.debug("Applying Tedee battery webhook to lock {}: batteryLevel={}", cfg.deviceId, batteryLevel);
 
@@ -239,6 +282,11 @@ public class TedeeLockHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    /**
+     * Applies a webhook update for the lock's charging status.
+     *
+     * @param charging whether the lock is charging
+     */
     void handleChargingWebhook(boolean charging) {
         logger.debug("Applying Tedee charging webhook to lock {}: charging={}", cfg.deviceId, charging);
 
@@ -287,6 +335,9 @@ public class TedeeLockHandler extends BaseThingHandler {
         };
     }
 
+    /**
+     * Stops scheduled polling and releases the resources associated with this handler.
+     */
     public void dispose() {
         ScheduledFuture<?> currentJob = job;
         if (currentJob != null) {

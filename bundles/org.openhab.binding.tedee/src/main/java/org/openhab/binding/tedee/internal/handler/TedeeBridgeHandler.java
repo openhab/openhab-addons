@@ -24,11 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tedee.internal.api.TedeeApi;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
-import org.openhab.binding.tedee.internal.api.TedeeClient;
 import org.openhab.binding.tedee.internal.api.TedeeLock;
 import org.openhab.binding.tedee.internal.configuration.TedeeBridgeConfiguration;
 import org.openhab.binding.tedee.internal.discovery.TedeeDiscoveryService;
-
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -51,7 +49,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
- * Handler for a Tedee Bridge.
+ * Handles the local Tedee Bridge, including API communication, connection
+ * monitoring, webhook registration, and access to lock operations for child Things.
  *
  * @author Alex Goll - Initial contribution
  */
@@ -70,16 +69,31 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
     private TedeeBridgeConfiguration cfg = new TedeeBridgeConfiguration();
     private final Logger logger = LoggerFactory.getLogger(TedeeBridgeHandler.class);
 
+    /**
+     * Creates a handler for a local Tedee Bridge.
+     *
+     * @param b the Tedee Bridge Thing
+     * @param c the HTTP client used for API communication
+     */
     public TedeeBridgeHandler(Bridge b, HttpClient c) {
         super(b);
         client = c;
     }
 
+    /**
+     * Returns the handler services provided by this bridge.
+     *
+     * @return the collection of supported handler service classes
+     */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(TedeeDiscoveryService.class);
     }
 
+    /**
+     * Initializes the bridge handler, validates its configuration, creates the
+     * API client, and schedules periodic health checks and webhook registration.
+     */
     @Override
     public void initialize() {
         cfg = getConfigAs(TedeeBridgeConfiguration.class);
@@ -94,8 +108,8 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         updateStatus(ThingStatus.UNKNOWN);
 
         // Run all bridge API checks sequentially in one asynchronous job.
-        job = scheduler.scheduleWithFixedDelay(this::runScheduledChecks, 0,
-                HEALTH_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        job = scheduler.scheduleWithFixedDelay(this::runScheduledChecks, 0, HEALTH_CHECK_INTERVAL_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     private void runScheduledChecks() {
@@ -121,14 +135,19 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
                 logger.warn("Unexpected error while checking Tedee Bridge callback", e);
             }
         }
-    }       
+    }
 
-
+    /**
+     * Indicates whether the bridge API is initialized and the bridge is online.
+     *
+     * @return {@code true} if the API is initialized and the bridge is online;
+     *         {@code false} otherwise
+     */
+    @Override
     public boolean ready() {
         return api != null && getThing().getStatus() == ThingStatus.ONLINE;
     }
 
-  
     private TedeeApi apiOrThrow() {
         TedeeApi currentApi = api;
         if (currentApi == null) {
@@ -137,42 +156,85 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         return currentApi;
     }
 
+    /**
+     * Retrieves information about a Tedee lock through the local bridge.
+     *
+     * @param id the identifier of the lock
+     * @return the lock information
+     * @throws TedeeApiException if the API request fails
+     */
     @Override
     public TedeeLock getLock(int id) throws TedeeApiException {
         return apiOrThrow().getLock(id);
     }
 
+    /**
+     * Retrieves the locks accessible through the local bridge.
+     *
+     * @return the list of accessible locks
+     * @throws TedeeApiException if the API request fails
+     */
     @Override
     public List<TedeeLock> getLocks() throws TedeeApiException {
         return apiOrThrow().getLocks();
     }
 
+    /**
+     * Sends a command to lock the specified Tedee lock.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
     @Override
     public void lock(int id) throws TedeeApiException {
         apiOrThrow().lock(id);
     }
 
+    /**
+     * Sends a command to unlock the specified Tedee lock.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
     @Override
     public void unlock(int id) throws TedeeApiException {
         apiOrThrow().unlock(id);
     }
 
+    /**
+     * Sends a command to unlock the specified Tedee lock without pulling the
+     * latch.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
     @Override
     public void unlockWithoutPull(int id) throws TedeeApiException {
         apiOrThrow().unlockWithoutPull(id);
     }
 
+    /**
+     * Sends a command to pull the latch of the specified Tedee lock.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
     @Override
     public void pull(int id) throws TedeeApiException {
         apiOrThrow().pull(id);
     }
 
+    /**
+     * Sends a command to unlock the specified Tedee lock or pull the latch,
+     * according to the supported device operation.
+     *
+     * @param id the identifier of the lock
+     * @throws TedeeApiException if the API request fails
+     */
     @Override
     public void unlockOrPull(int id) throws TedeeApiException {
         apiOrThrow().unlockOrPull(id);
     }
-
-
 
     private void check() {
         TedeeApi currentApi = api;
@@ -289,6 +351,13 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         return "http://" + host + ":" + port + CALLBACK_PATH;
     }
 
+    /**
+     * Checks whether the local bridge API is reachable.
+     *
+     * @return {@code true} if the bridge responds with HTTP status 200;
+     *         {@code false} if the API is not initialized or the response is unsuccessful
+     * @throws TedeeApiException if the API request fails
+     */
     public boolean isBridgeReachable() throws TedeeApiException {
         TedeeApi currentApi = api;
         return currentApi != null && currentApi.bridgeStatus() == 200;
@@ -336,10 +405,24 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         return value != null && !value.isJsonNull() ? value.getAsString() : null;
     }
 
+    /**
+     * Handles commands received by the local bridge.
+     *
+     * <p>The bridge does not currently expose command channels, so commands
+     * received here are not processed.
+     *
+     * @param c the channel on which the command was received
+     * @param x the command to handle
+     */
+    @Override
     public void handleCommand(ChannelUID c, Command x) {
     }
 
-   @Override
+    /**
+     * Cancels the scheduled health checks and releases the API client reference
+     * when the bridge handler is disposed.
+     */
+    @Override
     public void dispose() {
         if (job != null) {
             job.cancel(true);
