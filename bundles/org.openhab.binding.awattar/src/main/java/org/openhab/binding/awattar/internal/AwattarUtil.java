@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.awattar.internal;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -32,13 +33,17 @@ import org.openhab.core.library.unit.Units;
 public class AwattarUtil {
 
     public static long getMillisToNextMinute(int mod, ZoneId zoneId) {
-        long now = Instant.now().toEpochMilli();
-        ZonedDateTime dt = ZonedDateTime.now(zoneId).truncatedTo(ChronoUnit.MINUTES);
+        return getMillisToNextMinute(mod, Clock.system(zoneId));
+    }
+
+    static long getMillisToNextMinute(int mod, Clock clock) {
+        ZonedDateTime now = ZonedDateTime.now(clock);
+        ZonedDateTime dt = now.truncatedTo(ChronoUnit.MINUTES);
         int min = dt.getMinute();
         int offset = min % mod;
         offset = offset == 0 ? mod : offset;
         dt = dt.plusMinutes(offset);
-        return dt.toInstant().toEpochMilli() - now;
+        return dt.toInstant().toEpochMilli() - now.toInstant().toEpochMilli();
     }
 
     public static ZonedDateTime getCalendarForHour(int hour, ZoneId zone) {
@@ -54,8 +59,11 @@ public class AwattarUtil {
         return ZonedDateTime.ofInstant(Instant.ofEpochMilli(date), zoneId).toString();
     }
 
-    public static String getHourFrom(long timestamp, ZoneId zoneId) {
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), zoneId);
-        return String.format("%02d", zdt.getHour());
+    public static String formatPriceInterval(AwattarPrice price, ZoneId zoneId) {
+        ZonedDateTime start = ZonedDateTime.ofInstant(Instant.ofEpochMilli(price.timerange().start()), zoneId);
+        if (price.timerange().end() - price.timerange().start() == 3_600_000L) {
+            return String.format("%02d", start.getHour());
+        }
+        return String.format("%02d:%02d", start.getHour(), start.getMinute());
     }
 }

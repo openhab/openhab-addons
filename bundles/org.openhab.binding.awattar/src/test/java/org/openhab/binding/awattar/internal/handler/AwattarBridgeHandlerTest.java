@@ -59,7 +59,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBindingConstants;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.api.AwattarApi;
-import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
+import org.openhab.binding.awattar.internal.api.MarketPriceApiException;
 import org.openhab.binding.awattar.internal.dto.AwattarApiData;
 import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.config.core.Configuration;
@@ -102,16 +102,17 @@ public class AwattarBridgeHandlerTest extends JavaTest {
     private @NonNullByDefault({}) AwattarBridgeHandler bridgeHandler;
 
     @BeforeEach
-    public void setUp() throws IOException, IllegalArgumentException, IllegalAccessException, AwattarApiException {
+    public void setUp() throws IOException, IllegalArgumentException, IllegalAccessException, MarketPriceApiException {
         // mock the API response
-        try (InputStream inputStream = AwattarBridgeHandlerTest.class.getResourceAsStream("api_response.json")) {
+        try (InputStream inputStream = Objects
+                .requireNonNull(AwattarBridgeHandlerTest.class.getResourceAsStream("api_response.json"))) {
             SortedSet<AwattarPrice> result = new TreeSet<>(Comparator.comparing(AwattarPrice::timerange));
             Gson gson = new Gson();
 
             String json = new String(inputStream.readAllBytes());
 
             // read json file into sorted set of AwattarPrices
-            AwattarApiData apiData = gson.fromJson(json, AwattarApiData.class);
+            AwattarApiData apiData = Objects.requireNonNull(gson.fromJson(json, AwattarApiData.class));
             apiData.data.forEach(datum -> result.add(new AwattarPrice(datum.marketprice, datum.marketprice,
                     datum.marketprice, datum.marketprice, new TimeRange(datum.startTimestamp, datum.endTimestamp))));
             when(awattarApiMock.getData()).thenReturn(result);
@@ -121,9 +122,9 @@ public class AwattarBridgeHandlerTest extends JavaTest {
         bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, timeProviderMock);
         bridgeHandler.setCallback(bridgeCallbackMock);
 
-        // mock the private field awattarApi
+        // mock the selected market price API
         List<Field> fields = ReflectionSupport.findFields(AwattarBridgeHandler.class,
-                field -> field.getName().equals("awattarApi"), HierarchyTraversalMode.BOTTOM_UP);
+                field -> field.getName().equals("priceApi"), HierarchyTraversalMode.BOTTOM_UP);
 
         for (Field field : fields) {
             field.setAccessible(true);
