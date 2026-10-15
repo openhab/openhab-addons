@@ -50,6 +50,14 @@ Commands protected by PIN
 - Open / Ventilate Windows
 - Open / Lift Sunroof
 
+Every `refreshInterval` all values get updated.
+
+If the vehicle is driving or charging during the refresh from `refreshInterval` the bridge provides live updates.
+That means that a subset of values get updated much quicker outside the `refreshInterval` from then on.
+These live updates are only available as long as the vehicle is driving or charging.
+
+A small `refreshInterval` is very likely to result in a temporarily ban - the default is a reasonable choice.
+
 ## Thing Configuration
 
 | Name            | Type    | Description                                         | Default | Required | Advanced |
