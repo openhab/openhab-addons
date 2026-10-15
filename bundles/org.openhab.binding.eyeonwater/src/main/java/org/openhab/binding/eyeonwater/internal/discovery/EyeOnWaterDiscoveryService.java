@@ -47,7 +47,7 @@ public class EyeOnWaterDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void startScan() {
+    public void startScan() {
         logger.debug("Starting EyeOnWater meter discovery scan...");
         try {
             List<EyeOnWaterMeterData> meters = bridgeHandler.discoverMeters();
@@ -76,12 +76,5 @@ public class EyeOnWaterDiscoveryService extends AbstractDiscoveryService {
             logger.debug("Discovery scan interrupted", e);
             Thread.currentThread().interrupt();
         }
-    }
-
-    /**
-     * Triggers an on-demand discovery scan.
-     */
-    public void triggerScan() {
-        startScan();
     }
 }

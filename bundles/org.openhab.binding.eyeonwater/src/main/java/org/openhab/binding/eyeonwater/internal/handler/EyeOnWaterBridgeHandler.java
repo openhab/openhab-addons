@@ -149,7 +149,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                         // Automatically trigger an initial scan when the bridge becomes ONLINE
                         EyeOnWaterDiscoveryService discovery = discoveryService;
                         if (discovery != null) {
-                            pollingScheduler.execute(() -> discovery.triggerScan());
+                            pollingScheduler.execute(() -> discovery.startScan());
                         }
                     }
                 }
