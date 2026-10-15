@@ -5,10 +5,13 @@
 			"viomi.vacuum.v18",
 			"viomi.vacuum.v20",
 			"viomi.vacuum.v21",
+			"viomi.vacuum.v22",
 			"viomi.vacuum.v23",
 			"viomi.vacuum.v24",
 			"viomi.vacuum.v27",
-			"viomi.vacuum.v29"
+			"viomi.vacuum.v29",
+			"viomi.vacuum.v37",
+			"viomi.vacuum.v41"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
@@ -653,6 +656,43 @@
 					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Whole area\",\"2\"\u003d\"Along walls\",\"3\"\u003d\"Zone\",\"4\"\u003d\"Point\",\"5\"\u003d\"Manual control\"]`"
+			},
+			{
+				"property": "swept-area-type",
+				"siid": 4,
+				"piid": 44,
+				"friendlyName": "Cleaning scope",
+				"channel": "swept-area-type",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Selected rooms"
+						},
+						{
+							"value": "1",
+							"label": "Whole area"
+						},
+						{
+							"value": "2",
+							"label": "Partial area"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `[\"0\"\u003d\"Selected rooms\",\"1\"\u003d\"Whole area\",\"2\"\u003d\"Partial area\"]`"
 			},
 			{
 				"property": "door-state",
