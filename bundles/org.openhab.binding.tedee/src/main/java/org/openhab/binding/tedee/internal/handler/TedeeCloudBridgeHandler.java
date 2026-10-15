@@ -219,7 +219,8 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
     /**
      * Handles commands received by the cloud bridge.
      *
-     * <p>The bridge does not currently expose command channels, so commands
+     * <p>
+     * The bridge does not currently expose command channels, so commands
      * received here are not processed.
      *
      * @param channel the channel on which the command was received

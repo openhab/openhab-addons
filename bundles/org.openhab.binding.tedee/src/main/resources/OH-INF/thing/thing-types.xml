@@ -1,241 +1,241 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="tedee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0">
 
-    <bridge-type id="local-bridge">
-        <label>Tedee Bridge</label>
-        <description>Tedee Bridge for local communication with Tedee locks.</description>
+	<bridge-type id="local-bridge">
+		<label>Tedee Bridge</label>
+		<description>Tedee Bridge for local communication with Tedee locks.</description>
 
-        <config-description>
-            <parameter name="ip" type="text" required="true">
-                <context>network-address</context>
-                <label>Bridge IP Address</label>
-                <description>IP address of the Tedee Bridge.</description>
-            </parameter>
-            <parameter name="port" type="integer" min="1" max="65535">
-                <label>Port</label>
-                <description>HTTP port of the Tedee Bridge.</description>
-                <default>80</default>
-            </parameter>
-            <parameter name="apiToken" type="text" required="true">
-                <context>password</context>
-                <label>API Token</label>
-                <description>API token used to authenticate with the Tedee Bridge.</description>
-            </parameter>
-            <parameter name="pollInterval" type="integer" min="5">
-                <label>Poll Interval</label>
-                <description>Interval in seconds for checking the Tedee Bridge.</description>
-                <default>300</default>
-            </parameter>
-        </config-description>
-    </bridge-type>
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<context>network-address</context>
+				<label>Bridge IP Address</label>
+				<description>IP address of the Tedee Bridge.</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>HTTP port of the Tedee Bridge.</description>
+				<default>80</default>
+			</parameter>
+			<parameter name="apiToken" type="text" required="true">
+				<context>password</context>
+				<label>API Token</label>
+				<description>API token used to authenticate with the Tedee Bridge.</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="5">
+				<label>Poll Interval</label>
+				<description>Interval in seconds for checking the Tedee Bridge.</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-    <bridge-type id="cloud-bridge">
-        <label>Tedee Cloud</label>
-        <description>Tedee Cloud connection using a Personal Access Key.</description>
+	<bridge-type id="cloud-bridge">
+		<label>Tedee Cloud</label>
+		<description>Tedee Cloud connection using a Personal Access Key.</description>
 
-        <config-description>
-            <parameter name="personalAccessKey" type="text" required="true">
-                <context>password</context>
-                <label>Personal Access Key</label>
-                <description>Personal Access Key used to authenticate with the Tedee Cloud API.</description>
-            </parameter>
-            <parameter name="pollInterval" type="integer" min="60">
-                <label>Poll Interval</label>
-                <description>Interval in seconds for checking the Tedee Cloud connection.</description>
-                <default>300</default>
-            </parameter>
-        </config-description>
-    </bridge-type>
+		<config-description>
+			<parameter name="personalAccessKey" type="text" required="true">
+				<context>password</context>
+				<label>Personal Access Key</label>
+				<description>Personal Access Key used to authenticate with the Tedee Cloud API.</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="60">
+				<label>Poll Interval</label>
+				<description>Interval in seconds for checking the Tedee Cloud connection.</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-    <thing-type id="lock">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="local-bridge"/>
-            <bridge-type-ref id="cloud-bridge"/>
-        </supported-bridge-type-refs>
+	<thing-type id="lock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="local-bridge"/>
+			<bridge-type-ref id="cloud-bridge"/>
+		</supported-bridge-type-refs>
 
-        <label>Tedee Lock</label>
-        <description>Tedee smart lock connected through a Tedee Bridge.</description>
-        <semantic-equipment-tag>Lock</semantic-equipment-tag>
+		<label>Tedee Lock</label>
+		<description>Tedee smart lock connected through a Tedee Bridge.</description>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 
-        <channels>
-            <channel id="lock" typeId="lock-switch"/>
-            <channel id="state" typeId="lock-state"/>
-            <channel id="door-state" typeId="door-state"/>
-            <channel id="battery" typeId="system.battery-level"/>
-            <channel id="charging" typeId="charging"/>
-            <channel id="jammed" typeId="jammed"/>
-            <channel id="connected" typeId="connected"/>
-            <channel id="action" typeId="action"/>
+		<channels>
+			<channel id="lock" typeId="lock-switch"/>
+			<channel id="state" typeId="lock-state"/>
+			<channel id="door-state" typeId="door-state"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="charging" typeId="charging"/>
+			<channel id="jammed" typeId="jammed"/>
+			<channel id="connected" typeId="connected"/>
+			<channel id="action" typeId="action"/>
 
-            <channel id="auto-lock-enabled" typeId="setting-switch"/>
-            <channel id="auto-lock-delay" typeId="setting-number"/>
-            <channel id="auto-lock-implicit-enabled" typeId="setting-switch"/>
-            <channel id="auto-lock-implicit-delay" typeId="setting-number"/>
+			<channel id="auto-lock-enabled" typeId="setting-switch"/>
+			<channel id="auto-lock-delay" typeId="setting-number"/>
+			<channel id="auto-lock-implicit-enabled" typeId="setting-switch"/>
+			<channel id="auto-lock-implicit-delay" typeId="setting-number"/>
 
-            <channel id="pull-spring-enabled" typeId="setting-switch"/>
-            <channel id="pull-spring-duration" typeId="setting-number"/>
-            <channel id="auto-pull-spring-enabled" typeId="setting-switch"/>
+			<channel id="pull-spring-enabled" typeId="setting-switch"/>
+			<channel id="pull-spring-duration" typeId="setting-number"/>
+			<channel id="auto-pull-spring-enabled" typeId="setting-switch"/>
 
-            <channel id="postponed-lock-enabled" typeId="setting-switch"/>
-            <channel id="postponed-lock-delay" typeId="setting-number"/>
+			<channel id="postponed-lock-enabled" typeId="setting-switch"/>
+			<channel id="postponed-lock-delay" typeId="setting-number"/>
 
-            <channel id="button-lock-enabled" typeId="setting-switch"/>
-            <channel id="button-unlock-enabled" typeId="setting-switch"/>
-        </channels>
+			<channel id="button-lock-enabled" typeId="setting-switch"/>
+			<channel id="button-unlock-enabled" typeId="setting-switch"/>
+		</channels>
 
-        <properties>
-            <property name="name"/>
-            <property name="serialNumber"/>
-            <property name="deviceType"/>
-            <property name="firmwareVersion"/>
-        </properties>
+		<properties>
+			<property name="name"/>
+			<property name="serialNumber"/>
+			<property name="deviceType"/>
+			<property name="firmwareVersion"/>
+		</properties>
 
-        <config-description>
-            <parameter name="deviceId" type="integer" min="1" required="true">
-                <label>Device ID</label>
-                <description>Numeric ID of the Tedee lock.</description>
-            </parameter>
-            <parameter name="pollInterval" type="integer" min="2">
-                <label>Poll Interval</label>
-                <description>Interval in seconds for reading the lock status.</description>
-                <default>300</default>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<config-description>
+			<parameter name="deviceId" type="integer" min="1" required="true">
+				<label>Device ID</label>
+				<description>Numeric ID of the Tedee lock.</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="2">
+				<label>Poll Interval</label>
+				<description>Interval in seconds for reading the lock status.</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <!-- Lock control -->
-    <channel-type id="lock-switch">
-        <item-type>Switch</item-type>
-        <label>Lock</label>
-        <description>Lock or unlock the Tedee lock.</description>
-        <tags>
-            <tag>Control</tag>
-            <tag>LockState</tag>
-        </tags>
-        <state readOnly="false"/>
-    </channel-type>
+	<!-- Lock control -->
+	<channel-type id="lock-switch">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<description>Lock or unlock the Tedee lock.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
 
-    <!-- Internal lock state -->
-    <channel-type id="lock-state">
-        <item-type>String</item-type>
-        <label>Lock State</label>
-        <description>Current internal state of the Tedee lock.</description>
-        <tags>
-            <tag>Status</tag>
-            <tag>LockState</tag>
-        </tags>
-        <state readOnly="true">
-            <options>
-                <option value="UNCALIBRATED">Uncalibrated</option>
-                <option value="CALIBRATION">Calibration</option>
-                <option value="OPEN">Open</option>
-                <option value="PARTIALLY_OPEN">Partially Open</option>
-                <option value="OPENING">Opening</option>
-                <option value="CLOSING">Closing</option>
-                <option value="CLOSED">Closed</option>
-                <option value="PULL_SPRING">Pull Spring</option>
-                <option value="PULLING">Pulling</option>
-                <option value="UNPULLING">Unpulling</option>
-                <option value="UNKNOWN">Unknown</option>
-            </options>
-        </state>
-    </channel-type>
+	<!-- Internal lock state -->
+	<channel-type id="lock-state">
+		<item-type>String</item-type>
+		<label>Lock State</label>
+		<description>Current internal state of the Tedee lock.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="UNCALIBRATED">Uncalibrated</option>
+				<option value="CALIBRATION">Calibration</option>
+				<option value="OPEN">Open</option>
+				<option value="PARTIALLY_OPEN">Partially Open</option>
+				<option value="OPENING">Opening</option>
+				<option value="CLOSING">Closing</option>
+				<option value="CLOSED">Closed</option>
+				<option value="PULL_SPRING">Pull Spring</option>
+				<option value="PULLING">Pulling</option>
+				<option value="UNPULLING">Unpulling</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <!-- Door state -->
-    <channel-type id="door-state">
-        <item-type>String</item-type>
-        <label>Door State</label>
-        <description>Current door state reported by the Tedee lock.</description>
-        <tags>
-            <tag>Status</tag>
-            <tag>OpenState</tag>
-        </tags>
-        <state readOnly="true">
-            <options>
-                <option value="NOT_PAIRED">Not Paired</option>
-                <option value="CLOSED">Closed</option>
-                <option value="OPEN">Open</option>
-                <option value="UNKNOWN">Unknown</option>
-            </options>
-        </state>
-    </channel-type>
+	<!-- Door state -->
+	<channel-type id="door-state">
+		<item-type>String</item-type>
+		<label>Door State</label>
+		<description>Current door state reported by the Tedee lock.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NOT_PAIRED">Not Paired</option>
+				<option value="CLOSED">Closed</option>
+				<option value="OPEN">Open</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <!-- Charging status -->
-    <channel-type id="charging">
-        <item-type>Switch</item-type>
-        <label>Charging</label>
-        <description>Indicates whether the Tedee lock is charging.</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
-        <state readOnly="true"/>
-    </channel-type>
+	<!-- Charging status -->
+	<channel-type id="charging">
+		<item-type>Switch</item-type>
+		<label>Charging</label>
+		<description>Indicates whether the Tedee lock is charging.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <!-- Jammed status -->
-    <channel-type id="jammed">
-        <item-type>Switch</item-type>
-        <label>Jammed</label>
-        <description>Indicates whether the Tedee lock is jammed.</description>
-        <tags>
-            <tag>Alarm</tag>
-        </tags>
-        <state readOnly="true"/>
-    </channel-type>
+	<!-- Jammed status -->
+	<channel-type id="jammed">
+		<item-type>Switch</item-type>
+		<label>Jammed</label>
+		<description>Indicates whether the Tedee lock is jammed.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <!-- Connectivity status -->
-    <channel-type id="connected">
-        <item-type>Switch</item-type>
-        <label>Connected</label>
-        <description>Indicates whether the Tedee lock is connected to the Tedee Bridge.</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
-        <state readOnly="true"/>
-    </channel-type>
+	<!-- Connectivity status -->
+	<channel-type id="connected">
+		<item-type>Switch</item-type>
+		<label>Connected</label>
+		<description>Indicates whether the Tedee lock is connected to the Tedee Bridge.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <!-- Lock actions -->
-    <channel-type id="action">
-        <item-type>String</item-type>
-        <label>Action</label>
-        <description>Send an action to the Tedee lock.</description>
-        <tags>
-            <tag>Control</tag>
-        </tags>
-        <command>
-            <options>
-                <option value="LOCK">Lock</option>
-                <option value="UNLOCK">Unlock</option>
-                <option value="UNLOCK_NO_PULL">Unlock without Pull</option>
-                <option value="UNLOCK_OR_PULL">Decides how to unlock an open lock</option>
-                <option value="PULL">Pull</option>
-            </options>
-        </command>
-    </channel-type>
+	<!-- Lock actions -->
+	<channel-type id="action">
+		<item-type>String</item-type>
+		<label>Action</label>
+		<description>Send an action to the Tedee lock.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="LOCK">Lock</option>
+				<option value="UNLOCK">Unlock</option>
+				<option value="UNLOCK_NO_PULL">Unlock without Pull</option>
+				<option value="UNLOCK_OR_PULL">Decides how to unlock an open lock</option>
+				<option value="PULL">Pull</option>
+			</options>
+		</command>
+	</channel-type>
 
-    <!-- Read-only boolean settings -->
-    <channel-type id="setting-switch">
-        <item-type>Switch</item-type>
-        <label>Setting Enabled</label>
-        <description>Read-only Tedee device setting.</description>
-        <tags>
-            <tag>Status</tag>
-            <tag>Enabled</tag>
-        </tags>
-        <state readOnly="true"/>
-    </channel-type>
+	<!-- Read-only boolean settings -->
+	<channel-type id="setting-switch">
+		<item-type>Switch</item-type>
+		<label>Setting Enabled</label>
+		<description>Read-only Tedee device setting.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <!-- Read-only numeric settings -->
-    <channel-type id="setting-number">
-        <item-type>Number</item-type>
-        <label>Setting Value</label>
-        <description>Read-only Tedee device setting value.</description>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Duration</tag>
-        </tags>
-        <state readOnly="true"/>
-    </channel-type>
+	<!-- Read-only numeric settings -->
+	<channel-type id="setting-number">
+		<item-type>Number</item-type>
+		<label>Setting Value</label>
+		<description>Read-only Tedee device setting value.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 
 </thing:thing-descriptions>

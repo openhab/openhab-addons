@@ -408,7 +408,8 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
     /**
      * Handles commands received by the local bridge.
      *
-     * <p>The bridge does not currently expose command channels, so commands
+     * <p>
+     * The bridge does not currently expose command channels, so commands
      * received here are not processed.
      *
      * @param c the channel on which the command was received

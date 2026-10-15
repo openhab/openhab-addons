@@ -47,7 +47,7 @@ import com.google.gson.JsonParser;
 public class TedeeWebhookServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final int MAX_PAYLOAD_SIZE = 4096;
-    
+
     private static final class PayloadTooLargeException extends IOException {
         private static final long serialVersionUID = 1L;
 
@@ -55,7 +55,6 @@ public class TedeeWebhookServlet extends HttpServlet {
             super("Tedee webhook payload too large");
         }
     }
-    
 
     private final Logger logger = LoggerFactory.getLogger(TedeeWebhookServlet.class);
     private final ThingRegistry thingRegistry;
@@ -74,13 +73,13 @@ public class TedeeWebhookServlet extends HttpServlet {
         }
 
         final String body;
-            try {
-                body = readBody(request);
-            } catch (PayloadTooLargeException e) {
-                logger.warn("Tedee webhook payload is too large");
-                response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "Webhook payload too large");
-                return;
-            }
+        try {
+            body = readBody(request);
+        } catch (PayloadTooLargeException e) {
+            logger.warn("Tedee webhook payload is too large");
+            response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "Webhook payload too large");
+            return;
+        }
 
         try {
             JsonObject root = JsonParser.parseString(body).getAsJsonObject();

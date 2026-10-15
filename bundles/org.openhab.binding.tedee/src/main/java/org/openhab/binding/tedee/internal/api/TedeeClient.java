@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface TedeeClient {
 
-        /**
+    /**
      * Retrieves information about a Tedee lock.
      *
      * @param id the identifier of the lock
@@ -51,7 +51,7 @@ public interface TedeeClient {
      */
     void lock(int id) throws TedeeApiException;
 
-     /**
+    /**
      * Sends a command to unlock the specified Tedee lock.
      *
      * @param id the identifier of the lock
@@ -59,7 +59,7 @@ public interface TedeeClient {
      */
     void unlock(int id) throws TedeeApiException;
 
-     /**
+    /**
      * Sends a command to unlock the specified Tedee lock without pulling the
      * latch.
      *
@@ -67,7 +67,7 @@ public interface TedeeClient {
      * @throws TedeeApiException if the command fails
      */
     void unlockWithoutPull(int id) throws TedeeApiException;
-    
+
     /**
      * Sends a command to unlock the specified Tedee lock without pulling the
      * latch.
@@ -84,8 +84,8 @@ public interface TedeeClient {
      * @throws TedeeApiException if the command fails
      */
     void pull(int id) throws TedeeApiException;
-    
-     /**
+
+    /**
      * Sends a command to unlock the specified Tedee lock or pull the latch,
      * according to the supported device operation.
      *

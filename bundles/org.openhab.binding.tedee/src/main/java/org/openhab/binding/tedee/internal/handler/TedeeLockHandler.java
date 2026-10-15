@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tedee.internal.TedeeBindingConstants;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
-import org.openhab.binding.tedee.internal.api.TedeeClient;
 import org.openhab.binding.tedee.internal.api.TedeeLock;
 import org.openhab.binding.tedee.internal.configuration.TedeeLockConfiguration;
 import org.openhab.core.library.types.DecimalType;
@@ -49,8 +48,6 @@ public class TedeeLockHandler extends BaseThingHandler {
     private TedeeLockConfiguration cfg = new TedeeLockConfiguration();
     private @Nullable ScheduledFuture<?> job;
     private final Logger logger = LoggerFactory.getLogger(TedeeLockHandler.class);
-
-
 
     /**
      * Creates a handler for a Tedee lock.
@@ -80,7 +77,6 @@ public class TedeeLockHandler extends BaseThingHandler {
         job = scheduler.scheduleWithFixedDelay(this::refresh, 0, n, TimeUnit.SECONDS);
     }
 
-
     /**
      * Handles commands received on the Tedee lock's channels.
      *
@@ -100,7 +96,7 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         logger.debug("Command '{}' received on channel '{}' for Tedee lock {}", x, c.getId(), cfg.deviceId);
 
-       TedeeTransportProvider provider = transportProvider();
+        TedeeTransportProvider provider = transportProvider();
         if (provider == null || !provider.ready()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport offline");
             return;
@@ -113,8 +109,7 @@ public class TedeeLockHandler extends BaseThingHandler {
         }
     }
 
-
-     private void send(TedeeTransportProvider provider, String action) {
+    private void send(TedeeTransportProvider provider, String action) {
         scheduler.execute(() -> {
             try {
                 logger.debug("Sending Tedee action '{}' to lock {}", action, cfg.deviceId);
@@ -148,8 +143,7 @@ public class TedeeLockHandler extends BaseThingHandler {
      * @param action the action to execute
      * @throws TedeeApiException if the API request fails
      */
-    void executeAction(TedeeTransportProvider provider, int deviceId, String action)
-            throws TedeeApiException {
+    void executeAction(TedeeTransportProvider provider, int deviceId, String action) throws TedeeApiException {
         switch (action) {
             case "LOCK" -> provider.lock(deviceId);
             case "UNLOCK" -> provider.unlock(deviceId);
