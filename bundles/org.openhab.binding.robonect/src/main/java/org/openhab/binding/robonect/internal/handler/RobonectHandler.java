@@ -875,10 +875,9 @@ public class RobonectHandler extends BaseThingHandler {
         }
         PushServer server = push.getServer();
         if (server != null) {
-            if (server.getUrl() != null)
-                updateState(CHANNEL_PUSH_URL, new StringType(server.getUrl()));
-            if (server.getName() != null)
-                updateState(CHANNEL_PUSH_USERNAME, new StringType(server.getName()));
+            updateState(CHANNEL_PUSH_URL, server.getUrl() != null ? new StringType(server.getUrl()) : UnDefType.NULL);
+            updateState(CHANNEL_PUSH_USERNAME,
+                    server.getName() != null ? new StringType(server.getName()) : UnDefType.NULL);
         }
         PushTriggers triggers = push.getTrigger();
         if (triggers != null) {

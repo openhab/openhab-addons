@@ -543,8 +543,8 @@
 		<item-type>String</item-type>
 		<label>Push Service Password</label>
 		<description>Write-only password for the push service. The password cannot be read back; the state remains undefined.</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="pushTriggerSwitchType">
 		<item-type>Switch</item-type>
