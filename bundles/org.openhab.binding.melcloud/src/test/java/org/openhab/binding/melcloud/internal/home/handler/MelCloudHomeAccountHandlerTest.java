@@ -128,7 +128,7 @@ class MelCloudHomeAccountHandlerTest {
 
         // Assert
         callback.waitForOnline();
-        verify(storage).put(anyString(), eq(new MelCloudHomeAuthState(REFRESH_TOKEN)));
+        verify(storage).put(anyString(), eq(new MelCloudHomeAuthState("user@example.com", REFRESH_TOKEN)));
         assertEquals(ACCESS_TOKEN, handler.getAccessToken());
     }
 
@@ -163,7 +163,7 @@ class MelCloudHomeAccountHandlerTest {
     @Test
     void whenStoredRefreshTokenFailsTransientlyThenNoFullLoginIsAttempted() throws Exception {
         // Arrange
-        when(storage.get(anyString())).thenReturn(new MelCloudHomeAuthState(REFRESH_TOKEN));
+        when(storage.get(anyString())).thenReturn(new MelCloudHomeAuthState("user@example.com", REFRESH_TOKEN));
         when(authService.refreshToken(REFRESH_TOKEN)).thenThrow(new MelCloudCommException("Timeout"));
 
         // Act
@@ -178,7 +178,7 @@ class MelCloudHomeAccountHandlerTest {
     @Test
     void whenStoredRefreshTokenIsRejectedThenFullLoginIsUsed() throws Exception {
         // Arrange
-        when(storage.get(anyString())).thenReturn(new MelCloudHomeAuthState(REFRESH_TOKEN));
+        when(storage.get(anyString())).thenReturn(new MelCloudHomeAuthState("user@example.com", REFRESH_TOKEN));
         when(authService.refreshToken(REFRESH_TOKEN)).thenThrow(new MelCloudHomeAuthException("expired"));
         when(authService.login("user@example.com", "secret")).thenReturn(tokenResponse());
 
@@ -188,6 +188,50 @@ class MelCloudHomeAccountHandlerTest {
         // Assert
         callback.waitForOnline();
         verify(authService).login("user@example.com", "secret");
+    }
+
+    @Test
+    void whenStoredRefreshTokenBelongsToTheConfiguredAccountThenTheSessionIsResumed() throws Exception {
+        // Arrange
+        when(storage.get(anyString())).thenReturn(new MelCloudHomeAuthState("user@example.com", REFRESH_TOKEN));
+        when(authService.refreshToken(REFRESH_TOKEN)).thenReturn(tokenResponse());
+
+        // Act
+        handler.initialize();
+
+        // Assert
+        callback.waitForOnline();
+        verify(authService, never()).login(anyString(), anyString());
+    }
+
+    @Test
+    void whenStoredRefreshTokenBelongsToAnotherAccountThenAFullLoginIsUsed() throws Exception {
+        // Arrange: the bridge has been reconfigured with another account's credentials
+        when(storage.get(anyString())).thenReturn(new MelCloudHomeAuthState("other@example.com", REFRESH_TOKEN));
+        when(authService.login("user@example.com", "secret")).thenReturn(tokenResponse());
+
+        // Act
+        handler.initialize();
+
+        // Assert
+        callback.waitForOnline();
+        verify(authService, never()).refreshToken(anyString());
+        verify(storage).remove(anyString());
+        verify(authService).login("user@example.com", "secret");
+    }
+
+    @Test
+    void whenStoredStateHasNoAccountIdentityThenAFullLoginIsUsed() throws Exception {
+        // Arrange: state persisted by an earlier binding version carries no username
+        when(storage.get(anyString())).thenReturn(new MelCloudHomeAuthState(null, REFRESH_TOKEN));
+        when(authService.login("user@example.com", "secret")).thenReturn(tokenResponse());
+
+        // Act
+        handler.initialize();
+
+        // Assert
+        callback.waitForOnline();
+        verify(authService, never()).refreshToken(anyString());
     }
 
     @Test
@@ -238,6 +282,6 @@ class MelCloudHomeAccountHandlerTest {
             Thread.sleep(20);
         }
         verify(storage, times(1)).put(anyString(), any());
-        verify(storage).put(anyString(), eq(new MelCloudHomeAuthState(REFRESH_TOKEN)));
+        verify(storage).put(anyString(), eq(new MelCloudHomeAuthState("user@example.com", REFRESH_TOKEN)));
     }
 }

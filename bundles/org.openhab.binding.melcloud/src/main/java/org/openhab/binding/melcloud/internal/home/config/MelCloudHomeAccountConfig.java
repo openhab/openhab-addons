@@ -32,9 +32,12 @@ public class MelCloudHomeAccountConfig {
      */
     public boolean enableRealtimeUpdates = true;
 
+    /**
+     * The username is the account's email address, so both credentials are redacted.
+     */
     @Override
     public String toString() {
-        return "[username=" + (username.isEmpty() ? "<empty>" : username) + ", password="
+        return "[username=" + (username.isEmpty() ? "<empty>" : "<redacted>") + ", password="
                 + (password.isEmpty() ? "<empty>" : "<redacted>") + ", enableRealtimeUpdates=" + enableRealtimeUpdates
                 + "]";
     }

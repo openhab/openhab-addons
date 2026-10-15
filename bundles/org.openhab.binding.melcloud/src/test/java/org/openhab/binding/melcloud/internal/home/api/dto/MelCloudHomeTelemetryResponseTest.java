@@ -37,19 +37,19 @@ class MelCloudHomeTelemetryResponseTest {
     }
 
     @Test
-    void whenMeasureDataIsEmptyThenGetLatestValueWhReturnsEmpty() {
+    void whenMeasureDataIsEmptyThenGetLatestValueReturnsEmpty() {
         // Arrange
         MelCloudHomeTelemetryResponse response = new MelCloudHomeTelemetryResponse();
 
         // Act
-        Optional<Double> latest = response.getLatestValueWh();
+        Optional<Double> latest = response.getLatestValue();
 
         // Assert
         assertEquals(Optional.empty(), latest);
     }
 
     @Test
-    void whenValuesArePresentThenGetLatestValueWhReturnsTheLastOne() {
+    void whenValuesArePresentThenGetLatestValueReturnsTheLastOne() {
         // Arrange
         MelCloudHomeMeasureData measureData = new MelCloudHomeMeasureData();
         measureData.values = List.of(valueOf("2026-07-22T00:00:00Z", "100.0"),
@@ -58,14 +58,31 @@ class MelCloudHomeTelemetryResponseTest {
         response.measureData = List.of(measureData);
 
         // Act
-        Optional<Double> latest = response.getLatestValueWh();
+        Optional<Double> latest = response.getLatestValue();
 
         // Assert
         assertEquals(Optional.of(150.5), latest);
     }
 
     @Test
-    void whenLatestValueIsNotNumericThenGetLatestValueWhReturnsEmpty() {
+    void whenSeriesEndsWithAResetMarkerThenTheLastValueIsReturned() {
+        // Arrange: the ATA cumulative series delivers 100 Wh pulses followed by a 0 reset marker. The binding
+        // publishes the latest bucket as an interval reading, so the marker is reported as the wire last sent it
+        // rather than being summed into a cumulative value here.
+        MelCloudHomeMeasureData measureData = new MelCloudHomeMeasureData();
+        measureData.values = List.of(valueOf("2026-07-22T10:00:00Z", "100.0"), valueOf("2026-07-22T10:01:00Z", "0.0"));
+        MelCloudHomeTelemetryResponse response = new MelCloudHomeTelemetryResponse();
+        response.measureData = List.of(measureData);
+
+        // Act
+        Optional<Double> latest = response.getLatestValue();
+
+        // Assert
+        assertEquals(Optional.of(0.0), latest);
+    }
+
+    @Test
+    void whenLatestValueIsNotNumericThenGetLatestValueReturnsEmpty() {
         // Arrange
         MelCloudHomeMeasureData measureData = new MelCloudHomeMeasureData();
         measureData.values = List.of(valueOf("2026-07-23T00:00:00Z", "not-a-number"));
@@ -73,7 +90,7 @@ class MelCloudHomeTelemetryResponseTest {
         response.measureData = List.of(measureData);
 
         // Act
-        Optional<Double> latest = response.getLatestValueWh();
+        Optional<Double> latest = response.getLatestValue();
 
         // Assert
         assertTrue(latest.isEmpty());

@@ -100,6 +100,34 @@ public class MelCloudHomeRequestPacer {
     }
 
     /**
+     * Like {@link #scheduleBlocking(PacedCall)}, but never blocks the calling thread: the paced call's outcome is
+     * delivered through the returned {@link CompletableFuture}, for callers that run on a scheduler thread.
+     *
+     * <p>
+     * Cancelling the returned future before the paced slot arrives skips {@code apiCall} instead of executing it
+     * later, so a call that was already abandoned cannot still reach the platform.
+     *
+     * @param <T> the call's result type
+     * @param apiCall the call to pace and run
+     * @return a future completing with {@code apiCall}'s result, or exceptionally with its failure
+     */
+    public <T> CompletableFuture<T> scheduleAsync(PacedCall<T> apiCall) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        schedule(() -> {
+            if (future.isDone()) {
+                return;
+            }
+            try {
+                future.complete(apiCall.call());
+            } catch (MelCloudCommException | RuntimeException e) {
+                // An unchecked failure must complete the future too, or a waiting caller would wait forever.
+                future.completeExceptionally(e);
+            }
+        });
+        return future;
+    }
+
+    /**
      * Like {@link #schedule(Runnable)}, but blocks the calling thread until {@code apiCall} has run and returns its
      * result (or propagates its exception), for synchronous {@code ThingActions} callers.
      *
@@ -114,18 +142,7 @@ public class MelCloudHomeRequestPacer {
      * @throws MelCloudCommException if {@code apiCall} throws it, or if waiting for it is interrupted or times out
      */
     public <T> T scheduleBlocking(PacedCall<T> apiCall) throws MelCloudCommException {
-        CompletableFuture<T> future = new CompletableFuture<>();
-        schedule(() -> {
-            if (future.isDone()) {
-                return;
-            }
-            try {
-                future.complete(apiCall.call());
-            } catch (MelCloudCommException | RuntimeException e) {
-                // An unchecked failure must complete the future too, or the caller would wait for it forever.
-                future.completeExceptionally(e);
-            }
-        });
+        CompletableFuture<T> future = scheduleAsync(apiCall);
         try {
             return future.get(blockingTimeoutMillis, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {

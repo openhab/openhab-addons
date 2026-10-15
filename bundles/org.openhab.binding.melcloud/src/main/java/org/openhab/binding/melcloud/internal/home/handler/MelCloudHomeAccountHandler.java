@@ -258,6 +258,15 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         Storage<MelCloudHomeAuthState> currentStorage = storage;
         MelCloudHomeAuthState state = currentStorage == null ? null : currentStorage.get(thing.getUID().toString());
         String storedRefreshToken = state == null ? null : state.refreshToken();
+        if (state != null && storedRefreshToken != null && !config.username.equals(state.username())) {
+            // The stored session belongs to another account, so resuming it would keep the bridge running under the
+            // account the config no longer names; drop it and perform a full login with the configured credentials.
+            logger.debug("Discarding the stored MELCloud Home session, it belongs to a different account");
+            if (currentStorage != null) {
+                currentStorage.remove(thing.getUID().toString());
+            }
+            storedRefreshToken = null;
+        }
 
         if (storedRefreshToken != null) {
             logger.debug("Attempting to resume the MELCloud Home session with a stored refresh token");
@@ -311,7 +320,8 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         if (newRefreshToken != null) {
             Storage<MelCloudHomeAuthState> currentStorage = storage;
             if (currentStorage != null) {
-                currentStorage.put(thing.getUID().toString(), new MelCloudHomeAuthState(newRefreshToken));
+                currentStorage.put(thing.getUID().toString(),
+                        new MelCloudHomeAuthState(config.username, newRefreshToken));
                 logger.debug("Persisted a new MELCloud Home refresh token to storage");
             } else {
                 logger.warn("Received a refresh token but storage is not available (initialize() not run?); "

@@ -18,8 +18,10 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Root response of {@code GET /telemetry/telemetry/energy/{unitId}}. Values are in Wh; callers divide
- * by 1000 for kWh.
+ * Root response of {@code GET /telemetry/telemetry/energy/{unitId}}. The wire unit is measure-specific: the ATA
+ * {@code cumulative_energy_consumed_since_last_upload} series reports Wh, the ATW interval series report kWh per
+ * bucket. {@link org.openhab.binding.melcloud.internal.home.api.MelCloudHomeApiClient} normalizes every supported
+ * measure to kWh.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -29,9 +31,10 @@ public class MelCloudHomeTelemetryResponse {
     public List<MelCloudHomeMeasureData> measureData = List.of();
 
     /**
-     * @return the most recent (last) value across the first measure series in this response, in Wh
+     * @return the most recent (last) value across the first measure series in this response, in the measure's own
+     *         wire unit
      */
-    public Optional<Double> getLatestValueWh() {
+    public Optional<Double> getLatestValue() {
         if (measureData.isEmpty()) {
             return Optional.empty();
         }

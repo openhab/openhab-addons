@@ -78,6 +78,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -116,8 +117,20 @@ class MelCloudHomeAtwUnitHandlerTest {
         apiClient = mock(MelCloudHomeApiClient.class);
         when(accountHandler.getApiClient()).thenReturn(apiClient);
         when(accountHandler.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(accountHandler.getRequestPacer())
-                .thenReturn(new MelCloudHomeRequestPacer(Executors.newSingleThreadScheduledExecutor()));
+        when(accountHandler.getRequestPacer()).thenReturn(immediatePacer());
+    }
+
+    /**
+     * A pacer running every paced call on the calling thread: these tests assert the handlers' dispatch behavior
+     * without depending on pacing delays, while {@link MelCloudHomeRequestPacerTest} covers the pacing itself.
+     */
+    private static MelCloudHomeRequestPacer immediatePacer() {
+        return new MelCloudHomeRequestPacer(Executors.newSingleThreadScheduledExecutor()) {
+            @Override
+            public void schedule(Runnable apiCall) {
+                apiCall.run();
+            }
+        };
     }
 
     private MelCloudHomeAtwUnitHandler createHandler() {
@@ -197,13 +210,13 @@ class MelCloudHomeAtwUnitHandlerTest {
         MelCloudHomeAtwUnitHandler handler = createHandler(ThingStatus.OFFLINE);
         handler.initialize();
         callback.waitForStatus(ThingStatus.OFFLINE);
-        verify(apiClient, never()).fetchLatestEnergyWh(any(), any(), any(), any(), any());
+        verify(apiClient, never()).fetchLatestEnergyKwh(any(), any(), any(), any(), any());
 
         // Act
         handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(ThingStatus.ONLINE).build());
 
         // Assert: restarted telemetry only happens because going offline cancelled the previous task
-        verify(apiClient, timeout(3000)).fetchLatestEnergyWh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(),
+        verify(apiClient, timeout(3000)).fetchLatestEnergyKwh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(),
                 eq("interval_energy_consumed"));
     }
 
@@ -544,9 +557,9 @@ class MelCloudHomeAtwUnitHandlerTest {
 
     @Test
     void whenEnergyTelemetryFetchReturnsEmptyThenChannelsAreUpdatedWithUndef() throws Exception {
-        // Arrange: exercises the telemetry-poll path directly (fetchLatestEnergyWh), not just the settings-array
+        // Arrange: exercises the telemetry-poll path directly (fetchLatestEnergyKwh), not just the settings-array
         // path covered above. Also covers the derived "cop" channel, which is not computable without both values.
-        when(apiClient.fetchLatestEnergyWh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(), any()))
+        when(apiClient.fetchLatestEnergyKwh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(), any()))
                 .thenReturn(Optional.empty());
         MelCloudHomeAtwUnitHandler handler = createHandler();
 
@@ -557,6 +570,24 @@ class MelCloudHomeAtwUnitHandlerTest {
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ENERGY_CONSUMED));
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ENERGY_PRODUCED));
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_COP));
+    }
+
+    @Test
+    void whenEnergyTelemetryReturnsValuesThenChannelsAndCopAreUpdatedInKwh() throws Exception {
+        // Arrange: the API client hands out kWh for both ATW measures
+        when(apiClient.fetchLatestEnergyKwh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(),
+                eq(MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED))).thenReturn(Optional.of(2.0));
+        when(apiClient.fetchLatestEnergyKwh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(),
+                eq(MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_PRODUCED))).thenReturn(Optional.of(6.0));
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+
+        // Act
+        handler.initialize();
+
+        // Assert
+        assertEquals(new QuantityType<>(2.0, Units.KILOWATT_HOUR), callback.getState(CHANNEL_ENERGY_CONSUMED));
+        assertEquals(new QuantityType<>(6.0, Units.KILOWATT_HOUR), callback.getState(CHANNEL_ENERGY_PRODUCED));
+        assertEquals(new DecimalType(3.0), callback.getState(CHANNEL_COP));
     }
 
     @Test

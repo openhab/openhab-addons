@@ -140,16 +140,51 @@ class MelCloudHomeApiClientTest {
     }
 
     @Test
-    void whenEnergyTelemetryResponseIsEmptyThenFetchLatestEnergyWhReturnsEmpty() throws MelCloudCommException {
+    void whenEnergyTelemetryResponseIsEmptyThenFetchLatestEnergyKwhReturnsEmpty() throws MelCloudCommException {
         // Arrange
         mockGetResponse("");
 
         // Act
-        Optional<Double> latest = client.fetchLatestEnergyWh(ACCESS_TOKEN, UNIT_ID, Instant.EPOCH, Instant.now(),
-                "cumulative_energy_consumed_since_last_upload");
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, Instant.EPOCH, Instant.now(),
+                MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED);
 
         // Assert
         assertTrue(latest.isEmpty());
+    }
+
+    @Test
+    void whenAtaCumulativeEnergyIsFetchedThenWattHoursAreConvertedToKwh() throws MelCloudCommException {
+        // Arrange: the ATA cumulative measure reports Wh on the wire
+        mockGetResponse("{\"measureData\":[{\"type\":\"cumulative_energy_consumed_since_last_upload\","
+                + "\"values\":[{\"time\":\"2026-07-22 10:00\",\"value\":\"1500.0\"}]}]}");
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, Instant.EPOCH, Instant.now(),
+                MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED);
+
+        // Assert
+        assertEquals(Optional.of(1.5), latest);
+    }
+
+    @Test
+    void whenAtwIntervalEnergyIsFetchedThenKilowattHoursArePassedThrough() throws MelCloudCommException {
+        // Arrange: the ATW interval measures report kWh per bucket on the wire
+        mockGetResponse("{\"measureData\":[{\"type\":\"interval_energy_consumed\","
+                + "\"values\":[{\"time\":\"2026-07-22 10:00\",\"value\":\"1.5\"}]}]}");
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, Instant.EPOCH, Instant.now(),
+                MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
+
+        // Assert
+        assertEquals(Optional.of(1.5), latest);
+    }
+
+    @Test
+    void whenAnUnknownEnergyMeasureIsFetchedThenFetchLatestEnergyKwhThrows() {
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID,
+                Instant.EPOCH, Instant.now(), "unknown_measure"));
     }
 
     @Test

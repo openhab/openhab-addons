@@ -188,7 +188,7 @@ since that indicates a binding gap rather than genuinely missing data.
 | vane-horizontal      | Number              | Vane Horizontal: "0" = Auto, "1" = Left, "2" = Left Centre, "3" = Centre, "4" = Right Centre, "5" = Right, "12" = Swing. | False |
 | vane-vertical        | Number              | Vane Vertical: "0" = Auto, "1" = One, "2" = Two, "3" = Three, "4" = Four, "5" = Five, "7" = Swing. | False |
 | outdoor-temperature  | Number:Temperature  | Outdoor temperature reported by the unit. Refreshed every 30 minutes.               | True      |
-| energy-consumed      | Number:Energy       | Cumulative energy consumed, in Wh. Refreshed every 30 minutes.                       | True      |
+| energy-consumed      | Number:Energy       | Energy consumed in the last interval, in kWh. Refreshed every 30 minutes.            | True      |
 | rssi                 | Number              | Wi-Fi signal quality (openHAB's built-in `system.signal-strength` channel, 0 = no signal to 4 = excellent). | True |
 | is-in-error          | Switch              | Whether the unit is currently reporting an error.                                    | True      |
 | error-code           | String              | The unit's current error code, if any.                                              | True      |
@@ -214,8 +214,8 @@ convention chosen to match the legacy MELCloud binding's numbering and are not i
 | tank-target-water-temperature   | Number:Temperature  | Tank water target temperature: Min = 20, Max = 65.                                  | False     |
 | forced-hot-water-mode           | Switch              | If water mode is Heat Now (true) or Auto (false).                                   | False     |
 | outdoor-temperature             | Number:Temperature  | Outdoor temperature reported by the unit. Refreshed every 30 minutes.               | True      |
-| energy-consumed                 | Number:Energy       | Cumulative energy consumed, in Wh. Refreshed every 30 minutes.                       | True      |
-| energy-produced                 | Number:Energy       | Cumulative energy produced, in Wh. Refreshed every 30 minutes.                       | True      |
+| energy-consumed                 | Number:Energy       | Energy consumed in the last interval, in kWh. Refreshed every 30 minutes.            | True      |
+| energy-produced                 | Number:Energy       | Energy produced in the last interval, in kWh. Refreshed every 30 minutes.            | True      |
 | cop                             | Number              | Coefficient of performance: ratio of energy produced to energy consumed.            | True      |
 | rssi                            | Number              | Wi-Fi signal quality (openHAB's built-in `system.signal-strength` channel, 0 = no signal to 4 = excellent). | True |
 | is-in-error                     | Switch              | Whether the unit is currently reporting an error.                                   | True      |

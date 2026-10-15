@@ -17,7 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -168,5 +170,61 @@ class MelCloudHomeRequestPacerTest {
         scheduler.schedule(markerDone::countDown, intervalMillis + 200, TimeUnit.MILLISECONDS);
         assertTrue(markerDone.await(5, TimeUnit.SECONDS), "marker task should have run");
         assertFalse(ran.get(), "a call that timed out must not reach the API afterwards");
+    }
+
+    @Test
+    void whenScheduleAsyncCallSucceedsThenTheFutureCompletesWithTheResult() throws Exception {
+        // Arrange
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        MelCloudHomeRequestPacer pacer = new MelCloudHomeRequestPacer(scheduler);
+
+        // Act
+        CompletableFuture<String> future = pacer.scheduleAsync(() -> "ok");
+
+        // Assert
+        assertEquals("ok", future.get(5, TimeUnit.SECONDS));
+    }
+
+    @Test
+    void whenScheduleAsyncCallFailsThenTheFutureCompletesExceptionally() {
+        // Arrange
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        MelCloudHomeRequestPacer pacer = new MelCloudHomeRequestPacer(scheduler);
+        MelCloudCommException failure = new MelCloudCommException("boom");
+
+        // Act
+        CompletableFuture<String> future = pacer.scheduleAsync(() -> {
+            throw failure;
+        });
+
+        // Assert
+        ExecutionException thrown = assertThrows(ExecutionException.class, () -> future.get(5, TimeUnit.SECONDS));
+        assertEquals(failure, thrown.getCause());
+    }
+
+    @Test
+    void whenScheduleAsyncFutureIsCancelledThenItsPacedCallIsSkipped() throws Exception {
+        // Arrange: a pacing delay so the call is queued instead of running inline
+        long intervalMillis = 200;
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        MelCloudHomeRequestPacer pacer = new MelCloudHomeRequestPacer(scheduler, intervalMillis);
+        pacer.schedule(() -> {
+            // First call: reserves the next slot, nothing to assert.
+        });
+        AtomicBoolean ran = new AtomicBoolean(false);
+
+        // Act: the caller abandons its future before the paced slot arrives
+        CompletableFuture<String> future = pacer.scheduleAsync(() -> {
+            ran.set(true);
+            return "too late";
+        });
+        future.cancel(true);
+
+        // Assert - a marker queued after the paced task on the same single-threaded scheduler can only run once the
+        // paced task has been passed, so it proves the paced call was skipped rather than merely still pending.
+        CountDownLatch markerDone = new CountDownLatch(1);
+        scheduler.schedule(markerDone::countDown, intervalMillis + 200, TimeUnit.MILLISECONDS);
+        assertTrue(markerDone.await(5, TimeUnit.SECONDS), "marker task should have run");
+        assertFalse(ran.get(), "a cancelled call must not reach the API afterwards");
     }
 }

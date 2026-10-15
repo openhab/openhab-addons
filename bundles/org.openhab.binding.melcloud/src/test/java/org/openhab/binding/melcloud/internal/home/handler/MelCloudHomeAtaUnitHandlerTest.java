@@ -22,6 +22,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ENERGY_CONSUMED;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ERROR_CODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_FAN_SPEED;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_OPERATION_MODE;
@@ -69,6 +70,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -108,8 +110,20 @@ class MelCloudHomeAtaUnitHandlerTest {
         apiClient = mock(MelCloudHomeApiClient.class);
         when(accountHandler.getApiClient()).thenReturn(apiClient);
         when(accountHandler.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(accountHandler.getRequestPacer())
-                .thenReturn(new MelCloudHomeRequestPacer(Executors.newSingleThreadScheduledExecutor()));
+        when(accountHandler.getRequestPacer()).thenReturn(immediatePacer());
+    }
+
+    /**
+     * A pacer running every paced call on the calling thread: these tests assert the handlers' dispatch behavior
+     * without depending on pacing delays, while {@link MelCloudHomeRequestPacerTest} covers the pacing itself.
+     */
+    private static MelCloudHomeRequestPacer immediatePacer() {
+        return new MelCloudHomeRequestPacer(Executors.newSingleThreadScheduledExecutor()) {
+            @Override
+            public void schedule(Runnable apiCall) {
+                apiCall.run();
+            }
+        };
     }
 
     private MelCloudHomeAtaUnitHandler createHandler(String unitId, boolean withBridge, ThingStatus bridgeStatus) {
@@ -625,12 +639,12 @@ class MelCloudHomeAtaUnitHandlerTest {
 
     @Test
     void whenOutdoorTemperatureFetchReturnsEmptyThenChannelIsUpdatedWithUndef() throws Exception {
-        // Arrange: exercises the telemetry-poll path directly (fetchLatestOutdoorTemperature/fetchLatestEnergyWh),
+        // Arrange: exercises the telemetry-poll path directly (fetchLatestOutdoorTemperature/fetchLatestEnergyKwh),
         // not just the settings-array path covered above. callback.getState(...) itself blocks/retries for the
         // update to arrive from the scheduler-driven poll, so no extra wait helper is needed.
         when(apiClient.fetchLatestOutdoorTemperature(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any()))
                 .thenReturn(Optional.empty());
-        when(apiClient.fetchLatestEnergyWh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(), any()))
+        when(apiClient.fetchLatestEnergyKwh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(), any()))
                 .thenReturn(Optional.empty());
         MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
 
@@ -639,6 +653,20 @@ class MelCloudHomeAtaUnitHandlerTest {
 
         // Assert
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_OUTDOOR_TEMPERATURE));
+    }
+
+    @Test
+    void whenEnergyTelemetryReturnsAValueThenTheChannelIsUpdatedInKwh() throws Exception {
+        // Arrange: the API client hands out kWh, so the value is published on the channel unchanged
+        when(apiClient.fetchLatestEnergyKwh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(), any()))
+                .thenReturn(Optional.of(1.5));
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+
+        // Act
+        handler.initialize();
+
+        // Assert
+        assertEquals(new QuantityType<>(1.5, Units.KILOWATT_HOUR), callback.getState(CHANNEL_ENERGY_CONSUMED));
     }
 
     @Test

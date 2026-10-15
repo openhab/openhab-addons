@@ -22,8 +22,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
+import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeApiClient;
+import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeRequestPacer;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwCapabilities;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwScheduleEntry;
@@ -72,8 +76,6 @@ import org.slf4j.LoggerFactory;
 public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelCloudHomeAtwUnitListener {
 
     private static final long TELEMETRY_POLL_INTERVAL_SECONDS = 1800;
-    private static final String ENERGY_CONSUMED_MEASURE = "interval_energy_consumed";
-    private static final String ENERGY_PRODUCED_MEASURE = "interval_energy_produced";
 
     /**
      * Maps a schedule entry's operation mode word (matched case-insensitively) onto the integer code the write
@@ -710,34 +712,56 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         if (handler == null) {
             return;
         }
+        String accessToken;
+        try {
+            accessToken = handler.getAccessToken();
+        } catch (MelCloudCommException e) {
+            logger.debug("Skipping ATW telemetry poll for unit {}, reason {}. ",
+                    SensitiveDataMasker.maskId(config.unitId), e.getMessage());
+            return;
+        }
         Instant to = Instant.now();
         Instant from = to.minus(1, ChronoUnit.DAYS);
-        try {
-            String accessToken = handler.getAccessToken();
-            Double consumedWh = handler.getApiClient()
-                    .fetchLatestEnergyWh(accessToken, config.unitId, from, to, ENERGY_CONSUMED_MEASURE).orElse(null);
-            Double producedWh = handler.getApiClient()
-                    .fetchLatestEnergyWh(accessToken, config.unitId, from, to, ENERGY_PRODUCED_MEASURE).orElse(null);
-            if (consumedWh != null) {
-                updateState(CHANNEL_ENERGY_CONSUMED, new QuantityType<>(consumedWh, Units.WATT_HOUR));
-            } else {
-                updateState(CHANNEL_ENERGY_CONSUMED, UnDefType.UNDEF);
-            }
-            if (producedWh != null) {
-                updateState(CHANNEL_ENERGY_PRODUCED, new QuantityType<>(producedWh, Units.WATT_HOUR));
-            } else {
-                updateState(CHANNEL_ENERGY_PRODUCED, UnDefType.UNDEF);
-            }
-            if (consumedWh != null && producedWh != null && consumedWh > 0) {
-                updateState(CHANNEL_COP, new DecimalType(producedWh / consumedWh));
-            } else {
-                // Also covers consumedWh == 0: COP is not meaningfully computable, not just "missing".
-                updateState(CHANNEL_COP, UnDefType.UNDEF);
-            }
-        } catch (MelCloudCommException e) {
+        MelCloudHomeRequestPacer pacer = handler.getRequestPacer();
+        CompletableFuture<Optional<Double>> consumedKwh = pacer
+                .scheduleAsync(() -> handler.getApiClient().fetchLatestEnergyKwh(accessToken, config.unitId, from, to,
+                        MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED));
+        CompletableFuture<Optional<Double>> producedKwh = pacer
+                .scheduleAsync(() -> handler.getApiClient().fetchLatestEnergyKwh(accessToken, config.unitId, from, to,
+                        MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_PRODUCED));
+        consumedKwh.thenCombine(producedKwh, EnergyTelemetry::new).whenComplete(this::publishTelemetry);
+    }
+
+    /**
+     * Publishes one poll's two energy readings together, so the derived COP only ever combines values of the same
+     * window.
+     */
+    private void publishTelemetry(@Nullable EnergyTelemetry telemetry, @Nullable Throwable error) {
+        if (telemetry == null) {
             logger.debug("Telemetry poll failed for ATW unit {}, reason {}. ",
-                    SensitiveDataMasker.maskId(config.unitId), e.getMessage());
+                    SensitiveDataMasker.maskId(config.unitId), error == null ? "no result" : error.getMessage());
+            return;
         }
+        Optional<Double> consumedKwh = telemetry.consumedKwh();
+        Optional<Double> producedKwh = telemetry.producedKwh();
+        consumedKwh.ifPresentOrElse(
+                kwh -> updateState(CHANNEL_ENERGY_CONSUMED, new QuantityType<>(kwh, Units.KILOWATT_HOUR)),
+                () -> updateState(CHANNEL_ENERGY_CONSUMED, UnDefType.UNDEF));
+        producedKwh.ifPresentOrElse(
+                kwh -> updateState(CHANNEL_ENERGY_PRODUCED, new QuantityType<>(kwh, Units.KILOWATT_HOUR)),
+                () -> updateState(CHANNEL_ENERGY_PRODUCED, UnDefType.UNDEF));
+        if (consumedKwh.isPresent() && producedKwh.isPresent() && consumedKwh.get() > 0) {
+            updateState(CHANNEL_COP, new DecimalType(producedKwh.get() / consumedKwh.get()));
+        } else {
+            // Also covers consumedKwh == 0: COP is not meaningfully computable, not just "missing".
+            updateState(CHANNEL_COP, UnDefType.UNDEF);
+        }
+    }
+
+    /**
+     * One telemetry poll's two energy readings, both in kWh.
+     */
+    private record EnergyTelemetry(Optional<Double> consumedKwh, Optional<Double> producedKwh) {
     }
 
     private void updateCodeState(String channelId, Map<String, Integer> wordToCode, String word) {

@@ -13,6 +13,7 @@
 package org.openhab.binding.melcloud.internal.home.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Persisted MELCloud Home authentication state.
@@ -22,15 +23,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * only and is re-derived on every restart via
  * {@link org.openhab.binding.melcloud.internal.home.api.MelCloudHomeAuthService#refreshToken(String)}.
  *
+ * <p>
+ * The username records which account the refresh token belongs to. Without it, a session persisted for one account
+ * would still be resumed after the bridge is reconfigured with another account's credentials.
+ *
+ * @param username the account the refresh token belongs to; {@code null} for state persisted by an earlier version
  * @param refreshToken the last known MELCloud Home OAuth refresh token
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-record MelCloudHomeAuthState(String refreshToken) {
+record MelCloudHomeAuthState(@Nullable String username, String refreshToken) {
 
     @Override
     public String toString() {
-        return "MelCloudHomeAuthState[refreshToken=<redacted>]";
+        return "MelCloudHomeAuthState[username=<redacted>, refreshToken=<redacted>]";
     }
 }

@@ -56,6 +56,20 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class MelCloudHomeApiClient {
 
+    /** ATA measure: consumed energy since the unit's last upload; the wire reports it in Wh. */
+    public static final String MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED = "cumulative_energy_consumed_since_last_upload";
+    /** ATW measure: consumed energy per telemetry bucket; the wire reports it in kWh. */
+    public static final String MEASURE_ATW_INTERVAL_ENERGY_CONSUMED = "interval_energy_consumed";
+    /** ATW measure: produced energy per telemetry bucket; the wire reports it in kWh. */
+    public static final String MEASURE_ATW_INTERVAL_ENERGY_PRODUCED = "interval_energy_produced";
+
+    /**
+     * Divisor per energy measure, converting that measure's wire unit to kWh. The wire mixes units between the two
+     * unit families, so callers always receive kWh instead of assuming one unit for every measure.
+     */
+    private static final Map<String, Integer> MEASURE_TO_KWH_DIVISOR = Map.of(MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED,
+            1000, MEASURE_ATW_INTERVAL_ENERGY_CONSUMED, 1, MEASURE_ATW_INTERVAL_ENERGY_PRODUCED, 1);
+
     private static final String BFF_BASE_URL = "https://mobile.bff.melcloudhome.com";
     private static final String CONTEXT_URL = BFF_BASE_URL + "/context";
     private static final String ATA_CONTROL_URL_TEMPLATE = BFF_BASE_URL + "/monitor/ataunit/%s";
@@ -157,15 +171,19 @@ public class MelCloudHomeApiClient {
     }
 
     /**
-     * Fetches the most recent cumulative energy value (in Wh) for a unit over the given time window.
+     * Fetches the most recent energy value of one measure over the given time window, normalized to kWh: the ATA
+     * cumulative measure reports Wh on the wire, the ATW interval measures report kWh per bucket.
      *
-     * @param measure the BFF measure name, e.g. {@code cumulative_energy_consumed_since_last_upload} (ATA),
-     *            {@code interval_energy_consumed}, or {@code interval_energy_produced} (ATW)
-     * @return the latest value in Wh, if any data was available
-     * @throws MelCloudCommException if the request fails or the response cannot be parsed
+     * @param measure one of this class's {@code MEASURE_*} constants
+     * @return the latest value in kWh, if any data was available
+     * @throws MelCloudCommException if the request fails, the response cannot be parsed, or {@code measure} is unknown
      */
-    public Optional<Double> fetchLatestEnergyWh(String accessToken, String unitId, Instant from, Instant to,
+    public Optional<Double> fetchLatestEnergyKwh(String accessToken, String unitId, Instant from, Instant to,
             String measure) throws MelCloudCommException {
+        Integer divisor = MEASURE_TO_KWH_DIVISOR.get(measure);
+        if (divisor == null) {
+            throw new MelCloudCommException("Unknown energy measure: " + measure);
+        }
         String url = TELEMETRY_ENERGY_URL_TEMPLATE.formatted(unitId) + "?from=" + urlEncode(from) + "&to="
                 + urlEncode(to) + "&interval=Hour&measure=" + urlEncode(measure);
         String body = get(url, accessToken);
@@ -173,7 +191,8 @@ public class MelCloudHomeApiClient {
             // 304 Not Modified is surfaced by HttpUtil as an empty body — no new data, not an error.
             return Optional.empty();
         }
-        return parseJson(body, MelCloudHomeTelemetryResponse.class, "energy telemetry response").getLatestValueWh();
+        return parseJson(body, MelCloudHomeTelemetryResponse.class, "energy telemetry response").getLatestValue()
+                .map(value -> value / divisor);
     }
 
     /**

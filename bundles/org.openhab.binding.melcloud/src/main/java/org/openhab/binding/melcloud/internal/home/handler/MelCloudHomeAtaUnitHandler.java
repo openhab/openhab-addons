@@ -17,6 +17,7 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
+import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeApiClient;
+import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeRequestPacer;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaCapabilities;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaUnit;
@@ -63,7 +66,6 @@ import org.slf4j.LoggerFactory;
 public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelCloudHomeAtaUnitListener {
 
     private static final long TELEMETRY_POLL_INTERVAL_SECONDS = 1800;
-    private static final String ENERGY_CONSUMED_MEASURE = "cumulative_energy_consumed_since_last_upload";
 
     /**
      * Maps the API's word-based operation mode onto the legacy binding's numeric codes (1 = Heat, 2 = Dry, 3 = Cool,
@@ -432,21 +434,53 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         if (handler == null) {
             return;
         }
+        String accessToken;
+        try {
+            accessToken = handler.getAccessToken();
+        } catch (MelCloudCommException e) {
+            logger.debug("Skipping ATA telemetry poll for unit {}, reason {}. ",
+                    SensitiveDataMasker.maskId(config.unitId), e.getMessage());
+            return;
+        }
         Instant to = Instant.now();
         Instant from = to.minus(1, ChronoUnit.DAYS);
-        try {
-            String accessToken = handler.getAccessToken();
-            handler.getApiClient().fetchLatestEnergyWh(accessToken, config.unitId, from, to, ENERGY_CONSUMED_MEASURE)
-                    .ifPresentOrElse(
-                            wh -> updateState(CHANNEL_ENERGY_CONSUMED, new QuantityType<>(wh, Units.WATT_HOUR)),
-                            () -> updateState(CHANNEL_ENERGY_CONSUMED, UnDefType.UNDEF));
-            handler.getApiClient().fetchLatestOutdoorTemperature(accessToken, config.unitId, from, to).ifPresentOrElse(
-                    value -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
-                    () -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, UnDefType.UNDEF));
-        } catch (MelCloudCommException e) {
-            logger.debug("Telemetry poll failed for ATA unit {}, reason {}. ",
-                    SensitiveDataMasker.maskId(config.unitId), e.getMessage());
+        MelCloudHomeRequestPacer pacer = handler.getRequestPacer();
+        pacer.scheduleAsync(() -> handler.getApiClient().fetchLatestEnergyKwh(accessToken, config.unitId, from, to,
+                MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED)).whenComplete(this::publishEnergyKwh);
+        pacer.scheduleAsync(
+                () -> handler.getApiClient().fetchLatestOutdoorTemperature(accessToken, config.unitId, from, to))
+                .whenComplete(this::publishOutdoorTemperature);
+    }
+
+    /**
+     * Publishes the paced energy telemetry result: the last bucket of the queried window, in kWh.
+     */
+    private void publishEnergyKwh(@Nullable Optional<Double> energyKwh, @Nullable Throwable error) {
+        if (energyKwh == null) {
+            logTelemetryFailure(error);
+            return;
         }
+        energyKwh.ifPresentOrElse(
+                kwh -> updateState(CHANNEL_ENERGY_CONSUMED, new QuantityType<>(kwh, Units.KILOWATT_HOUR)),
+                () -> updateState(CHANNEL_ENERGY_CONSUMED, UnDefType.UNDEF));
+    }
+
+    /**
+     * Publishes the paced outdoor temperature telemetry result.
+     */
+    private void publishOutdoorTemperature(@Nullable Optional<Double> temperature, @Nullable Throwable error) {
+        if (temperature == null) {
+            logTelemetryFailure(error);
+            return;
+        }
+        temperature.ifPresentOrElse(
+                value -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
+                () -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, UnDefType.UNDEF));
+    }
+
+    private void logTelemetryFailure(@Nullable Throwable error) {
+        logger.debug("Telemetry poll failed for ATA unit {}, reason {}. ", SensitiveDataMasker.maskId(config.unitId),
+                error == null ? "no result" : error.getMessage());
     }
 
     /**
