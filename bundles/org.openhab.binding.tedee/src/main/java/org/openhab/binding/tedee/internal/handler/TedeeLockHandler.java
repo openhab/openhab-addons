@@ -93,13 +93,15 @@ public class TedeeLockHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID c, Command x) {
+        final int deviceId = cfg.deviceId;
+
         if (x instanceof RefreshType) {
-            logger.debug("Refresh requested for Tedee lock {}", cfg.deviceId);
+            logger.debug("Refresh requested for Tedee lock {}", deviceId);
             scheduler.execute(this::refresh);
             return;
         }
 
-        logger.debug("Command '{}' received on channel '{}' for Tedee lock {}", x, c.getId(), cfg.deviceId);
+        logger.debug("Command '{}' received on channel '{}' for Tedee lock {}", x, c.getId(), deviceId);
 
         TedeeTransportProvider provider = transportProvider();
         if (provider == null || !provider.ready()) {
@@ -108,9 +110,9 @@ public class TedeeLockHandler extends BaseThingHandler {
         }
 
         if (TedeeBindingConstants.C_LOCK.equals(c.getId()) && x instanceof OnOffType) {
-            send(provider, x == OnOffType.ON ? "LOCK" : "UNLOCK");
+            queueAction(provider, deviceId, x == OnOffType.ON ? "LOCK" : "UNLOCK");
         } else if (TedeeBindingConstants.C_ACTION.equals(c.getId()) && x instanceof StringType) {
-            send(provider, x.toString().toUpperCase(Locale.ROOT));
+            queueAction(provider, deviceId, x.toString().toUpperCase(Locale.ROOT));
         }
     }
 
@@ -377,10 +379,27 @@ public class TedeeLockHandler extends BaseThingHandler {
         ScheduledFuture<?> future = scheduler.schedule(() -> {
             try {
                 if (generation != commandGeneration) {
+                    logger.debug("Ignoring stale Tedee action '{}' for lock {}", action, deviceId);
                     return;
                 }
 
+                logger.debug("Sending Tedee action '{}' to lock {}", action, deviceId);
+
                 executeAction(provider, deviceId, action);
+
+                logger.debug("Tedee action '{}' accepted for lock {}", action, deviceId);
+
+                scheduler.schedule(this::refresh, 1, TimeUnit.SECONDS);
+                scheduler.schedule(this::refresh, 3, TimeUnit.SECONDS);
+            } catch (TedeeApiException e) {
+                logger.warn("Tedee action '{}' failed for lock {}: {}", action, deviceId, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE,
+                        e.getStatus() == 401 || e.getStatus() == 403 ? ThingStatusDetail.CONFIGURATION_ERROR
+                                : ThingStatusDetail.COMMUNICATION_ERROR,
+                        e.getMessage());
+            } catch (IllegalStateException e) {
+                logger.warn("Tedee transport unavailable for lock {}: {}", deviceId, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             } finally {
                 synchronized (pendingCommands) {
                     pendingCommands.removeIf(ScheduledFuture::isDone);
