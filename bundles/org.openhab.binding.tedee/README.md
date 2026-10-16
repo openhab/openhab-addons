@@ -356,7 +356,7 @@ The Tedee Bridge can POST status events to this endpoint.
 ```
 
 The callback must point to the LAN address of the openHAB server, not `localhost` or `127.0.0.1`.
-The local Bridge Handler generates a separate secret for each configured local bridge and validates it before applying webhook updates. 
+The local Bridge Handler generates a separate secret for each configured local bridge and validates it before applying webhook updates.
 The handler also removes stale or duplicate binding callbacks.
 
 ### Implemented Webhook Events
@@ -496,4 +496,107 @@ The Personal Access Key can be retrieved from the tedee web.
 
 ## Full example
 
-xxx
+The following example shows a local Tedee Bridge and a Tedee Cloud Bridge. The same lock may be configured through both transports; use separate Thing and Item names for each representation.
+
+### `tedee.things`
+
+```text
+Bridge tedee:local-bridge:home "Tedee Bridge" [
+    ip="192.168.1.50",
+    port=80,
+    apiToken="YOUR_API_TOKEN",
+    pollInterval=300
+] {
+    Thing lock:frontdoor "Front Door" [
+        deviceId=123456,
+        pollInterval=300
+    ]
+}
+
+Bridge tedee:cloud-bridge:account "Tedee Cloud" [
+    personalAccessKey="YOUR_PERSONAL_ACCESS_KEY",
+    pollInterval=300
+] {
+    Thing lock:frontdoor-cloud "Front Door (Cloud)" [
+        deviceId=123456,
+        pollInterval=300
+    ]
+}
+```
+
+The bridge IDs (`home` and `account`) and lock IDs (`frontdoor` and `frontdoor-cloud`) are examples. Replace the credentials and `deviceId` with values from your installation. For a local-only setup, omit the cloud bridge and its child Thing.
+
+### `tedee.items`
+
+```text
+Group gTedee "Tedee Locks"
+
+Switch TedeeFrontDoorLock "Front Door Lock" (gTedee) {
+    channel="tedee:lock:home:frontdoor:lock"
+}
+String TedeeFrontDoorState "Front Door State [%s]" (gTedee) {
+    channel="tedee:lock:home:frontdoor:state"
+}
+String TedeeFrontDoorDoorState "Front Door Door State [%s]" (gTedee) {
+    channel="tedee:lock:home:frontdoor:door-state"
+}
+Number TedeeFrontDoorBattery "Front Door Battery [%d %%]" (gTedee) {
+    channel="tedee:lock:home:frontdoor:battery"
+}
+Switch TedeeFrontDoorCharging "Front Door Charging" (gTedee) {
+    channel="tedee:lock:home:frontdoor:charging"
+}
+Switch TedeeFrontDoorJammed "Front Door Jammed" (gTedee) {
+    channel="tedee:lock:home:frontdoor:jammed"
+}
+Switch TedeeFrontDoorConnected "Front Door Connected" (gTedee) {
+    channel="tedee:lock:home:frontdoor:connected"
+}
+String TedeeFrontDoorAction "Front Door Action [%s]" (gTedee) {
+    channel="tedee:lock:home:frontdoor:action"
+}
+Switch TedeeFrontDoorAutoLockEnabled "Front Door Auto-Lock" (gTedee) {
+    channel="tedee:lock:home:frontdoor:auto-lock-enabled"
+}
+Number TedeeFrontDoorAutoLockDelay "Front Door Auto-Lock Delay [%d s]" (gTedee) {
+    channel="tedee:lock:home:frontdoor:auto-lock-delay"
+}
+
+Switch TedeeCloudFrontDoorLock "Front Door Lock (Cloud)" {
+    channel="tedee:lock:account:frontdoor-cloud:lock"
+}
+String TedeeCloudFrontDoorState "Front Door State (Cloud) [%s]" {
+    channel="tedee:lock:account:frontdoor-cloud:state"
+}
+```
+
+The `lock` channel accepts `ON` and `OFF` commands. Use the `action` channel to send the string commands `LOCK`, `UNLOCK`, `UNLOCK_NO_PULL`, `UNLOCK_OR_PULL`, or `PULL`.
+
+### `tedee.sitemap`
+
+```text
+sitemap tedee label="Tedee Locks" {
+    Frame label="Front Door (Local)" {
+        Switch item=TedeeFrontDoorLock label="Lock"
+        Selection item=TedeeFrontDoorAction label="Action" mappings=[
+            LOCK="Lock",
+            UNLOCK="Unlock",
+            UNLOCK_NO_PULL="Unlock without pull",
+            UNLOCK_OR_PULL="Unlock or pull",
+            PULL="Pull"
+        ]
+        Text item=TedeeFrontDoorState label="Lock state"
+        Text item=TedeeFrontDoorDoorState label="Door state"
+        Default item=TedeeFrontDoorBattery label="Battery"
+        Text item=TedeeFrontDoorCharging label="Charging"
+        Text item=TedeeFrontDoorJammed label="Jammed"
+        Text item=TedeeFrontDoorConnected label="Connected"
+        Text item=TedeeFrontDoorAutoLockEnabled label="Auto-lock enabled"
+        Text item=TedeeFrontDoorAutoLockDelay label="Auto-lock delay"
+    }
+    Frame label="Front Door (Cloud)" {
+        Switch item=TedeeCloudFrontDoorLock label="Lock"
+        Text item=TedeeCloudFrontDoorState label="Lock state"
+    }
+}
+```

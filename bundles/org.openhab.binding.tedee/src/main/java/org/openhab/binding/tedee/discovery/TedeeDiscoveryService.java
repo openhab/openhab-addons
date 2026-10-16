@@ -75,7 +75,9 @@ public class TedeeDiscoveryService extends AbstractThingHandlerDiscoveryService<
      */
     @Override
     protected void startBackgroundDiscovery() {
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
+        ScheduledFuture<?> currentJob = discoveryJob;
+
+        if (currentJob == null || currentJob.isCancelled()) {
             discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverLocks, 0, DISCOVERY_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
         }
