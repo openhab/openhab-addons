@@ -273,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 430 different models.
+Currently the miio binding supports more than 460 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -519,10 +519,38 @@ Currently the miio binding supports more than 430 different models.
 | Xiaomi Scishare Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Experimental | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Soocare Electric Toothbrush        | miio:unsupported | soocare.toothbrush.x3  | No           |            |
 | Viomi Internet Refrigerator iLive(French style 462L) | miio:unsupported | viomi.fridge.v3        | No           |            |
+| Viomi sweeper PRO                  | miio:basic       | [viomi.vacuum.v3](#viomi-vacuum-v3) | Yes          |            |
 | Viomi Cleaning Robot V-RVCLM21B    | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes          |            |
 | Mi Robot Vacuum-Mop P              | miio:basic       | [viomi.vacuum.v7](#viomi-vacuum-v7) | Yes          |            |
 | Mi Robot Vacuum-Mop P              | miio:basic       | [viomi.vacuum.v8](#viomi-vacuum-v8) | Yes          |            |
+| Mi Robot Vacuum-Mop P              | miio:basic       | [viomi.vacuum.v9](#viomi-vacuum-v9) | Yes          |            |
+| Viomi Robot Vacuum (viomi.vacuum.v10) | miio:basic       | [viomi.vacuum.v10](#viomi-vacuum-v10) | Yes          |            |
+| Viomi V-SLAM Robot Vacuum          | miio:basic       | [viomi.vacuum.v11](#viomi-vacuum-v11) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi Cleaning Robot X2            | miio:basic       | [viomi.vacuum.v12](#viomi-vacuum-v12) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi V3                           | miio:basic       | [viomi.vacuum.v13](#viomi-vacuum-v13) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI Alpha 2 Pro                  | miio:basic       | [viomi.vacuum.v15](#viomi-vacuum-v15) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi Robot Vacuum-Mop JC          | miio:basic       | [viomi.vacuum.v17](#viomi-vacuum-v17) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Viomi S9                           | miio:basic       | [viomi.vacuum.v18](#viomi-vacuum-v18) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi SE                           | miio:basic       | [viomi.vacuum.v19](#viomi-vacuum-v19) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI FIERCE-UV                    | miio:basic       | [viomi.vacuum.v20](#viomi-vacuum-v20) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI ALPHA-UV                     | miio:basic       | [viomi.vacuum.v21](#viomi-vacuum-v21) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI Alpha 2 Pro                  | miio:basic       | [viomi.vacuum.v22](#viomi-vacuum-v22) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI V3 Max                       | miio:basic       | [viomi.vacuum.v23](#viomi-vacuum-v23) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI 5G IOT LingLi 2              | miio:basic       | [viomi.vacuum.v24](#viomi-vacuum-v24) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI X3                           | miio:basic       | [viomi.vacuum.v25](#viomi-vacuum-v25) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI Alpha 2 Plus                 | miio:basic       | [viomi.vacuum.v27](#viomi-vacuum-v27) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI Eagle                        | miio:basic       | [viomi.vacuum.v29](#viomi-vacuum-v29) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi V2 Max                       | miio:basic       | [viomi.vacuum.v35](#viomi-vacuum-v35) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi V5                           | miio:basic       | [viomi.vacuum.v36](#viomi-vacuum-v36) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi Alpha Lite                   | miio:basic       | [viomi.vacuum.v37](#viomi-vacuum-v37) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi V5 Pro                       | miio:basic       | [viomi.vacuum.v38](#viomi-vacuum-v38) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi Alpha 2 Pro(WH)              | miio:basic       | [viomi.vacuum.v40](#viomi-vacuum-v40) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi Alpha 2 Max                  | miio:basic       | [viomi.vacuum.v41](#viomi-vacuum-v41) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI Auto Cleaning Alpha 3        | miio:basic       | [viomi.vacuum.v45](#viomi-vacuum-v45) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi Alpha 3 Pro                  | miio:basic       | [viomi.vacuum.v49](#viomi-vacuum-v49) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi Alpha 2 Lite                 | miio:basic       | [viomi.vacuum.v53](#viomi-vacuum-v53) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi V3 Absolut                   | miio:basic       | [viomi.vacuum.v56](#viomi-vacuum-v56) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Viomi Master 10 Max                | miio:basic       | [viomi.vacuum.v60](#viomi-vacuum-v60) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | VIOMI Internet Electric Water Heater 1A (60L) | miio:basic       | [viomi.waterheater.e1](#viomi-waterheater-e1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Inverter Air Conditioner (1.5HP) | miio:basic       | [xiaomi.aircondition.ma1](#xiaomi-aircondition-ma1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.ma2](#xiaomi-aircondition-ma2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -3933,133 +3961,1581 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | expresso                   | Number               | Brew Americano                           | Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90 |
 | boil                       | Number               | Boil water                               | Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature |
 
+### Viomi sweeper PRO (<a name="viomi-vacuum-v3">viomi.vacuum.v3</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | Number               | Vacuum action                            | Start, Pause and Stop are sent as `set_mode_withroom` like the Mi Home app does (cleaning type, action, number of rooms). Start uses cleaning type 0 (vacuum); the app derives the type from the `is_mop` channel, use Start vacuum and mop or Start mop for those types. The app pauses with action 2 from its main button (3 in some other flows; python-miio documents 2). Dock sends `set_charge` 1, Cancel return to dock sends `set_charge` 0, Find robot sends `set_resetpos` 1 (the app Find function). Not exposed: room, zone and spot cleaning, virtual walls and map editing (need several values). Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock","4"="Cancel return to dock","5"="Start vacuum and mop","6"="Start mop","7"="Find robot"]` |
+| state                      | Number               | State                                    | Labels as shown by the Mi Home app (python-miio: 0 idle not docked, 1 idle). Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Vacuuming","4"="Returning to dock","5"="Charging","6"="Vacuuming and mopping","7"="Mopping"]` |
+| mode                       | Number               | Cleaning mode                            | Read only: the Mi Home app selects the mode with the start command (edge, zone and spot cleaning need more values). Value mapping `["0"="Whole home","1"="Whole home (mop mode)","2"="Along edges","3"="Zone","4"="Spot"]` |
+| err_state                  | Number               | Error                                    | Labels from the Mi Home app error table (500 to 537) and state texts (507, 517, 518, 2108 to 2110). 2100 is only used internally by the app; 2103 and 2104 are not used by the app (earlier community lists). Value mapping `["0"="No error","500"="Radar timed out","501"="Wheels suspended","502"="Low battery","503"="Dust bin or 2-in-1 bin not installed","507"="Could not reposition","508"="Not on level surface","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Could not return to dock","512"="Could not return to dock (512)","513"="Could not navigate","514"="Vacuum stuck","515"="Charging error","516"="Temperature error","517"="Updating system","518"="Battery too low to start","521"="Water tank not installed","522"="Mop not installed","525"="Insufficient water","527"="Remove mop","528"="Dust bin or 2-in-1 bin not installed (528)","529"="Mop and 550 ml water tank not installed","530"="2-in-1 bin and mop not installed","531"="2-in-1 bin not installed","537"="Do not disturb active, no cleaning","2100"="Cleaning finished","2101"="Low battery, charging before continuing","2103"="Charging","2104"="Fully charged","2108"="Repositioning","2109"="Cleaning again","2110"="Self-inspecting"]` |
+| battery_life               | Number:Dimensionless | Battery                                  |            |
+| box_type                   | Number               | Bin / tank type                          | Value mapping `["0"="None","1"="Dust bin","2"="Water tank","3"="Dust bin and water tank"]` |
+| mop_type                   | Number               | Mop installed                            | Value mapping `["0"="No","1"="Yes"]` |
+| mop_route                  | Number               | Mop pattern                              | Not offered by the app plugin of the oldest v3 and v6 firmware. Value mapping `["0"="S-pattern","1"="Y-pattern"]` |
+| clean_time                 | Number:Time          | Clean time                               | Minutes, as shown by the Mi Home app (rounded there). |
+| clean_area                 | Number:Area          | Clean area                               | Square meter, as shown by the Mi Home app (rounded there). |
+| suction_grade              | Number               | Suction power                            | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| water_grade                | Number               | Water level                              | Suction power and water level are both set with `set_suction`; the app uses 11 to 13 for the water level. Value mapping `["11"="Low","12"="Medium","13"="High"]` |
+| remember_map               | Switch               | Map remembered                           |            |
+| has_map                    | Number               | Has map                                  | Value mapping `["0"="No","1"="Yes"]` |
+| has_newmap                 | Number               | New map available                        | Value mapping `["0"="No","1"="Yes"]` |
+| cleaning_type              | Number               | Cleaning type                            | Selects what the next cleaning does, as in the app. python-miio also lists 3 and 4 (zone, spot) which the app does not use here. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| repeat_cleaning            | Switch               | Repeat cleaning                          | Repeats the cleaning once (app: Secondary cleanup, takes effect once). |
+| volume                     | Number               | Volume                                   | Level 0 (voice off) to 10. The app switches the voice with `set_voice [on, level]` and sets the level with `set_voice [1, level]`. |
+| side_brush_hours           | Number:Time          | Side brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| main_brush_hours           | Number:Time          | Main brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| hypa_hours                 | Number:Time          | Dust compartment filter remaining time   | Expected remaining hours, as shown by the Mi Home app. |
+| mop_hours                  | Number:Time          | Mop remaining time                       | Expected remaining hours, as shown by the Mi Home app. |
+| side_brush_life            | Number:Dimensionless | Side brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| main_brush_life            | Number:Dimensionless | Main brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| hypa_life                  | Number:Dimensionless | Dust compartment filter life             | Remaining life in percent, as shown by the Mi Home app. |
+| mop_life                   | Number:Dimensionless | Mop life                                 | Remaining life in percent, as shown by the Mi Home app. |
+
 ### Viomi Cleaning Robot V-RVCLM21B (<a name="viomi-vacuum-v6">viomi.vacuum.v6</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| vacuumaction               | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock"]` |
-| state                      | Number               | State                                    | Value mapping `["0"="Idle Undocked","1"="Idle","2"="Paused","3"="Sweeping","4"="Go Charging","5"="Charging","6"="Sweeping and Mopping","7"="Mopping"]` |
-| mode                       | Number               | Clean Mode                               | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
-| err_state                  | Number               | Error                                    | Value mapping `["0"="Sleeping and not charging","500"="Radar timed out","501"="Wheels stuck","502"="Low battery","503"="Dust bin missing","508"="Uneven ground","509"="Cliff sensor erro","510"="Collision sensor error","511"="Could not return to dock","512"="Could not return to dock","513"="Could not navigate","514"="Vacuum stuck","515"="Charging erro","516"="Mop temperature error","521"="Water tank is not installed","522"="Mop is not installed","525"="Insufficient water in water tank","527"="Remove mop","528"="Dust bin missing","529"="Mop and water tank missing","530"="Mop and water tank missin","531"="Water tank is not installed","2101"="Unsufficient battery, continuing cleaning after recharge","2103"="Charging","2104"="Fully charged"]` |
-| battery_life               | Number               | Battery                                  |            |
-| box_type                   | Number               | Box type                                 | Value mapping `["0"="No Bin","1"="Sweep","2"="Mop","3"="Sweep and Mop"]` |
-| mop_type                   | Number               | mop_type                                 |            |
-| mop_route                  | Number               | Mop Route                                | Value mapping `["0"="S-Pattern","1"="Y-Pattern"]` |
-| s_time                     | Number               | Clean time                               |            |
-| s_area                     | Number               | Clean Area                               |            |
-| suction_grade              | Number               | suction_grade                            | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
-| water_grade                | Number               | water_grade                              | Value mapping `["11"="Low","12"="Medium","13"="High"]` |
-| remember_map               | Number               | remember_map                             |            |
-| has_map                    | Number               | has_map                                  |            |
-| is_mop                     | Number               | is_mop                                   | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="CleanZone","4"="CleanSpot"]` |
-| has_newmap                 | Number               | has_newmap                               |            |
+| vacuumaction               | Number               | Vacuum action                            | Start, Pause and Stop are sent as `set_mode_withroom` like the Mi Home app does (cleaning type, action, number of rooms). Start uses cleaning type 0 (vacuum); the app derives the type from the `is_mop` channel, use Start vacuum and mop or Start mop for those types. The app pauses with action 2 from its main button (3 in some other flows; python-miio documents 2). Dock sends `set_charge` 1, Cancel return to dock sends `set_charge` 0, Find robot sends `set_resetpos` 1 (the app Find function). Not exposed: room, zone and spot cleaning, virtual walls and map editing (need several values). Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock","4"="Cancel return to dock","5"="Start vacuum and mop","6"="Start mop","7"="Find robot"]` |
+| state                      | Number               | State                                    | Labels as shown by the Mi Home app (python-miio: 0 idle not docked, 1 idle). Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Vacuuming","4"="Returning to dock","5"="Charging","6"="Vacuuming and mopping","7"="Mopping"]` |
+| mode                       | Number               | Cleaning mode                            | Read only: the Mi Home app selects the mode with the start command (edge, zone and spot cleaning need more values). Value mapping `["0"="Whole home","1"="Whole home (mop mode)","2"="Along edges","3"="Zone","4"="Spot"]` |
+| err_state                  | Number               | Error                                    | Labels from the Mi Home app error table (500 to 537) and state texts (507, 517, 518, 2108 to 2110). 2100 is only used internally by the app; 2103 and 2104 are not used by the app (earlier community lists). Value mapping `["0"="No error","500"="Radar timed out","501"="Wheels suspended","502"="Low battery","503"="Dust bin or 2-in-1 bin not installed","507"="Could not reposition","508"="Not on level surface","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Could not return to dock","512"="Could not return to dock (512)","513"="Could not navigate","514"="Vacuum stuck","515"="Charging error","516"="Temperature error","517"="Updating system","518"="Battery too low to start","521"="Water tank not installed","522"="Mop not installed","525"="Insufficient water","527"="Remove mop","528"="Dust bin or 2-in-1 bin not installed (528)","529"="Mop and 550 ml water tank not installed","530"="2-in-1 bin and mop not installed","531"="2-in-1 bin not installed","537"="Do not disturb active, no cleaning","2100"="Cleaning finished","2101"="Low battery, charging before continuing","2103"="Charging","2104"="Fully charged","2108"="Repositioning","2109"="Cleaning again","2110"="Self-inspecting"]` |
+| battery_life               | Number:Dimensionless | Battery                                  |            |
+| box_type                   | Number               | Bin / tank type                          | Value mapping `["0"="None","1"="Dust bin","2"="Water tank","3"="Dust bin and water tank"]` |
+| mop_type                   | Number               | Mop installed                            | Value mapping `["0"="No","1"="Yes"]` |
+| mop_route                  | Number               | Mop pattern                              | Not offered by the app plugin of the oldest v3 and v6 firmware. Value mapping `["0"="S-pattern","1"="Y-pattern"]` |
+| clean_time                 | Number:Time          | Clean time                               | Minutes, as shown by the Mi Home app (rounded there). |
+| clean_area                 | Number:Area          | Clean area                               | Square meter, as shown by the Mi Home app (rounded there). |
+| suction_grade              | Number               | Suction power                            | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| water_grade                | Number               | Water level                              | Suction power and water level are both set with `set_suction`; the app uses 11 to 13 for the water level. Value mapping `["11"="Low","12"="Medium","13"="High"]` |
+| remember_map               | Switch               | Map remembered                           |            |
+| has_map                    | Number               | Has map                                  | Value mapping `["0"="No","1"="Yes"]` |
+| has_newmap                 | Number               | New map available                        | Value mapping `["0"="No","1"="Yes"]` |
+| cleaning_type              | Number               | Cleaning type                            | Selects what the next cleaning does, as in the app. python-miio also lists 3 and 4 (zone, spot) which the app does not use here. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| repeat_cleaning            | Switch               | Repeat cleaning                          | Repeats the cleaning once (app: Secondary cleanup, takes effect once). |
+| volume                     | Number               | Volume                                   | Level 0 (voice off) to 10. The app switches the voice with `set_voice [on, level]` and sets the level with `set_voice [1, level]`. |
+| side_brush_hours           | Number:Time          | Side brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| main_brush_hours           | Number:Time          | Main brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| hypa_hours                 | Number:Time          | Dust compartment filter remaining time   | Expected remaining hours, as shown by the Mi Home app. |
+| mop_hours                  | Number:Time          | Mop remaining time                       | Expected remaining hours, as shown by the Mi Home app. |
+| side_brush_life            | Number:Dimensionless | Side brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| main_brush_life            | Number:Dimensionless | Main brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| hypa_life                  | Number:Dimensionless | Dust compartment filter life             | Remaining life in percent, as shown by the Mi Home app. |
+| mop_life                   | Number:Dimensionless | Mop life                                 | Remaining life in percent, as shown by the Mi Home app. |
 
 ### Mi Robot Vacuum-Mop P (<a name="viomi-vacuum-v7">viomi.vacuum.v7</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| vacuumaction               | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock"]` |
-| state                      | Number               | State                                    | Value mapping `["0"="Idle Undocked","1"="Idle","2"="Paused","3"="Sweeping","4"="Go Charging","5"="Charging","6"="Sweeping and Mopping","7"="Mopping"]` |
-| mode                       | Number               | Clean Mode                               | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
-| err_state                  | Number               | Error                                    | Value mapping `["0"="Sleeping and not charging","500"="Radar timed out","501"="Wheels stuck","502"="Low battery","503"="Dust bin missing","508"="Uneven ground","509"="Cliff sensor erro","510"="Collision sensor error","511"="Could not return to dock","512"="Could not return to dock","513"="Could not navigate","514"="Vacuum stuck","515"="Charging erro","516"="Mop temperature error","521"="Water tank is not installed","522"="Mop is not installed","525"="Insufficient water in water tank","527"="Remove mop","528"="Dust bin missing","529"="Mop and water tank missing","530"="Mop and water tank missin","531"="Water tank is not installed","2101"="Unsufficient battery, continuing cleaning after recharge","2103"="Charging","2104"="Fully charged"]` |
-| battery_life               | Number               | Battery                                  |            |
-| box_type                   | Number               | Box type                                 | Value mapping `["0"="No Bin","1"="Sweep","2"="Mop","3"="Sweep and Mop"]` |
-| mop_type                   | Number               | mop_type                                 |            |
-| mop_route                  | Number               | Mop Route                                | Value mapping `["0"="S-Pattern","1"="Y-Pattern"]` |
-| s_time                     | Number               | Clean time                               |            |
-| s_area                     | Number               | Clean Area                               |            |
-| suction_grade              | Number               | suction_grade                            | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
-| water_grade                | Number               | water_grade                              | Value mapping `["11"="Low","12"="Medium","13"="High"]` |
-| remember_map               | Number               | remember_map                             |            |
-| has_map                    | Number               | has_map                                  |            |
-| is_mop                     | Number               | is_mop                                   | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="CleanZone","4"="CleanSpot"]` |
-| has_newmap                 | Number               | has_newmap                               |            |
+| vacuumaction               | Number               | Vacuum action                            | Start, Pause and Stop are sent as `set_mode_withroom` like the Mi Home app does (cleaning type, action, number of rooms). Start uses cleaning type 0 (vacuum); the app derives the type from the `is_mop` channel, use Start vacuum and mop or Start mop for those types. The app pauses with action 2 from its main button (3 in some other flows; python-miio documents 2). Dock sends `set_charge` 1, Cancel return to dock sends `set_charge` 0, Find robot sends `set_resetpos` 1 (the app Find function). Not exposed: room, zone and spot cleaning, virtual walls and map editing (need several values). Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock","4"="Cancel return to dock","5"="Start vacuum and mop","6"="Start mop","7"="Find robot"]` |
+| state                      | Number               | State                                    | Labels as shown by the Mi Home app (python-miio: 0 idle not docked, 1 idle). Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Vacuuming","4"="Returning to dock","5"="Charging","6"="Vacuuming and mopping","7"="Mopping"]` |
+| mode                       | Number               | Cleaning mode                            | Read only: the Mi Home app selects the mode with the start command (edge, zone and spot cleaning need more values). Value mapping `["0"="Whole home","1"="Whole home (mop mode)","2"="Along edges","3"="Zone","4"="Spot"]` |
+| err_state                  | Number               | Error                                    | Labels from the Mi Home app error table (500 to 537) and state texts (507, 517, 518, 2108 to 2110). 2100 is only used internally by the app; 2103 and 2104 are not used by the app (earlier community lists). Value mapping `["0"="No error","500"="Radar timed out","501"="Wheels suspended","502"="Low battery","503"="Dust bin or 2-in-1 bin not installed","507"="Could not reposition","508"="Not on level surface","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Could not return to dock","512"="Could not return to dock (512)","513"="Could not navigate","514"="Vacuum stuck","515"="Charging error","516"="Temperature error","517"="Updating system","518"="Battery too low to start","521"="Water tank not installed","522"="Mop not installed","525"="Insufficient water","527"="Remove mop","528"="Dust bin or 2-in-1 bin not installed (528)","529"="Mop and 550 ml water tank not installed","530"="2-in-1 bin and mop not installed","531"="2-in-1 bin not installed","537"="Do not disturb active, no cleaning","2100"="Cleaning finished","2101"="Low battery, charging before continuing","2103"="Charging","2104"="Fully charged","2108"="Repositioning","2109"="Cleaning again","2110"="Self-inspecting"]` |
+| battery_life               | Number:Dimensionless | Battery                                  |            |
+| box_type                   | Number               | Bin / tank type                          | Value mapping `["0"="None","1"="Dust bin","2"="Water tank","3"="Dust bin and water tank"]` |
+| mop_type                   | Number               | Mop installed                            | Value mapping `["0"="No","1"="Yes"]` |
+| mop_route                  | Number               | Mop pattern                              | Not offered by the app plugin of the oldest v3 and v6 firmware. Value mapping `["0"="S-pattern","1"="Y-pattern"]` |
+| clean_time                 | Number:Time          | Clean time                               | Minutes, as shown by the Mi Home app (rounded there). |
+| clean_area                 | Number:Area          | Clean area                               | Square meter, as shown by the Mi Home app (rounded there). |
+| suction_grade              | Number               | Suction power                            | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| water_grade                | Number               | Water level                              | Suction power and water level are both set with `set_suction`; the app uses 11 to 13 for the water level. Value mapping `["11"="Low","12"="Medium","13"="High"]` |
+| remember_map               | Switch               | Map remembered                           |            |
+| has_map                    | Number               | Has map                                  | Value mapping `["0"="No","1"="Yes"]` |
+| has_newmap                 | Number               | New map available                        | Value mapping `["0"="No","1"="Yes"]` |
+| cleaning_type              | Number               | Cleaning type                            | Selects what the next cleaning does, as in the app. python-miio also lists 3 and 4 (zone, spot) which the app does not use here. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| repeat_cleaning            | Switch               | Repeat cleaning                          | Repeats the cleaning once (app: Secondary cleanup, takes effect once). |
+| volume                     | Number               | Volume                                   | Level 0 (voice off) to 10. The app switches the voice with `set_voice [on, level]` and sets the level with `set_voice [1, level]`. |
+| side_brush_hours           | Number:Time          | Side brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| main_brush_hours           | Number:Time          | Main brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| hypa_hours                 | Number:Time          | Dust compartment filter remaining time   | Expected remaining hours, as shown by the Mi Home app. |
+| mop_hours                  | Number:Time          | Mop remaining time                       | Expected remaining hours, as shown by the Mi Home app. |
+| side_brush_life            | Number:Dimensionless | Side brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| main_brush_life            | Number:Dimensionless | Main brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| hypa_life                  | Number:Dimensionless | Dust compartment filter life             | Remaining life in percent, as shown by the Mi Home app. |
+| mop_life                   | Number:Dimensionless | Mop life                                 | Remaining life in percent, as shown by the Mi Home app. |
 
 ### Mi Robot Vacuum-Mop P (<a name="viomi-vacuum-v8">viomi.vacuum.v8</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| vacuumaction               | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock"]` |
-| state                      | Number               | State                                    | Value mapping `["0"="Idle Undocked","1"="Idle","2"="Paused","3"="Sweeping","4"="Go Charging","5"="Charging","6"="Sweeping and Mopping","7"="Mopping"]` |
-| mode                       | Number               | Clean Mode                               | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
-| err_state                  | Number               | Error                                    | Value mapping `["0"="Sleeping and not charging","500"="Radar timed out","501"="Wheels stuck","502"="Low battery","503"="Dust bin missing","508"="Uneven ground","509"="Cliff sensor erro","510"="Collision sensor error","511"="Could not return to dock","512"="Could not return to dock","513"="Could not navigate","514"="Vacuum stuck","515"="Charging erro","516"="Mop temperature error","521"="Water tank is not installed","522"="Mop is not installed","525"="Insufficient water in water tank","527"="Remove mop","528"="Dust bin missing","529"="Mop and water tank missing","530"="Mop and water tank missin","531"="Water tank is not installed","2101"="Unsufficient battery, continuing cleaning after recharge","2103"="Charging","2104"="Fully charged"]` |
-| battery_life               | Number               | Battery                                  |            |
-| box_type                   | Number               | Box type                                 | Value mapping `["0"="No Bin","1"="Sweep","2"="Mop","3"="Sweep and Mop"]` |
-| mop_type                   | Number               | mop_type                                 |            |
-| mop_route                  | Number               | Mop Route                                | Value mapping `["0"="S-Pattern","1"="Y-Pattern"]` |
-| s_time                     | Number               | Clean time                               |            |
-| s_area                     | Number               | Clean Area                               |            |
-| suction_grade              | Number               | suction_grade                            | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
-| water_grade                | Number               | water_grade                              | Value mapping `["11"="Low","12"="Medium","13"="High"]` |
-| remember_map               | Number               | remember_map                             |            |
-| has_map                    | Number               | has_map                                  |            |
-| is_mop                     | Number               | is_mop                                   | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="CleanZone","4"="CleanSpot"]` |
-| has_newmap                 | Number               | has_newmap                               |            |
+| vacuumaction               | Number               | Vacuum action                            | Start, Pause and Stop are sent as `set_mode_withroom` like the Mi Home app does (cleaning type, action, number of rooms). Start uses cleaning type 0 (vacuum); the app derives the type from the `is_mop` channel, use Start vacuum and mop or Start mop for those types. The app pauses with action 2 from its main button (3 in some other flows; python-miio documents 2). Dock sends `set_charge` 1, Cancel return to dock sends `set_charge` 0, Find robot sends `set_resetpos` 1 (the app Find function). Not exposed: room, zone and spot cleaning, virtual walls and map editing (need several values). Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock","4"="Cancel return to dock","5"="Start vacuum and mop","6"="Start mop","7"="Find robot"]` |
+| state                      | Number               | State                                    | Labels as shown by the Mi Home app (python-miio: 0 idle not docked, 1 idle). Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Vacuuming","4"="Returning to dock","5"="Charging","6"="Vacuuming and mopping","7"="Mopping"]` |
+| mode                       | Number               | Cleaning mode                            | Read only: the Mi Home app selects the mode with the start command (edge, zone and spot cleaning need more values). Value mapping `["0"="Whole home","1"="Whole home (mop mode)","2"="Along edges","3"="Zone","4"="Spot"]` |
+| err_state                  | Number               | Error                                    | Labels from the Mi Home app error table (500 to 537) and state texts (507, 517, 518, 2108 to 2110). 2100 is only used internally by the app; 2103 and 2104 are not used by the app (earlier community lists). Value mapping `["0"="No error","500"="Radar timed out","501"="Wheels suspended","502"="Low battery","503"="Dust bin or 2-in-1 bin not installed","507"="Could not reposition","508"="Not on level surface","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Could not return to dock","512"="Could not return to dock (512)","513"="Could not navigate","514"="Vacuum stuck","515"="Charging error","516"="Temperature error","517"="Updating system","518"="Battery too low to start","521"="Water tank not installed","522"="Mop not installed","525"="Insufficient water","527"="Remove mop","528"="Dust bin or 2-in-1 bin not installed (528)","529"="Mop and 550 ml water tank not installed","530"="2-in-1 bin and mop not installed","531"="2-in-1 bin not installed","537"="Do not disturb active, no cleaning","2100"="Cleaning finished","2101"="Low battery, charging before continuing","2103"="Charging","2104"="Fully charged","2108"="Repositioning","2109"="Cleaning again","2110"="Self-inspecting"]` |
+| battery_life               | Number:Dimensionless | Battery                                  |            |
+| box_type                   | Number               | Bin / tank type                          | Value mapping `["0"="None","1"="Dust bin","2"="Water tank","3"="Dust bin and water tank"]` |
+| mop_type                   | Number               | Mop installed                            | Value mapping `["0"="No","1"="Yes"]` |
+| mop_route                  | Number               | Mop pattern                              | Not offered by the app plugin of the oldest v3 and v6 firmware. Value mapping `["0"="S-pattern","1"="Y-pattern"]` |
+| clean_time                 | Number:Time          | Clean time                               | Minutes, as shown by the Mi Home app (rounded there). |
+| clean_area                 | Number:Area          | Clean area                               | Square meter, as shown by the Mi Home app (rounded there). |
+| suction_grade              | Number               | Suction power                            | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| water_grade                | Number               | Water level                              | Suction power and water level are both set with `set_suction`; the app uses 11 to 13 for the water level. Value mapping `["11"="Low","12"="Medium","13"="High"]` |
+| remember_map               | Switch               | Map remembered                           |            |
+| has_map                    | Number               | Has map                                  | Value mapping `["0"="No","1"="Yes"]` |
+| has_newmap                 | Number               | New map available                        | Value mapping `["0"="No","1"="Yes"]` |
+| cleaning_type              | Number               | Cleaning type                            | Selects what the next cleaning does, as in the app. python-miio also lists 3 and 4 (zone, spot) which the app does not use here. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| repeat_cleaning            | Switch               | Repeat cleaning                          | Repeats the cleaning once (app: Secondary cleanup, takes effect once). |
+| volume                     | Number               | Volume                                   | Level 0 (voice off) to 10. The app switches the voice with `set_voice [on, level]` and sets the level with `set_voice [1, level]`. |
+| side_brush_hours           | Number:Time          | Side brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| main_brush_hours           | Number:Time          | Main brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| hypa_hours                 | Number:Time          | Dust compartment filter remaining time   | Expected remaining hours, as shown by the Mi Home app. |
+| mop_hours                  | Number:Time          | Mop remaining time                       | Expected remaining hours, as shown by the Mi Home app. |
+| side_brush_life            | Number:Dimensionless | Side brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| main_brush_life            | Number:Dimensionless | Main brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| hypa_life                  | Number:Dimensionless | Dust compartment filter life             | Remaining life in percent, as shown by the Mi Home app. |
+| mop_life                   | Number:Dimensionless | Mop life                                 | Remaining life in percent, as shown by the Mi Home app. |
+
+### Mi Robot Vacuum-Mop P (<a name="viomi-vacuum-v9">viomi.vacuum.v9</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | Number               | Vacuum action                            | Start, Pause and Stop are sent as `set_mode_withroom` like the Mi Home app does (cleaning type, action, number of rooms). Start uses cleaning type 0 (vacuum); the app derives the type from the `is_mop` channel, use Start vacuum and mop or Start mop for those types. The app pauses with action 2 from its main button (3 in some other flows; python-miio documents 2). Dock sends `set_charge` 1, Cancel return to dock sends `set_charge` 0, Find robot sends `set_resetpos` 1 (the app Find function). Not exposed: room, zone and spot cleaning, virtual walls and map editing (need several values). Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock","4"="Cancel return to dock","5"="Start vacuum and mop","6"="Start mop","7"="Find robot"]` |
+| state                      | Number               | State                                    | Labels as shown by the Mi Home app (python-miio: 0 idle not docked, 1 idle). Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Vacuuming","4"="Returning to dock","5"="Charging","6"="Vacuuming and mopping","7"="Mopping"]` |
+| mode                       | Number               | Cleaning mode                            | Read only: the Mi Home app selects the mode with the start command (edge, zone and spot cleaning need more values). Value mapping `["0"="Whole home","1"="Whole home (mop mode)","2"="Along edges","3"="Zone","4"="Spot"]` |
+| err_state                  | Number               | Error                                    | Labels from the Mi Home app error table (500 to 537) and state texts (507, 517, 518, 2108 to 2110). 2100 is only used internally by the app; 2103 and 2104 are not used by the app (earlier community lists). Value mapping `["0"="No error","500"="Radar timed out","501"="Wheels suspended","502"="Low battery","503"="Dust bin or 2-in-1 bin not installed","507"="Could not reposition","508"="Not on level surface","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Could not return to dock","512"="Could not return to dock (512)","513"="Could not navigate","514"="Vacuum stuck","515"="Charging error","516"="Temperature error","517"="Updating system","518"="Battery too low to start","521"="Water tank not installed","522"="Mop not installed","525"="Insufficient water","527"="Remove mop","528"="Dust bin or 2-in-1 bin not installed (528)","529"="Mop and 550 ml water tank not installed","530"="2-in-1 bin and mop not installed","531"="2-in-1 bin not installed","537"="Do not disturb active, no cleaning","2100"="Cleaning finished","2101"="Low battery, charging before continuing","2103"="Charging","2104"="Fully charged","2108"="Repositioning","2109"="Cleaning again","2110"="Self-inspecting"]` |
+| battery_life               | Number:Dimensionless | Battery                                  |            |
+| box_type                   | Number               | Bin / tank type                          | Value mapping `["0"="None","1"="Dust bin","2"="Water tank","3"="Dust bin and water tank"]` |
+| mop_type                   | Number               | Mop installed                            | Value mapping `["0"="No","1"="Yes"]` |
+| mop_route                  | Number               | Mop pattern                              | Not offered by the app plugin of the oldest v3 and v6 firmware. Value mapping `["0"="S-pattern","1"="Y-pattern"]` |
+| clean_time                 | Number:Time          | Clean time                               | Minutes, as shown by the Mi Home app (rounded there). |
+| clean_area                 | Number:Area          | Clean area                               | Square meter, as shown by the Mi Home app (rounded there). |
+| suction_grade              | Number               | Suction power                            | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| water_grade                | Number               | Water level                              | Suction power and water level are both set with `set_suction`; the app uses 11 to 13 for the water level. Value mapping `["11"="Low","12"="Medium","13"="High"]` |
+| remember_map               | Switch               | Map remembered                           |            |
+| has_map                    | Number               | Has map                                  | Value mapping `["0"="No","1"="Yes"]` |
+| has_newmap                 | Number               | New map available                        | Value mapping `["0"="No","1"="Yes"]` |
+| cleaning_type              | Number               | Cleaning type                            | Selects what the next cleaning does, as in the app. python-miio also lists 3 and 4 (zone, spot) which the app does not use here. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| repeat_cleaning            | Switch               | Repeat cleaning                          | Repeats the cleaning once (app: Secondary cleanup, takes effect once). |
+| volume                     | Number               | Volume                                   | Level 0 (voice off) to 10. The app switches the voice with `set_voice [on, level]` and sets the level with `set_voice [1, level]`. |
+| side_brush_hours           | Number:Time          | Side brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| main_brush_hours           | Number:Time          | Main brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| hypa_hours                 | Number:Time          | Dust compartment filter remaining time   | Expected remaining hours, as shown by the Mi Home app. |
+| mop_hours                  | Number:Time          | Mop remaining time                       | Expected remaining hours, as shown by the Mi Home app. |
+| side_brush_life            | Number:Dimensionless | Side brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| main_brush_life            | Number:Dimensionless | Main brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| hypa_life                  | Number:Dimensionless | Dust compartment filter life             | Remaining life in percent, as shown by the Mi Home app. |
+| mop_life                   | Number:Dimensionless | Mop life                                 | Remaining life in percent, as shown by the Mi Home app. |
+
+### Viomi Robot Vacuum (viomi.vacuum.v10) (<a name="viomi-vacuum-v10">viomi.vacuum.v10</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | Number               | Vacuum action                            | Start, Pause and Stop are sent as `set_mode_withroom` like the Mi Home app does (cleaning type, action, number of rooms). Start uses cleaning type 0 (vacuum); the app derives the type from the `is_mop` channel, use Start vacuum and mop or Start mop for those types. The app pauses with action 2 from its main button (3 in some other flows; python-miio documents 2). Dock sends `set_charge` 1, Cancel return to dock sends `set_charge` 0, Find robot sends `set_resetpos` 1 (the app Find function). Not exposed: room, zone and spot cleaning, virtual walls and map editing (need several values). Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock","4"="Cancel return to dock","5"="Start vacuum and mop","6"="Start mop","7"="Find robot"]` |
+| state                      | Number               | State                                    | Labels as shown by the Mi Home app (python-miio: 0 idle not docked, 1 idle). Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Vacuuming","4"="Returning to dock","5"="Charging","6"="Vacuuming and mopping","7"="Mopping"]` |
+| mode                       | Number               | Cleaning mode                            | Read only: the Mi Home app selects the mode with the start command (edge, zone and spot cleaning need more values). Value mapping `["0"="Whole home","1"="Whole home (mop mode)","2"="Along edges","3"="Zone","4"="Spot"]` |
+| err_state                  | Number               | Error                                    | Labels from the Mi Home app error table (500 to 537) and state texts (507, 517, 518, 2108 to 2110). 2100 is only used internally by the app; 2103 and 2104 are not used by the app (earlier community lists). Value mapping `["0"="No error","500"="Radar timed out","501"="Wheels suspended","502"="Low battery","503"="Dust bin or 2-in-1 bin not installed","507"="Could not reposition","508"="Not on level surface","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Could not return to dock","512"="Could not return to dock (512)","513"="Could not navigate","514"="Vacuum stuck","515"="Charging error","516"="Temperature error","517"="Updating system","518"="Battery too low to start","521"="Water tank not installed","522"="Mop not installed","525"="Insufficient water","527"="Remove mop","528"="Dust bin or 2-in-1 bin not installed (528)","529"="Mop and 550 ml water tank not installed","530"="2-in-1 bin and mop not installed","531"="2-in-1 bin not installed","537"="Do not disturb active, no cleaning","2100"="Cleaning finished","2101"="Low battery, charging before continuing","2103"="Charging","2104"="Fully charged","2108"="Repositioning","2109"="Cleaning again","2110"="Self-inspecting"]` |
+| battery_life               | Number:Dimensionless | Battery                                  |            |
+| box_type                   | Number               | Bin / tank type                          | Value mapping `["0"="None","1"="Dust bin","2"="Water tank","3"="Dust bin and water tank"]` |
+| mop_type                   | Number               | Mop installed                            | Value mapping `["0"="No","1"="Yes"]` |
+| mop_route                  | Number               | Mop pattern                              | Not offered by the app plugin of the oldest v3 and v6 firmware. Value mapping `["0"="S-pattern","1"="Y-pattern"]` |
+| clean_time                 | Number:Time          | Clean time                               | Minutes, as shown by the Mi Home app (rounded there). |
+| clean_area                 | Number:Area          | Clean area                               | Square meter, as shown by the Mi Home app (rounded there). |
+| suction_grade              | Number               | Suction power                            | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| water_grade                | Number               | Water level                              | Suction power and water level are both set with `set_suction`; the app uses 11 to 13 for the water level. Value mapping `["11"="Low","12"="Medium","13"="High"]` |
+| remember_map               | Switch               | Map remembered                           |            |
+| has_map                    | Number               | Has map                                  | Value mapping `["0"="No","1"="Yes"]` |
+| has_newmap                 | Number               | New map available                        | Value mapping `["0"="No","1"="Yes"]` |
+| cleaning_type              | Number               | Cleaning type                            | Selects what the next cleaning does, as in the app. python-miio also lists 3 and 4 (zone, spot) which the app does not use here. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| repeat_cleaning            | Switch               | Repeat cleaning                          | Repeats the cleaning once (app: Secondary cleanup, takes effect once). |
+| volume                     | Number               | Volume                                   | Level 0 (voice off) to 10. The app switches the voice with `set_voice [on, level]` and sets the level with `set_voice [1, level]`. |
+| side_brush_hours           | Number:Time          | Side brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| main_brush_hours           | Number:Time          | Main brush remaining time                | Expected remaining hours, as shown by the Mi Home app. |
+| hypa_hours                 | Number:Time          | Dust compartment filter remaining time   | Expected remaining hours, as shown by the Mi Home app. |
+| mop_hours                  | Number:Time          | Mop remaining time                       | Expected remaining hours, as shown by the Mi Home app. |
+| side_brush_life            | Number:Dimensionless | Side brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| main_brush_life            | Number:Dimensionless | Main brush life                          | Remaining life in percent, as shown by the Mi Home app. |
+| hypa_life                  | Number:Dimensionless | Dust compartment filter life             | Remaining life in percent, as shown by the Mi Home app. |
+| mop_life                   | Number:Dimensionless | Mop life                                 | Remaining life in percent, as shown by the Mi Home app. |
+
+### Viomi V-SLAM Robot Vacuum (<a name="viomi-vacuum-v11">viomi.vacuum.v11</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | The start actions send the start command of the Mi Home app with the cleaning type and mode as constants; starting again after a pause resumes the run. Point cleaning: write `point-x` and `point-y` first; zone cleaning: write `zone-points` first; then send the start action. Map editing (virtual walls, restricted areas) and schedules need several inputs and are not available. Value mapping `["start-vacuum"="Start vacuuming","start-vacuum-walls"="Start vacuuming along walls","start-vacuum-mop"="Start vacuuming and mopping","start-vacuum-mop-walls"="Start vacuuming and mopping along walls","start-mop"="Start mopping","start-mop-walls"="Start mopping along walls","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop returning to dock","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| status                     | Number               | Status                                   | The order differs from the newer viomi.vacuum models (vacuuming is 3). Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Vacuuming","4"="Returning to dock","5"="Charging","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error and status texts of the Mi Home app; codes without text are shown as number. Value mapping `["0"="No error","500"="Lidar timeout","501"="Wheels lifted","502"="Battery level too low","503"="Dust box or 2-in-1 tank not installed","507"="Relocation failed","508"="Started on a slope","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Return to dock failed, clear obstacles around the dock","512"="Return to dock failed, place the robot on the dock","513"="Navigation failed","514"="Stuck, could not get free","515"="Charging error, clean the charging contacts","516"="Temperature error","517"="System updating","518"="Battery level insufficient","521"="Water tank not installed","522"="Mop not installed","527"="Remove the mop","528"="Paused, dust box or 2-in-1 tank missing","529"="Paused, install mop and water tank","530"="Paused, install 2-in-1 tank and mop","531"="Paused, install 2-in-1 tank","2101"="Low battery, charging before continuing","2108"="Relocating","2109"="Repeat cleaning in progress","2110"="Self-checking"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area and Along walls; the other values are set by the robot when zone, point or manual control cleaning is started. Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| suction-grade              | Number               | Suction power                            | The spec calls this property mode, the Mi Home app uses it as suction power. Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | The spec calls this property target-water-level. Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="2-in-1 dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | The spec calls this property rinsh-time; the Mi Home app shows it as the cleaning time in minutes of the current or last run. |
+| clean-area                 | Number:Area          | Cleaned area                             | The spec calls this property target-distance; the Mi Home app shows it as the cleaned area in square meters of the current or last run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| repeat-state               | Switch               | Repeat cleaning                          | The spec calls this property recording-mode, the Mi Home app uses it as repeat cleaning (switches off after one run). |
+| remember-state             | Switch               | Remember map                             | The spec calls this property massage-part, the Mi Home app uses it as memory map switch. |
+| has-map                    | Switch               | Map available                            | The spec calls this property current-step-count, the Mi Home app uses it as has_map (on when a map is saved). |
+| manual-control             | Number               | Manual control                           | Write only. The Mi Home app sends 1 to 4 while a direction key is pressed, 5 when it is released and 10 when the remote control page is opened or closed. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| point-x                    | Number               | Point cleaning target X                  | Map x coordinate; write `point-y` too, then send the action `start-point-clean`. |
+| point-y                    | Number               | Point cleaning target Y                  | Map y coordinate; write `point-x` too, then send the action `start-point-clean`. |
+| zone-points                | String               | Zone cleaning corners                    | Eight coordinates (four corner points) as JSON list of numbers, as sent by the Mi Home app; send the action `start-zone-clean` afterwards. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+
+### Viomi Cleaning Robot X2 (<a name="viomi-vacuum-v12">viomi.vacuum.v12</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Start cleaning sends the room cleaning command of the Mi Home app without rooms (whole area); it also resumes a paused run. Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Save, replace or discard the new map is the answer to the new map question of the app (see `has-newmap`). Create a new map, Clean rooms in order and the voice pack download exist on newer models and firmware only. Map editing (rooms, virtual walls, restricted areas), saved map selection, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","start-sweep-walls"="Start cleaning along walls","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop returning to dock","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","save-new-map"="Save the new map","replace-saved-map"="Replace the saved map with the new map","discard-new-map"="Discard the new map","create-new-map"="Create a new map","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| room-clean-queue           | String               | Clean rooms in order                     | Cleans the rooms in the given order, ids separated by a comma (for example `3,1,2`), as the room customization of the Mi Home app. Only on newer models and firmware. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error and status texts of the Mi Home app; codes without text are shown as number. Value mapping `["0"="No error","500"="Lidar timeout","501"="Wheels lifted","502"="Battery level too low","503"="Dust box or 2-in-1 tank not installed","507"="Relocation failed","508"="Started on a slope","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Return to dock failed, clear obstacles around the dock","512"="Return to dock failed, place the robot on the dock","513"="Navigation failed","514"="Stuck, could not get free","515"="Charging error, clean the charging contacts","516"="Temperature error","517"="System updating","518"="Battery level insufficient","521"="Water tank not installed","522"="Mop not installed","527"="Remove the mop","528"="Paused, dust box or 2-in-1 tank missing","529"="Paused, install mop and water tank","530"="Paused, install 2-in-1 tank and mop","531"="Paused, install 2-in-1 tank","2101"="Low battery, charging before continuing","2108"="Relocating","2109"="Repeat cleaning in progress","2110"="Self-checking"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area and Along walls; the other values are set by the robot when zone, point or manual control cleaning is started. Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="2-in-1 dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             | Memory map switch of the Mi Home app. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not read by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not read by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. The Mi Home app sends 1 to 4 while a direction key is pressed, 5 when it is released and 10 when the remote control page is opened or closed. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | On when the robot has a saved (remembered) map. |
+| has-newmap                 | Switch               | New map                                  | On when the robot found a new map; the Mi Home app then asks to save, replace or discard it (see the actions). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### Viomi V3 (<a name="viomi-vacuum-v13">viomi.vacuum.v13</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Start cleaning sends the room cleaning command of the Mi Home app without rooms (whole area); it also resumes a paused run. Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Save, replace or discard the new map is the answer to the new map question of the app (see `has-newmap`). Create a new map, Clean rooms in order and the voice pack download exist on newer models and firmware only. Map editing (rooms, virtual walls, restricted areas), saved map selection, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","start-sweep-walls"="Start cleaning along walls","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop returning to dock","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","save-new-map"="Save the new map","replace-saved-map"="Replace the saved map with the new map","discard-new-map"="Discard the new map","create-new-map"="Create a new map","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| room-clean-queue           | String               | Clean rooms in order                     | Cleans the rooms in the given order, ids separated by a comma (for example `3,1,2`), as the room customization of the Mi Home app. Only on newer models and firmware. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error and status texts of the Mi Home app; codes without text are shown as number. Value mapping `["0"="No error","500"="Lidar timeout","501"="Wheels lifted","502"="Battery level too low","503"="Dust box or 2-in-1 tank not installed","507"="Relocation failed","508"="Started on a slope","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Return to dock failed, clear obstacles around the dock","512"="Return to dock failed, place the robot on the dock","513"="Navigation failed","514"="Stuck, could not get free","515"="Charging error, clean the charging contacts","516"="Temperature error","517"="System updating","518"="Battery level insufficient","521"="Water tank not installed","522"="Mop not installed","527"="Remove the mop","528"="Paused, dust box or 2-in-1 tank missing","529"="Paused, install mop and water tank","530"="Paused, install 2-in-1 tank and mop","531"="Paused, install 2-in-1 tank","2101"="Low battery, charging before continuing","2108"="Relocating","2109"="Repeat cleaning in progress","2110"="Self-checking"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area and Along walls; the other values are set by the robot when zone, point or manual control cleaning is started. Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="2-in-1 dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             | Memory map switch of the Mi Home app. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not read by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not read by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. The Mi Home app sends 1 to 4 while a direction key is pressed, 5 when it is released and 10 when the remote control page is opened or closed. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | On when the robot has a saved (remembered) map. |
+| has-newmap                 | Switch               | New map                                  | On when the robot found a new map; the Mi Home app then asks to save, replace or discard it (see the actions). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI Alpha 2 Pro (<a name="viomi-vacuum-v15">viomi.vacuum.v15</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### Viomi Robot Vacuum-Mop JC (<a name="viomi-vacuum-v17">viomi.vacuum.v17</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
 
 ### Viomi S9 (<a name="viomi-vacuum-v18">viomi.vacuum.v18</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| vacuumaction               | String               | Vacuum Action                            | Value mapping `["start-sweep"="Sweep","stop-sweeping"="Stop Sweep","pause"="Pause","start-charge"="Goto Dock","stop-massage"="Stop Sweep","start-mop"="Start Mop","start-only-sweep"="Start Sweep Only","start-sweep-mop"="Start Sweep Mop"]` |
-| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping"]` |
-| fault                      | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Error","1"="Low Battery Find Charge","2"="Low Bat Need Poweroff","3"="Wheel Trap","4"="Collision Error","5"="Tile Do Task","6"="Lidar Point Err","7"="Front Wall Err","8"="Along Wall Err","9"="Mid Brush Err","10"="Side Brush Err","11"="Fan Err","12"="Lidar Cover","13"="Garbage Full","14"="Garbage Out","15"="Garbage Full Out","16"="Trapped","17"="Pick Up","20"="Cannot Arrive","21"="Start From Forbid","22"="Drop","23"="Kit Water Pump","24"="Find Charge Failed","18"="Garbage Out","25"="No Mop Clean","26"="Low Battery Cant Clean"]` |
-| wdr-mode                   | Number               | Robot Cleaner - Wide Dynamic Range Mode  | Value mapping `["0"="Mode 0","1"="Mode 1","2"="Mode 2"]` |
-| door-state                 | Number               | Robot Cleaner - Door State               | Value mapping `["0"="Door 0","1"="Door 1","2"="Door 2","3"="Door 3"]` |
-| contact-state              | Number               | Robot Cleaner - Contact State            | Value mapping `["0"="Off","1"="On"]` |
-| contact-state1             | Number:Time          | Robot Cleaner - Contact State            |            |
-| contact-state2             | Number               | Robot Cleaner - Contact State            |            |
-| mute                       | Number               | Robot Cleaner - Mute                     |            |
-| sweep-type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Total","2"="Wall","3"="Zone","4"="Point","5"="Control"]` |
-| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
-| battery-level              | Number:Dimensionless | Battery - Battery Level                  |            |
-| repeat-state               | Switch               | Viomi Vacuum - Repeat State              |            |
-| remember-state             | Switch               | Viomi Vacuum - Remember State            | Value mapping ["0"="关","1"="开"] |
-| mop-route                  | Number               | Viomi Vacuum - Mop Route                 | Value mapping `["0"="C-Curved","1"="Y-Route"]` |
-| side-brush-life            | Number:Dimensionless | Viomi Vacuum - Side Brush Life           |            |
-| side-brush-hours           | Number:Time          | Viomi Vacuum - Side Brush Hours          |            |
-| main-brush-life            | Number:Dimensionless | Viomi Vacuum - Main Brush Life           |            |
-| main-brush-hours           | Number:Time          | Viomi Vacuum - Main Brush Hours          |            |
-| hypa-life                  | Number:Dimensionless | Viomi Vacuum - Hypa Life                 |            |
-| hypa-hours                 | Number:Time          | Viomi Vacuum - Hypa Hours                |            |
-| mop-life                   | Number:Dimensionless | Viomi Vacuum - Mop Life                  |            |
-| mop-hours                  | Number:Time          | Viomi Vacuum - Mop Hours                 |            |
-| suction-grade              | Number               | Viomi Vacuum - Suction Grade             | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Strong"]` |
-| water-grade                | Number               | Viomi Vacuum - Water Grade               | Value mapping `["0"="1 Block","1"="2 Blocks","2"="3 Blocks"]` |
-| map-num                    | Number               | Viomi Vacuum - Map Num                   |            |
-| time-zone                  | Number               | Viomi Vacuum - Time Zone                 |            |
-| clean-start-time           | Number:Time          | Viomi Vacuum - Clean Start Time          |            |
-| clean-use-time             | Number:Time          | Viomi Vacuum - Clean Use Time            |            |
-| clean-area                 | Number               | Viomi Vacuum - Clean Area                |            |
-| clean-map-url              | String               | Viomi Vacuum - Clean Map Url             |            |
-| clean-mode                 | Number               | Viomi Vacuum - Clean Mode                | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
-| clean-way                  | Number               | Viomi Vacuum - Clean Way                 | Value mapping `["0"="Sweep Floor","1"="Sweep","2"="Mop"]` |
-| cur-lang                   | String               | Viomi Vacuum - Cur Lang                  |            |
-| cur-map-id                 | Number               | Viomi Vacuum - Cur Map Id                |            |
-| cur-map-url                | String               | Viomi Vacuum - Cur Map Url               |            |
-| last-update-time           | Number:Time          | Viomi Vacuum - Last Update Time          |            |
-| has-map                    | Number               | Viomi Vacuum - Has Map                   | Value mapping `["0"="No map in memory","1"="Map in memory"]` |
-| has-newmap                 | Number               | Viomi Vacuum - Has Newmap                | Value mapping `["0"="None","1"="New","2"="Cover"]` |
-| dust-collection            | Number               | Viomi Vacuum - Dust Collection           | Value mapping `["0"="Close","1"="Open"]` |
-| dnd-enable                 | Number               | Order - Dnd Enable                       | Value mapping `["0"="Disabled","1"="Enabled"]` |
-| dnd-start-hour             | Number:Time          | Order - Dnd Start Hour                   |            |
-| dnd-start-minute           | Number:Time          | Order - Dnd Start Minute                 |            |
-| dnd-end-hour               | Number:Time          | Order - Dnd End Hour                     |            |
-| dnd-end-minute             | Number:Time          | Order - Dnd End Minute                   |            |
-| dnd-timezone               | Number               | Order - Dnd Timezone                     |            |
-| timestamp                  | Number               | Order - Timestamp                        |            |
-| orderdata                  | String               | Order - Orderdata                        |            |
-| target-point               | String               | Point Zone - Target Point                |            |
-| map-type                   | Number               | Map - Map Type                           | Value mapping `["0"="Upload to url0","1"="Upload to url1","2"="Upload to url2"]` |
-| map-id                     | Number               | Map - Map Id                             |            |
-| map-name                   | String               | Map - Map Name                           |            |
-| cur-cleaning-path          | String               | Map - Cur Cleaning Path                  |            |
-| map-list                   | String               | Map - Map List                           |            |
-| oper-result                | String               | Map - Oper Result                        |            |
-| auto-area-id               | Number               | Map - Auto Area Id                       |            |
-| target-voice               | String               | Voice - Target Voice                     |            |
-| cur-voice                  | String               | Voice - Cur Voice                        |            |
-| download-status            | Number               | Voice - Download Status                  | Value mapping `["0"="Free","1"="Downloading"]` |
-| download-progress          | Number:Dimensionless | Voice - Download Progress                |            |
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### Viomi SE (<a name="viomi-vacuum-v19">viomi.vacuum.v19</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Start cleaning sends the room cleaning command of the Mi Home app without rooms (whole area); it also resumes a paused run. Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Save, replace or discard the new map is the answer to the new map question of the app (see `has-newmap`). Create a new map, Clean rooms in order and the voice pack download exist on newer models and firmware only. Map editing (rooms, virtual walls, restricted areas), saved map selection, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","start-sweep-walls"="Start cleaning along walls","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop returning to dock","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","save-new-map"="Save the new map","replace-saved-map"="Replace the saved map with the new map","discard-new-map"="Discard the new map","create-new-map"="Create a new map","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| room-clean-queue           | String               | Clean rooms in order                     | Cleans the rooms in the given order, ids separated by a comma (for example `3,1,2`), as the room customization of the Mi Home app. Only on newer models and firmware. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error and status texts of the Mi Home app; codes without text are shown as number. Value mapping `["0"="No error","500"="Lidar timeout","501"="Wheels lifted","502"="Battery level too low","503"="Dust box or 2-in-1 tank not installed","507"="Relocation failed","508"="Started on a slope","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Return to dock failed, clear obstacles around the dock","512"="Return to dock failed, place the robot on the dock","513"="Navigation failed","514"="Stuck, could not get free","515"="Charging error, clean the charging contacts","516"="Temperature error","517"="System updating","518"="Battery level insufficient","521"="Water tank not installed","522"="Mop not installed","527"="Remove the mop","528"="Paused, dust box or 2-in-1 tank missing","529"="Paused, install mop and water tank","530"="Paused, install 2-in-1 tank and mop","531"="Paused, install 2-in-1 tank","2101"="Low battery, charging before continuing","2108"="Relocating","2109"="Repeat cleaning in progress","2110"="Self-checking"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area and Along walls; the other values are set by the robot when zone, point or manual control cleaning is started. Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="2-in-1 dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             | Memory map switch of the Mi Home app. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not read by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not read by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. The Mi Home app sends 1 to 4 while a direction key is pressed, 5 when it is released and 10 when the remote control page is opened or closed. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | On when the robot has a saved (remembered) map. |
+| has-newmap                 | Switch               | New map                                  | On when the robot found a new map; the Mi Home app then asks to save, replace or discard it (see the actions). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI FIERCE-UV (<a name="viomi-vacuum-v20">viomi.vacuum.v20</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI ALPHA-UV (<a name="viomi-vacuum-v21">viomi.vacuum.v21</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI Alpha 2 Pro (<a name="viomi-vacuum-v22">viomi.vacuum.v22</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI V3 Max (<a name="viomi-vacuum-v23">viomi.vacuum.v23</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI 5G IOT LingLi 2 (<a name="viomi-vacuum-v24">viomi.vacuum.v24</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI X3 (<a name="viomi-vacuum-v25">viomi.vacuum.v25</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Start cleaning sends the room cleaning command of the Mi Home app without rooms (whole area); it also resumes a paused run. Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Save, replace or discard the new map is the answer to the new map question of the app (see `has-newmap`). Create a new map, Clean rooms in order and the voice pack download exist on newer models and firmware only. Map editing (rooms, virtual walls, restricted areas), saved map selection, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","start-sweep-walls"="Start cleaning along walls","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop returning to dock","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","save-new-map"="Save the new map","replace-saved-map"="Replace the saved map with the new map","discard-new-map"="Discard the new map","create-new-map"="Create a new map","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| room-clean-queue           | String               | Clean rooms in order                     | Cleans the rooms in the given order, ids separated by a comma (for example `3,1,2`), as the room customization of the Mi Home app. Only on newer models and firmware. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error and status texts of the Mi Home app; codes without text are shown as number. Value mapping `["0"="No error","500"="Lidar timeout","501"="Wheels lifted","502"="Battery level too low","503"="Dust box or 2-in-1 tank not installed","507"="Relocation failed","508"="Started on a slope","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Return to dock failed, clear obstacles around the dock","512"="Return to dock failed, place the robot on the dock","513"="Navigation failed","514"="Stuck, could not get free","515"="Charging error, clean the charging contacts","516"="Temperature error","517"="System updating","518"="Battery level insufficient","521"="Water tank not installed","522"="Mop not installed","527"="Remove the mop","528"="Paused, dust box or 2-in-1 tank missing","529"="Paused, install mop and water tank","530"="Paused, install 2-in-1 tank and mop","531"="Paused, install 2-in-1 tank","2101"="Low battery, charging before continuing","2108"="Relocating","2109"="Repeat cleaning in progress","2110"="Self-checking"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area and Along walls; the other values are set by the robot when zone, point or manual control cleaning is started. Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="2-in-1 dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             | Memory map switch of the Mi Home app. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not read by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not read by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. The Mi Home app sends 1 to 4 while a direction key is pressed, 5 when it is released and 10 when the remote control page is opened or closed. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | On when the robot has a saved (remembered) map. |
+| has-newmap                 | Switch               | New map                                  | On when the robot found a new map; the Mi Home app then asks to save, replace or discard it (see the actions). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI Alpha 2 Plus (<a name="viomi-vacuum-v27">viomi.vacuum.v27</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI Eagle (<a name="viomi-vacuum-v29">viomi.vacuum.v29</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### Viomi V2 Max (<a name="viomi-vacuum-v35">viomi.vacuum.v35</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Start cleaning sends the room cleaning command of the Mi Home app without rooms (whole area); it also resumes a paused run. Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Save, replace or discard the new map is the answer to the new map question of the app (see `has-newmap`). Create a new map, Clean rooms in order and the voice pack download exist on newer models and firmware only. Map editing (rooms, virtual walls, restricted areas), saved map selection, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","start-sweep-walls"="Start cleaning along walls","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop returning to dock","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","save-new-map"="Save the new map","replace-saved-map"="Replace the saved map with the new map","discard-new-map"="Discard the new map","create-new-map"="Create a new map","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| room-clean-queue           | String               | Clean rooms in order                     | Cleans the rooms in the given order, ids separated by a comma (for example `3,1,2`), as the room customization of the Mi Home app. Only on newer models and firmware. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error and status texts of the Mi Home app; codes without text are shown as number. Value mapping `["0"="No error","500"="Lidar timeout","501"="Wheels lifted","502"="Battery level too low","503"="Dust box or 2-in-1 tank not installed","507"="Relocation failed","508"="Started on a slope","509"="Cliff sensor error","510"="Collision sensor stuck","511"="Return to dock failed, clear obstacles around the dock","512"="Return to dock failed, place the robot on the dock","513"="Navigation failed","514"="Stuck, could not get free","515"="Charging error, clean the charging contacts","516"="Temperature error","517"="System updating","518"="Battery level insufficient","521"="Water tank not installed","522"="Mop not installed","527"="Remove the mop","528"="Paused, dust box or 2-in-1 tank missing","529"="Paused, install mop and water tank","530"="Paused, install 2-in-1 tank and mop","531"="Paused, install 2-in-1 tank","2101"="Low battery, charging before continuing","2108"="Relocating","2109"="Repeat cleaning in progress","2110"="Self-checking"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area and Along walls; the other values are set by the robot when zone, point or manual control cleaning is started. Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="2-in-1 dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             | Memory map switch of the Mi Home app. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not read by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not read by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. The Mi Home app sends 1 to 4 while a direction key is pressed, 5 when it is released and 10 when the remote control page is opened or closed. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | On when the robot has a saved (remembered) map. |
+| has-newmap                 | Switch               | New map                                  | On when the robot found a new map; the Mi Home app then asks to save, replace or discard it (see the actions). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Whole area (mopping)","2"="Along walls","3"="Zone","4"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### Viomi V5 (<a name="viomi-vacuum-v36">viomi.vacuum.v36</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Zone cleaning (`start-zone-clean`) and map saving are used by the Mi Home app but are not in the published spec. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start or resume cleaning","pause"="Pause cleaning","stop-sweeping"="Stop cleaning","start-charge"="Return to dock","stop-charge"="Stop returning to dock","start-all-clean"="Start cleaning all rooms","start-all-clean-walls"="Start cleaning all rooms along walls","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","find-device"="Locate the robot","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Start level calibration","set-new-map"="Create a new map","save-map-to-cloud"="Save the new map"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping","8"="Repeat cleaning","9"="Error","10"="Relocating"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app; 201, 202 and 207 are only in the spec. Value mapping `["0"="No error","20"="No error (code 20)","201"="Left wheel hanging","202"="Right wheel hanging","203"="Left wheel stuck","204"="Right wheel stuck","205"="Main brush stuck","206"="Side brush stuck","207"="Charging error","208"="Started at a cliff","209"="Collision sensor stuck","210"="Vacuum fan error","211"="Two-in-one water tank not installed","212"="Mop not mounted","213"="Robot lifted up","214"="Robot trapped","215"="Laser cover blocked","216"="Laser sensor blocked","217"="Wall sensor error","218"="Started in restricted area","219"="Target area unreachable","220"="Laser head error","221"="Recharge failed","222"="Water pump not working","223"="Robot tilted","224"="Dust bag full","225"="Dust bag not installed","226"="Dust station fan error"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Custom uses the per room settings made in the app. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop","3"="Custom"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area and Along walls; the other values are set by the robot. Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Remote control"]` |
+| cleaning-scope             | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning. Value mapping `["0"="Selected rooms","1"="All rooms","2"="Selected areas"]` |
+| box-type                   | Number               | Installed box                            | The spec calls this property door-state, the Mi Home app code calls it box_type but does not poll it for this model. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Two-in-one box"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app code calls it mop_type (1 = mop cloth) but does not poll it for this model. |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run (s_time in the Mi Home app). |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run (s_area in the Mi Home app). |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). The spec calls it mute. |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| carpet-press               | Switch               | Carpet boost                             | Increased suction on carpets. |
+| cleantimes                 | Number               | Cleaning passes                          | Write only; the Mi Home app sets it before starting a cleaning. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Remote control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-time            | Number:Time          | Last clean duration                      | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-area            | Number:Area          | Last clean area                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-mode            | Number               | Last clean mode                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | The robot has a saved (remembered) map. |
+| has-newmap                 | Number               | New map                                  | A new map was created and the Mi Home app asks whether to keep it. Value mapping `["0"="None","1"="New map","2"="Overwrite map"]` |
+| clean-map-state            | Switch               | Map ready to save                        | ON when a finished cleaning map can be saved (the Mi Home app then asks to save it). |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app (for example `en`, `de`), sent as typed. |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Write only. JSON list of zones, each text holding eight comma separated map coordinates (four corners), for example `["x1,y1,x2,y2,x3,y3,x4,y4"]`; send the action `start-zone-clean` afterwards. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as comma separated text; schedules can not be changed from here. |
+
+### Viomi Alpha Lite (<a name="viomi-vacuum-v37">viomi.vacuum.v37</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### Viomi V5 Pro (<a name="viomi-vacuum-v38">viomi.vacuum.v38</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Custom cleaning uses the room settings saved with the Mi Home app. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start or resume cleaning","pause"="Pause cleaning","stop-sweeping"="Stop cleaning","start-charge"="Return to dock","stop-charge"="Stop returning to dock","start-all-clean"="Start cleaning all rooms","start-all-clean-walls"="Start cleaning all rooms along walls","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","start-custom-clean"="Start custom cleaning","find-device"="Locate the robot","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Start level calibration","set-new-map"="Create a new map"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping","8"="Repeat cleaning"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Code 20 is an error for the v40 app; the v38 app treats it as no error. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning","32"="Left wheel stuck","33"="Right wheel stuck","34"="Air duct blocked"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Custom uses the per room settings made in the app. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop","3"="Custom"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area and Along walls; the other values are set by the robot. Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Remote control"]` |
+| cleaning-scope             | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning. Value mapping `["0"="Selected rooms","1"="All rooms","2"="Selected areas"]` |
+| box-type                   | Number               | Installed box                            | The spec calls this property door-state, the Mi Home app code calls it box_type but does not poll it for this model. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Two-in-one box"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app code calls it mop_type (1 = mop cloth) but does not poll it for this model. |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run (s_time in the Mi Home app). |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run (s_area in the Mi Home app). |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). The spec calls it mute. |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. The Mi Home app of this model does not show the switch but still reads the value. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station; the Mi Home app shows the switch for the v40 only. |
+| cleantimes                 | Number               | Cleaning passes                          | Write only; the Mi Home app sets it (1 or 2) before starting a cleaning. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Remote control`. The Mi Home app sends 10 when it opens and closes its remote control page (not in the spec), repeats the direction every 1.3 s while a key is pressed and sends 5 on release. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-time            | Number:Time          | Last clean duration                      | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-area            | Number:Area          | Last clean area                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-mode            | Number               | Last clean mode                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | The robot has a saved (remembered) map. |
+| has-newmap                 | Number               | New map                                  | A new map was created and the Mi Home app asks whether to keep it. Value mapping `["0"="None","1"="New map","2"="Overwrite map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| cur-voice                  | String               | Voice pack                               | Key of the installed voice pack as reported by the robot (the Mi Home app compares it with the packs it offers). Voice pack download needs several inputs and is not available. |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app (for example `en`, `de`), sent as typed. |
+| time-zone                  | Number:Time          | Time zone offset                         | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset); the app corrects the value when it differs from the phone. |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Write only. JSON list of zones, each text holding eight comma separated map coordinates (four corners), for example `["x1,y1,x2,y2,x3,y3,x4,y4"]`; send the action `start-zone-clean` afterwards. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as comma separated text; schedules can not be changed from here. |
+
+### Viomi Alpha 2 Pro(WH) (<a name="viomi-vacuum-v40">viomi.vacuum.v40</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Custom cleaning uses the room settings saved with the Mi Home app. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start or resume cleaning","pause"="Pause cleaning","stop-sweeping"="Stop cleaning","start-charge"="Return to dock","stop-charge"="Stop returning to dock","start-all-clean"="Start cleaning all rooms","start-all-clean-walls"="Start cleaning all rooms along walls","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","start-custom-clean"="Start custom cleaning","find-device"="Locate the robot","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Start level calibration","set-new-map"="Create a new map"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping","8"="Repeat cleaning"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Code 20 is an error for the v40 app; the v38 app treats it as no error. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning","32"="Left wheel stuck","33"="Right wheel stuck","34"="Air duct blocked"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Custom uses the per room settings made in the app. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop","3"="Custom"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area and Along walls; the other values are set by the robot. Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Remote control"]` |
+| cleaning-scope             | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning. Value mapping `["0"="Selected rooms","1"="All rooms","2"="Selected areas"]` |
+| box-type                   | Number               | Installed box                            | The spec calls this property door-state, the Mi Home app code calls it box_type but does not poll it for this model. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Two-in-one box"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app code calls it mop_type (1 = mop cloth) but does not poll it for this model. |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run (s_time in the Mi Home app). |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run (s_area in the Mi Home app). |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). The spec calls it mute. |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. The Mi Home app of this model does not show the switch but still reads the value. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station; the Mi Home app shows the switch for the v40 only. |
+| cleantimes                 | Number               | Cleaning passes                          | Write only; the Mi Home app sets it (1 or 2) before starting a cleaning. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Remote control`. The Mi Home app sends 10 when it opens and closes its remote control page (not in the spec), repeats the direction every 1.3 s while a key is pressed and sends 5 on release. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-time            | Number:Time          | Last clean duration                      | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-area            | Number:Area          | Last clean area                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-mode            | Number               | Last clean mode                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | The robot has a saved (remembered) map. |
+| has-newmap                 | Number               | New map                                  | A new map was created and the Mi Home app asks whether to keep it. Value mapping `["0"="None","1"="New map","2"="Overwrite map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| cur-voice                  | String               | Voice pack                               | Key of the installed voice pack as reported by the robot (the Mi Home app compares it with the packs it offers). Voice pack download needs several inputs and is not available. |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app (for example `en`, `de`), sent as typed. |
+| time-zone                  | Number:Time          | Time zone offset                         | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset); the app corrects the value when it differs from the phone. |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Write only. JSON list of zones, each text holding eight comma separated map coordinates (four corners), for example `["x1,y1,x2,y2,x3,y3,x4,y4"]`; send the action `start-zone-clean` afterwards. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as comma separated text; schedules can not be changed from here. |
+
+### Viomi Alpha 2 Max (<a name="viomi-vacuum-v41">viomi.vacuum.v41</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start cleaning","stop-sweeping"="Stop cleaning","pause"="Pause cleaning","start-charge"="Go to dock","stop-charge"="Stop charging","find-device"="Locate the robot","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Calibrate"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Manual control"]` |
+| swept-area-type            | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning; only used by newer firmware. Value mapping `["0"="Selected rooms","1"="Whole area","2"="Partial area"]` |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app uses it as mop type (1 = mop cloth installed). |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10). |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="S pattern","1"="Y pattern"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. |
+| remember-state             | Switch               | Remember map                             |            |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Manual control`. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards. |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            |            |
+| has-newmap                 | Number               | New map                                  | The Mi Home app asks to save the new map when this is above 0. Value mapping `["0"="No new map","1"="New map, not saved yet","2"="New map replaces the saved map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). |
+| last-clean-time            | Number:Time          | Last clean duration                      |            |
+| last-clean-area            | Number:Area          | Last clean area                          |            |
+| last-clean-mode            | Number               | Last clean mode                          | Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app, sent as typed. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as JSON text; schedules can not be changed from here. |
+
+### VIOMI Auto Cleaning Alpha 3 (<a name="viomi-vacuum-v45">viomi.vacuum.v45</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | The Mi Home app has no separate stop: pause the cleaning and send the robot to the dock. Start sends the room cleaning command of the app without rooms (whole area). Zone cleaning: set the zone with the channel `set-zone`, then start it here. Point cleaning: start it with the channel `spot-clean`. The options here pause or resume zone and point cleaning. Not available (several values or structured data needed): saved map selection, map rename or delete, room split, merge and rename, virtual walls, room settings, schedules and voice pack download. Value mapping `["start-sweep"="Start or resume cleaning","start-sweep-walls"="Start cleaning along walls","pause"="Pause cleaning","start-charge"="Return to dock","stop-charge"="Stop returning to dock","find-device"="Locate the robot","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start or resume zone cleaning","pause-zone-clean"="Pause zone cleaning","wash-mop"="Wash the mop","dry-mop"="Start drying the mop","stop-wash-dry"="Stop mop washing or drying","reset-main-brush"="Reset main brush life","reset-side-brush"="Reset side brush life","reset-dust-filter"="Reset dust box filter life","reset-mop"="Reset mop life","build-map"="Start quick mapping","reset-map"="Reset the saved map","set-calibration"="Level the robot"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| spot-clean                 | String               | Clean spot                               | Starts point cleaning at the map coordinates `x,y` (as sent by the Mi Home app). |
+| set-zone                   | String               | Set cleaning zone                        | Sets the zone to clean as eight comma separated map coordinates (four corner points) `x1,y1,x2,y2,x3,y3,x4,y4`, as sent by the Mi Home app. Start the cleaning with `start-zone-clean` of the `vacuumaction` channel. |
+| cleaning-plan              | Number               | Cleaning plan                            | Write only. Selects the room or floor type customization made in the Mi Home app for the next cleaning; the settings themselves can not be changed here. Value mapping `["0"="Regular cleaning","1"="Custom by room","2"="Custom by floor type"]` |
+| status                     | Number               | Status                                   | The Mi Home app shows status 5 to 7 as working. Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping","8"="Upgrading","9"="Washing the mop","10"="Drying the mop"]` |
+| fault                      | Number               | Error                                    | Error and status texts of the Mi Home app; codes without text in the app (for example 529, 530, 550, 559, 561, 564, 566, 612) are shown as number. Codes from 2100 are progress messages. Value mapping `["0"="No error","500"="Lidar timeout","501"="Wheels lifted","502"="Battery too low","503"="Dust box not installed","508"="Started on a slope","509"="Cliff sensor dirty","510"="Collision sensor stuck","511"="Return to dock failed, clear obstacles around the dock","512"="Return to dock failed, place the robot on the dock","513"="Navigation failed","514"="Stuck, could not get free","518"="Battery too low to start, wait for charging","521"="Water tank not installed","522"="Mop not installed","533"="Standby too long, switching off","534"="Battery low, switching off","560"="Side brush stuck","563"="Dust box not installed properly","572"="Restricted zone or virtual wall detected","581"="Clean water tank empty","582"="Dirty water tank full","583"="Clean water tank not installed","584"="Dirty water tank not installed","585"="Dirty water filter not installed","586"="Cleaning trough full","587"="Base station communication error","588"="Robot may be on a carpet","589"="Relocation failed, move the robot to the dock and rebuild the map","611"="Relocation failed","2007"="Target area unreachable","2012"="Some areas unreachable","2013"="Not started from the dock, return to the dock to wash the mop","2015"="Mop washing in progress, try again later","2017"="Map building failed","2100"="Resuming cleaning after charging","2101"="Charging, cleaning will resume","2105"="Battery full","2108"="Relocating","2109"="Second cleaning pass","2110"="Self-checking","2111"="Generating map","2112"="Building map","2114"="Cleaned for 15 hours, empty the dust box"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area, Along walls and Remote control; the other values are set by the robot when zone, point cleaning or mapping is started. Value mapping `["0"="Whole area","1"="Mopping","2"="Along walls","3"="Zone","4"="Point","5"="Remote control","6"="Mapping"]` |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="Standard (S pattern)","1"="Professional (Y pattern)"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Cleans a second time; the Mi Home app switches it off again after one run. |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="2-in-1 dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property cloth-state; ON when the mop cloth is installed. |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (voice off) to 10; the Mi Home app shows it as percent (level x 10). |
+| manual-control             | Number               | Manual control                           | Write only. Set the cleaning mode to Remote control first. The Mi Home app repeats the direction while the key is pressed and does not offer backward outside China. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| carpet-booster             | Switch               | Carpet boost                             | Increased suction when a carpet is recognized. |
+| carpet-avoid               | Switch               | Carpet avoidance                         | Write only (the Mi Home app reads it from the multi-prop-vacuum list, index 12). Avoids carpets instead of cleaning them. |
+| carpet-show                | Switch               | Show carpets on map                      | Write only (index 22 of multi-prop-vacuum). |
+| vibration-mop              | Switch               | Vibration mopping                        | Vibrating mop mode of the Mi Home app. |
+| vibration-level            | Number               | Vibration level                          | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| dnd-pause-drying           | Switch               | Pause mop drying in Do not disturb       | ON suspends the mop drying during the do not disturb period (the spec labels the values Pause and Start; the Mi Home app uses 1 for suspend). |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           |            |
+| mop-hours                  | Number:Time          | Mop cloth time left                      |            |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| build-map                  | Number               | Mapping state                            | The spec lists 0, 1 and 3; the Mi Home app uses 0, 1 and 2 (mapping, mapping and cleaning). Value mapping `["0"="Not mapping","1"="Mapping","2"="Mapping and cleaning","3"="Cleaning"]` |
+| has-newmap                 | Switch               | New map                                  | ON when a new map waits to be saved or renamed in the Mi Home app. |
+| target-point               | String               | Point cleaning target                    | Map coordinates of the point cleaning target. To start point cleaning use `spot-clean`. |
+| stop-map-upload            | Switch               | Stop map upload                          | Write only (index 18 of multi-prop-vacuum). ON stops the upload of map data and, as the Mi Home app warns, deactivates the map functions and clears the map data. Shown by the Mi Home app for accounts outside China only. |
+| order-count                | String               | Cleaning schedules                       | JSON list with the number of schedules and the number of enabled schedules, for example `[3,2]`. Schedules can not be changed from here. |
+| dnd-enable                 | Switch               | Do not disturb                           | Read only: the Mi Home app writes enable, start, end and time zone together with one action that needs all six values. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| time-zone                  | Number:Time          | Time zone offset                         | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset, for example -3600 for UTC+1). |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app (for example `en_US`, `de_DE`, `zh_CN`), sent as typed. |
+| ai-recognize               | Switch               | AI recognition                           | AI object recognition switch of the Mi Home app. |
+| multi-prop-vacuum          | String               | Settings list                            | JSON list of the settings the Mi Home app polls, by index: 0 repeat cleaning, 1 box type, 2 mop installed, 3 suction, 4 water level, 5 mop pattern, 6 time zone, 7 cleaning time, 8 cleaning area, 9 carpet boost, 10 cleaning plan, 11 language, 12 carpet avoidance, 18 stop map upload, 19 vibration mopping, 20 vibration level, 21 electrolysis, 22 show carpets, 23 station action, 27 pause drying in do not disturb, 29 mop wash interval area. Use it to read the write only settings. |
+
+### Viomi Alpha 3 Pro (<a name="viomi-vacuum-v49">viomi.vacuum.v49</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | The Mi Home app has no separate stop: pause the cleaning and send the robot to the dock. Start sends the room cleaning command of the app without rooms (whole area). Zone cleaning: set the zone with the channel `set-zone`, then start it here. Point cleaning: start it with the channel `spot-clean`. The options here pause or resume zone and point cleaning. Not available (several values or structured data needed): saved map selection, map rename or delete, room split, merge and rename, virtual walls, room settings, schedules and voice pack download. Value mapping `["start-sweep"="Start or resume cleaning","start-sweep-walls"="Start cleaning along walls","pause"="Pause cleaning","start-charge"="Return to dock","stop-charge"="Stop returning to dock","find-device"="Locate the robot","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start or resume zone cleaning","pause-zone-clean"="Pause zone cleaning","wash-mop"="Wash the mop","dry-mop"="Start drying the mop","stop-wash-dry"="Stop mop washing or drying","dust-collection"="Empty the dust box","reset-main-brush"="Reset main brush life","reset-side-brush"="Reset side brush life","reset-dust-filter"="Reset dust box filter life","reset-mop"="Reset mop life","build-map"="Start quick mapping","reset-map"="Reset the saved map","set-calibration"="Level the robot"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| spot-clean                 | String               | Clean spot                               | Starts point cleaning at the map coordinates `x,y` (as sent by the Mi Home app). |
+| set-zone                   | String               | Set cleaning zone                        | Sets the zone to clean as eight comma separated map coordinates (four corner points) `x1,y1,x2,y2,x3,y3,x4,y4`, as sent by the Mi Home app. Start the cleaning with `start-zone-clean` of the `vacuumaction` channel. |
+| cleaning-plan              | Number               | Cleaning plan                            | Write only. Selects the room or floor type customization made in the Mi Home app for the next cleaning; the settings themselves can not be changed here. Value mapping `["0"="Regular cleaning","1"="Custom by room","2"="Custom by floor type"]` |
+| status                     | Number               | Status                                   | The Mi Home app shows status 5 to 7 as working. Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping","8"="Upgrading","9"="Washing the mop","10"="Drying the mop","11"="Collecting dust","12"="Returning to dock to resume cleaning","13"="Charging to resume cleaning"]` |
+| fault                      | Number               | Error                                    | Error and status texts of the Mi Home app; codes without text in the app (for example 529, 530, 550, 559, 561, 564, 566, 612) are shown as number. Codes from 2100 are progress messages. Value mapping `["0"="No error","500"="Lidar timeout","501"="Wheels lifted","502"="Battery too low","503"="Dust box not installed","508"="Started on a slope","509"="Cliff sensor dirty","510"="Collision sensor stuck","511"="Return to dock failed, clear obstacles around the dock","512"="Return to dock failed, place the robot on the dock","513"="Navigation failed","514"="Stuck, could not get free","518"="Battery too low to start, wait for charging","521"="Water tank not installed","522"="Mop not installed","533"="Standby too long, switching off","534"="Battery low, switching off","560"="Side brush stuck","563"="Dust box not installed properly","572"="Restricted zone or virtual wall detected","581"="Clean water tank empty","582"="Dirty water tank full","583"="Clean water tank not installed","584"="Dirty water tank not installed","585"="Dirty water filter not installed","586"="Cleaning trough full","587"="Base station communication error","588"="Robot may be on a carpet","589"="Relocation failed, move the robot to the dock and rebuild the map","594"="Dust bag not installed","611"="Relocation failed","625"="Cleaning bracket not installed","2007"="Target area unreachable","2012"="Some areas unreachable","2013"="Not started from the dock, return to the dock to wash the mop","2015"="Mop washing in progress, try again later","2017"="Map building failed","2100"="Resuming cleaning after charging","2101"="Charging, cleaning will resume","2105"="Battery full","2108"="Relocating","2109"="Second cleaning pass","2110"="Self-checking","2111"="Generating map","2112"="Building map","2114"="Cleaned for 15 hours, empty the dust box"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area, Along walls and Remote control; the other values are set by the robot when zone, point cleaning or mapping is started. Value mapping `["0"="Whole area","1"="Mopping","2"="Along walls","3"="Zone","4"="Point","5"="Remote control","6"="Mapping"]` |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="Standard (S pattern)","1"="Professional (Y pattern)"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Cleans a second time; the Mi Home app switches it off again after one run. |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="2-in-1 dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property cloth-state; ON when the mop cloth is installed. |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (voice off) to 10; the Mi Home app shows it as percent (level x 10). |
+| manual-control             | Number               | Manual control                           | Write only. Set the cleaning mode to Remote control first. The Mi Home app repeats the direction while the key is pressed and does not offer backward outside China. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| carpet-booster             | Switch               | Carpet boost                             | Increased suction when a carpet is recognized. |
+| carpet-avoid               | Switch               | Carpet avoidance                         | Write only (the Mi Home app reads it from the multi-prop-vacuum list, index 12). Avoids carpets instead of cleaning them. |
+| carpet-show                | Switch               | Show carpets on map                      | Write only (index 22 of multi-prop-vacuum). |
+| sweep-avoid                | Switch               | Carpet avoidance when vacuuming          | Write only (index 30 of multi-prop-vacuum). Used by the Mi Home app on firmware with separate carpet avoidance for vacuuming and mopping. |
+| mop-avoid                  | Switch               | Carpet avoidance when mopping            | Write only (index 31 of multi-prop-vacuum). |
+| vibration-mop              | Switch               | Vibration mopping                        | Vibrating mop mode of the Mi Home app. |
+| vibration-level            | Number               | Vibration level                          | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| electrolysis               | Switch               | Water electrolysis                       | Electrolyzed water for mopping. The Mi Home app only enables it with the 2-in-1 box installed and tells not to add detergent. |
+| dnd-pause-drying           | Switch               | Pause mop drying in Do not disturb       | ON suspends the mop drying during the do not disturb period (the spec labels the values Pause and Start; the Mi Home app uses 1 for suspend). |
+| auto-dust-collection       | Switch               | Auto dust collection                     | Empties the dust box into the station automatically. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           |            |
+| mop-hours                  | Number:Time          | Mop cloth time left                      |            |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| build-map                  | Number               | Mapping state                            | The spec lists 0, 1 and 3; the Mi Home app uses 0, 1 and 2 (mapping, mapping and cleaning). Value mapping `["0"="Not mapping","1"="Mapping","2"="Mapping and cleaning","3"="Cleaning"]` |
+| has-newmap                 | Switch               | New map                                  | ON when a new map waits to be saved or renamed in the Mi Home app. |
+| target-point               | String               | Point cleaning target                    | Map coordinates of the point cleaning target. To start point cleaning use `spot-clean`. |
+| order-count                | String               | Cleaning schedules                       | JSON list with the number of schedules and the number of enabled schedules, for example `[3,2]`. Schedules can not be changed from here. |
+| dnd-enable                 | Switch               | Do not disturb                           | Read only: the Mi Home app writes enable, start, end and time zone together with one action that needs all six values. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| time-zone                  | Number:Time          | Time zone offset                         | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset, for example -3600 for UTC+1). |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app (for example `en_US`, `de_DE`, `zh_CN`), sent as typed. |
+| ai-recognize               | Switch               | AI recognition                           | AI object recognition switch of the Mi Home app. |
+| multi-prop-vacuum          | String               | Settings list                            | JSON list of the settings the Mi Home app polls, by index: 0 repeat cleaning, 1 box type, 2 mop installed, 3 suction, 4 water level, 5 mop pattern, 6 time zone, 7 cleaning time, 8 cleaning area, 9 carpet boost, 10 cleaning plan, 11 language, 12 carpet avoidance, 19 vibration mopping, 20 vibration level, 21 electrolysis, 22 show carpets, 23 station action, 27 pause drying in do not disturb, 29 mop wash interval area, 30 and 31 carpet avoidance when vacuuming and mopping, 32 auto dust collection. Use it to read the write only settings. |
+
+### Viomi Alpha 2 Lite (<a name="viomi-vacuum-v53">viomi.vacuum.v53</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Custom cleaning uses the room settings saved with the Mi Home app. `start-fast-mapping` overwrites the saved map and needs the robot on the dock. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start or resume cleaning","pause"="Pause cleaning","stop-sweeping"="Stop cleaning","start-charge"="Return to dock","stop-charge"="Stop returning to dock","start-all-clean"="Start cleaning all rooms","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","start-custom-clean"="Start custom cleaning","find-device"="Locate the robot","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-calibration"="Start level calibration","set-new-map"="Create a new map","start-fast-mapping"="Start quick mapping"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping","8"="Repeat cleaning"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning","32"="Left wheel stuck","33"="Right wheel stuck","34"="Air duct blocked","35"="Mop not installed, switched to vacuum only","36"="Dust station fan error, check for leaks"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Custom uses the per room settings made in the app. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop","3"="Custom"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app of this model has no along walls switch and only reads the value; it is set by the robot. Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Remote control"]` |
+| cleaning-scope             | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning. Value mapping `["0"="Selected rooms","1"="All rooms","2"="Selected areas"]` |
+| box-type                   | Number               | Installed box                            | The spec calls this property door-state, the Mi Home app code calls it box_type but does not poll it for this model. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Two-in-one box"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app code calls it mop_type (1 = mop cloth) but does not poll it for this model. |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run (s_time in the Mi Home app). |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run (s_area in the Mi Home app). |
+| mute                       | Switch               | Mute                                     | ON silences the robot voice. The spec calls this property mute and the Mi Home app v_state; it writes true to mute and false to unmute. |
+| volume                     | Number               | Volume                                   | Volume level 1 to 10; the Mi Home app shows it as percent (level x 10) and writes it as mute_num. |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. The Mi Home app of this model does not show the switch but still reads the value. |
+| remember-state             | Switch               | Remember map                             |            |
+| carpet-press               | Switch               | Carpet boost                             | Increased suction on carpets. |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station; the Mi Home app shows the switch for the v53. |
+| fast-mapping-button        | Switch               | Quick mapping                            | Quick mapping switch of the Mi Home main page: when ON the next whole house cleaning only explores and maps the rooms. The app refuses it when the maximum number of maps is stored. |
+| fast-mapping-status        | Number               | Quick mapping status                     | Polled by the Mi Home app; the labels come from the spec, the meaning of the two finished values is not confirmed. Value mapping `["0"="Off","1"="Mapping","2"="Finished, main page","3"="Finished, settings page"]` |
+| cleantimes                 | Number               | Cleaning passes                          | Write only; the Mi Home app sets it (1 or 2) before starting a cleaning. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Remote control`. The Mi Home app sends 10 when it opens and closes its remote control page (not in the spec), repeats the direction every 1.3 s while a key is pressed and sends 5 on release. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-time            | Number:Time          | Last clean duration                      | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-area            | Number:Area          | Last clean area                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-mode            | Number               | Last clean mode                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point"]` |
+| last-clean-type            | Number               | Last clean type                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | The robot has a saved (remembered) map. |
+| has-newmap                 | Number               | New map                                  | A new map was created and the Mi Home app asks whether to keep it. Value mapping `["0"="None","1"="New map","2"="Overwrite map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| map-num                    | Number               | Saved maps                               | Number of maps stored in the robot; the Mi Home app uses it to limit quick mapping and new maps. |
+| cur-voice                  | String               | Voice pack                               | Key of the installed voice pack as reported by the robot (the Mi Home app compares it with the packs it offers). Voice pack download needs several inputs and is not available. |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app (for example `en`, `de`), sent as typed. |
+| time-zone                  | Number:Time          | Time zone offset                         | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset); the app corrects the value when it differs from the phone. |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Write only. JSON list of zones, each text holding eight comma separated map coordinates (four corners), for example `["x1,y1,x2,y2,x3,y3,x4,y4"]`; send the action `start-zone-clean` afterwards. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as comma separated text; schedules can not be changed from here. |
+
+### Viomi V3 Absolut (<a name="viomi-vacuum-v56">viomi.vacuum.v56</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Custom cleaning uses the room settings saved with the Mi Home app. `start-fast-mapping` overwrites the saved map and needs the robot on the dock. Map editing, saved map selection, room split / merge / rename, schedules and voice pack download need several inputs and are not available. Value mapping `["start-sweep"="Start or resume cleaning","pause"="Pause cleaning","stop-sweeping"="Stop cleaning","start-charge"="Return to dock","stop-charge"="Stop returning to dock","start-all-clean"="Start cleaning all rooms","start-point-clean"="Start point cleaning","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start zone cleaning","pause-zone-clean"="Pause zone cleaning","start-custom-clean"="Start custom cleaning","find-device"="Locate the robot","reset-side-brush"="Reset side brush life","reset-main-brush"="Reset main brush life","reset-dust-filter"="Reset dust box filter life","reset-map"="Clear the saved map","set-new-map"="Create a new map","start-fast-mapping"="Start quick mapping"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| status                     | Number               | Status                                   | Values 9 and 10 are only listed by the spec; the Mi Home app does not know them. Value mapping `["0"="Sleeping","1"="Standby","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping","8"="Repeat cleaning","9"="Returning to dock (status 9)","10"="Charging (status 10)"]` |
+| fault                      | Number               | Error                                    | Error texts of the Mi Home app. Value mapping `["0"="No error","1"="Low battery, searching dock","2"="Low battery, shutting down","3"="Main wheel stuck","4"="Collision sensor stuck","5"="Machine tilted","6"="Lidar blocked","7"="Front collision sensor error","8"="Wall sensor error","9"="Main brush stuck","10"="Side brush stuck","11"="Fan error","12"="Lidar cover stuck","13"="Dust box needs cleaning","14"="Two-in-one water tank not installed","15"="Dust box full, please empty it","16"="Robot trapped","17"="Robot picked up","18"="Water tank not installed","19"="Water tank empty, please add water","20"="Destination unreachable","21"="Start from restricted zone","22"="Cliff detected","23"="Water pump error","24"="Recharge failed","25"="Mop not installed","26"="Battery too low to start cleaning","27"="Dust bag not in place","28"="Dust collector fan failure","29"="Dust bag full","30"="Dust collection in progress, wait before cleaning","32"="Left wheel stuck","33"="Right wheel stuck","34"="Air duct blocked","35"="Mop not installed, switched to vacuum only","36"="Dust station fan error, check for leaks","37"="Lidar stuck"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Custom uses the per room settings made in the app. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop","3"="Custom"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app of this model has no along walls switch and only reads the value; it is set by the robot. Value mapping `["0"="Whole area","2"="Along walls","3"="Zone","4"="Point","5"="Remote control"]` |
+| cleaning-scope             | Number               | Cleaning scope                           | Scope the Mi Home app remembers for the next cleaning. Value mapping `["0"="Selected rooms","1"="All rooms","2"="Selected areas"]` |
+| box-type                   | Number               | Installed box                            | The spec calls this property door-state, the Mi Home app code calls it box_type but does not poll it for this model. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="Two-in-one box"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property contact-state, the Mi Home app code calls it mop_type (1 = mop cloth) but does not poll it for this model. |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run (s_time in the Mi Home app). |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run (s_area in the Mi Home app). |
+| mute                       | Switch               | Mute                                     | ON silences the robot voice. The spec calls this property mute and the Mi Home app v_state; it writes true to mute and false to unmute. |
+| volume                     | Number               | Volume                                   | Volume level 1 to 10; the Mi Home app shows it as percent (level x 10) and writes it as mute_num. |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Standard","2"="Strong"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Repeat the cleaning once; switches off after one run. The Mi Home app of this model does not show the switch but still reads the value. |
+| remember-state             | Switch               | Remember map                             |            |
+| carpet-press               | Switch               | Carpet boost                             | Increased suction on carpets. |
+| dust-collection            | Switch               | Auto dust collection                     | Only for models with a dust collection station; the Mi Home app of the v56 does not show the switch. |
+| fast-mapping-button        | Switch               | Quick mapping                            | Quick mapping switch of the Mi Home main page: when ON the next whole house cleaning only explores and maps the rooms. The app refuses it when the maximum number of maps is stored. |
+| fast-mapping-status        | Number               | Quick mapping status                     | Polled by the Mi Home app; the labels come from the spec, the meaning of the two finished values is not confirmed. Value mapping `["0"="Off","1"="Mapping","2"="Finished, main page","3"="Finished, settings page"]` |
+| cleantimes                 | Number               | Cleaning passes                          | Write only; the Mi Home app sets it (1 or 2) before starting a cleaning. |
+| manual-control             | Number               | Manual control                           | Write only. Use with the cleaning mode `Remote control`. The Mi Home app sends 10 when it opens and closes its remote control page (not in the spec), repeats the direction every 1.3 s while a key is pressed and sends 5 on release. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop","10"="Start or end remote control"]` |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| mop-hours                  | Number:Time          | Mop cloth time left                      | Not shown by the Mi Home app; the mop cloth has no reset action. |
+| last-clean-start           | Number               | Last clean start                         | Seconds since 1970-01-01 (UTC). Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-time            | Number:Time          | Last clean duration                      | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-area            | Number:Area          | Last clean area                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. |
+| last-clean-mode            | Number               | Last clean mode                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Whole area","1"="Along walls","2"="Zone","3"="Point","4"="Custom"]` |
+| last-clean-type            | Number               | Last clean type                          | Not polled by the Mi Home app, which uses the cloud event clean_end; value as published by the robot. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop"]` |
+| cur-map-id                 | Number               | Current map id                           |            |
+| has-map                    | Switch               | Map available                            | The robot has a saved (remembered) map. |
+| has-newmap                 | Number               | New map                                  | A new map was created and the Mi Home app asks whether to keep it. Value mapping `["0"="None","1"="New map","2"="Overwrite map"]` |
+| last-update-time           | Number               | Map updated                              | Seconds since 1970-01-01 (UTC). |
+| map-num                    | Number               | Saved maps                               | Number of maps stored in the robot; the Mi Home app uses it to limit quick mapping and new maps. |
+| cur-voice                  | String               | Voice pack                               | Key of the installed voice pack as reported by the robot (the Mi Home app compares it with the packs it offers). Voice pack download needs several inputs and is not available. |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app (for example `en`, `de`), sent as typed. |
+| time-zone                  | Number:Time          | Time zone offset                         | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset); the app corrects the value when it differs from the phone. |
+| target-point               | String               | Point cleaning target                    | Map coordinates `x,y`; send the action `start-point-clean` afterwards. |
+| zone-points                | String               | Zone cleaning corners                    | Write only. JSON list of zones, each text holding eight comma separated map coordinates (four corners), for example `["x1,y1,x2,y2,x3,y3,x4,y4"]`; send the action `start-zone-clean` afterwards. |
+| dnd-enable                 | Switch               | Do not disturb                           | The Mi Home app writes the enable, start, end and time zone values together. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| dnd-timezone               | Number:Time          | Do not disturb time zone offset          | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset). |
+| orderdata                  | String               | Cleaning schedule                        | Schedule list as comma separated text; schedules can not be changed from here. |
+
+### Viomi Master 10 Max (<a name="viomi-vacuum-v60">viomi.vacuum.v60</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| vacuumaction               | String               | Actions                                  | The Mi Home app has no separate stop: pause the cleaning and send the robot to the dock. Start sends the room cleaning command of the app without rooms (whole area). Zone cleaning: set the zone with the channel `set-zone`, then start it here. Point cleaning: start it with the channel `spot-clean`. The options here pause or resume zone and point cleaning. Not available (several values or structured data needed): saved map selection, map rename or delete, room split, merge and rename, virtual walls, room settings, schedules and voice pack download. Value mapping `["start-sweep"="Start or resume cleaning","start-sweep-walls"="Start cleaning along walls","pause"="Pause cleaning","start-charge"="Return to dock","stop-charge"="Stop returning to dock","find-device"="Locate the robot","pause-point-clean"="Pause point cleaning","start-zone-clean"="Start or resume zone cleaning","pause-zone-clean"="Pause zone cleaning","wash-mop"="Wash the mop","dry-mop"="Start drying the mop","stop-dry-mop"="Stop drying the mop","dust-collection"="Empty the dust box","reset-main-brush"="Reset main brush life","reset-side-brush"="Reset side brush life","reset-dust-filter"="Reset dust box filter life","reset-mop"="Reset mop life","build-map"="Start quick mapping","reset-map"="Reset the saved map"]` |
+| room-clean                 | String               | Clean rooms                              | Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map. |
+| spot-clean                 | String               | Clean spot                               | Starts point cleaning at the map coordinates `x,y` (as sent by the Mi Home app). |
+| set-zone                   | String               | Set cleaning zone                        | Sets the zone to clean as eight comma separated map coordinates (four corner points) `x1,y1,x2,y2,x3,y3,x4,y4`, as sent by the Mi Home app. Start the cleaning with `start-zone-clean` of the `vacuumaction` channel. |
+| cleaning-plan              | Number               | Cleaning plan                            | Write only. Selects the room or floor type customization made in the Mi Home app for the next cleaning; the settings themselves can not be changed here. Value mapping `["0"="Regular cleaning","1"="Custom by room","2"="Custom by floor type"]` |
+| status                     | Number               | Status                                   | The Mi Home app shows status 5 to 7 as working. Status 12 and 13 are cleaning interrupted for charging. Value mapping `["0"="Sleeping","1"="Idle","2"="Paused","3"="Returning to dock","4"="Charging","5"="Vacuuming","6"="Vacuuming and mopping","7"="Mopping","8"="Upgrading","9"="Washing the mop","10"="Drying the mop","11"="Collecting dust","12"="Returning to dock to resume cleaning","13"="Charging to resume cleaning","14"="Vacuuming after mopping","15"="Building map"]` |
+| fault                      | Number               | Error                                    | Error and status texts of the Mi Home app; codes without text in the app (for example 529, 530, 550, 559, 561, 564, 566, 612) are shown as number. Codes from 2100 are progress messages. Value mapping `["0"="No error","500"="Lidar timeout","501"="Wheels lifted","502"="Battery too low","503"="Dust box not installed","508"="Started on a slope","509"="Cliff sensor dirty","510"="Collision sensor stuck","511"="Return to dock failed, clear obstacles around the dock","512"="Return to dock failed, place the robot on the dock","513"="Navigation failed","514"="Stuck, could not get free","518"="Battery too low to start, wait for charging","521"="Water tank not installed","522"="Mop not installed","533"="Standby too long, switching off","534"="Battery low, switching off","560"="Side brush stuck","563"="Dust box not installed properly","567"="Main brush stuck (code 567)","568"="Left wheel stuck","569"="Right wheel stuck","570"="Main brush stuck","572"="Restricted zone or virtual wall detected","581"="Clean water tank empty or not installed","582"="Dirty water tank full or not installed","583"="Clean water tank not installed","584"="Dirty water tank not installed","585"="Dirty water filter not installed","586"="Cleaning trough full","587"="Base station communication error","589"="Relocation failed, move the robot to the dock and rebuild the map","591"="Dust bag may be full","594"="Dust bag not installed","597"="Dust collection too frequent","604"="Dust collection too frequent (code 604)","611"="Relocation failed","625"="Base station sewage filter not installed","630"="Mop bracket stuck","637"="Robot may be on a carpet","711"="Clean water tank empty or not installed (code 711)","712"="Dirty water tank full or not installed (code 712)","2003"="Battery too low, scheduled cleaning can not start","2007"="Target area unreachable","2012"="Some areas unreachable","2013"="Not started from the dock, return to the dock to wash the mop","2015"="Mop washing in progress, try again later","2017"="Map building failed","2100"="Resuming cleaning after charging","2101"="Charging, cleaning will resume","2105"="Battery full","2108"="Relocating","2109"="Second cleaning pass","2110"="Self-checking","2111"="Generating map","2112"="Building map","2114"="Cleaned for 15 hours, empty the dust box"]` |
+| battery-level              | Number:Dimensionless | Battery                                  |            |
+| cleaning-type              | Number               | Cleaning type                            | The spec calls this property mode. Mop after vacuum cleans the floor first and mops afterwards. Value mapping `["0"="Vacuum","1"="Vacuum and mop","2"="Mop","3"="Mop after vacuum"]` |
+| cleaning-mode              | Number               | Cleaning mode                            | The Mi Home app only writes Whole area, Along walls and Remote control; the other values are set by the robot when zone, point cleaning or mapping is started. Value mapping `["0"="Whole area","1"="Mopping","2"="Along walls","3"="Zone","4"="Point","5"="Remote control","6"="Mapping"]` |
+| suction-grade              | Number               | Suction power                            | Value mapping `["0"="Quiet","1"="Balanced","2"="Strong","3"="Max"]` |
+| water-grade                | Number               | Water level                              | Value mapping `["0"="Low","1"="Medium","2"="High"]` |
+| mop-route                  | Number               | Mopping pattern                          | Value mapping `["0"="Standard (S pattern)","1"="Professional (Y pattern)"]` |
+| repeat-state               | Switch               | Repeat cleaning                          | Cleans a second time (value 1 = clean twice). |
+| box-type                   | Number               | Installed modules                        | The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `["0"="None","1"="Dust box","2"="Water tank","3"="2-in-1 dust box and water tank"]` |
+| mop-installed              | Switch               | Mop installed                            | The spec calls this property cloth-state; ON when the mop cloth is installed. |
+| clean-time                 | Number:Time          | Cleaning time                            | Duration of the current or last cleaning run. |
+| clean-area                 | Number:Area          | Cleaned area                             | Area of the current or last cleaning run. |
+| volume                     | Number               | Volume                                   | Volume level 0 (voice off) to 10; the Mi Home app shows it as percent (level x 10). |
+| manual-control             | Number               | Manual control                           | Write only. Set the cleaning mode to Remote control first. The Mi Home app repeats the direction while the key is pressed and does not offer backward outside China. Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Backward","5"="Stop"]` |
+| carpet-booster             | Switch               | Carpet boost                             | Increased suction when a carpet is recognized. |
+| carpet-avoid               | Switch               | Carpet avoidance                         | Write only (the Mi Home app reads it from the multi-prop-vacuum list, index 12). Avoids carpets instead of cleaning them. |
+| carpet-show                | Switch               | Show carpets on map                      | Write only (index 22 of multi-prop-vacuum). |
+| sweep-avoid                | Switch               | Carpet avoidance when vacuuming          | Write only (index 30 of multi-prop-vacuum). Used by the Mi Home app on firmware with separate carpet avoidance for vacuuming and mopping. |
+| mop-avoid                  | Switch               | Carpet avoidance when mopping            | Write only (index 31 of multi-prop-vacuum). |
+| vibration-mop              | Switch               | Vibration mopping                        | Vibrating mop mode of the Mi Home app. |
+| vibration-level            | Number               | Vibration level                          | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| dnd-pause-drying           | Switch               | Pause mop drying in Do not disturb       | ON suspends the mop drying during the do not disturb period (the spec labels the values Pause and Start; the Mi Home app uses 1 for suspend). |
+| auto-dust-collection       | Switch               | Auto dust collection                     | Empties the dust box into the station automatically. |
+| back-wash                  | Switch               | Return to wash the mop by area           | The robot returns to the station to wash the mop after the area of `back-wash-area`. |
+| back-wash-area             | Number               | Mop wash interval area                   | Write only (index 29 of multi-prop-vacuum). Value mapping `["5"="5 square meters","8"="8 square meters","10"="10 square meters"]` |
+| auto-dry-mop               | Switch               | Automatic mop drying                     | Dries the mop automatically after washing it at the end of cleaning. |
+| dry-time                   | Number               | Mop drying time                          | Write only (index 39 of multi-prop-vacuum). The spec allows 4 to 12 hours, the Mi Home app offers 4, 6 and 8. Value mapping `["4"="4 hours","6"="6 hours","8"="8 hours"]` |
+| dust-frequency             | Number               | Dust collection frequency                | Value mapping `["1"="After every cleaning","2"="After every 2 cleanings","3"="After every 3 cleanings"]` |
+| mop-edge                   | Switch               | Automatic mop extend                     | Extends the mop outward to reach edges. |
+| mop-edge-frequency         | Number               | Mop extend frequency                     | Value mapping `["1"="Every 7th task","2"="Every 2nd task","3"="Every task"]` |
+| clean-brush                | Switch               | Brush self-cleaning                      | The robot returns to the station to clean the roller brush after cleaning. |
+| clean-brush-frequency      | Number               | Brush self-cleaning frequency            | Value mapping `["1"="After every cleaning","2"="After every 2 cleanings","3"="After every 3 cleanings"]` |
+| child-lock                 | Switch               | Child lock                               | Locks the keys of the robot when it is not working. |
+| side-brush-life            | Number:Dimensionless | Side brush life                          |            |
+| side-brush-hours           | Number:Time          | Side brush time left                     |            |
+| main-brush-life            | Number:Dimensionless | Main brush life                          |            |
+| main-brush-hours           | Number:Time          | Main brush time left                     |            |
+| hypa-life                  | Number:Dimensionless | Dust box filter life                     |            |
+| hypa-hours                 | Number:Time          | Dust box filter time left                |            |
+| mop-life                   | Number:Dimensionless | Mop cloth life                           |            |
+| mop-hours                  | Number:Time          | Mop cloth time left                      |            |
+| map-num                    | Number               | Saved maps                               |            |
+| cur-map-id                 | Number               | Current map id                           |            |
+| build-map                  | Number               | Mapping state                            | The spec lists 0, 1 and 3; the Mi Home app uses 0, 1 and 2 (mapping, mapping and cleaning). Value mapping `["0"="Not mapping","1"="Mapping","2"="Mapping and cleaning","3"="Cleaning"]` |
+| has-newmap                 | Switch               | New map                                  | ON when a new map waits to be saved or renamed in the Mi Home app. |
+| target-point               | String               | Point cleaning target                    | Map coordinates of the point cleaning target. To start point cleaning use `spot-clean`. |
+| order-count                | String               | Cleaning schedules                       | JSON list with the number of schedules and the number of enabled schedules, for example `[3,2]`. Schedules can not be changed from here. |
+| dnd-enable                 | Switch               | Do not disturb                           | Read only: the Mi Home app writes enable, start, end and time zone together with one action that needs all six values. |
+| dnd-start-hour             | Number:Time          | Do not disturb start hour                |            |
+| dnd-start-minute           | Number:Time          | Do not disturb start minute              |            |
+| dnd-end-hour               | Number:Time          | Do not disturb end hour                  |            |
+| dnd-end-minute             | Number:Time          | Do not disturb end minute                |            |
+| time-zone                  | Number:Time          | Time zone offset                         | Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset, for example -3600 for UTC+1). |
+| cur-lang                   | String               | Voice language                           | Language code as used by the Mi Home app (for example `en_US`, `de_DE`, `zh_CN`), sent as typed. |
+| ai-recognize               | Switch               | AI recognition                           | AI object recognition switch of the Mi Home app. |
+| multi-prop-vacuum          | String               | Settings list                            | JSON list of the settings the Mi Home app polls, by index: 0 repeat cleaning, 1 box type, 2 mop installed, 3 suction, 4 water level, 5 mop pattern, 6 time zone, 7 cleaning time, 8 cleaning area, 9 carpet boost, 10 cleaning plan, 11 language, 12 carpet avoidance, 19 vibration mopping, 20 vibration level, 21 electrolysis, 22 show carpets, 23 station action, 27 pause drying in do not disturb, 29 mop wash interval area, 30 and 31 carpet avoidance when vacuuming and mopping, 32 auto dust collection, 33 child lock, 34 and 35 mop extend, 36 and 37 brush self-cleaning, 38 automatic mop drying, 39 mop drying time, 40 dust collection frequency, 41 return to wash the mop. Use it to read the write only settings. |
 
 ### VIOMI Internet Electric Water Heater 1A (60L) (<a name="viomi-waterheater-e1">viomi.waterheater.e1</a>) Channels
 
@@ -6534,20 +8010,12 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | brightness                 | Dimmer               | Brightness                               |            |
-| ambientBrightness          | Dimmer               | Ambient Brightness                       |            |
 | delayoff                   | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature           | Number               | Color Temperature                        |            |
-| colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode, use the nightlightMode channel for Night Light mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode"]` |
+| colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                       | String               | Name                                     |            |
-| ambientPower               | Switch               | Ambient Power                            |            |
-| ambientColor               | Color                | Ambient Color                            |            |
-| ambientColorTemperature    | Number               | Ambient Color Temperature                |            |
-| ambientColorflow           | Switch               | Ambient Color Flow                       |            |
-| ambientColorflowScene      | String               | Ambient Color Flow Scene                 | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | customScene                | String               | Set Scene                                |            |
-| ambientColorMode           | Number               | Ambient Color Mode                       | Value mapping `["1"="RGB mode","2"="CT mode","3"="HSV mode"]` |
 | nightlightBrightness       | Dimmer               | Nightlight Brightness                    |            |
-| nightlightMode             | Switch               | Night Light Mode                         | Switching off returns the light to CT mode |
 
 ### Mi LED Ceiling Light (<a name="yeelink-light-ceiling5">yeelink.light.ceiling5</a>) Channels
 
@@ -8449,15 +9917,21 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | String               | Mode                                     |            |
+| mode                       | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | aqi                        | Number               | Air Quality Index                        |            |
-| brightness                 | Dimmer               | Brightness                               |            |
+| averageaqi                 | Number               | Average Air Quality Index                |            |
 | led                        | Switch               | LED Status                               |            |
-| act_det                    | Switch               | Air AutoDetect                           |            |
 | buzzer                     | Switch               | Buzzer Status                            |            |
 | filtermaxlife              | Number               | Filter Max Life                          |            |
-| filterlive                 | Number               | Filter Life                              |            |
+| filterhours                | Number:Time          | Filter Hours used                        |            |
+| usedhours                  | Number:Time          | Run Time                                 |            |
+| motorspeed                 | Number               | Motor Speed                              |            |
+| filterlife                 | Number               | Filter Life                              |            |
+| favoritelevel              | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| purifyvolume               | Number:Volume        | Purified Volume                          |            |
+| childlock                  | Switch               | Child Lock                               |            |
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
 
@@ -12728,28 +14202,72 @@ Number expresso "Brew Americano" (G_coffee) {channel="miio:basic:coffee:expresso
 Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
 ```
 
+### Viomi sweeper PRO (viomi.vacuum.v3) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi sweeper PRO" <status>
+Number vacuumaction "Vacuum action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
+Number mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
+Number:Dimensionless battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
+Number box_type "Bin / tank type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop pattern" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Time clean_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Number:Area clean_area "Clean area" (G_vacuum) {channel="miio:basic:vacuum:clean_area"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Switch remember_map "Map remembered" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "Has map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number has_newmap "New map available" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning_type"}
+Switch repeat_cleaning "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat_cleaning"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number:Time side_brush_hours "Side brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Time main_brush_hours "Main brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Time hypa_hours "Dust compartment filter remaining time" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Time mop_hours "Mop remaining time" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Dimensionless hypa_life "Dust compartment filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Dimensionless mop_life "Mop life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+```
+
 ### Viomi Cleaning Robot V-RVCLM21B (viomi.vacuum.v6) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Viomi Cleaning Robot V-RVCLM21B" <status>
-Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number vacuumaction "Vacuum action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
-Number mode "Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
-Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
-Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
-Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
-Number mop_route "Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
-Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
-Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
-Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
-Number water_grade "water_grade" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
-Number remember_map "remember_map" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
-Number has_map "has_map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
-Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
-Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+Number:Dimensionless battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
+Number box_type "Bin / tank type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop pattern" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Time clean_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Number:Area clean_area "Clean area" (G_vacuum) {channel="miio:basic:vacuum:clean_area"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Switch remember_map "Map remembered" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "Has map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number has_newmap "New map available" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning_type"}
+Switch repeat_cleaning "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat_cleaning"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number:Time side_brush_hours "Side brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Time main_brush_hours "Main brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Time hypa_hours "Dust compartment filter remaining time" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Time mop_hours "Mop remaining time" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Dimensionless hypa_life "Dust compartment filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Dimensionless mop_life "Mop life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
 ```
 
 ### Mi Robot Vacuum-Mop P (viomi.vacuum.v7) item file lines
@@ -12758,22 +14276,32 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 
 ```java
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
-Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number vacuumaction "Vacuum action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
-Number mode "Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
-Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
-Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
-Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
-Number mop_route "Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
-Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
-Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
-Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
-Number water_grade "water_grade" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
-Number remember_map "remember_map" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
-Number has_map "has_map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
-Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
-Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+Number:Dimensionless battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
+Number box_type "Bin / tank type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop pattern" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Time clean_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Number:Area clean_area "Clean area" (G_vacuum) {channel="miio:basic:vacuum:clean_area"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Switch remember_map "Map remembered" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "Has map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number has_newmap "New map available" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning_type"}
+Switch repeat_cleaning "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat_cleaning"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number:Time side_brush_hours "Side brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Time main_brush_hours "Main brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Time hypa_hours "Dust compartment filter remaining time" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Time mop_hours "Mop remaining time" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Dimensionless hypa_life "Dust compartment filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Dimensionless mop_life "Mop life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
 ```
 
 ### Mi Robot Vacuum-Mop P (viomi.vacuum.v8) item file lines
@@ -12782,22 +14310,360 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 
 ```java
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
-Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number vacuumaction "Vacuum action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
-Number mode "Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
-Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
-Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
-Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
-Number mop_route "Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
-Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
-Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
-Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
-Number water_grade "water_grade" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
-Number remember_map "remember_map" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
-Number has_map "has_map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
-Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
-Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+Number:Dimensionless battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
+Number box_type "Bin / tank type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop pattern" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Time clean_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Number:Area clean_area "Clean area" (G_vacuum) {channel="miio:basic:vacuum:clean_area"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Switch remember_map "Map remembered" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "Has map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number has_newmap "New map available" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning_type"}
+Switch repeat_cleaning "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat_cleaning"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number:Time side_brush_hours "Side brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Time main_brush_hours "Main brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Time hypa_hours "Dust compartment filter remaining time" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Time mop_hours "Mop remaining time" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Dimensionless hypa_life "Dust compartment filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Dimensionless mop_life "Mop life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+```
+
+### Mi Robot Vacuum-Mop P (viomi.vacuum.v9) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
+Number vacuumaction "Vacuum action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
+Number mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
+Number:Dimensionless battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
+Number box_type "Bin / tank type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop pattern" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Time clean_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Number:Area clean_area "Clean area" (G_vacuum) {channel="miio:basic:vacuum:clean_area"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Switch remember_map "Map remembered" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "Has map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number has_newmap "New map available" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning_type"}
+Switch repeat_cleaning "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat_cleaning"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number:Time side_brush_hours "Side brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Time main_brush_hours "Main brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Time hypa_hours "Dust compartment filter remaining time" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Time mop_hours "Mop remaining time" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Dimensionless hypa_life "Dust compartment filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Dimensionless mop_life "Mop life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+```
+
+### Viomi Robot Vacuum (viomi.vacuum.v10) (viomi.vacuum.v10) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi Robot Vacuum (viomi.vacuum.v10)" <status>
+Number vacuumaction "Vacuum action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
+Number mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
+Number:Dimensionless battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
+Number box_type "Bin / tank type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop pattern" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Time clean_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Number:Area clean_area "Clean area" (G_vacuum) {channel="miio:basic:vacuum:clean_area"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Switch remember_map "Map remembered" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "Has map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number has_newmap "New map available" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning_type"}
+Switch repeat_cleaning "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat_cleaning"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number:Time side_brush_hours "Side brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Time main_brush_hours "Main brush remaining time" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Time hypa_hours "Dust compartment filter remaining time" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Time mop_hours "Mop remaining time" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Dimensionless hypa_life "Dust compartment filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Dimensionless mop_life "Mop life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+```
+
+### Viomi V-SLAM Robot Vacuum (viomi.vacuum.v11) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi V-SLAM Robot Vacuum" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+Number point_x "Point cleaning target X" (G_vacuum) {channel="miio:basic:vacuum:point-x"}
+Number point_y "Point cleaning target Y" (G_vacuum) {channel="miio:basic:vacuum:point-y"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+```
+
+### Viomi Cleaning Robot X2 (viomi.vacuum.v12) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi Cleaning Robot X2" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+String room_clean_queue "Clean rooms in order" (G_vacuum) {channel="miio:basic:vacuum:room-clean-queue"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Switch has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi V3 (viomi.vacuum.v13) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi V3" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+String room_clean_queue "Clean rooms in order" (G_vacuum) {channel="miio:basic:vacuum:room-clean-queue"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Switch has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI Alpha 2 Pro (viomi.vacuum.v15) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI Alpha 2 Pro" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi Robot Vacuum-Mop JC (viomi.vacuum.v17) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi Robot Vacuum-Mop JC" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
 ```
 
 ### Viomi S9 (viomi.vacuum.v18) item file lines
@@ -12806,66 +14672,1206 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 
 ```java
 Group G_vacuum "Viomi S9" <status>
-String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
-Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
-Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
-Number wdr_mode "Robot Cleaner - Wide Dynamic Range Mode" (G_vacuum) {channel="miio:basic:vacuum:wdr-mode"}
-Number door_state "Robot Cleaner - Door State" (G_vacuum) {channel="miio:basic:vacuum:door-state"}
-Number contact_state "Robot Cleaner - Contact State" (G_vacuum) {channel="miio:basic:vacuum:contact-state"}
-Number:Time contact_state1 "Robot Cleaner - Contact State" (G_vacuum) {channel="miio:basic:vacuum:contact-state1"}
-Number contact_state2 "Robot Cleaner - Contact State" (G_vacuum) {channel="miio:basic:vacuum:contact-state2"}
-Number mute "Robot Cleaner - Mute" (G_vacuum) {channel="miio:basic:vacuum:mute"}
-Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep-type"}
-Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
-Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
-Switch repeat_state "Viomi Vacuum - Repeat State" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
-Switch remember_state "Viomi Vacuum - Remember State" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
-Number mop_route "Viomi Vacuum - Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
-Number:Dimensionless side_brush_life "Viomi Vacuum - Side Brush Life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
-Number:Time side_brush_hours "Viomi Vacuum - Side Brush Hours" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
-Number:Dimensionless main_brush_life "Viomi Vacuum - Main Brush Life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
-Number:Time main_brush_hours "Viomi Vacuum - Main Brush Hours" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
-Number:Dimensionless hypa_life "Viomi Vacuum - Hypa Life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
-Number:Time hypa_hours "Viomi Vacuum - Hypa Hours" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
-Number:Dimensionless mop_life "Viomi Vacuum - Mop Life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
-Number:Time mop_hours "Viomi Vacuum - Mop Hours" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
-Number suction_grade "Viomi Vacuum - Suction Grade" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
-Number water_grade "Viomi Vacuum - Water Grade" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
-Number map_num "Viomi Vacuum - Map Num" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
-Number time_zone "Viomi Vacuum - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
-Number:Time clean_start_time "Viomi Vacuum - Clean Start Time" (G_vacuum) {channel="miio:basic:vacuum:clean-start-time"}
-Number:Time clean_use_time "Viomi Vacuum - Clean Use Time" (G_vacuum) {channel="miio:basic:vacuum:clean-use-time"}
-Number clean_area "Viomi Vacuum - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
-String clean_map_url "Viomi Vacuum - Clean Map Url" (G_vacuum) {channel="miio:basic:vacuum:clean-map-url"}
-Number clean_mode "Viomi Vacuum - Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:clean-mode"}
-Number clean_way "Viomi Vacuum - Clean Way" (G_vacuum) {channel="miio:basic:vacuum:clean-way"}
-String cur_lang "Viomi Vacuum - Cur Lang" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
-Number cur_map_id "Viomi Vacuum - Cur Map Id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
-String cur_map_url "Viomi Vacuum - Cur Map Url" (G_vacuum) {channel="miio:basic:vacuum:cur-map-url"}
-Number:Time last_update_time "Viomi Vacuum - Last Update Time" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
-Number has_map "Viomi Vacuum - Has Map" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
-Number has_newmap "Viomi Vacuum - Has Newmap" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
-Number dust_collection "Viomi Vacuum - Dust Collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
-Number dnd_enable "Order - Dnd Enable" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
-Number:Time dnd_start_hour "Order - Dnd Start Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
-Number:Time dnd_start_minute "Order - Dnd Start Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
-Number:Time dnd_end_hour "Order - Dnd End Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
-Number:Time dnd_end_minute "Order - Dnd End Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
-Number dnd_timezone "Order - Dnd Timezone" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
-Number timestamp "Order - Timestamp" (G_vacuum) {channel="miio:basic:vacuum:timestamp"}
-String orderdata "Order - Orderdata" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
-String target_point "Point Zone - Target Point" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
-Number map_type "Map - Map Type" (G_vacuum) {channel="miio:basic:vacuum:map-type"}
-Number map_id "Map - Map Id" (G_vacuum) {channel="miio:basic:vacuum:map-id"}
-String map_name "Map - Map Name" (G_vacuum) {channel="miio:basic:vacuum:map-name"}
-String cur_cleaning_path "Map - Cur Cleaning Path" (G_vacuum) {channel="miio:basic:vacuum:cur-cleaning-path"}
-String map_list "Map - Map List" (G_vacuum) {channel="miio:basic:vacuum:map-list"}
-String oper_result "Map - Oper Result" (G_vacuum) {channel="miio:basic:vacuum:oper-result"}
-Number auto_area_id "Map - Auto Area Id" (G_vacuum) {channel="miio:basic:vacuum:auto-area-id"}
-String target_voice "Voice - Target Voice" (G_vacuum) {channel="miio:basic:vacuum:target-voice"}
-String cur_voice "Voice - Cur Voice" (G_vacuum) {channel="miio:basic:vacuum:cur-voice"}
-Number download_status "Voice - Download Status" (G_vacuum) {channel="miio:basic:vacuum:download-status"}
-Number:Dimensionless download_progress "Voice - Download Progress" (G_vacuum) {channel="miio:basic:vacuum:download-progress"}
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi SE (viomi.vacuum.v19) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi SE" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+String room_clean_queue "Clean rooms in order" (G_vacuum) {channel="miio:basic:vacuum:room-clean-queue"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Switch has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI FIERCE-UV (viomi.vacuum.v20) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI FIERCE-UV" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI ALPHA-UV (viomi.vacuum.v21) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI ALPHA-UV" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI Alpha 2 Pro (viomi.vacuum.v22) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI Alpha 2 Pro" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI V3 Max (viomi.vacuum.v23) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI V3 Max" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI 5G IOT LingLi 2 (viomi.vacuum.v24) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI 5G IOT LingLi 2" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI X3 (viomi.vacuum.v25) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI X3" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+String room_clean_queue "Clean rooms in order" (G_vacuum) {channel="miio:basic:vacuum:room-clean-queue"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Switch has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI Alpha 2 Plus (viomi.vacuum.v27) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI Alpha 2 Plus" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI Eagle (viomi.vacuum.v29) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI Eagle" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi V2 Max (viomi.vacuum.v35) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi V2 Max" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+String room_clean_queue "Clean rooms in order" (G_vacuum) {channel="miio:basic:vacuum:room-clean-queue"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Switch has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi V5 (viomi.vacuum.v36) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi V5" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number cleaning_scope "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:cleaning-scope"}
+Number box_type "Installed box" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch carpet_press "Carpet boost" (G_vacuum) {channel="miio:basic:vacuum:carpet-press"}
+Number cleantimes "Cleaning passes" (G_vacuum) {channel="miio:basic:vacuum:cleantimes"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Switch clean_map_state "Map ready to save" (G_vacuum) {channel="miio:basic:vacuum:clean-map-state"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi Alpha Lite (viomi.vacuum.v37) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi Alpha Lite" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi V5 Pro (viomi.vacuum.v38) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi V5 Pro" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number cleaning_scope "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:cleaning-scope"}
+Number box_type "Installed box" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number cleantimes "Cleaning passes" (G_vacuum) {channel="miio:basic:vacuum:cleantimes"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+String cur_voice "Voice pack" (G_vacuum) {channel="miio:basic:vacuum:cur-voice"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Number:Time time_zone "Time zone offset" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi Alpha 2 Pro(WH) (viomi.vacuum.v40) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi Alpha 2 Pro(WH)" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number cleaning_scope "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:cleaning-scope"}
+Number box_type "Installed box" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number cleantimes "Cleaning passes" (G_vacuum) {channel="miio:basic:vacuum:cleantimes"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+String cur_voice "Voice pack" (G_vacuum) {channel="miio:basic:vacuum:cur-voice"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Number:Time time_zone "Time zone offset" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi Alpha 2 Max (viomi.vacuum.v41) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi Alpha 2 Max" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number swept_area_type "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:swept-area-type"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### VIOMI Auto Cleaning Alpha 3 (viomi.vacuum.v45) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "VIOMI Auto Cleaning Alpha 3" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+String spot_clean "Clean spot" (G_vacuum) {channel="miio:basic:vacuum:spot-clean"}
+String set_zone "Set cleaning zone" (G_vacuum) {channel="miio:basic:vacuum:set-zone"}
+Number cleaning_plan "Cleaning plan" (G_vacuum) {channel="miio:basic:vacuum:cleaning-plan"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+Switch carpet_booster "Carpet boost" (G_vacuum) {channel="miio:basic:vacuum:carpet-booster"}
+Switch carpet_avoid "Carpet avoidance" (G_vacuum) {channel="miio:basic:vacuum:carpet-avoid"}
+Switch carpet_show "Show carpets on map" (G_vacuum) {channel="miio:basic:vacuum:carpet-show"}
+Switch vibration_mop "Vibration mopping" (G_vacuum) {channel="miio:basic:vacuum:vibration-mop"}
+Number vibration_level "Vibration level" (G_vacuum) {channel="miio:basic:vacuum:vibration-level"}
+Switch dnd_pause_drying "Pause mop drying in Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-pause-drying"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Number build_map "Mapping state" (G_vacuum) {channel="miio:basic:vacuum:build-map"}
+Switch has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+Switch stop_map_upload "Stop map upload" (G_vacuum) {channel="miio:basic:vacuum:stop-map-upload"}
+String order_count "Cleaning schedules" (G_vacuum) {channel="miio:basic:vacuum:order-count"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time time_zone "Time zone offset" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch ai_recognize "AI recognition" (G_vacuum) {channel="miio:basic:vacuum:ai-recognize"}
+String multi_prop_vacuum "Settings list" (G_vacuum) {channel="miio:basic:vacuum:multi-prop-vacuum"}
+```
+
+### Viomi Alpha 3 Pro (viomi.vacuum.v49) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi Alpha 3 Pro" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+String spot_clean "Clean spot" (G_vacuum) {channel="miio:basic:vacuum:spot-clean"}
+String set_zone "Set cleaning zone" (G_vacuum) {channel="miio:basic:vacuum:set-zone"}
+Number cleaning_plan "Cleaning plan" (G_vacuum) {channel="miio:basic:vacuum:cleaning-plan"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+Switch carpet_booster "Carpet boost" (G_vacuum) {channel="miio:basic:vacuum:carpet-booster"}
+Switch carpet_avoid "Carpet avoidance" (G_vacuum) {channel="miio:basic:vacuum:carpet-avoid"}
+Switch carpet_show "Show carpets on map" (G_vacuum) {channel="miio:basic:vacuum:carpet-show"}
+Switch sweep_avoid "Carpet avoidance when vacuuming" (G_vacuum) {channel="miio:basic:vacuum:sweep-avoid"}
+Switch mop_avoid "Carpet avoidance when mopping" (G_vacuum) {channel="miio:basic:vacuum:mop-avoid"}
+Switch vibration_mop "Vibration mopping" (G_vacuum) {channel="miio:basic:vacuum:vibration-mop"}
+Number vibration_level "Vibration level" (G_vacuum) {channel="miio:basic:vacuum:vibration-level"}
+Switch electrolysis "Water electrolysis" (G_vacuum) {channel="miio:basic:vacuum:electrolysis"}
+Switch dnd_pause_drying "Pause mop drying in Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-pause-drying"}
+Switch auto_dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:auto-dust-collection"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Number build_map "Mapping state" (G_vacuum) {channel="miio:basic:vacuum:build-map"}
+Switch has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String order_count "Cleaning schedules" (G_vacuum) {channel="miio:basic:vacuum:order-count"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time time_zone "Time zone offset" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch ai_recognize "AI recognition" (G_vacuum) {channel="miio:basic:vacuum:ai-recognize"}
+String multi_prop_vacuum "Settings list" (G_vacuum) {channel="miio:basic:vacuum:multi-prop-vacuum"}
+```
+
+### Viomi Alpha 2 Lite (viomi.vacuum.v53) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi Alpha 2 Lite" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number cleaning_scope "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:cleaning-scope"}
+Number box_type "Installed box" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Switch mute "Mute" (G_vacuum) {channel="miio:basic:vacuum:mute"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch carpet_press "Carpet boost" (G_vacuum) {channel="miio:basic:vacuum:carpet-press"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Switch fast_mapping_button "Quick mapping" (G_vacuum) {channel="miio:basic:vacuum:fast-mapping-button"}
+Number fast_mapping_status "Quick mapping status" (G_vacuum) {channel="miio:basic:vacuum:fast-mapping-status"}
+Number cleantimes "Cleaning passes" (G_vacuum) {channel="miio:basic:vacuum:cleantimes"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+String cur_voice "Voice pack" (G_vacuum) {channel="miio:basic:vacuum:cur-voice"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Number:Time time_zone "Time zone offset" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi V3 Absolut (viomi.vacuum.v56) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi V3 Absolut" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number cleaning_scope "Cleaning scope" (G_vacuum) {channel="miio:basic:vacuum:cleaning-scope"}
+Number box_type "Installed box" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Switch mute "Mute" (G_vacuum) {channel="miio:basic:vacuum:mute"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Switch remember_state "Remember map" (G_vacuum) {channel="miio:basic:vacuum:remember-state"}
+Switch carpet_press "Carpet boost" (G_vacuum) {channel="miio:basic:vacuum:carpet-press"}
+Switch dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:dust-collection"}
+Switch fast_mapping_button "Quick mapping" (G_vacuum) {channel="miio:basic:vacuum:fast-mapping-button"}
+Number fast_mapping_status "Quick mapping status" (G_vacuum) {channel="miio:basic:vacuum:fast-mapping-status"}
+Number cleantimes "Cleaning passes" (G_vacuum) {channel="miio:basic:vacuum:cleantimes"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number last_clean_start "Last clean start" (G_vacuum) {channel="miio:basic:vacuum:last-clean-start"}
+Number:Time last_clean_time "Last clean duration" (G_vacuum) {channel="miio:basic:vacuum:last-clean-time"}
+Number:Area last_clean_area "Last clean area" (G_vacuum) {channel="miio:basic:vacuum:last-clean-area"}
+Number last_clean_mode "Last clean mode" (G_vacuum) {channel="miio:basic:vacuum:last-clean-mode"}
+Number last_clean_type "Last clean type" (G_vacuum) {channel="miio:basic:vacuum:last-clean-type"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Switch has_map "Map available" (G_vacuum) {channel="miio:basic:vacuum:has-map"}
+Number has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+Number last_update_time "Map updated" (G_vacuum) {channel="miio:basic:vacuum:last-update-time"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+String cur_voice "Voice pack" (G_vacuum) {channel="miio:basic:vacuum:cur-voice"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Number:Time time_zone "Time zone offset" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String zone_points "Zone cleaning corners" (G_vacuum) {channel="miio:basic:vacuum:zone-points"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time dnd_timezone "Do not disturb time zone offset" (G_vacuum) {channel="miio:basic:vacuum:dnd-timezone"}
+String orderdata "Cleaning schedule" (G_vacuum) {channel="miio:basic:vacuum:orderdata"}
+```
+
+### Viomi Master 10 Max (viomi.vacuum.v60) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Viomi Master 10 Max" <status>
+String vacuumaction "Actions" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+String room_clean "Clean rooms" (G_vacuum) {channel="miio:basic:vacuum:room-clean"}
+String spot_clean "Clean spot" (G_vacuum) {channel="miio:basic:vacuum:spot-clean"}
+String set_zone "Set cleaning zone" (G_vacuum) {channel="miio:basic:vacuum:set-zone"}
+Number cleaning_plan "Cleaning plan" (G_vacuum) {channel="miio:basic:vacuum:cleaning-plan"}
+Number status "Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Error" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number cleaning_type "Cleaning type" (G_vacuum) {channel="miio:basic:vacuum:cleaning-type"}
+Number cleaning_mode "Cleaning mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number suction_grade "Suction power" (G_vacuum) {channel="miio:basic:vacuum:suction-grade"}
+Number water_grade "Water level" (G_vacuum) {channel="miio:basic:vacuum:water-grade"}
+Number mop_route "Mopping pattern" (G_vacuum) {channel="miio:basic:vacuum:mop-route"}
+Switch repeat_state "Repeat cleaning" (G_vacuum) {channel="miio:basic:vacuum:repeat-state"}
+Number box_type "Installed modules" (G_vacuum) {channel="miio:basic:vacuum:box-type"}
+Switch mop_installed "Mop installed" (G_vacuum) {channel="miio:basic:vacuum:mop-installed"}
+Number:Time clean_time "Cleaning time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean_area "Cleaned area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number volume "Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number manual_control "Manual control" (G_vacuum) {channel="miio:basic:vacuum:manual-control"}
+Switch carpet_booster "Carpet boost" (G_vacuum) {channel="miio:basic:vacuum:carpet-booster"}
+Switch carpet_avoid "Carpet avoidance" (G_vacuum) {channel="miio:basic:vacuum:carpet-avoid"}
+Switch carpet_show "Show carpets on map" (G_vacuum) {channel="miio:basic:vacuum:carpet-show"}
+Switch sweep_avoid "Carpet avoidance when vacuuming" (G_vacuum) {channel="miio:basic:vacuum:sweep-avoid"}
+Switch mop_avoid "Carpet avoidance when mopping" (G_vacuum) {channel="miio:basic:vacuum:mop-avoid"}
+Switch vibration_mop "Vibration mopping" (G_vacuum) {channel="miio:basic:vacuum:vibration-mop"}
+Number vibration_level "Vibration level" (G_vacuum) {channel="miio:basic:vacuum:vibration-level"}
+Switch dnd_pause_drying "Pause mop drying in Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-pause-drying"}
+Switch auto_dust_collection "Auto dust collection" (G_vacuum) {channel="miio:basic:vacuum:auto-dust-collection"}
+Switch back_wash "Return to wash the mop by area" (G_vacuum) {channel="miio:basic:vacuum:back-wash"}
+Number back_wash_area "Mop wash interval area" (G_vacuum) {channel="miio:basic:vacuum:back-wash-area"}
+Switch auto_dry_mop "Automatic mop drying" (G_vacuum) {channel="miio:basic:vacuum:auto-dry-mop"}
+Number dry_time "Mop drying time" (G_vacuum) {channel="miio:basic:vacuum:dry-time"}
+Number dust_frequency "Dust collection frequency" (G_vacuum) {channel="miio:basic:vacuum:dust-frequency"}
+Switch mop_edge "Automatic mop extend" (G_vacuum) {channel="miio:basic:vacuum:mop-edge"}
+Number mop_edge_frequency "Mop extend frequency" (G_vacuum) {channel="miio:basic:vacuum:mop-edge-frequency"}
+Switch clean_brush "Brush self-cleaning" (G_vacuum) {channel="miio:basic:vacuum:clean-brush"}
+Number clean_brush_frequency "Brush self-cleaning frequency" (G_vacuum) {channel="miio:basic:vacuum:clean-brush-frequency"}
+Switch child_lock "Child lock" (G_vacuum) {channel="miio:basic:vacuum:child-lock"}
+Number:Dimensionless side_brush_life "Side brush life" (G_vacuum) {channel="miio:basic:vacuum:side-brush-life"}
+Number:Time side_brush_hours "Side brush time left" (G_vacuum) {channel="miio:basic:vacuum:side-brush-hours"}
+Number:Dimensionless main_brush_life "Main brush life" (G_vacuum) {channel="miio:basic:vacuum:main-brush-life"}
+Number:Time main_brush_hours "Main brush time left" (G_vacuum) {channel="miio:basic:vacuum:main-brush-hours"}
+Number:Dimensionless hypa_life "Dust box filter life" (G_vacuum) {channel="miio:basic:vacuum:hypa-life"}
+Number:Time hypa_hours "Dust box filter time left" (G_vacuum) {channel="miio:basic:vacuum:hypa-hours"}
+Number:Dimensionless mop_life "Mop cloth life" (G_vacuum) {channel="miio:basic:vacuum:mop-life"}
+Number:Time mop_hours "Mop cloth time left" (G_vacuum) {channel="miio:basic:vacuum:mop-hours"}
+Number map_num "Saved maps" (G_vacuum) {channel="miio:basic:vacuum:map-num"}
+Number cur_map_id "Current map id" (G_vacuum) {channel="miio:basic:vacuum:cur-map-id"}
+Number build_map "Mapping state" (G_vacuum) {channel="miio:basic:vacuum:build-map"}
+Switch has_newmap "New map" (G_vacuum) {channel="miio:basic:vacuum:has-newmap"}
+String target_point "Point cleaning target" (G_vacuum) {channel="miio:basic:vacuum:target-point"}
+String order_count "Cleaning schedules" (G_vacuum) {channel="miio:basic:vacuum:order-count"}
+Switch dnd_enable "Do not disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd-enable"}
+Number:Time dnd_start_hour "Do not disturb start hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-hour"}
+Number:Time dnd_start_minute "Do not disturb start minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-start-minute"}
+Number:Time dnd_end_hour "Do not disturb end hour" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-hour"}
+Number:Time dnd_end_minute "Do not disturb end minute" (G_vacuum) {channel="miio:basic:vacuum:dnd-end-minute"}
+Number:Time time_zone "Time zone offset" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String cur_lang "Voice language" (G_vacuum) {channel="miio:basic:vacuum:cur-lang"}
+Switch ai_recognize "AI recognition" (G_vacuum) {channel="miio:basic:vacuum:ai-recognize"}
+String multi_prop_vacuum "Settings list" (G_vacuum) {channel="miio:basic:vacuum:multi-prop-vacuum"}
 ```
 
 ### VIOMI Internet Electric Water Heater 1A (60L) (viomi.waterheater.e1) item file lines
@@ -15568,20 +18574,12 @@ note: Autogenerated example. Replace the id (ceiling4) in the channel with your 
 Group G_ceiling4 "Yeelight LED Ceiling Ambi Lamp" <status>
 Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
 Dimmer brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
-Dimmer ambientBrightness "Ambient Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
 Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
 Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
 String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
-Switch ambientPower "Ambient Power" (G_ceiling4) {channel="miio:basic:ceiling4:ambientPower"}
-Color ambientColor "Ambient Color" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorTemperature"}
-Switch ambientColorflow "Ambient Color Flow" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorflow"}
-String ambientColorflowScene "Ambient Color Flow Scene" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorflowScene"}
 String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorMode"}
 Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
-Switch nightlightMode "Night Light Mode" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightMode"}
 ```
 
 ### Mi LED Ceiling Light (yeelink.light.ceiling5) item file lines
@@ -17789,12 +20787,18 @@ Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
-Dimmer brightness "Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
-Switch act_det "Air AutoDetect" (G_airpurifier) {channel="miio:basic:airpurifier:act_det"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
-Number filterlive "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlive"}
+Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
+Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
+Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
+Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
 ### Mi Air Purifier v2 (zhimi.airpurifier.v2) item file lines
