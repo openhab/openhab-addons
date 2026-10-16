@@ -16,40 +16,34 @@ Cloud and local bridge an operate on the same locks simultaneously.
 
 ### Tedee Local Bridge
 
-**Thing type:** `tedee:local-bridge`
-
 #### Configuration
 
-| Parameter | Type | Required | Default | Description |
-|---|---|---:|---:|---|
-| `ip` | text | Yes | — | IP address of the Tedee Bridge |
-| `port` | integer | No | `80` | HTTP port of the Tedee Bridge |
-| `apiToken` | password | Yes | — | Tedee Bridge API token, encryption set to ON |
-| `pollInterval` | integer | No | `300` | Configured interval in seconds for bridge monitoring |
+| Parameter      | Type     | Required | Default | Description                                          |
+|----------------|----------|---------:|--------:|------------------------------------------------------|
+| `ip`           | text     | Yes      | —       | IP address of the Tedee Bridge                       |
+| `port`         | integer  | No       | `80`    | HTTP port of the Tedee Bridge                        |
+| `apiToken`     | password | Yes      | —       | Tedee Bridge API token, encryption set to ON         |
+| `pollInterval` | integer  | No       | `300`   | Configured interval in seconds for bridge monitoring |
 
 ### Tedee Cloud Bridge
 
-**Thing type:** `tedee:cloud-bridge`
-
 #### Configuration
 
-| Parameter | Type | Required | Default | Description |
-|---|---|---:|---:|---|
-| `personalAccessKey` | password | Yes | — | Tedee Personal Access Key used for Cloud API authentication |
-| `pollInterval` | integer | No | `300` | Cloud status and discovery polling interval in seconds |
+| Parameter           | Type     | Required | Default | Description                                                 |
+|---------------------|----------|---------:|--------:|-------------------------------------------------------------|
+| `personalAccessKey` | password | Yes      | —       | Tedee Personal Access Key used for Cloud API authentication |
+| `pollInterval`      | integer  | No       | `300`   | Cloud status and discovery polling interval in seconds      |
 
 The Personal Access Key should be treated as a secret and must not be published in repositories, screenshots or logs.
 
 ### Tedee Lock
 
-**Thing type:** `tedee:lock`
-
 #### Configuration
 
-| Parameter | Type | Required | Default | Description |
-|---|---|---:|---:|---|
-| `deviceId` | integer | Yes | — | Numeric Tedee device ID |
-| `pollInterval` | integer | No | `300` | Lock status polling interval in seconds |
+| Parameter      | Type    | Required | Default | Description                             |
+|----------------|---------|---------:|--------:|-----------------------------------------|
+| `deviceId`     | integer | Yes      | —       | Numeric Tedee device ID                 |
+| `pollInterval` | integer | No       | `300`   | Lock status polling interval in seconds |
 
 ## Channels
 
@@ -57,10 +51,10 @@ The Lock Thing exposes the following channels.
 
 ### Lock Control
 
-| Channel ID | Item Type | Read | Command | Description |
-|---|---|---:|---|---|
-| `lock` | Switch | Yes | `ON` / `OFF` | Lock or unlock the Tedee lock |
-| `action` | String | No | `LOCK`, `UNLOCK`, `UNLOCK_NO_PULL`, `PULL` | Execute a specific Tedee action |
+| Channel ID | Item Type | Read | Command                                    | Description                     |
+|------------|-----------|-----:|--------------------------------------------|---------------------------------|
+| `lock`     | Switch    | Yes  | `ON` / `OFF`                               | Lock or unlock the Tedee lock   |
+| `action`   | String    | No   | `LOCK`, `UNLOCK`, `UNLOCK_NO_PULL`, `PULL` | Execute a specific Tedee action |
 
 The `lock` channel is the simple Switch interface:
 
@@ -79,40 +73,40 @@ When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also 
 
 ### Lock State
 
-| Channel ID | Item Type | Description |
-|---|---|---|
-| `state` | String | Internal Tedee lock state |
-| `door-state` | String | Door sensor state, if supported by the lock/sensor setup |
-| `battery` | Number | Battery level in percent |
-| `charging` | Switch | Whether the lock is charging |
-| `jammed` | Switch | Whether the lock reports a jam |
-| `connected` | Switch | Whether the lock is connected to its Tedee transport |
+| Channel ID   | Item Type | Description                                              |
+|--------------|-----------|----------------------------------------------------------|
+| `state`      | String    | Internal Tedee lock state                                |
+| `door-state` | String    | Door sensor state, if supported by the lock/sensor setup |
+| `battery`    | Number    | Battery level in percent                                 |
+| `charging`   | Switch    | Whether the lock is charging                             |
+| `jammed`     | Switch    | Whether the lock reports a jam                           |
+| `connected`  | Switch    | Whether the lock is connected to its Tedee transport     |
 
 ### Tedee Lock States
 
-| State | Meaning |
-|---:|---|
-| `0` | `UNCALIBRATED` |
-| `1` | `CALIBRATION` |
-| `2` | `OPEN` |
-| `3` | `PARTIALLY_OPEN` |
-| `4` | `OPENING` |
-| `5` | `CLOSING` |
-| `6` | `CLOSED` |
-| `7` | `PULL_SPRING` |
-| `8` | `PULLING` |
-| `9` | `UNKNOWN` |
-| `255` | `UNPULLING` |
+| State | Meaning           |
+|------:|-------------------|
+| `0`   | `UNCALIBRATED`    |
+| `1`   | `CALIBRATION`     |
+| `2`   | `OPEN`            |
+| `3`   | `PARTIALLY_OPEN`  |
+| `4`   | `OPENING`         |
+| `5`   | `CLOSING`         |
+| `6`   | `CLOSED`          |
+| `7`   | `PULL_SPRING`     |
+| `8`   | `PULLING`         |
+| `9`   | `UNKNOWN`         |
+| `255` | `UNPULLING`       |
 
 ### Tedee Door States
 
-| Value | Meaning |
-|---:|---|
-| `0` | `NOT_PAIRED` |
-| `1` | `DISCONNECTED` |
-| `2` | `OPENED` |
-| `3` | `CLOSED` |
-| `4` | `UNCALIBRATED` |
+| Value | Meaning        |
+|------:|----------------|
+| `0`   | `NOT_PAIRED`   |
+| `1`   | `DISCONNECTED` |
+| `2`   | `OPENED`       |
+| `3`   | `CLOSED`       |
+| `4`   | `UNCALIBRATED` |
 
 A physical door sensor is required for meaningful door-state testing.
 
@@ -120,19 +114,19 @@ A physical door sensor is required for meaningful door-state testing.
 
 The following Tedee device settings are exposed as read-only channels:
 
-| Channel ID | Item Type | Description |
-|---|---|---|
-| `auto-lock-enabled` | Switch | Automatic lock enabled |
-| `auto-lock-delay` | Number | Automatic lock delay |
-| `auto-lock-implicit-enabled` | Switch | Implicit automatic lock enabled |
-| `auto-lock-implicit-delay` | Number | Implicit automatic lock delay |
-| `pull-spring-enabled` | Switch | Pull spring feature enabled |
-| `pull-spring-duration` | Number | Pull spring duration |
-| `auto-pull-spring-enabled` | Switch | Automatic pull spring enabled |
-| `postponed-lock-enabled` | Switch | Postponed lock enabled |
-| `postponed-lock-delay` | Number | Postponed lock delay |
-| `button-lock-enabled` | Switch | Physical button locking enabled |
-| `button-unlock-enabled` | Switch | Physical button unlocking enabled |
+| Channel ID                   | Item Type | Description                       |
+|------------------------------|-----------|-----------------------------------|
+| `auto-lock-enabled`          | Switch    | Automatic lock enabled            |
+| `auto-lock-delay`            | Number    | Automatic lock delay              |
+| `auto-lock-implicit-enabled` | Switch    | Implicit automatic lock enabled   |
+| `auto-lock-implicit-delay`   | Number    | Implicit automatic lock delay     |
+| `pull-spring-enabled`        | Switch    | Pull spring feature enabled       |
+| `pull-spring-duration`       | Number    | Pull spring duration              |
+| `auto-pull-spring-enabled`   | Switch    | Automatic pull spring enabled     |
+| `postponed-lock-enabled`     | Switch    | Postponed lock enabled            |
+| `postponed-lock-delay`       | Number    | Postponed lock delay              |
+| `button-lock-enabled`        | Switch    | Physical button locking enabled   |
+| `button-unlock-enabled`      | Switch    | Physical button unlocking enabled |
 
 These settings are read from the Tedee lock response and refreshed by polling or `REFRESH`.
 Writing settings is not currently implemented.
@@ -141,11 +135,11 @@ Writing settings is not currently implemented.
 
 The Lock Thing exposes these properties:
 
-| Property | Description |
-|---|---|
-| `name` | Tedee lock name |
-| `serialNumber` | Tedee serial number |
-| `deviceType` | Tedee device type |
+| Property          | Description                                         |
+|-------------------|-----------------------------------------------------|
+| `name`            | Tedee lock name                                     |
+| `serialNumber`    | Tedee serial number                                 |
+| `deviceType`      | Tedee device type                                   |
 | `firmwareVersion` | Firmware/software version reported by the Tedee API |
 
 ## Text `.things` Configuration
@@ -188,16 +182,16 @@ Channels need to be linked to Items before their states are consumed by openHAB 
 
 ### Main Lock Items
 
-| Item | Type | Channel | Description |
-|---|---|---|---|
-| `Tedee_Lock` | Switch | `lock` | Lock/unlock control |
-| `Tedee_State` | String | `state` | Lock state |
-| `Tedee_Door_State` | String | `door-state` | Door sensor state |
-| `Tedee_Battery` | Number | `battery` | Battery level |
-| `Tedee_Charging` | Switch | `charging` | Charging state |
-| `Tedee_Jammed` | Switch | `jammed` | Jam status |
-| `Tedee_Connected` | Switch | `connected` | Connection status |
-| `Tedee_Action` | String | `action` | Explicit Tedee actions |
+| Item               | Type   | Channel      | Description            |
+|--------------------|--------|--------------|------------------------|
+| `Tedee_Lock`       | Switch | `lock`       | Lock/unlock control    |
+| `Tedee_State`      | String | `state`      | Lock state             |
+| `Tedee_Door_State` | String | `door-state` | Door sensor state      |
+| `Tedee_Battery`    | Number | `battery`    | Battery level          |
+| `Tedee_Charging`   | Switch | `charging`   | Charging state         |
+| `Tedee_Jammed`     | Switch | `jammed`     | Jam status             |
+| `Tedee_Connected`  | Switch | `connected`  | Connection status      |
+| `Tedee_Action`     | String | `action`     | Explicit Tedee actions |
 
 ### Main Lock Items Example
 
@@ -233,19 +227,19 @@ Switch Tedee_Cloud_Connected "Cloud Lock Connected" {channel="tedee:lock:cloud:l
 
 ### Device Settings Items
 
-| Item | Type | Channel | Description |
-|---|---|---|---|
-| `Tedee_AutoLockEnabled` | Switch | `auto-lock-enabled` | Automatic lock |
-| `Tedee_AutoLockDelay` | Number | `auto-lock-dela` | Automatic lock delay |
-| `Tedee_AutoLockImplicitEnabled` | Switch | `auto-lock-implicit-enabled` | Implicit automatic lock |
-| `Tedee_AutoLockImplicitDelay` | Number | `auto-Lock-implicit-delay` | Implicit automatic lock delay |
-| `Tedee_PullSpringEnabled` | Switch | `pull-spring-enabled` | Pull spring enabled |
-| `Tedee_PullSpringDuration` | Number | `pull-spring-duration` | Pull spring duration |
-| `Tedee_AutoPullSpringEnabled` | Switch | `auto-pull-spring-enabled` | Automatic pull spring |
-| `Tedee_PostponedLockEnabled` | Switch | `postponed-lock-enabled` | Postponed locking |
-| `Tedee_PostponedLockDelay` | Number | `postponed-lock-delay` | Postponed lock delay |
-| `Tedee_ButtonLockEnabled` | Switch | `button-lock-enabled` | Button locking |
-| `Tedee_ButtonUnlockEnabled` | Switch | `button-unlock-enabled` | Button unlocking |
+| Item                            | Type   | Channel                      | Description                   |
+|---------------------------------|--------|------------------------------|-------------------------------|
+| `Tedee_AutoLockEnabled`         | Switch | `auto-lock-enabled`          | Automatic lock                |
+| `Tedee_AutoLockDelay`           | Number | `auto-lock-dela`             | Automatic lock delay          |
+| `Tedee_AutoLockImplicitEnabled` | Switch | `auto-lock-implicit-enabled` | Implicit automatic lock       |
+| `Tedee_AutoLockImplicitDelay`   | Number | `auto-Lock-implicit-delay`   | Implicit automatic lock delay |
+| `Tedee_PullSpringEnabled`       | Switch | `pull-spring-enabled`        | Pull spring enabled           |
+| `Tedee_PullSpringDuration`      | Number | `pull-spring-duration`       | Pull spring duration          |
+| `Tedee_AutoPullSpringEnabled`   | Switch | `auto-pull-spring-enabled`   | Automatic pull spring         |
+| `Tedee_PostponedLockEnabled`    | Switch | `postponed-lock-enabled`     | Postponed locking             |
+| `Tedee_PostponedLockDelay`      | Number | `postponed-lock-delay`       | Postponed lock delay          |
+| `Tedee_ButtonLockEnabled`       | Switch | `button-lock-enabled`        | Button locking                |
+| `Tedee_ButtonUnlockEnabled`     | Switch | `button-unlock-enabled`      | Button unlocking              |
 
 ### Device Settings Items Example
 
@@ -416,19 +410,19 @@ http://<BRIDGE-IP>/v1.0
 
 ### Main Local Endpoints
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| `GET` | `/v1.0/bridge` | Bridge status |
-| `GET` | `/v1.0/lock/{id}` | Read one lock |
-| `GET` | `/v1.0/lock` | Read available locks for discovery |
-| `POST` | `/v1.0/lock/{id}/lock` | Lock |
-| `POST` | `/v1.0/lock/{id}/unlock` | Unlock |
-| `POST` | `/v1.0/lock/{id}/pull` | Pull spring |
-| `POST` | `/v1.0/lock/{id}/unlock?mode=3` | Unlock without pull |
-| `POST` | `/v1.0/lock/{id}/unlock?mode=4` | Decision whether unlock or pull action is performed, based on lockposition |
-| `GET` | `/v1.0/callback` | Read callbacks |
-| `POST` | `/v1.0/callback` | Register callback |
-| `DELETE` | `/v1.0/callback/{callbackId}` | Remove callback |
+| Method   | Endpoint                        | Purpose                                                                    |
+|----------|---------------------------------|----------------------------------------------------------------------------|
+| `GET`    | `/v1.0/bridge`                  | Bridge status                                                              |
+| `GET`    | `/v1.0/lock/{id}`               | Read one lock                                                              |
+| `GET`    | `/v1.0/lock`                    | Read available locks for discovery                                         |
+| `POST`   | `/v1.0/lock/{id}/lock`          | Lock                                                                       |
+| `POST`   | `/v1.0/lock/{id}/unlock`        | Unlock                                                                     |
+| `POST`   | `/v1.0/lock/{id}/pull`          | Pull spring                                                                |
+| `POST`   | `/v1.0/lock/{id}/unlock?mode=3` | Unlock without pull 													      |
+| `POST`   | `/v1.0/lock/{id}/unlock?mode=4` | Decision whether unlock or pull action is performed, based on lockposition |
+| `GET`    | `/v1.0/callback`                | Read callbacks                                                             |
+| `POST`   | `/v1.0/callback`                | Register callback                                                          |
+| `DELETE` | `/v1.0/callback/{callbackId}`   | Remove callback                                                            |
 
 The `mode=3` unlock operation is used for `UNLOCK_NO_PULL`.
 

@@ -116,31 +116,6 @@ public class TedeeLockHandler extends BaseThingHandler {
         }
     }
 
-    private void send(TedeeTransportProvider provider, String action) {
-        scheduler.execute(() -> {
-            try {
-                logger.debug("Sending Tedee action '{}' to lock {}", action, cfg.deviceId);
-
-                executeAction(provider, cfg.deviceId, action);
-
-                logger.debug("Tedee action '{}' accepted for lock {}", action, cfg.deviceId);
-
-                scheduler.schedule(this::refresh, 1, TimeUnit.SECONDS);
-                scheduler.schedule(this::refresh, 3, TimeUnit.SECONDS);
-            } catch (TedeeApiException e) {
-                logger.warn("Tedee action '{}' failed for lock {}: {}", action, cfg.deviceId, e.getMessage());
-
-                updateStatus(ThingStatus.OFFLINE,
-                        e.getStatus() == 401 || e.getStatus() == 403 ? ThingStatusDetail.CONFIGURATION_ERROR
-                                : ThingStatusDetail.COMMUNICATION_ERROR,
-                        e.getMessage());
-            } catch (IllegalStateException e) {
-                logger.warn("Tedee transport unavailable for lock {}: {}", cfg.deviceId, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
-            }
-
-        });
-    }
 
     /**
      * Executes a lock action through the associated bridge's transport provider.
