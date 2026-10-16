@@ -15,9 +15,9 @@ package org.openhab.binding.tedee.internal.handler;
 
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,6 +53,7 @@ public class TedeeLockHandler extends BaseThingHandler {
     private final Set<ScheduledFuture<?>> pendingCommands = new HashSet<>();
 
     private long commandGeneration;
+    private boolean disposed;
 
     /**
      * Creates a handler for a Tedee lock.
@@ -69,6 +70,11 @@ public class TedeeLockHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
+        synchronized (pendingCommands) {
+            disposed = false;
+            commandGeneration++;
+        }
+
         cfg = getConfigAs(TedeeLockConfiguration.class);
         if (cfg.deviceId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID required");
@@ -116,7 +122,6 @@ public class TedeeLockHandler extends BaseThingHandler {
         }
     }
 
-
     /**
      * Executes a lock action through the associated bridge's transport provider.
      *
@@ -152,77 +157,77 @@ public class TedeeLockHandler extends BaseThingHandler {
                     cfg.deviceId, l.state, l.doorState, l.batteryLevel, l.isCharging, l.jammed, l.isConnected,
                     l.version);
 
-                if (l.state == 6) {
-                    updateState(TedeeBindingConstants.C_LOCK, OnOffType.ON);
-                } else if (l.state == 2) {
-                    updateState(TedeeBindingConstants.C_LOCK, OnOffType.OFF);
-                }
+            if (l.state == 6) {
+                updateState(TedeeBindingConstants.C_LOCK, OnOffType.ON);
+            } else if (l.state == 2) {
+                updateState(TedeeBindingConstants.C_LOCK, OnOffType.OFF);
+            }
 
-                updateState(TedeeBindingConstants.C_STATE, new StringType(state(l.state)));
+            updateState(TedeeBindingConstants.C_STATE, new StringType(state(l.state)));
 
-                if (l.doorState != null) {
-                    updateState(TedeeBindingConstants.C_DOOR, new StringType(door(l.doorState.intValue())));
-                }
-                if (l.batteryLevel != null) {
-                    updateState(TedeeBindingConstants.C_BATTERY, new DecimalType(l.batteryLevel.intValue()));
-                }
-                if (l.isCharging != null) {
-                    updateState(TedeeBindingConstants.C_CHARGING, OnOffType.from(l.isCharging != 0));
-                }
-                if (l.jammed != null) {
-                    updateState(TedeeBindingConstants.C_JAMMED, OnOffType.from(l.jammed != 0));
-                }
-                if (l.isConnected != null) {
-                    updateState(TedeeBindingConstants.C_CONNECTED, OnOffType.from(l.isConnected != 0));
-                }
+            if (l.doorState != null) {
+                updateState(TedeeBindingConstants.C_DOOR, new StringType(door(l.doorState.intValue())));
+            }
+            if (l.batteryLevel != null) {
+                updateState(TedeeBindingConstants.C_BATTERY, new DecimalType(l.batteryLevel.intValue()));
+            }
+            if (l.isCharging != null) {
+                updateState(TedeeBindingConstants.C_CHARGING, OnOffType.from(l.isCharging != 0));
+            }
+            if (l.jammed != null) {
+                updateState(TedeeBindingConstants.C_JAMMED, OnOffType.from(l.jammed != 0));
+            }
+            if (l.isConnected != null) {
+                updateState(TedeeBindingConstants.C_CONNECTED, OnOffType.from(l.isConnected != 0));
+            }
 
-                TedeeLock.DeviceSettings settings = l.deviceSettings;
-                if (settings != null) {
-                    if (settings.autoLockEnabled != null) {
-                        updateState(TedeeBindingConstants.C_AUTO_LOCK_ENABLED,
-                                OnOffType.from(settings.autoLockEnabled != 0));
-                    }
-                    if (settings.autoLockDelay != null) {
-                        updateState(TedeeBindingConstants.C_AUTO_LOCK_DELAY,
-                                new DecimalType(settings.autoLockDelay.intValue()));
-                    }
-                    if (settings.autoLockImplicitEnabled != null) {
-                        updateState(TedeeBindingConstants.C_AUTO_LOCK_IMPLICIT_ENABLED,
-                                OnOffType.from(settings.autoLockImplicitEnabled != 0));
-                    }
-                    if (settings.autoLockImplicitDelay != null) {
-                        updateState(TedeeBindingConstants.C_AUTO_LOCK_IMPLICIT_DELAY,
-                                new DecimalType(settings.autoLockImplicitDelay.intValue()));
-                    }
-                    if (settings.pullSpringEnabled != null) {
-                        updateState(TedeeBindingConstants.C_PULL_SPRING_ENABLED,
-                                OnOffType.from(settings.pullSpringEnabled != 0));
-                    }
-                    if (settings.pullSpringDuration != null) {
-                        updateState(TedeeBindingConstants.C_PULL_SPRING_DURATION,
-                                new DecimalType(settings.pullSpringDuration.intValue()));
-                    }
-                    if (settings.autoPullSpringEnabled != null) {
-                        updateState(TedeeBindingConstants.C_AUTO_PULL_SPRING_ENABLED,
-                                OnOffType.from(settings.autoPullSpringEnabled != 0));
-                    }
-                    if (settings.postponedLockEnabled != null) {
-                        updateState(TedeeBindingConstants.C_POSTPONED_LOCK_ENABLED,
-                                OnOffType.from(settings.postponedLockEnabled != 0));
-                    }
-                    if (settings.postponedLockDelay != null) {
-                        updateState(TedeeBindingConstants.C_POSTPONED_LOCK_DELAY,
-                                new DecimalType(settings.postponedLockDelay.intValue()));
-                    }
-                    if (settings.buttonLockEnabled != null) {
-                        updateState(TedeeBindingConstants.C_BUTTON_LOCK_ENABLED,
-                                OnOffType.from(settings.buttonLockEnabled != 0));
-                    }
-                    if (settings.buttonUnlockEnabled != null) {
-                        updateState(TedeeBindingConstants.C_BUTTON_UNLOCK_ENABLED,
-                                OnOffType.from(settings.buttonUnlockEnabled != 0));
-                    }
+            TedeeLock.DeviceSettings settings = l.deviceSettings;
+            if (settings != null) {
+                if (settings.autoLockEnabled != null) {
+                    updateState(TedeeBindingConstants.C_AUTO_LOCK_ENABLED,
+                            OnOffType.from(settings.autoLockEnabled != 0));
                 }
+                if (settings.autoLockDelay != null) {
+                    updateState(TedeeBindingConstants.C_AUTO_LOCK_DELAY,
+                            new DecimalType(settings.autoLockDelay.intValue()));
+                }
+                if (settings.autoLockImplicitEnabled != null) {
+                    updateState(TedeeBindingConstants.C_AUTO_LOCK_IMPLICIT_ENABLED,
+                            OnOffType.from(settings.autoLockImplicitEnabled != 0));
+                }
+                if (settings.autoLockImplicitDelay != null) {
+                    updateState(TedeeBindingConstants.C_AUTO_LOCK_IMPLICIT_DELAY,
+                            new DecimalType(settings.autoLockImplicitDelay.intValue()));
+                }
+                if (settings.pullSpringEnabled != null) {
+                    updateState(TedeeBindingConstants.C_PULL_SPRING_ENABLED,
+                            OnOffType.from(settings.pullSpringEnabled != 0));
+                }
+                if (settings.pullSpringDuration != null) {
+                    updateState(TedeeBindingConstants.C_PULL_SPRING_DURATION,
+                            new DecimalType(settings.pullSpringDuration.intValue()));
+                }
+                if (settings.autoPullSpringEnabled != null) {
+                    updateState(TedeeBindingConstants.C_AUTO_PULL_SPRING_ENABLED,
+                            OnOffType.from(settings.autoPullSpringEnabled != 0));
+                }
+                if (settings.postponedLockEnabled != null) {
+                    updateState(TedeeBindingConstants.C_POSTPONED_LOCK_ENABLED,
+                            OnOffType.from(settings.postponedLockEnabled != 0));
+                }
+                if (settings.postponedLockDelay != null) {
+                    updateState(TedeeBindingConstants.C_POSTPONED_LOCK_DELAY,
+                            new DecimalType(settings.postponedLockDelay.intValue()));
+                }
+                if (settings.buttonLockEnabled != null) {
+                    updateState(TedeeBindingConstants.C_BUTTON_LOCK_ENABLED,
+                            OnOffType.from(settings.buttonLockEnabled != 0));
+                }
+                if (settings.buttonUnlockEnabled != null) {
+                    updateState(TedeeBindingConstants.C_BUTTON_UNLOCK_ENABLED,
+                            OnOffType.from(settings.buttonUnlockEnabled != 0));
+                }
+            }
 
             updateProperty("name", l.name);
             updateProperty("serialNumber", l.serialNumber);
@@ -340,7 +345,6 @@ public class TedeeLockHandler extends BaseThingHandler {
         };
     }
 
-
     /**
      * Queues a lock action while binding the action to the current device configuration.
      *
@@ -349,48 +353,64 @@ public class TedeeLockHandler extends BaseThingHandler {
      * @param action Tedee action to execute
      */
     private void queueAction(TedeeTransportProvider provider, int deviceId, String action) {
-        final long generation = commandGeneration;
+        synchronized (pendingCommands) {
+            if (disposed) {
+                logger.debug("Ignoring Tedee action '{}' because the lock handler is disposed", action);
+                return;
+            }
 
-        ScheduledFuture<?> future = scheduler.schedule(() -> {
-            try {
-                if (generation != commandGeneration) {
+            final long generation = commandGeneration;
+            ScheduledFuture<?> future = scheduler
+                    .schedule(() -> runQueuedAction(provider, deviceId, action, generation), 0, TimeUnit.SECONDS);
+            pendingCommands.add(future);
+        }
+    }
+
+    private void runQueuedAction(TedeeTransportProvider provider, int deviceId, String action, long generation) {
+        try {
+            synchronized (pendingCommands) {
+                if (disposed || generation != commandGeneration) {
                     logger.debug("Ignoring stale Tedee action '{}' for lock {}", action, deviceId);
                     return;
                 }
+            }
 
-                logger.debug("Sending Tedee action '{}' to lock {}", action, deviceId);
+            if (!provider.ready()) {
+                logger.debug("Ignoring Tedee action '{}' because the transport is offline", action);
+                return;
+            }
 
-                executeAction(provider, deviceId, action);
+            logger.debug("Sending Tedee action '{}' to lock {}", action, deviceId);
 
-                logger.debug("Tedee action '{}' accepted for lock {}", action, deviceId);
+            executeAction(provider, deviceId, action);
 
-                scheduler.schedule(this::refresh, 1, TimeUnit.SECONDS);
-                scheduler.schedule(this::refresh, 3, TimeUnit.SECONDS);
-            } catch (TedeeApiException e) {
-                logger.warn("Tedee action '{}' failed for lock {}: {}", action, deviceId, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE,
-                        e.getStatus() == 401 || e.getStatus() == 403 ? ThingStatusDetail.CONFIGURATION_ERROR
-                                : ThingStatusDetail.COMMUNICATION_ERROR,
-                        e.getMessage());
-            } catch (IllegalStateException e) {
-                logger.warn("Tedee transport unavailable for lock {}: {}", deviceId, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
-            } finally {
-                synchronized (pendingCommands) {
-                    pendingCommands.removeIf(ScheduledFuture::isDone);
+            logger.debug("Tedee action '{}' accepted for lock {}", action, deviceId);
+
+            synchronized (pendingCommands) {
+                if (!disposed && generation == commandGeneration) {
+                    scheduler.schedule(this::refresh, 1, TimeUnit.SECONDS);
+                    scheduler.schedule(this::refresh, 3, TimeUnit.SECONDS);
                 }
             }
-        }, 0, TimeUnit.SECONDS);
-
-        synchronized (pendingCommands) {
-            pendingCommands.add(future);
+        } catch (TedeeApiException e) {
+            logger.warn("Tedee action '{}' failed for lock {}: {}", action, deviceId, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE,
+                    e.getStatus() == 401 || e.getStatus() == 403 ? ThingStatusDetail.CONFIGURATION_ERROR
+                            : ThingStatusDetail.COMMUNICATION_ERROR,
+                    e.getMessage());
+        } catch (IllegalStateException e) {
+            logger.warn("Tedee transport unavailable for lock {}: {}", deviceId, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+        } finally {
+            synchronized (pendingCommands) {
+                pendingCommands.removeIf(ScheduledFuture::isDone);
+            }
         }
-    }    
+    }
 
     private void invalidatePendingCommands() {
-        commandGeneration++;
-
         synchronized (pendingCommands) {
+            commandGeneration++;
             pendingCommands.forEach(future -> future.cancel(false));
             pendingCommands.clear();
         }
@@ -401,9 +421,16 @@ public class TedeeLockHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
-        invalidatePendingCommands();
+        ScheduledFuture<?> currentJob = job;
+        if (currentJob != null) {
+            currentJob.cancel(true);
+            job = null;
+        }
 
-        transportProvider = null;
+        synchronized (pendingCommands) {
+            disposed = true;
+        }
+        invalidatePendingCommands();
 
         super.dispose();
     }

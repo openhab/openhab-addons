@@ -14,6 +14,8 @@
 package org.openhab.binding.tedee.internal.handler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
@@ -21,10 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tedee.internal.TedeeBindingConstants;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -102,58 +105,64 @@ public class TedeeWebhookServlet extends HttpServlet {
                 return;
             }
 
-            TedeeLockHandler handler = findLockHandler(deviceId);
-            if (handler == null) {
+            List<TedeeLockHandler> handlers = findLockHandlers(deviceId);
+            if (handlers.isEmpty()) {
                 logger.debug("No Tedee lock handler found for device {}", deviceId);
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return;
             }
 
-            switch (event) {
-                case "lock-status-changed" -> {
-                    int state = data.get("state").getAsInt();
-                    int jammed = data.get("jammed").getAsInt();
-                    int doorState = data.get("doorState").getAsInt();
-
-                    logger.debug("Processing lock-status webhook for lock {}: state={}, doorState={}, jammed={}",
-                            deviceId, state, doorState, jammed);
-                    handler.handleWebhook(state, doorState, jammed);
-                }
-                case "device-connection-changed" -> {
-                    int isConnected = data.get("isConnected").getAsInt();
-
-                    logger.debug("Processing connection webhook for lock {}: isConnected={}", deviceId, isConnected);
-                    handler.handleConnectionWebhook(isConnected);
-                }
-                case "device-battery-level-changed" -> {
-                    int batteryLevel = data.get("batteryLevel").getAsInt();
-
-                    logger.debug("Processing battery webhook for lock {}: batteryLevel={}", deviceId, batteryLevel);
-                    handler.handleBatteryWebhook(batteryLevel);
-                }
-                case "device-battery-start-charging" -> {
-                    logger.debug("Processing battery start-charging webhook for lock {}", deviceId);
-                    handler.handleChargingWebhook(true);
-                }
-                case "device-battery-stop-charging" -> {
-                    logger.debug("Processing battery stop-charging webhook for lock {}", deviceId);
-                    handler.handleChargingWebhook(false);
-                }
-                case "device-battery-fully-charged" -> {
-                    logger.debug("Processing battery fully-charged webhook for lock {}", deviceId);
-                    handler.handleChargingWebhook(false);
-                }
-                case "device-settings-changed" -> {
-                    logger.debug("Processing settings-changed webhook for lock {}", deviceId);
-                    handler.handleSettingsWebhook();
-                }
-                default -> throw new IllegalStateException("Unsupported Tedee webhook event: " + event);
+            for (TedeeLockHandler handler : handlers) {
+                processEvent(handler, event, data, deviceId);
             }
 
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         } catch (JsonParseException | IllegalStateException e) {
             logger.warn("Invalid Tedee webhook payload");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON payload");
+        }
+    }
+
+    private void processEvent(TedeeLockHandler handler, String event, JsonObject data, int deviceId) {
+        switch (event) {
+            case "lock-status-changed" -> {
+                int state = data.get("state").getAsInt();
+                int jammed = data.get("jammed").getAsInt();
+                int doorState = data.get("doorState").getAsInt();
+
+                logger.debug("Processing lock-status webhook for lock {}: state={}, doorState={}, jammed={}", deviceId,
+                        state, doorState, jammed);
+                handler.handleWebhook(state, doorState, jammed);
+            }
+            case "device-connection-changed" -> {
+                int isConnected = data.get("isConnected").getAsInt();
+
+                logger.debug("Processing connection webhook for lock {}: isConnected={}", deviceId, isConnected);
+                handler.handleConnectionWebhook(isConnected);
+            }
+            case "device-battery-level-changed" -> {
+                int batteryLevel = data.get("batteryLevel").getAsInt();
+
+                logger.debug("Processing battery webhook for lock {}: batteryLevel={}", deviceId, batteryLevel);
+                handler.handleBatteryWebhook(batteryLevel);
+            }
+            case "device-battery-start-charging" -> {
+                logger.debug("Processing battery start-charging webhook for lock {}", deviceId);
+                handler.handleChargingWebhook(true);
+            }
+            case "device-battery-stop-charging" -> {
+                logger.debug("Processing battery stop-charging webhook for lock {}", deviceId);
+                handler.handleChargingWebhook(false);
+            }
+            case "device-battery-fully-charged" -> {
+                logger.debug("Processing battery fully-charged webhook for lock {}", deviceId);
+                handler.handleChargingWebhook(false);
+            }
+            case "device-settings-changed" -> {
+                logger.debug("Processing settings-changed webhook for lock {}", deviceId);
+                handler.handleSettingsWebhook();
+            }
+            default -> throw new IllegalStateException("Unsupported Tedee webhook event: " + event);
         }
     }
 
@@ -186,9 +195,18 @@ public class TedeeWebhookServlet extends HttpServlet {
         return body.toString();
     }
 
-    private @Nullable TedeeLockHandler findLockHandler(int deviceId) {
+    private List<TedeeLockHandler> findLockHandlers(int deviceId) {
+        List<TedeeLockHandler> handlers = new ArrayList<>();
+
         for (Thing thing : thingRegistry.getAll()) {
             if (!TedeeBindingConstants.LOCK.equals(thing.getThingTypeUID())) {
+                continue;
+            }
+
+            ThingUID bridgeUID = thing.getBridgeUID();
+            Thing bridgeThing = bridgeUID == null ? null : thingRegistry.get(bridgeUID);
+            Bridge bridge = bridgeThing instanceof Bridge matchingBridge ? matchingBridge : null;
+            if (!(bridge != null && bridge.getHandler() instanceof TedeeBridgeHandler)) {
                 continue;
             }
 
@@ -198,10 +216,10 @@ public class TedeeWebhookServlet extends HttpServlet {
             }
 
             if (thing.getHandler() instanceof TedeeLockHandler handler) {
-                return handler;
+                handlers.add(handler);
             }
         }
 
-        return null;
+        return handlers;
     }
 }

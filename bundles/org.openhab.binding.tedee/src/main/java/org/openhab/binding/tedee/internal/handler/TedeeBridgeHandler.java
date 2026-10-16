@@ -60,7 +60,8 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
     private static final long CALLBACK_CHECK_INTERVAL_SECONDS = 300;
 
     private final HttpClient client;
-    private @Nullable TedeeApi api;
+    private volatile @Nullable TedeeApi api;
+    private volatile boolean disposed;
     private @Nullable ScheduledFuture<?> job;
     private @Nullable ScheduledFuture<?> callbackJob;
     private TedeeBridgeConfiguration cfg = new TedeeBridgeConfiguration();
@@ -93,6 +94,7 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
      */
     @Override
     public void initialize() {
+        disposed = false;
         cfg = getConfigAs(TedeeBridgeConfiguration.class);
         if (cfg.ip.isBlank() || cfg.apiToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -110,8 +112,8 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
 
         job = scheduler.scheduleWithFixedDelay(this::runHealthCheck, pollInterval, pollInterval, TimeUnit.SECONDS);
 
-        callbackJob = scheduler.scheduleWithFixedDelay(this::runCallbackCheck,
-                CALLBACK_CHECK_INTERVAL_SECONDS, CALLBACK_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        callbackJob = scheduler.scheduleWithFixedDelay(this::runCallbackCheck, CALLBACK_CHECK_INTERVAL_SECONDS,
+                CALLBACK_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
     private synchronized void runInitialChecks() {
@@ -133,7 +135,7 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         } catch (RuntimeException e) {
             logger.warn("Unexpected error while checking Tedee Bridge callback", e);
         }
-}
+    }
 
     /**
      * Indicates whether the bridge API is initialized and the bridge is online.
@@ -143,12 +145,13 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
      */
     @Override
     public boolean ready() {
-        return api != null && getThing().getStatus() == ThingStatus.ONLINE;
+        TedeeApi currentApi = api;
+        return !disposed && currentApi != null && getThing().getStatus() == ThingStatus.ONLINE;
     }
 
     private TedeeApi apiOrThrow() {
         TedeeApi currentApi = api;
-        if (currentApi == null) {
+        if (disposed || currentApi == null) {
             throw new IllegalStateException("Tedee API is not initialized");
         }
         return currentApi;
@@ -429,8 +432,10 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
      * Cancels the scheduled health checks and releases the API client reference
      * when the bridge handler is disposed.
      */
-   @Override
+    @Override
     public void dispose() {
+        disposed = true;
+
         ScheduledFuture<?> currentJob = job;
         if (currentJob != null) {
             currentJob.cancel(true);

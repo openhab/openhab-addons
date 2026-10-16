@@ -418,7 +418,7 @@ http://<BRIDGE-IP>/v1.0
 | `POST`   | `/v1.0/lock/{id}/lock`          | Lock                                                                       |
 | `POST`   | `/v1.0/lock/{id}/unlock`        | Unlock                                                                     |
 | `POST`   | `/v1.0/lock/{id}/pull`          | Pull spring                                                                |
-| `POST`   | `/v1.0/lock/{id}/unlock?mode=3` | Unlock without pull 													      |
+| `POST`   | `/v1.0/lock/{id}/unlock?mode=3` | Unlock without pull                                                        |
 | `POST`   | `/v1.0/lock/{id}/unlock?mode=4` | Decision whether unlock or pull action is performed, based on lockposition |
 | `GET`    | `/v1.0/callback`                | Read callbacks                                                             |
 | `POST`   | `/v1.0/callback`                | Register callback                                                          |

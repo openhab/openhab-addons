@@ -41,8 +41,6 @@ public class TedeeLock {
     public String serialNumber = "";
     public String version = "";
 
-
-
     public static class DeviceSettings {
         public @Nullable Integer autoLockEnabled;
         public @Nullable Integer autoLockDelay;
