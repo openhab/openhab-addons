@@ -13,9 +13,11 @@
 
 package org.openhab.binding.tedee.internal.handler;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,6 +50,9 @@ public class TedeeLockHandler extends BaseThingHandler {
     private TedeeLockConfiguration cfg = new TedeeLockConfiguration();
     private @Nullable ScheduledFuture<?> job;
     private final Logger logger = LoggerFactory.getLogger(TedeeLockHandler.class);
+    private final Set<ScheduledFuture<?>> pendingCommands = new HashSet<>();
+
+    private long commandGeneration;
 
     /**
      * Creates a handler for a Tedee lock.
@@ -358,14 +363,54 @@ public class TedeeLockHandler extends BaseThingHandler {
         };
     }
 
+
+    /**
+     * Queues a lock action while binding the action to the current device configuration.
+     *
+     * @param provider transport provider to use for the action
+     * @param deviceId device ID captured when the command was accepted
+     * @param action Tedee action to execute
+     */
+    private void queueAction(TedeeTransportProvider provider, int deviceId, String action) {
+        final long generation = commandGeneration;
+
+        ScheduledFuture<?> future = scheduler.schedule(() -> {
+            try {
+                if (generation != commandGeneration) {
+                    return;
+                }
+
+                executeAction(provider, deviceId, action);
+            } finally {
+                synchronized (pendingCommands) {
+                    pendingCommands.removeIf(ScheduledFuture::isDone);
+                }
+            }
+        }, 0, TimeUnit.SECONDS);
+
+        synchronized (pendingCommands) {
+            pendingCommands.add(future);
+        }
+    }    
+
+    private void invalidatePendingCommands() {
+        commandGeneration++;
+
+        synchronized (pendingCommands) {
+            pendingCommands.forEach(future -> future.cancel(false));
+            pendingCommands.clear();
+        }
+    }
+
     /**
      * Stops scheduled polling and releases the resources associated with this handler.
      */
+    @Override
     public void dispose() {
-        ScheduledFuture<?> currentJob = job;
-        if (currentJob != null) {
-            currentJob.cancel(true);
-        }
+        invalidatePendingCommands();
+
+        transportProvider = null;
+
         super.dispose();
     }
 }
