@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,6 +43,8 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class TedeeApi implements TedeeClient {
+    private static final int REQUEST_TIMEOUT_SECONDS = 10;
+
     private final HttpClient client;
     private final Gson gson = new Gson();
     private final String base, token;
@@ -53,7 +56,7 @@ public class TedeeApi implements TedeeClient {
     }
 
     public TedeeLock getLock(int id) throws TedeeApiException {
-        ContentResponse r = execute(client.newRequest(base + "/lock/" + id).method(HttpMethod.GET));
+        ContentResponse r = execute(newRequest("/lock/" + id, HttpMethod.GET));
         if (r.getStatus() != 200) {
             throw error(r);
         }
@@ -67,7 +70,7 @@ public class TedeeApi implements TedeeClient {
     }
 
     public List<TedeeLock> getLocks() throws TedeeApiException {
-        ContentResponse r = execute(client.newRequest(base + "/lock").method(HttpMethod.GET));
+        ContentResponse r = execute(newRequest("/lock", HttpMethod.GET));
         if (r.getStatus() != 200) {
             throw error(r);
         }
@@ -114,7 +117,7 @@ public class TedeeApi implements TedeeClient {
     }
 
     public int bridgeStatus() throws TedeeApiException {
-        return execute(client.newRequest(base + "/bridge").method(HttpMethod.GET)).getStatus();
+        return execute(newRequest("/bridge", HttpMethod.GET)).getStatus();
     }
 
     public void lock(int id) throws TedeeApiException {
@@ -138,7 +141,7 @@ public class TedeeApi implements TedeeClient {
     }
 
     public String getCallbacks() throws TedeeApiException {
-        ContentResponse r = execute(client.newRequest(base + "/callback").method(HttpMethod.GET));
+        ContentResponse r = execute(newRequest("/callback", HttpMethod.GET));
         if (r.getStatus() != 200) {
             throw error(r);
         }
@@ -151,8 +154,7 @@ public class TedeeApi implements TedeeClient {
         callback.addProperty("method", "POST");
         callback.add("headers", new JsonArray());
 
-        Request request = client.newRequest(base + "/callback").method(HttpMethod.POST).header("Content-Type",
-                "application/json");
+        Request request = newRequest("/callback", HttpMethod.POST).header("Content-Type", "application/json");
 
         request.content(new StringContentProvider("application/json", callback.toString(), StandardCharsets.UTF_8));
 
@@ -166,7 +168,7 @@ public class TedeeApi implements TedeeClient {
     }
 
     public void deleteCallback(String callbackId) throws TedeeApiException {
-        Request request = client.newRequest(base + "/callback/" + callbackId).method(HttpMethod.DELETE);
+        Request request = newRequest("/callback/" + callbackId, HttpMethod.DELETE);
         ContentResponse response = execute(request);
 
         if (response.getStatus() < 200 || response.getStatus() >= 300) {
@@ -175,12 +177,16 @@ public class TedeeApi implements TedeeClient {
     }
 
     private void post(String p) throws TedeeApiException {
-        Request q = client.newRequest(base + p).method(HttpMethod.POST);
+        Request q = newRequest(p, HttpMethod.POST);
         q.header("Content-Length", "0");
         ContentResponse r = execute(q);
         if (r.getStatus() != 204) {
             throw error(r);
         }
+    }
+
+    private Request newRequest(String path, HttpMethod method) {
+        return client.newRequest(base + path).method(method).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     private ContentResponse execute(Request q) throws TedeeApiException {

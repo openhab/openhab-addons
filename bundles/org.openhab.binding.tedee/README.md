@@ -10,7 +10,7 @@ Cloud access is available as an optional alternative and can be used without a l
 Tedee also requires the Bridge itself to have internet connectivity so that it can obtain and refresh access certificates for paired devices.
 
 Cloud or local bridges control their assigned lock devices.
-Cloud and local bridge an operate on the same locks simultaneously.
+Cloud and local bridge can operate on the same locks simultaneously.
 
 ## Supported Things
 
@@ -370,7 +370,7 @@ Example payload received from a real Tedee Bridge:
   "data": {
     "deviceType": 2,
     "deviceId": XXX,
-    "serialNumber": "21180201-000004",
+    "serialNumber": "XXXXXXX-000004",
     "state": 4,
     "jammed": 0,
     "source": 18,

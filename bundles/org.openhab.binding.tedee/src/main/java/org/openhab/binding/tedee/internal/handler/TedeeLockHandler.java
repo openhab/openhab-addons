@@ -380,6 +380,13 @@ public class TedeeLockHandler extends BaseThingHandler {
                 return;
             }
 
+            synchronized (pendingCommands) {
+                if (disposed || generation != commandGeneration) {
+                    logger.debug("Ignoring stale Tedee action '{}' for lock {}", action, deviceId);
+                    return;
+                }
+            }
+
             logger.debug("Sending Tedee action '{}' to lock {}", action, deviceId);
 
             executeAction(provider, deviceId, action);

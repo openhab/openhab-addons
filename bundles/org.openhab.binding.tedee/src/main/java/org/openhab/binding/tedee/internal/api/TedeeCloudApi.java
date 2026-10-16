@@ -60,7 +60,7 @@ public class TedeeCloudApi implements TedeeClient {
     private static final String JSON_CONTENT_TYPE = MimeTypes.Type.APPLICATION_JSON.asString();
     private static final String JSON_PATCH_CONTENT_TYPE = "application/json-patch+json";
     private static final String EMPTY_CONTENT_LENGTH = "0";
-    private static final int GET_LOCKS_TIMEOUT_SECONDS = 10;
+    private static final int REQUEST_TIMEOUT_SECONDS = 10;
 
     private final HttpClient client;
 
@@ -94,8 +94,7 @@ public class TedeeCloudApi implements TedeeClient {
         final int itemsPerPage = 100;
         while (true) {
             String url = ITEMS_PER_PAGE_PATH + itemsPerPage + PAGE_PARAMETER + page;
-            Request request = client.newRequest(url).timeout(GET_LOCKS_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                    .method(HttpMethod.GET);
+            Request request = client.newRequest(url).method(HttpMethod.GET);
             ContentResponse response = execute(request);
             if (response.getStatus() != HttpStatus.OK_200) {
                 throw error(response);
@@ -162,7 +161,7 @@ public class TedeeCloudApi implements TedeeClient {
         request.header(HttpHeader.AUTHORIZATION, PERSONAL_KEY_AUTHORIZATION_SCHEME + " " + personalAccessKey);
         request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
         try {
-            return request.send();
+            return request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new TedeeApiException("Interrupted", HttpStatus.REQUEST_TIMEOUT_408, e);
