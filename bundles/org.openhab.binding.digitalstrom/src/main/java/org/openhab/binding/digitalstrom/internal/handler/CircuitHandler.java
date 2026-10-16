@@ -134,7 +134,7 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
             if (dSID != null) {
                 if (getDssBridgeHandler() != null) {
                     if (circuit == null) {
-                        updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "waiting for listener registration");
+                        updateStatus(ThingStatus.UNKNOWN);
                         dssBridgeHandler.registerDeviceStatusListener(this);
                     } else {
                         updateStatus(ThingStatus.ONLINE);

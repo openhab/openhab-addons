@@ -201,7 +201,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
                 updateStatus(ThingStatus.OFFLINE);
                 break;
             case init:
-                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING);
+                updateStatus(ThingStatus.UNKNOWN);
                 break;
             case lost:
                 updateStatus(ThingStatusDetail.GONE, "Device did not send heartbeat in time");

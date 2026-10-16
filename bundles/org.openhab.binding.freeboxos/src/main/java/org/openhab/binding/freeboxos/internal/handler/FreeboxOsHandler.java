@@ -71,7 +71,7 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
             try {
                 session.initialize(config);
                 if (config.appToken.isBlank()) {
-                    updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "@text/info-conf-pending");
+                    updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/info-conf-pending");
                     grantingJob = Optional.of(scheduler.schedule(this::processGranting, 2, TimeUnit.SECONDS));
                     return;
                 } else {
