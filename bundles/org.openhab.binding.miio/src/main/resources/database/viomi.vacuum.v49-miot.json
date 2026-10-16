@@ -44,7 +44,7 @@
 						},
 						{
 							"value": "start-zone-clean",
-							"label": "Resume zone cleaning"
+							"label": "Start or resume zone cleaning"
 						},
 						{
 							"value": "pause-zone-clean",
@@ -507,7 +507,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "The Mi Home app has no separate stop: pause the cleaning and send the robot to the dock. Start sends the room cleaning command of the app without rooms (whole area). Zone and point cleaning: use the channels `zone-clean` and `spot-clean` to start, the options here pause or resume them. Not available (several values or structured data needed): saved map selection, map rename or delete, room split, merge and rename, virtual walls, room settings, schedules and voice pack download. Value mapping `[\"start-sweep\"\u003d\"Start or resume cleaning\",\"start-sweep-walls\"\u003d\"Start cleaning along walls\",\"pause\"\u003d\"Pause cleaning\",\"start-charge\"\u003d\"Return to dock\",\"stop-charge\"\u003d\"Stop returning to dock\",\"find-device\"\u003d\"Locate the robot\",\"pause-point-clean\"\u003d\"Pause point cleaning\",\"start-zone-clean\"\u003d\"Resume zone cleaning\",\"pause-zone-clean\"\u003d\"Pause zone cleaning\",\"wash-mop\"\u003d\"Wash the mop\",\"dry-mop\"\u003d\"Start drying the mop\",\"stop-wash-dry\"\u003d\"Stop mop washing or drying\",\"dust-collection\"\u003d\"Empty the dust box\",\"reset-main-brush\"\u003d\"Reset main brush life\",\"reset-side-brush\"\u003d\"Reset side brush life\",\"reset-dust-filter\"\u003d\"Reset dust box filter life\",\"reset-mop\"\u003d\"Reset mop life\",\"build-map\"\u003d\"Start quick mapping\",\"reset-map\"\u003d\"Reset the saved map\",\"set-calibration\"\u003d\"Level the robot\"]`"
+				"readmeComment": "The Mi Home app has no separate stop: pause the cleaning and send the robot to the dock. Start sends the room cleaning command of the app without rooms (whole area). Zone cleaning: set the zone with the channel `set-zone`, then start it here. Point cleaning: start it with the channel `spot-clean`. The options here pause or resume zone and point cleaning. Not available (several values or structured data needed): saved map selection, map rename or delete, room split, merge and rename, virtual walls, room settings, schedules and voice pack download. Value mapping `[\"start-sweep\"\u003d\"Start or resume cleaning\",\"start-sweep-walls\"\u003d\"Start cleaning along walls\",\"pause\"\u003d\"Pause cleaning\",\"start-charge\"\u003d\"Return to dock\",\"stop-charge\"\u003d\"Stop returning to dock\",\"find-device\"\u003d\"Locate the robot\",\"pause-point-clean\"\u003d\"Pause point cleaning\",\"start-zone-clean\"\u003d\"Start or resume zone cleaning\",\"pause-zone-clean\"\u003d\"Pause zone cleaning\",\"wash-mop\"\u003d\"Wash the mop\",\"dry-mop\"\u003d\"Start drying the mop\",\"stop-wash-dry\"\u003d\"Stop mop washing or drying\",\"dust-collection\"\u003d\"Empty the dust box\",\"reset-main-brush\"\u003d\"Reset main brush life\",\"reset-side-brush\"\u003d\"Reset side brush life\",\"reset-dust-filter\"\u003d\"Reset dust box filter life\",\"reset-mop\"\u003d\"Reset mop life\",\"build-map\"\u003d\"Start quick mapping\",\"reset-map\"\u003d\"Reset the saved map\",\"set-calibration\"\u003d\"Level the robot\"]`"
 			},
 			{
 				"property": "",
@@ -571,8 +571,8 @@
 			},
 			{
 				"property": "",
-				"friendlyName": "Clean zone",
-				"channel": "zone-clean",
+				"friendlyName": "Set cleaning zone",
+				"channel": "set-zone",
 				"type": "String",
 				"refresh": false,
 				"actions": [
@@ -587,19 +587,13 @@
 								"value": "$value$"
 							}
 						]
-					},
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 9,
-						"aiid": 3
 					}
 				],
 				"category": "cleaningrobot",
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Sets the zone and starts zone cleaning. The zone are eight comma separated map coordinates (four corner points) `x1,y1,x2,y2,x3,y3,x4,y4`, as sent by the Mi Home app."
+				"readmeComment": "Sets the zone to clean as eight comma separated map coordinates (four corner points) `x1,y1,x2,y2,x3,y3,x4,y4`, as sent by the Mi Home app. Start the cleaning with `start-zone-clean` of the `vacuumaction` channel."
 			},
 			{
 				"property": "",
