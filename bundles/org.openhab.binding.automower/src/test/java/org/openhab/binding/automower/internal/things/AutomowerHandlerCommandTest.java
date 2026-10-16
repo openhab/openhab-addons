@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -27,6 +28,7 @@ import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*
 
 import java.lang.reflect.Method;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,6 +53,86 @@ import org.openhab.core.types.RefreshType;
 
 @SuppressWarnings("all")
 class AutomowerHandlerCommandTest {
+    @Test
+    void mowerCmCommandsConvertCompatibleUnitsAndNumbers() {
+        AutomowerHandler handler = configuredCmHandler();
+        doNothing().when(handler).sendAutomowerSettingsCuttingHeight((byte) 3);
+        for (var command : List.of(QuantityType.valueOf("4.5 cm"), QuantityType.valueOf("45 mm"),
+                new DecimalType("4.5"))) {
+            handler.handleCommand(channel(CHANNEL_SETTING_CUTTING_HEIGHT_CM), command);
+        }
+        verify(handler, times(3)).sendAutomowerSettingsCuttingHeight((byte) 3);
+    }
+
+    @Test
+    void mowerCmCommandsRejectInvalidValuesAndMissingConfiguration() {
+        AutomowerHandler handler = configuredCmHandler();
+        handler.handleCommand(channel(CHANNEL_SETTING_CUTTING_HEIGHT_CM), QuantityType.valueOf("9 cm"));
+        handler.handleCommand(channel(CHANNEL_SETTING_CUTTING_HEIGHT_CM), QuantityType.valueOf("4.5 s"));
+        doReturn(null).when(handler).getMaxCuttingHeightCm();
+        handler.handleCommand(channel(CHANNEL_SETTING_CUTTING_HEIGHT_CM), new DecimalType("4.5"));
+        verify(handler, never()).sendAutomowerSettingsCuttingHeight(org.mockito.ArgumentMatchers.anyByte());
+    }
+
+    @Test
+    void workAreaCmCommandsConvertCompatibleUnitsAndNumbers() {
+        AutomowerHandler mower = configuredCmHandler();
+        doNothing().when(mower).sendAutomowerWorkAreaCuttingHeight("17746", (byte) 30);
+        AutomowerWorkAreaHandler handler = createWorkAreaHandler(mower);
+        for (var command : List.of(QuantityType.valueOf("4.5 cm"), QuantityType.valueOf("45 mm"),
+                new DecimalType("4.5"))) {
+            handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_WORKAREA_CUTTING_HEIGHT_CM),
+                    command);
+        }
+        verify(mower, times(3)).sendAutomowerWorkAreaCuttingHeight("17746", (byte) 30);
+        doNothing().when(mower).sendAutomowerWorkAreaCuttingHeight("17746", (byte) 0);
+        doNothing().when(mower).sendAutomowerWorkAreaCuttingHeight("17746", (byte) 100);
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_WORKAREA_CUTTING_HEIGHT_CM),
+                new DecimalType(3));
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_WORKAREA_CUTTING_HEIGHT_CM),
+                new DecimalType(8));
+        verify(mower).sendAutomowerWorkAreaCuttingHeight("17746", (byte) 0);
+        verify(mower).sendAutomowerWorkAreaCuttingHeight("17746", (byte) 100);
+    }
+
+    @Test
+    void workAreaCmCommandsRejectInvalidValuesAndMissingConfiguration() {
+        AutomowerHandler mower = configuredCmHandler();
+        AutomowerWorkAreaHandler handler = createWorkAreaHandler(mower);
+        ChannelUID channel = new ChannelUID(handler.getThing().getUID(), CHANNEL_WORKAREA_CUTTING_HEIGHT_CM);
+        handler.handleCommand(channel, QuantityType.valueOf("2 cm"));
+        handler.handleCommand(channel, QuantityType.valueOf("4.5 s"));
+        doReturn(3.0).when(mower).getMaxCuttingHeightCm();
+        handler.handleCommand(channel, new DecimalType("4.5"));
+        doReturn(null).when(mower).getMaxCuttingHeightCm();
+        handler.handleCommand(channel, new DecimalType("4.5"));
+        verify(mower, never()).sendAutomowerWorkAreaCuttingHeight(org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyByte());
+    }
+
+    private AutomowerHandler configuredCmHandler() {
+        AutomowerHandler handler = spy(createHandler());
+        doReturn(3.0).when(handler).getMinCuttingHeightCm();
+        doReturn(8.0).when(handler).getMaxCuttingHeightCm();
+        return handler;
+    }
+
+    private AutomowerWorkAreaHandler createWorkAreaHandler(AutomowerHandler mower) {
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID("automower:work-area:bridge-1:mower-1-17746"));
+        ThingUID bridgeUID = new ThingUID("automower:bridge:bridge-1");
+        when(thing.getBridgeUID()).thenReturn(bridgeUID);
+        Bridge bridge = mock(Bridge.class);
+        AutomowerBridgeHandler bridgeHandler = mock(AutomowerBridgeHandler.class);
+        when(bridge.getHandler()).thenReturn(bridgeHandler);
+        when(bridgeHandler.getAutomowerHandlerByMowerId("mower-1")).thenReturn(mower);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        when(callback.getBridge(bridgeUID)).thenReturn(bridge);
+        AutomowerWorkAreaHandler handler = new AutomowerWorkAreaHandler(thing);
+        handler.setCallback(callback);
+        return handler;
+    }
+
     @Test
     void disposeDoesNotWaitForScheduledRefreshPoll() throws Exception {
         AutomowerHandler handler = createHandler();
