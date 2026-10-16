@@ -351,8 +351,9 @@ public class TedeeLockHandler extends BaseThingHandler {
     private static String door(int s) {
         return switch (s) {
             case 0 -> "NOT_PAIRED";
-            case 1 -> "CLOSED";
+            case 1 -> "UNKNOWN"; // Disconnected
             case 2 -> "OPEN";
+            case 3 -> "CLOSED";
             default -> "UNKNOWN";
         };
     }
