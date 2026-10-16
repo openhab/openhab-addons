@@ -49,6 +49,12 @@ Export-Package:
 	bnd.identity;id='biz.aQute.tester.junit-platform',\
 	bnd.identity;id='junit-jupiter-engine'
 
+# The pax-web fragment re-exports jakarta.servlet-api 6.1 as 4.0/5.0/6.0 and provides the JakartaServlet/JavaServlet
+# contracts (as in the Karaf distro). Where only optional imports (e.g. logback) would use it, the resolver may or may
+# not pick it depending on the environment, so require it explicitly to get the same -runbundles everywhere.
+-runrequires.servlet: \
+	bnd.identity;id='org.ops4j.pax.web.pax-web-compatibility-servlet'
+
 -runproperties: \
 	org.ops4j.pax.logging.DefaultServiceLog.level=WARN,\
 	org.osgi.framework.bootdelegation="jdk.internal.access,jdk.internal.module,org.mockito.internal.creation.bytebuddy.inject"
