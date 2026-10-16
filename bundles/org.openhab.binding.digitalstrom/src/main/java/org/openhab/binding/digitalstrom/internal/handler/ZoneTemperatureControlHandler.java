@@ -174,7 +174,7 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
             if (zoneID != null) {
                 if (getDssBridgeHandler() != null && temperatureSensorTransmitter == null) {
                     dssBridgeHandler.registerTemperatureControlStatusListener(this);
-                    updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "waiting for listener registration");
+                    updateStatus(ThingStatus.UNKNOWN);
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }

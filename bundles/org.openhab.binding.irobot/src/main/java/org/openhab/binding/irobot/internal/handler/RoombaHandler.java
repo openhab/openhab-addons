@@ -358,8 +358,7 @@ public class RoombaHandler extends BaseThingHandler {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
             scheduler.execute(this::getCredentials);
         } else {
-            final String message = "Robot authentication is successful";
-            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, message);
+            updateStatus(ThingStatus.UNKNOWN);
             connection.connect(address, blid, password);
         }
     }

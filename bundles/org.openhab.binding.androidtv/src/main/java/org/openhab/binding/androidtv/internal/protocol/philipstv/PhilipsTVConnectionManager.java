@@ -381,8 +381,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         String password = this.password;
 
         if ((username.isEmpty()) || (password.isEmpty())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "offline.pairing-is-not-configured-yet");
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "offline.pairing-is-not-configured-yet");
             return;
         }
 
@@ -513,7 +512,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             } else {
                 pairing.finishPairingWithTv(pincode, this, target);
             }
-            postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                     "offline.authentication-with-philips-tv-device-was-successful-continuing-initialization-of-the-tv");
         } catch (Exception e) {
             postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.AUTHORIZATION_PENDING,

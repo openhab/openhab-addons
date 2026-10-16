@@ -499,7 +499,7 @@ public class PS4Handler extends BaseThingHandler {
                             }
                             break;
                         case STATUS_NOT_PAIRED:
-                            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, status.message);
+                            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, status.message);
                             loggedIn = false;
                             break;
                         case STATUS_MISSING_PAIRING_CODE:
