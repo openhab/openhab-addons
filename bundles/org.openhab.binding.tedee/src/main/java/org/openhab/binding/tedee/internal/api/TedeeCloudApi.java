@@ -32,6 +32,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonNull;
 
 /**
  *
@@ -189,25 +190,30 @@ public class TedeeCloudApi implements TedeeClient {
         local.addProperty("id", intValue(source, "id", 0));
         local.addProperty("name", stringValue(source, "name", ""));
         local.addProperty("serialNumber", stringValue(source, "serialNumber", ""));
-        local.addProperty("isConnected", booleanAsInt(source, "isConnected"));
+        addNullableProperty(local, "isConnected", nullableBooleanAsInt(source, "isConnected"));
         local.addProperty("rssi", 0);
         local.addProperty("deviceRevision", intValue(source, "deviceRevision", 0));
         local.addProperty("version", softwareVersion(source));
+
         JsonElement deviceStateElement = source.get("deviceState");
         if (deviceStateElement != null && deviceStateElement.isJsonObject()) {
             JsonObject deviceState = deviceStateElement.getAsJsonObject();
+
             local.addProperty("state", intValue(deviceState, "state", 9));
-            local.addProperty("doorState", cloudDoorState(deviceState));
-            local.addProperty("batteryLevel", intValue(deviceState, "batteryLevel", 0));
-            local.addProperty("isCharging", booleanAsInt(deviceState, "isCharging"));
+            addNullableProperty(local, "doorState", nullableIntValue(deviceState, "doorState"));
+            addNullableProperty(local, "batteryLevel", nullableIntValue(deviceState, "batteryLevel"));
+            addNullableProperty(local, "isCharging", nullableBooleanAsInt(deviceState, "isCharging"));
         } else {
             local.addProperty("state", 9);
-            local.addProperty("doorState", 0);
-            local.addProperty("batteryLevel", 0);
-            local.addProperty("isCharging", 0);
+            local.add("doorState", JsonNull.INSTANCE);
+            local.add("batteryLevel", JsonNull.INSTANCE);
+            local.add("isCharging", JsonNull.INSTANCE);
         }
-        local.addProperty("jammed", 0);
+
+        // The cloud response does not provide the jammed state.
+        local.add("jammed", JsonNull.INSTANCE);
         local.add("deviceSettings", deviceSettings(source));
+
         TedeeLock lock = gson.fromJson(local, TedeeLock.class);
         if (lock == null) {
             throw new TedeeApiException("Invalid Tedee Cloud lock model", HttpStatus.INTERNAL_SERVER_ERROR_500);
@@ -220,18 +226,22 @@ public class TedeeCloudApi implements TedeeClient {
         JsonObject settings = settingsElement != null && settingsElement.isJsonObject()
                 ? settingsElement.getAsJsonObject()
                 : new JsonObject();
+
         JsonObject result = new JsonObject();
-        result.addProperty("autoLockEnabled", booleanAsInt(settings, "autoLockEnabled"));
-        result.addProperty("autoLockDelay", intValue(settings, "autoLockDelay", 0));
-        result.addProperty("autoLockImplicitEnabled", booleanAsInt(settings, "autoLockImplicitEnabled"));
-        result.addProperty("autoLockImplicitDelay", intValue(settings, "autoLockImplicitDelay", 0));
-        result.addProperty("pullSpringEnabled", booleanAsInt(settings, "pullSpringEnabled"));
-        result.addProperty("pullSpringDuration", intValue(settings, "pullSpringDuration", 0));
-        result.addProperty("autoPullSpringEnabled", booleanAsInt(settings, "autoPullSpringEnabled"));
-        result.addProperty("postponedLockEnabled", booleanAsInt(settings, "postponedLockEnabled"));
-        result.addProperty("postponedLockDelay", intValue(settings, "postponedLockDelay", 0));
-        result.addProperty("buttonLockEnabled", booleanAsInt(settings, "buttonLockEnabled"));
-        result.addProperty("buttonUnlockEnabled", booleanAsInt(settings, "buttonUnlockEnabled"));
+
+        addNullableProperty(result, "autoLockEnabled", nullableBooleanAsInt(settings, "autoLockEnabled"));
+        addNullableProperty(result, "autoLockDelay", nullableIntValue(settings, "autoLockDelay"));
+        addNullableProperty(result, "autoLockImplicitEnabled",
+                nullableBooleanAsInt(settings, "autoLockImplicitEnabled"));
+        addNullableProperty(result, "autoLockImplicitDelay", nullableIntValue(settings, "autoLockImplicitDelay"));
+        addNullableProperty(result, "pullSpringEnabled", nullableBooleanAsInt(settings, "pullSpringEnabled"));
+        addNullableProperty(result, "pullSpringDuration", nullableIntValue(settings, "pullSpringDuration"));
+        addNullableProperty(result, "autoPullSpringEnabled", nullableBooleanAsInt(settings, "autoPullSpringEnabled"));
+        addNullableProperty(result, "postponedLockEnabled", nullableBooleanAsInt(settings, "postponedLockEnabled"));
+        addNullableProperty(result, "postponedLockDelay", nullableIntValue(settings, "postponedLockDelay"));
+        addNullableProperty(result, "buttonLockEnabled", nullableBooleanAsInt(settings, "buttonLockEnabled"));
+        addNullableProperty(result, "buttonUnlockEnabled", nullableBooleanAsInt(settings, "buttonUnlockEnabled"));
+
         return result;
     }
 
@@ -244,15 +254,28 @@ public class TedeeCloudApi implements TedeeClient {
         };
     }
 
-    private static int booleanAsInt(JsonObject object, String name) {
+    private static @Nullable Integer nullableBooleanAsInt(JsonObject object, String name) {
         JsonElement value = object.get(name);
         if (value == null || value.isJsonNull()) {
-            return 0;
+            return null;
         }
         if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean()) {
             return value.getAsBoolean() ? 1 : 0;
         }
         return value.getAsInt() != 0 ? 1 : 0;
+    }
+
+    private static @Nullable Integer nullableIntValue(JsonObject object, String name) {
+        JsonElement value = object.get(name);
+        return value != null && !value.isJsonNull() ? value.getAsInt() : null;
+    }
+
+    private static void addNullableProperty(JsonObject target, String name, @Nullable Integer value) {
+        if (value == null) {
+            target.add(name, JsonNull.INSTANCE);
+        } else {
+            target.addProperty(name, value.intValue());
+        }
     }
 
     private static int intValue(JsonObject object, String name, int defaultValue) {

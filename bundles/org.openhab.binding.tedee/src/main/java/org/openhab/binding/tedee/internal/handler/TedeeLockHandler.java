@@ -170,49 +170,77 @@ public class TedeeLockHandler extends BaseThingHandler {
                     cfg.deviceId, l.state, l.doorState, l.batteryLevel, l.isCharging, l.jammed, l.isConnected,
                     l.version);
 
-            if (l.state == 6) {
-                updateState(TedeeBindingConstants.C_LOCK, OnOffType.ON);
-            } else if (l.state == 2) {
-                updateState(TedeeBindingConstants.C_LOCK, OnOffType.OFF);
-            }
+                if (l.state == 6) {
+                    updateState(TedeeBindingConstants.C_LOCK, OnOffType.ON);
+                } else if (l.state == 2) {
+                    updateState(TedeeBindingConstants.C_LOCK, OnOffType.OFF);
+                }
 
-            updateState(TedeeBindingConstants.C_STATE, new StringType(state(l.state)));
-            updateState(TedeeBindingConstants.C_DOOR, new StringType(door(l.doorState)));
-            updateState(TedeeBindingConstants.C_BATTERY, new DecimalType(l.batteryLevel));
-            updateState(TedeeBindingConstants.C_CHARGING, OnOffType.from(l.isCharging != 0));
-            updateState(TedeeBindingConstants.C_JAMMED, OnOffType.from(l.jammed != 0));
-            updateState(TedeeBindingConstants.C_CONNECTED, OnOffType.from(l.isConnected != 0));
-            updateState(TedeeBindingConstants.C_AUTO_LOCK_ENABLED,
-                    OnOffType.from(l.deviceSettings.autoLockEnabled != 0));
+                updateState(TedeeBindingConstants.C_STATE, new StringType(state(l.state)));
 
-            updateState(TedeeBindingConstants.C_AUTO_LOCK_DELAY, new DecimalType(l.deviceSettings.autoLockDelay));
+                if (l.doorState != null) {
+                    updateState(TedeeBindingConstants.C_DOOR, new StringType(door(l.doorState.intValue())));
+                }
+                if (l.batteryLevel != null) {
+                    updateState(TedeeBindingConstants.C_BATTERY, new DecimalType(l.batteryLevel.intValue()));
+                }
+                if (l.isCharging != null) {
+                    updateState(TedeeBindingConstants.C_CHARGING, OnOffType.from(l.isCharging != 0));
+                }
+                if (l.jammed != null) {
+                    updateState(TedeeBindingConstants.C_JAMMED, OnOffType.from(l.jammed != 0));
+                }
+                if (l.isConnected != null) {
+                    updateState(TedeeBindingConstants.C_CONNECTED, OnOffType.from(l.isConnected != 0));
+                }
 
-            updateState(TedeeBindingConstants.C_AUTO_LOCK_IMPLICIT_ENABLED,
-                    OnOffType.from(l.deviceSettings.autoLockImplicitEnabled != 0));
-
-            updateState(TedeeBindingConstants.C_AUTO_LOCK_IMPLICIT_DELAY,
-                    new DecimalType(l.deviceSettings.autoLockImplicitDelay));
-
-            updateState(TedeeBindingConstants.C_PULL_SPRING_ENABLED,
-                    OnOffType.from(l.deviceSettings.pullSpringEnabled != 0));
-
-            updateState(TedeeBindingConstants.C_PULL_SPRING_DURATION,
-                    new DecimalType(l.deviceSettings.pullSpringDuration));
-
-            updateState(TedeeBindingConstants.C_AUTO_PULL_SPRING_ENABLED,
-                    OnOffType.from(l.deviceSettings.autoPullSpringEnabled != 0));
-
-            updateState(TedeeBindingConstants.C_POSTPONED_LOCK_ENABLED,
-                    OnOffType.from(l.deviceSettings.postponedLockEnabled != 0));
-
-            updateState(TedeeBindingConstants.C_POSTPONED_LOCK_DELAY,
-                    new DecimalType(l.deviceSettings.postponedLockDelay));
-
-            updateState(TedeeBindingConstants.C_BUTTON_LOCK_ENABLED,
-                    OnOffType.from(l.deviceSettings.buttonLockEnabled != 0));
-
-            updateState(TedeeBindingConstants.C_BUTTON_UNLOCK_ENABLED,
-                    OnOffType.from(l.deviceSettings.buttonUnlockEnabled != 0));
+                TedeeLock.DeviceSettings settings = l.deviceSettings;
+                if (settings != null) {
+                    if (settings.autoLockEnabled != null) {
+                        updateState(TedeeBindingConstants.C_AUTO_LOCK_ENABLED,
+                                OnOffType.from(settings.autoLockEnabled != 0));
+                    }
+                    if (settings.autoLockDelay != null) {
+                        updateState(TedeeBindingConstants.C_AUTO_LOCK_DELAY,
+                                new DecimalType(settings.autoLockDelay.intValue()));
+                    }
+                    if (settings.autoLockImplicitEnabled != null) {
+                        updateState(TedeeBindingConstants.C_AUTO_LOCK_IMPLICIT_ENABLED,
+                                OnOffType.from(settings.autoLockImplicitEnabled != 0));
+                    }
+                    if (settings.autoLockImplicitDelay != null) {
+                        updateState(TedeeBindingConstants.C_AUTO_LOCK_IMPLICIT_DELAY,
+                                new DecimalType(settings.autoLockImplicitDelay.intValue()));
+                    }
+                    if (settings.pullSpringEnabled != null) {
+                        updateState(TedeeBindingConstants.C_PULL_SPRING_ENABLED,
+                                OnOffType.from(settings.pullSpringEnabled != 0));
+                    }
+                    if (settings.pullSpringDuration != null) {
+                        updateState(TedeeBindingConstants.C_PULL_SPRING_DURATION,
+                                new DecimalType(settings.pullSpringDuration.intValue()));
+                    }
+                    if (settings.autoPullSpringEnabled != null) {
+                        updateState(TedeeBindingConstants.C_AUTO_PULL_SPRING_ENABLED,
+                                OnOffType.from(settings.autoPullSpringEnabled != 0));
+                    }
+                    if (settings.postponedLockEnabled != null) {
+                        updateState(TedeeBindingConstants.C_POSTPONED_LOCK_ENABLED,
+                                OnOffType.from(settings.postponedLockEnabled != 0));
+                    }
+                    if (settings.postponedLockDelay != null) {
+                        updateState(TedeeBindingConstants.C_POSTPONED_LOCK_DELAY,
+                                new DecimalType(settings.postponedLockDelay.intValue()));
+                    }
+                    if (settings.buttonLockEnabled != null) {
+                        updateState(TedeeBindingConstants.C_BUTTON_LOCK_ENABLED,
+                                OnOffType.from(settings.buttonLockEnabled != 0));
+                    }
+                    if (settings.buttonUnlockEnabled != null) {
+                        updateState(TedeeBindingConstants.C_BUTTON_UNLOCK_ENABLED,
+                                OnOffType.from(settings.buttonUnlockEnabled != 0));
+                    }
+                }
 
             updateProperty("name", l.name);
             updateProperty("serialNumber", l.serialNumber);

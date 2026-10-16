@@ -14,6 +14,8 @@
 package org.openhab.binding.tedee.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tedee.internal.api.TedeeLock.DeviceSettings;
 
 /**
  * 
@@ -25,32 +27,33 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TedeeLock {
     public int type;
     public int id;
-    public int isConnected;
+    public @Nullable Integer isConnected;
+    public @Nullable Integer jammed;
+    public @Nullable Integer doorState;
+    public @Nullable Integer batteryLevel;
+    public @Nullable Integer isCharging;
+    public @Nullable DeviceSettings deviceSettings = new DeviceSettings();
     public int rssi;
     public int deviceRevision;
     public int state;
-    public int jammed;
-    public int doorState;
-    public int batteryLevel;
-    public int isCharging;
 
     public String name = "";
     public String serialNumber = "";
     public String version = "";
 
-    public DeviceSettings deviceSettings = new DeviceSettings();
+
 
     public static class DeviceSettings {
-        public int autoLockEnabled;
-        public int autoLockDelay;
-        public int autoLockImplicitEnabled;
-        public int autoLockImplicitDelay;
-        public int pullSpringEnabled;
-        public int pullSpringDuration;
-        public int autoPullSpringEnabled;
-        public int postponedLockEnabled;
-        public int postponedLockDelay;
-        public int buttonLockEnabled;
-        public int buttonUnlockEnabled;
+        public @Nullable Integer autoLockEnabled;
+        public @Nullable Integer autoLockDelay;
+        public @Nullable Integer autoLockImplicitEnabled;
+        public @Nullable Integer autoLockImplicitDelay;
+        public @Nullable Integer pullSpringEnabled;
+        public @Nullable Integer pullSpringDuration;
+        public @Nullable Integer autoPullSpringEnabled;
+        public @Nullable Integer postponedLockEnabled;
+        public @Nullable Integer postponedLockDelay;
+        public @Nullable Integer buttonLockEnabled;
+        public @Nullable Integer buttonUnlockEnabled;
     }
 }
