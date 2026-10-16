@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TedeeLockHandler extends BaseThingHandler {
-    private TedeeLockConfiguration cfg = new TedeeLockConfiguration();
+    private volatile TedeeLockConfiguration cfg = new TedeeLockConfiguration();
     private @Nullable ScheduledFuture<?> job;
     private final Logger logger = LoggerFactory.getLogger(TedeeLockHandler.class);
     private final Set<ScheduledFuture<?>> pendingCommands = new HashSet<>();
@@ -70,9 +70,17 @@ public class TedeeLockHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
+        ScheduledFuture<?> currentJob = job;
+        if (currentJob != null) {
+            currentJob.cancel(true);
+            job = null;
+        }
+
         synchronized (pendingCommands) {
             disposed = false;
             commandGeneration++;
+            pendingCommands.forEach(future -> future.cancel(false));
+            pendingCommands.clear();
         }
 
         cfg = getConfigAs(TedeeLockConfiguration.class);
@@ -103,7 +111,7 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         if (x instanceof RefreshType) {
             logger.debug("Refresh requested for Tedee lock {}", deviceId);
-            scheduler.execute(this::refresh);
+            scheduleRefresh(0);
             return;
         }
 
@@ -142,7 +150,8 @@ public class TedeeLockHandler extends BaseThingHandler {
     }
 
     private void refresh() {
-        logger.info("Polling Tedee lock {}", cfg.deviceId);
+        int deviceId = cfg.deviceId;
+        logger.info("Polling Tedee lock {}", deviceId);
 
         TedeeTransportProvider provider = transportProvider();
         if (provider == null || !provider.ready()) {
@@ -151,11 +160,10 @@ public class TedeeLockHandler extends BaseThingHandler {
         }
 
         try {
-            TedeeLock l = provider.getLock(cfg.deviceId);
+            TedeeLock l = provider.getLock(deviceId);
             logger.debug(
                     "Tedee lock {} status: state={}, doorState={}, battery={}%, charging={}, jammed={}, connected={}, firmware='{}'",
-                    cfg.deviceId, l.state, l.doorState, l.batteryLevel, l.isCharging, l.jammed, l.isConnected,
-                    l.version);
+                    deviceId, l.state, l.doorState, l.batteryLevel, l.isCharging, l.jammed, l.isConnected, l.version);
 
             if (l.state == 6) {
                 updateState(TedeeBindingConstants.C_LOCK, OnOffType.ON);
@@ -236,10 +244,10 @@ public class TedeeLockHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (TedeeApiException e) {
-            logger.warn("Polling failed for Tedee lock {}: {}", cfg.deviceId, e.getMessage());
+            logger.warn("Polling failed for Tedee lock {}: {}", deviceId, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
-            logger.error("Unexpected error while polling Tedee lock {}", cfg.deviceId, e);
+            logger.error("Unexpected error while polling Tedee lock {}", deviceId, e);
         }
     }
 
@@ -305,7 +313,7 @@ public class TedeeLockHandler extends BaseThingHandler {
 
     void handleSettingsWebhook() {
         logger.debug("Scheduling Tedee lock refresh after settings webhook for lock {}", cfg.deviceId);
-        scheduler.execute(this::refresh);
+        scheduleRefresh(0);
     }
 
     private @Nullable TedeeTransportProvider transportProvider() {
@@ -360,10 +368,42 @@ public class TedeeLockHandler extends BaseThingHandler {
             }
 
             final long generation = commandGeneration;
-            ScheduledFuture<?> future = scheduler
-                    .schedule(() -> runQueuedAction(provider, deviceId, action, generation), 0, TimeUnit.SECONDS);
-            pendingCommands.add(future);
+            schedulePending(() -> runQueuedAction(provider, deviceId, action, generation), 0);
         }
+    }
+
+    private void scheduleRefresh(long delaySeconds) {
+        synchronized (pendingCommands) {
+            if (!disposed) {
+                scheduleRefresh(delaySeconds, commandGeneration);
+            }
+        }
+    }
+
+    private void scheduleRefresh(long delaySeconds, long generation) {
+        if (!disposed && generation == commandGeneration) {
+            schedulePending(() -> runScheduledRefresh(generation), delaySeconds);
+        }
+    }
+
+    private void runScheduledRefresh(long generation) {
+        try {
+            synchronized (pendingCommands) {
+                if (disposed || generation != commandGeneration) {
+                    return;
+                }
+            }
+            refresh();
+        } finally {
+            synchronized (pendingCommands) {
+                pendingCommands.removeIf(ScheduledFuture::isDone);
+            }
+        }
+    }
+
+    private void schedulePending(Runnable task, long delaySeconds) {
+        pendingCommands.removeIf(ScheduledFuture::isDone);
+        pendingCommands.add(scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS));
     }
 
     private void runQueuedAction(TedeeTransportProvider provider, int deviceId, String action, long generation) {
@@ -395,8 +435,8 @@ public class TedeeLockHandler extends BaseThingHandler {
 
             synchronized (pendingCommands) {
                 if (!disposed && generation == commandGeneration) {
-                    scheduler.schedule(this::refresh, 1, TimeUnit.SECONDS);
-                    scheduler.schedule(this::refresh, 3, TimeUnit.SECONDS);
+                    scheduleRefresh(1, generation);
+                    scheduleRefresh(3, generation);
                 }
             }
         } catch (TedeeApiException e) {
@@ -415,14 +455,6 @@ public class TedeeLockHandler extends BaseThingHandler {
         }
     }
 
-    private void invalidatePendingCommands() {
-        synchronized (pendingCommands) {
-            commandGeneration++;
-            pendingCommands.forEach(future -> future.cancel(false));
-            pendingCommands.clear();
-        }
-    }
-
     /**
      * Stops scheduled polling and releases the resources associated with this handler.
      */
@@ -436,8 +468,10 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         synchronized (pendingCommands) {
             disposed = true;
+            commandGeneration++;
+            pendingCommands.forEach(future -> future.cancel(false));
+            pendingCommands.clear();
         }
-        invalidatePendingCommands();
 
         super.dispose();
     }

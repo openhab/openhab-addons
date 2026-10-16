@@ -356,8 +356,7 @@ The Tedee Bridge can POST status events to this endpoint.
 ```
 
 The callback must point to the LAN address of the openHAB server, not `localhost` or `127.0.0.1`.
-The local Bridge Handler generates a separate secret for each configured local bridge, registers it automatically,
-and validates it before applying webhook updates. The secret is not a Thing configuration parameter.
+The local Bridge Handler generates a separate secret for each configured local bridge and validates it before applying webhook updates. 
 The handler also removes stale or duplicate binding callbacks.
 
 ### Implemented Webhook Events
