@@ -14,8 +14,10 @@ package org.openhab.io.homekit.internal;
 
 import java.time.Clock;
 import java.time.Duration;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +56,7 @@ import io.github.hapjava.server.impl.HomekitRoot;
  * for HomeKit tags and, if present, add the items to the HomekitAccessoryRegistry.
  *
  * @author Andy Lintner - Initial contribution
+ * @author Leo Siepel - Propagate nested accessory changes
  */
 @NonNullByDefault
 public class HomekitChangeListener implements ItemRegistryChangeListener {
@@ -75,9 +78,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     private final Set<String> pendingUpdates = new HashSet<>();
 
-    private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
-
     /**
      * Rather than reacting to item added/removed/modified changes directly, we mark them as dirty (and the groups to
      * which they belong)
@@ -90,13 +90,19 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     HomekitChangeListener(ItemRegistry itemRegistry, HomekitSettings settings, MetadataRegistry metadataRegistry,
             Storage<Object> storage, int instance) {
+        this(itemRegistry, settings, metadataRegistry, storage, instance,
+                ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON), Clock.systemUTC());
+    }
+
+    HomekitChangeListener(ItemRegistry itemRegistry, HomekitSettings settings, MetadataRegistry metadataRegistry,
+            Storage<Object> storage, int instance, ScheduledExecutorService scheduler, Clock clock) {
         this.itemRegistry = itemRegistry;
         this.settings = settings;
         this.metadataRegistry = metadataRegistry;
         this.storage = storage;
         this.instance = instance;
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices-" + instance, scheduler,
-                Duration.ofMillis(1000), Clock.systemUTC(), this::applyUpdates);
+                Duration.ofMillis(1000), clock, this::applyUpdates);
         metadataChangeListener = new RegistryChangeListener<>() {
             @Override
             public void added(final Metadata metadata) {
@@ -209,20 +215,24 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     /**
-     * Mark an item as dirty, plus any accessory groups to which it pertains, so that after a debounce period the
+     * Mark an item as dirty, plus all ancestor accessory groups, so that after a debounce period the
      * accessory update can be applied.
      *
      * @param item The item that has been changed or removed.
      */
     private synchronized void markDirty(Item item) {
         logger.trace("Mark dirty item {}", item.getName());
-        pendingUpdates.add(item.getName());
-        /*
-         * If findMyAccessoryGroups fails because the accessory group has already been deleted, then we can count on a
-         * later update telling us that the accessory group was removed.
-         */
-        for (Item accessoryGroup : HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry)) {
-            pendingUpdates.add(accessoryGroup.getName());
+        // Linked services are published as part of the root accessory, so changes must reach every ancestor.
+        Set<String> visited = new HashSet<>();
+        Deque<Item> affectedItems = new ArrayDeque<>();
+        affectedItems.add(item);
+        while (!affectedItems.isEmpty()) {
+            Item affectedItem = affectedItems.removeFirst();
+            if (visited.add(affectedItem.getName())) {
+                pendingUpdates.add(affectedItem.getName());
+                affectedItems.addAll(
+                        HomekitAccessoryFactory.getAccessoryGroups(affectedItem, itemRegistry, metadataRegistry));
+            }
         }
 
         /*
