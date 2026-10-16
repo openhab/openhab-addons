@@ -27,6 +27,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntConsumer;
+import java.util.function.IntFunction;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -207,12 +209,9 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
         }
 
         try {
-            int id = nextMessageId();
-            if (entityId != null) {
-                sendCommand(new CallServiceCommand(id, domain, service, entityId, serviceData));
-            } else {
-                sendCommand(new CallServiceCommand(id, domain, service, serviceData));
-            }
+            sendCommandWithId(
+                    id -> entityId != null ? new CallServiceCommand(id, domain, service, entityId, serviceData)
+                            : new CallServiceCommand(id, domain, service, serviceData));
             future.complete(null);
         } catch (Exception e) {
             future.completeExceptionally(e);
@@ -224,20 +223,38 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
      * @return the next unique outgoing message id
      */
     public int nextMessageId() {
-        return idCounter.getAndIncrement();
+        synchronized (sendLock) {
+            return idCounter.getAndIncrement();
+        }
     }
 
     public void sendRegistryListRequest() {
-        int deviceRegistryId = nextMessageId();
-        pendingDeviceRegistryId = deviceRegistryId;
-        sendCommand(new RegistryListCommand(deviceRegistryId, "device_registry"));
-
-        int entityRegistryId = nextMessageId();
-        pendingEntityRegistryId = entityRegistryId;
-        sendCommand(new RegistryListCommand(entityRegistryId, "entity_registry"));
+        sendCommandWithId(id -> new RegistryListCommand(id, "device_registry"), id -> pendingDeviceRegistryId = id);
+        sendCommandWithId(id -> new RegistryListCommand(id, "entity_registry"), id -> pendingEntityRegistryId = id);
     }
 
     private void sendCommand(BaseCommand command) {
+        synchronized (sendLock) {
+            sendCommandLocked(command);
+        }
+    }
+
+    private int sendCommandWithId(IntFunction<BaseCommand> commandFactory) {
+        return sendCommandWithId(commandFactory, ignored -> {
+        });
+    }
+
+    private int sendCommandWithId(IntFunction<BaseCommand> commandFactory, IntConsumer beforeSend) {
+        synchronized (sendLock) {
+            int id = nextMessageId();
+            BaseCommand command = commandFactory.apply(id);
+            beforeSend.accept(id);
+            sendCommandLocked(command);
+            return id;
+        }
+    }
+
+    private void sendCommandLocked(BaseCommand command) {
         Session localSession = session;
         if (localSession == null) {
             logger.warn("Cannot send '{}' command, not connected to Home Assistant", command.type);
@@ -246,12 +263,10 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
         String json = gson.toJson(command);
         try {
             RemoteEndpoint remote = localSession.getRemote();
-            synchronized (sendLock) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("SEND | {}", redactToken(json));
-                }
-                remote.sendString(json);
+            if (logger.isTraceEnabled()) {
+                logger.trace("SEND | {}", redactToken(json));
             }
+            remote.sendString(json);
         } catch (IOException e) {
             logger.warn("Failed to send '{}' command: {}", command.type, e.getMessage());
         }
@@ -268,7 +283,8 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
 
             if (entityIds.isEmpty()) {
                 if (activeSubscriptionId != -1) {
-                    sendCommand(new UnsubscribeEventsCommand(nextMessageId(), activeSubscriptionId));
+                    int subscriptionId = activeSubscriptionId;
+                    sendCommandWithId(id -> new UnsubscribeEventsCommand(id, subscriptionId));
                     activeSubscriptionId = -1;
                 }
                 subscribedEntityIds.clear();
@@ -280,17 +296,17 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
             }
 
             if (activeSubscriptionId != -1) {
-                sendCommand(new UnsubscribeEventsCommand(nextMessageId(), activeSubscriptionId));
+                int subscriptionId = activeSubscriptionId;
+                sendCommandWithId(id -> new UnsubscribeEventsCommand(id, subscriptionId));
                 activeSubscriptionId = -1;
             }
 
-            int subscribeId = nextMessageId();
-            pendingSubscribeId = subscribeId;
-            activeSubscriptionId = subscribeId;
-            subscribedEntityIds.clear();
-            subscribedEntityIds.addAll(entityIds);
-
-            sendCommand(new SubscribeEntitiesCommand(subscribeId, entityIds));
+            sendCommandWithId(id -> new SubscribeEntitiesCommand(id, entityIds), id -> {
+                pendingSubscribeId = id;
+                activeSubscriptionId = id;
+                subscribedEntityIds.clear();
+                subscribedEntityIds.addAll(entityIds);
+            });
         }
     }
 
@@ -433,22 +449,18 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
 
         listener.onAuthenticated(haVersion);
 
-        int getConfigId = nextMessageId();
-        pendingGetConfigId = getConfigId;
-        sendCommand(new GetConfigCommand(getConfigId));
+        sendCommandWithId(id -> new GetConfigCommand(id), id -> pendingGetConfigId = id);
 
-        int getEntitiesId = nextMessageId();
-        pendingGetEntitiesId = getEntitiesId;
-        sendCommand(new GetEntitiesCommand(getEntitiesId));
+        sendCommandWithId(id -> new GetEntitiesCommand(id), id -> pendingGetEntitiesId = id);
 
         sendRegistryListRequest();
         subscribeRegistryEvents();
     }
 
     private void subscribeRegistryEvents() {
-        sendCommand(new SubscribeEventsCommand(nextMessageId(), EVENT_DEVICE_REGISTRY_UPDATED));
-        sendCommand(new SubscribeEventsCommand(nextMessageId(), EVENT_ENTITY_REGISTRY_UPDATED));
-        sendCommand(new SubscribeEventsCommand(nextMessageId(), EVENT_AREA_REGISTRY_UPDATED));
+        sendCommandWithId(id -> new SubscribeEventsCommand(id, EVENT_DEVICE_REGISTRY_UPDATED));
+        sendCommandWithId(id -> new SubscribeEventsCommand(id, EVENT_ENTITY_REGISTRY_UPDATED));
+        sendCommandWithId(id -> new SubscribeEventsCommand(id, EVENT_AREA_REGISTRY_UPDATED));
     }
 
     private void handleAuthInvalid(JsonObject frame) {
@@ -484,9 +496,8 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
             if (!result.success) {
                 logger.warn("Failed to subscribe to Home Assistant entity updates: {}",
                         error != null ? error.message : "unknown error");
-                int fallbackId = nextMessageId();
-                pendingSubscribeId = fallbackId;
-                sendCommand(new SubscribeEventsCommand(fallbackId, EVENT_TYPE_STATE_CHANGED));
+                sendCommandWithId(newId -> new SubscribeEventsCommand(newId, EVENT_TYPE_STATE_CHANGED),
+                        newId -> pendingSubscribeId = newId);
             }
             return;
         }
