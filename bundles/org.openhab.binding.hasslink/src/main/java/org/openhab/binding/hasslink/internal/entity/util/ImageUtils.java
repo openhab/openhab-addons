@@ -39,19 +39,20 @@ public final class ImageUtils {
      * Processes an image URL or data URI and places the parsed state into {@code targetStates}
      * or triggers an asynchronous image fetch via {@link HassLinkBridgeHandler}.
      * <p>
-     * Guarded by {@link EntityContext#isLinked(String)} to avoid triggering unneeded background HTTP fetches
-     * or allocations for unlinked image channels.
+     * Guarded by {@link EntityContext#shouldProcessAttribute(String)} to avoid triggering unneeded background HTTP
+     * fetches or allocations for unused image channels.
      *
      * @param entityState the Home Assistant entity state
      * @param attribute the image target attribute or channel name
      * @param imageSource raw image path, URL, or data URI
      * @param targetStates destination map for synchronously parsed states
-     * @param context execution context supplying bridge handler reference, link predicate, and async consumer
+     * @param context execution context supplying bridge handler reference, attribute-processing predicate, and async
+     *            consumer
      */
     public static void processImageChannel(EntityState entityState, String attribute, @Nullable String imageSource,
             Map<String, ParsedData> targetStates, EntityContext context) {
 
-        if (imageSource == null || imageSource.isBlank() || !context.isLinked(attribute)) {
+        if (imageSource == null || imageSource.isBlank() || !context.shouldProcessAttribute(attribute)) {
             return;
         }
 

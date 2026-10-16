@@ -21,18 +21,18 @@ import org.openhab.binding.hasslink.internal.api.dto.HomeAssistantConfig;
 import org.openhab.binding.hasslink.internal.handler.HassLinkBridgeHandler;
 
 /**
- * Provides shared bridge, attribute-linking, and state-update context for Home Assistant entities.
+ * Provides shared bridge, attribute-processing, and state-update context for Home Assistant entities.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public record EntityContext(@Nullable HassLinkBridgeHandler bridgeHandler, Predicate<String> isAttributeLinked,
+public record EntityContext(@Nullable HassLinkBridgeHandler bridgeHandler, Predicate<String> shouldProcessAttribute,
         @Nullable BiConsumer<String, ParsedData> asyncStateConsumer) {
 
     public static final EntityContext EMPTY = new EntityContext(null, attr -> true, null);
 
-    public boolean isLinked(String attribute) {
-        return isAttributeLinked.test(attribute);
+    public boolean shouldProcessAttribute(String attribute) {
+        return shouldProcessAttribute.test(attribute);
     }
 
     public @Nullable HomeAssistantConfig getHaConfig() {

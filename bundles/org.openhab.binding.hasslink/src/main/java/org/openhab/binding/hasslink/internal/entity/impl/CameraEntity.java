@@ -74,7 +74,8 @@ public class CameraEntity implements EntityType {
                 .putOnOffValue("power", !"idle".equalsIgnoreCase(entityState.state()));
 
         HassLinkBridgeHandler bridgeHandler = context.bridgeHandler();
-        if (entityState.isSupportedFeature(STREAM) && context.isLinked("stream_url") && bridgeHandler != null) {
+        if (entityState.isSupportedFeature(STREAM) && context.shouldProcessAttribute("stream_url")
+                && bridgeHandler != null) {
             String accessToken = entityState.getAttributeAsString("access_token");
             String streamPath = "/api/camera_proxy_stream/" + entityState.entityId()
                     + (accessToken == null || accessToken.isBlank() ? "" : "?token=" + accessToken);
@@ -85,7 +86,7 @@ public class CameraEntity implements EntityType {
 
         Map<String, ParsedData> states = builder.build();
 
-        if (context.isLinked("image")) {
+        if (context.shouldProcessAttribute("image")) {
             String imageSource = ImageUtils.extractImageSource(entityState);
             ImageUtils.processImageChannel(entityState, "image", imageSource, states, context);
         }

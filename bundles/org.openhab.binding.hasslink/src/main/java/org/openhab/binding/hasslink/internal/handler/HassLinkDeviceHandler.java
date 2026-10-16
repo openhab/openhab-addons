@@ -546,7 +546,7 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
 
         // All entities get a special "json_attributes" channel if any attribute is linked,
         // which contains a JSON string of all attributes
-        if (!parsedStates.containsKey("json_attributes") && context.isLinked("json_attributes")) {
+        if (!parsedStates.containsKey("json_attributes") && context.shouldProcessAttribute("json_attributes")) {
             String json = GSON.toJson(entityState.attributes());
             Map<String, ParsedData> newParsedStates = new HashMap<>(parsedStates);
             newParsedStates.put("json_attributes", new ParsedData.StateData(StringType.valueOf(json)));
@@ -559,7 +559,7 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
             ChannelUID channelUID = channel.getUID();
 
             ParsedData data = parsedStates.get(attribute);
-            if (data != null && isLinked(channelUID)) {
+            if (data != null) {
                 dispatchChannelData(channel, data);
             }
 
@@ -577,10 +577,14 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
 
     private void dispatchToAttributeChannels(List<Channel> channels, String attribute, ParsedData data) {
         for (Channel channel : channels) {
-            if (attribute.equals(getAttribute(channel)) && isLinked(channel.getUID())) {
+            if (attribute.equals(getAttribute(channel))) {
                 dispatchChannelData(channel, data);
             }
         }
+    }
+
+    private boolean shouldDispatchChannel(Channel channel) {
+        return channel.getKind() == ChannelKind.TRIGGER || isLinked(channel.getUID());
     }
 
     /**
@@ -588,6 +592,10 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
      * to openHAB based on data type and dynamic channel configuration.
      */
     private void dispatchChannelData(Channel channel, ParsedData data) {
+        if (!shouldDispatchChannel(channel)) {
+            return;
+        }
+
         switch (data) {
             case ParsedData.StateData(State newState) -> {
                 if (channel.getKind() == ChannelKind.TRIGGER) {
@@ -646,9 +654,9 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
      * Constructs an {@link EntityContext} tailored for state updates on specific channels.
      */
     private EntityContext createEntityContext(@Nullable HassLinkBridgeHandler bridgeHandler, List<Channel> channels) {
-        Predicate<String> isAttributeLinked = attr -> channels.stream().filter(c -> attr.equals(getAttribute(c)))
-                .anyMatch(c -> isLinked(c.getUID()));
-        return new EntityContext(bridgeHandler, isAttributeLinked,
+        Predicate<String> shouldProcessAttribute = attr -> channels.stream().filter(c -> attr.equals(getAttribute(c)))
+                .anyMatch(this::shouldDispatchChannel);
+        return new EntityContext(bridgeHandler, shouldProcessAttribute,
                 (attribute, data) -> dispatchToAttributeChannels(channels, attribute, data));
     }
 

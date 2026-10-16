@@ -65,7 +65,7 @@ public class StateMapBuilder {
      * {@link EntityContext}.
      *
      * @param entityState the Home Assistant entity state to parse
-     * @param context execution context supplying optional bridge handler and channel link predicate
+     * @param context execution context supplying an optional bridge handler and attribute-processing predicate
      * @return a new builder instance
      */
     public static StateMapBuilder create(EntityState entityState, EntityContext context) {
@@ -92,13 +92,14 @@ public class StateMapBuilder {
     /**
      * Stores an openHAB {@link State} under the primary attribute key.
      * <p>
-     * Skips adding to the map if the provided state is {@code null} or if the primary channel is not linked.
+     * Skips adding to the map if the provided state is {@code null} or if the primary attribute should not be
+     * processed.
      *
      * @param state openHAB state to store under primary attribute
      * @return this builder instance for fluent chaining
      */
     public StateMapBuilder putPrimaryState(@Nullable State state) {
-        if (state != null && context.isLinked(EntityType.PRIMARY_ATTR)) {
+        if (state != null && context.shouldProcessAttribute(EntityType.PRIMARY_ATTR)) {
             map.put(EntityType.PRIMARY_ATTR, ParsedData.of(state));
         }
         return this;
@@ -254,7 +255,7 @@ public class StateMapBuilder {
     /**
      * Extracts and maps a secondary entity attribute.
      * <p>
-     * Skips parsing if the attribute channel is not currently linked in openHAB.
+     * Skips parsing if the attribute should not be processed for the current channels.
      * Skips adding to the map if the attribute is missing/null in the JSON payload.
      * Maps to {@link UnDefType#UNDEF} if the attribute exists but is set to "unavailable" or "unknown".
      *
@@ -263,7 +264,7 @@ public class StateMapBuilder {
      * @return this builder instance for fluent chaining
      */
     public StateMapBuilder putAttribute(String attribute, Function<JsonElement, @Nullable State> mapper) {
-        if (!context.isLinked(attribute)) {
+        if (!context.shouldProcessAttribute(attribute)) {
             return this;
         }
 
@@ -287,14 +288,14 @@ public class StateMapBuilder {
     /**
      * Directly maps an openHAB {@link State} to an attribute key.
      * <p>
-     * Skips adding to the map if state is {@code null} or attribute is not linked.
+     * Skips adding to the map if state is {@code null} or the attribute should not be processed.
      *
      * @param attribute target attribute key
      * @param state openHAB {@link State} to assign
      * @return this builder instance for fluent chaining
      */
     public StateMapBuilder put(String attribute, @Nullable State state) {
-        if (state != null && context.isLinked(attribute)) {
+        if (state != null && context.shouldProcessAttribute(attribute)) {
             map.put(attribute, ParsedData.of(state));
         }
         return this;
@@ -321,7 +322,7 @@ public class StateMapBuilder {
      * @return this builder instance for fluent chaining
      */
     public StateMapBuilder putStringValue(String attribute, @Nullable String value) {
-        if (value != null && !value.isBlank() && context.isLinked(attribute)) {
+        if (value != null && !value.isBlank() && context.shouldProcessAttribute(attribute)) {
             map.put(attribute, ParsedData.of(new StringType(value)));
         }
         return this;
@@ -399,7 +400,7 @@ public class StateMapBuilder {
      * @return this builder instance for fluent chaining
      */
     public StateMapBuilder putDecimalValue(String attribute, @Nullable Number value) {
-        if (value != null && context.isLinked(attribute)) {
+        if (value != null && context.shouldProcessAttribute(attribute)) {
             map.put(attribute, ParsedData.of(new DecimalType(value.doubleValue())));
         }
         return this;
@@ -437,7 +438,7 @@ public class StateMapBuilder {
      * @return this builder instance for fluent chaining
      */
     public StateMapBuilder putOnOffValue(String attribute, @Nullable Boolean value) {
-        if (value != null && context.isLinked(attribute)) {
+        if (value != null && context.shouldProcessAttribute(attribute)) {
             map.put(attribute, ParsedData.of(OnOffType.from(value)));
         }
         return this;
@@ -508,7 +509,7 @@ public class StateMapBuilder {
      * @return this builder instance for fluent chaining
      */
     public StateMapBuilder putLocation(String channelKey) {
-        if (!context.isLinked(channelKey)) {
+        if (!context.shouldProcessAttribute(channelKey)) {
             return this;
         }
         BigDecimal lat = entityState.getAttributeAsBigDecimal("latitude");
@@ -531,7 +532,7 @@ public class StateMapBuilder {
      * @return this builder instance for fluent chaining
      */
     public StateMapBuilder putPlayer(String attribute) {
-        if (!context.isLinked(attribute)) {
+        if (!context.shouldProcessAttribute(attribute)) {
             return this;
         }
         switch (entityState.state()) {
@@ -549,7 +550,7 @@ public class StateMapBuilder {
      * @return this builder instance for fluent chaining
      */
     public StateMapBuilder putTimeSeries(String attribute, @Nullable TimeSeries timeSeries) {
-        if (timeSeries != null && context.isLinked(attribute)) {
+        if (timeSeries != null && context.shouldProcessAttribute(attribute)) {
             map.put(attribute, ParsedData.of(timeSeries));
         }
         return this;
@@ -570,7 +571,7 @@ public class StateMapBuilder {
                 .filter(attr -> !EntityState.isMetadataAttribute(attr)) //
                 .filter(EntityUtils::isValidUID) //
                 .filter(attr -> !map.containsKey(attr)) //
-                .filter(context::isLinked) //
+                .filter(context::shouldProcessAttribute) //
                 .forEach(attr -> {
                     State inferredState = parseCustomAttributeState(attr);
                     if (inferredState != null) {

@@ -51,7 +51,7 @@ public class ImageEntity implements EntityType {
     public Map<String, ParsedData> parseState(EntityState entityState, EntityContext context) {
         Map<String, ParsedData> states = new HashMap<>();
 
-        if (context.isLinked(EntityType.PRIMARY_ATTR)) {
+        if (context.shouldProcessAttribute(EntityType.PRIMARY_ATTR)) {
             String imageSource = ImageUtils.extractImageSource(entityState);
             ImageUtils.processImageChannel(entityState, EntityType.PRIMARY_ATTR, imageSource, states, context);
         }

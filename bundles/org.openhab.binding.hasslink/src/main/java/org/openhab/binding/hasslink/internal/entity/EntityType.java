@@ -80,7 +80,8 @@ public interface EntityType {
      * Returns the channel specifications required for this entity based on its current state and attributes.
      *
      * @param entityState the raw state update from Home Assistant
-     * @param context execution context supplying optional bridge handler, channel link predicate, and async consumers
+     * @param context execution context supplying an optional bridge handler, attribute-processing predicate, and async
+     *            consumers
      * @return list of channel specifications for this entity
      */
     List<ChannelSpec> getChannelSpecs(EntityState entityState, EntityContext context);
@@ -90,7 +91,7 @@ public interface EntityType {
      *
      * @param entityState the current raw state from Home Assistant
      * @param attribute the channel attribute key/suffix (e.g., "target_temperature", "preset_mode")
-     * @param context execution context supplying optional bridge handler and channel link state
+     * @param context execution context supplying an optional bridge handler and attribute-processing predicate
      * @return a fragment containing state description overrides, or null if no dynamic metadata applies
      */
     default @Nullable StateDescriptionFragment getStateDescriptionFragment( //
@@ -106,7 +107,7 @@ public interface EntityType {
      *
      * @param entityState the current raw state from Home Assistant
      * @param attribute the channel attribute key/suffix (e.g., "target_temperature", "preset_mode")
-     * @param context execution context supplying optional bridge handler and channel link state
+     * @param context execution context supplying an optional bridge handler and attribute-processing predicate
      * @return a list of command options for the channel, or null if no dynamic options apply
      */
     default @Nullable List<CommandOption> getCommandOptions( //
@@ -125,9 +126,10 @@ public interface EntityType {
      * <li><b>Synchronous State Map:</b> Return persistent channel attributes (e.g., {@code temperature},
      * {@code battery}, {@code brightness}) in the returned map for standard openHAB state updates.</li>
      *
-     * <li><b>Guarded Execution:</b> Query {@link EntityContext#isLinked(String)} before triggering heavy or expensive
+     * <li><b>Guarded Execution:</b> Query {@link EntityContext#shouldProcessAttribute(String)} before triggering heavy
+     * or expensive
      * work
-     * (e.g., background HTTP image downloads) to avoid executing unnecessary background tasks for unlinked
+     * (e.g., background HTTP image downloads) to avoid executing unnecessary background tasks for unused
      * channels.</li>
      *
      * <li><b>Callback Consumer:</b> Use {@link EntityContext#asyncStateConsumer()} for off-thread background updates
@@ -139,7 +141,8 @@ public interface EntityType {
      * </ul>
      *
      * @param entityState the Home Assistant entity state payload
-     * @param context execution context supplying optional bridge handler, channel link predicate, and async consumers
+     * @param context execution context supplying an optional bridge handler, attribute-processing predicate, and async
+     *            consumers
      * @return map of synchronously parsed property names to their corresponding openHAB states
      */
     Map<String, ParsedData> parseState(EntityState entityState, EntityContext context);
@@ -153,7 +156,7 @@ public interface EntityType {
      *            {@code "power"})
      * @param command the openHAB command received
      * @param entityState the current cached entity state, or {@code null} if unavailable
-     * @param context execution context supplying optional bridge handler and channel link state
+     * @param context execution context supplying an optional bridge handler and attribute-processing predicate
      * @return an {@link Optional} containing the mapped {@link ServiceCall}, or {@link Optional#empty()}
      *         if the command cannot be mapped or required unit metadata is missing
      */
