@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tedee.internal.TedeeBindingConstants;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -105,10 +106,12 @@ public class TedeeWebhookServlet extends HttpServlet {
                 return;
             }
 
-            List<TedeeLockHandler> handlers = findLockHandlers(deviceId);
+            List<TedeeLockHandler> handlers = findLockHandlers(deviceId,
+                    request.getHeader(TedeeBindingConstants.WEBHOOK_SECRET_HEADER));
             if (handlers.isEmpty()) {
-                logger.debug("No Tedee lock handler found for device {}", deviceId);
-                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                logger.debug("Rejected Tedee webhook for device {} because no authorized local handler was found",
+                        deviceId);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid webhook secret");
                 return;
             }
 
@@ -195,7 +198,7 @@ public class TedeeWebhookServlet extends HttpServlet {
         return body.toString();
     }
 
-    private List<TedeeLockHandler> findLockHandlers(int deviceId) {
+    private List<TedeeLockHandler> findLockHandlers(int deviceId, @Nullable String webhookSecret) {
         List<TedeeLockHandler> handlers = new ArrayList<>();
 
         for (Thing thing : thingRegistry.getAll()) {
@@ -206,7 +209,8 @@ public class TedeeWebhookServlet extends HttpServlet {
             ThingUID bridgeUID = thing.getBridgeUID();
             Thing bridgeThing = bridgeUID == null ? null : thingRegistry.get(bridgeUID);
             Bridge bridge = bridgeThing instanceof Bridge matchingBridge ? matchingBridge : null;
-            if (!(bridge != null && bridge.getHandler() instanceof TedeeBridgeHandler)) {
+            if (!(bridge != null && bridge.getHandler() instanceof TedeeBridgeHandler bridgeHandler
+                    && bridgeHandler.isWebhookSecret(webhookSecret))) {
                 continue;
             }
 

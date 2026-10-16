@@ -14,7 +14,11 @@
 package org.openhab.binding.tedee.internal.handler;
 
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.Collection;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.tedee.internal.TedeeBindingConstants;
 import org.openhab.binding.tedee.internal.api.TedeeApi;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
 import org.openhab.binding.tedee.internal.api.TedeeLock;
@@ -58,8 +63,11 @@ import com.google.gson.JsonParser;
 public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransportProvider {
     private static final String CALLBACK_PATH = "/tedee/webhook";
     private static final long CALLBACK_CHECK_INTERVAL_SECONDS = 300;
+    private static final int WEBHOOK_SECRET_BYTES = 32;
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final HttpClient client;
+    private final String webhookSecret = generateWebhookSecret();
     private volatile @Nullable TedeeApi api;
     private volatile boolean disposed;
     private @Nullable ScheduledFuture<?> job;
@@ -294,7 +302,8 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
 
                 String callbackId = callbackId(callback);
 
-                if (callbackUrl.equals(url) && "POST".equalsIgnoreCase(method) && !callbackPresent) {
+                if (callbackUrl.equals(url) && "POST".equalsIgnoreCase(method)
+                        && hasWebhookSecret(callback, webhookSecret) && !callbackPresent) {
                     callbackPresent = true;
                 } else if (callbackId != null) {
                     currentApi.deleteCallback(callbackId);
@@ -303,8 +312,8 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
             }
 
             if (!callbackPresent) {
-                String response = currentApi.addCallback(callbackUrl);
-                logger.info("Registered Tedee webhook callback at {}: {}", callbackUrl, response);
+                currentApi.addCallback(callbackUrl, webhookSecret);
+                logger.info("Registered Tedee webhook callback at {}", callbackUrl);
             } else {
                 logger.debug("Tedee webhook callback already registered at {}", callbackUrl);
             }
@@ -368,6 +377,38 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
 
     private static boolean isBindingCallback(String url) {
         return url.endsWith(CALLBACK_PATH);
+    }
+
+    boolean isWebhookSecret(@Nullable String presentedSecret) {
+        return !disposed && api != null && presentedSecret != null && MessageDigest.isEqual(
+                webhookSecret.getBytes(StandardCharsets.UTF_8), presentedSecret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String generateWebhookSecret() {
+        byte[] bytes = new byte[WEBHOOK_SECRET_BYTES];
+        RANDOM.nextBytes(bytes);
+        return HexFormat.of().formatHex(bytes);
+    }
+
+    private static boolean hasWebhookSecret(JsonObject callback, String expectedSecret) {
+        JsonElement headers = callback.get("headers");
+        if (headers == null || !headers.isJsonArray()) {
+            return false;
+        }
+
+        for (JsonElement element : headers.getAsJsonArray()) {
+            if (!element.isJsonObject()) {
+                continue;
+            }
+
+            JsonObject header = element.getAsJsonObject();
+            if (TedeeBindingConstants.WEBHOOK_SECRET_HEADER.equals(stringProperty(header, "header_name"))
+                    && expectedSecret.equals(stringProperty(header, "header_value"))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static boolean isLoopback(String host) {

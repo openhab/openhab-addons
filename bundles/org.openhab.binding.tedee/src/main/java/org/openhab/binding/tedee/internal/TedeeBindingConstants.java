@@ -28,6 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public final class TedeeBindingConstants {
     public static final String ID = "tedee";
+    public static final String WEBHOOK_SECRET_HEADER = "X-Tedee-Webhook-Secret";
 
     public static final ThingTypeUID BRIDGE = new ThingTypeUID(ID, "local-bridge");
     public static final ThingTypeUID LOCK = new ThingTypeUID(ID, "lock");

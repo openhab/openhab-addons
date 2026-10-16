@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.tedee.internal.TedeeBindingConstants;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -148,11 +149,17 @@ public class TedeeApi implements TedeeClient {
         return r.getContentAsString();
     }
 
-    public String addCallback(String url) throws TedeeApiException {
+    public String addCallback(String url, String webhookSecret) throws TedeeApiException {
         JsonObject callback = new JsonObject();
         callback.addProperty("url", url);
         callback.addProperty("method", "POST");
-        callback.add("headers", new JsonArray());
+
+        JsonObject header = new JsonObject();
+        header.addProperty("header_name", TedeeBindingConstants.WEBHOOK_SECRET_HEADER);
+        header.addProperty("header_value", webhookSecret);
+        JsonArray headers = new JsonArray();
+        headers.add(header);
+        callback.add("headers", headers);
 
         Request request = newRequest("/callback", HttpMethod.POST).header("Content-Type", "application/json");
 
