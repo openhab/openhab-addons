@@ -215,9 +215,10 @@ public class LGThinQWasherDryerHandler
                 // === creating selectable channels for the Course (if any)
                 WasherDryerCapability cap = getCapabilities();
                 loadOptionsCourse(cap, remoteStartCourseChannelUID);
-                updateState(remoteStartCourseChannelUID, new StringType(cap.getDefaultCourseId()));
+                String currentCourse = getCurrentCourse(cap, shot);
+                updateState(remoteStartCourseChannelUID, new StringType(currentCourse));
 
-                CourseDefinition courseDef = cap.getCourses().get(cap.getDefaultCourseId());
+                CourseDefinition courseDef = cap.getCourses().get(currentCourse);
                 if (WMD_COURSE_NOT_SELECTED_VALUE.equals(shot.getSmartCourse()) && courseDef != null) {
                     // only create selectable channels if the course is not a smart course. Smart courses have
                     // already predefined
@@ -282,37 +283,72 @@ public class LGThinQWasherDryerHandler
         }
     }
 
+    private static String getCurrentCourse(WasherDryerCapability cap, WasherDryerSnapshot shot) {
+        String course = shot.getCourse();
+        return !WMD_COURSE_NOT_SELECTED_VALUE.equals(course) && cap.getCourses().containsKey(course) ? course
+                : cap.getDefaultCourseId();
+    }
+
     private Map<String, Object> getRemoteStartData() throws LGThinqApiException {
         WasherDryerSnapshot lastShot = getLastShot();
         if (lastShot.getRawData().isEmpty()) {
             return lastShot.getRawData();
         }
-        String selectedCourse = getItemLinkedValue(remoteStartCourseChannelUID);
-        if (selectedCourse == null) {
-            logger.warn("Remote Start Channel must be linked to proceed with remote start.");
-            return Collections.emptyMap();
-        }
         WasherDryerCapability cap = getCapabilities();
-        Map<String, Object> rawData = lastShot.getRawData();
-        Map<String, Object> data = new HashMap<>();
         CommandDefinition cmd = cap.getCommandsDefinition().get(cap.getCommandRemoteStart());
         if (cmd == null) {
             logger.error("Command for Remote Start not found in the Washer descriptor. It's most likely a bug");
             return Collections.emptyMap();
         }
-        Map<String, Object> cmdData = cmd.getData();
-        // 1st - copy snapshot data to command
-        cmdData.forEach((k, v) -> {
-            data.put(k, rawData.getOrDefault(k, v));
-        });
-        // 2nd - replace remote start data with selected course values
-        CourseDefinition selCourseDef = cap.getCourses().get(selectedCourse);
-        if (selCourseDef != null) {
-            selCourseDef.getFunctions().forEach(f -> {
-                data.put(f.getValue(), f.getDefaultValue());
-            });
+        String selectedCourse = getItemLinkedValue(remoteStartCourseChannelUID);
+        if (selectedCourse == null || !cap.getCourses().containsKey(selectedCourse)) {
+            selectedCourse = getCurrentCourse(cap, lastShot);
         }
-        String smartCourse = lastShot.getSmartCourse();
+        Map<String, String> selectedFeatures = new HashMap<>();
+        for (Channel c : remoteStartEnabledChannels) {
+            String simpleChannelUID = getSimpleChannelUID(c.getUID().getId());
+            String featureName;
+            switch (simpleChannelUID) {
+                case CHANNEL_WMD_REMOTE_START_START_STOP:
+                case CHANNEL_WMD_REMOTE_COURSE:
+                    continue;
+                case CHANNEL_WMD_REMOTE_START_RINSE:
+                    featureName = cap.getRinseFeat().getName();
+                    break;
+                case CHANNEL_WMD_REMOTE_START_TEMP:
+                    featureName = cap.getTemperatureFeat().getName();
+                    break;
+                case CHANNEL_WMD_REMOTE_START_SPIN:
+                    featureName = cap.getSpinFeat().getName();
+                    break;
+                default:
+                    logger.warn("channel [{}] not mapped for this binding. It is most likely a bug.", simpleChannelUID);
+                    continue;
+            }
+            String value = getItemLinkedValue(c.getUID());
+            if (value != null && !value.isBlank()) {
+                selectedFeatures.put(featureName, value);
+            }
+        }
+        return buildRemoteStartData(cap, cmd.getData(), lastShot, selectedCourse, selectedFeatures);
+    }
+
+    static Map<String, Object> buildRemoteStartData(WasherDryerCapability cap, Map<String, Object> cmdTemplate,
+            WasherDryerSnapshot shot, String selectedCourse, Map<String, String> selectedFeatures) {
+        Map<String, Object> rawData = shot.getRawData();
+        Map<String, Object> data = new HashMap<>();
+        // 1st - copy snapshot data to command
+        cmdTemplate.forEach((k, v) -> {
+            Object value = rawData.get(k);
+            data.put(k, value != null ? value : v);
+        });
+        // 2nd - for a course other than the one set on the machine, use its default values
+        CourseDefinition selCourseDef = cap.getCourses().get(selectedCourse);
+        if (selCourseDef != null && !selectedCourse.equals(shot.getCourse())) {
+            selCourseDef.getFunctions().stream().filter(f -> !f.getDefaultValue().isBlank())
+                    .forEach(f -> data.put(f.getValue(), f.getDefaultValue()));
+        }
+        String smartCourse = shot.getSmartCourse();
         data.put(cap.getDefaultCourseFieldName(), selectedCourse);
         data.put(cap.getDefaultSmartCourseFeatName(), smartCourse);
         CourseType courseType = Objects
@@ -321,24 +357,7 @@ public class LGThinQWasherDryerHandler
                 .getCourseType();
         data.put("courseType", courseType.getValue());
         // 3rd - replace custom selectable features with channel's ones.
-        for (Channel c : remoteStartEnabledChannels) {
-            String value = Objects.requireNonNullElse(getItemLinkedValue(c.getUID()), "");
-            String simpleChannelUID = getSimpleChannelUID(c.getUID().getId());
-            switch (simpleChannelUID) {
-                case CHANNEL_WMD_REMOTE_START_RINSE:
-                    data.put(cap.getRinseFeat().getName(), value);
-                    break;
-                case CHANNEL_WMD_REMOTE_START_TEMP:
-                    data.put(cap.getTemperatureFeat().getName(), value);
-                    break;
-                case CHANNEL_WMD_REMOTE_START_SPIN:
-                    data.put(cap.getSpinFeat().getName(), value);
-                    break;
-                default:
-                    logger.warn("channel [{}] not mapped for this binding. It is most likely a bug.", simpleChannelUID);
-            }
-        }
-
+        data.putAll(selectedFeatures);
         return data;
     }
 
