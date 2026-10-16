@@ -245,15 +245,6 @@ public class TedeeCloudApi implements TedeeClient {
         return result;
     }
 
-    private static int cloudDoorState(JsonObject deviceState) {
-        int value = intValue(deviceState, "doorState", 0);
-        return switch (value) {
-            case 3 -> 1;
-            case 2 -> 2;
-            default -> value;
-        };
-    }
-
     private static @Nullable Integer nullableBooleanAsInt(JsonObject object, String name) {
         JsonElement value = object.get(name);
         if (value == null || value.isJsonNull()) {
