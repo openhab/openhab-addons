@@ -17,11 +17,12 @@ import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,7 +56,8 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
 
     private final BundleContext bundleContext;
     private final ScheduledExecutorService pollingScheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
-    private final Set<EyeOnWaterMeterHandler> registeredMeters = ConcurrentHashMap.newKeySet();
+    private final Map<EyeOnWaterMeterHandler, Long> registeredMeters = new ConcurrentHashMap<>();
+    private final AtomicLong registrationSequence = new AtomicLong();
 
     private volatile @Nullable EyeOnWaterClient client;
 
@@ -218,6 +220,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
             stopPolling();
             cancelReconnect();
             client = null;
+            registeredMeters.clear();
         }
 
         ServiceRegistration<?> reg = discoveryServiceReg;
@@ -258,51 +261,66 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void pollAllMeters() {
+    void setClient(@Nullable EyeOnWaterClient client) {
+        this.client = client;
+    }
+
+    void pollAllMeters() {
         logger.debug("Executing EyeOnWater polling cycle...");
         EyeOnWaterClient activeClient = client;
         if (activeClient == null) {
             return;
         }
 
-        for (EyeOnWaterMeterHandler meterHandler : registeredMeters) {
+        for (Map.Entry<EyeOnWaterMeterHandler, Long> entry : registeredMeters.entrySet()) {
+            EyeOnWaterMeterHandler meterHandler = entry.getKey();
+            Long regId = entry.getValue();
+            String meterUuid = meterHandler.getMeterUuid();
+            String meterId = meterHandler.getMeterId();
             try {
-                logger.debug("Polling meter: {}", meterHandler.getMeterId());
-                EyeOnWaterMeterData data = activeClient.pollMeter(meterHandler.getMeterUuid(),
-                        meterHandler.getMeterId());
+                logger.debug("Polling meter: {}", meterId);
+                EyeOnWaterMeterData data = activeClient.pollMeter(meterUuid, meterId);
                 synchronized (this) {
-                    if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
+                    if (isMeterStillValid(activeClient, meterHandler, regId, meterUuid, meterId)) {
                         meterHandler.updateState(data);
                     }
                 }
             } catch (IOException e) {
                 synchronized (this) {
-                    if (activeClient.equals(client)) {
-                        logger.debug("Communication error polling EyeOnWater meter {}: {}", meterHandler.getMeterId(),
-                                e.getMessage(), e);
+                    if (isMeterStillValid(activeClient, meterHandler, regId, meterUuid, meterId)) {
+                        logger.debug("Communication error polling EyeOnWater meter {}: {}", meterId, e.getMessage(), e);
                         String msg = e.getMessage();
                         meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.communication-error");
                     }
                 }
             } catch (InterruptedException e) {
-                logger.debug("Interrupted while polling EyeOnWater meter {}", meterHandler.getMeterId(), e);
+                logger.debug("Interrupted while polling EyeOnWater meter {}", meterId, e);
                 Thread.currentThread().interrupt();
                 synchronized (this) {
-                    if (activeClient.equals(client)) {
+                    if (isMeterStillValid(activeClient, meterHandler, regId, meterUuid, meterId)) {
                         meterHandler.updateStatusOffline("@text/offline.interrupted-polling");
                     }
                 }
                 break;
             } catch (RuntimeException e) {
                 synchronized (this) {
-                    if (activeClient.equals(client)) {
-                        logger.error("Unexpected error polling EyeOnWater meter {}", meterHandler.getMeterId(), e);
+                    if (isMeterStillValid(activeClient, meterHandler, regId, meterUuid, meterId)) {
+                        logger.error("Unexpected error polling EyeOnWater meter {}", meterId, e);
                         String msg = e.getMessage();
                         meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.unexpected-error");
                     }
                 }
             }
         }
+    }
+
+    private boolean isMeterStillValid(EyeOnWaterClient activeClient, EyeOnWaterMeterHandler meterHandler,
+            @Nullable Long regId, String expectedUuid, String expectedId) {
+        Long currentRegId = registeredMeters.get(meterHandler);
+        if (!activeClient.equals(client) || currentRegId == null || !currentRegId.equals(regId)) {
+            return false;
+        }
+        return expectedUuid.equals(meterHandler.getMeterUuid()) && expectedId.equals(meterHandler.getMeterId());
     }
 
     /**
@@ -318,7 +336,10 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
     }
 
     public void registerMeterHandler(EyeOnWaterMeterHandler meterHandler) {
-        registeredMeters.add(meterHandler);
+        long regId = registrationSequence.incrementAndGet();
+        registeredMeters.put(meterHandler, regId);
+        String meterUuid = meterHandler.getMeterUuid();
+        String meterId = meterHandler.getMeterId();
         // Trigger an immediate poll only if the bridge is already ONLINE (i.e. added manually after startup)
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             synchronized (this) {
@@ -326,18 +347,17 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                 if (activeClient != null) {
                     pollingScheduler.execute(() -> {
                         try {
-                            EyeOnWaterMeterData data = activeClient.pollMeter(meterHandler.getMeterUuid(),
-                                    meterHandler.getMeterId());
+                            EyeOnWaterMeterData data = activeClient.pollMeter(meterUuid, meterId);
                             synchronized (EyeOnWaterBridgeHandler.this) {
-                                if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
+                                if (isMeterStillValid(activeClient, meterHandler, regId, meterUuid, meterId)) {
                                     meterHandler.updateState(data);
                                 }
                             }
                         } catch (IOException e) {
                             synchronized (EyeOnWaterBridgeHandler.this) {
-                                if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
-                                    logger.debug("Failed to perform initial poll for meter {}: {}",
-                                            meterHandler.getMeterId(), e.getMessage(), e);
+                                if (isMeterStillValid(activeClient, meterHandler, regId, meterUuid, meterId)) {
+                                    logger.debug("Failed to perform initial poll for meter {}: {}", meterId,
+                                            e.getMessage(), e);
                                     String msg = e.getMessage();
                                     meterHandler.updateStatusOffline(
                                             msg != null ? msg : "@text/offline.failed-initial-poll");
@@ -346,17 +366,15 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             synchronized (EyeOnWaterBridgeHandler.this) {
-                                if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
-                                    logger.debug("Interrupted during initial poll for meter {}",
-                                            meterHandler.getMeterId(), e);
+                                if (isMeterStillValid(activeClient, meterHandler, regId, meterUuid, meterId)) {
+                                    logger.debug("Interrupted during initial poll for meter {}", meterId, e);
                                     meterHandler.updateStatusOffline("@text/offline.poll-interrupted");
                                 }
                             }
                         } catch (RuntimeException e) {
                             synchronized (EyeOnWaterBridgeHandler.this) {
-                                if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
-                                    logger.error("Unexpected error during initial poll for meter {}",
-                                            meterHandler.getMeterId(), e);
+                                if (isMeterStillValid(activeClient, meterHandler, regId, meterUuid, meterId)) {
+                                    logger.error("Unexpected error during initial poll for meter {}", meterId, e);
                                     String msg = e.getMessage();
                                     meterHandler
                                             .updateStatusOffline(msg != null ? msg : "@text/offline.unexpected-error");

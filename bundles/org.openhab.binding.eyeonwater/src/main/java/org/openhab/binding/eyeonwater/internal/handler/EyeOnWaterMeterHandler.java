@@ -49,8 +49,8 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
 
     private final TimeZoneProvider timeZoneProvider;
 
-    private String meterUuid = "";
-    private String meterId = "";
+    private volatile String meterUuid = "";
+    private volatile String meterId = "";
 
     public EyeOnWaterMeterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -132,6 +132,12 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
      * Called by the bridge handler to update this meter's states.
      */
     public void updateState(EyeOnWaterMeterData data) {
+        if (!meterUuid.equals(data.getMeterUuid()) || !meterId.equals(data.getMeterId())) {
+            logger.debug("Received data for meter {} ({}) but current meter is {} ({}), ignoring stale data",
+                    data.getMeterId(), data.getMeterUuid(), meterId, meterUuid);
+            return;
+        }
+
         String rawUnit = data.getReadingUnit();
         try {
             NormalizedReading normalized = EyeOnWaterUnitConverter.normalize(data.getReadingValue(), rawUnit);
