@@ -27,4 +27,5 @@ public class DockMessage {
     public @Nullable String command;
     public @Nullable String code;
     public @Nullable Boolean success;
+    public @Nullable String version;
 }

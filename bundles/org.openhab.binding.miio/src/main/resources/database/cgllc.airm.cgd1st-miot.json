@@ -1,0 +1,662 @@
+{
+	"deviceMapping": {
+		"id": [
+			"cgllc.airm.cgd1st"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"experimental": true,
+		"channels": [
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "pm2.5-density",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "PM2.5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
+			},
+			{
+				"property": "pm10-density",
+				"siid": 3,
+				"piid": 5,
+				"friendlyName": "PM10 Density",
+				"channel": "pm10_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 100,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "co2-density",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "CO2 Density",
+				"channel": "co2_density",
+				"type": "Number:Dimensionless",
+				"unit": "ppm",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9999,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "carbondioxide",
+				"tags": [
+					"Measurement",
+					"CO2"
+				]
+			},
+			{
+				"property": "tvoc-density",
+				"siid": 3,
+				"piid": 9,
+				"friendlyName": "TVOC Density",
+				"channel": "tvoc_density",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"VOC"
+				],
+				"readmeComment": "Read by the Mi Home app, not in the released MIoT spec."
+			},
+			{
+				"property": "battery-level",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Battery Level",
+				"channel": "battery_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
+			},
+			{
+				"property": "charging-state",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Charging State",
+				"channel": "charging_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Charging"
+						},
+						{
+							"value": "2",
+							"label": "Not charging"
+						},
+						{
+							"value": "3",
+							"label": "Not chargeable"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not charging\",\"3\"\u003d\"Not chargeable\"]`"
+			},
+			{
+				"property": "start-time",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Screen Off Start Time",
+				"channel": "start_time",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1439,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 2,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 2
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Minutes after midnight (480 is 08:00). The screen is switched off between the start and end time; a start time of 0 disables it."
+			},
+			{
+				"property": "end-time",
+				"siid": 9,
+				"piid": 3,
+				"friendlyName": "Screen Off End Time",
+				"channel": "end_time",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1439,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 3,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 3
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Minutes after midnight (480 is 08:00). The screen is switched off between the start and end time; a start time of 0 disables it."
+			},
+			{
+				"property": "monitoring-frequency",
+				"siid": 9,
+				"piid": 4,
+				"friendlyName": "PM2.5 and PM10 Detection Frequency",
+				"channel": "monitoring_frequency",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Every second"
+						},
+						{
+							"value": "60",
+							"label": "Every minute"
+						},
+						{
+							"value": "300",
+							"label": "Every 5 minutes"
+						},
+						{
+							"value": "600",
+							"label": "Every 10 minutes"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Every second\",\"60\"\u003d\"Every minute\",\"300\"\u003d\"Every 5 minutes\",\"600\"\u003d\"Every 10 minutes\"]`"
+			},
+			{
+				"property": "screen-off",
+				"siid": 9,
+				"piid": 5,
+				"friendlyName": "Screen Off After",
+				"channel": "screen_off",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Never"
+						},
+						{
+							"value": "15",
+							"label": "15 seconds"
+						},
+						{
+							"value": "30",
+							"label": "30 seconds"
+						},
+						{
+							"value": "60",
+							"label": "1 minute"
+						},
+						{
+							"value": "300",
+							"label": "5 minutes"
+						},
+						{
+							"value": "600",
+							"label": "10 minutes"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "screen",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Never\",\"15\"\u003d\"15 seconds\",\"30\"\u003d\"30 seconds\",\"60\"\u003d\"1 minute\",\"300\"\u003d\"5 minutes\",\"600\"\u003d\"10 minutes\"]`"
+			},
+			{
+				"property": "tempature-unit",
+				"siid": 9,
+				"piid": 7,
+				"friendlyName": "Temperature Unit",
+				"channel": "tempature_unit",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "c",
+							"label": "Celsius"
+						},
+						{
+							"value": "f",
+							"label": "Fahrenheit"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "STRING",
+						"parameters": [
+							{
+								"piid": 7,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 7,
+						"condition": {
+							"name": "LowerCase"
+						}
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"c\"\u003d\"Celsius\",\"f\"\u003d\"Fahrenheit\"]`"
+			},
+			{
+				"property": "screensaver-time",
+				"siid": 9,
+				"piid": 8,
+				"friendlyName": "Screen Saver Start",
+				"channel": "screensaver_start",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "60",
+							"label": "After 1 minute"
+						},
+						{
+							"value": "120",
+							"label": "After 2 minutes"
+						},
+						{
+							"value": "300",
+							"label": "After 5 minutes"
+						},
+						{
+							"value": "600",
+							"label": "After 10 minutes"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 8,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 9
+					}
+				],
+				"category": "screen",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Value mapping `[\"60\"\u003d\"After 1 minute\",\"120\"\u003d\"After 2 minutes\",\"300\"\u003d\"After 5 minutes\",\"600\"\u003d\"After 10 minutes\"]`"
+			},
+			{
+				"property": "screensaver-type",
+				"siid": 9,
+				"piid": 11,
+				"friendlyName": "Screen Saver Style",
+				"channel": "screensaver_style",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Current reading"
+						},
+						{
+							"value": "0",
+							"label": "All readings, rotating"
+						},
+						{
+							"value": "3",
+							"label": "Clock with current reading"
+						},
+						{
+							"value": "2",
+							"label": "Clock with rotating readings"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 11,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 12
+					}
+				],
+				"category": "screen",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Current reading\",\"0\"\u003d\"All readings, rotating\",\"3\"\u003d\"Clock with current reading\",\"2\"\u003d\"Clock with rotating readings\"]`"
+			},
+			{
+				"property": "device-off-new",
+				"siid": 9,
+				"piid": 18,
+				"friendlyName": "Auto Power Off (on Battery)",
+				"channel": "auto_power_off",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Never"
+						},
+						{
+							"value": "300",
+							"label": "After 5 minutes"
+						},
+						{
+							"value": "600",
+							"label": "After 10 minutes"
+						},
+						{
+							"value": "1800",
+							"label": "After 30 minutes"
+						},
+						{
+							"value": "3600",
+							"label": "After 1 hour"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 18,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 19
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Never\",\"300\"\u003d\"After 5 minutes\",\"600\"\u003d\"After 10 minutes\",\"1800\"\u003d\"After 30 minutes\",\"3600\"\u003d\"After 1 hour\"]`"
+			},
+			{
+				"property": "is-twelve-hours-sys",
+				"siid": 9,
+				"piid": 19,
+				"friendlyName": "Screen Time Format",
+				"channel": "time_format",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "12-hour"
+						},
+						{
+							"value": "0",
+							"label": "24-hour"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 19,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 20
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"12-hour\",\"0\"\u003d\"24-hour\"]`"
+			},
+			{
+				"property": "pm-tpf-standard",
+				"siid": 9,
+				"piid": 20,
+				"friendlyName": "Grading Standard",
+				"channel": "grading_standard",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "China"
+						},
+						{
+							"value": "1",
+							"label": "US"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 20,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 21
+					}
+				],
+				"category": "smoke",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"China\",\"1\"\u003d\"US\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "calibrate-co2",
+							"label": "Calibrate CO2 Sensor"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 9,
+						"aiid": 8,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "calibrate-co2"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "CO2 calibration takes 90 seconds; place the device next to an open window. Value mapping `[\"calibrate-co2\"\u003d\"Calibrate CO2 Sensor\"]`"
+			}
+		]
+	}
+}

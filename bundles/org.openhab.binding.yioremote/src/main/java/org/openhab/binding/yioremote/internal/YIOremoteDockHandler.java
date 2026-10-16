@@ -299,7 +299,7 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
         if (MESSAGE_TYPE_AUTH_REQUIRED.equals(dockMessage.type)) {
             handleAuthenticationRequired();
         } else if (MESSAGE_TYPE_AUTH_OK.equals(dockMessage.type)) {
-            handleAuthenticationOk();
+            handleAuthenticationOk(dockMessage.version);
         } else if (MESSAGE_TYPE_AUTH.equals(dockMessage.type) && connectionState == ConnectionState.AUTHENTICATING) {
             // the dock rejects an invalid token with {"type":"auth","message":"Invalid token"}
             handleAuthenticationRejected(dockMessage.message);
@@ -340,9 +340,13 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
                 "@text/offline.conf-error-authentication-failed [\"" + Objects.requireNonNullElse(reason, "") + "\"]");
     }
 
-    private void handleAuthenticationOk() {
+    private void handleAuthenticationOk(@Nullable String dockVersion) {
         connectionState = ConnectionState.AUTHENTICATED;
         dockAlive = true;
+        // newer dock firmware reports its version with auth_ok, older firmware does not
+        if (dockVersion != null && !dockVersion.isBlank()) {
+            updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, dockVersion);
+        }
         updateStatus(ThingStatus.ONLINE);
         updateGroupState(GROUP_OUTPUT, STATUS_STRING_CHANNEL, StringType.EMPTY);
         // the dock keeps its receiver setting across connections, so restore the requested one
