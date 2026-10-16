@@ -176,11 +176,11 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
         return "";
     }
 
-    public void updateBridgeStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail) {
-        if (thingStatusDetail == ThingStatusDetail.NONE) {
-            updateStatus(thingStatus);
-        } else {
-            updateStatus(thingStatusDetail);
-        }
+    public void bridgeOnline() {
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    public void bridgeOffline() {
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
     }
 }
