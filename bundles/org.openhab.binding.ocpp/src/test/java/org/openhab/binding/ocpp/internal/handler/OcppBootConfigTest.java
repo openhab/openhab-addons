@@ -804,6 +804,51 @@ class OcppBootConfigTest {
                 argThat(r -> r instanceof eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest));
     }
 
+    @Test
+    void aMatchingVersionFromAnotherBackendIsReplaced() {
+        chargerKeepingItsLocalList(1);
+        handler.handleCommand(new org.openhab.core.thing.ChannelUID(CP_UID, "local-auth-list"),
+                new org.openhab.core.library.types.StringType("RFID-A"));
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        verify(transport, timeout(2000)).send(any(), argThat(r -> sentList(r, "RFID-A")));
+        verify(serverHandler, timeout(2000)).localAuthListInstalled("charger", 1);
+    }
+
+    @Test
+    void aListThisBindingInstalledIsNotSentAgain() {
+        chargerKeepingItsLocalList(1);
+        when(serverHandler.isLocalAuthListInstalled("charger", 1)).thenReturn(true);
+        handler.handleCommand(new org.openhab.core.thing.ChannelUID(CP_UID, "local-auth-list"),
+                new org.openhab.core.library.types.StringType("RFID-A"));
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        verify(transport, timeout(2000)).send(any(),
+                argThat(r -> r instanceof eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionRequest));
+        verify(transport, org.mockito.Mockito.after(1000).never()).send(any(),
+                argThat(r -> r instanceof eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest));
+    }
+
+    @Test
+    void aListTheChargerRefusedIsNotRecordedAsInstalled() {
+        chargerKeepingItsLocalList(1);
+        when(transport.send(any(),
+                argThat(r -> r instanceof eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest)))
+                .thenReturn(CompletableFuture
+                        .completedFuture(new eu.chargetime.ocpp.model.localauthlist.SendLocalListConfirmation(
+                                eu.chargetime.ocpp.model.localauthlist.UpdateStatus.Failed)));
+        handler.handleCommand(new org.openhab.core.thing.ChannelUID(CP_UID, "local-auth-list"),
+                new org.openhab.core.library.types.StringType("RFID-A"));
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        verify(transport, timeout(2000)).send(any(), argThat(r -> sentList(r, "RFID-A")));
+        verify(serverHandler, org.mockito.Mockito.after(500).never()).localAuthListInstalled(any(),
+                org.mockito.ArgumentMatchers.anyInt());
+    }
+
     /** Supports a local list, holds {@code version}, and still reports the boot setting, so a reboot skips it. */
     private void chargerKeepingItsLocalList(int version) {
         when(transport.send(any(), any())).thenAnswer(invocation -> {
@@ -816,6 +861,11 @@ class OcppBootConfigTest {
             if (req instanceof eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionRequest) {
                 return CompletableFuture.completedFuture(
                         new eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionConfirmation(version));
+            }
+            if (req instanceof eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest) {
+                return CompletableFuture
+                        .completedFuture(new eu.chargetime.ocpp.model.localauthlist.SendLocalListConfirmation(
+                                eu.chargetime.ocpp.model.localauthlist.UpdateStatus.Accepted));
             }
             return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
         });

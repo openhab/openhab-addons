@@ -76,7 +76,9 @@ import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 import eu.chargetime.ocpp.model.localauthlist.AuthorizationData;
 import eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionConfirmation;
 import eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionRequest;
+import eu.chargetime.ocpp.model.localauthlist.SendLocalListConfirmation;
 import eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest;
+import eu.chargetime.ocpp.model.localauthlist.UpdateStatus;
 import eu.chargetime.ocpp.model.localauthlist.UpdateType;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType;
@@ -900,9 +902,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         OcppServerBridgeHandler bridge = serverHandler();
         int version = bridge == null ? 1 : bridge.localAuthListVersion(chargePointId, tags);
         return send(new GetLocalListVersionRequest()).thenCompose(current -> {
+            boolean installed = bridge != null && bridge.isLocalAuthListInstalled(chargePointId, version);
             // OCPP reports an emptied list as version 0, not the version that emptied it.
             if (current instanceof GetLocalListVersionConfirmation reported
-                    && (Integer.valueOf(version).equals(reported.getListVersion())
+                    && ((installed && Integer.valueOf(version).equals(reported.getListVersion()))
                             || (tags.isEmpty() && Integer.valueOf(0).equals(reported.getListVersion())))) {
                 return CompletableFuture.completedFuture(current);
             }
@@ -911,6 +914,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return send(request).thenApply(result -> {
                 logger.info("Local authorization list sent to {}: version {}, {} tag(s), {}", chargePointId, version,
                         tags.size(), result);
+                if (bridge != null && result instanceof SendLocalListConfirmation list
+                        && list.getStatus() == UpdateStatus.Accepted) {
+                    bridge.localAuthListInstalled(chargePointId, version);
+                }
                 return result;
             });
         }).toCompletableFuture();

@@ -13,7 +13,9 @@
 package org.openhab.binding.ocpp.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -148,6 +150,23 @@ class OcppServerBridgeHandlerTest {
         afterRestart.initialize();
         assertEquals(2, afterRestart.localAuthListVersion("charx", List.of("A", "C")));
         assertEquals(3, afterRestart.localAuthListVersion("charx", List.of("A", "B")));
+    }
+
+    @Test
+    void aListCountsAsInstalledOnlyOnceRecordedAndSurvivesARestart() {
+        handler.initialize();
+        int version = handler.localAuthListVersion("charx", List.of("A"));
+        assertFalse(handler.isLocalAuthListInstalled("charx", version));
+
+        handler.localAuthListInstalled("charx", version);
+
+        TestableBridgeHandler afterRestart = new TestableBridgeHandler(thing, storageService, transport);
+        afterRestart.setCallback(callback);
+        afterRestart.initialize();
+        assertTrue(afterRestart.isLocalAuthListInstalled("charx", version));
+        assertFalse(afterRestart.isLocalAuthListInstalled("charx",
+                afterRestart.localAuthListVersion("charx", List.of("B"))));
+        assertFalse(afterRestart.isLocalAuthListInstalled("wallbox", version));
     }
 
     @Test

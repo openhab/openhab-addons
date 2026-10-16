@@ -61,6 +61,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
 
     private static final String AUTH_LIST_VERSION_PREFIX = "authListVersion:";
     private static final String AUTH_LIST_CONTENT_PREFIX = "authList:";
+    private static final String AUTH_LIST_INSTALLED_PREFIX = "authListInstalled:";
 
     private final Map<UUID, String> sessionChargePoints = new ConcurrentHashMap<>();
     private final Map<String, OcppChargePointHandler> chargePoints = new ConcurrentHashMap<>();
@@ -409,6 +410,19 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             store.put(versionKey, Integer.toString(version));
             store.put(contentKey, content);
             return version;
+        }
+    }
+
+    /** A charger moved from another backend can hold the same version number with other cards. */
+    public boolean isLocalAuthListInstalled(String chargePointId, int version) {
+        Storage<String> store = bridgeStore;
+        return store != null && Integer.toString(version).equals(store.get(AUTH_LIST_INSTALLED_PREFIX + chargePointId));
+    }
+
+    public void localAuthListInstalled(String chargePointId, int version) {
+        Storage<String> store = bridgeStore;
+        if (store != null) {
+            store.put(AUTH_LIST_INSTALLED_PREFIX + chargePointId, Integer.toString(version));
         }
     }
 
