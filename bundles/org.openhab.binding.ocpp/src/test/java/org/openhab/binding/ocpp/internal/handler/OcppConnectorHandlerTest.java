@@ -208,6 +208,36 @@ class OcppConnectorHandlerTest {
     }
 
     @Test
+    void aStartStillWaitingForItsAnswerIsNotRetriedAfterOff() {
+        ThingUID chargePointUID = new ThingUID(THING_TYPE_CHARGEPOINT, "server", "charger");
+        when(thing.getBridgeUID()).thenReturn(chargePointUID);
+        when(thing.getConfiguration()).thenReturn(new org.openhab.core.config.core.Configuration(
+                java.util.Map.of("remoteStartRetries", new java.math.BigDecimal(1))));
+        OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
+        when(chargePoint.isReady()).thenReturn(true);
+        when(chargePoint.getChargePointId()).thenReturn("charger");
+        when(chargePoint.recoverTransactionId(org.mockito.ArgumentMatchers.anyInt())).thenReturn(null);
+        when(chargePoint.send(any()))
+                .thenReturn(CompletableFuture.completedFuture(mock(eu.chargetime.ocpp.model.Confirmation.class)));
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> unanswered = new CompletableFuture<>();
+        when(chargePoint.send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.RemoteStartTransactionRequest)))
+                .thenReturn(unanswered);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(chargePoint);
+        when(callback.getBridge(chargePointUID)).thenReturn(bridge);
+        handler.initialize();
+
+        command(CHANNEL_CHARGING, OnOffType.ON);
+        verify(chargePoint, timeout(2000))
+                .send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.RemoteStartTransactionRequest));
+        command(CHANNEL_CHARGING, OnOffType.OFF);
+        unanswered.completeExceptionally(new java.util.concurrent.TimeoutException("no answer"));
+
+        verify(chargePoint, org.mockito.Mockito.after(6500).times(1))
+                .send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.RemoteStartTransactionRequest));
+    }
+
+    @Test
     void preparingMeansACableIsPluggedInButNotYetCharging() {
         handler.onStatusNotification(status(ChargePointStatus.Preparing));
 
