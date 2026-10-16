@@ -257,7 +257,7 @@
 				]
 			},
 			{
-				"property": "enable",
+				"property": "circadian-enable",
 				"siid": 5,
 				"piid": 1,
 				"friendlyName": "Circadian Light",

@@ -76,7 +76,10 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "COLOR"
+						"parameterType": "COLOR",
+						"condition": {
+							"name": "HSBOnly"
+						}
 					}
 				],
 				"category": "colorlight",

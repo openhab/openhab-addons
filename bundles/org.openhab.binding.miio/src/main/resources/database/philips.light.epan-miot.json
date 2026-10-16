@@ -309,7 +309,7 @@
 				]
 			},
 			{
-				"property": "enable",
+				"property": "auto-on-off-enable",
 				"siid": 11,
 				"piid": 1,
 				"friendlyName": "Auto On/Off",
@@ -429,7 +429,7 @@
 				"readmeComment": "Turns on only when the ambient light is below this level. Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Dark\",\"2\"\u003d\"Dim\",\"3\"\u003d\"Bright\"]`"
 			},
 			{
-				"property": "enable",
+				"property": "night-light-enable",
 				"siid": 12,
 				"piid": 1,
 				"friendlyName": "Automatic Night Light",
@@ -450,7 +450,7 @@
 				"readmeComment": "Within the set time the light turns on when someone is detected and off when nobody is detected."
 			},
 			{
-				"property": "effect-time",
+				"property": "night-light-time",
 				"siid": 12,
 				"piid": 2,
 				"friendlyName": "Automatic Night Light Time",
@@ -527,7 +527,7 @@
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Slow\",\"1\"\u003d\"Fast\"]`"
 			},
 			{
-				"property": "enable",
+				"property": "toilet-monitor-enable",
 				"siid": 16,
 				"piid": 1,
 				"friendlyName": "Toilet Monitoring",
@@ -548,7 +548,7 @@
 				"readmeComment": "Alerts when the bathroom is visited too often within the monitoring period."
 			},
 			{
-				"property": "effect-time",
+				"property": "toilet-monitor-time",
 				"siid": 16,
 				"piid": 2,
 				"friendlyName": "Toilet Monitoring Time",
