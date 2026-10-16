@@ -293,7 +293,7 @@ public enum MiIoDevices {
     ROBOROCK_VACUUM_A84("roborock.vacuum.a84", "Roborock Q5 Pro", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_A85("roborock.vacuum.a85", "Roborock Q8 Max", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_C1("roborock.vacuum.c1", "Xiaowa C1", THING_TYPE_VACUUM),
-    ROBOROCK_VACUUM_E2("roborock.vacuum.e2", "Roborock Xiaowa E Series Vacuum v2", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_E2("roborock.vacuum.e2", "Roborock Xiaowa E Series Vacuum v2", THING_TYPE_UNSUPPORTED),
     ROBOROCK_VACUUM_M1S("roborock.vacuum.m1s", "Mi Robot Vacuum 1S", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_P5("roborock.vacuum.p5", "Roborock P5", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_P6("roborock.vacuum.p6", "Roborock S5 Max", THING_TYPE_VACUUM),

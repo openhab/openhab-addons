@@ -539,7 +539,7 @@ Currently the miio binding supports more than 500 different models.
 | Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a84](#roborock-vacuum-channels) | Yes          |            |
 | Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a85](#roborock-vacuum-channels) | Yes          |            |
 | Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-channels) | Yes          |            |
-| Roborock Xiaowa E Series Vacuum v2 | miio:vacuum      | [roborock.vacuum.e2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
 | Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-channels) | Yes          |            |
 | Roborock P5                        | miio:vacuum      | [roborock.vacuum.p5](#roborock-vacuum-channels) | Yes          |            |
 | Roborock S5 Max                    | miio:vacuum      | [roborock.vacuum.p6](#roborock-vacuum-channels) | Yes          |            |
