@@ -57,15 +57,12 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransportProvider {
     private static final String CALLBACK_PATH = "/tedee/webhook";
-    private static final long HEALTH_CHECK_INTERVAL_SECONDS = 30;
     private static final long CALLBACK_CHECK_INTERVAL_SECONDS = 300;
 
     private final HttpClient client;
     private @Nullable TedeeApi api;
     private @Nullable ScheduledFuture<?> job;
-
-    private boolean initialCallbackCheckCompleted;
-    private int healthChecksSinceCallback;
+    private @Nullable ScheduledFuture<?> callbackJob;
     private TedeeBridgeConfiguration cfg = new TedeeBridgeConfiguration();
     private final Logger logger = LoggerFactory.getLogger(TedeeBridgeHandler.class);
 
@@ -105,38 +102,38 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
 
         api = new TedeeApi(client, cfg.ip, cfg.port, cfg.apiToken);
 
-        // The bridge remains UNKNOWN until the first health check completes.
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Run all bridge API checks sequentially in one asynchronous job.
-        job = scheduler.scheduleWithFixedDelay(this::runScheduledChecks, 0, HEALTH_CHECK_INTERVAL_SECONDS,
-                TimeUnit.SECONDS);
+        int pollInterval = Math.max(5, cfg.pollInterval);
+
+        scheduler.execute(this::runInitialChecks);
+
+        job = scheduler.scheduleWithFixedDelay(this::runHealthCheck, pollInterval, pollInterval, TimeUnit.SECONDS);
+
+        callbackJob = scheduler.scheduleWithFixedDelay(this::runCallbackCheck,
+                CALLBACK_CHECK_INTERVAL_SECONDS, CALLBACK_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
-    private void runScheduledChecks() {
+    private synchronized void runInitialChecks() {
+        runHealthCheck();
+        runCallbackCheck();
+    }
+
+    private synchronized void runHealthCheck() {
         try {
-            // First check bridge availability and update its status.
             check();
         } catch (RuntimeException e) {
             logger.warn("Unexpected error while checking Tedee Bridge status", e);
         }
-
-        healthChecksSinceCallback++;
-
-        if (!initialCallbackCheckCompleted
-                || healthChecksSinceCallback >= CALLBACK_CHECK_INTERVAL_SECONDS / HEALTH_CHECK_INTERVAL_SECONDS) {
-
-            initialCallbackCheckCompleted = true;
-            healthChecksSinceCallback = 0;
-
-            try {
-                // Register or verify the webhook after the health check.
-                ensureCallback();
-            } catch (RuntimeException e) {
-                logger.warn("Unexpected error while checking Tedee Bridge callback", e);
-            }
-        }
     }
+
+    private synchronized void runCallbackCheck() {
+        try {
+            ensureCallback();
+        } catch (RuntimeException e) {
+            logger.warn("Unexpected error while checking Tedee Bridge callback", e);
+        }
+}
 
     /**
      * Indicates whether the bridge API is initialized and the bridge is online.
@@ -432,11 +429,18 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
      * Cancels the scheduled health checks and releases the API client reference
      * when the bridge handler is disposed.
      */
-    @Override
+   @Override
     public void dispose() {
-        if (job != null) {
-            job.cancel(true);
+        ScheduledFuture<?> currentJob = job;
+        if (currentJob != null) {
+            currentJob.cancel(true);
             job = null;
+        }
+
+        ScheduledFuture<?> currentCallbackJob = callbackJob;
+        if (currentCallbackJob != null) {
+            currentCallbackJob.cancel(true);
+            callbackJob = null;
         }
 
         api = null;
