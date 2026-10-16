@@ -218,7 +218,7 @@ public class VentaThingHandler extends BaseThingHandler {
          */
         public void stateUpdated(DeviceInfoMessage message) {
             if (messageIsEmpty(message)) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Please allow openHAB to access your device");
+                updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "Please allow openHAB to access your device");
                 return;
             }
 

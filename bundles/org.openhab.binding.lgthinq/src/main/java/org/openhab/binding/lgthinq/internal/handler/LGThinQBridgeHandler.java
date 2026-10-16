@@ -295,7 +295,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                     doConnectedRun();
                 } catch (Exception e) {
                     logger.error("Unexpected error getting device list from LG account", e);
-                    updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "@text/error.lgapi-getting-devices");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.lgapi-getting-devices");
                 }
             } finally {
                 pollingLock.unlock();

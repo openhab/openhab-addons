@@ -26,7 +26,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -136,11 +135,7 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
         // "tried updating the thing status although the handler was already disposed."
         if (this.isInitialized()) {
             logger.trace("updateVisibleInformation(): updating thing status.");
-            if (currentNumberOfBridges < 1) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING);
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateStatus(ThingStatus.ONLINE);
             logger.trace("updateVisibleInformation(): updating all channels.");
             for (Channel channel : thing.getChannels()) {
                 handleCommand(channel.getUID(), RefreshType.REFRESH);

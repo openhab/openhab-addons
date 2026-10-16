@@ -147,15 +147,14 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
                                             + "' does not exist, please check the configuration.");
                             break;
                         case NO_STRUC_MAN:
-                            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING,
-                                    "Waiting for building digitalSTROM model.");
+                            updateStatus(ThingStatus.UNKNOWN);
                             break;
                         case NO_SCENE:
                             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No Scene-ID is set!");
                             break;
                         default:
                             this.sceneThingID = sceneID;
-                            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for listener registration");
+                            updateStatus(ThingStatus.UNKNOWN);
                             logger.debug("Set status on {}", getThing().getStatus());
                             this.bridgeHandler.registerSceneStatusListener(this);
                     }
