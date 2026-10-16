@@ -25,5 +25,5 @@ public class TedeeBridgeConfiguration {
     public String ip = "";
     public int port = 80;
     public String apiToken = "";
-    public int pollInterval = 10;
+    public int pollInterval = 300;
 }

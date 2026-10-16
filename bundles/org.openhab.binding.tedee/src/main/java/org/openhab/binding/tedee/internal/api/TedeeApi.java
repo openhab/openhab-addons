@@ -48,20 +48,21 @@ public class TedeeApi implements TedeeClient {
 
     private final HttpClient client;
     private final Gson gson = new Gson();
-    private final String base, token;
+    private final String baseUrl;
+    private final String apiToken;
 
-    public TedeeApi(HttpClient c, String ip, int port, String t) {
-        client = c;
-        base = "http://" + ip + ":" + port + "/v1.0";
-        token = t;
+    public TedeeApi(HttpClient client, String host, int port, String apiToken) {
+        this.client = client;
+        baseUrl = "http://" + host + ":" + port + "/v1.0";
+        this.apiToken = apiToken;
     }
 
     public TedeeLock getLock(int id) throws TedeeApiException {
-        ContentResponse r = execute(newRequest("/lock/" + id, HttpMethod.GET));
-        if (r.getStatus() != 200) {
-            throw error(r);
+        ContentResponse response = execute(newRequest("/lock/" + id, HttpMethod.GET));
+        if (response.getStatus() != 200) {
+            throw error(response);
         }
-        String content = r.getContentAsString();
+        String content = response.getContentAsString();
 
         TedeeLock lock = gson.fromJson(content, TedeeLock.class);
         if (lock == null) {
@@ -71,12 +72,12 @@ public class TedeeApi implements TedeeClient {
     }
 
     public List<TedeeLock> getLocks() throws TedeeApiException {
-        ContentResponse r = execute(newRequest("/lock", HttpMethod.GET));
-        if (r.getStatus() != 200) {
-            throw error(r);
+        ContentResponse response = execute(newRequest("/lock", HttpMethod.GET));
+        if (response.getStatus() != 200) {
+            throw error(response);
         }
 
-        String content = r.getContentAsString();
+        String content = response.getContentAsString();
 
         JsonElement root;
         try {
@@ -142,11 +143,11 @@ public class TedeeApi implements TedeeClient {
     }
 
     public String getCallbacks() throws TedeeApiException {
-        ContentResponse r = execute(newRequest("/callback", HttpMethod.GET));
-        if (r.getStatus() != 200) {
-            throw error(r);
+        ContentResponse response = execute(newRequest("/callback", HttpMethod.GET));
+        if (response.getStatus() != 200) {
+            throw error(response);
         }
-        return r.getContentAsString();
+        return response.getContentAsString();
     }
 
     public String addCallback(String url, String webhookSecret) throws TedeeApiException {
@@ -183,24 +184,24 @@ public class TedeeApi implements TedeeClient {
         }
     }
 
-    private void post(String p) throws TedeeApiException {
-        Request q = newRequest(p, HttpMethod.POST);
-        q.header("Content-Length", "0");
-        ContentResponse r = execute(q);
-        if (r.getStatus() != 204) {
-            throw error(r);
+    private void post(String path) throws TedeeApiException {
+        Request request = newRequest(path, HttpMethod.POST);
+        request.header("Content-Length", "0");
+        ContentResponse response = execute(request);
+        if (response.getStatus() != 204) {
+            throw error(response);
         }
     }
 
     private Request newRequest(String path, HttpMethod method) {
-        return client.newRequest(base + path).method(method).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        return client.newRequest(baseUrl + path).method(method).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
-    private ContentResponse execute(Request q) throws TedeeApiException {
-        q.header("api_token", encryptedToken());
-        q.header("Accept", "application/json");
+    private ContentResponse execute(Request request) throws TedeeApiException {
+        request.header("api_token", encryptedToken());
+        request.header("Accept", "application/json");
         try {
-            return q.send();
+            return request.send();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new TedeeApiException("Interrupted", 408, e);
@@ -210,17 +211,18 @@ public class TedeeApi implements TedeeClient {
     }
 
     private String encryptedToken() throws TedeeApiException {
-        long ts = System.currentTimeMillis();
+        long timestamp = System.currentTimeMillis();
         try {
-            String h = HexFormat.of().formatHex(
-                    MessageDigest.getInstance("SHA-256").digest((token + ts).getBytes(StandardCharsets.UTF_8)));
-            return h + ts;
+            String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest((apiToken + timestamp).getBytes(StandardCharsets.UTF_8)));
+            return hash + timestamp;
         } catch (Exception e) {
             throw new TedeeApiException("SHA-256 unavailable", 500, e);
         }
     }
 
-    private TedeeApiException error(ContentResponse r) {
-        return new TedeeApiException("Tedee HTTP " + r.getStatus() + " " + r.getReason(), r.getStatus());
+    private TedeeApiException error(ContentResponse response) {
+        return new TedeeApiException("Tedee HTTP " + response.getStatus() + " " + response.getReason(),
+                response.getStatus());
     }
 }

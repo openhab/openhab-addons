@@ -185,36 +185,36 @@ public class TedeeCloudApi implements TedeeClient {
     }
 
     private TedeeLock toTedeeLock(JsonObject source) throws TedeeApiException {
-        JsonObject local = new JsonObject();
-        local.addProperty("type", intValue(source, "type", 2));
-        local.addProperty("id", intValue(source, "id", 0));
-        local.addProperty("name", stringValue(source, "name", ""));
-        local.addProperty("serialNumber", stringValue(source, "serialNumber", ""));
-        addNullableProperty(local, "isConnected", nullableBooleanAsInt(source, "isConnected"));
-        local.addProperty("rssi", 0);
-        local.addProperty("deviceRevision", intValue(source, "deviceRevision", 0));
-        local.addProperty("version", softwareVersion(source));
+        JsonObject normalizedLock = new JsonObject();
+        normalizedLock.addProperty("type", intValue(source, "type", 2));
+        normalizedLock.addProperty("id", intValue(source, "id", 0));
+        normalizedLock.addProperty("name", stringValue(source, "name", ""));
+        normalizedLock.addProperty("serialNumber", stringValue(source, "serialNumber", ""));
+        addNullableProperty(normalizedLock, "isConnected", nullableBooleanAsInt(source, "isConnected"));
+        normalizedLock.addProperty("rssi", 0);
+        normalizedLock.addProperty("deviceRevision", intValue(source, "deviceRevision", 0));
+        normalizedLock.addProperty("version", softwareVersion(source));
 
         JsonElement deviceStateElement = source.get("deviceState");
         if (deviceStateElement != null && deviceStateElement.isJsonObject()) {
             JsonObject deviceState = deviceStateElement.getAsJsonObject();
 
-            local.addProperty("state", intValue(deviceState, "state", 9));
-            addNullableProperty(local, "doorState", nullableIntValue(deviceState, "doorState"));
-            addNullableProperty(local, "batteryLevel", nullableIntValue(deviceState, "batteryLevel"));
-            addNullableProperty(local, "isCharging", nullableBooleanAsInt(deviceState, "isCharging"));
+            normalizedLock.addProperty("state", intValue(deviceState, "state", 9));
+            addNullableProperty(normalizedLock, "doorState", nullableIntValue(deviceState, "doorState"));
+            addNullableProperty(normalizedLock, "batteryLevel", nullableIntValue(deviceState, "batteryLevel"));
+            addNullableProperty(normalizedLock, "isCharging", nullableBooleanAsInt(deviceState, "isCharging"));
         } else {
-            local.addProperty("state", 9);
-            local.add("doorState", JsonNull.INSTANCE);
-            local.add("batteryLevel", JsonNull.INSTANCE);
-            local.add("isCharging", JsonNull.INSTANCE);
+            normalizedLock.addProperty("state", 9);
+            normalizedLock.add("doorState", JsonNull.INSTANCE);
+            normalizedLock.add("batteryLevel", JsonNull.INSTANCE);
+            normalizedLock.add("isCharging", JsonNull.INSTANCE);
         }
 
         // The cloud response does not provide the jammed state.
-        local.add("jammed", JsonNull.INSTANCE);
-        local.add("deviceSettings", deviceSettings(source));
+        normalizedLock.add("jammed", JsonNull.INSTANCE);
+        normalizedLock.add("deviceSettings", deviceSettings(source));
 
-        TedeeLock lock = gson.fromJson(local, TedeeLock.class);
+        TedeeLock lock = gson.fromJson(normalizedLock, TedeeLock.class);
         if (lock == null) {
             throw new TedeeApiException("Invalid Tedee Cloud lock model", HttpStatus.INTERNAL_SERVER_ERROR_500);
         }
@@ -227,22 +227,28 @@ public class TedeeCloudApi implements TedeeClient {
                 ? settingsElement.getAsJsonObject()
                 : new JsonObject();
 
-        JsonObject result = new JsonObject();
+        JsonObject normalizedSettings = new JsonObject();
 
-        addNullableProperty(result, "autoLockEnabled", nullableBooleanAsInt(settings, "autoLockEnabled"));
-        addNullableProperty(result, "autoLockDelay", nullableIntValue(settings, "autoLockDelay"));
-        addNullableProperty(result, "autoLockImplicitEnabled",
+        addNullableProperty(normalizedSettings, "autoLockEnabled", nullableBooleanAsInt(settings, "autoLockEnabled"));
+        addNullableProperty(normalizedSettings, "autoLockDelay", nullableIntValue(settings, "autoLockDelay"));
+        addNullableProperty(normalizedSettings, "autoLockImplicitEnabled",
                 nullableBooleanAsInt(settings, "autoLockImplicitEnabled"));
-        addNullableProperty(result, "autoLockImplicitDelay", nullableIntValue(settings, "autoLockImplicitDelay"));
-        addNullableProperty(result, "pullSpringEnabled", nullableBooleanAsInt(settings, "pullSpringEnabled"));
-        addNullableProperty(result, "pullSpringDuration", nullableIntValue(settings, "pullSpringDuration"));
-        addNullableProperty(result, "autoPullSpringEnabled", nullableBooleanAsInt(settings, "autoPullSpringEnabled"));
-        addNullableProperty(result, "postponedLockEnabled", nullableBooleanAsInt(settings, "postponedLockEnabled"));
-        addNullableProperty(result, "postponedLockDelay", nullableIntValue(settings, "postponedLockDelay"));
-        addNullableProperty(result, "buttonLockEnabled", nullableBooleanAsInt(settings, "buttonLockEnabled"));
-        addNullableProperty(result, "buttonUnlockEnabled", nullableBooleanAsInt(settings, "buttonUnlockEnabled"));
+        addNullableProperty(normalizedSettings, "autoLockImplicitDelay",
+                nullableIntValue(settings, "autoLockImplicitDelay"));
+        addNullableProperty(normalizedSettings, "pullSpringEnabled",
+                nullableBooleanAsInt(settings, "pullSpringEnabled"));
+        addNullableProperty(normalizedSettings, "pullSpringDuration", nullableIntValue(settings, "pullSpringDuration"));
+        addNullableProperty(normalizedSettings, "autoPullSpringEnabled",
+                nullableBooleanAsInt(settings, "autoPullSpringEnabled"));
+        addNullableProperty(normalizedSettings, "postponedLockEnabled",
+                nullableBooleanAsInt(settings, "postponedLockEnabled"));
+        addNullableProperty(normalizedSettings, "postponedLockDelay", nullableIntValue(settings, "postponedLockDelay"));
+        addNullableProperty(normalizedSettings, "buttonLockEnabled",
+                nullableBooleanAsInt(settings, "buttonLockEnabled"));
+        addNullableProperty(normalizedSettings, "buttonUnlockEnabled",
+                nullableBooleanAsInt(settings, "buttonUnlockEnabled"));
 
-        return result;
+        return normalizedSettings;
     }
 
     private static @Nullable Integer nullableBooleanAsInt(JsonObject object, String name) {
@@ -282,9 +288,9 @@ public class TedeeCloudApi implements TedeeClient {
     private static String softwareVersion(JsonObject source) {
         JsonElement versions = source.get("softwareVersions");
         if (versions != null && versions.isJsonArray() && !versions.getAsJsonArray().isEmpty()) {
-            JsonElement first = versions.getAsJsonArray().get(0);
-            if (first.isJsonObject()) {
-                JsonElement version = first.getAsJsonObject().get("version");
+            JsonElement firstVersion = versions.getAsJsonArray().get(0);
+            if (firstVersion.isJsonObject()) {
+                JsonElement version = firstVersion.getAsJsonObject().get("version");
                 if (version != null && !version.isJsonNull()) {
                     return version.getAsString();
                 }

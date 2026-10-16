@@ -15,7 +15,6 @@ package org.openhab.binding.tedee.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tedee.internal.api.TedeeLock.DeviceSettings;
 
 /**
  * 

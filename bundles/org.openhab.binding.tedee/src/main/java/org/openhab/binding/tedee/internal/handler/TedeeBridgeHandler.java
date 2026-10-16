@@ -281,7 +281,7 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
             JsonArray callbackArray = callbackArray(root);
 
             if (callbackArray == null) {
-                logger.warn("Unexpected Tedee Bridge callback response: {}", callbacks);
+                logger.warn("Unexpected Tedee Bridge callback response format");
                 return;
             }
 

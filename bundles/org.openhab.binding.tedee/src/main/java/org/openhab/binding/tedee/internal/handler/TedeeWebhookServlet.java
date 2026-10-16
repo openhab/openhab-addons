@@ -36,9 +36,11 @@ import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Receives webhook events sent by the Tedee Bridge.
@@ -51,6 +53,7 @@ import com.google.gson.JsonParser;
 public class TedeeWebhookServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final int MAX_PAYLOAD_SIZE = 4096;
+    private static final int LOCK_DEVICE_TYPE = 2;
 
     private static final class PayloadTooLargeException extends IOException {
         private static final long serialVersionUID = 1L;
@@ -88,25 +91,25 @@ public class TedeeWebhookServlet extends HttpServlet {
         try {
             JsonObject root = JsonParser.parseString(body).getAsJsonObject();
 
-            String event = root.get("event").getAsString();
+            String event = requiredString(root, "event");
             if (!isSupportedEvent(event)) {
                 logger.debug("Ignoring unsupported Tedee webhook event '{}'", event);
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return;
             }
 
-            JsonObject data = root.getAsJsonObject("data");
-            int deviceType = data.get("deviceType").getAsInt();
-            int deviceId = data.get("deviceId").getAsInt();
+            JsonObject data = requiredObject(root, "data");
+            int deviceType = requiredInt(data, "deviceType");
+            int deviceId = requiredInt(data, "deviceId");
 
-            if (deviceType != 2) {
+            if (deviceType != LOCK_DEVICE_TYPE) {
                 logger.debug("Ignoring Tedee webhook for unsupported device type {} and device {}", deviceType,
                         deviceId);
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return;
             }
 
-            List<TedeeLockHandler> handlers = findLockHandlers(deviceId,
+            List<TedeeLockHandler> handlers = findAuthorizedLockHandlers(deviceId,
                     request.getHeader(TedeeBindingConstants.WEBHOOK_SECRET_HEADER));
             if (handlers.isEmpty()) {
                 logger.debug("Rejected Tedee webhook for device {} because no authorized local handler was found",
@@ -129,22 +132,22 @@ public class TedeeWebhookServlet extends HttpServlet {
     private void processEvent(TedeeLockHandler handler, String event, JsonObject data, int deviceId) {
         switch (event) {
             case "lock-status-changed" -> {
-                int state = data.get("state").getAsInt();
-                int jammed = data.get("jammed").getAsInt();
-                int doorState = data.get("doorState").getAsInt();
+                int state = requiredInt(data, "state");
+                int jammed = requiredInt(data, "jammed");
+                int doorState = requiredInt(data, "doorState");
 
                 logger.debug("Processing lock-status webhook for lock {}: state={}, doorState={}, jammed={}", deviceId,
                         state, doorState, jammed);
                 handler.handleWebhook(state, doorState, jammed);
             }
             case "device-connection-changed" -> {
-                int isConnected = data.get("isConnected").getAsInt();
+                int isConnected = requiredInt(data, "isConnected");
 
                 logger.debug("Processing connection webhook for lock {}: isConnected={}", deviceId, isConnected);
                 handler.handleConnectionWebhook(isConnected);
             }
             case "device-battery-level-changed" -> {
-                int batteryLevel = data.get("batteryLevel").getAsInt();
+                int batteryLevel = requiredInt(data, "batteryLevel");
 
                 logger.debug("Processing battery webhook for lock {}: batteryLevel={}", deviceId, batteryLevel);
                 handler.handleBatteryWebhook(batteryLevel);
@@ -153,12 +156,8 @@ public class TedeeWebhookServlet extends HttpServlet {
                 logger.debug("Processing battery start-charging webhook for lock {}", deviceId);
                 handler.handleChargingWebhook(true);
             }
-            case "device-battery-stop-charging" -> {
-                logger.debug("Processing battery stop-charging webhook for lock {}", deviceId);
-                handler.handleChargingWebhook(false);
-            }
-            case "device-battery-fully-charged" -> {
-                logger.debug("Processing battery fully-charged webhook for lock {}", deviceId);
+            case "device-battery-stop-charging", "device-battery-fully-charged" -> {
+                logger.debug("Processing battery charging-ended webhook '{}' for lock {}", event, deviceId);
                 handler.handleChargingWebhook(false);
             }
             case "device-settings-changed" -> {
@@ -170,7 +169,7 @@ public class TedeeWebhookServlet extends HttpServlet {
     }
 
     private static boolean isSupportedEvent(String event) {
-        return event != null && switch (event) {
+        return switch (event) {
             case "lock-status-changed", "device-connection-changed", "device-battery-level-changed",
                     "device-battery-start-charging", "device-battery-stop-charging", "device-battery-fully-charged",
                     "device-settings-changed" ->
@@ -198,7 +197,41 @@ public class TedeeWebhookServlet extends HttpServlet {
         return body.toString();
     }
 
-    private List<TedeeLockHandler> findLockHandlers(int deviceId, @Nullable String webhookSecret) {
+    private static JsonObject requiredObject(JsonObject object, String name) {
+        JsonElement value = object.get(name);
+        if (value == null || !value.isJsonObject()) {
+            throw new IllegalStateException("Missing or invalid webhook object: " + name);
+        }
+        return value.getAsJsonObject();
+    }
+
+    private static String requiredString(JsonObject object, String name) {
+        JsonElement value = object.get(name);
+        if (value == null || !value.isJsonPrimitive()) {
+            throw new IllegalStateException("Missing or invalid webhook string: " + name);
+        }
+
+        JsonPrimitive primitive = value.getAsJsonPrimitive();
+        if (!primitive.isString()) {
+            throw new IllegalStateException("Missing or invalid webhook string: " + name);
+        }
+        return primitive.getAsString();
+    }
+
+    private static int requiredInt(JsonObject object, String name) {
+        JsonElement value = object.get(name);
+        if (value == null || !value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber()) {
+            throw new IllegalStateException("Missing or invalid webhook number: " + name);
+        }
+
+        try {
+            return value.getAsInt();
+        } catch (RuntimeException e) {
+            throw new IllegalStateException("Invalid webhook number: " + name, e);
+        }
+    }
+
+    private List<TedeeLockHandler> findAuthorizedLockHandlers(int deviceId, @Nullable String webhookSecret) {
         List<TedeeLockHandler> handlers = new ArrayList<>();
 
         for (Thing thing : thingRegistry.getAll()) {
