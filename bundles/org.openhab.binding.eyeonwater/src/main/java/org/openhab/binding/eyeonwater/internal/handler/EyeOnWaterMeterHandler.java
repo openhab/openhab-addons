@@ -143,9 +143,9 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
             // Determine Flow Rate Unit
             String flowUnit;
             if ("gal".equals(normalized.getUnit())) {
-                flowUnit = "gal/min";
+                flowUnit = "gal/h";
             } else if ("ft³".equals(normalized.getUnit())) {
-                flowUnit = "ft³/min";
+                flowUnit = "ft³/h";
             } else {
                 flowUnit = "m³/h";
             }
