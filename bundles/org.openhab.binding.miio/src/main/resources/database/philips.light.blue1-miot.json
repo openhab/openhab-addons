@@ -1,0 +1,650 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.blue1"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 6,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "1",
+							"label": "Sunrise"
+						},
+						{
+							"value": "2",
+							"label": "Noon"
+						},
+						{
+							"value": "3",
+							"label": "Sunset"
+						},
+						{
+							"value": "4",
+							"label": "Mid-night"
+						},
+						{
+							"value": "5",
+							"label": "Custom"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Sunrise\",\"2\"\u003d\"Noon\",\"3\"\u003d\"Sunset\",\"4\"\u003d\"Mid-night\",\"5\"\u003d\"Custom\"]`"
+			},
+			{
+				"property": "wall-scene-en",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Wall Switch Scenes",
+				"channel": "WallSceneEn",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Switches between the scenes Sunrise, Noon and Sunset when the wall switch is turned off and on within 3 seconds."
+			},
+			{
+				"property": "up-light-mode",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Uplight RGB Mode",
+				"channel": "upLightMode",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "On selects the RGB color (color set in the Mi Home app), Off selects white light."
+			},
+			{
+				"property": "up-light-color-bri",
+				"siid": 5,
+				"piid": 5,
+				"friendlyName": "Uplight RGB Brightness",
+				"channel": "upLightColorBrightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "up-light-white-cct",
+				"siid": 5,
+				"piid": 6,
+				"friendlyName": "Uplight Color Temperature",
+				"channel": "upLightCct",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"category": "colorlight"
+			},
+			{
+				"property": "up-light-white-bri",
+				"siid": 5,
+				"piid": 7,
+				"friendlyName": "Uplight White Brightness",
+				"channel": "upLightWhiteBrightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "down-light-mode",
+				"siid": 5,
+				"piid": 8,
+				"friendlyName": "Downlight RGB Mode",
+				"channel": "downLightMode",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "On selects the RGB color (color set in the Mi Home app), Off selects white light."
+			},
+			{
+				"property": "down-light-color-bri",
+				"siid": 5,
+				"piid": 12,
+				"friendlyName": "Downlight RGB Brightness",
+				"channel": "downLightColorBrightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "down-light-white-cct",
+				"siid": 5,
+				"piid": 13,
+				"friendlyName": "Downlight Color Temperature",
+				"channel": "downLightCct",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"category": "colorlight"
+			},
+			{
+				"property": "down-light-white-bri",
+				"siid": 5,
+				"piid": 14,
+				"friendlyName": "Downlight White Brightness",
+				"channel": "downLightWhiteBrightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "sky-bri",
+				"siid": 5,
+				"piid": 18,
+				"friendlyName": "Sky Brightness",
+				"channel": "skyBrightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "sun-cct",
+				"siid": 5,
+				"piid": 19,
+				"friendlyName": "Sunlight Color Temperature",
+				"channel": "sunCct",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"category": "colorlight"
+			},
+			{
+				"property": "sun-bri",
+				"siid": 5,
+				"piid": 20,
+				"friendlyName": "Sunlight Brightness",
+				"channel": "sunBrightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "natural-rhythm-en",
+				"siid": 3,
+				"piid": 11,
+				"friendlyName": "Circadian Rhythm",
+				"channel": "circadianRhythm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Switches the preset modes automatically during the day."
+			},
+			{
+				"property": "natural-rhythm-dur",
+				"siid": 3,
+				"piid": 12,
+				"friendlyName": "Circadian Rhythm Times",
+				"channel": "circadianRhythmTimes",
+				"type": "String",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				],
+				"readmeComment": "Start times of the circadian rhythm periods. Set them in the Mi Home app."
+			},
+			{
+				"property": "auto-natural",
+				"siid": 3,
+				"piid": 28,
+				"friendlyName": "Circadian Rhythm Auto Adjustment",
+				"channel": "circadianAuto",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Adjusts the circadian rhythm times based on the location; the Mi Home app sends the phone location to the lamp."
+			},
+			{
+				"property": "sleep-en",
+				"siid": 3,
+				"piid": 13,
+				"friendlyName": "Sleep Mode",
+				"channel": "sleepMode",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The light dims down and turns off after the sleep mode time."
+			},
+			{
+				"property": "sleep-time",
+				"siid": 3,
+				"piid": 14,
+				"friendlyName": "Sleep Mode Time",
+				"channel": "sleepTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 5,
+					"maximum": 60,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "sleep-remain-time",
+				"siid": 3,
+				"piid": 18,
+				"friendlyName": "Sleep Mode Remaining Time",
+				"channel": "sleepRemainTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 60,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "disable-sleep",
+				"siid": 3,
+				"piid": 32,
+				"friendlyName": "Sleep Mode Unavailable",
+				"channel": "sleepUnavailable",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "switch",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "night-en",
+				"siid": 3,
+				"piid": 15,
+				"friendlyName": "Night Light",
+				"channel": "nightLight",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The lamp switches to the Mid-night mode when turned on between the start and end time."
+			},
+			{
+				"property": "night-start-time",
+				"siid": 3,
+				"piid": 16,
+				"friendlyName": "Night Light Start Time",
+				"channel": "nightStartTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Time of day in minutes after midnight."
+			},
+			{
+				"property": "night-end-time",
+				"siid": 3,
+				"piid": 17,
+				"friendlyName": "Night Light End Time",
+				"channel": "nightEndTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Time of day in minutes after midnight."
+			},
+			{
+				"property": "awake-enable-first",
+				"siid": 3,
+				"piid": 22,
+				"friendlyName": "Sunrise Alarm 1",
+				"channel": "sunriseAlarm1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The alarms themselves are set in the Mi Home app."
+			},
+			{
+				"property": "awake-enable-second",
+				"siid": 3,
+				"piid": 23,
+				"friendlyName": "Sunrise Alarm 2",
+				"channel": "sunriseAlarm2",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "awake-enable-third",
+				"siid": 3,
+				"piid": 24,
+				"friendlyName": "Sunrise Alarm 3",
+				"channel": "sunriseAlarm3",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\"]`"
+			}
+		],
+		"experimental": true
+	}
+}
