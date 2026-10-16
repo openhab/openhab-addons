@@ -134,7 +134,11 @@ public class SystemInfoHandler extends BaseThingHandler {
                 thing.getThingTypeUID().getId());
         restoreChannelsConfig(); // After a thing type change, previous channel configs will have been stored, and will
                                  // be restored here.
-        if (instantiateSystemInfoLibrary() && isConfigurationValid() && updateProperties()) {
+        if (!isConfigurationValid()) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.cannot-initialize");
+            return;
+        }
+        if (instantiateSystemInfoLibrary() && updateProperties()) {
             if (!addDynamicChannels()) { // If there are new channel groups, the thing will get recreated with a new
                                          // thing type and this handler will be disposed. Therefore do not do anything
                                          // further here.
