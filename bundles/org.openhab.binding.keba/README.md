@@ -68,9 +68,9 @@ Configuration is grouped with Common settings first, followed by Modbus TCP, UDP
 | REST API   | verifyCertificate   | Verify the REST TLS certificate and hostname                     | true      |
 
 For UDP display commands only, set `udpEnabled=true` and `udpDisplayOnly=true`. This is useful when Modbus or
-REST supplies measurements and additional UDP data is not needed. It replaces the former zero-cycle-time mode
-without changing the shared polling intervals. Only the UDP `display` channel and `setDisplay` rule actions
-remain available; channels supplied by Modbus or REST are unaffected.
+REST supplies measurements and additional UDP data is not needed. Shared polling intervals must remain at least
+10 seconds; Only the UDP `display` channel and `setDisplay` rule actions remain available; channels supplied by
+Modbus or REST are unaffected.
 
 Display-only mode sends no startup probes or cyclic UDP reports. The first display request reads report 1 for
 identification and uses the UDP-enable flag to check command availability. Report 2 is read on demand only if

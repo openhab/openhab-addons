@@ -528,7 +528,13 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 if (protocol == Protocol.REST && "phaseswitchsource".equals(channel) && localSession.modbusOnline) {
                     return false;
                 }
-                return KeContactCombinedHandler.this.isLinked(channel);
+                return KeContactCombinedHandler.this.isLinked(protocol == Protocol.MODBUS ? switch (channel) {
+                    case CHANNEL_MAX_CHARGING_CURRENT -> CHANNEL_PILOT_CURRENT;
+                    case CHANNEL_MAX_SUPPORTED_CURRENT -> CHANNEL_MAX_SYSTEM_CURRENT;
+                    case CHANNEL_FAILSAFE_CURRENT_SETTING -> CHANNEL_FAILSAFE_CURRENT;
+                    case CHANNEL_FAILSAFE_TIMEOUT_SETTING -> CHANNEL_FAILSAFE_TIMEOUT;
+                    default -> channel;
+                } : channel);
             }
         };
     }

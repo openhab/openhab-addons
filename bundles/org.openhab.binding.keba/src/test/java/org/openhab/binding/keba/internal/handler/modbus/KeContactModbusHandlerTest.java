@@ -22,6 +22,7 @@ import static org.mockito.Mockito.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +42,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -54,6 +56,54 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  * @author Michael Weger - Initial contribution
  */
 class KeContactModbusHandlerTest {
+
+    @Test
+    @Timeout(20)
+    void cancelsTransportWritesOnDisposalAndReconfiguration() throws Exception {
+        for (boolean reconfigure : java.util.List.of(false, true)) {
+            ThingUID uid = new ThingUID("keba:kecontact:queuedwrites");
+            Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                    .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1"))).build();
+            ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
+            ModbusCommunicationInterface firstComms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
+            ModbusCommunicationInterface secondComms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
+            when(manager.newModbusCommunicationInterface(any(), any())).thenReturn(firstComms, secondComms);
+            CompletableFuture<Void> firstWrite = new CompletableFuture<>();
+            CompletableFuture<Void> secondWrite = new CompletableFuture<>();
+            when(firstComms.submitOneTimePoll(any(), any(), any()))
+                    .thenAnswer(invocation -> CompletableFuture.completedFuture(null));
+            when(secondComms.submitOneTimePoll(any(), any(), any()))
+                    .thenAnswer(invocation -> CompletableFuture.completedFuture(null));
+            when(firstComms.submitOneTimeWrite(any(), any(), any())).thenAnswer(invocation -> firstWrite);
+            when(secondComms.submitOneTimeWrite(any(), any(), any())).thenAnswer(invocation -> secondWrite);
+            KeContactModbusHandler handler = new KeContactModbusHandler(thing, manager, null,
+                    Objects.requireNonNull(mock(KeContactProtocolHandler.Listener.class)));
+            try {
+                handler.initialize();
+                verify(firstComms, timeout(5000)).submitOneTimePoll(any(), any(), any());
+                handler.handleCommand(new ChannelUID(uid, "enableduser"), OnOffType.ON);
+                verify(firstComms, timeout(5000)).submitOneTimeWrite(any(), any(), any());
+                assertFalse(firstWrite.isCancelled());
+                if (reconfigure) {
+                    handler.handleConfigurationUpdate(Map.of("ipAddress", "192.0.2.2"));
+                } else {
+                    handler.dispose();
+                }
+                assertTrue(firstWrite.isCancelled(), "Old transport write must be cancelled");
+                verify(firstComms).close();
+                if (reconfigure) {
+                    verify(secondComms, timeout(5000)).submitOneTimePoll(any(), any(), any());
+                    handler.handleCommand(new ChannelUID(uid, "enableduser"), OnOffType.OFF);
+                    verify(secondComms, timeout(5000)).submitOneTimeWrite(any(), any(), any());
+                    assertFalse(secondWrite.isCancelled());
+                    handler.dispose();
+                    assertTrue(secondWrite.isCancelled());
+                }
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
 
     @Test
     @Timeout(10)

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,6 +88,7 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
     private volatile @Nullable ModbusCommunicationInterface comms;
     private final List<PollTask> pollTasks = new ArrayList<>();
     private final List<ScheduledFuture<?>> writeTasks = new ArrayList<>();
+    private final List<Future<?>> writeRequests = new ArrayList<>();
     private final Object writeLock = new Object();
     private final Object connectionLock = new Object();
     private final AtomicInteger consecutiveReadFailures = new AtomicInteger();
@@ -348,12 +350,15 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
             localIdentificationJob.cancel(false);
             identificationJob = null;
         }
+        ModbusCommunicationInterface localComms = comms;
         synchronized (writeLock) {
+            comms = null;
             writeTasks.forEach(task -> task.cancel(false));
             writeTasks.clear();
+            writeRequests.forEach(request -> request.cancel(true));
+            writeRequests.clear();
             lastWriteSubmissionNanos = 0;
         }
-        ModbusCommunicationInterface localComms = comms;
         synchronized (pollTasks) {
             pollTasks.forEach(task -> {
                 if (localComms != null) {
@@ -369,7 +374,6 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
                 logger.warn("Error closing Modbus communication interface: {}", e.getMessage());
             }
         }
-        comms = null;
         consecutiveReadFailures.set(0);
     }
 
@@ -471,6 +475,9 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
     private void scheduleWrite(ModbusCommunicationInterface localComms, ModbusWriteRegisterRequestBlueprint request,
             KebaModbusWriteRegister register) {
         synchronized (writeLock) {
+            if (!localComms.equals(comms)) {
+                return;
+            }
             writeTasks.removeIf(ScheduledFuture::isDone);
             scheduleWriteTask(() -> submitWriteWhenAllowed(localComms, request, register), 1);
         }
@@ -491,13 +498,26 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
                 return;
             }
             lastWriteSubmissionNanos = now;
-            localComms.submitOneTimeWrite(request, result -> {
-                logger.debug("Modbus write to register {} successful", register.getAddress());
-                if (register.getKind() == KebaModbusWriteRegister.Kind.SWITCH_TRIGGER) {
-                    updateState(register.getChannelId(), OnOffType.OFF);
+            int generation = connectionGeneration.get();
+            writeRequests.removeIf(Future::isDone);
+            writeRequests.add(localComms.submitOneTimeWrite(request, result -> {
+                synchronized (writeLock) {
+                    if (generation != connectionGeneration.get() || !localComms.equals(comms)) {
+                        return;
+                    }
+                    logger.debug("Modbus write to register {} successful", register.getAddress());
+                    if (register.getKind() == KebaModbusWriteRegister.Kind.SWITCH_TRIGGER) {
+                        updateState(register.getChannelId(), OnOffType.OFF);
+                    }
                 }
-            }, failure -> logger.warn("Modbus write to register {} failed: {}", register.getAddress(),
-                    getFailureMessage(failure)));
+            }, failure -> {
+                synchronized (writeLock) {
+                    if (generation == connectionGeneration.get() && localComms.equals(comms)) {
+                        logger.warn("Modbus write to register {} failed: {}", register.getAddress(),
+                                getFailureMessage(failure));
+                    }
+                }
+            }));
         }
     }
 

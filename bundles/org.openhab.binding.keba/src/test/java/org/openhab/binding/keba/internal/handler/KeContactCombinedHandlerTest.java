@@ -146,6 +146,59 @@ class KeContactCombinedHandlerTest {
     }
 
     @Test
+    @Timeout(20)
+    void linkedPublicCurrentAndFailsafeChannelsRegisterModbusPolls() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:modbuspubliclinks");
+        Map<String, Integer> addresses = Map.of("maxpilotcurrent", 1100, "maxsystemcurrent", 1110, "failsafecurrent",
+                1600, "failsafetimeout", 1602);
+        var channels = addresses
+                .keySet().stream().map(
+                        channel -> ChannelBuilder
+                                .create(new ChannelUID(uid, channel),
+                                        "failsafetimeout".equals(channel) ? "Number:Time" : "Number:ElectricCurrent")
+                                .build())
+                .toList();
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "udpEnabled", false)))
+                .withChannels(channels).build();
+        ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
+        ModbusCommunicationInterface comms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
+        when(manager.newModbusCommunicationInterface(any(), any())).thenReturn(comms);
+        BlockingQueue<Read> identificationReads = new LinkedBlockingQueue<>();
+        when(comms.submitOneTimePoll(any(), any(), any())).thenAnswer(invocation -> {
+            identificationReads.add(new Read(invocation.getArgument(0), invocation.getArgument(1)));
+            return java.util.concurrent.CompletableFuture.completedFuture(null);
+        });
+        Map<Integer, Read> polls = new HashMap<>();
+        when(comms.registerRegularPoll(any(), anyLong(), anyLong(), any(), any())).thenAnswer(invocation -> {
+            ModbusReadRequestBlueprint request = invocation.getArgument(0);
+            polls.put(request.getReference(), new Read(request, invocation.getArgument(3)));
+            return Objects.requireNonNull(mock(PollTask.class));
+        });
+        ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+        when(callback.isChannelLinked(any())).thenAnswer(invocation -> {
+            ChannelUID channel = invocation.getArgument(0);
+            return addresses.containsKey(channel.getId());
+        });
+        KeContactCombinedHandler handler = new KeContactCombinedHandler(thing, manager,
+                Objects.requireNonNull(mock(KeContactTransceiver.class)));
+        handler.setCallback(callback);
+        try {
+            handler.initialize();
+            Objects.requireNonNull(identificationReads.poll(5, TimeUnit.SECONDS)).respond(304111);
+            assertEquals(Set.of(1000, 1100, 1110, 1600, 1602), polls.keySet());
+            for (var entry : addresses.entrySet()) {
+                boolean timeout = "failsafetimeout".equals(entry.getKey());
+                Objects.requireNonNull(polls.get(entry.getValue())).respond(timeout ? 30 : 16000);
+                verify(callback).stateUpdated(new ChannelUID(uid, entry.getKey()),
+                        timeout ? new QuantityType<>(30, Units.SECOND) : new QuantityType<>(16, Units.AMPERE));
+            }
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
     void retainsLegacyUdpChannelIdsAsCanonicalChannels() {
         ThingUID uid = new ThingUID("keba:kecontact:legacyids");
         List<String> legacyIds = List.of("maxsystemcurrent", "maxpilotcurrent", "failsafecurrent", "failsafetimeout");
@@ -833,6 +886,29 @@ class KeContactCombinedHandlerTest {
             verify(callback, never()).stateUpdated(eq(new ChannelUID(uid, "state")), any());
         } finally {
             handler.dispose();
+        }
+    }
+
+    @Test
+    void invalidRefreshIntervalsAreConfigurationErrors() {
+        for (int interval : List.of(-1, 0, 1, 9)) {
+            Thing thing = ThingBuilder
+                    .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:invalidinterval"))
+                    .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "refreshInterval", interval)))
+                    .build();
+            ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
+            KeContactTransceiver transceiver = Objects.requireNonNull(mock(KeContactTransceiver.class));
+            ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+            KeContactCombinedHandler handler = new KeContactCombinedHandler(thing, manager, transceiver);
+            handler.setCallback(callback);
+            try {
+                handler.initialize();
+                verify(callback).statusUpdated(any(), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                        && status.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
+                verifyNoInteractions(manager, transceiver);
+            } finally {
+                handler.dispose();
+            }
         }
     }
 
