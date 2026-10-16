@@ -389,4 +389,36 @@ class OcppConnectorReadinessTest {
         connector.initialize();
         return connector;
     }
+
+    @Test
+    void aHeldLimitReleasedBeforeTheUnitsAreKnownIsResentInWattsToAPowerOnlyCharger() {
+        List<Request> sent = captureAcceptedSends();
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
+        ready.set(true);
+        handler.onChargePointReady();
+        org.junit.jupiter.api.Assertions.assertEquals(ChargingRateUnitType.A,
+                firstSchedule(sent).getChargingRateUnit());
+        sent.clear();
+
+        when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Power"));
+        handler.onCapabilitiesRead();
+
+        ChargingSchedule schedule = firstSchedule(sent);
+        org.junit.jupiter.api.Assertions.assertEquals(ChargingRateUnitType.W, schedule.getChargingRateUnit());
+        org.junit.jupiter.api.Assertions.assertEquals(3680.0,
+                schedule.getChargingSchedulePeriod()[0].getLimit().doubleValue());
+    }
+
+    @Test
+    void aLimitAlreadyInAnAcceptedUnitIsNotResentWhenTheUnitsArrive() {
+        List<Request> sent = captureAcceptedSends();
+        ready.set(true);
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
+        sent.clear();
+
+        when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current,Power"));
+        handler.onCapabilitiesRead();
+
+        org.junit.jupiter.api.Assertions.assertTrue(sent.isEmpty());
+    }
 }

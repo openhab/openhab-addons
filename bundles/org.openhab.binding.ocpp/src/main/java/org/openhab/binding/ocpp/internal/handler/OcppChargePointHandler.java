@@ -716,6 +716,9 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 return;
             }
             boolean read = applyCapabilities(confirmation, ex);
+            if (read) {
+                connectors.values().forEach(OcppConnectorHandler::onCapabilitiesRead);
+            }
             reconcileLocalAuthList();
             runBootConfigBurst(bootSession, !read);
         });

@@ -164,6 +164,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     // A TxProfile lapses with its transaction (OCPP 1.6 errata 7.10), so what it carried moves to the default.
     private volatile boolean limitHeldByTxProfile;
     private volatile boolean limitDeferred;
+    // The unit the last profile went out in, checked again once the charger has said which units it takes.
+    private volatile @Nullable ChargingRateUnitType lastWireUnit;
     private volatile boolean smartChargingUnsupportedLogged;
     private volatile boolean phaseSwitchWarningLogged;
 
@@ -415,6 +417,20 @@ public class OcppConnectorHandler extends BaseThingHandler {
         return true;
     }
 
+    /** A limit released before the charger reported its units may have gone out in one it rejects. */
+    public void onCapabilitiesRead() {
+        ChargingRateUnitType unit = lastWireUnit;
+        OcppChargePointHandler cp = chargePoint;
+        if (unit == null || cp == null) {
+            return;
+        }
+        ChargerCapabilities caps = cp.getCapabilities();
+        Optional<Boolean> allowed = unit == ChargingRateUnitType.W ? caps.allowsPowerUnit() : caps.allowsCurrentUnit();
+        if (Boolean.FALSE.equals(allowed.orElse(null))) {
+            applyLimit();
+        }
+    }
+
     public void onChargePointReady() {
         if (limitDeferred) {
             limitDeferred = false;
@@ -488,6 +504,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
             wireUnit = ChargingRateUnitType.A;
             wireValue = amps;
         }
+        lastWireUnit = !paused && Double.isNaN(wireValue) ? null : wireUnit;
         return new ProfileClaim(profileGeneration, wireUnit, wireValue, currentLimitAmps, watts, powerSourced,
                 numberPhases, paused);
     }

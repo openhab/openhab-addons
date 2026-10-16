@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -472,6 +473,47 @@ class OcppBootConfigTest {
             }
             return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
         });
+    }
+
+    @Test
+    void connectorsAreToldOnceAConfigurationReadAfterReadinessReportsTheUnits() {
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> configuration = new CompletableFuture<>();
+        when(transport.send(any(), any())).thenAnswer(invocation -> {
+            Request request = invocation.getArgument(1);
+            if (request instanceof GetConfigurationRequest) {
+                return configuration;
+            }
+            return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        });
+        OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
+        handler.registerConnector(1, connector);
+
+        handler.reconnectedWithoutBoot(session);
+        verify(connector, timeout(3000)).onChargePointReady();
+        verify(connector, never()).onCapabilitiesRead();
+
+        configuration.complete(configurationAnswer(Map.of("ChargingScheduleAllowedChargingRateUnit", "Power")));
+
+        verify(connector, timeout(3000)).onCapabilitiesRead();
+        assertEquals(java.util.Optional.of(false), handler.getCapabilities().allowsCurrentUnit());
+    }
+
+    @Test
+    void aFailedConfigurationReadLeavesTheLimitsAsSent() {
+        when(transport.send(any(), any())).thenAnswer(invocation -> {
+            Request request = invocation.getArgument(1);
+            if (request instanceof GetConfigurationRequest) {
+                return CompletableFuture.failedFuture(new java.util.concurrent.TimeoutException("no answer"));
+            }
+            return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        });
+        OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
+        handler.registerConnector(1, connector);
+
+        handler.reconnectedWithoutBoot(session);
+
+        verify(connector, timeout(3000)).requestStatus();
+        verify(connector, never()).onCapabilitiesRead();
     }
 
     private static GetConfigurationConfirmation configurationAnswer(Map<String, String> keys) {
