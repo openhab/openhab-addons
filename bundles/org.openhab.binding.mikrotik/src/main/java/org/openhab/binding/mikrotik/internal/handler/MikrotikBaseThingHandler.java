@@ -136,18 +136,39 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        if (status == ONLINE || (status == OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR)) {
-            scheduleRefreshJob();
-        } else if (status == OFFLINE
-                && (statusDetail == ThingStatusDetail.CONFIGURATION_ERROR || statusDetail == ThingStatusDetail.GONE)) {
-            cancelRefreshJob();
-        }
-
         // update the status only if it's changed
         ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(status, statusDetail).withDescription(description)
                 .build();
         if (!statusInfo.equals(getThing().getStatusInfo())) {
             super.updateStatus(status, statusDetail, description);
+        }
+        statusUpdated(status, statusDetail);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+        statusUpdated(status, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        super.updateStatus(status, description);
+        statusUpdated(status, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        super.updateStatus(detail, description);
+        statusUpdated(getThing().getStatus(), detail);
+    }
+
+    protected void statusUpdated(ThingStatus status, ThingStatusDetail detail) {
+        if (status == ONLINE || (status == OFFLINE && detail == ThingStatusDetail.COMMUNICATION_ERROR)) {
+            scheduleRefreshJob();
+        } else if (status == OFFLINE
+                && (detail == ThingStatusDetail.CONFIGURATION_ERROR || detail == ThingStatusDetail.GONE)) {
+            cancelRefreshJob();
         }
     }
 

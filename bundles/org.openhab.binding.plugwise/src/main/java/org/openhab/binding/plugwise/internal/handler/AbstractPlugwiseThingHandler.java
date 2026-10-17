@@ -272,9 +272,35 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         ThingStatus oldStatus = thing.getStatus();
         super.updateStatus(status, statusDetail, description);
+        statusChanged(oldStatus);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        ThingStatus oldStatus = thing.getStatus();
+        super.updateStatus(status);
+        statusChanged(oldStatus);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        ThingStatus oldStatus = thing.getStatus();
+        super.updateStatus(status, description);
+        statusChanged(oldStatus);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        ThingStatus oldStatus = thing.getStatus();
+        super.updateStatus(detail, description);
+        statusChanged(oldStatus);
+    }
+
+    protected void statusChanged(ThingStatus oldStatus) {
+        ThingStatus newStatus = thing.getStatus();
 
         updateTask(onlineStateUpdateTask);
-        if (oldStatus != ONLINE && status == ONLINE && isConfigurationPending()) {
+        if (oldStatus != ONLINE && newStatus == ONLINE && isConfigurationPending()) {
             sendConfigurationUpdateCommands();
         }
     }
