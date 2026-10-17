@@ -175,6 +175,29 @@ public class TedeeApi implements TedeeClient {
         return response.getContentAsString();
     }
 
+    public void updateCallback(String callbackId, String url, String webhookSecret) throws TedeeApiException {
+        JsonObject callback = new JsonObject();
+        callback.addProperty("url", url);
+        callback.addProperty("method", "POST");
+
+        JsonObject header = new JsonObject();
+        header.addProperty("header_name", TedeeBindingConstants.WEBHOOK_SECRET_HEADER);
+        header.addProperty("header_value", webhookSecret);
+        JsonArray headers = new JsonArray();
+        headers.add(header);
+        callback.add("headers", headers);
+
+        Request request = newRequest("/callback/" + callbackId, HttpMethod.PUT).header("Content-Type",
+                "application/json");
+        request.content(new StringContentProvider("application/json", callback.toString(), StandardCharsets.UTF_8));
+
+        ContentResponse response = execute(request);
+
+        if (response.getStatus() < 200 || response.getStatus() >= 300) {
+            throw error(response);
+        }
+    }
+
     public void deleteCallback(String callbackId) throws TedeeApiException {
         Request request = newRequest("/callback/" + callbackId, HttpMethod.DELETE);
         ContentResponse response = execute(request);

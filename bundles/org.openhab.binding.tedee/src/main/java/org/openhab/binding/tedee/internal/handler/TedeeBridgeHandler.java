@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.tedee.internal.TedeeBindingConstants;
 import org.openhab.binding.tedee.internal.api.TedeeApi;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
 import org.openhab.binding.tedee.internal.api.TedeeLock;
@@ -302,9 +301,13 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
 
                 String callbackId = callbackId(callback);
 
-                if (callbackUrl.equals(url) && "POST".equalsIgnoreCase(method)
-                        && hasWebhookSecret(callback, webhookSecret) && !callbackPresent) {
+                if (callbackUrl.equals(url) && "POST".equalsIgnoreCase(method) && !callbackPresent
+                        && callbackId != null) {
+                    // Tedee omits callback header values from the GET response. Refresh the callback in place
+                    // so the current handler secret is applied without deleting it first.
+                    currentApi.updateCallback(callbackId, callbackUrl, webhookSecret);
                     callbackPresent = true;
+                    logger.debug("Updated Tedee webhook callback at {}", callbackUrl);
                 } else if (callbackId != null) {
                     currentApi.deleteCallback(callbackId);
                     logger.info("Removed stale Tedee callback {}", callbackId);
@@ -388,27 +391,6 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         byte[] bytes = new byte[WEBHOOK_SECRET_BYTES];
         RANDOM.nextBytes(bytes);
         return HexFormat.of().formatHex(bytes);
-    }
-
-    private static boolean hasWebhookSecret(JsonObject callback, String expectedSecret) {
-        JsonElement headers = callback.get("headers");
-        if (headers == null || !headers.isJsonArray()) {
-            return false;
-        }
-
-        for (JsonElement element : headers.getAsJsonArray()) {
-            if (!element.isJsonObject()) {
-                continue;
-            }
-
-            JsonObject header = element.getAsJsonObject();
-            if (TedeeBindingConstants.WEBHOOK_SECRET_HEADER.equals(stringProperty(header, "header_name"))
-                    && expectedSecret.equals(stringProperty(header, "header_value"))) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static boolean isLoopback(String host) {

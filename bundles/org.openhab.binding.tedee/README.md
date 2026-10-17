@@ -422,6 +422,7 @@ http://<BRIDGE-IP>/v1.0
 | `POST`   | `/v1.0/lock/{id}/unlock?mode=4` | Decision whether unlock or pull action is performed, based on lockposition |
 | `GET`    | `/v1.0/callback`                | Read callbacks                                                             |
 | `POST`   | `/v1.0/callback`                | Register callback                                                          |
+| `PUT`    | `/v1.0/callback/{callbackId}`   | Update callback                                                            |
 | `DELETE` | `/v1.0/callback/{callbackId}`   | Remove callback                                                            |
 
 The `mode=3` unlock operation is used for `UNLOCK_NO_PULL`.
