@@ -36,7 +36,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -155,7 +154,7 @@ public class PentairIntelliFloHandler extends PentairBaseThingHandler {
         PentairBaseBridgeHandler bridgeHandler = getBridgeHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
+            logger.debug("Bridge handler unavailable while checking Thing: {}", thing.getUID());
             return true;
         }
 
