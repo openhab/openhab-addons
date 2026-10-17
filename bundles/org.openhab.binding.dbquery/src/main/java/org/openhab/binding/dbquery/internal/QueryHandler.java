@@ -210,8 +210,8 @@ public class QueryHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
         if (status == ThingStatus.ONLINE) {
             scheduleQueryExecutionIntervalIfNeeded();
         }

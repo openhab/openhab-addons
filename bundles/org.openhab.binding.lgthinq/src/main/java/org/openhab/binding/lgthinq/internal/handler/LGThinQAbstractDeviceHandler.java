@@ -260,9 +260,21 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     }
 
     @Override
-    protected void updateStatus(ThingStatus newStatus, ThingStatusDetail statusDetail, @Nullable String description) {
-        handleStatusChanged(newStatus, statusDetail);
-        super.updateStatus(newStatus, statusDetail, description);
+    protected void updateStatus(ThingStatus newStatus) {
+        super.updateStatus(newStatus);
+        handleStatusChanged(newStatus, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus newStatus, @Nullable String description) {
+        super.updateStatus(newStatus, description);
+        handleStatusChanged(newStatus, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
+        handleStatusChanged(thing.getStatus(), statusDetail);
     }
 
     @Override

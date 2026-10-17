@@ -196,8 +196,18 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String comment) {
-        super.updateStatus(status, detail, comment);
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+        notifyHubStatusListeners(status);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        super.updateStatus(detail, description);
+        notifyHubStatusListeners(thing.getStatus());
+    }
+
+    private void notifyHubStatusListeners(ThingStatus status) {
         logger.debug("Updating listeners with status {}", status);
         for (HubStatusListener listener : listeners) {
             listener.hubStatusChanged(status);

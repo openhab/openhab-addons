@@ -296,11 +296,24 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+    protected void updateStatus(ThingStatus status) {
         updateStatusChannel();
 
-        super.updateStatus(status, statusDetail, description);
+        super.updateStatus(status);
 
+        updateRefreshSchedule(status);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        updateStatusChannel();
+
+        super.updateStatus(statusDetail, description);
+
+        updateRefreshSchedule(thing.getStatus());
+    }
+
+    private void updateRefreshSchedule(ThingStatus status) {
         if (status.equals(ThingStatus.ONLINE)) {
             if (refreshCacheUpdateSchedule == null || refreshCacheUpdateSchedule.isDone()) {
                 scheduleRefresh();
