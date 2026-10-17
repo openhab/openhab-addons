@@ -14,8 +14,8 @@ package org.openhab.binding.fronius.internal.handler;
 
 import java.time.DayOfWeek;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
@@ -46,6 +46,7 @@ import org.openhab.binding.fronius.internal.api.dto.storage.StorageDetails;
 import org.openhab.binding.fronius.internal.api.dto.storage.StorageRealtimeBody;
 import org.openhab.binding.fronius.internal.api.dto.storage.StorageRealtimeBodyData;
 import org.openhab.binding.fronius.internal.api.dto.storage.StorageRealtimeResponse;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -81,6 +82,7 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBatteryHandler.class);
+    private final TimeZoneProvider timeZoneProvider;
 
     private @Nullable StorageController controller;
     private @Nullable FroniusBatteryConfiguration config;
@@ -90,8 +92,9 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
     private @Nullable TimeOfUseRecords lastTimeOfUse;
     private @Nullable ScheduledFuture<?> batterySettingsRefreshJob;
 
-    public FroniusBatteryHandler(Thing thing) {
+    public FroniusBatteryHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -372,8 +375,10 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
         if (records == null) {
             return UnDefType.UNDEF;
         }
-        LocalTime now = LocalTime.now();
-        DayOfWeek today = LocalDate.now().getDayOfWeek();
+        // the time of use schedules are in local time, so evaluate them in the time zone configured in openHAB
+        ZonedDateTime dateTime = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        LocalTime now = dateTime.toLocalTime();
+        DayOfWeek today = dateTime.getDayOfWeek();
         for (TimeOfUseRecord record : records.records()) {
             if (!record.active() || record.scheduleType() != type || !isActiveOn(record.weekdays(), today)) {
                 continue;
