@@ -23,14 +23,22 @@
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">
+			<add-channel id="powerflowbackupmode">
+				<type>fronius:backupMode</type>
+			</add-channel>
+			<add-channel id="powerflowbatterystandby">
+				<type>fronius:batteryStandby</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<remove-channel id="powerflowbackupmode"/>
+			<remove-channel id="powerflowbatterystandby"/>
 			<add-channel id="backup-mode">
 				<type>fronius:backup-mode</type>
 			</add-channel>
 			<add-channel id="battery-standby">
 				<type>fronius:battery-standby</type>
 			</add-channel>
-		</instruction-set>
-		<instruction-set targetVersion="3">
 			<add-channel id="ac-power">
 				<type>fronius:ac-power</type>
 			</add-channel>
@@ -114,6 +122,35 @@
 
 	<thing-type uid="fronius:battery">
 		<instruction-set targetVersion="1">
+			<add-channel id="socMin">
+				<type>fronius:batterySocMin</type>
+			</add-channel>
+			<add-channel id="socMax">
+				<type>fronius:batterySocMax</type>
+			</add-channel>
+			<add-channel id="backupReservedCapacity">
+				<type>fronius:backupReservedCapacity</type>
+			</add-channel>
+			<add-channel id="backupCriticalSoc">
+				<type>fronius:backupCriticalSoc</type>
+			</add-channel>
+			<add-channel id="chargeFromGrid">
+				<type>fronius:chargeFromGrid</type>
+			</add-channel>
+			<add-channel id="calibration">
+				<type>fronius:batteryCalibration</type>
+			</add-channel>
+			<add-channel id="nightPreservationLimit">
+				<type>fronius:nightPreservationLimit</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<remove-channel id="socMin"/>
+			<remove-channel id="socMax"/>
+			<remove-channel id="backupReservedCapacity"/>
+			<remove-channel id="backupCriticalSoc"/>
+			<remove-channel id="chargeFromGrid"/>
+			<remove-channel id="nightPreservationLimit"/>
 			<add-channel id="soc-min">
 				<type>fronius:soc-min</type>
 			</add-channel>
@@ -129,14 +166,12 @@
 			<add-channel id="charge-from-grid">
 				<type>fronius:charge-from-grid</type>
 			</add-channel>
-			<add-channel id="calibration">
+			<update-channel id="calibration">
 				<type>fronius:calibration</type>
-			</add-channel>
+			</update-channel>
 			<add-channel id="night-preservation-limit">
 				<type>fronius:night-preservation-limit</type>
 			</add-channel>
-		</instruction-set>
-		<instruction-set targetVersion="2">
 			<add-channel id="maximum-capacity">
 				<type>fronius:maximum-capacity</type>
 				<label>Maximum Capacity</label>
