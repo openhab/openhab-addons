@@ -106,6 +106,7 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
     public void deviceRemoved() {
         updateStatus(ThingStatusDetail.GONE, "@text/offline.configuration-error.deviceRemoved");
     }
+
     abstract void startCommunication();
 
     void restartCommunication(NikoHomeControlCommunication nhcComm) {

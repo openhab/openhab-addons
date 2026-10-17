@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluelink.internal.handler;
 
-import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -24,16 +23,17 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 import javax.measure.quantity.Temperature;
-import javax.swing.plaf.synth.Region;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.bluelink.internal.api.AbstractBluelinkApi;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiCA;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiEU;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiUS;
 import org.openhab.binding.bluelink.internal.api.LoginRejectedException;
+import org.openhab.binding.bluelink.internal.api.Region;
 import org.openhab.binding.bluelink.internal.api.RetryableRequestException;
 import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
 import org.openhab.binding.bluelink.internal.config.BluelinkAccountConfiguration;
@@ -51,6 +51,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
