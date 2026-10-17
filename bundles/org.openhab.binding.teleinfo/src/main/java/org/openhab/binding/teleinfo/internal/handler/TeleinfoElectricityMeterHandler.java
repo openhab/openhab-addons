@@ -141,21 +141,15 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-
-        if (!(ThingStatus.ONLINE.equals(status))) {
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
             for (Channel channel : getThing().getChannels()) {
                 if (!CHANNEL_LAST_UPDATE.equals(channel.getUID().getId())) {
                     updateState(channel.getUID(), UnDefType.UNDEF);
                 }
             }
         }
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
     }
 
     @Override
