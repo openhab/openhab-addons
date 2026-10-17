@@ -43,7 +43,6 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_URL_RESTART = "/reboot";
 
     public static final String SHELLY_URL_SETTINGS_RELAY = "/settings/relay";
-    public static final String SHELLY_URL_STATUS_RELEAY = "/status/relay";
     public static final String SHELLY_URL_CONTROL_RELEAY = "/relay";
 
     public static final String SHELLY_URL_SETTINGS_EMETER = "/settings/emeter";

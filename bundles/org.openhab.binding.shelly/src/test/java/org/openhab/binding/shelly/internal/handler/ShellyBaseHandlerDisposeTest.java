@@ -16,6 +16,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1PM;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,8 @@ class ShellyBaseHandlerDisposeTest {
 
         setField(handler, "api", api);
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
+        setField(handler, "vibrationFilter", new AtomicInteger());
+        setField(handler, "initLock", new Object());
         handler.profile = profile;
         handler.scheduledUpdates = 1;
         doReturn(thing).when(handler).getThing();
@@ -75,6 +78,8 @@ class ShellyBaseHandlerDisposeTest {
 
         setField(handler, "api", api);
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
+        setField(handler, "vibrationFilter", new AtomicInteger());
+        setField(handler, "initLock", new Object());
         handler.profile = profile;
         handler.scheduledUpdates = 1;
         doReturn(thing).when(handler).getThing();
