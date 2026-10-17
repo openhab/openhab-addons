@@ -154,6 +154,13 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="heating-circuit-target-temperature-flow-line-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature Flow Line</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
 	<channel-type id="heating-circuit-offset-flow-line-temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Offset Flow Line Temperature</label>
