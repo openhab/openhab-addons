@@ -172,7 +172,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             factory = new BoschSslUtil(ipAddress).getSslContextFactory();
         } catch (PairingFailedException e) {
             logger.debug("Error while obtaining SSL context factory.", e);
-            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-ssl");
+            this.updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "@text/offline.conf-error-ssl");
             return;
         }
 
@@ -278,7 +278,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
             // SHC is online and access should possible
             if (!checkBridgeAccess()) {
-                this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.not-reachable");
+                this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "@text/offline.not-reachable");
                 // restart initial access
                 scheduleInitialAccess(httpClient);
                 return;

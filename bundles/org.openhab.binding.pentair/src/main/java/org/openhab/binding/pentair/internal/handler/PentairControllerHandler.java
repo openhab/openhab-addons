@@ -47,7 +47,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -129,7 +128,7 @@ public class PentairControllerHandler extends PentairBaseThingHandler {
         PentairBaseBridgeHandler bridgeHandler = getBridgeHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
+            logger.debug("Bridge handler unavailable while bringing Thing online: {}", thing.getUID());
             return;
         }
 
