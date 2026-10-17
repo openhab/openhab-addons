@@ -27,10 +27,10 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class EntityStateCompressedEvent {
 
-    /** Map of newly added or initialized entities (Entity ID -&gt; State). */
+    /** Initial state snapshots for entities in the subscription (Entity ID -&gt; State). */
     public @Nullable Map<String, CompressedEntityState> a;
 
-    /** Map of entity state diffs and attribute updates (Entity ID -&gt; Delta). */
+    /** Live state changes and attribute updates since the previous event (Entity ID -&gt; Delta). */
     public @Nullable Map<String, CompressedEntityDiff> c;
 
     /** List of Entity IDs that were removed from Home Assistant. */

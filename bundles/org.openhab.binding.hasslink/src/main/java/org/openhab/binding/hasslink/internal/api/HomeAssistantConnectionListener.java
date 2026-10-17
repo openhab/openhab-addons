@@ -94,11 +94,10 @@ public interface HomeAssistantConnectionListener {
     void onEntityStateChanged(EntityState state);
 
     /**
-     * Called when a compressed entity state update or diff event is received
-     * from Home Assistant via the WebSocket {@code subscribe_entities} stream.
+     * Called when a compressed entity event is received from Home Assistant via the WebSocket
+     * {@code subscribe_entities} stream. Initial entity states are snapshots; subsequent state changes are diffs.
      *
-     * @param compressedEvent the compressed event payload containing entity additions,
-     *            state deltas, or removals
+     * @param compressedEvent the payload containing initial snapshots, state diffs, or removals
      */
     void onCompressedEvent(EntityStateCompressedEvent compressedEvent);
 }

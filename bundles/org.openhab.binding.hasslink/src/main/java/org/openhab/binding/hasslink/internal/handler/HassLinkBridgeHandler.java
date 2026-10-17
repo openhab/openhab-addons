@@ -319,15 +319,33 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
         });
     }
 
-    public void refreshEntity(String entityId) {
+    /**
+     * Replays the last known state for an entity to its handlers without requesting an update from Home Assistant.
+     *
+     * @param entityId the entity whose cached state should be replayed
+     */
+    public void replayCachedEntityState(String entityId) {
+        EntityState cachedState = lastKnownStates.get(entityId);
+        if (cachedState != null) {
+            cacheAndDispatchSnapshot(cachedState);
+        }
+    }
+
+    /**
+     * Requests Home Assistant to refresh an entity. The updated state is delivered asynchronously through the
+     * subscribed WebSocket state events.
+     *
+     * @param entityId the Home Assistant entity ID to refresh
+     */
+    public void requestEntityRefresh(String entityId) {
         EntityState cachedState = lastKnownStates.get(entityId);
         if (cachedState != null) {
             String imageSource = ImageUtils.extractImageSource(cachedState);
             if (imageSource != null) {
                 imageCache.invalidate(imageSource);
             }
-            dispatchState(cachedState);
         }
+        callService("homeassistant", "update_entity", entityId, null);
     }
 
     public void fetchImage(String pathOrUrl, @Nullable String imageLastUpdated, Consumer<RawType> consumer) {
@@ -541,7 +559,7 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
     public void onEntitiesSnapshot(List<EntityState> entities) {
         lastKnownStates.clear();
         for (EntityState state : entities) {
-            dispatchState(state);
+            cacheAndDispatchSnapshot(state);
         }
     }
 
@@ -599,6 +617,7 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
 
     @Override
     public void onCompressedEvent(EntityStateCompressedEvent compressedEvent) {
+        // Initial subscription states are snapshots, not live transitions; don't fire stateless trigger channels.
         Map<String, CompressedEntityState> addedEntities = compressedEvent.a;
         if (addedEntities != null) {
             for (Map.Entry<String, CompressedEntityState> entry : addedEntities.entrySet()) {
@@ -611,10 +630,11 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
                 String newState = Objects.requireNonNullElse(compState.state, "");
                 Map<String, JsonElement> newAttributes = Objects.requireNonNullElse(compState.attributes, Map.of());
                 EntityState state = new EntityState(entityId, newState, newAttributes);
-                dispatchState(state);
+                cacheAndDispatchSnapshot(state);
             }
         }
 
+        // Diffs represent live state changes and should use the normal update path, including trigger dispatch.
         Map<String, CompressedEntityDiff> diffEntities = compressedEvent.c;
         if (diffEntities != null) {
             for (Map.Entry<String, CompressedEntityDiff> entry : diffEntities.entrySet()) {
@@ -686,6 +706,18 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
         Set<HassLinkDeviceHandler> handlers = entityHandlers.get(entityId);
         if (handlers != null) {
             handlers.forEach(handler -> handler.onEntityStateUpdate(state));
+        }
+    }
+
+    private void cacheAndDispatchSnapshot(EntityState state) {
+        String entityId = state.entityId();
+        if (!EntityUtils.isValidEntityId(entityId)) {
+            return;
+        }
+        lastKnownStates.put(entityId, state);
+        Set<HassLinkDeviceHandler> handlers = entityHandlers.get(entityId);
+        if (handlers != null) {
+            handlers.forEach(handler -> handler.onEntityStateSnapshot(state));
         }
     }
 

@@ -29,6 +29,7 @@ import org.openhab.binding.hasslink.internal.HassLinkDynamicCommandDescriptionPr
 import org.openhab.binding.hasslink.internal.HassLinkDynamicStateDescriptionProvider;
 import org.openhab.binding.hasslink.internal.api.dto.EntityState;
 import org.openhab.binding.hasslink.internal.entity.impl.EventEntity;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -38,10 +39,16 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 import com.google.gson.JsonPrimitive;
 
+/**
+ * Unit tests for {@link HassLinkDeviceHandler}.
+ *
+ * @author Jimmy Tanagra - Initial contribution
+ */
 class HassLinkDeviceHandlerTest {
 
     private static final String ENTITY_ID = "event.test_button";
@@ -54,6 +61,45 @@ class HassLinkDeviceHandlerTest {
 
         verify(fixture.callback, times(1)).channelTriggered(fixture.thing, fixture.channelUID, "button_pressed");
         verify(fixture.callback, never()).isChannelLinked(fixture.channelUID);
+    }
+
+    @Test
+    void doesNotDispatchTriggerChannelForSnapshotReplay() throws ReflectiveOperationException {
+        HandlerFixture fixture = new HandlerFixture(ChannelKind.TRIGGER);
+
+        fixture.handler.onEntityStateSnapshot(fixture.entityState);
+
+        verify(fixture.callback, never()).channelTriggered(fixture.thing, fixture.channelUID, "button_pressed");
+    }
+
+    @Test
+    void replaysCachedStateWhenChannelIsLinked() throws ReflectiveOperationException {
+        HandlerFixture fixture = new HandlerFixture(ChannelKind.STATE);
+
+        fixture.handler.channelLinked(fixture.channelUID);
+
+        verify(fixture.bridgeHandler).replayCachedEntityState(ENTITY_ID);
+        verify(fixture.bridgeHandler, never()).requestEntityRefresh(ENTITY_ID);
+    }
+
+    @Test
+    void refreshCommandRequestsEntityUpdateFromHomeAssistant() throws ReflectiveOperationException {
+        HandlerFixture fixture = new HandlerFixture(ChannelKind.STATE);
+
+        fixture.handler.handleCommand(fixture.channelUID, RefreshType.REFRESH);
+
+        verify(fixture.bridgeHandler).requestEntityRefresh(ENTITY_ID);
+        verify(fixture.bridgeHandler, never()).replayCachedEntityState(ENTITY_ID);
+    }
+
+    @Test
+    void dispatchesConsecutiveLiveEventsWithTheSameType() throws ReflectiveOperationException {
+        HandlerFixture fixture = new HandlerFixture(ChannelKind.TRIGGER);
+
+        fixture.handler.onEntityStateUpdate(fixture.entityState);
+        fixture.handler.onEntityStateUpdate(fixture.entityState);
+
+        verify(fixture.callback, times(2)).channelTriggered(fixture.thing, fixture.channelUID, "button_pressed");
     }
 
     @Test
@@ -72,17 +118,20 @@ class HassLinkDeviceHandlerTest {
         private final EntityState entityState = new EntityState(ENTITY_ID, "event",
                 Map.of("event_type", new JsonPrimitive("button_pressed")));
         private final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        private final HassLinkBridgeHandler bridgeHandler = mock(HassLinkBridgeHandler.class);
         private final HassLinkDeviceHandler handler;
 
         HandlerFixture(ChannelKind channelKind) throws ReflectiveOperationException {
             ThingUID thingUID = new ThingUID(HassLinkBindingConstants.THING_TYPE_DEVICE, "test_device");
             ThingUID bridgeUID = new ThingUID(HassLinkBindingConstants.THING_TYPE_BRIDGE, "test_server");
             channelUID = new ChannelUID(thingUID, "event");
-            Channel channel = ChannelBuilder.create(channelUID).withKind(channelKind).build();
+            Configuration channelConfiguration = new Configuration();
+            channelConfiguration.put(HassLinkDeviceHandler.CONFIG_ENTITY_ID, ENTITY_ID);
+            Channel channel = ChannelBuilder.create(channelUID).withKind(channelKind)
+                    .withConfiguration(channelConfiguration).build();
             thing = ThingBuilder.create(HassLinkBindingConstants.THING_TYPE_DEVICE, thingUID).withBridge(bridgeUID)
                     .withChannel(channel).build();
 
-            HassLinkBridgeHandler bridgeHandler = mock(HassLinkBridgeHandler.class);
             Bridge bridge = mock(Bridge.class);
             when(callback.getBridge(bridgeUID)).thenReturn(bridge);
             when(bridge.getHandler()).thenReturn(bridgeHandler);

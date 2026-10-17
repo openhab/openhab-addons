@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -162,7 +163,32 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
         buildChannels(false);
     }
 
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        // Do not delegate to BaseThingHandler:
+        // its default implementation sends RefreshType, which requests a HA update.
+        Channel channel = getThing().getChannel(channelUID);
+        String entityId = channel == null ? null : getConfiguredEntityId(channel);
+        if (entityId != null) {
+            HassLinkBridgeHandler bridgeHandler = getBridgeHandler();
+            if (bridgeHandler != null) {
+                bridgeHandler.replayCachedEntityState(entityId);
+            }
+        }
+    }
+
     public void onEntityStateUpdate(EntityState entityState) {
+        applyEntityState(entityState, this::dispatchChannelData);
+    }
+
+    /**
+     * Applies a state snapshot without treating it as a live event or triggering stateless event channels.
+     */
+    public void onEntityStateSnapshot(EntityState entityState) {
+        applyEntityState(entityState, this::refreshChannelData);
+    }
+
+    private void applyEntityState(EntityState entityState, BiConsumer<Channel, ParsedData> channelDataDispatcher) {
         if (getCallback() == null) {
             return;
         }
@@ -176,7 +202,7 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
-        applyStateUpdates(entityState);
+        applyStateUpdates(entityState, channelDataDispatcher);
     }
 
     @Override
@@ -202,8 +228,8 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
     }
 
     private void handleRefreshCommand(Channel channel) {
-        Object entityIdConfig = channel.getConfiguration().get(CONFIG_ENTITY_ID);
-        if (!(entityIdConfig instanceof String entityId) || entityId.isBlank()) {
+        String entityId = getConfiguredEntityId(channel);
+        if (entityId == null) {
             return;
         }
 
@@ -212,8 +238,13 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        // Invalidate caches and push state updates back to openHAB channels
-        bridgeHandler.refreshEntity(entityId);
+        // Ask Home Assistant to update the entity; the resulting state arrives through the WebSocket subscription.
+        bridgeHandler.requestEntityRefresh(entityId);
+    }
+
+    private @Nullable String getConfiguredEntityId(Channel channel) {
+        Object entityIdConfig = channel.getConfiguration().get(CONFIG_ENTITY_ID);
+        return entityIdConfig instanceof String entityId && !entityId.isBlank() ? entityId : null;
     }
 
     /**
@@ -518,12 +549,12 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
         for (String entityId : entityToChannelsMap.keySet()) {
             EntityState state = bridgeHandler.getCachedEntityState(entityId);
             if (state != null) {
-                applyStateUpdates(state);
+                applyStateUpdates(state, this::refreshChannelData);
             }
         }
     }
 
-    private void applyStateUpdates(EntityState entityState) {
+    private void applyStateUpdates(EntityState entityState, BiConsumer<Channel, ParsedData> channelDataDispatcher) {
         List<Channel> channels = entityToChannelsMap.getOrDefault(entityState.entityId(), Set.of()).stream() //
                 .map(channelUID -> getThing().getChannel(channelUID)) //
                 .filter(Objects::nonNull) //
@@ -539,7 +570,7 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        EntityContext context = createEntityContext(bridgeHandler, channels);
+        EntityContext context = createEntityContext(bridgeHandler, channels, channelDataDispatcher);
 
         // Process state updates
         Map<String, ParsedData> parsedStates = entityType.parseState(entityState, context);
@@ -560,7 +591,7 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
 
             ParsedData data = parsedStates.get(attribute);
             if (data != null) {
-                dispatchChannelData(channel, data);
+                channelDataDispatcher.accept(channel, data);
             }
 
             StateDescriptionFragment fragment = entityType.getStateDescriptionFragment(entityState, attribute, context);
@@ -575,10 +606,11 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private void dispatchToAttributeChannels(List<Channel> channels, String attribute, ParsedData data) {
+    private void dispatchToAttributeChannels(List<Channel> channels, String attribute, ParsedData data,
+            BiConsumer<Channel, ParsedData> channelDataDispatcher) {
         for (Channel channel : channels) {
             if (attribute.equals(getAttribute(channel))) {
-                dispatchChannelData(channel, data);
+                channelDataDispatcher.accept(channel, data);
             }
         }
     }
@@ -605,6 +637,12 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
                 }
             }
             case ParsedData.TimeSeriesData(TimeSeries timeSeries) -> sendTimeSeries(channel.getUID(), timeSeries);
+        }
+    }
+
+    private void refreshChannelData(Channel channel, ParsedData data) {
+        if (channel.getKind() != ChannelKind.TRIGGER) {
+            dispatchChannelData(channel, data);
         }
     }
 
@@ -653,11 +691,12 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
     /**
      * Constructs an {@link EntityContext} tailored for state updates on specific channels.
      */
-    private EntityContext createEntityContext(@Nullable HassLinkBridgeHandler bridgeHandler, List<Channel> channels) {
+    private EntityContext createEntityContext(@Nullable HassLinkBridgeHandler bridgeHandler, List<Channel> channels,
+            BiConsumer<Channel, ParsedData> channelDataDispatcher) {
         Predicate<String> shouldProcessAttribute = attr -> channels.stream().filter(c -> attr.equals(getAttribute(c)))
                 .anyMatch(this::shouldDispatchChannel);
         return new EntityContext(bridgeHandler, shouldProcessAttribute,
-                (attribute, data) -> dispatchToAttributeChannels(channels, attribute, data));
+                (attribute, data) -> dispatchToAttributeChannels(channels, attribute, data, channelDataDispatcher));
     }
 
     /**
