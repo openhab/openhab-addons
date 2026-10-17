@@ -87,8 +87,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Storage<String> storage;
     private final HttpClient httpClient;
 
-    // written by the scheduler thread and by ThingActions, which run on a rule thread
-    private volatile @Nullable ScheduledFuture<?> refreshScheduler;
+    // guards refreshScheduler: the read/cancel/replace sequence must be atomic, otherwise a scheduled and a
+    // forced refresh can each cancel the same future and install their own replacement, leaving one untracked
+    private final Object refreshSchedulerLock = new Object();
+    // package-private for AccountHandlerTest, which verifies that a forced update replaces the pending refresh
+    @Nullable
+    ScheduledFuture<?> refreshScheduler;
     private List<PushMessage> eventQueue = new ArrayList<>();
     private boolean updateRunning = false;
 
@@ -113,18 +117,33 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void initialize() {
+        initialize(null);
+    }
+
+    /**
+     * Activates the handler.
+     *
+     * @param apiToUse API implementation to activate with, or {@code null} to create the real {@link Websocket}
+     */
+    // package-private for AccountHandlerTest: it must install its WebSocket mock before the first refresh is
+    // scheduled, otherwise that refresh runs against the real API and can reach the network
+    void initialize(@Nullable Websocket apiToUse) {
         disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(AccountConfiguration.class);
-        String configValidReason = validateConfig();
-        if (!configValidReason.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
-        } else {
-            api = new Websocket(this, httpClient, config, localeProvider, storage);
-            api.websocketDispose(false);
-            // tracked like every other refresh, otherwise a forced update or a keep alive could not move it
-            scheduleRefresh(2);
+        Websocket apiLocal = apiToUse;
+        if (apiLocal == null) {
+            String configValidReason = validateConfig();
+            if (!configValidReason.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
+                return;
+            }
+            apiLocal = new Websocket(this, httpClient, config, localeProvider, storage);
         }
+        api = apiLocal;
+        api.websocketDispose(false);
+        // tracked like every other refresh, otherwise a forced update or a keep alive could not move it
+        scheduleRefresh(2);
     }
 
     /**
@@ -135,14 +154,15 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             logger.debug("AccountHandler is disposed, skipping refresh");
             return;
         }
-        if (api.authTokenIsValid()) {
+        if (api.authTokenIsValid() || authorize()) {
             // The REST "vehicleattributes" endpoint only returns the small widget-tile attribute set and can
             // never trigger keepAlive(), so every refresh goes through the WebSocket; each vehicle then decides
             // whether it needs to stay alive (driving or charging).
+            //
+            // A refresh with an invalid token resumes the login above; requesting the update in the same pass keeps
+            // a force update during startup or authentication recovery from being delayed by a whole interval. When
+            // login failed the next regular refresh retries it.
             api.websocketUpdate();
-        } else {
-            // token is not valid - try to resume login
-            authorize();
         }
         scheduleRefresh(nextRefreshSeconds());
     }
@@ -161,17 +181,19 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private void scheduleRefresh(long delayInSeconds) {
-        if (disposed) {
-            logger.debug("AccountHandler is disposed, skipping scheduleRefresh");
-            return;
+        synchronized (refreshSchedulerLock) {
+            if (disposed) {
+                logger.debug("AccountHandler is disposed, skipping scheduleRefresh");
+                return;
+            }
+            ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
+            if (localRefreshScheduler != null) {
+                localRefreshScheduler.cancel(false);
+            }
+            Instant nextSchedule = Instant.now().plus(delayInSeconds, ChronoUnit.SECONDS);
+            logger.trace("Next schedule at {}", nextSchedule);
+            refreshScheduler = scheduler.schedule(this::refresh, delayInSeconds, TimeUnit.SECONDS);
         }
-        ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
-        if (localRefreshScheduler != null) {
-            localRefreshScheduler.cancel(false);
-        }
-        Instant nextSchedule = Instant.now().plus(delayInSeconds, ChronoUnit.SECONDS);
-        logger.trace("Next schedule at {}", nextSchedule);
-        refreshScheduler = scheduler.schedule(this::refresh, delayInSeconds, TimeUnit.SECONDS);
     }
 
     /**
@@ -225,12 +247,14 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void dispose() {
-        disposed = true;
-        ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
-        if (localRefreshScheduler != null) {
-            localRefreshScheduler.cancel(false);
+        synchronized (refreshSchedulerLock) {
+            disposed = true;
+            ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
+            if (localRefreshScheduler != null) {
+                localRefreshScheduler.cancel(false);
+            }
+            refreshScheduler = null;
         }
-        refreshScheduler = null;
         eventQueue.clear();
         api.websocketDispose(true);
     }

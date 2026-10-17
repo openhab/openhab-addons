@@ -13,21 +13,34 @@
 package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -35,12 +48,14 @@ import org.openhab.binding.mercedesme.internal.api.Websocket;
 import org.openhab.binding.mercedesme.internal.api.WebsocketMock;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
+import org.openhab.binding.mercedesme.internal.exception.MercedesMeAuthException;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.BridgeImpl;
 
@@ -79,6 +94,43 @@ public class AccountHandlerTest {
         @Override
         public boolean authTokenIsValid() {
             return true;
+        }
+    }
+
+    /**
+     * Drives the invalid-token path of {@link AccountHandler#refresh()}: the token is invalid until a login succeeds,
+     * and {@link WebsocketMock#login()} is replaced by a {@code login()} which either succeeds or fails.
+     */
+    private static class ConfigurableWebsocketMock extends WebsocketMock {
+        final AtomicInteger loginCount = new AtomicInteger();
+        final AtomicInteger updateCount = new AtomicInteger();
+        private final boolean loginSucceeds;
+        private volatile boolean authenticated;
+
+        ConfigurableWebsocketMock(AccountHandler atrl, HttpClient hc, AccountConfiguration ac, LocaleProvider l,
+                boolean loginSucceeds) {
+            super(atrl, hc, ac, l, new VolatileStorageService().getStorage(""));
+            this.loginSucceeds = loginSucceeds;
+        }
+
+        @Override
+        public void login() throws MercedesMeAuthException {
+            loginCount.incrementAndGet();
+            if (!loginSucceeds) {
+                throw new MercedesMeAuthException("login denied by test");
+            }
+            // a successful login stores a token pair, which is what authTokenIsValid() reports
+            authenticated = true;
+        }
+
+        @Override
+        public boolean authTokenIsValid() {
+            return authenticated;
+        }
+
+        @Override
+        public void websocketUpdate() {
+            updateCount.incrementAndGet();
         }
     }
 
@@ -177,9 +229,29 @@ public class AccountHandlerTest {
         assertEquals(1, ws.ackCount, "an update successfully delivered to an active handler must be acknowledged");
     }
 
-    @Test
-    void forceUpdateRefreshesImmediatelyAndRestartsTheRefreshInterval() throws InterruptedException {
-        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
+    /**
+     * Installs the WebSocket mock through the initialization seam, so the refresh scheduled by
+     * {@link AccountHandler#initialize()} already runs against the mock. The mock is handed over after construction
+     * because it needs the handler itself; it must be set before {@code initialize()} is called.
+     */
+    private static class ApiInjectedAccountHandler extends AccountHandler {
+        private @Nullable Websocket apiMock;
+
+        ApiInjectedAccountHandler(Bridge bridge, MercedesMeDiscoveryService mmds, HttpClient hc, LocaleProvider lp) {
+            super(bridge, mmds, hc, lp, new VolatileStorageService());
+        }
+
+        void setApiMock(Websocket apiMock) {
+            this.apiMock = apiMock;
+        }
+
+        @Override
+        public void initialize() {
+            initialize(apiMock);
+        }
+    }
+
+    private static ApiInjectedAccountHandler buildAccountHandler() {
         Map<String, Object> config = new HashMap<>();
         config.put("email", "test@junit.org");
         config.put("password", "junitPassword");
@@ -187,30 +259,144 @@ public class AccountHandlerTest {
         config.put("refreshInterval", 15);
         BridgeImpl bridge = new BridgeImpl(new ThingTypeUID("test", "account"), "MB");
         bridge.setConfiguration(new Configuration(config));
-        AccountHandler ah = new AccountHandler(bridge, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class),
-                mock(LocaleProvider.class), new VolatileStorageService());
-        ah.setCallback(new ThingCallbackListener());
+        return new ApiInjectedAccountHandler(bridge, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class),
+                mock(LocaleProvider.class));
+    }
+
+    private static void tearDown(AccountHandler ah) {
+        ah.dispose();
+    }
+
+    @Test
+    void forceUpdateRefreshesImmediatelyAndRestartsTheRefreshInterval() throws InterruptedException {
+        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
+        ApiInjectedAccountHandler ah = buildAccountHandler();
+        ThingCallbackListener tcl = new ThingCallbackListener();
+        ah.setCallback(tcl);
         try {
-            // initialize schedules the first regular refresh two seconds ahead
-            ah.initialize();
             CountingWebsocketMock ws = new CountingWebsocketMock(ah, mock(HttpClient.class), ah.config,
                     mock(LocaleProvider.class));
-            ah.api = ws;
+            ah.setApiMock(ws);
+            // the mock is in place before initialize() schedules the first refresh, so that refresh cannot reach the
+            // network even when this test thread is delayed
+            ah.initialize();
+            ScheduledFuture<?> firstRefresh = ah.refreshScheduler;
+            assertNotNull(firstRefresh, "initialize must schedule the first refresh");
+            assertTrue(firstRefresh.getDelay(TimeUnit.SECONDS) <= 2,
+                    "the first refresh must be scheduled shortly after initialization");
 
             ah.forceUpdate("WDB1230011ANONYMIZ");
-            assertTrue(ws.updateCount.get() >= 1, "forceUpdate must trigger an immediate update");
+            assertEquals(1, ws.updateCount.get(), "forceUpdate must trigger an immediate update");
 
-            // the refresh pending before the force update must be moved to the refresh interval - within the next
-            // seconds only the refresh already triggered by the force update may be observed
-            ws.updateCount.set(0);
-            Instant deadline = Instant.now().plusSeconds(3);
-            while (ws.updateCount.get() == 0 && Instant.now().isBefore(deadline)) {
-                Thread.sleep(50);
-            }
-            assertEquals(0, ws.updateCount.get(),
-                    "the refresh scheduled before the force update must be moved to the refresh interval");
+            ScheduledFuture<?> rescheduledRefresh = ah.refreshScheduler;
+            assertNotNull(rescheduledRefresh, "forceUpdate must leave a pending refresh");
+            assertNotSame(firstRefresh, rescheduledRefresh,
+                    "the refresh scheduled by initialize must be replaced by the forced update");
+            assertTrue(firstRefresh.isCancelled(),
+                    "the refresh scheduled before the force update must be cancelled, otherwise it would fire "
+                            + "shortly after the forced update");
+            // refreshInterval is 15 minutes, so anything clearly above the initial 2 seconds means the interval was
+            // restarted instead of the old pending refresh being kept
+            assertTrue(rescheduledRefresh.getDelay(TimeUnit.SECONDS) > 60,
+                    "the next regular refresh must follow the configured interval, not the previous schedule");
         } finally {
-            ah.dispose();
+            tearDown(ah);
+        }
+    }
+
+    @Test
+    void concurrentForceUpdatesLeaveExactlyOnePendingRefresh() throws InterruptedException {
+        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
+        ApiInjectedAccountHandler ah = buildAccountHandler();
+        ah.setCallback(new ThingCallbackListener());
+        try {
+            CountingWebsocketMock ws = new CountingWebsocketMock(ah, mock(HttpClient.class), ah.config,
+                    mock(LocaleProvider.class));
+            ah.setApiMock(ws);
+            ah.initialize();
+            assertNotNull(ah.refreshScheduler, "initialize must schedule the first refresh");
+
+            // overlapping force updates must not each install their own timer - the replacement has to be serialized
+            int threads = 8;
+            CyclicBarrier startTogether = new CyclicBarrier(threads);
+            ExecutorService starters = Executors.newFixedThreadPool(threads);
+            try {
+                List<Future<?>> started = new ArrayList<>();
+                for (int i = 0; i < threads; i++) {
+                    started.add(starters.submit(() -> {
+                        startTogether.await(5, TimeUnit.SECONDS);
+                        ah.forceUpdate("WDB1230011ANONYMIZ");
+                        return null;
+                    }));
+                }
+                for (Future<?> f : started) {
+                    try {
+                        f.get(10, TimeUnit.SECONDS);
+                    } catch (ExecutionException | TimeoutException e) {
+                        fail("force update did not finish in time", e);
+                    }
+                }
+            } finally {
+                starters.shutdownNow();
+            }
+
+            ScheduledFuture<?> pending = ah.refreshScheduler;
+            assertNotNull(pending, "overlapping force updates must leave a pending refresh");
+            long delay = pending.getDelay(TimeUnit.SECONDS);
+            assertTrue(delay > 60 && delay <= 17 * 60,
+                    "the surviving refresh must be the one restarted on the configured interval, but was " + delay
+                            + " seconds away");
+            assertEquals(threads, ws.updateCount.get(), "every force update must request an immediate update");
+        } finally {
+            tearDown(ah);
+        }
+    }
+
+    @Test
+    void refreshWithInvalidTokenRequestsUpdateImmediatelyAfterSuccessfulLogin() throws InterruptedException {
+        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
+        ApiInjectedAccountHandler ah = buildAccountHandler();
+        ah.setCallback(new ThingCallbackListener());
+        try {
+            ConfigurableWebsocketMock ws = new ConfigurableWebsocketMock(ah, mock(HttpClient.class), ah.config,
+                    mock(LocaleProvider.class), true);
+            ah.setApiMock(ws);
+            ah.initialize();
+            assertFalse(ws.authTokenIsValid(), "the test must start without a valid token");
+
+            ah.forceUpdate("WDB1230011ANONYMIZ");
+
+            assertEquals(1, ws.loginCount.get(), "an invalid token must be resumed with a login");
+            assertTrue(ws.authTokenIsValid(), "a successful login must yield a valid token");
+            // without the fix the login only stores the token and the vehicle data is requested one interval later
+            assertEquals(1, ws.updateCount.get(),
+                    "a force update must request the vehicle data as soon as the login succeeded");
+        } finally {
+            tearDown(ah);
+        }
+    }
+
+    @Test
+    void refreshWithFailedLoginDoesNotRequestUpdateAndKeepsRetrying() throws InterruptedException {
+        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
+        ApiInjectedAccountHandler ah = buildAccountHandler();
+        ThingCallbackListener tcl = new ThingCallbackListener();
+        ah.setCallback(tcl);
+        try {
+            ConfigurableWebsocketMock ws = new ConfigurableWebsocketMock(ah, mock(HttpClient.class), ah.config,
+                    mock(LocaleProvider.class), false);
+            ah.setApiMock(ws);
+            ah.initialize();
+
+            ah.forceUpdate("WDB1230011ANONYMIZ");
+
+            assertEquals(1, ws.loginCount.get(), "an invalid token must be resumed with a login");
+            assertEquals(0, ws.updateCount.get(), "a failed login must not request vehicle data");
+            assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(),
+                    "a failed login must report the account offline");
+            assertNotNull(ah.refreshScheduler, "a failed login must keep the regular refresh pending for a retry");
+        } finally {
+            tearDown(ah);
         }
     }
 
