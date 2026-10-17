@@ -124,8 +124,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 logger.debug("Set handler status to OFFLINE for thing {} (bridge OFFLINE)", getThing().getUID());
             }
         } else {
-            updateStatus(ThingStatus.UNKNOWN);
-            logger.debug("Set handler status to UNINITIALIZED for thing {}", getThing().getUID());
+            logger.debug("Bridge handler is null for thing {}", getThing().getUID());
         }
     }
 
