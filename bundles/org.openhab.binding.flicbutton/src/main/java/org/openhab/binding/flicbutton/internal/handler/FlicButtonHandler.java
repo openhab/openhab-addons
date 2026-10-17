@@ -169,11 +169,11 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
 
     // Cleanup delayedDisconnect on status change to online
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+    protected void updateStatus(ThingStatus status) {
         if (status == ThingStatus.ONLINE) {
             cancelDelayedDisconnectTask();
         }
-        super.updateStatus(status, statusDetail, description);
+        super.updateStatus(status);
     }
 
     private void cancelInitializationTask() {

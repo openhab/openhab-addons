@@ -192,16 +192,19 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-        scheduler.execute(() -> {
-            if (initPending && ThingStatus.ONLINE.equals(status)) {
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+        if (status == ThingStatus.ONLINE) {
+            scheduler.execute(() -> {
+                if (!initPending) {
+                    return;
+                }
                 final BridgeHandler handler = getBridgeHandler();
                 if (handler instanceof LinkTapBridgeHandler linkTapBridge) {
                     initAfterBridge(linkTapBridge);
                 }
-            }
-        });
+            });
+        }
     }
 
     protected abstract void runStartInit();

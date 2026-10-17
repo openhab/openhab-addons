@@ -1823,32 +1823,38 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Override method: Updates the thing status based on the given status, status detail, and description. If the
-     * status is ONLINE and the firmware property indicates that an update is available, then the description is
-     * overridden with the respective update state's translatable text. If the status detail is FIRMWARE_UPDATING,
-     * then the description is overridden with the translatable 'installing update' text. In all other cases,
-     * the given status, status detail, and description are used unchanged.
-     */
     @Override
-    protected void updateStatus(ThingStatus thingStatus, ThingStatusDetail detail, @Nullable String description) {
-        if (thingStatus == ThingStatus.ONLINE || detail == ThingStatusDetail.FIRMWARE_UPDATING) {
-            String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
-            UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
-            if (status != null) {
-                switch (status) {
-                    case INSTALLING:
-                        super.updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
-                        return;
-                    case READY_TO_INSTALL:
-                        super.updateStatus(ThingStatus.ONLINE, status.i18nKey());
-                        return;
-                    default:
-                }
-            }
-            // if there is no software update status preserve the caller-provided status information
+    protected void updateStatus(ThingStatus thingStatus) {
+        if (thingStatus != ThingStatus.ONLINE || !updateFirmwareStatus()) {
+            super.updateStatus(thingStatus);
         }
-        super.updateStatus(thingStatus, detail, description);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus thingStatus, @Nullable String description) {
+        if (thingStatus != ThingStatus.ONLINE || !updateFirmwareStatus()) {
+            super.updateStatus(thingStatus, description);
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        if (detail != ThingStatusDetail.FIRMWARE_UPDATING || !updateFirmwareStatus()) {
+            super.updateStatus(detail, description);
+        }
+    }
+
+    private boolean updateFirmwareStatus() {
+        String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
+        UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
+        if (status == UpdateStatusV2.INSTALLING) {
+            super.updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+            return true;
+        } else if (status == UpdateStatusV2.READY_TO_INSTALL) {
+            super.updateStatus(ThingStatus.ONLINE, status.i18nKey());
+            return true;
+        }
+        return false;
     }
 
     /**
