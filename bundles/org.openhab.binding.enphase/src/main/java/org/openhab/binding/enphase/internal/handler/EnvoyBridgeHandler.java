@@ -47,19 +47,20 @@ import org.openhab.binding.enphase.internal.EnphaseBindingConstants;
 import org.openhab.binding.enphase.internal.EnvoyConfiguration;
 import org.openhab.binding.enphase.internal.EnvoyHostAddressCache;
 import org.openhab.binding.enphase.internal.discovery.EnphaseDevicesDiscoveryService;
+import org.openhab.binding.enphase.internal.dto.EnsemblePowerDTO;
+import org.openhab.binding.enphase.internal.dto.EnsemblePowerDTO.DevicePowerDTO;
+import org.openhab.binding.enphase.internal.dto.EnsembleSecctrlDTO;
 import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO.DeviceDTO;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
-import org.openhab.binding.enphase.internal.dto.LivedataStatusDTO;
-import org.openhab.binding.enphase.internal.dto.LivedataStatusDTO.MetersDTO;
-import org.openhab.binding.enphase.internal.dto.LivedataStatusDTO.PowerDTO;
 import org.openhab.binding.enphase.internal.dto.PdmDeviceDataDTO;
 import org.openhab.binding.enphase.internal.exception.EnphaseException;
 import org.openhab.binding.enphase.internal.exception.EntrezConnectionException;
 import org.openhab.binding.enphase.internal.exception.EntrezJwtInvalidException;
 import org.openhab.binding.enphase.internal.exception.EnvoyConnectionException;
 import org.openhab.binding.enphase.internal.exception.EnvoyNoHostnameException;
+import org.openhab.binding.enphase.internal.exception.EnvoyUnsupportedEndpointException;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
@@ -118,7 +119,8 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     private @Nullable ExpiringCache<Map<String, PdmDeviceDataDTO>> deviceDataCache;
     private @Nullable EnvoyEnergyDTO productionDTO;
     private @Nullable EnvoyEnergyDTO consumptionDTO;
-    private @Nullable LivedataStatusDTO storageDTO;
+    private @Nullable EnsembleSecctrlDTO storageSecctrlDTO;
+    private @Nullable EnsemblePowerDTO storagePowerDTO;
     private FeatureStatus consumptionSupported = FeatureStatus.UNKNOWN;
     private FeatureStatus jsonSupported = FeatureStatus.UNKNOWN;
     private FeatureStatus deviceDataSupported = FeatureStatus.UNKNOWN;
@@ -168,28 +170,42 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     private void refreshStorage(final ChannelUID channelUID) {
-        final LivedataStatusDTO data = storageDTO;
-        final MetersDTO meters = data == null ? null : data.meters;
+        final EnsembleSecctrlDTO secctrl = storageSecctrlDTO;
 
-        if (meters == null) {
-            updateState(channelUID, UnDefType.UNDEF);
-            return;
-        }
         switch (channelUID.getIdWithoutGroup()) {
             case STORAGE_CHANNEL_WATTS_NOW:
-                final PowerDTO storage = meters.storage;
-                final Long milliWatts = storage == null ? null : storage.aggPMw;
-
-                updateState(channelUID, milliWatts == null ? UnDefType.UNDEF
-                        : new QuantityType<>(Math.round(milliWatts / 1000.0), Units.WATT));
+                updateState(channelUID, storagePowerState(storagePowerDTO));
                 break;
             case STORAGE_CHANNEL_STATE_OF_CHARGE:
-                updateState(channelUID, toState(meters.encAggSoc, Units.PERCENT));
+                updateState(channelUID, toState(secctrl == null ? null : secctrl.encAggSoc, Units.PERCENT));
                 break;
             case STORAGE_CHANNEL_AVAILABLE_ENERGY:
-                updateState(channelUID, toState(meters.encAggEnergy, Units.WATT_HOUR));
+                updateState(channelUID, toState(secctrl == null ? null : secctrl.encAggAvailEnergy, Units.WATT_HOUR));
                 break;
         }
+    }
+
+    /**
+     * @return the summed power of all IQ Batteries, or {@link UnDefType#UNDEF} if no battery reported its power.
+     */
+    private State storagePowerState(final @Nullable EnsemblePowerDTO power) {
+        final DevicePowerDTO[] devices = power == null ? null : power.devices;
+
+        if (devices == null) {
+            return UnDefType.UNDEF;
+        }
+        long milliWatts = 0;
+        boolean hasData = false;
+
+        for (final DevicePowerDTO device : devices) {
+            final Long realPowerMw = device.realPowerMw;
+
+            if (realPowerMw != null) {
+                milliWatts += realPowerMw;
+                hasData = true;
+            }
+        }
+        return hasData ? new QuantityType<>(Math.round(milliWatts / 1000.0), Units.WATT) : UnDefType.UNDEF;
     }
 
     /**
@@ -297,15 +313,14 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             }
         } catch (final EnvoyNoHostnameException e) {
             // ignore hostname exception here. It's already handled by others.
+        } catch (final EnvoyUnsupportedEndpointException e) {
+            logger.debug(
+                    "This Enphase Envoy device ({}) doesn't support ensemble data. So no battery things are available.",
+                    getThing().getUID());
+            ensembleSupported = FeatureStatus.UNSUPPORTED;
         } catch (final EnvoyConnectionException e) {
-            if (ensembleSupported == FeatureStatus.UNKNOWN) {
-                logger.debug(
-                        "This Enphase Envoy device ({}) doesn't seem to support ensemble data. So no battery things are available.",
-                        getThing().getUID());
-                ensembleSupported = FeatureStatus.UNSUPPORTED;
-            } else {
-                logger.trace("refreshEnsembleDevices connection problem", e);
-            }
+            // Transient problem (e.g. timeout); retried on the next refresh.
+            logger.trace("refreshEnsembleDevices connection problem", e);
         } catch (final EnphaseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -313,7 +328,8 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     private static Map<String, @Nullable DeviceDTO> toDevicesMap(final List<InventoryJsonDTO> inventory) {
-        return inventory.stream().flatMap(inv -> Stream.of(inv.devices).map(d -> {
+        // Entries without devices, like the grid profile entry in the ensemble inventory, are skipped.
+        return inventory.stream().filter(inv -> inv.devices != null).flatMap(inv -> Stream.of(inv.devices).map(d -> {
             d.type = inv.type;
             return d;
         })).collect(Collectors.toMap(DeviceDTO::getSerialNumber, Function.identity()));
@@ -542,21 +558,31 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             return;
         }
         try {
-            storageDTO = connectorWrapper.getConnector().getLivedataStatus();
+            final EnvoyConnector connector = connectorWrapper.getConnector();
+            final EnsembleSecctrlDTO secctrl = connector.getEnsembleSecctrl();
+            final EnsemblePowerDTO power = connector.getEnsemblePower();
+
+            storageSecctrlDTO = secctrl;
+            storagePowerDTO = power;
             storageSupported = FeatureStatus.SUPPORTED;
         } catch (final EnvoyNoHostnameException e) {
             // ignore hostname exception here. It's already handled by others.
+        } catch (final EnvoyUnsupportedEndpointException e) {
+            clearStorageData();
+            logger.info(
+                    "This Enphase Envoy device ({}) doesn't support battery storage data. So no storage channels are set.",
+                    getThing().getUID());
+            storageSupported = FeatureStatus.UNSUPPORTED;
         } catch (final EnvoyConnectionException e) {
-            storageDTO = null;
-            if (storageSupported == FeatureStatus.UNKNOWN) {
-                logger.info(
-                        "This Enphase Envoy device ({}) doesn't seem to support battery storage data. So no storage channels are set.",
-                        getThing().getUID());
-                storageSupported = FeatureStatus.UNSUPPORTED;
-            } else {
-                logger.trace("setStorageDTOData connection problem", e);
-            }
+            // Transient problem (e.g. timeout); retried on the next refresh.
+            clearStorageData();
+            logger.trace("setStorageDTOData connection problem", e);
         }
+    }
+
+    private void clearStorageData() {
+        storageSecctrlDTO = null;
+        storagePowerDTO = null;
     }
 
     /**

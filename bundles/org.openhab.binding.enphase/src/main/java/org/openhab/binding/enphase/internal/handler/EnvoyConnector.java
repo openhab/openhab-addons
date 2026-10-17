@@ -36,16 +36,18 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.enphase.internal.EnphaseBindingConstants;
 import org.openhab.binding.enphase.internal.EnvoyConfiguration;
+import org.openhab.binding.enphase.internal.dto.EnsemblePowerDTO;
+import org.openhab.binding.enphase.internal.dto.EnsembleSecctrlDTO;
 import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
 import org.openhab.binding.enphase.internal.dto.EnvoyErrorDTO;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
-import org.openhab.binding.enphase.internal.dto.LivedataStatusDTO;
 import org.openhab.binding.enphase.internal.dto.PdmDeviceDataDTO;
 import org.openhab.binding.enphase.internal.dto.ProductionJsonDTO;
 import org.openhab.binding.enphase.internal.exception.EnphaseException;
 import org.openhab.binding.enphase.internal.exception.EnvoyConnectionException;
 import org.openhab.binding.enphase.internal.exception.EnvoyNoHostnameException;
+import org.openhab.binding.enphase.internal.exception.EnvoyUnsupportedEndpointException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +77,8 @@ public class EnvoyConnector {
     private static final String INVERTERS_URL = PRODUCTION_URL + "/inverters";
     private static final String DEVICE_DATA_URL = "/ivp/pdm/device_data";
     private static final String ENSEMBLE_INVENTORY_URL = "/ivp/ensemble/inventory";
-    private static final String LIVEDATA_STATUS_URL = "/ivp/livedata/status";
+    private static final String ENSEMBLE_SECCTRL_URL = "/ivp/ensemble/secctrl";
+    private static final String ENSEMBLE_POWER_URL = "/ivp/ensemble/power";
     private static final String INFO_XML = "/info.xml";
     private static final String JSON_KEY_SERIAL_NUMBER = "sn";
 
@@ -204,11 +207,17 @@ public class EnvoyConnector {
     }
 
     /**
-     * @return Returns the live status data, which contains the aggregated battery storage data, from the Envoy
-     *         gateway.
+     * @return Returns the aggregated IQ Battery data (state of charge, available energy) from the Envoy gateway.
      */
-    public LivedataStatusDTO getLivedataStatus() throws EnphaseException {
-        return retrieveData(LIVEDATA_STATUS_URL, json -> gson.fromJson(json, LivedataStatusDTO.class));
+    public EnsembleSecctrlDTO getEnsembleSecctrl() throws EnphaseException {
+        return retrieveData(ENSEMBLE_SECCTRL_URL, json -> gson.fromJson(json, EnsembleSecctrlDTO.class));
+    }
+
+    /**
+     * @return Returns the power of each IQ Battery from the Envoy gateway.
+     */
+    public EnsemblePowerDTO getEnsemblePower() throws EnphaseException {
+        return retrieveData(ENSEMBLE_POWER_URL, json -> gson.fromJson(json, EnsemblePowerDTO.class));
     }
 
     private @Nullable List<InventoryJsonDTO> jsonToEnvoyInventoryJson(final String json) {
@@ -278,6 +287,8 @@ public class EnvoyConnector {
                     throw new EnvoyConnectionException("No data received");
                 }
                 return result;
+            } else if (response.getStatus() == HttpStatus.NOT_FOUND_404) {
+                throw new EnvoyUnsupportedEndpointException("Endpoint not supported by the Envoy: " + urlPath);
             } else {
                 final @Nullable EnvoyErrorDTO error = gson.fromJson(content, EnvoyErrorDTO.class);
 
