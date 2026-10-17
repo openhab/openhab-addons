@@ -71,6 +71,7 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
     private volatile boolean disposed;
     private @Nullable ScheduledFuture<?> job;
     private @Nullable ScheduledFuture<?> callbackJob;
+    private @Nullable String reconciledCallbackId;
     private TedeeBridgeConfiguration cfg = new TedeeBridgeConfiguration();
     private final Logger logger = LoggerFactory.getLogger(TedeeBridgeHandler.class);
 
@@ -102,6 +103,7 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
     @Override
     public void initialize() {
         disposed = false;
+        reconciledCallbackId = null;
         cfg = getConfigAs(TedeeBridgeConfiguration.class);
         if (cfg.ip.isBlank() || cfg.apiToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -304,10 +306,13 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
                 if (callbackUrl.equals(url) && "POST".equalsIgnoreCase(method) && !callbackPresent
                         && callbackId != null) {
                     // Tedee omits callback header values from the GET response. Refresh the callback in place
-                    // so the current handler secret is applied without deleting it first.
-                    currentApi.updateCallback(callbackId, callbackUrl, webhookSecret);
+                    // once per handler lifecycle so the current handler secret is applied without deleting it.
+                    if (!callbackId.equals(reconciledCallbackId)) {
+                        currentApi.updateCallback(callbackId, callbackUrl, webhookSecret);
+                        reconciledCallbackId = callbackId;
+                        logger.debug("Updated Tedee webhook callback at {}", callbackUrl);
+                    }
                     callbackPresent = true;
-                    logger.debug("Updated Tedee webhook callback at {}", callbackUrl);
                 } else if (callbackId != null) {
                     currentApi.deleteCallback(callbackId);
                     logger.info("Removed stale Tedee callback {}", callbackId);
