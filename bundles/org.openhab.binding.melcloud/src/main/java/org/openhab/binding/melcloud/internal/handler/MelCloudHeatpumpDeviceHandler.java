@@ -152,7 +152,12 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
         logger.debug("Received command '{}' to channel {}", command, channelUID);
 
         if (command instanceof RefreshType) {
-            logger.debug("Refresh command not supported");
+            HeatpumpDeviceStatus cachedHeatpumpDeviceStatus = this.heatpumpDeviceStatus;
+            if (cachedHeatpumpDeviceStatus != null) {
+                updateChannels(channelUID.getId(), cachedHeatpumpDeviceStatus);
+            } else {
+                logger.debug("No cached data available yet, ignoring refresh command");
+            }
             return;
         }
 
