@@ -172,7 +172,7 @@ public class GridBoxHandler extends BaseThingHandler {
             reConnectAttempts = 0;
         } catch (GridBoxApiAuthenticationException e) {
             // maybe the authentication is no longer valid, so try to re-authenticate
-            updateStatus(ThingStatusDetail.AUTHORIZATION_REQUIRED,
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
                     "@text/offline.configuration-error.authenticationlost");
             stopUpdater();
             config.idToken = null;

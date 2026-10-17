@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.pentair.internal.handler;
 
-import java.nio.channels.Channel;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,6 +26,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -35,6 +35,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

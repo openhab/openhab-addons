@@ -15,7 +15,6 @@ package org.openhab.binding.boschindego.internal.handler;
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschindego.internal.AuthorizationController;
 import org.openhab.binding.boschindego.internal.AuthorizationListener;
 import org.openhab.binding.boschindego.internal.AuthorizationProvider;
@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -88,7 +89,8 @@ public class BoschAccountHandler extends BaseBridgeHandler implements Authorizat
                 authorizationController.getAccessToken();
                 updateStatus(ThingStatus.ONLINE);
             } catch (OAuthException | OAuthResponseException e) {
-                updateStatus(ThingStatusDetail.OFFLINE.AUTHORIZATION_PENDING, "@text/offline.conf-error.oauth2-unauthorized");
+                updateStatus(ThingStatusDetail.OFFLINE.AUTHORIZATION_PENDING,
+                        "@text/offline.conf-error.oauth2-unauthorized");
             } catch (IOException e) {
                 updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "@text/offline.comm-error.oauth2-authorization-failed");
