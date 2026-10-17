@@ -126,7 +126,7 @@ public class ChaserThingHandler extends DmxThingHandler {
     @Override
     public void initialize() {
         if (!(this.getBridge() instanceof Bridge bridge
-                && bridge.getHandler() instanceof DMXBridgeHandler bridgeHandler)) {
+                && bridge.getHandler() instanceof DmxBridgeHandler bridgeHandler)) {
             logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }

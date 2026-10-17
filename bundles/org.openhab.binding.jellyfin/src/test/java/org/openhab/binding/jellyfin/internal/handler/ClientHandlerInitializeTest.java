@@ -20,17 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import org.openhab.binding.jellyfin.internal.config.ImageChannelConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 /**
@@ -51,10 +46,8 @@ class ClientHandlerInitializeTest {
      * parameter as {@code deviceId} (the event-bus subscription key).
      *
      * <p>
-     * The bridge check runs after the config read and fails because the mock
-     * thing has no bridgeUID. That OFFLINE status update is captured to confirm
-     * the serialNumber gate was passed. The {@code deviceId} field is then read
-     * via reflection to assert the correct value.
+     * The bridge check returns after reading the configuration because the mock
+     * Thing has no bridge UID. The {@code deviceId} field is then read via reflection.
      */
     @Test
     void testInitialize_usesSerialNumberAsSubscriptionKey() throws Exception {
@@ -70,14 +63,7 @@ class ClientHandlerInitializeTest {
 
         handler.initialize();
 
-        // The first CONFIGURATION_ERROR must be "No bridge…", NOT "Missing serialNumber…",
-        // which proves the serialNumber gate was passed successfully.
-        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        verify(callback).statusUpdated(eq(thing), statusCaptor.capture());
-        ThingStatusInfo status = statusCaptor.getValue();
-        assertEquals(ThingStatus.OFFLINE, status.getStatus());
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail());
-        assertEquals("@text/error.configuration.no-bridge", status.getDescription());
+        verifyNoInteractions(callback);
 
         // The internal deviceId field must equal the serialNumber, not the ThingUID segment.
         Field deviceIdField = ClientHandler.class.getDeclaredField("deviceId");
