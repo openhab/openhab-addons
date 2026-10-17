@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="binding:smartthings">
+		<parameter name="discoveryConcurrency" type="integer" min="1" max="32">
+			<label>Discovery Concurrency</label>
+			<description>Maximum number of appliance addresses probed simultaneously.</description>
+			<default>16</default>
+		</parameter>
+		<parameter name="discoverySubnet" type="text">
+			<label>Discovery Subnet</label>
+			<description>Optional private IPv4 CIDR override for user-triggered Inbox scans, for example 192.168.1.0/24.
+				When
+				empty, the primary IPv4 interface's subnet from Network settings is used. Only
+				10.0.0.0/8, 172.16.0.0/12 and
+				192.168.0.0/16 addresses with a /24 to /32 prefix are accepted.
+				No background scanning is performed.</description>
+		</parameter>
+		<parameter name="discoverUnclassified" type="boolean">
+			<label>Discover Unclassified Appliances</label>
+			<description>Also add devices that do not advertise one of the supported appliance families as generic Things for
+				diagnosis. This does not make them compatible with the binding.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:smartthings:device">
+		<parameter name="host" type="text" required="true">
+			<context>network-address</context>
+			<label>Appliance Address</label>
+			<description>Host name or IP address of the appliance on the same network.</description>
+		</parameter>
+		<parameter name="port" type="integer" min="0" max="65535">
+			<label>Secure CoAP Port</label>
+			<description>Advertised DTLS port. Zero discovers the secure port from this host using public CoAP discovery.</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="clientPort" type="integer" min="0" max="65535">
+			<label>Client UDP Port</label>
+			<description>Client UDP port. Zero selects a deterministic stable port. Use an explicit unused port if
+				multiple Things
+				would conflict.</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="10" unit="s">
+			<label>Refresh Interval</label>
+			<description>Delay between fallback resource polls when event subscriptions are unavailable, in seconds.</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="timeout" type="integer" min="1" max="60" unit="s">
+			<label>Request Timeout</label>
+			<description>Maximum duration of each discovery or authenticated CoAP request, in seconds.</description>
+			<default>12</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="deviceId" type="text">
+			<label>Expected Device UUID</label>
+			<description>Optional expected appliance UUID. The authenticated device identity must match; otherwise the first
+				authenticated identity is remembered for this Thing.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="keyStore" type="text">
+			<label>Client PKCS12 Key Store</label>
+			<description>Absolute path on the openHAB server to a PKCS12 key store containing one authorized client private key
+				and its certificate chain. Leave empty to generate and retain a client identity automatically.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="keyStorePassword" type="text">
+			<context>password</context>
+			<label>Key Store Password</label>
+			<description>Password protecting the client PKCS12 key store and private key.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="serverFingerprint" type="text">
+			<label>Server Certificate SHA-256 Fingerprint</label>
+			<description>Explicitly trusted appliance leaf certificate fingerprint obtained through an authenticated,
+				out-of-band
+				source. Leave empty to trust the bundled Samsung OCF CA, which is community-sourced and whose
+				manufacturer provenance
+				has not been independently authenticated. Hexadecimal, with optional colon separators.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="ownerId" type="text">
+			<label>Owner UUID</label>
+			<description>Owner UUID associated with an imported OwnerPSK. Not the device UUID.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="ownerPsk" type="text">
+			<context>password</context>
+			<label>OwnerPSK</label>
+			<description>Previously provisioned, authorized owner pre-shared key: 16 or 32 bytes encoded as hexadecimal. Use
+				either this mode or certificate authentication.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

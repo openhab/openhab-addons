@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Boolean resource state. Writes are accepted only when live appliance capabilities and Remote Control
+			permit them.</description>
+	</channel-type>
+	<channel-type id="switch-readonly">
+		<item-type>Switch</item-type>
+		<label>Switch State</label>
+		<description>Read-only boolean resource state.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="switch-readonly-advanced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Advanced Switch State</label>
+		<description>Read-only boolean state for an ancillary appliance resource.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>Numeric resource state. The channel description reports validated command ranges when available;
+			otherwise supported command values depend on live device capabilities.</description>
+	</channel-type>
+	<channel-type id="number-readonly">
+		<item-type>Number</item-type>
+		<label>Number State</label>
+		<description>Read-only numeric resource state. No unit or range is inferred.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="number-readonly-advanced" advanced="true">
+		<item-type>Number</item-type>
+		<label>Advanced Number State</label>
+		<description>Read-only numeric state for an ancillary appliance resource.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="energy-readonly">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label>Energy State</label>
+		<description>Read-only energy measurement in the device-reported unit.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="time">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration in seconds. Valid command ranges and increments are supplied from the appliance.</description>
+	</channel-type>
+	<channel-type id="time-readonly">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Time State</label>
+		<description>Read-only duration in seconds.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="percentage-readonly">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Percentage</label>
+		<description>Read-only percentage from 0 to 100.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature in the device-reported unit. Writes require a valid advertised range and increment.</description>
+		<category>Temperature</category>
+	</channel-type>
+	<channel-type id="temperature-readonly">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature State</label>
+		<description>Read-only temperature in the device-reported unit.</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>Setting</label>
+		<description>Text resource state. Mode channels report the exact command values advertised by the appliance, with
+			display names when available. Other valid commands depend on live device capabilities.</description>
+	</channel-type>
+	<channel-type id="string-readonly">
+		<item-type>String</item-type>
+		<label>Text State</label>
+		<description>Read-only text or JSON representation of a non-security resource.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="string-readonly-advanced" advanced="true">
+		<item-type>String</item-type>
+		<label>Advanced Text State</label>
+		<description>Read-only text state for an ancillary appliance resource.</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
