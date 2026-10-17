@@ -147,28 +147,31 @@ public class KeContactTransceiver {
                 isStarted = true;
                 localTransceiverThread.start();
                 logger.debug("Started the KEBA KeContact transceiver");
+            } catch (BindException e) {
+                cleanupFailedStart(localSelector, localBroadcastChannel, localTransceiverThread);
+                logger.warn("KEBA UDP listener port {} is unavailable: {}", listenerPort, e.getMessage());
             } catch (IOException | RuntimeException e) {
-                isStarted = false;
-                selector = null;
-                broadcastChannel = null;
-                transceiverThread = null;
-                if (localTransceiverThread != null) {
-                    localTransceiverThread.interrupt();
-                }
-                for (KeContactHandler listener : handlerSnapshot()) {
-                    removeConnection(listener, localSelector);
-                }
-                closeQuietly(localBroadcastChannel);
-                closeQuietly(localSelector);
-                if (e instanceof BindException) {
-                    logger.error("An exception occurred while starting the KEBA KeContact transceiver: {}",
-                            e.getMessage());
-                } else {
-                    logger.error("An exception occurred while starting the KEBA KeContact transceiver: {}",
-                            e.getMessage(), e);
-                }
+                cleanupFailedStart(localSelector, localBroadcastChannel, localTransceiverThread);
+                logger.error("An exception occurred while starting the KEBA KeContact transceiver: {}", e.getMessage(),
+                        e);
             }
         }
+    }
+
+    private void cleanupFailedStart(Selector localSelector, @Nullable DatagramChannel localBroadcastChannel,
+            @Nullable Thread localTransceiverThread) {
+        isStarted = false;
+        selector = null;
+        broadcastChannel = null;
+        transceiverThread = null;
+        if (localTransceiverThread != null) {
+            localTransceiverThread.interrupt();
+        }
+        for (KeContactHandler listener : handlerSnapshot()) {
+            removeConnection(listener, localSelector);
+        }
+        closeQuietly(localBroadcastChannel);
+        closeQuietly(localSelector);
     }
 
     public void stop() {

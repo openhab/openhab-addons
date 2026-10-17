@@ -69,7 +69,7 @@ Configuration is grouped with Common settings first, followed by Modbus TCP, UDP
 
 For UDP display commands only, set `udpEnabled=true` and `udpDisplayOnly=true`. This is useful when Modbus or
 REST supplies measurements and additional UDP data is not needed. Shared polling intervals must remain at least
-10 seconds; Only the UDP `display` channel and `setDisplay` rule actions remain available; channels supplied by
+10 seconds. Only the UDP `display` channel and `setDisplay` rule actions remain available; channels supplied by
 Modbus or REST are unaffected.
 
 Display-only mode sends no startup probes or cyclic UDP reports. The first display request reads report 1 for
@@ -448,7 +448,7 @@ Number:ElectricCurrent    KebaI3                                                
 Number:ElectricPotential  KebaU1                                                          {channel="keba:kecontact:combined:U1"}
 Number:ElectricPotential  KebaU2                                                          {channel="keba:kecontact:combined:U2"}
 Number:ElectricPotential  KebaU3                                                          {channel="keba:kecontact:combined:U3"}
-Number:Power              KebaPower             "Energy during current session [%.1f W]"  {channel="keba:kecontact:combined:power"}
+Number:Power              KebaPower             "Charging power [%.1f W]"                 {channel="keba:kecontact:combined:power"}
 Number:Energy             KebaSessionEnergy                                               {channel="keba:kecontact:combined:sessionconsumption"}
 Number:Energy             KebaTotalEnergy       "Energy during all sessions [%.1f Wh]"    {channel="keba:kecontact:combined:totalconsumption"}
 Switch                    KebaInputSwitch                                                 {channel="keba:kecontact:combined:input"}
@@ -477,7 +477,7 @@ sitemap demo label="Main Menu"
     Text    item=KebaFailSafeCurrent
     Text    item=KebaSessionEnergy
     Text    item=KebaTotalEnergy
-    Switch  item=KebaSetEnergyLimit
+    Setpoint item=KebaSetEnergyLimit
   }
 }
 ```
@@ -569,7 +569,7 @@ The right configuration can be validated as follows:
 ### Modbus TCP Port Used
 
 The default Modbus TCP port is `502` (configurable via the `port` parameter); the default Unit ID is `255` (configurable via the `unitId` parameter).
-Unlike the UDP interface, the Modbus TCP interface is disabled by default and must be enabled explicitly:
+The binding's `modbusEnabled` setting defaults to `true`, but Modbus TCP must also be enabled on the wallbox:
 
 - On the KeContact P30, set `DIP switch 1.3` to `ON`, then select Modbus TCP via the WebGUI or Installation Manual instructions. Depending on model, firmware, and configuration, UDP may also remain available for commands such as `setDisplay`; disable UDP probing in the combined Thing if its reports are not needed.
 - On the KeContact P40, there are no DIP switches; enable the Modbus TCP interface and configure its port/Unit ID via the KEBA eMobility App, OCPP or REST API.

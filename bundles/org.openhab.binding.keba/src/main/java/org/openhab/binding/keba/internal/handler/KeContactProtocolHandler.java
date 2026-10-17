@@ -22,6 +22,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.State;
 
 /**
@@ -91,10 +93,19 @@ public abstract class KeContactProtocolHandler extends BaseThingHandler {
     public void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
         Listener localListener = listener;
         if (localListener == null) {
-            super.updateStatus(status, detail, description);
+            ThingHandlerCallback callback = getCallback();
+            if (callback != null) {
+                callback.statusUpdated(getThing(),
+                        ThingStatusInfoBuilder.create(status, detail).withDescription(description).build());
+            }
         } else {
             localListener.statusUpdated(status, detail, description);
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        updateStatus(status, ThingStatusDetail.NONE, null);
     }
 
     @Override

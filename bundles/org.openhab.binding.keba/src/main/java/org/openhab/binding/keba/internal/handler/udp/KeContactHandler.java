@@ -222,11 +222,6 @@ public class KeContactHandler extends KeContactProtocolHandler {
         return this;
     }
 
-    @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-    }
-
     private void pollingRunnable() {
         try {
             logger.debug("Running pollingRunnable to connect Keba wallbox");

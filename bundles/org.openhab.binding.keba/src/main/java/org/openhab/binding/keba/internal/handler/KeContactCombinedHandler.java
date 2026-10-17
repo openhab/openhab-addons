@@ -52,6 +52,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.ThingType;
@@ -179,13 +180,13 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         boolean validRestPort = !restEnabled || config.restPort >= 1 && config.restPort <= 65535;
         if (!validModbus || !validWallboxAddress || !validRestPort || config.refreshInterval < 10
                 || config.refreshIntervalSlow < 10) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            reportStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configure enabled protocol endpoints and valid refresh intervals");
             return;
         }
         String password = config.password;
         if (restEnabled && (password == null || password.isBlank())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            reportStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configure REST credentials or disable REST");
             return;
         }
@@ -193,7 +194,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             try {
                 config.getRestBaseUrl();
             } catch (IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                reportStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Invalid wallbox network address for REST");
                 return;
             }
@@ -796,8 +797,17 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         } else if (localSession.modbusPending || localSession.udpPending || localSession.restPending) {
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            reportStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "No wallbox protocol is responding; enable Modbus/UDP or configure REST credentials");
+        }
+    }
+
+    private void reportStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
+        @Nullable
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            callback.statusUpdated(getThing(),
+                    ThingStatusInfoBuilder.create(status, detail).withDescription(description).build());
         }
     }
 

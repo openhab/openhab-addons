@@ -80,6 +80,7 @@ import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeRegistry;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.w3c.dom.Element;
@@ -94,6 +95,38 @@ import com.google.gson.JsonParser;
  * @author Michael Weger - Initial contribution
  */
 class KeContactCombinedHandlerTest {
+
+    @Test
+    void forwardsSingleArgumentStatusUpdatesToCombinedListener() {
+        Thing fixtureThing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:statusrouting")).build();
+        KeContactProtocolHandler.Listener listener = Objects
+                .requireNonNull(mock(KeContactProtocolHandler.Listener.class));
+        class TestProtocolHandler extends KeContactProtocolHandler {
+            TestProtocolHandler() {
+                super(fixtureThing, null, listener);
+            }
+
+            @Override
+            public void initialize() {
+            }
+
+            @Override
+            public void handleCommand(ChannelUID channelUID, Command command) {
+            }
+
+            void markOnline() {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
+        TestProtocolHandler handler = new TestProtocolHandler();
+        try {
+            handler.markOnline();
+            verify(listener).statusUpdated(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+        } finally {
+            handler.dispose();
+        }
+    }
 
     @Test
     void forwardsModbusTriggerResetsWithoutBypassingReadPrecedence() {
@@ -331,11 +364,11 @@ class KeContactCombinedHandlerTest {
             assertNotNull(handler.getThing().getChannel(new ChannelUID(uid, "display")));
             assertNotNull(handler.getThing().getChannel(new ChannelUID(uid, "state")));
             assertNotNull(handler.getThing().getChannel(new ChannelUID(uid, "power")));
-            assertEquals(new ChannelTypeUID("keba", "x1"),
-                    handler.getThing().getChannel(new ChannelUID(uid, "input")).getChannelTypeUID());
-            assertEquals("Number", handler.getThing().getChannel(new ChannelUID(uid, "input")).getAcceptedItemType());
-            assertEquals("Number:Power",
-                    handler.getThing().getChannel(new ChannelUID(uid, "power")).getAcceptedItemType());
+            var inputChannel = Objects.requireNonNull(handler.getThing().getChannel(new ChannelUID(uid, "input")));
+            var powerChannel = Objects.requireNonNull(handler.getThing().getChannel(new ChannelUID(uid, "power")));
+            assertEquals(new ChannelTypeUID("keba", "x1"), inputChannel.getChannelTypeUID());
+            assertEquals("Number", inputChannel.getAcceptedItemType());
+            assertEquals("Number:Power", powerChannel.getAcceptedItemType());
             assertNull(handler.getThing().getChannel(new ChannelUID(uid, "cablestate")));
             assertNull(handler.getThing().getChannel(new ChannelUID(uid, "temperature")));
 
