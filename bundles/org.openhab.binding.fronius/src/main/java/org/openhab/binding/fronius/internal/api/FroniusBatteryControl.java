@@ -213,13 +213,14 @@ public class FroniusBatteryControl {
     }
 
     /**
-     * Sets an all-day, all-week schedule entry for the given schedule type, replacing all existing entries of that
-     * type. Entries of other schedule types are preserved, unlike with the reset based battery control methods.
+     * Sets an all-day, all-week schedule entry for the given schedule type, replacing an existing all-time entry of
+     * that type. Entries of other schedule types are preserved, unlike with the reset based battery control methods.
      *
      * @param scheduleType the type of the schedule
      * @param power the power value for the schedule
      * @throws FroniusCommunicationException when an error occurs during communication with the inverter
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     * @throws IllegalArgumentException when the power is invalid or other entries of that schedule type exist
      */
     public void setAllTimeSchedule(ScheduleType scheduleType, QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {

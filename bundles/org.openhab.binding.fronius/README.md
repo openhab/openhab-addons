@@ -134,8 +134,9 @@ They read from and write to the inverter's settings through its config API.
 Since reading these settings requires a login to the inverter, they are not part of the fast polling cycle, but refreshed every `batterySettingsRefreshInterval` minutes (and after each write), so changes made through the inverter's web UI show up with a delay.
 Commands sent to the writable channels are applied to the inverter immediately.
 
-The charge/discharge power limit channels (`min-charge-power`, `max-charge-power`, `min-discharge-power` and `max-discharge-power`) reflect the limit currently in effect: the first active time of use entry (in table order, matching the priority shown in the inverter web UI) whose weekday and time range match the current time determines the value; without a matching entry the channel is `UNDEF`.
-Writing such a channel replaces all time of use entries of its schedule type with a single all-time entry, so it clashes with schedules added through the [Actions](#actions) - entries of the other schedule types are preserved.
+The charge/discharge power limit channels (`min-charge-power`, `max-charge-power`, `min-discharge-power` and `max-discharge-power`) reflect the limit currently in effect: of the active time of use entries of the channel's schedule type whose weekday and time range match the current time (in the time zone configured in openHAB), the most restrictive one determines the value, as the inverter applies it; without a matching entry the channel is `UNDEF`.
+Writing such a channel sets a single all-time entry of its schedule type, entries of the other schedule types are preserved.
+The write is refused while other entries of that schedule type exist, e.g. schedules added through the [Actions](#actions) or the inverter web UI, so that they are not destroyed.
 
 ### `meter` Thing Channels
 

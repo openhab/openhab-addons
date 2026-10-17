@@ -344,9 +344,8 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
 
     /**
      * Reads the time of use table and updates the charge/discharge power limit channels with the limits in effect
-     * right now: the first active entry (in table order, matching the priority shown in the inverter web UI) whose
-     * weekday and time range match the current time determines the value; without a matching entry the channel is
-     * UNDEF.
+     * right now: of the active entries whose weekday and time range match the current time, the most restrictive one
+     * determines the value; without a matching entry the channel is UNDEF.
      */
     private void refreshTimeOfUseChannels(FroniusBatteryControl control) {
         if (FroniusBindingConstants.BATTERY_TIME_OF_USE_CHANNELS.stream().noneMatch(this::isLinked)) {

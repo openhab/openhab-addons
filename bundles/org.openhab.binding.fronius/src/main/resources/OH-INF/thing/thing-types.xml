@@ -712,8 +712,9 @@
 	<channel-type id="min-charge-power">
 		<item-type>Number:Power</item-type>
 		<label>Minimum Charge Power</label>
-		<description>Minimum battery charging power currently in effect, derived from the active time of use entry. Writing
-			replaces all CHARGE_MIN time of use entries with an all-time entry (writable, requires battery control)</description>
+		<description>Minimum battery charging power currently in effect, derived from the most restrictive active time of use
+			entry. Writing sets an all-time CHARGE_MIN entry and is refused while other CHARGE_MIN entries exist (writable,
+			requires battery control)</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Power</tag>
@@ -724,8 +725,9 @@
 	<channel-type id="max-charge-power">
 		<item-type>Number:Power</item-type>
 		<label>Maximum Charge Power</label>
-		<description>Maximum battery charging power currently in effect, derived from the active time of use entry. Writing
-			replaces all CHARGE_MAX time of use entries with an all-time entry (writable, requires battery control)</description>
+		<description>Maximum battery charging power currently in effect, derived from the most restrictive active time of use
+			entry. Writing sets an all-time CHARGE_MAX entry and is refused while other CHARGE_MAX entries exist (writable,
+			requires battery control)</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Power</tag>
@@ -736,8 +738,9 @@
 	<channel-type id="min-discharge-power">
 		<item-type>Number:Power</item-type>
 		<label>Minimum Discharge Power</label>
-		<description>Minimum battery discharging power currently in effect, derived from the active time of use entry. Writing
-			replaces all DISCHARGE_MIN time of use entries with an all-time entry (writable, requires battery control)</description>
+		<description>Minimum battery discharging power currently in effect, derived from the most restrictive active time of
+			use entry. Writing sets an all-time DISCHARGE_MIN entry and is refused while other DISCHARGE_MIN entries exist
+			(writable, requires battery control)</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Power</tag>
@@ -748,8 +751,9 @@
 	<channel-type id="max-discharge-power">
 		<item-type>Number:Power</item-type>
 		<label>Maximum Discharge Power</label>
-		<description>Maximum battery discharging power currently in effect, derived from the active time of use entry. Writing
-			replaces all DISCHARGE_MAX time of use entries with an all-time entry (writable, requires battery control)</description>
+		<description>Maximum battery discharging power currently in effect, derived from the most restrictive active time of
+			use entry. Writing sets an all-time DISCHARGE_MAX entry and is refused while other DISCHARGE_MAX entries exist
+			(writable, requires battery control)</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Power</tag>
