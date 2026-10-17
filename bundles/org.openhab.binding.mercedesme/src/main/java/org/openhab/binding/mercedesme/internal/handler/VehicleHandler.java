@@ -613,7 +613,8 @@ public class VehicleHandler extends BaseThingHandler {
                         observer);
                 updateChannel(csmUpdated);
             } catch (IllegalArgumentException iae) {
-                logger.trace("Cannot decode command {} {}", value.getAllFields().toString(), iae.getMessage());
+                logger.trace("Cannot decode command {} {}", Utils.maskVinsIn(value.getAllFields().toString()),
+                        iae.getMessage());
                 // silent ignore update
             }
         });
@@ -657,7 +658,8 @@ public class VehicleHandler extends BaseThingHandler {
 
     public void handleUpdate(VehicleStatusAttributes update) {
         boolean fullUpdate = update.fullUpdate();
-        logger.trace("{} received {} attributes - full update? {}", config.vin, update.attributes().size(), fullUpdate);
+        logger.trace("{} received {} attributes - full update? {}", Utils.maskVin(config.vin),
+                update.attributes().size(), fullUpdate);
         updateStatus(ThingStatus.ONLINE);
         /**
          * Deliver proto update
@@ -1250,5 +1252,17 @@ public class VehicleHandler extends BaseThingHandler {
             return;
         }
         localAccountHandler.sendPoi(config.vin, poi);
+    }
+
+    /**
+     * Triggers an immediate update for this vehicle, outside the regular refresh interval
+     */
+    public void forceUpdate() {
+        AccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler == null) {
+            logger.trace("Force update not possible without active account");
+            return;
+        }
+        localAccountHandler.forceUpdate(config.vin);
     }
 }

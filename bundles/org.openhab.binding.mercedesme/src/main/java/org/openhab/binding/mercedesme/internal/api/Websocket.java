@@ -147,7 +147,8 @@ public class Websocket extends RestApi {
                 localSession.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
                 logger.trace("Sent acknowledge {}", message.getMsgCase());
             } catch (IOException e) {
-                logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
+                logger.warn("Error sending acknowledge {} : {}", Utils.maskVinsIn(message.getAllFields().toString()),
+                        e.getMessage());
             }
         } else {
             // a dropped ack is otherwise indistinguishable from the server never receiving it
@@ -215,7 +216,7 @@ public class Websocket extends RestApi {
         ClientMessage message = commandQueue.poll();
         if (message != null) {
             if (logger.isTraceEnabled()) {
-                logger.trace("Send Message {}", message.getAllFields());
+                logger.trace("Send Message {}", Utils.maskVinsIn(message.getAllFields().toString()));
             }
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -223,14 +224,16 @@ public class Websocket extends RestApi {
                 Session localSession = session;
                 if (localSession != null) {
                     localSession.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
-                    logger.trace("Send Message {} done", message.getAllFields());
+                    logger.trace("Send Message {} done", Utils.maskVinsIn(message.getAllFields().toString()));
                     return true;
                 } else {
-                    logger.warn("Cannot send message {} - no session available", message.getAllFields());
+                    logger.warn("Cannot send message {} - no session available",
+                            Utils.maskVinsIn(message.getAllFields().toString()));
                     return false;
                 }
             } catch (IOException e) {
-                logger.warn("Error sending message {} : {}", message.getAllFields(), e.getMessage());
+                logger.warn("Error sending message {} : {}", Utils.maskVinsIn(message.getAllFields().toString()),
+                        e.getMessage());
             }
         }
         return false;
