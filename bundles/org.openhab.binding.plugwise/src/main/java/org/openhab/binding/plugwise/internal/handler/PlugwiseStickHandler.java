@@ -248,12 +248,37 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
     protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String comment) {
         ThingStatus oldStatus = thing.getStatus();
         super.updateStatus(status, detail, comment);
+        statusChanged(oldStatus);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        ThingStatus oldStatus = thing.getStatus();
+        super.updateStatus(status);
+        statusChanged(oldStatus);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        ThingStatus oldStatus = thing.getStatus();
+        super.updateStatus(status, description);
+        statusChanged(oldStatus);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        ThingStatus oldStatus = thing.getStatus();
+        super.updateStatus(detail, description);
+        statusChanged(oldStatus);
+    }
+
+    private void statusChanged(ThingStatus oldStatus) {
         ThingStatus newStatus = thing.getStatus();
 
         if (!oldStatus.equals(newStatus)) {
-            logger.debug("Updating listeners with status {}", status);
+            logger.debug("Updating listeners with status {}", newStatus);
             for (PlugwiseStickStatusListener listener : statusListeners) {
-                listener.stickStatusChanged(status);
+                listener.stickStatusChanged(newStatus);
             }
             updateTask(onlineStateUpdateTask);
         }
