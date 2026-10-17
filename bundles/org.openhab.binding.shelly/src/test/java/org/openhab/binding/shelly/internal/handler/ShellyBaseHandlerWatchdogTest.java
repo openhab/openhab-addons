@@ -137,7 +137,8 @@ class ShellyBaseHandlerWatchdogTest {
         setField(handler, "stopping", true);
         handler.setCallback(callback);
 
-        handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "gone");
+        handler.updateStatus(ThingStatus.OFFLINE);
+        handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "gone");
 
         verify(callback, never()).statusUpdated(any(), any());
     }
@@ -197,8 +198,7 @@ class ShellyBaseHandlerWatchdogTest {
 
         assertThrows(ShellyApiException.class, () -> handler.initializeThing());
 
-        verify(handler, times(expectPending ? 1 : 0)).updateStatus(eq(ThingStatus.ONLINE),
-                eq(ThingStatusDetail.CONFIGURATION_PENDING), any());
+        verify(handler, times(expectPending ? 1 : 0)).updateStatus(eq(ThingStatusDetail.CONFIGURATION_PENDING), any());
     }
 
     private static ShellyBaseHandler prepareHandler(ShellyApiInterface api, ThingTypeUID thingType) throws Exception {
@@ -224,7 +224,7 @@ class ShellyBaseHandlerWatchdogTest {
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
         when(thing.getThingTypeUID()).thenReturn(thingType);
         doReturn(ThingStatusDetail.NONE).when(handler).getThingStatusDetail();
-        doNothing().when(handler).updateStatus(any(ThingStatus.class), any(ThingStatusDetail.class), any());
+        doNothing().when(handler).updateStatus(any(ThingStatusDetail.class), any());
         return handler;
     }
 

@@ -45,7 +45,6 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     protected final Logger logger = LoggerFactory.getLogger(BaseSensorHandler.class);
     protected SensorCommunityConfiguration config = DEFAULT_CONFIG;
     protected ConfigStatus configStatus = ConfigStatus.UNKNOWN;
-    protected ThingStatus myThingStatus = ThingStatus.UNKNOWN;
     protected UpdateStatus lastUpdateStatus = UpdateStatus.UNKNOWN;
     protected @Nullable ScheduledFuture<?> refreshJob;
     private String sensorUrl = "";
@@ -221,12 +220,6 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
                     break;
             }
         }
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        myThingStatus = status;
-        super.updateStatus(status, statusDetail, description);
     }
 
     protected abstract UpdateStatus updateChannels(@Nullable String json);

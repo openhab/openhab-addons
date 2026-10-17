@@ -119,13 +119,22 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
     @Override
     public void updateStatus(ThingStatus thingStatus) {
         super.updateStatus(thingStatus);
+        notifyBridgeOfStatusChange(thingStatus);
     }
 
     @Override
-    public void updateStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
-            @Nullable String description) {
-        super.updateStatus(thingStatus, thingStatusDetail, description);
+    protected void updateStatus(ThingStatus thingStatus, @Nullable String description) {
+        super.updateStatus(thingStatus, description);
+        notifyBridgeOfStatusChange(thingStatus);
+    }
 
+    @Override
+    protected void updateStatus(ThingStatusDetail thingStatusDetail, @Nullable String description) {
+        super.updateStatus(thingStatusDetail, description);
+        notifyBridgeOfStatusChange(thing.getStatus());
+    }
+
+    private void notifyBridgeOfStatusChange(ThingStatus thingStatus) {
         if (getBridge() instanceof Bridge bridge) {
             if (bridge.getHandler() instanceof SenseEnergyMonitorHandler monitorHandler) {
                 monitorHandler.childStatusChange(this, thingStatus);

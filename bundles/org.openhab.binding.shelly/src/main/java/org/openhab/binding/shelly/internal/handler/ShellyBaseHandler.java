@@ -758,13 +758,29 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
-        updateMarkerSet = false;
-        if (stopping) {
-            return;
+    protected void updateStatus(ThingStatus status) {
+        if (shouldUpdateStatus()) {
+            super.updateStatus(status);
         }
-        super.updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        if (shouldUpdateStatus()) {
+            super.updateStatus(status, description);
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        if (shouldUpdateStatus()) {
+            super.updateStatus(statusDetail, description);
+        }
+    }
+
+    private boolean shouldUpdateStatus() {
+        updateMarkerSet = false;
+        return !stopping;
     }
 
     // WebSocket events and in-flight polls may still arrive after dispose(), core would reject and log them
