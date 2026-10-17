@@ -3,13 +3,14 @@ import {
     Environment,
     Instant,
     Logger,
+    Millis,
     ObserverGroup,
     SharedEnvironmentServices,
     StorageContext,
     StorageManager,
     StorageService,
 } from "@matter/general";
-import { DclOtaUpdateService, Fabric, FabricAuthority, Read } from "@matter/main/protocol";
+import { DclCertificateService, DclOtaUpdateService, Fabric, FabricAuthority, Read } from "@matter/main/protocol";
 import { AcceptedCommandList, AttributeList, ClusterRevision, FeatureMap, Matter } from "@matter/model";
 import {
     ChangeNotificationService,
@@ -19,6 +20,8 @@ import {
     ControllerBehavior,
     Endpoint,
     EndpointLifecycle,
+    FabricOperationInProgressError,
+    IcdClient,
     NetworkClient,
     NodeConnectionState,
     ServerNode,
@@ -28,8 +31,9 @@ import { BasicInformationClient } from "@matter/node/behaviors/basic-information
 import { OtaProviderEndpoint } from "@matter/node/endpoints/ota-provider";
 import { AttributeId, ClusterId, EndpointNumber, EventId, NodeId } from "@matter/types";
 import { WebSocketSession } from "../app";
-import { EventType, NodeState } from "../MessageTypes";
+import { EventType, IcdEvent, NodeState, OtaUpdateStatus } from "../MessageTypes";
 import { printError } from "../util/error";
+import { dclSeed } from "./dclSeed";
 import { migrateLegacyCommissionedNodes, migrateLegacyControllerCredentials } from "./legacyStorageMigration";
 
 const logger = Logger.get("ControllerNode");
@@ -124,6 +128,22 @@ export class ControllerNode {
             new DclOtaUpdateService(this.environment); // Adds itself to the environment
         }
         return this.services.get(DclOtaUpdateService);
+    }
+
+    /**
+     * Checks device certificates against the Matter certificate list while pairing. It starts from the list built
+     * into matter.js and updates it from the DCL at startup and once a day.
+     */
+    get certificateService() {
+        if (!this.environment.has(DclCertificateService)) {
+            new DclCertificateService(this.environment, {
+                fetchTestCertificates: true,
+                // Report test certificates as an attestation finding, so pairing can accept them with a warning
+                acceptTestCertificates: false,
+                seed: dclSeed(),
+            });
+        }
+        return this.services.get(DclCertificateService);
     }
 
     protected get services() {
@@ -260,6 +280,19 @@ export class ControllerNode {
             }
         });
 
+        this.observers.on(updateManagerEvents.updateApplying, peer =>
+            this.#sendOtaUpdateStatus(peer.nodeId, OtaUpdateStatus.Applying),
+        );
+        // Also emitted when the update is cancelled
+        this.observers.on(updateManagerEvents.updateFailed, peer =>
+            this.#sendOtaUpdateStatus(peer.nodeId, OtaUpdateStatus.Failed),
+        );
+
+        // Load the certificate list in the background, so the first pairing does not wait for it
+        this.certificateService.construction.catch(error =>
+            logger.warn(`Could not load the Matter certificate list: ${error}`),
+        );
+
         // Query for updates now once
         const updates = await this.otaProvider.act(agent => agent.get(SoftwareUpdateManager).queryUpdates());
         for (const update of updates ?? []) {
@@ -346,6 +379,10 @@ export class ControllerNode {
         try {
             await peer.decommission();
         } catch (error) {
+            // Another pairing or removal of this node is still running, so leave the node to it
+            if (error instanceof FabricOperationInProgressError) {
+                throw error;
+            }
             logger.error(`Error decommissioning node ${nodeId}: ${error} force removing node`);
             await peer.delete();
         }
@@ -538,7 +575,9 @@ export class ControllerNode {
             }
             this.#sendNodeState(peer, nodeId, state);
         });
+        let watchingIcd = this.#watchIcd(peer, nodeId, observers);
         observers.on(peer.lifecycle.seeded, () => {
+            watchingIcd ||= this.#watchIcd(peer, nodeId, observers);
             if (peer.lifecycle.connectionState === NodeConnectionState.Connected) {
                 this.#sendNodeState(peer, nodeId, NodeConnectionState.Connected);
             }
@@ -553,6 +592,63 @@ export class ControllerNode {
             }
             this.#scheduleStructureChanged(nodeId);
         });
+    }
+
+    /**
+     * Sends check-in changes of a sleepy device (ICD) to openHAB. matter.js adds the IcdClient behavior to nodes that
+     * have the ICD Management cluster, so it can be missing until the node's structure is known.
+     *
+     * @returns whether the node has the behavior
+     */
+    #watchIcd(peer: ClientNode, nodeId: NodeId, observers: ObserverGroup) {
+        if (!peer.behaviors.has(IcdClient)) {
+            return false;
+        }
+        const events = peer.eventsOf(IcdClient);
+        const send = (event: IcdEvent) =>
+            this.ws.sendEvent(EventType.IcdState, { nodeId, event, ...this.icdState(peer) });
+        observers.on(events.registered, () => send(IcdEvent.Registered));
+        observers.on(events.unregistered, () => send(IcdEvent.Unregistered));
+        observers.on(events.checkedIn, () => send(IcdEvent.CheckedIn));
+        observers.on(events.checkInMissed, () => send(IcdEvent.CheckInMissed));
+        return true;
+    }
+
+    /**
+     * Check-in state of a sleepy device (ICD). Only devices that support long idle times (LIT) send check-ins, and
+     * matter.js registers for them on its own.
+     */
+    icdState(peer: ClientNode) {
+        this.#requireIcd(peer);
+        const { registered, lastCheckInReceivedAt } = peer.stateOf(IcdClient);
+        return {
+            litSupported: IcdClient.litSupported(peer),
+            registered,
+            lastCheckIn: lastCheckInReceivedAt,
+        };
+    }
+
+    /**
+     * Asks a sleepy device (ICD) to stay awake, for example before sending it several commands. Only devices that
+     * support long idle times accept this.
+     *
+     * @param duration requested time in milliseconds
+     * @returns the time in milliseconds the device promised to stay awake
+     */
+    async icdStayActive(peer: ClientNode, duration: number) {
+        this.#requireIcd(peer);
+        return peer.act(agent => agent.get(IcdClient).stayActive(Millis(duration)));
+    }
+
+    #requireIcd(peer: ClientNode) {
+        if (!peer.behaviors.has(IcdClient)) {
+            throw new Error(`Node ${this.#nodeIdOf(peer)} is not an intermittently connected device`);
+        }
+    }
+
+    #sendOtaUpdateStatus(nodeId: NodeId, status: OtaUpdateStatus) {
+        logger.info(`Update ${status} for node ${nodeId}`);
+        this.ws.sendEvent(EventType.OtaUpdateStatus, { nodeId, status });
     }
 
     #handlePeerDeleted(peer: ClientNode) {

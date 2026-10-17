@@ -1,6 +1,6 @@
 import { Logger, Seconds } from "@matter/general";
 import { GeneralCommissioning, OperationalCredentials } from "@matter/main/clusters";
-import { Read, SessionManager } from "@matter/main/protocol";
+import { AttestationFinding, DeviceAttestationCheck, Read, SessionManager } from "@matter/main/protocol";
 import { SoftwareUpdateManager } from "@matter/node";
 import { OperationalCredentialsClient } from "@matter/node/behaviors/operational-credentials";
 import {
@@ -93,7 +93,7 @@ export class Nodes {
      * @param pairingCode
      * @param shortDiscriminator
      * @param setupPinCode
-     * @returns
+     * @returns the node id and the device certificate warnings that did not stop pairing
      */
     async pairNode(
         pairingCode: string | undefined,
@@ -131,26 +131,63 @@ export class Nodes {
         const threadName = await store.get<string>("ThreadName", "");
         const threadOperationalDataset = await store.get<string>("ThreadOperationalDataset", "");
 
-        const node = await this.controllerNode.node.peers.commission({
-            ...(discriminator !== undefined ? { longDiscriminator: discriminator } : { shortDiscriminator }),
-            discoveryCapabilities: { onIpNetwork: true },
-            passcode: setupPinCode,
-            fabric: this.controllerNode.fabric,
-            regulatoryLocation: GeneralCommissioning.RegulatoryLocationType.Outdoor, // Set to the most restrictive if relevant
-            regulatoryCountryCode: "XX",
-            // openHAB subscribes once the Thing is initialized
-            autoSubscribe: false,
-            ...(wifiSsid.length > 0 && wifiCredentials.length > 0
-                ? { wifiNetwork: { wifiSsid, wifiCredentials } }
-                : undefined),
-            ...(threadName.length > 0 && threadOperationalDataset.length > 0
-                ? { threadNetwork: { networkName: threadName, operationalDataset: threadOperationalDataset } }
-                : undefined),
-        });
+        // Wait for the certificate list, as pairing checks the device's certificates against it
+        await this.controllerNode.certificateService.construction;
+        // A set, as matter.js checks again when it retries commissioning
+        const warnings = new Set<string>();
+        let rejection: string | undefined;
+        const checkAttestation = (findings: AttestationFinding[]) => {
+            // A device with a test certificate is a development or uncertified device. It may pair, with a warning.
+            const errors = findings.filter(
+                ({ level, type }) => level === "error" && type !== DeviceAttestationCheck.TrustedAsTestCertificate,
+            );
+            if (errors.length > 0) {
+                rejection = `Device certificate check failed: ${errors.map(({ message }) => message).join(", ")}`;
+                return false;
+            }
+            for (const { level, type, message } of findings) {
+                if (type === DeviceAttestationCheck.TrustedAsTestCertificate) {
+                    warnings.add("The device uses a test certificate, so it is a development or uncertified device");
+                } else if (level !== "info") {
+                    warnings.add(message);
+                }
+            }
+            return true;
+        };
+
+        let node;
+        try {
+            node = await this.controllerNode.node.peers.commission({
+                ...(discriminator !== undefined ? { longDiscriminator: discriminator } : { shortDiscriminator }),
+                discoveryCapabilities: { onIpNetwork: true },
+                passcode: setupPinCode,
+                fabric: this.controllerNode.fabric,
+                regulatoryLocation: GeneralCommissioning.RegulatoryLocationType.Outdoor, // Set to the most restrictive if relevant
+                regulatoryCountryCode: "XX",
+                onAttestationFailure: checkAttestation,
+                // openHAB subscribes once the Thing is initialized
+                autoSubscribe: false,
+                ...(wifiSsid.length > 0 && wifiCredentials.length > 0
+                    ? { wifiNetwork: { wifiSsid, wifiCredentials } }
+                    : undefined),
+                ...(threadName.length > 0 && threadOperationalDataset.length > 0
+                    ? { threadNetwork: { networkName: threadName, operationalDataset: threadOperationalDataset } }
+                    : undefined),
+            });
+        } catch (error) {
+            // matter.js reports a rejected attestation as a general commissioning error, so give the actual reason
+            if (rejection !== undefined) {
+                throw new Error(rejection, { cause: error });
+            }
+            throw error;
+        }
 
         const commissionedNodeId = node.peerAddress?.nodeId;
         logger.info(`Commissioned Node: ${commissionedNodeId}`);
-        return commissionedNodeId;
+        if (warnings.size > 0) {
+            logger.info(`Device certificate warnings for node ${commissionedNodeId}: ${[...warnings].join(", ")}`);
+        }
+        return { nodeId: commissionedNodeId, warnings: [...warnings] };
     }
 
     /**
@@ -310,5 +347,24 @@ export class Nodes {
         const peerAddress = this.controllerNode.fabric.addressOf(NodeId(BigInt(nodeId)));
         await this.controllerNode.otaProvider.act(agent => agent.get(SoftwareUpdateManager).removeConsent(peerAddress));
         logger.info(`Consent removed for node ${nodeId}`);
+    }
+
+    /**
+     * Returns the check-in state of a sleepy device (ICD)
+     * @param nodeId
+     */
+    async icdState(nodeId: number | string) {
+        return this.controllerNode.icdState(this.controllerNode.getNode(nodeId));
+    }
+
+    /**
+     * Asks a sleepy device (ICD) to stay awake, for example before sending it several commands. Only devices that
+     * support long idle times accept this.
+     * @param nodeId
+     * @param duration requested time in milliseconds
+     * @returns the time in milliseconds the device promised to stay awake
+     */
+    async icdStayActive(nodeId: number | string, duration: number) {
+        return this.controllerNode.icdStayActive(this.controllerNode.getNode(nodeId), duration);
     }
 }

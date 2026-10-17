@@ -283,6 +283,12 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = "otasoftwareupdaterequestor-updateavailable";
     public static final ChannelTypeUID CHANNEL_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = new ChannelTypeUID(
             BINDING_ID, CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE);
+    public static final String CHANNEL_ID_ICDMANAGEMENT_CHECKINREGISTERED = "icdmanagement-checkinregistered";
+    public static final ChannelTypeUID CHANNEL_ICDMANAGEMENT_CHECKINREGISTERED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_ICDMANAGEMENT_CHECKINREGISTERED);
+    public static final String CHANNEL_ID_ICDMANAGEMENT_LASTCHECKIN = "icdmanagement-lastcheckin";
+    public static final ChannelTypeUID CHANNEL_ICDMANAGEMENT_LASTCHECKIN = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_ICDMANAGEMENT_LASTCHECKIN);
     public static final String CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI = "wifinetworkdiagnostics-rssi";
     public static final ChannelTypeUID CHANNEL_WIFINETWORKDIAGNOSTICS_RSSI = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI);
@@ -481,6 +487,11 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE = "@text/thing-action.node.cancelFirmwareUpdate.label";
     public static final String THING_ACTION_DESC_NODE_CANCEL_FIRMWARE_UPDATE = "@text/thing-action.node.cancelFirmwareUpdate.description";
     public static final String THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE_RESULT = "@text/thing-action.node.cancelFirmwareUpdate.result.label";
+    public static final String THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE = "@text/thing-action.node.icdStayActive.label";
+    public static final String THING_ACTION_DESC_NODE_ICD_STAY_ACTIVE = "@text/thing-action.node.icdStayActive.description";
+    public static final String THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE_DURATION = "@text/thing-action.node.icdStayActive.duration.label";
+    public static final String THING_ACTION_DESC_NODE_ICD_STAY_ACTIVE_DURATION = "@text/thing-action.node.icdStayActive.duration.description";
+    public static final String THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE_RESULT = "@text/thing-action.node.icdStayActive.result.label";
 
     // Action Result Messages
     public static final String THING_ACTION_RESULT_SUCCESS = "@text/thing-action.result.success";
@@ -490,6 +501,7 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_AVAILABLE = "@text/thing-action.result.firmware-update-available";
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_STARTED = "@text/thing-action.result.firmware-update-started";
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_CANCELLED = "@text/thing-action.result.firmware-update-cancelled";
+    public static final String THING_ACTION_RESULT_ICD_STAY_ACTIVE = "@text/thing-action.result.icd-stay-active";
 
     // Matter OTBR Actions
     public static final String THING_ACTION_LABEL_OTBR_LOAD_EXTERNAL_DATASET = "@text/thing-action.otbr.loadExternalDataset.label";
@@ -576,6 +588,7 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_DESC_CONTROLLER_PAIR_DEVICE_CODE = "@text/thing-action.controller.pairDevice.code.description";
     public static final String THING_ACTION_LABEL_CONTROLLER_PAIR_DEVICE_RESULT = "@text/thing-action.controller.pairDevice.result.label";
     public static final String THING_ACTION_RESULT_DEVICE_ADDED = "@text/thing-action.result.device-added";
+    public static final String THING_ACTION_RESULT_DEVICE_ADDED_WITH_WARNINGS = "@text/thing-action.result.device-added-with-warnings";
     public static final String THING_ACTION_RESULT_PAIRING_FAILED = "@text/thing-action.result.pairing-failed";
     public static final String THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA = "@text/thing-action.controller.getDebugNodeData.label";
     public static final String THING_ACTION_DESC_CONTROLLER_GET_DEBUG_NODE_DATA = "@text/thing-action.controller.getDebugNodeData.description";
@@ -592,6 +605,12 @@ public class MatterBindingConstants {
     public static final String THING_STATUS_DETAIL_FIRMWARE_DELAYED_ON_APPLY = "@text/thing-status.detail.node.firmwareDelayedOnApply";
     public static final String THING_STATUS_DETAIL_FIRMWARE_ROLLING_BACK = "@text/thing-status.detail.node.firmwareRollingBack";
     public static final String THING_STATUS_DETAIL_FIRMWARE_DELAYED_ON_USER_CONSENT = "@text/thing-status.detail.node.firmwareDelayedOnUserConsent";
+    public static final String THING_STATUS_DETAIL_NODE_NOT_FOUND = "@text/thing-status.detail.node.notFound";
+    public static final String THING_STATUS_DETAIL_NODE_RECONNECTING = "@text/thing-status.detail.node.reconnecting";
+    public static final String THING_STATUS_DETAIL_NODE_DISCONNECTED = "@text/thing-status.detail.node.disconnected";
+    public static final String THING_STATUS_DETAIL_NODE_CONNECTING = "@text/thing-status.detail.node.connecting";
+    public static final String THING_STATUS_DETAIL_NODE_DECOMMISSIONED = "@text/thing-status.detail.node.decommissioned";
+    public static final String THING_STATUS_DETAIL_NODE_CHECK_IN_MISSED = "@text/thing-status.detail.node.checkInMissed";
 
     // Discovery
     public static final String DISCOVERY_MATTER_BRIDGE_ENDPOINT_LABEL = "@text/discovery.matter.bridge-endpoint.label";

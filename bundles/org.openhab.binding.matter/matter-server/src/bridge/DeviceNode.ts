@@ -1,7 +1,14 @@
 // Include this first to auto-register Crypto, Network and Time Node.js implementations
 import "@matter/node";
 
-import { Environment, Logger, MatterAggregateError, StorageService } from "@matter/general";
+import {
+    Environment,
+    Logger,
+    MatterAggregateError,
+    MaybePromise,
+    StorageContext,
+    StorageService,
+} from "@matter/general";
 import { AdministratorCommissioning } from "@matter/main/clusters";
 import { Endpoint, ServerNode } from "@matter/node";
 import { BasicInformationServer, BridgedDeviceBasicInformationServer } from "@matter/node/behaviors";
@@ -107,8 +114,7 @@ export class DeviceNode {
             logger.info(`!!! Erasing ServerNode Storage !!!`);
             await this.server?.erase();
             await this.close();
-            const ohStorage = await this.#ohBridgeStorage();
-            await ohStorage.clearAll();
+            await this.#withBridgeStorage(storage => storage.clearAll());
             logger.info(`Initializing bridge again`);
             await this.#init();
         }
@@ -135,8 +141,7 @@ export class DeviceNode {
         await this.server.start();
         logger.info(`Bridge started`);
         this.#sendCommissioningStatus();
-        const ohStorage = await this.#ohBridgeStorage();
-        await ohStorage.set("lastStart", Date.now());
+        await this.#withBridgeStorage(storage => storage.set("lastStart", Date.now()));
     }
 
     public async close() {
@@ -211,6 +216,13 @@ export class DeviceNode {
             // Set after adding, as matter.js does not store values passed when the endpoint is created
             await device.endpoint.setStateOf(BridgedDeviceBasicInformationServer, { uniqueId: identity.uniqueId });
         }
+    }
+
+    /**
+     * Tells paired ecosystems that the bridge's devices changed, so they read its structure again
+     */
+    public async increaseConfigurationVersion() {
+        await this.#getStartedServer().act(agent => agent.get(BasicInformationServer).increaseConfigurationVersion());
     }
 
     public async removeEndpoint(id: string) {
@@ -344,7 +356,6 @@ export class DeviceNode {
     }
 
     async #init() {
-        const ohStorage = await this.#ohBridgeStorage();
         const uniqueId = await this.#uniqueIdForBridge();
         logger.info(`Unique ID: ${uniqueId}`);
         /**
@@ -408,18 +419,29 @@ export class DeviceNode {
         return this.server;
     }
 
-    async #ohBridgeStorage() {
-        return (await this.storageService.open(DeviceNode.DEFAULT_NODE_ID)).createContext("openhab");
+    /**
+     * Runs fn with the bridge's own storage and closes it afterwards. Storage that stays open keeps its lock file
+     * until the process exits.
+     */
+    async #withBridgeStorage<T>(fn: (storage: StorageContext) => MaybePromise<T>) {
+        const manager = await this.storageService.open(DeviceNode.DEFAULT_NODE_ID);
+        try {
+            return await fn(manager.createContext("openhab"));
+        } finally {
+            await manager.close();
+        }
     }
 
     async #uniqueIdForBridge() {
-        const basicContext = (await this.#ohBridgeStorage()).createContext("basicInformation");
-        if (await basicContext.has("uniqueId")) {
-            return (await basicContext.get("uniqueId")) as string;
-        }
-        const uniqueId = BasicInformationServer.createUniqueId();
-        await basicContext.set("uniqueId", uniqueId);
-        return uniqueId;
+        return this.#withBridgeStorage<string>(async storage => {
+            const basicContext = storage.createContext("basicInformation");
+            if (await basicContext.has("uniqueId")) {
+                return basicContext.get<string>("uniqueId");
+            }
+            const uniqueId = BasicInformationServer.createUniqueId();
+            await basicContext.set("uniqueId", uniqueId);
+            return uniqueId;
+        });
     }
 
     #sendCommissioningStatus() {

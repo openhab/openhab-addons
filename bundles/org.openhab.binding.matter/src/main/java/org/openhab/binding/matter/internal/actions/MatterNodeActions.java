@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterBindingConstants;
+import org.openhab.binding.matter.internal.client.MatterErrorCode;
+import org.openhab.binding.matter.internal.client.MatterRequestException;
 import org.openhab.binding.matter.internal.client.dto.PairingCodes;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
@@ -119,6 +121,12 @@ public class MatterNodeActions implements ThingActions {
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 } catch (ExecutionException | TimeoutException e) {
                     logger.debug("Failed to decommission device {}", handler.getNodeId(), e);
+                    if (e.getCause() instanceof MatterRequestException requestException) {
+                        MatterErrorCode errorCode = requestException.getErrorCode();
+                        if (errorCode != null) {
+                            return translationService.getTranslation(errorCode.getTranslationKey());
+                        }
+                    }
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
             }
@@ -249,6 +257,28 @@ public class MatterNodeActions implements ThingActions {
                     logger.debug("Failed to cancel firmware update for device {}", handler.getNodeId(), e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_ICD_STAY_ACTIVE)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE_RESULT, type = "java.lang.String") }) String icdStayActive(
+                    @ActionInput(name = "duration", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE_DURATION, description = MatterBindingConstants.THING_ACTION_DESC_NODE_ICD_STAY_ACTIVE_DURATION) Integer duration) {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            try {
+                long promised = handler.icdStayActive(TimeUnit.SECONDS.toMillis(duration)).get(60, TimeUnit.SECONDS);
+                return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_ICD_STAY_ACTIVE,
+                        TimeUnit.MILLISECONDS.toSeconds(promised));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Failed to keep device {} awake", handler.getNodeId(), e);
+                return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+            } catch (ExecutionException | TimeoutException e) {
+                logger.debug("Failed to keep device {} awake", handler.getNodeId(), e);
+                return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
             }
         }
         return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);

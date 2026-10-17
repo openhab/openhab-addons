@@ -46,9 +46,11 @@ import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventAttributeCha
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventTriggered;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateStatusMessage;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.common.registry.RegistryChangeListener;
@@ -64,13 +66,11 @@ import org.openhab.core.items.ItemRegistryChangeListener;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.items.events.ItemStateChangedEvent;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.events.ThingStatusInfoChangedEvent;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
-import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
@@ -327,6 +327,14 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
     }
 
     @Override
+    public void onEvent(OtaUpdateStatusMessage message) {
+    }
+
+    @Override
+    public void onEvent(IcdStateMessage message) {
+    }
+
+    @Override
     public void onEvent(BridgeEventMessage message) {
         if (message instanceof BridgeEventAttributeChanged attributeChanged) {
             BaseDevice d = devices.get(attributeChanged.data.endpointId);
@@ -351,26 +359,15 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
 
     @Override
     public Set<String> getSubscribedEventTypes() {
-        return Set.of(ItemStateChangedEvent.TYPE, ThingStatusInfoChangedEvent.TYPE);
+        return Set.of(ThingStatusInfoChangedEvent.TYPE);
     }
 
     @Override
     public void receive(Event event) {
-        if (runningState != RunningState.Running) {
-            return;
-        }
-        if (event instanceof ItemStateChangedEvent changed) {
-            if ((changed.getItemState() instanceof UnDefType) != (changed.getOldItemState() instanceof UnDefType)) {
-                String itemName = changed.getItemName();
-                devices.values().stream()
-                        .filter(device -> device.stateItems().stream().anyMatch(i -> i.getName().equals(itemName)))
-                        .forEach(device -> device.updateReachable(this::isReachable));
-            }
-        } else if (event instanceof ThingStatusInfoChangedEvent changed) {
-            if ((changed.getStatusInfo().getStatus() == ThingStatus.ONLINE) != (changed.getOldStatusInfo()
-                    .getStatus() == ThingStatus.ONLINE)) {
-                updateReachable();
-            }
+        if (runningState == RunningState.Running && event instanceof ThingStatusInfoChangedEvent changed
+                && (changed.getStatusInfo().getStatus() == ThingStatus.ONLINE) != (changed.getOldStatusInfo()
+                        .getStatus() == ThingStatus.ONLINE)) {
+            updateReachable();
         }
     }
 
@@ -745,9 +742,11 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
      * @return false if an endpoint failed to add, which leaves the bridge needing a restart
      */
     private boolean updateEndpoints(Map<String, BaseDevice> itemDevices) throws InterruptedException {
+        boolean devicesChanged = false;
         for (String name : List.copyOf(devices.keySet())) {
             if (!itemDevices.containsKey(name)) {
                 logger.debug("Removing endpoint {}", name);
+                devicesChanged = true;
                 BaseDevice removed = devices.remove(name);
                 if (removed != null) {
                     removed.deactivate();
@@ -760,11 +759,13 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
             BaseDevice existing = devices.get(name);
             if (existing == null) {
                 logger.debug("Adding endpoint {}", name);
+                devicesChanged = true;
                 if (!sendEndpoint(device, client::addEndpoint)) {
                     return false;
                 }
             } else if (existing.structureChanged()) {
                 logger.debug("Replacing endpoint {}", name);
+                devicesChanged = true;
                 devices.remove(name);
                 existing.deactivate();
                 if (!sendEndpoint(device, client::updateEndpoint)) {
@@ -783,6 +784,13 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
                 awaitEndpointChange(name, device.takeOver(existing));
             } else {
                 awaitEndpointChange(name, existing.updateLabel(device.label()));
+            }
+        }
+        if (devicesChanged) {
+            try {
+                client.increaseConfigurationVersion().get();
+            } catch (ExecutionException e) {
+                logger.debug("Could not increase the bridge configuration version", e);
             }
         }
         updateReachable();
@@ -827,16 +835,12 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
     }
 
     /**
-     * A device is unreachable when all of its items are NULL or UNDEF, or when its items are linked to Things and
-     * none of them is online. A group without members counts as unreachable.
+     * A device is reachable when none of its items is linked to a Thing, or when at least one of the linked Things is
+     * online.
      */
     private boolean isReachable(BaseDevice device) {
-        Collection<GenericItem> items = device.stateItems();
-        if (items.stream().allMatch(item -> item.getState() instanceof UnDefType)) {
-            return false;
-        }
         Set<Thing> things = new HashSet<>();
-        items.forEach(item -> things.addAll(itemChannelLinkRegistry.getBoundThings(item.getName())));
+        device.stateItems().forEach(item -> things.addAll(itemChannelLinkRegistry.getBoundThings(item.getName())));
         return things.isEmpty() || things.stream().anyMatch(thing -> thing.getStatus() == ThingStatus.ONLINE);
     }
 

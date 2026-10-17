@@ -13,7 +13,7 @@
 package org.openhab.binding.matter.internal.bridge;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,7 +28,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +46,14 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
+import org.openhab.core.thing.events.ThingEventFactory;
+import org.openhab.core.thing.events.ThingStatusInfoChangedEvent;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.UnDefType;
 import org.osgi.service.cm.Configuration;
@@ -106,6 +108,7 @@ class MatterBridgeTest {
         when(client.addEndpoint(any())).thenReturn(CompletableFuture.completedFuture("null"));
         when(client.updateEndpoint(any())).thenReturn(CompletableFuture.completedFuture("null"));
         when(client.removeEndpoint(anyString())).thenReturn(done);
+        when(client.increaseConfigurationVersion()).thenReturn(done);
         when(client.setEndpointState(anyString(), anyString(), anyString(), any())).thenReturn(done);
         when(client.getCommissioningState()).thenReturn(CompletableFuture.failedFuture(new IOException("none")));
     }
@@ -142,6 +145,7 @@ class MatterBridgeTest {
         bridge.registerItems();
         verify(client).addEndpoint(argThat(endpoint -> "light2".equals(endpoint.id)));
         verify(client, times(1)).initializeBridge(anyBoolean());
+        verify(client, times(1)).increaseConfigurationVersion();
     }
 
     @Test
@@ -153,6 +157,7 @@ class MatterBridgeTest {
         bridge.registerItems();
         verify(client).removeEndpoint("light2");
         verify(client, times(1)).initializeBridge(anyBoolean());
+        verify(client, times(2)).increaseConfigurationVersion();
     }
 
     @Test
@@ -163,6 +168,7 @@ class MatterBridgeTest {
         bridge.registerItems();
         verify(client).updateEndpoint(argThat(endpoint -> "light1".equals(endpoint.id)));
         verify(client, times(1)).initializeBridge(anyBoolean());
+        verify(client).increaseConfigurationVersion();
     }
 
     @Test
@@ -173,6 +179,7 @@ class MatterBridgeTest {
         bridge.registerItems();
         verify(client).setEndpointState("light1", CLUSTER, "nodeLabel", "Desk Lamp");
         verify(client, never()).updateEndpoint(any());
+        verify(client, never()).increaseConfigurationVersion();
     }
 
     @Test
@@ -183,6 +190,7 @@ class MatterBridgeTest {
         verify(client, never()).updateEndpoint(any());
         verify(client, never()).removeEndpoint(anyString());
         verify(client, never()).setEndpointState(anyString(), anyString(), anyString(), any());
+        verify(client, never()).increaseConfigurationVersion();
     }
 
     @Test
@@ -239,46 +247,62 @@ class MatterBridgeTest {
     }
 
     @Test
-    void testUndefinedItemIsUnreachable() {
-        addLight("light1", Map.of()).setState(UnDefType.UNDEF);
+    void testUnlinkedItemIsReachable() {
+        // items driven by rules have no Thing and may never get a state
+        addLight("light1", Map.of()).setState(UnDefType.NULL);
         bridge.registerItems();
         ArgumentCaptor<BridgedEndpoint> endpoint = ArgumentCaptor.forClass(BridgedEndpoint.class);
         verify(client).addEndpoint(endpoint.capture());
-        assertFalse(endpoint.getValue().reachable);
+        assertTrue(endpoint.getValue().reachable);
     }
 
     @Test
-    void testOfflineThingIsUnreachable() {
-        addLight("light1", Map.of());
-        addLight("light2", Map.of());
-        addLight("light3", Map.of());
-        Thing offline = mock(Thing.class);
-        when(offline.getStatus()).thenReturn(ThingStatus.OFFLINE);
-        Thing online = mock(Thing.class);
-        when(online.getStatus()).thenReturn(ThingStatus.ONLINE);
-        boundThings.put("light1", Set.of(offline));
-        boundThings.put("light2", Set.of(offline, online));
+    void testOnlyOnlineThingsAreReachable() {
+        addLight("offline", Map.of());
+        addLight("someOnline", Map.of());
+        addLight("unknown", Map.of());
+        addLight("unlinked", Map.of());
+        boundThings.put("offline", Set.of(thing(ThingStatus.OFFLINE)));
+        boundThings.put("someOnline", Set.of(thing(ThingStatus.OFFLINE), thing(ThingStatus.ONLINE)));
+        boundThings.put("unknown", Set.of(thing(ThingStatus.UNKNOWN)));
         bridge.registerItems();
 
         ArgumentCaptor<BridgedEndpoint> captor = ArgumentCaptor.forClass(BridgedEndpoint.class);
-        verify(client, times(3)).addEndpoint(captor.capture());
+        verify(client, times(4)).addEndpoint(captor.capture());
         Map<String, Boolean> reachable = new HashMap<>();
         captor.getAllValues().forEach(endpoint -> reachable.put(endpoint.id, endpoint.reachable));
-        assertEquals(Map.of("light1", false, "light2", true, "light3", true), reachable);
+        assertEquals(Map.of("offline", false, "someOnline", true, "unknown", false, "unlinked", true), reachable);
     }
 
     @Test
-    void testItemStateChangeUpdatesReachable() {
-        SwitchItem item = addLight("light1", Map.of());
+    void testThingStatusChangeUpdatesReachable() {
+        addLight("light1", Map.of());
+        Thing thing = thing(ThingStatus.ONLINE);
+        boundThings.put("light1", Set.of(thing));
         bridge.registerItems();
-        item.setState(UnDefType.NULL);
-        bridge.receive(ItemEventFactory.createStateChangedEvent("light1", UnDefType.NULL, OnOffType.OFF,
-                ZonedDateTime.now(), ZonedDateTime.now()));
+
+        when(thing.getStatus()).thenReturn(ThingStatus.OFFLINE);
+        bridge.receive(statusChanged(ThingStatus.ONLINE, ThingStatus.OFFLINE));
         verify(client).setEndpointState("light1", CLUSTER, "reachable", false);
 
-        // changes between defined states do not touch the flag
-        bridge.receive(ItemEventFactory.createStateChangedEvent("light1", OnOffType.ON, OnOffType.OFF,
-                ZonedDateTime.now(), ZonedDateTime.now()));
+        // changes that do not involve ONLINE do not touch the flag
+        when(thing.getStatus()).thenReturn(ThingStatus.UNKNOWN);
+        bridge.receive(statusChanged(ThingStatus.OFFLINE, ThingStatus.UNKNOWN));
         verify(client, times(1)).setEndpointState(eq("light1"), eq(CLUSTER), eq("reachable"), any());
+
+        when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        bridge.receive(statusChanged(ThingStatus.UNKNOWN, ThingStatus.ONLINE));
+        verify(client).setEndpointState("light1", CLUSTER, "reachable", true);
+    }
+
+    private static Thing thing(ThingStatus status) {
+        Thing thing = mock(Thing.class);
+        when(thing.getStatus()).thenReturn(status);
+        return thing;
+    }
+
+    private static ThingStatusInfoChangedEvent statusChanged(ThingStatus from, ThingStatus to) {
+        return ThingEventFactory.createStatusInfoChangedEvent(new ThingUID("test:thing:1"),
+                ThingStatusInfoBuilder.create(to).build(), ThingStatusInfoBuilder.create(from).build());
     }
 }

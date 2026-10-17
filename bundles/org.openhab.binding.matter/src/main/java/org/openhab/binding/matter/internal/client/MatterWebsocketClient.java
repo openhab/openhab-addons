@@ -52,10 +52,12 @@ import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventTriggered;
 import org.openhab.binding.matter.internal.client.dto.ws.Event;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Message;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateStatusMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.binding.matter.internal.client.dto.ws.Request;
 import org.openhab.binding.matter.internal.client.dto.ws.Response;
@@ -387,6 +389,37 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                         for (MatterClientListener listener : clientListeners) {
                             try {
                                 listener.onEvent(otaMessage);
+                            } catch (Exception e) {
+                                logger.debug("Error notifying listener", e);
+                            }
+                        }
+                        break;
+                    case "otaUpdateStatus":
+                        logger.debug("otaUpdateStatus message {}", event.data);
+                        OtaUpdateStatusMessage otaStatusMessage = gson.fromJson(event.data,
+                                OtaUpdateStatusMessage.class);
+                        if (otaStatusMessage == null || otaStatusMessage.status == null) {
+                            logger.debug("invalid OtaUpdateStatusMessage");
+                            return;
+                        }
+                        for (MatterClientListener listener : clientListeners) {
+                            try {
+                                listener.onEvent(otaStatusMessage);
+                            } catch (Exception e) {
+                                logger.debug("Error notifying listener", e);
+                            }
+                        }
+                        break;
+                    case "icdState":
+                        logger.debug("icdState message {}", event.data);
+                        IcdStateMessage icdStateMessage = gson.fromJson(event.data, IcdStateMessage.class);
+                        if (icdStateMessage == null) {
+                            logger.debug("invalid IcdStateMessage");
+                            return;
+                        }
+                        for (MatterClientListener listener : clientListeners) {
+                            try {
+                                listener.onEvent(icdStateMessage);
                             } catch (Exception e) {
                                 logger.debug("Error notifying listener", e);
                             }

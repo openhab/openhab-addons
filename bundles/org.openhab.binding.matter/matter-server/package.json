@@ -33,6 +33,7 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
+        "@matter/dcl-data": "2026.10.10",
         "@matter/main": "0.18.0-alpha.0-20261008-6066b7499",
         "@matter/node": "0.18.0-alpha.0-20261008-6066b7499",
         "ws": "^8.18.0",

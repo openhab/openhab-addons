@@ -220,8 +220,8 @@ public abstract class BaseDevice implements StateChangeListener {
     }
 
     /**
-     * The items whose states the endpoint reports. For a group these are its members, as a group without an
-     * aggregation function is UNDEF whenever its members differ.
+     * The items whose states the endpoint reports. For a group these are its members, as those are the items linked to
+     * Things.
      */
     public Collection<GenericItem> stateItems() {
         if (primaryItem instanceof GroupItem groupItem) {

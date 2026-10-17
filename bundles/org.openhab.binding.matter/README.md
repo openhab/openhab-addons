@@ -74,6 +74,11 @@ The pairing action can be found in the settings of the "Controller" Thing under 
 
 This action will give feedback on the pairing process, if successful a device will be added to the Inbox.
 
+During pairing openHAB checks the device's certificates against the official Matter certificate list, which is kept in the Matter Distributed Compliance Ledger (DCL).
+A copy of the list is built into the binding and updated from the DCL once a day, so pairing also works without internet access.
+A device whose certificate was revoked, or was not issued by a known manufacturer, is not paired.
+A development or uncertified device that uses a test certificate is paired, and the action result shows a warning.
+
 See [Device Pairing: Code Types](#device-pairing-code-types) for more information on pairing codes and code formats.
 
 The same codes can also be used in the openHAB Thing discovery UI, although feedback is limited and only a single controller is supported.
@@ -193,6 +198,7 @@ Nodes are discovered automatically (see [Discovery](#discovery) for more informa
 | OTA: Check for firmware updates                 | Queries the Matter server for available firmware updates for this device                                                                                                                                                                                                  |
 | OTA: Start firmware update                      | Starts the firmware update process for this device. Check the Thing status for download progress.                                                                                                                                                                         |
 | OTA: Cancel firmware update                     | Cancels the firmware update process for this device if the download is in progress. Updates will not be possible for approximately 10 minutes after cancellation.                                                                                                         |
+| Keep a sleepy device awake                      | Asks a sleepy device that supports long idle times to stay awake for the given number of seconds, for example before sending it several commands. The device decides how long it stays awake.                                                                             |
 
 For nodes that contain a Thread Border Router Management Cluster, the following additional actions will be present
 
@@ -264,6 +270,17 @@ rules.when().item('Matter_Node_Ota_Update_Available').changed().toOn().then(e =>
 - **Update fails**: If an update fails, check the Thing status and logs for error messages. The device may need to be power cycled or reset.
 - **Update stuck**: If an update appears to be stuck, you can try canceling it and restarting the update process after the cool down period.
 
+## Sleepy Devices
+
+Battery powered devices, such as many Thread sensors and locks, sleep most of the time to save power and only wake up to report changes or check for messages.
+Matter calls these Intermittently Connected Devices (ICD), and their sleep settings are shown as Thing properties.
+
+Devices that support long idle times (LIT) can sleep for long periods.
+openHAB registers with them to receive check-ins, short messages the device sends when it wakes up on schedule.
+For these devices the `icdmanagement-checkinregistered` and `icdmanagement-lastcheckin` channels show the registration and the time of the last check-in.
+Such a device is not set offline while it sleeps, only when it misses a scheduled check-in.
+Use the "Keep a sleepy device awake" Thing action to keep it awake for a while, for example before sending it several commands.
+
 ## Channels
 
 ### Controller Channels
@@ -308,6 +325,8 @@ Possible channels include:
 | fancontrol-mode                                                     | Number                   | Fan Control Mode             | The current mode of the fan                                                                                                                                                                                                                                          | HVAC             |          |             |                                                                                                                                                                      |
 | fancontrol-percent                                                  | Dimmer                   | Fan Control Percent          | The current fan speed percentage level                                                                                                                                                                                                                               | HVAC             | true     | %.0f %%     |                                                                                                                                                                      |
 | formaldehydeconcentrationmeasurement-measuredvalue                  | Number:Dimensionless     | Formaldehyde Concentration   | Indicates the measured formaldehyde (HCHO) concentration                                                                                                                                                                                                             | Gas              | true     | %.2f ppm    |                                                                                                                                                                      |
+| icdmanagement-checkinregistered                                     | Switch                   | Check-In Registered          | Indicates if openHAB is registered to receive check-ins from this sleepy device                                                                                                                                                                                      | Status           | true     |             |                                                                                                                                                                      |
+| icdmanagement-lastcheckin                                           | DateTime                 | Last Check-In                | The time this sleepy device last checked in with openHAB                                                                                                                                                                                                             | Time             | true     |             |                                                                                                                                                                      |
 | illuminancemeasurement-measuredvalue                                | Number:Illuminance       | Illuminance                  | The measured illuminance in Lux                                                                                                                                                                                                                                      | Illuminance      | true     | %d %unit%   |                                                                                                                                                                      |
 | levelcontrol-level                                                  | Dimmer                   | Dimmer                       | Sets the level of the light                                                                                                                                                                                                                                          | Light            |          |             |                                                                                                                                                                      |
 | modeselect-mode                                                     | Number                   | Mode Select                  | Selection of 1 or more states                                                                                                                                                                                                                                        |                  |          | %d          |                                                                                                                                                                      |
@@ -577,7 +596,7 @@ If there are issues starting the bridge, check the status field in the bridge se
 
 Pairing codes and other options can be found in the MainUI under "Settings -> Add-on Settings -> Matter Binding"
 
-When the matter bridge starts, if no 3rd party clients are paired, it will automatically open the "Commissioning Window" for up to 48 hours, meaning you can use the QR code or manual pair code found in the bridge settings page to pair a new client like Alexa, Google Home or Apple Home.
+When the matter bridge starts, if no 3rd party clients are paired, it will automatically open the "Commissioning Window" and keep it open until a client is paired, meaning you can use the QR code or manual pair code found in the bridge settings page to pair a new client like Alexa, Google Home or Apple Home.
 
 <img src="./doc/bridge-settings-pair.png" alt="Commissioning Window" width="500"/>
 
@@ -632,8 +651,9 @@ Changing its options or members replaces the device. A device that keeps its typ
 Changing the device type adds it as a new device.
 An item the bridge cannot add, for example because of an invalid option, is logged and left out until its Matter metadata changes. The rest of the bridge keeps running.
 
-A device shows as not responding in paired apps when all of its items are `NULL` or `UNDEF`, or when its items are linked to Things and none of those Things is online.
-For a Group item, its member items are checked, so a group without members shows as not responding.
+A device shows as not responding in paired apps when its items are linked to Things and none of those Things is `ONLINE`.
+Items that are not linked to any Thing, such as items driven by rules, always show as responding.
+For a Group item, the Things linked to its member items are checked.
 
 ### Thermostat group member tags
 
@@ -759,7 +779,7 @@ Switch                TestFanSingleItem         "On/Off"                        
 - Alexa: Suddenly stops working and says it could not connect to a device or device not responding.
   - Check the Settings page in the Main UI to confirm the bridge is running
   - Ensure the openHAB item has the proper matter tag, or that the item is being loaded at all (check item file errors)
-  - Check that the item has a state and that its Thing is online, see [Item Changes and Device Status](#item-changes-and-device-status)
+  - Check that the Thing linked to the item is online, see [Item Changes and Device Status](#item-changes-and-device-status)
   - Rarely, you may need to reboot the Alexa device.
   If you have multiple devices and not sure which is the primary matter connection, you may need to reboot all of them.
 

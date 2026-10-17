@@ -26,9 +26,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,10 +42,13 @@ import org.openhab.binding.matter.internal.client.dto.Node;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdStateMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdStateMessage.IcdEvent;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeState;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateStatusMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.PhysicalDeviceProperties;
 import org.openhab.binding.matter.internal.config.ControllerConfiguration;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
@@ -100,6 +105,8 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     // Nodes whose full attribute set has already been read once. Used to skip requestAllNodeData
     // on reconnect for sleepy devices; cleared on WebSocket reconnect since the bridge may have been restarted.
     private final Set<BigInteger> enumeratedNodes = Collections.synchronizedSet(new HashSet<>());
+    // Last connection problem matter.js reported per node, shown in the Thing status
+    private final Map<BigInteger, NodeState> connectionStates = new ConcurrentHashMap<>();
     // Set of nodes we need to try reconnecting to
     private Set<BigInteger> disconnectedNodes = Collections.synchronizedSet(new HashSet<>());
     // Nodes that we have linked to a handler
@@ -148,6 +155,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
             offlineTimers.clear();
         }
         pendingPhysicalProperties.clear();
+        connectionStates.clear();
         enumeratedNodes.clear();
         disconnectedNodes.clear();
         linkedNodes.clear();
@@ -211,16 +219,30 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
 
     @Override
     public CompletableFuture<Void> startScan(@Nullable String code) {
+        if (code != null) {
+            return pairDevice(code).thenAccept(warnings -> {
+            });
+        }
         if (!client.isConnected()) {
             logger.debug("not connected");
             return CompletableFuture.completedFuture(null);
         }
-        if (code != null) {
-            return client.pairNode(code).thenCompose(nodeId -> updateNode(nodeId));
-        } else {
-            // If no code, just sync unknown nodes
-            return syncUnknownNodes();
+        // If no code, just sync unknown nodes
+        return syncUnknownNodes();
+    }
+
+    /**
+     * Pairs a device and adds it to the inbox
+     *
+     * @param code a manual pairing code or a Matter QR code
+     * @return a future that completes with the warnings about the device's certificates that did not stop pairing
+     */
+    public CompletableFuture<List<String>> pairDevice(String code) {
+        if (!client.isConnected()) {
+            logger.debug("not connected");
+            return CompletableFuture.completedFuture(List.of());
         }
+        return client.pairNode(code).thenCompose(result -> updateNode(result.nodeId).thenApply(v -> result.warnings));
     }
 
     @Override
@@ -238,6 +260,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         logger.debug("Node onEvent: node {} is {}", message.nodeId, message.state);
         switch (message.state) {
             case CONNECTED:
+                connectionStates.remove(message.nodeId);
                 cancelOfflineTimer(message.nodeId);
                 PhysicalDeviceProperties props = message.physicalProperties;
                 if (props != null) {
@@ -270,7 +293,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
             case DECOMMISSIONED:
                 cancelOfflineTimer(message.nodeId);
                 updateEndpointStatuses(message.nodeId, ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                        "Node " + message.state);
+                        translationService.getTranslation(THING_STATUS_DETAIL_NODE_DECOMMISSIONED));
                 removeNode(message.nodeId);
                 break;
             case DISCONNECTED:
@@ -280,6 +303,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
                 // fall through
             case RECONNECTING:
             case WAITINGFORDEVICEDISCOVERY:
+                connectionStates.put(message.nodeId, message.state);
                 scheduleOffline(message.nodeId, message.state);
                 clearPendingDataRequest(message.nodeId);
                 break;
@@ -326,6 +350,33 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     }
 
     @Override
+    public void onEvent(OtaUpdateStatusMessage message) {
+        logger.debug("OtaUpdateStatusMessage onEvent: node {} is {}", message.nodeId, message.status);
+        NodeHandler handler = linkedNodes.get(message.nodeId);
+        if (handler != null) {
+            handler.handleOtaUpdateStatus(message.status);
+        }
+    }
+
+    @Override
+    public void onEvent(IcdStateMessage message) {
+        logger.debug("IcdStateMessage onEvent: node {} {} registered {}", message.nodeId, message.event,
+                message.registered);
+        NodeHandler handler = linkedNodes.get(message.nodeId);
+        if (handler == null) {
+            return;
+        }
+        handler.updateIcdState(message);
+        if (message.event == IcdEvent.CHECK_IN_MISSED) {
+            updateEndpointStatuses(message.nodeId, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    translationService.getTranslation(THING_STATUS_DETAIL_NODE_CHECK_IN_MISSED));
+        } else if (message.event == IcdEvent.CHECKED_IN && handler.getThing().getStatus() == ThingStatus.OFFLINE
+                && handler.getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
+            updateEndpointStatuses(message.nodeId, ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+        }
+    }
+
+    @Override
     public void onEvent(BridgeEventMessage message) {
     }
 
@@ -367,6 +418,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         outstandingNodeRequests.remove(nodeId);
         clearPendingDataRequest(nodeId);
         cancelOfflineTimer(nodeId);
+        connectionStates.remove(nodeId);
         pendingPhysicalProperties.remove(nodeId);
         enumeratedNodes.remove(nodeId);
         linkedNodes.remove(nodeId);
@@ -397,11 +449,36 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         }).exceptionally(e -> {
             logger.debug("Could not update node {}", id, e);
             disconnectedNodes.add(id);
-            String message = e.getMessage();
             updateEndpointStatuses(id, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    message != null ? message : "");
+                    connectionFailureText(id, e));
             throw new CompletionException(e);
         }).whenComplete((node, e) -> outstandingNodeRequests.remove(id));
+    }
+
+    /**
+     * Status text for a node that did not connect in time. matter.js keeps trying in the background, so the reason it
+     * last reported is more useful than the timeout.
+     */
+    private String connectionFailureText(BigInteger nodeId, Throwable e) {
+        NodeState state = connectionStates.get(nodeId);
+        if (state != null) {
+            return connectionStateText(state);
+        }
+        for (Throwable cause = e; cause != null; cause = cause.getCause()) {
+            if (cause instanceof TimeoutException) {
+                return translationService.getTranslation(THING_STATUS_DETAIL_NODE_CONNECTING);
+            }
+        }
+        String message = e.getMessage();
+        return message != null ? message : "";
+    }
+
+    private String connectionStateText(NodeState state) {
+        return translationService.getTranslation(switch (state) {
+            case WAITINGFORDEVICEDISCOVERY -> THING_STATUS_DETAIL_NODE_NOT_FOUND;
+            case RECONNECTING -> THING_STATUS_DETAIL_NODE_RECONNECTING;
+            default -> THING_STATUS_DETAIL_NODE_DISCONNECTED;
+        });
     }
 
     protected CompletableFuture<Void> updateEndpoint(BigInteger nodeId, Integer endpointId) {
@@ -454,12 +531,17 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
                 return;
             }
             NodeHandler handler = linkedNodes.get(nodeId);
+            // matter.js reports a missed check-in when such a device is really gone
+            if (handler != null && handler.receivesCheckIns()) {
+                logger.debug("Not scheduling OFFLINE for node {}, it checks in while asleep (state={})", nodeId, state);
+                return;
+            }
             int graceSec = handler != null ? handler.getOfflineGraceSeconds() : 60;
             logger.debug("Scheduling OFFLINE for node {} in {}s (state={})", nodeId, graceSec, state);
             ScheduledFuture<?> future = scheduler.schedule(() -> {
                 offlineTimers.remove(nodeId);
                 updateEndpointStatuses(nodeId, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Node " + state);
+                        connectionStateText(state));
             }, graceSec, TimeUnit.SECONDS);
             offlineTimers.put(nodeId, future);
         }

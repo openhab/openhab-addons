@@ -65,6 +65,18 @@ public class MatterBridgeClient extends MatterWebsocketClient {
         });
     }
 
+    /**
+     * Tell paired ecosystems that the bridge's devices changed.
+     *
+     * @return a future that completes when the configuration version is increased
+     */
+    public CompletableFuture<Void> increaseConfigurationVersion() {
+        CompletableFuture<JsonElement> future = sendMessage("bridge", "increaseConfigurationVersion", new Object[0]);
+        return future.thenAccept(obj -> {
+            // Do nothing, just to complete the future
+        });
+    }
+
     private CompletableFuture<String> sendEndpoint(String functionName, BridgedEndpoint be) {
         CompletableFuture<JsonElement> future = sendMessage("bridge", functionName, new Object[] { be.deviceType, be.id,
                 be.nodeLabel, be.productName, be.productLabel, be.serialNumber, be.attributeMap, be.reachable });
