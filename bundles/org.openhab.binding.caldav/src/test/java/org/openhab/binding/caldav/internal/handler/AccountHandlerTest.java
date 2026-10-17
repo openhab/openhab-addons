@@ -194,6 +194,21 @@ class AccountHandlerTest {
                 offline.countDown();
             }
         }
+
+        @Override
+        protected void updateStatus(ThingStatus status) {
+            updateStatus(status, ThingStatusDetail.NONE, null);
+        }
+
+        @Override
+        protected void updateStatus(ThingStatus status, @Nullable String description) {
+            updateStatus(status, ThingStatusDetail.NONE, description);
+        }
+
+        @Override
+        protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+            updateStatus(ThingStatus.OFFLINE, detail, description);
+        }
     }
 
     /** A captured account poll with its requested delay and cancellable scheduled future. */
@@ -349,6 +364,21 @@ class AccountHandlerTest {
             this.status = status;
             this.detail = detail;
         }
+
+        @Override
+        protected void updateStatus(ThingStatus status) {
+            updateStatus(status, ThingStatusDetail.NONE, null);
+        }
+
+        @Override
+        protected void updateStatus(ThingStatus status, @Nullable String description) {
+            updateStatus(status, ThingStatusDetail.NONE, description);
+        }
+
+        @Override
+        protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+            updateStatus(ThingStatus.OFFLINE, detail, description);
+        }
     }
 
     /** Typed storage contract used by calendar test fixtures and mocks. */
@@ -433,6 +463,21 @@ class AccountHandlerTest {
             this.status = status;
             this.detail = detail;
             getThing().setStatusInfo(new ThingStatusInfo(status, detail, description));
+        }
+
+        @Override
+        protected void updateStatus(ThingStatus status) {
+            updateStatus(status, ThingStatusDetail.NONE, null);
+        }
+
+        @Override
+        protected void updateStatus(ThingStatus status, @Nullable String description) {
+            updateStatus(status, ThingStatusDetail.NONE, description);
+        }
+
+        @Override
+        protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+            updateStatus(ThingStatus.OFFLINE, detail, description);
         }
     }
 
