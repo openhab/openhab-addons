@@ -106,13 +106,13 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         if (!configuration.restEnabled || configuration.ipAddress.isBlank() || configuration.restPort < 1
                 || configuration.restPort > 65535 || configuredPassword == null || configuredPassword.isBlank()
                 || configuration.refreshInterval < 10 || configuration.refreshIntervalSlow < 10) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-rest");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-rest");
             return;
         }
         try {
             configuration.getRestBaseUrl();
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-rest");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-rest");
             return;
         }
         String password = configuredPassword;
@@ -167,7 +167,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                     if (expectedGeneration == generation.get()) {
                         initializing = false;
                         httpClient = null;
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/offline.comm-error-rest [\"" + messageOf(e) + "\"]");
                     }
                 }
@@ -294,7 +294,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
             consecutivePollFailures = Math.min(consecutivePollFailures + 1, MAX_CONSECUTIVE_POLL_FAILURES);
             if (!online || consecutivePollFailures >= MAX_CONSECUTIVE_POLL_FAILURES) {
                 online = false;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error-rest [\"" + messageOf(e) + "\"]");
             }
         }

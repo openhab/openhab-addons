@@ -122,14 +122,12 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
         config = getConfigAs(KeContactCombinedConfiguration.class);
         String host = config.getModbusAddress();
         if (host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-no-address");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-no-address");
             return;
         }
         if (config.refreshInterval < MIN_FAST_REFRESH_INTERVAL_SECONDS || config.refreshIntervalSlow <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-invalid-refresh [\"fast=" + config.refreshInterval + ", slow="
-                            + config.refreshIntervalSlow + "\"]");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-refresh [\"fast="
+                    + config.refreshInterval + ", slow=" + config.refreshIntervalSlow + "\"]");
             return;
         }
 
@@ -176,7 +174,7 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
             String description = (invalidConfiguration ? "Invalid Modbus endpoint or pool configuration: "
                     : "Could not create Modbus communication interface: ") + failure.getMessage();
             logger.warn("Modbus communication setup failed: {}", failure.getMessage());
-            updateStatus(ThingStatus.OFFLINE, detail, description);
+            updateStatus(detail, description);
         }
     }
 
@@ -231,7 +229,7 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
             registerPolls(localComms, generation, true);
             return;
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Modbus identification failed");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Modbus identification failed");
         synchronized (connectionLock) {
             if (generation == connectionGeneration.get()) {
                 identificationJob = scheduler.schedule(() -> identifyProduct(localComms, generation), 300,
@@ -417,7 +415,7 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
             return;
         }
         if (consecutiveReadFailures.incrementAndGet() >= MAX_CONSECUTIVE_READ_FAILURES) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-modbus-read [\"" + getFailureMessage(failure) + "\"]");
         }
     }

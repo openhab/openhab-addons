@@ -22,8 +22,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.State;
 
 /**
@@ -90,22 +88,46 @@ public abstract class KeContactProtocolHandler extends BaseThingHandler {
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
+    public void updateStatus(ThingStatus status, @Nullable String description) {
         Listener localListener = listener;
         if (localListener == null) {
-            ThingHandlerCallback callback = getCallback();
-            if (callback != null) {
-                callback.statusUpdated(getThing(),
-                        ThingStatusInfoBuilder.create(status, detail).withDescription(description).build());
-            }
+            super.updateStatus(status, description);
         } else {
-            localListener.statusUpdated(status, detail, description);
+            localListener.statusUpdated(status, ThingStatusDetail.NONE, description);
         }
     }
 
     @Override
     protected void updateStatus(ThingStatus status) {
-        updateStatus(status, ThingStatusDetail.NONE, null);
+        Listener localListener = listener;
+        if (localListener == null) {
+            super.updateStatus(status);
+        } else {
+            localListener.statusUpdated(status, ThingStatusDetail.NONE, null);
+        }
+    }
+
+    @Override
+    public void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        Listener localListener = listener;
+        if (localListener == null) {
+            super.updateStatus(detail, description);
+        } else {
+            localListener.statusUpdated(statusFromDetail(detail), detail, description);
+        }
+    }
+
+    private static ThingStatus statusFromDetail(ThingStatusDetail detail) {
+        return switch (detail) {
+            case NOT_YET_READY, HANDLER_MISSING_ERROR, HANDLER_REGISTERING_ERROR, HANDLER_INITIALIZING_ERROR,
+                    HANDLER_CONFIGURATION_PENDING, BRIDGE_UNINITIALIZED, DISABLED ->
+                ThingStatus.UNINITIALIZED;
+            case CONFIGURATION_PENDING -> ThingStatus.ONLINE;
+            case AUTHORIZATION_PENDING, BRIDGE_OFFLINE, COMMUNICATION_ERROR, CONFIGURATION_ERROR, FIRMWARE_UPDATING,
+                    DUTY_CYCLE, GONE ->
+                ThingStatus.OFFLINE;
+            case NONE -> throw new IllegalArgumentException("A status cannot be derived from the NONE detail");
+        };
     }
 
     @Override

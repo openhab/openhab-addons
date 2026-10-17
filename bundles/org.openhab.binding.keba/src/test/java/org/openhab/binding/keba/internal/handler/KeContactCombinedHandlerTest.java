@@ -118,11 +118,18 @@ class KeContactCombinedHandlerTest {
             void markOnline() {
                 updateStatus(ThingStatus.ONLINE);
             }
+
+            void markCommunicationFailure() {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "connection lost");
+            }
         }
         TestProtocolHandler handler = new TestProtocolHandler();
         try {
             handler.markOnline();
             verify(listener).statusUpdated(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+            handler.markCommunicationFailure();
+            verify(listener).statusUpdated(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "connection lost");
         } finally {
             handler.dispose();
         }

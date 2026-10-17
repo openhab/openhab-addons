@@ -169,11 +169,10 @@ public class KeContactHandler extends KeContactProtocolHandler {
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-address-port");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-address-port");
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-init [\"" + String.valueOf(e.getMessage()) + "\"]");
         }
     }
@@ -228,8 +227,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
             long stamp = System.currentTimeMillis();
             if (!isKebaReachable()) {
                 logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error-timeout");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-timeout");
             } else {
                 ExpiringCacheMap<String, ByteBuffer> localCache = cache;
                 if (localCache == null) {
@@ -278,8 +276,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
         } catch (IOException e) {
             logger.debug("An error occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
                     e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-polling");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-polling");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());

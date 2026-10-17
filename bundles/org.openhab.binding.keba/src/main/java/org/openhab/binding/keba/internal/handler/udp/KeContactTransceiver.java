@@ -355,7 +355,7 @@ public class KeContactTransceiver {
                 return request.reply;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } finally {
                 if (request != null) {
                     requests.remove(handler, request);
@@ -456,18 +456,16 @@ public class KeContactTransceiver {
                                                         theChannel.getLocalAddress(), theChannel.getRemoteAddress() });
                                         theChannel.write(theBuffer);
                                     } catch (NotYetConnectedException e) {
-                                        theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                ThingStatusDetail.COMMUNICATION_ERROR,
+                                        theHandler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                                 "The remote host is not yet connected");
                                         error = true;
                                     } catch (ClosedChannelException e) {
-                                        theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                ThingStatusDetail.COMMUNICATION_ERROR,
+                                        theHandler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                                 "The connection to the remote host is closed");
                                         error = true;
                                     } catch (IOException e) {
-                                        theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                ThingStatusDetail.COMMUNICATION_ERROR, "An IO exception occurred");
+                                        theHandler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                                                "An IO exception occurred");
                                         error = true;
                                     }
 
@@ -515,7 +513,7 @@ public class KeContactTransceiver {
                                         }
                                     }
                                 } else {
-                                    handlerSnapshot().forEach(listener -> listener.updateStatus(ThingStatus.OFFLINE,
+                                    handlerSnapshot().forEach(listener -> listener.updateStatus(
                                             ThingStatusDetail.COMMUNICATION_ERROR, "The transceiver is offline"));
                                     reset();
                                     return;
@@ -540,18 +538,16 @@ public class KeContactTransceiver {
                                                 new String(channelBuffer.array(), StandardCharsets.US_ASCII),
                                                 theChannel.getRemoteAddress());
                                     } catch (NotYetConnectedException e) {
-                                        theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                ThingStatusDetail.COMMUNICATION_ERROR,
+                                        theHandler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                                 "The remote host is not yet connected");
                                         error = true;
                                     } catch (PortUnreachableException e) {
-                                        theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                ThingStatusDetail.CONFIGURATION_ERROR,
+                                        theHandler.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                                 "The remote host is probably not a KEBA KeContact");
                                         error = true;
                                     } catch (IOException e) {
-                                        theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                ThingStatusDetail.COMMUNICATION_ERROR, "An IO exception occurred");
+                                        theHandler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                                                "An IO exception occurred");
                                         error = true;
                                     }
 
@@ -600,7 +596,7 @@ public class KeContactTransceiver {
             try {
                 datagramChannel = DatagramChannel.open();
             } catch (Exception e2) {
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "An exception occurred while opening a datagram channel");
             }
 
@@ -610,7 +606,7 @@ public class KeContactTransceiver {
                 try {
                     datagramChannel.configureBlocking(false);
                 } catch (IOException e2) {
-                    handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "An exception occurred while configuring a datagram channel");
                 }
 
@@ -619,7 +615,7 @@ public class KeContactTransceiver {
                 try {
                     datagramChannel.register(localSelector, interestSet);
                 } catch (ClosedChannelException e1) {
-                    handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "An exception occurred while registering a selector");
                 }
 
@@ -631,16 +627,16 @@ public class KeContactTransceiver {
                     }
                     datagramChannel.connect(remoteAddress);
 
-                    handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+                    handler.updateStatus(ThingStatus.ONLINE, "");
                 } catch (Exception e) {
                     logger.debug("An exception occurred while connecting connecting to '{}:{}' : {}",
                             new Object[] { ipAddress, remotePort, e.getMessage() });
-                    handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "An exception occurred while connecting");
                 }
             }
         } else {
-            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            handler.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     handler.getThing().getStatusInfo().getDescription());
         }
     }
@@ -656,11 +652,11 @@ public class KeContactTransceiver {
                     key.cancel();
                 }
                 datagramChannel.close();
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "");
+                handler.updateStatus(ThingStatus.OFFLINE, "");
             } catch (Exception e) {
                 logger.debug("An exception occurred while closing the datagramchannel for '{}': {}",
                         handler.getThing().getUID(), e.getMessage());
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "An exception occurred while closing the datagramchannel");
             }
         }
