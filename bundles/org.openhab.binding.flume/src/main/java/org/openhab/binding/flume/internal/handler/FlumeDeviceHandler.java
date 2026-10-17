@@ -63,7 +63,6 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -143,7 +142,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         FlumeBridgeHandler bh = (FlumeBridgeHandler) bridge.getHandler();
 
         if (bh == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
+            logger.debug("Bridge handler unavailable while bringing Thing online: {}", thing.getUID());
             return;
         }
 
