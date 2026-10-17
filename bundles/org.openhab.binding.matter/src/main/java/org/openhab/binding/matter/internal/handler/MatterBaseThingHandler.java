@@ -16,7 +16,9 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_S
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.NetworkInterface;
 import java.net.URI;
+import java.nio.channels.Channel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +45,6 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BasicInformationCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BridgedDeviceBasicInformationCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnosticsCluster;
-import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnosticsCluster.NetworkInterface;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
@@ -56,9 +57,7 @@ import org.openhab.binding.matter.internal.util.MatterLabelUtils;
 import org.openhab.binding.matter.internal.util.MatterUIDUtils;
 import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.config.core.ConfigDescription;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -76,8 +75,6 @@ import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
@@ -200,11 +197,6 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         } else {
             startPolling();
         }
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
     }
 
     @Override
