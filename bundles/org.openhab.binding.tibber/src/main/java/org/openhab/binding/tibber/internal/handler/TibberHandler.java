@@ -70,6 +70,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -209,8 +210,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         isDisposed = false;
         tibberConfig = getConfigAs(TibberConfiguration.class);
         if (tibberConfig.homeid.isBlank() || tibberConfig.token.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.configuration-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.configuration-error");
         } else {
             // Create TibberHistory here (not in constructor) to ensure StorageService OSGi injection is complete
             history = new TibberHistory(storageService, tibberConfig.homeid, this);
@@ -287,7 +287,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
                 if (jsonResponse.has("errors")) {
                     // case: error
                     // if response is ok_200 and an error occurs homeid or token is wrong so raise configuration error
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/status.initial-call-failed  [\"" + responseStatus + " - " + initialResponse + "\"]");
                 } else {
                     JsonObject initalJson = Utils.getJsonObject(jsonResponse, INITIAL_QUERY_JSON_PATH);
@@ -348,8 +348,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     }
 
     private void handleInitializeError(@Nullable String message, boolean retry) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "@text/status.initial-call-failed  [\"" + message + "\"]");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.initial-call-failed  [\"" + message + "\"]");
         if (retry) {
             scheduler.schedule(this::doInitialize, 60, TimeUnit.SECONDS);
         }
@@ -498,25 +497,25 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
                         }
                         updateStatus(ThingStatus.ONLINE);
                     } catch (JsonSyntaxException | DateTimeParseException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/status.price-update-failed  [\"" + e.getMessage() + "\"]");
                     }
                 }
             } else if (jsonResponse.contains("error")) {
                 updatePriceInfoRetry();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/status.price-update-failed  [\"" + responseStatus + "\"]");
             } else {
                 updatePriceInfoRetry();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/status.price-update-failed  [\"" + jsonResponse + "\"]");
             }
         } catch (TimeoutException | ExecutionException e) {
             updatePriceInfoRetry();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.price-update-failed  [\"" + e.getMessage() + "\"]");
         } catch (InterruptedException e1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.price-update-failed  [\"" + e1.getMessage() + "\"]");
             Thread.currentThread().interrupt();
         }
@@ -760,8 +759,17 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         TibberHistory.TimeWindow window = request.window();
         if (series == null) {
             // Fetch started — update status to show which window is loading
-            updateStatus(thing.getStatus(), thing.getStatusInfo().getStatusDetail(),
-                    "@text/status.history-update [\"" + window.name() + "\"]");
+            String description = "@text/status.history-update [\"" + window.name() + "\"]";
+            ThingStatusInfo statusInfo = thing.getStatusInfo();
+            ThingStatus status = statusInfo.getStatus();
+            if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE || status == ThingStatus.UNKNOWN) {
+                ThingStatusDetail detail = statusInfo.getStatusDetail();
+                if (detail == ThingStatusDetail.NONE) {
+                    updateStatus(status, description);
+                } else {
+                    updateStatus(detail, description);
+                }
+            }
             return;
         }
 
@@ -782,7 +790,11 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         scheduler.execute(() -> enrichCurrentPeriods(localHistory));
 
         // Restore status (clear the "loading" message)
-        updateStatus(thing.getStatus(), thing.getStatusInfo().getStatusDetail());
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
+        ThingStatus status = statusInfo.getStatus();
+        if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE || status == ThingStatus.UNKNOWN) {
+            updateStatus(status, statusInfo.getStatusDetail());
+        }
         logger.info("History update for {} completed", window.name());
     }
 

@@ -79,7 +79,7 @@ public class StationHandler extends BaseThingHandler {
 
         stationId = (String) getConfig().get("stopPointId");
         if (stationId == null || stationId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-station-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-station-id");
             return;
         }
 
@@ -89,7 +89,7 @@ public class StationHandler extends BaseThingHandler {
 
         String timezone = thing.getProperties().get(TIMEZONE);
         if (timezone == null || timezone.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-timezone");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-timezone");
             return;
         }
 
@@ -127,7 +127,7 @@ public class StationHandler extends BaseThingHandler {
                 updateThing(thingBuilder.build());
                 return true;
             } catch (SncfException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
         return false;
@@ -182,7 +182,7 @@ public class StationHandler extends BaseThingHandler {
             });
             updateStatus(ThingStatus.ONLINE);
         } catch (SncfException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             freeRefreshJob();
         }
     }
@@ -242,18 +242,20 @@ public class StationHandler extends BaseThingHandler {
 
     private @Nullable SncfBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler != null) {
-                if (handler.getThing().getStatus() == ThingStatus.ONLINE) {
-                    return (SncfBridgeHandler) handler;
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    return null;
-                }
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return null;
+        }
+        BridgeHandler handler = bridge.getHandler();
+        if (handler != null) {
+            if (handler.getThing().getStatus() == ThingStatus.ONLINE) {
+                return (SncfBridgeHandler) handler;
+            } else {
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+                return null;
             }
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        updateStatus(ThingStatus.UNKNOWN);
         return null;
     }
 }

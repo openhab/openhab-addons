@@ -99,7 +99,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
             logger.error(
                     "Long running HttpClient for PlexServerHandler {} cannot be started. Creating Handler failed. Exception: {}",
                     httpClientName, e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
@@ -107,25 +107,24 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
         if (!config.host.isEmpty()) { // Check if a hostname is set
             plexAPIConnector.setParameters(config);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Host must be specified, check configuration");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Host must be specified, check configuration");
             return;
         }
         if (!plexAPIConnector.hasToken()) {
             // No token is set by config, let's see if we can fetch one from username/password
             logger.debug("Token is not set, trying to fetch one");
             if (config.username.isEmpty() || config.password.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Username, password and Token is not set, unable to connect to PLEX without. ");
                 return;
             } else {
                 try {
                     plexAPIConnector.getToken();
                 } catch (ConfigurationException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                     return;
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     return;
                 }
             }
@@ -133,12 +132,12 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
         logger.debug("Fetch API with config, {}", config.toString());
         try {
             if (!plexAPIConnector.getApi()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Unable to find server, make sure `server` matches the Plex network configuration.");
                 return;
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to fetch API, make sure `server` and `token` are correct.");
             return;
         }
@@ -305,12 +304,11 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
                 refreshStates(plexSessionData);
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "PLEX is not returning valid session data");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "PLEX is not returning valid session data");
             }
             refreshAllPlayers();
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("An exception occurred while polling the PLEX Server: '%s'", e.getMessage()));
         }
     };

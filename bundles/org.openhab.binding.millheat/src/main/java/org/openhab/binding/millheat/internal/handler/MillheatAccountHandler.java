@@ -149,10 +149,10 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
             }
             // Bad credentials are a configuration problem; anything else is worth retrying.
             if (e.getHttpStatus() == HttpStatus.UNAUTHORIZED_401 || e.getHttpStatus() == HttpStatus.BAD_REQUEST_400) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Could not sign in to the Mill cloud API: " + e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduleReinitialize();
             }
             return;
@@ -183,8 +183,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 return;
             }
             model = new MillheatModel(0);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error fetching initial data: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error fetching initial data: " + e.getMessage());
             logger.debug("Error initializing Mill data", e);
             scheduleReinitialize();
         }
@@ -332,7 +331,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 updateModel();
             } catch (final MillheatCommunicationException retryFailure) {
                 logger.debug("Retry failed, waiting for the next refresh cycle", retryFailure);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, retryFailure.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, retryFailure.getMessage());
             }
         }
     }

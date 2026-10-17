@@ -164,7 +164,7 @@ public class CalendarHandler extends BaseThingHandler {
                 var failure = CalDavErrors.calendar(e, false);
                 set("sync#status", new StringType("ERROR"));
                 set("sync#error", new StringType(failure.description()));
-                updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
+                updateStatus(failure.detail(), failure.statusDescription());
             }
             configured = configuration;
         }
@@ -271,7 +271,7 @@ public class CalendarHandler extends BaseThingHandler {
                 } else {
                     set("sync#status", new StringType("SYNCING"));
                     set("sync#error", new StringType(""));
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.calendar.waiting");
+                    updateStatus(ThingStatus.UNKNOWN, "@text/status.calendar.waiting");
                 }
             }
             return active && currentContext(current, bridgeUID, accountValid);
@@ -319,13 +319,13 @@ public class CalendarHandler extends BaseThingHandler {
         }
     }
 
-    /** Publishes bridge-offline state while retaining calendar-specific errors and usable events. */
+    /** Publishes bridge failure to sync channels while retaining calendar-specific errors and usable events. */
     public void bridgeConnectionFailed() {
         bridgeConnectionFailed(() -> true);
     }
 
     /**
-     * Publishes bridge-offline state while retaining calendar-specific errors and usable events.
+     * Publishes bridge failure to sync channels while retaining calendar-specific errors and usable events.
      *
      * @param accountValid nonblocking check that the captured account context still permits publication
      */
@@ -340,11 +340,10 @@ public class CalendarHandler extends BaseThingHandler {
             var failure = synchronizationFailure;
             if (failure == null) {
                 set("sync#error", new StringType("Account bridge is offline"));
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                        "@text/status.calendar.bridge-offline");
+                logger.debug("Calendar bridge is offline");
             } else {
                 set("sync#error", new StringType(failure.description()));
-                updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
+                updateStatus(failure.detail(), failure.statusDescription());
             }
         }
     }
@@ -449,7 +448,7 @@ public class CalendarHandler extends BaseThingHandler {
                 set("sync#status", new StringType("SYNCING"));
                 set("sync#error", new StringType(""));
                 if (!synchronizedOnce) {
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.calendar.fetching");
+                    updateStatus(ThingStatus.UNKNOWN, "@text/status.calendar.fetching");
                 }
             }
             CalendarSynchronizer.Result result = worker.synchronize(horizon, zone, account.syncMode,
@@ -505,7 +504,7 @@ public class CalendarHandler extends BaseThingHandler {
         synchronizationFailure = failure;
         set("sync#status", new StringType("ERROR"));
         set("sync#error", new StringType(failure.description()));
-        updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
+        updateStatus(failure.detail(), failure.statusDescription());
     }
 
     private void failed(long current, BooleanSupplier accountValid, Exception error) {
@@ -517,7 +516,7 @@ public class CalendarHandler extends BaseThingHandler {
             synchronizationFailure = failure;
             set("sync#status", new StringType("ERROR"));
             set("sync#error", new StringType(failure.description()));
-            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
+            updateStatus(failure.detail(), failure.statusDescription());
         }
         if (error instanceof CalDavHttpException http) {
             logger.debug("CalDAV {} failed with HTTP {}", http.operation(), http.statusCode());

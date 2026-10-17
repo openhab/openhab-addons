@@ -289,15 +289,14 @@ public class IAqualinkHandler extends BaseThingHandler {
             Device[] devices = client.getDevices(apiKey, accountInfo.getAuthenticationToken(), accountInfo.getId());
 
             if (devices.length == 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No registered devices found");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No registered devices found");
                 return;
             }
 
             if (confSerialId != null && !confSerialId.isBlank()) {
                 serialNumber = confSerialId.replaceAll("[^a-zA-Z0-9]", "").toUpperCase();
                 if (!Arrays.stream(devices).anyMatch(device -> device.getSerialNumber().equals(serialNumber))) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "No Device for given serialId found");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No Device for given serialId found");
                     return;
                 }
             } else {
@@ -309,10 +308,10 @@ public class IAqualinkHandler extends BaseThingHandler {
             initPolling(COMMAND_REFRESH_SECONDS);
         } catch (IOException e) {
             logger.debug("Could not connect to service {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (NotAuthorizedException e) {
             logger.debug("Credentials not valid");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Credentials not valid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Credentials not valid");
         }
     }
 
@@ -350,7 +349,7 @@ public class IAqualinkHandler extends BaseThingHandler {
             Home home = client.getHome(serialNumber, sessionId);
 
             if ("Error".equals(home.getResponse())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Service reports controller status as: " + home.getStatus());
                 return;
             }
@@ -403,7 +402,7 @@ public class IAqualinkHandler extends BaseThingHandler {
             logger.debug("Exception polling", e);
             if (isFutureValid(localFuture)) {
                 // only valid futures should set state, otherwise this exception was do to being canceled.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } catch (NotAuthorizedException e) {
             // if are creds are not valid, we need to try re authorizing again

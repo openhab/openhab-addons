@@ -418,7 +418,7 @@ public class SomneoHandler extends BaseThingHandler {
                 // Occurs on parallel mobile app access
                 logger.debug("EOF: {}", e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
@@ -497,7 +497,7 @@ public class SomneoHandler extends BaseThingHandler {
                 // Occurs on parallel mobile app access
                 logger.debug("EOF: {}", e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
@@ -570,7 +570,7 @@ public class SomneoHandler extends BaseThingHandler {
                 // Occurs on parallel mobile app access
                 logger.debug("EOF: {}", e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
@@ -770,7 +770,7 @@ public class SomneoHandler extends BaseThingHandler {
                 // Occurs on parallel mobile app access
                 logger.debug("EOF: {}", e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

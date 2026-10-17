@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -101,10 +102,16 @@ public class PentairIntelliFloHandlerTest {
 
         handler = new PentairIntelliFloHandler(thing) {
             @Override
+            protected @Nullable Bridge getBridge() {
+                return bridge;
+            }
+
+            @Override
             public @NonNull PentairBaseBridgeHandler getBridgeHandler() {
                 return pibh;
             }
         };
+        when(bridge.getHandler()).thenReturn(pibh);
 
         channels.add(ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_INTELLIFLO_RUN)).build());
         channels.add(ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_INTELLIFLO_POWER)).build());

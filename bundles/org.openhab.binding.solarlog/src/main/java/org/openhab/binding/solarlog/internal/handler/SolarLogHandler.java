@@ -81,7 +81,7 @@ public class SolarLogHandler extends BaseThingHandler {
                 // Very rudimentary Exception differentiation
             } catch (IOException e) {
                 logger.debug("Error reading response from Solar-Log", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Communication error with the device. Please retry later.");
             } catch (JsonSyntaxException je) {
                 logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());

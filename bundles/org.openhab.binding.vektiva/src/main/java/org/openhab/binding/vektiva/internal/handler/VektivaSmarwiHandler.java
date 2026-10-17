@@ -147,16 +147,14 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             return response;
         } catch (InterruptedException e) {
             logger.debug("API execution has been interrupted", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "API execution has been interrupted");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "API execution has been interrupted");
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             logger.debug("Timeout during API execution", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Timeout during API execution");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Timeout during API execution");
         } catch (ExecutionException e) {
             logger.debug("Exception during API execution", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Exception during API execution: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Exception during API execution: " + e.getMessage());
         }
         return null;
     }
@@ -189,8 +187,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             if (resp.getStatus() == 200) {
                 processStatusResponse(response);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "got response code: " + resp.getStatus());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "got response code: " + resp.getStatus());
             }
             // reconnect web socket if not connected
             if (config.useWebSockets && (session == null || !session.isOpen())
@@ -201,16 +198,14 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             }
         } catch (InterruptedException e) {
             logger.debug("API execution has been interrupted", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "API execution has been interrupted");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "API execution has been interrupted");
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             logger.debug("Timeout during status update", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Timeout during status update");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Timeout during status update");
         } catch (ExecutionException e) {
             logger.debug("Exception during status update", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Exception during status update: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Exception during status update: " + e.getMessage());
         }
         session = null;
     }
@@ -262,14 +257,14 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             return fut.get();
         } catch (IOException ex) {
             logger.debug("Cannot connect websocket client", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot connect websocket client");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Cannot connect websocket client");
         } catch (InterruptedException ex) {
             logger.debug("Cannot create websocket session", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket session");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket session");
             Thread.currentThread().interrupt();
         } catch (ExecutionException ex) {
             logger.debug("Cannot create websocket session", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket session");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket session");
         }
         return null;
     }

@@ -262,20 +262,20 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             updateChannels();
             updateBridgeProperties();
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IOException e) {
             final Throwable cause = e.getCause();
             if (cause != null) {
                 final String causeMessage = cause.getMessage();
 
                 if (causeMessage != null && causeMessage.contains("Connection timed out")) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "IP Address probably incorrect, timed out creating connection!");
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, causeMessage);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, causeMessage);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } catch (Exception e) {
             setOfflineAndReconnect(e.getMessage());
@@ -607,7 +607,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private void setOfflineAndReconnect(@Nullable String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         cancelEventPolling();
         final Connection connection = omniConnection;
         if (connection != null) {

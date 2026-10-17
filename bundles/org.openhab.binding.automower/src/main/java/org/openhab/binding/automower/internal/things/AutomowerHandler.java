@@ -321,36 +321,34 @@ public class AutomowerHandler extends BaseThingHandler {
         synchronized (this) {
             disposed = false;
         }
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
-            final String configMowerZoneId = currentConfig.getMowerZoneId();
-            if (configMowerZoneId != null && !configMowerZoneId.isBlank()) {
-                try {
-                    mowerZoneId = ZoneId.of(configMowerZoneId);
-                } catch (DateTimeException e) {
-                    logger.warn("Invalid configuration mowerZoneId: {}, Error: {}", mowerZoneId, e.getMessage());
-                    mowerZoneId = timeZoneProvider.getTimeZone(); // wrong config, use System TimeZone
-                }
-            } else {
-                mowerZoneId = timeZoneProvider.getTimeZone(); // not configured, use System TimeZone
-            }
-
-            final String mowerId = this.getThing().getUID().getId();
-            automowerId.set(mowerId);
-            // Adding handler to map of handlers
-            AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
-            if (automowerBridgeHandler != null) {
-                automowerBridgeHandler.registerAutomowerHandler(mowerId, this);
-            }
-
-            updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
-
-            scheduler.execute(() -> completeInitAsync());
-
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         }
+        AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
+        final String configMowerZoneId = currentConfig.getMowerZoneId();
+        if (configMowerZoneId != null && !configMowerZoneId.isBlank()) {
+            try {
+                mowerZoneId = ZoneId.of(configMowerZoneId);
+            } catch (DateTimeException e) {
+                logger.warn("Invalid configuration mowerZoneId: {}, Error: {}", mowerZoneId, e.getMessage());
+                mowerZoneId = timeZoneProvider.getTimeZone(); // wrong config, use System TimeZone
+            }
+        } else {
+            mowerZoneId = timeZoneProvider.getTimeZone(); // not configured, use System TimeZone
+        }
+
+        final String mowerId = this.getThing().getUID().getId();
+        automowerId.set(mowerId);
+        // Adding handler to map of handlers
+        AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+        if (automowerBridgeHandler != null) {
+            automowerBridgeHandler.registerAutomowerHandler(mowerId, this);
+        }
+
+        updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
+
+        scheduler.execute(() -> completeInitAsync());
     }
 
     private void completeInitAsync() {
@@ -371,11 +369,10 @@ public class AutomowerHandler extends BaseThingHandler {
                 mowerMessages = automowerBridge.getAutomowerMessages(mowerId);
                 updateMessagesChannelState(mowerMessages);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             }
         } catch (AutomowerCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error-query-mower-failed");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-query-mower-failed");
             logger.warn("Unable to query automower messages for: {}. Error: {}", mowerId, e.getMessage());
         }
     }
@@ -460,12 +457,10 @@ public class AutomowerHandler extends BaseThingHandler {
             if (isConnected(mower)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error-mower-not-connected-to-cloud");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-mower-not-connected-to-cloud");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error-query-mower-failed");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-query-mower-failed");
         }
     }
 
@@ -476,10 +471,15 @@ public class AutomowerHandler extends BaseThingHandler {
             if (disposed) {
                 return;
             }
-            automowerBridge = getAutomowerBridge();
-            automowerBridgeHandler = getAutomowerBridgeHandler();
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+                return;
+            }
+            automowerBridgeHandler = bridge.getHandler() instanceof AutomowerBridgeHandler handler ? handler : null;
+            automowerBridge = automowerBridgeHandler != null ? automowerBridgeHandler.getAutomowerBridge() : null;
             if (automowerBridgeHandler == null || automowerBridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 return;
             }
         }
@@ -552,7 +552,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 automowerBridge.sendAutomowerCommand(id, command, commandWorkAreaId, commandDurationMinutes,
                         commandExternalReason);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             }
         } catch (AutomowerCommunicationException e) {
             logger.warn("Unable to send Command to automower: {}, Error: {}", id, e.getMessage());
@@ -610,8 +610,7 @@ public class AutomowerHandler extends BaseThingHandler {
                             mower.getAttributes().getCapabilities().hasWorkAreas(), workAreaId, calendarTaskArray);
                     replaceCachedCalendarTasks(mower, workAreaId, calendarTaskArray);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send CalendarTask to automower: {}, Error: {}", id, e.getMessage());
@@ -701,8 +700,7 @@ public class AutomowerHandler extends BaseThingHandler {
                             calendarTasksFiltered);
                     copyCalendarTaskValues(calendarTask, updatedCalendarTask);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send CalendarTask to automower: {}, Error: {}", id, e.getMessage());
@@ -774,8 +772,7 @@ public class AutomowerHandler extends BaseThingHandler {
                             .filter(zone -> zone.getId().equals(zoneId)).findFirst()
                             .ifPresent(zone -> zone.setEnabled(enable));
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send StayOutZone to automower: {}, Error: {}", id, e.getMessage());
@@ -958,8 +955,7 @@ public class AutomowerHandler extends BaseThingHandler {
                                 }
                             });
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send WorkArea to automower: {}, Error: {}", id, e.getMessage());
@@ -1036,8 +1032,7 @@ public class AutomowerHandler extends BaseThingHandler {
                         settings.getHeadlight().setHeadlightMode(headlightMode);
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send SettingCuttingHeight to automower: {}, Error: {}", id, e.getMessage());
@@ -1063,8 +1058,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 if (automowerBridge != null) {
                     automowerBridge.sendAutomowerConfirmError(id);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send ConfirmError to automower: {}, Error: {}", id, e.getMessage());
@@ -1091,8 +1085,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     requestSucceeded = true;
                     mower.getAttributes().getStatistics().setCuttingBladeUsageTime(0);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send ResetCuttingBladeUsageTime to automower: {}, Error: {}", id,

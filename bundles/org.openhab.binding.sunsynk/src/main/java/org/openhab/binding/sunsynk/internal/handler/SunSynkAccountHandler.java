@@ -73,7 +73,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     public void setBridgeOffline() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Check credentials and re-enable account");
+        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Check credentials and re-enable account");
     }
 
     public List<Inverter> getInvertersFromSunSynk() {
@@ -82,7 +82,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         try {
             inverters = sunAccount.getDetails();
         } catch (SunSynkInverterDiscoveryException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to find inverters registered to account");
         }
         return inverters;
@@ -101,11 +101,11 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     private boolean configAccount() {
         SunSynkAccountConfig accountConfig = this.accountConfig;
         if (accountConfig == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No account config provided.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No account config provided.");
             return false;
         }
         if (accountConfig.getEmail().isBlank() | accountConfig.getPassword().isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "E-mail address or Password missing in account configuration");
             return false;
         }
@@ -115,15 +115,14 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             if (logger.isDebugEnabled()) {
                 logger.debug("Error attempting to authenticate client: {}.", e.getMessage());
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate binding with SunSynk");
             return false;
         } catch (SunSynkAuthenticateException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Error attempting to authenticate user: {}.", e.getMessage());
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error attempting to authenticate user credentials");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error attempting to authenticate user credentials");
             return false;
         }
         updateStatus(ThingStatus.ONLINE);
@@ -155,7 +154,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (SunSynkTokenException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to refresh account: " + e.getMessage());
             throw new SunSynkAuthenticateException("" + e.getMessage());
         }

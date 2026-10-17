@@ -121,7 +121,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
     @Override
     public void processAuthenticationResult(boolean authenticated) {
         if (!authenticated) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     getLocalizedText("bridge.error.site-specific.auth-issue"));
         } else {
             processConnected();
@@ -141,7 +141,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
         if (message == null || message.isBlank()) {
             message = getLocalizedText("bridge.error.site-specific.communication-failure.unknown");
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 getLocalizedText("bridge.error.site-specific.communication-failure", message));
     }
 

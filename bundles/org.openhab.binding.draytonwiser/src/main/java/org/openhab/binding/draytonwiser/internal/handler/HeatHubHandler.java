@@ -109,8 +109,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
                 final DomainDTO domain = api.getDomain();
 
                 if (domain == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "No data received");
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "No data received");
                 } else {
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
@@ -124,7 +123,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
             }
         } catch (final RuntimeException | DraytonWiserApiException e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             return null;
         }
         return Boolean.TRUE;

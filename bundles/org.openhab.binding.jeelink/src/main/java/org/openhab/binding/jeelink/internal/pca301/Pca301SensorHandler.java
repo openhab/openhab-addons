@@ -62,7 +62,11 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
     public void initialize() {
         super.initialize();
 
-        bridge = (JeeLinkHandler) getBridge().getHandler();
+        JeeLinkHandler bridge = registeredBridge;
+        if (bridge == null) {
+            return;
+        }
+        this.bridge = bridge;
 
         Pca301SensorConfig cfg = getConfigAs(Pca301SensorConfig.class);
         sendCount = cfg.sendCount;

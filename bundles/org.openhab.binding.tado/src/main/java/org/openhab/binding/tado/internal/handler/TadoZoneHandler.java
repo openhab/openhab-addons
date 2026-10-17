@@ -241,16 +241,16 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         disposing = false;
         configuration = getConfigAs(TadoZoneConfig.class);
         if (configuration.refreshInterval <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone "
-                    + getZoneId() + " of home " + getHomeId() + " must be greater than zero");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone " + getZoneId() + " of home "
+                    + getHomeId() + " must be greater than zero");
             return;
         } else if (configuration.fallbackTimerDuration <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Fallback timer duration of zone "
-                    + getZoneId() + " of home " + getHomeId() + " must be greater than zero");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Fallback timer duration of zone " + getZoneId()
+                    + " of home " + getHomeId() + " must be greater than zero");
             return;
         } else if (configuration.hvacChangeDebounce <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "HVAC change debounce of zone "
-                    + getZoneId() + " of home " + getHomeId() + " must be greater than zero");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "HVAC change debounce of zone " + getZoneId()
+                    + " of home " + getHomeId() + " must be greater than zero");
             return;
         }
 
@@ -277,7 +277,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 logApiTransaction(capabilities, false);
 
                 if (zoneDetails == null || capabilities == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Can not access zone " + getZoneId() + " of home " + getHomeId());
                     return;
                 }
@@ -292,7 +292,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
                 updateDynamicChannels(capabilitiesSupport);
             } catch (IOException | ApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
                 cancelScheduledZoneStateUpdate();
                 return;
@@ -303,7 +303,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             cancelScheduledZoneStateUpdate();
         }
     }
@@ -357,8 +357,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
             onSuccessfulOperation();
         } catch (IOException | ApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to server due to " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Could not connect to server due to " + e.getMessage());
         }
 
         updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM,
@@ -448,7 +447,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                     }
                 }
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (ApiException e) {
                 logger.warn("Could not apply HVAC change on home {} and zone {}: {}", getHomeId(), getZoneId(),
                         e.getMessage(), e);

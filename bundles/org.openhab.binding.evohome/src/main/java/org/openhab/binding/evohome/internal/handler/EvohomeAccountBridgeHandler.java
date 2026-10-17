@@ -243,7 +243,11 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     private void updateAccountStatus(ThingStatus newStatus, ThingStatusDetail detail, @Nullable String message) {
         // Prevent spamming the log file
         if (!newStatus.equals(getThing().getStatus())) {
-            updateStatus(newStatus, detail, message);
+            if (detail == ThingStatusDetail.NONE) {
+                updateStatus(newStatus, message);
+            } else {
+                updateStatus(detail, message);
+            }
             updateListeners(newStatus);
         }
     }

@@ -100,7 +100,7 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -263,7 +263,7 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             errorMsg = String.format("InterruptedException: %s", e.getMessage());
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
         return null;
     }
 

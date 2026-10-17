@@ -114,7 +114,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         } catch (InterruptedException ignored) {
         } catch (AndroidDebugBridgeDeviceException | ExecutionException e) {
             if (!(e.getCause() instanceof InterruptedException)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 adbConnection.disconnect();
             }
         } catch (AndroidDebugBridgeDeviceReadException e) {
@@ -220,7 +220,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                         break;
                     case SHUTDOWN_REBOOT:
                         adbConnection.rebootDevice();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Rebooting");
+                        updateStatus(ThingStatusDetail.GONE, "Rebooting");
                         break;
                 }
                 break;
@@ -463,7 +463,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
      */
     private void reportOffline(ThingStatusDetail statusDetail, @Nullable String description) {
         if (++connectionFailures >= OFFLINE_AFTER_FAILURES) {
-            updateStatus(ThingStatus.OFFLINE, statusDetail, description);
+            updateStatus(statusDetail, description);
         } else {
             logger.debug("{} - transient ADB failure {}/{}, keeping status {}", config.ip, connectionFailures,
                     OFFLINE_AFTER_FAILURES, getThing().getStatus());

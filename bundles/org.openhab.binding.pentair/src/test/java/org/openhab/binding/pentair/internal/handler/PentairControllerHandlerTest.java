@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -117,10 +118,16 @@ public class PentairControllerHandlerTest {
 
         handler = new PentairControllerHandler(thing) {
             @Override
+            protected @Nullable Bridge getBridge() {
+                return bridgeMock;
+            }
+
+            @Override
             public @NonNull PentairBaseBridgeHandler getBridgeHandler() {
                 return pibh;
             }
         };
+        when(bridgeMock.getHandler()).thenReturn(pibh);
 
         ChannelGroupUID groupID = new ChannelGroupUID(thingUID, GROUP_CONTROLLER_STATUS);
 

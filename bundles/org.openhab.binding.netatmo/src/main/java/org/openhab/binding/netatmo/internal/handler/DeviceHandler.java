@@ -71,7 +71,13 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
     @Override
     public void setThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
             @Nullable String thingStatusReason) {
-        updateStatus(thingStatus, thingStatusDetail, thingStatusReason);
+        if (thingStatusDetail == ThingStatusDetail.BRIDGE_UNINITIALIZED) {
+            updateStatus(ThingStatus.UNKNOWN);
+        } else if (thingStatusDetail == ThingStatusDetail.NONE) {
+            updateStatus(thingStatus, thingStatusReason);
+        } else {
+            updateStatus(thingStatusDetail, thingStatusReason);
+        }
     }
 
     @Override

@@ -55,7 +55,9 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
         }
 
         // Follow the bridge status
-        updateStatus(bridgeHandler.getThing().getStatus());
+        ThingStatus bridgeStatus = bridgeHandler.getThing().getStatus();
+        updateStatus((bridgeStatus == ThingStatus.ONLINE || bridgeStatus == ThingStatus.OFFLINE) ? bridgeStatus
+                : ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -92,7 +94,8 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         // Keypad follows the status of the bridge
-        updateStatus(bridgeStatusInfo.getStatus());
+        ThingStatus status = bridgeStatusInfo.getStatus();
+        updateStatus((status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE) ? status : ThingStatus.UNKNOWN);
 
         super.bridgeStatusChanged(bridgeStatusInfo);
     }
