@@ -301,7 +301,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                     try {
                         initPairingCodeRetrieval(target);
                     } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "offline.error-occurred-while-presenting-pairing-code");
                     }
                 } else {
@@ -381,7 +381,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         String password = this.password;
 
         if ((username.isEmpty()) || (password.isEmpty())) {
-            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "offline.pairing-is-not-configured-yet");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.AUTHORIZATION_PENDING,
+                    "offline.pairing-is-not-configured-yet");
             return;
         }
 
