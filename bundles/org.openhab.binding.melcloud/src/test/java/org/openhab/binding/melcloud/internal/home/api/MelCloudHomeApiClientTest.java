@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -155,12 +158,12 @@ class MelCloudHomeApiClientTest {
     @Test
     void whenAtaCumulativeEnergyIsFetchedThenWattHoursAreConvertedToKwh() throws MelCloudCommException {
         // Arrange: the ATA cumulative measure reports Wh on the wire
-        mockGetResponse("{\"measureData\":[{\"type\":\"cumulative_energy_consumed_since_last_upload\","
-                + "\"values\":[{\"time\":\"2026-07-22 10:00\",\"value\":\"1500.0\"}]}]}");
+        mockGetResponse(energyResponse("cumulative_energy_consumed_since_last_upload", currentHour(), "1500.0"));
+        Instant now = Instant.now();
 
         // Act
-        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, Instant.EPOCH, Instant.now(),
-                MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED);
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED);
 
         // Assert
         assertEquals(Optional.of(1.5), latest);
@@ -169,15 +172,58 @@ class MelCloudHomeApiClientTest {
     @Test
     void whenAtwIntervalEnergyIsFetchedThenKilowattHoursArePassedThrough() throws MelCloudCommException {
         // Arrange: the ATW interval measures report kWh per bucket on the wire
-        mockGetResponse("{\"measureData\":[{\"type\":\"interval_energy_consumed\","
-                + "\"values\":[{\"time\":\"2026-07-22 10:00\",\"value\":\"1.5\"}]}]}");
+        mockGetResponse(energyResponse("interval_energy_consumed", currentHour(), "1.5"));
+        Instant now = Instant.now();
 
         // Act
-        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, Instant.EPOCH, Instant.now(),
-                MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
 
         // Assert
         assertEquals(Optional.of(1.5), latest);
+    }
+
+    @Test
+    void whenTheLatestBucketBelongsToAPreviousHourThenFetchLatestEnergyKwhReturnsEmpty() throws MelCloudCommException {
+        // Arrange: the endpoint omits hours without data, so the newest bucket of the window can be older than the
+        // interval the channels advertise; publishing it would present stale energy as the latest reading.
+        Instant now = Instant.now();
+        mockGetResponse(energyResponse("interval_energy_consumed", previousHour(), "4.5"));
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
+
+        // Assert
+        assertTrue(latest.isEmpty());
+    }
+
+    @Test
+    void whenTheBucketTimestampCannotBeParsedThenTheValueIsStillReturned() throws MelCloudCommException {
+        // Arrange: a wire format change must not silently drop energy data
+        mockGetResponse(energyResponse("interval_energy_consumed", "not-a-timestamp", "1.5"));
+        Instant now = Instant.now();
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
+
+        // Assert
+        assertEquals(Optional.of(1.5), latest);
+    }
+
+    @Test
+    void whenTheBucketValueIsNotNumericThenFetchLatestEnergyKwhReturnsEmpty() throws MelCloudCommException {
+        // Arrange
+        mockGetResponse(energyResponse("interval_energy_consumed", currentHour(), "not-a-number"));
+        Instant now = Instant.now();
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
+
+        // Assert
+        assertTrue(latest.isEmpty());
     }
 
     @Test
@@ -185,6 +231,23 @@ class MelCloudHomeApiClientTest {
         // Act & Assert
         assertThrows(MelCloudCommException.class, () -> client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID,
                 Instant.EPOCH, Instant.now(), "unknown_measure"));
+    }
+
+    private static String energyResponse(String measure, String time, String value) {
+        return "{\"measureData\":[{\"type\":\"" + measure + "\",\"values\":[{\"time\":\"" + time + "\",\"value\":\""
+                + value + "\"}]}]}";
+    }
+
+    private static String currentHour() {
+        return bucketTime(Instant.now().truncatedTo(ChronoUnit.HOURS));
+    }
+
+    private static String previousHour() {
+        return bucketTime(Instant.now().truncatedTo(ChronoUnit.HOURS).minus(1, ChronoUnit.HOURS));
+    }
+
+    private static String bucketTime(Instant instant) {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).format(instant);
     }
 
     @Test

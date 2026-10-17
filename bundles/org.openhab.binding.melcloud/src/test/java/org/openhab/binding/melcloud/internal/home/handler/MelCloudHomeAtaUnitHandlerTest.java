@@ -13,6 +13,8 @@
 package org.openhab.binding.melcloud.internal.home.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -47,11 +49,16 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PRO
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ACCOUNT;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ATA_UNIT;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -667,6 +674,80 @@ class MelCloudHomeAtaUnitHandlerTest {
 
         // Assert
         assertEquals(new QuantityType<>(1.5, Units.KILOWATT_HOUR), callback.getState(CHANNEL_ENERGY_CONSUMED));
+    }
+
+    @Test
+    void whenTelemetryIsPolledThenTheEnergyQueryCoversTheCurrentHourOnly() throws Exception {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        Instant hourStart = Instant.now().truncatedTo(ChronoUnit.HOURS);
+
+        // Act
+        handler.initialize();
+
+        // Assert
+        ArgumentCaptor<Instant> fromCaptor = ArgumentCaptor.forClass(Instant.class);
+        verify(apiClient, timeout(3000)).fetchLatestEnergyKwh(eq(ACCESS_TOKEN), eq(UNIT_ID), fromCaptor.capture(),
+                any(), eq(MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED));
+        // A poll that runs across the test's own hour boundary may legitimately query one hour earlier.
+        assertTrue(!fromCaptor.getValue().isBefore(hourStart.minus(1, ChronoUnit.HOURS)),
+                "the energy query must not reach back further than one hour");
+    }
+
+    @Test
+    void whenTheUnitIsDisposedWhileTelemetryIsQueuedThenTheQueuedCallsAreSkipped() throws Exception {
+        // Arrange: a pacer that queues the paced calls, so both are still pending when the unit stops
+        List<Runnable> queuedCalls = new CopyOnWriteArrayList<>();
+        CountDownLatch queued = new CountDownLatch(2);
+        MelCloudHomeRequestPacer deferringPacer = new MelCloudHomeRequestPacer(
+                Executors.newSingleThreadScheduledExecutor()) {
+            @Override
+            public void schedule(Runnable apiCall) {
+                queuedCalls.add(apiCall);
+                queued.countDown();
+            }
+        };
+        when(accountHandler.getRequestPacer()).thenReturn(deferringPacer);
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        assertTrue(queued.await(5, TimeUnit.SECONDS), "both telemetry calls should be queued");
+
+        // Act: stopping the poll must drop the queued calls instead of letting them run later
+        handler.dispose();
+        queuedCalls.forEach(Runnable::run);
+
+        // Assert
+        verify(apiClient, never()).fetchLatestEnergyKwh(any(), any(), any(), any(), any());
+        verify(apiClient, never()).fetchLatestOutdoorTemperature(any(), any(), any(), any());
+    }
+
+    @Test
+    void whenTheBridgeGoesOfflineWhileTelemetryIsQueuedThenNothingIsPublished() throws Exception {
+        // Arrange: a pacer that queues the paced calls, so both are still pending when the bridge drops
+        List<Runnable> queuedCalls = new CopyOnWriteArrayList<>();
+        CountDownLatch queued = new CountDownLatch(2);
+        MelCloudHomeRequestPacer deferringPacer = new MelCloudHomeRequestPacer(
+                Executors.newSingleThreadScheduledExecutor()) {
+            @Override
+            public void schedule(Runnable apiCall) {
+                queuedCalls.add(apiCall);
+                queued.countDown();
+            }
+        };
+        when(accountHandler.getRequestPacer()).thenReturn(deferringPacer);
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        assertTrue(queued.await(5, TimeUnit.SECONDS), "both telemetry calls should be queued");
+        callback.clear();
+
+        // Act: the bridge dropping must drop the queued calls instead of letting them publish later
+        handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(ThingStatus.OFFLINE).build());
+        queuedCalls.forEach(Runnable::run);
+
+        // Assert
+        verify(apiClient, never()).fetchLatestEnergyKwh(any(), any(), any(), any(), any());
+        verify(apiClient, never()).fetchLatestOutdoorTemperature(any(), any(), any(), any());
+        assertFalse(callback.stateMap.containsKey(CHANNEL_ENERGY_CONSUMED));
     }
 
     @Test

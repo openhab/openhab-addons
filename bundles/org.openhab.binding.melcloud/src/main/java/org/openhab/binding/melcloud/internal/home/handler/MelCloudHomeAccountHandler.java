@@ -89,12 +89,14 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     private final Map<String, MelCloudHomeAtwUnitListener> atwUnitListeners = new ConcurrentHashMap<>();
     private final MelCloudHomeRequestPacer requestPacer = new MelCloudHomeRequestPacer(scheduler);
 
-    private MelCloudHomeAccountConfig config = new MelCloudHomeAccountConfig();
+    private volatile MelCloudHomeAccountConfig config = new MelCloudHomeAccountConfig();
     private @Nullable Storage<MelCloudHomeAuthState> storage;
     private volatile @Nullable String accessToken;
     private volatile @Nullable ScheduledFuture<?> refreshFuture;
     private volatile @Nullable ScheduledFuture<?> contextPollFuture;
     private volatile boolean disposed;
+    /** Serializes the start of an {@link #initialize()} round with the persistence of a login result. */
+    private final Object authRoundLock = new Object();
 
     private volatile @Nullable WebSocketClient webSocketClient;
     private volatile boolean realtimeConnected;
@@ -124,7 +126,9 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         logger.debug("Initializing MELCloud Home account handler");
         disposed = false;
         // Invalidate the authentication work of any earlier initialize() round, which may still be in flight.
-        initGeneration.incrementAndGet();
+        synchronized (authRoundLock) {
+            initGeneration.incrementAndGet();
+        }
         config = getConfigAs(MelCloudHomeAccountConfig.class);
         storage = storageService.getStorage(thing.getUID().toString(), MelCloudHomeAuthState.class.getClassLoader());
 
@@ -255,15 +259,22 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         if (disposed) {
             return;
         }
+        // Snapshot the round's credentials: a re-initialization may replace the config while this round is in flight,
+        // and the account check as well as the persisted state must stay consistent with the round that logged in.
+        MelCloudHomeAccountConfig roundConfig = config;
         Storage<MelCloudHomeAuthState> currentStorage = storage;
         MelCloudHomeAuthState state = currentStorage == null ? null : currentStorage.get(thing.getUID().toString());
         String storedRefreshToken = state == null ? null : state.refreshToken();
-        if (state != null && storedRefreshToken != null && !config.username.equals(state.username())) {
+        if (state != null && storedRefreshToken != null && !roundConfig.username.equals(state.username())) {
             // The stored session belongs to another account, so resuming it would keep the bridge running under the
             // account the config no longer names; drop it and perform a full login with the configured credentials.
             logger.debug("Discarding the stored MELCloud Home session, it belongs to a different account");
-            if (currentStorage != null) {
-                currentStorage.remove(thing.getUID().toString());
+            synchronized (authRoundLock) {
+                // Under the lock and limited to the current round, so a superseded round cannot delete the entry a
+                // newer round has just persisted.
+                if (isCurrentInit(generation) && currentStorage != null) {
+                    currentStorage.remove(thing.getUID().toString());
+                }
             }
             storedRefreshToken = null;
         }
@@ -271,7 +282,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         if (storedRefreshToken != null) {
             logger.debug("Attempting to resume the MELCloud Home session with a stored refresh token");
             try {
-                onLoginSuccess(authService.refreshToken(storedRefreshToken), generation);
+                onLoginSuccess(authService.refreshToken(storedRefreshToken), generation, roundConfig.username);
                 return;
             } catch (MelCloudHomeAuthException e) {
                 if (!isCurrentInit(generation)) {
@@ -291,7 +302,8 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         }
 
         try {
-            onLoginSuccess(authService.login(config.username, config.password), generation);
+            onLoginSuccess(authService.login(roundConfig.username, roundConfig.password), generation,
+                    roundConfig.username);
         } catch (MelCloudHomeAuthException e) {
             if (!isCurrentInit(generation)) {
                 return;
@@ -310,25 +322,29 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private void onLoginSuccess(MelCloudHomeTokenResponse tokenResponse, long generation) {
-        if (!isCurrentInit(generation)) {
-            // initialize() or dispose() ran while the login was in flight; do not publish state or schedule anything.
-            return;
-        }
-        accessToken = tokenResponse.accessToken;
-        String newRefreshToken = tokenResponse.refreshToken;
-        if (newRefreshToken != null) {
-            Storage<MelCloudHomeAuthState> currentStorage = storage;
-            if (currentStorage != null) {
-                currentStorage.put(thing.getUID().toString(),
-                        new MelCloudHomeAuthState(config.username, newRefreshToken));
-                logger.debug("Persisted a new MELCloud Home refresh token to storage");
-            } else {
-                logger.warn("Received a refresh token but storage is not available (initialize() not run?); "
-                        + "it will not survive a restart");
+    private void onLoginSuccess(MelCloudHomeTokenResponse tokenResponse, long generation, String roundUsername) {
+        // The generation check and the storage write must not be split by a re-initialization, or the refresh token of
+        // the round that logged in could be persisted under the account a newer round configures.
+        synchronized (authRoundLock) {
+            if (!isCurrentInit(generation)) {
+                // initialize() or dispose() ran while the login was in flight; publish nothing or schedule anything.
+                return;
             }
-        } else {
-            logger.debug("Token response did not include a refresh token; nothing to persist");
+            accessToken = tokenResponse.accessToken;
+            String newRefreshToken = tokenResponse.refreshToken;
+            if (newRefreshToken != null) {
+                Storage<MelCloudHomeAuthState> currentStorage = storage;
+                if (currentStorage != null) {
+                    currentStorage.put(thing.getUID().toString(),
+                            new MelCloudHomeAuthState(roundUsername, newRefreshToken));
+                    logger.debug("Persisted a new MELCloud Home refresh token to storage");
+                } else {
+                    logger.warn("Received a refresh token but storage is not available (initialize() not run?); "
+                            + "it will not survive a restart");
+                }
+            } else {
+                logger.debug("Token response did not include a refresh token; nothing to persist");
+            }
         }
         updateStatus(ThingStatus.ONLINE);
         scheduleRefresh(tokenResponse.expiresIn);

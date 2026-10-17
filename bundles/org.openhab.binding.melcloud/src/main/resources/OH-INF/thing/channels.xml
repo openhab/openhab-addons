@@ -446,7 +446,7 @@
 	<channel-type id="energyConsumed-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Consumed</label>
-		<description>Energy consumed in the last interval</description>
+		<description>Energy consumed in the current hour</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -457,7 +457,7 @@
 	<channel-type id="energyProduced-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Produced</label>
-		<description>Energy produced in the last interval</description>
+		<description>Energy produced in the current hour</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>

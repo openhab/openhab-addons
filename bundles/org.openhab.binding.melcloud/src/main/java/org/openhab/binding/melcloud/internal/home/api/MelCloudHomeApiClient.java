@@ -20,8 +20,10 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,7 @@ import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwScheduleWriteRequest;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeMeasureValue;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeTelemetryResponse;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeTrendSummaryReport;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeUserContext;
@@ -171,11 +174,16 @@ public class MelCloudHomeApiClient {
     }
 
     /**
-     * Fetches the most recent energy value of one measure over the given time window, normalized to kWh: the ATA
-     * cumulative measure reports Wh on the wire, the ATW interval measures report kWh per bucket.
+     * Fetches the latest energy reading of one measure, normalized to kWh: the ATA cumulative measure reports Wh on
+     * the wire, the ATW interval measures report kWh per bucket.
+     *
+     * <p>
+     * The endpoint omits hours without data, so the newest bucket of a wider window can belong to an older interval.
+     * A reading is therefore only returned when its bucket starts within the current hour; otherwise an idle unit
+     * would keep publishing an old, non-zero bucket as its latest interval value.
      *
      * @param measure one of this class's {@code MEASURE_*} constants
-     * @return the latest value in kWh, if any data was available
+     * @return the latest value in kWh, if a current bucket was available
      * @throws MelCloudCommException if the request fails, the response cannot be parsed, or {@code measure} is unknown
      */
     public Optional<Double> fetchLatestEnergyKwh(String accessToken, String unitId, Instant from, Instant to,
@@ -191,8 +199,40 @@ public class MelCloudHomeApiClient {
             // 304 Not Modified is surfaced by HttpUtil as an empty body — no new data, not an error.
             return Optional.empty();
         }
-        return parseJson(body, MelCloudHomeTelemetryResponse.class, "energy telemetry response").getLatestValue()
-                .map(value -> value / divisor);
+        Optional<MelCloudHomeMeasureValue> sample = parseJson(body, MelCloudHomeTelemetryResponse.class,
+                "energy telemetry response").getLatestSample();
+        if (sample.isEmpty()) {
+            return Optional.empty();
+        }
+        MelCloudHomeMeasureValue latest = sample.get();
+        if (!isCurrentInterval(latest.time, to)) {
+            logger.debug("Discarding '{}' bucket of measure {}, it is older than the current interval", latest.time,
+                    measure);
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(Double.parseDouble(latest.value) / divisor);
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Whether a sample's bucket belongs to the interval the caller asked for. The wire reports UTC wall-clock bucket
+     * starts; a timestamp that cannot be parsed is accepted, so a format change cannot silently drop energy data.
+     *
+     * @param time the bucket start as reported by the endpoint
+     * @param to the end of the queried window
+     * @return whether the bucket starts within the hour that contains {@code to}
+     */
+    private static boolean isCurrentInterval(String time, Instant to) {
+        Instant bucketStart;
+        try {
+            bucketStart = LocalDateTime.parse(time, ENERGY_TIMESTAMP_FORMAT).toInstant(ZoneOffset.UTC);
+        } catch (DateTimeParseException e) {
+            return true;
+        }
+        return !bucketStart.isBefore(to.truncatedTo(ChronoUnit.HOURS));
     }
 
     /**

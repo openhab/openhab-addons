@@ -57,7 +57,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -588,6 +591,60 @@ class MelCloudHomeAtwUnitHandlerTest {
         assertEquals(new QuantityType<>(2.0, Units.KILOWATT_HOUR), callback.getState(CHANNEL_ENERGY_CONSUMED));
         assertEquals(new QuantityType<>(6.0, Units.KILOWATT_HOUR), callback.getState(CHANNEL_ENERGY_PRODUCED));
         assertEquals(new DecimalType(3.0), callback.getState(CHANNEL_COP));
+    }
+
+    @Test
+    void whenTheUnitIsDisposedWhileTelemetryIsQueuedThenTheQueuedCallsAreSkipped() throws Exception {
+        // Arrange: a pacer that queues the paced calls, so both are still pending when the unit stops
+        List<Runnable> queuedCalls = new CopyOnWriteArrayList<>();
+        CountDownLatch queued = new CountDownLatch(2);
+        MelCloudHomeRequestPacer deferringPacer = new MelCloudHomeRequestPacer(
+                Executors.newSingleThreadScheduledExecutor()) {
+            @Override
+            public void schedule(Runnable apiCall) {
+                queuedCalls.add(apiCall);
+                queued.countDown();
+            }
+        };
+        when(accountHandler.getRequestPacer()).thenReturn(deferringPacer);
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        assertTrue(queued.await(5, TimeUnit.SECONDS), "both telemetry calls should be queued");
+
+        // Act: stopping the poll must drop the queued calls instead of letting them run later
+        handler.dispose();
+        queuedCalls.forEach(Runnable::run);
+
+        // Assert
+        verify(apiClient, never()).fetchLatestEnergyKwh(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void whenTheBridgeGoesOfflineWhileTelemetryIsQueuedThenNothingIsPublished() throws Exception {
+        // Arrange: a pacer that queues the paced calls, so both are still pending when the bridge drops
+        List<Runnable> queuedCalls = new CopyOnWriteArrayList<>();
+        CountDownLatch queued = new CountDownLatch(2);
+        MelCloudHomeRequestPacer deferringPacer = new MelCloudHomeRequestPacer(
+                Executors.newSingleThreadScheduledExecutor()) {
+            @Override
+            public void schedule(Runnable apiCall) {
+                queuedCalls.add(apiCall);
+                queued.countDown();
+            }
+        };
+        when(accountHandler.getRequestPacer()).thenReturn(deferringPacer);
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        assertTrue(queued.await(5, TimeUnit.SECONDS), "both telemetry calls should be queued");
+        callback.clear();
+
+        // Act: the bridge dropping must drop the queued calls instead of letting them publish later
+        handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(ThingStatus.OFFLINE).build());
+        queuedCalls.forEach(Runnable::run);
+
+        // Assert
+        verify(apiClient, never()).fetchLatestEnergyKwh(any(), any(), any(), any(), any());
+        assertFalse(callback.stateMap.containsKey(CHANNEL_ENERGY_CONSUMED));
     }
 
     @Test

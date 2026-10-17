@@ -13,7 +13,6 @@
 package org.openhab.binding.melcloud.internal.home.api.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,63 +35,51 @@ class MelCloudHomeTelemetryResponseTest {
         return measureValue;
     }
 
+    private static MelCloudHomeTelemetryResponse responseOf(MelCloudHomeMeasureValue... values) {
+        MelCloudHomeMeasureData measureData = new MelCloudHomeMeasureData();
+        measureData.values = List.of(values);
+        MelCloudHomeTelemetryResponse response = new MelCloudHomeTelemetryResponse();
+        response.measureData = List.of(measureData);
+        return response;
+    }
+
     @Test
-    void whenMeasureDataIsEmptyThenGetLatestValueReturnsEmpty() {
+    void whenMeasureDataIsEmptyThenGetLatestSampleReturnsEmpty() {
         // Arrange
         MelCloudHomeTelemetryResponse response = new MelCloudHomeTelemetryResponse();
 
         // Act
-        Optional<Double> latest = response.getLatestValue();
+        Optional<MelCloudHomeMeasureValue> latest = response.getLatestSample();
 
         // Assert
         assertEquals(Optional.empty(), latest);
     }
 
     @Test
-    void whenValuesArePresentThenGetLatestValueReturnsTheLastOne() {
+    void whenValuesArePresentThenGetLatestSampleReturnsTheLastOne() {
         // Arrange
-        MelCloudHomeMeasureData measureData = new MelCloudHomeMeasureData();
-        measureData.values = List.of(valueOf("2026-07-22T00:00:00Z", "100.0"),
-                valueOf("2026-07-23T00:00:00Z", "150.5"));
-        MelCloudHomeTelemetryResponse response = new MelCloudHomeTelemetryResponse();
-        response.measureData = List.of(measureData);
+        MelCloudHomeTelemetryResponse response = responseOf(valueOf("2026-07-22 10:00", "100.0"),
+                valueOf("2026-07-22 11:00", "150.5"));
 
         // Act
-        Optional<Double> latest = response.getLatestValue();
+        Optional<MelCloudHomeMeasureValue> latest = response.getLatestSample();
 
         // Assert
-        assertEquals(Optional.of(150.5), latest);
+        assertEquals(Optional.of("150.5"), latest.map(sample -> sample.value));
+        assertEquals(Optional.of("2026-07-22 11:00"), latest.map(sample -> sample.time));
     }
 
     @Test
-    void whenSeriesEndsWithAResetMarkerThenTheLastValueIsReturned() {
-        // Arrange: the ATA cumulative series delivers 100 Wh pulses followed by a 0 reset marker. The binding
-        // publishes the latest bucket as an interval reading, so the marker is reported as the wire last sent it
-        // rather than being summed into a cumulative value here.
-        MelCloudHomeMeasureData measureData = new MelCloudHomeMeasureData();
-        measureData.values = List.of(valueOf("2026-07-22T10:00:00Z", "100.0"), valueOf("2026-07-22T10:01:00Z", "0.0"));
-        MelCloudHomeTelemetryResponse response = new MelCloudHomeTelemetryResponse();
-        response.measureData = List.of(measureData);
+    void whenSeriesEndsWithAResetMarkerThenTheLastSampleKeepsTheMarker() {
+        // Arrange: the ATA cumulative series delivers 100 Wh pulses followed by a 0 reset marker. The DTO stays
+        // wire-verbatim here; deciding whether the bucket is current is the API client's job.
+        MelCloudHomeTelemetryResponse response = responseOf(valueOf("2026-07-22 10:00", "100.0"),
+                valueOf("2026-07-22 10:01", "0.0"));
 
         // Act
-        Optional<Double> latest = response.getLatestValue();
+        Optional<MelCloudHomeMeasureValue> latest = response.getLatestSample();
 
         // Assert
-        assertEquals(Optional.of(0.0), latest);
-    }
-
-    @Test
-    void whenLatestValueIsNotNumericThenGetLatestValueReturnsEmpty() {
-        // Arrange
-        MelCloudHomeMeasureData measureData = new MelCloudHomeMeasureData();
-        measureData.values = List.of(valueOf("2026-07-23T00:00:00Z", "not-a-number"));
-        MelCloudHomeTelemetryResponse response = new MelCloudHomeTelemetryResponse();
-        response.measureData = List.of(measureData);
-
-        // Act
-        Optional<Double> latest = response.getLatestValue();
-
-        // Assert
-        assertTrue(latest.isEmpty());
+        assertEquals(Optional.of("0.0"), latest.map(sample -> sample.value));
     }
 }

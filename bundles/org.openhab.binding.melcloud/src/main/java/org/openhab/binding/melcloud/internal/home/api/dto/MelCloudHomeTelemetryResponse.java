@@ -31,10 +31,10 @@ public class MelCloudHomeTelemetryResponse {
     public List<MelCloudHomeMeasureData> measureData = List.of();
 
     /**
-     * @return the most recent (last) value across the first measure series in this response, in the measure's own
-     *         wire unit
+     * @return the most recent (last) sample across the first measure series in this response, with its value in the
+     *         measure's own wire unit and its bucket start as reported by the endpoint
      */
-    public Optional<Double> getLatestValue() {
+    public Optional<MelCloudHomeMeasureValue> getLatestSample() {
         if (measureData.isEmpty()) {
             return Optional.empty();
         }
@@ -42,11 +42,6 @@ public class MelCloudHomeTelemetryResponse {
         if (values.isEmpty()) {
             return Optional.empty();
         }
-        String raw = values.get(values.size() - 1).value;
-        try {
-            return Optional.of(Double.parseDouble(raw));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
+        return Optional.of(values.get(values.size() - 1));
     }
 }

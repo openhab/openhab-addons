@@ -25,10 +25,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -114,6 +117,10 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
     private MelCloudHomeUnitConfig config = new MelCloudHomeUnitConfig();
     private @Nullable MelCloudHomeAccountHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> telemetryFuture;
+    /** Paced telemetry calls that have not completed yet, so they can be cancelled when the poll stops. */
+    private final Set<CompletableFuture<?>> telemetryCalls = ConcurrentHashMap.newKeySet();
+    /** Identifies the current telemetry poll round, so a result of a stopped poll cannot publish state. */
+    private final AtomicLong telemetryGeneration = new AtomicLong();
     private volatile @Nullable MelCloudHomeAtwUnit lastKnownUnit;
     private volatile boolean capabilitiesPropertiesSet;
     /** Last value sent per channel since the last poll; see {@link #isRedundant(String, Object, boolean)}. */
@@ -708,6 +715,9 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
     }
 
     private void pollTelemetry() {
+        // Read first: a poll that races with cancelTelemetryPoll() must not adopt the generation the shutdown
+        // incremented, or its calls would register as current and publish for a Thing that is no longer live.
+        long generation = telemetryGeneration.get();
         MelCloudHomeAccountHandler handler = bridgeHandler;
         if (handler == null) {
             return;
@@ -721,22 +731,49 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             return;
         }
         Instant to = Instant.now();
-        Instant from = to.minus(1, ChronoUnit.DAYS);
+        // The channels carry the latest interval reading, so the query covers exactly the current hour: an hour the
+        // endpoint omits as empty must not fall back to an older bucket.
+        Instant from = to.truncatedTo(ChronoUnit.HOURS);
         MelCloudHomeRequestPacer pacer = handler.getRequestPacer();
-        CompletableFuture<Optional<Double>> consumedKwh = pacer
-                .scheduleAsync(() -> handler.getApiClient().fetchLatestEnergyKwh(accessToken, config.unitId, from, to,
-                        MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED));
-        CompletableFuture<Optional<Double>> producedKwh = pacer
-                .scheduleAsync(() -> handler.getApiClient().fetchLatestEnergyKwh(accessToken, config.unitId, from, to,
-                        MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_PRODUCED));
-        consumedKwh.thenCombine(producedKwh, EnergyTelemetry::new).whenComplete(this::publishTelemetry);
+        CompletableFuture<Optional<Double>> consumedKwh = track(generation,
+                pacer.scheduleAsync(() -> handler.getApiClient().fetchLatestEnergyKwh(accessToken, config.unitId, from,
+                        to, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED)));
+        CompletableFuture<Optional<Double>> producedKwh = track(generation,
+                pacer.scheduleAsync(() -> handler.getApiClient().fetchLatestEnergyKwh(accessToken, config.unitId, from,
+                        to, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_PRODUCED)));
+        consumedKwh.thenCombine(producedKwh, EnergyTelemetry::new)
+                .whenComplete((telemetry, error) -> publishTelemetry(generation, telemetry, error));
+    }
+
+    /**
+     * Registers a paced telemetry call so {@link #cancelTelemetryPoll()} can drop it while it still waits for its
+     * slot; the pacer skips a task whose future was cancelled before the slot arrived. A call registered after the
+     * poll was stopped is cancelled right away, so a poll racing with {@code cancelTelemetryPoll()} cannot leave an
+     * untracked call behind.
+     *
+     * @param generation the poll round the call belongs to
+     * @param call the paced call
+     * @return {@code call}, for chaining
+     */
+    private <T> CompletableFuture<T> track(long generation, CompletableFuture<T> call) {
+        telemetryCalls.add(call);
+        if (generation != telemetryGeneration.get()) {
+            call.cancel(true);
+        }
+        call.whenComplete((result, error) -> telemetryCalls.remove(call));
+        return call;
     }
 
     /**
      * Publishes one poll's two energy readings together, so the derived COP only ever combines values of the same
      * window.
+     *
+     * @param generation the poll round the result belongs to
      */
-    private void publishTelemetry(@Nullable EnergyTelemetry telemetry, @Nullable Throwable error) {
+    private void publishTelemetry(long generation, @Nullable EnergyTelemetry telemetry, @Nullable Throwable error) {
+        if (isSuperseded(generation, error)) {
+            return;
+        }
         if (telemetry == null) {
             logger.debug("Telemetry poll failed for ATW unit {}, reason {}. ",
                     SensitiveDataMasker.maskId(config.unitId), error == null ? "no result" : error.getMessage());
@@ -756,6 +793,22 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             // Also covers consumedKwh == 0: COP is not meaningfully computable, not just "missing".
             updateState(CHANNEL_COP, UnDefType.UNDEF);
         }
+    }
+
+    /**
+     * Whether a telemetry completion must be ignored because the poll that started it was stopped (bridge offline or
+     * dispose) in the meantime, or because the paced calls were cancelled. {@code thenCombine} wraps a cancellation in
+     * a {@link CompletionException}, so the cause is inspected as well.
+     *
+     * @param generation the poll round the completion belongs to
+     * @param error the completion's failure, or {@code null} on success
+     */
+    private boolean isSuperseded(long generation, @Nullable Throwable error) {
+        if (generation != telemetryGeneration.get()) {
+            return true;
+        }
+        Throwable cause = error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
+        return cause instanceof CancellationException;
     }
 
     /**
@@ -802,10 +855,15 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
     }
 
     private void cancelTelemetryPoll() {
+        // Invalidate in-flight and not-yet-registered polls before cancelling, so a poll racing with this method
+        // cannot publish state for a Thing that is no longer live.
+        telemetryGeneration.incrementAndGet();
         ScheduledFuture<?> future = telemetryFuture;
         if (future != null) {
             future.cancel(true);
             telemetryFuture = null;
         }
+        telemetryCalls.forEach(call -> call.cancel(true));
+        telemetryCalls.clear();
     }
 }
