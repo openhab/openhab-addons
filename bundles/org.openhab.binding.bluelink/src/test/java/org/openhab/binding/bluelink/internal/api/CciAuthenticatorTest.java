@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluelink.internal.CciLoginStubs;
 import org.openhab.binding.bluelink.internal.MockApiData;
+import org.openhab.binding.bluelink.internal.model.Brand;
 import org.openhab.core.i18n.TimeZoneProvider;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -52,6 +54,8 @@ class CciAuthenticatorTest {
     private final TimeZoneProvider timeZoneProvider = () -> ZoneId.of("Europe/Berlin");
     private @NonNullByDefault({}) CciLoginStubs stubs;
     private @NonNullByDefault({}) CciAuthenticator authenticator;
+    private @NonNullByDefault({}) CciAuthenticator signingAuthenticator;
+    private @NonNullByDefault({}) CciAuthenticator.Config signingConfig;
 
     @BeforeAll
     static void startServer() throws Exception {
@@ -72,8 +76,108 @@ class CciAuthenticatorTest {
         stubs = new CciLoginStubs(SERVER);
         final String baseUrl = "http://localhost:" + SERVER.port();
         final CciAuthenticator.Config config = new CciAuthenticator.Config("test-client-id",
-                "https://oneapp.hyundai.com/redirect", baseUrl, "com.hyundai.oneapp.eu", "hyundai", "18.7", "APNS");
+                "https://oneapp.hyundai.com/redirect", baseUrl, "com.hyundai.oneapp.eu", "hyundai", "18.7", "APNS",
+                null);
         authenticator = new CciAuthenticator(HTTP_CLIENT, timeZoneProvider, config, baseUrl);
+        signingConfig = BluelinkApiEU.BrandConfig.forBrand(Brand.KIA).cci().withApiBaseUrl(baseUrl);
+        signingAuthenticator = new CciAuthenticator(HTTP_CLIENT, timeZoneProvider, signingConfig, baseUrl);
+    }
+
+    private static String fingerprint(final CciAuthenticator.Config config, final String timestamp, final String body) {
+        return CciAuthenticator.fingerprint(config.packageId(), Objects.requireNonNull(config.fingerprint()), timestamp,
+                body);
+    }
+
+    private static void assertSigned(final CciAuthenticator.Config config, final LoggedRequest request) {
+        assertEquals(fingerprint(config, request.getHeader("X-Timestamp"), request.getBodyAsString()),
+                request.getHeader("X-Fingerprint"));
+    }
+
+    @Test
+    void testFingerprintMatchesTheApp() {
+        // reference values from hyundai_kia_connect_api, accepted by the live servers
+        final CciAuthenticator.Config kia = BluelinkApiEU.BrandConfig.forBrand(Brand.KIA).cci();
+        final CciAuthenticator.Config hyundai = BluelinkApiEU.BrandConfig.forBrand(Brand.HYUNDAI).cci();
+        assertEquals("0a3ceccc83823ec0d2c5d39a15dbf722c813e6da48800a0156a7a8459db63337",
+                fingerprint(kia, "1700000000123", ""));
+        assertEquals("df04e3dadd52288ce5b280b368af261272556b5360adbc90a817a167526e2946",
+                fingerprint(hyundai, "1792000084084", ""));
+        assertEquals("0aae2e0acd5d57bcabba202cc7a839fc90f1d52814091b92e0908be66ed12eef",
+                fingerprint(kia, "1700000000123", "{\"refreshToken\": \"r1\", \"idToken\": \"i1\"}"));
+        assertNull(BluelinkApiEU.BrandConfig.forBrand(Brand.GENESIS).cci().fingerprint());
+    }
+
+    @Test
+    void testSignedLoginAndRefresh() throws Exception {
+        stubs.stubLogin();
+
+        assertEquals(CCS_ACCESS_TOKEN,
+                signingAuthenticator.login(MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD).accessToken());
+        stubs.stubTokenRefresh("cci-access-2", "cci-refresh-2");
+        signingAuthenticator.refresh();
+
+        final LoggedRequest exchange = SERVER.findAll(postRequestedFor(urlPathEqualTo(SIGNED_TOKEN_PATH))).getFirst();
+        assertSigned(signingConfig, exchange);
+        assertEquals("KiaEU", exchange.getHeader("client-name"));
+        assertEquals("1.4.0", exchange.getHeader("client-version"));
+        assertEquals("android", exchange.getHeader("client-os-code"));
+        assertEquals("Kia", exchange.getHeader("X-Brand"));
+        assertFalse(exchange.containsHeader("Authorization"));
+
+        final LoggedRequest refresh = SERVER.findAll(postRequestedFor(urlPathEqualTo(SIGNED_TOKEN_REFRESH_PATH)))
+                .getFirst();
+        assertSigned(signingConfig, refresh);
+        assertTrue(refresh.getBodyAsString().contains(CCI_REFRESH_TOKEN), refresh.getBodyAsString());
+
+        final List<LoggedRequest> ccsExchanges = SERVER
+                .findAll(postRequestedFor(urlPathEqualTo(SIGNED_TOKEN_EXCHANGE_PATH)));
+        assertEquals(2, ccsExchanges.size());
+        assertSigned(signingConfig, ccsExchanges.getLast());
+        assertEquals("Bearer cci-access-2", ccsExchanges.getLast().getHeader("Authorization"));
+        assertEquals(NON_CCS_TOKEN, ccsExchanges.getLast().getHeader("Authentication"));
+
+        SERVER.verify(0, postRequestedFor(urlPathMatching("/domain/api/.*")));
+    }
+
+    @Test
+    void testRejectedFingerprintFallsBackToUnsignedRoute() throws Exception {
+        stubs.stubLogin();
+        SERVER.stubFor(post(urlPathEqualTo(SIGNED_TOKEN_PATH)).willReturn(aResponse().withStatus(400)
+                .withBody("{\"code\":9036,\"message\":\"Invalid signature\",\"errors\":[]}")));
+
+        assertEquals(CCS_ACCESS_TOKEN,
+                signingAuthenticator.login(MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD).accessToken());
+        SERVER.verify(postRequestedFor(urlPathEqualTo(TOKEN_PATH)).withHeader("client-name", equalTo("kia"))
+                .withoutHeader("X-Fingerprint"));
+    }
+
+    @Test
+    void testRejectedSignatureIsReported() {
+        stubs.stubLogin();
+        SERVER.stubFor(post(urlPathEqualTo(SIGNED_TOKEN_PATH))
+                .willReturn(aResponse().withStatus(400).withBody("{\"code\":9037,\"message\":\"Invalid timestamp\"}")));
+        SERVER.stubFor(post(urlPathEqualTo(TOKEN_PATH))
+                .willReturn(aResponse().withStatus(400).withBody("{\"code\":9035,\"message\":\"Unusual activity\"}")));
+
+        LoginRejectedException e = assertThrows(LoginRejectedException.class,
+                () -> signingAuthenticator.login(MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD));
+        assertEquals("@text/account-handler.login.timestamp-rejected", e.getStatusDescription());
+
+        // without a signing key only the unsigned route is left
+        e = assertThrows(LoginRejectedException.class,
+                () -> authenticator.login(MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD));
+        assertEquals("@text/account-handler.login.signature-rejected", e.getStatusDescription());
+    }
+
+    @Test
+    void testOtherErrorOnSignedRouteIsNotMasked() {
+        stubs.stubLogin();
+        SERVER.stubFor(post(urlPathEqualTo(SIGNED_TOKEN_PATH)).willReturn(
+                aResponse().withStatus(400).withBody("{\"code\":9013,\"message\":\"Invalid code\",\"errors\":[]}")));
+
+        assertThrows(BluelinkApiException.class,
+                () -> signingAuthenticator.login(MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD));
+        SERVER.verify(0, postRequestedFor(urlPathEqualTo(TOKEN_PATH)));
     }
 
     @Test
@@ -221,7 +325,7 @@ class CciAuthenticatorTest {
         final BluelinkApiException e = assertThrows(BluelinkApiException.class,
                 () -> authenticator.login(MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD));
         assertTrue(String.valueOf(e.getMessage()).contains("Invalid token response"), e.getMessage());
-        SERVER.verify(0, postRequestedFor(urlPathEqualTo("/domain/api/v1/auth/token-exchange")));
+        SERVER.verify(0, postRequestedFor(urlPathEqualTo(TOKEN_EXCHANGE_PATH)));
     }
 
     @Test
