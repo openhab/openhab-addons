@@ -54,6 +54,7 @@ public class WindhagerHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> initializationJob;
     private volatile boolean disposed;
+    private volatile long lifecycleGeneration;
 
     public WindhagerHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -65,13 +66,19 @@ public class WindhagerHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             Channel channel = getThing().getChannel(channelUID.getId());
             if (channel != null) {
-                refreshChannels(List.of(channel));
+                refreshChannels(List.of(channel), lifecycleGeneration);
             }
         }
     }
 
     @Override
     public void initialize() {
+        long generation;
+        synchronized (lifecycleLock) {
+            disposed = false;
+            generation = ++lifecycleGeneration;
+        }
+
         WindhagerConfiguration config = getConfigAs(WindhagerConfiguration.class);
 
         if (config.hostname.isBlank() || config.username.isBlank() || config.password.isBlank()) {
@@ -96,9 +103,9 @@ public class WindhagerHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
         synchronized (lifecycleLock) {
-            if (!disposed) {
-                initializationJob = scheduler.schedule(() -> initializeClient(config, channelsByRefreshInterval), 0,
-                        TimeUnit.SECONDS);
+            if (isActive(generation)) {
+                initializationJob = scheduler.schedule(
+                        () -> initializeClient(config, channelsByRefreshInterval, generation), 0, TimeUnit.SECONDS);
             }
         }
     }
@@ -129,9 +136,9 @@ public class WindhagerHandler extends BaseThingHandler {
         return Collections.unmodifiableMap(channelsByRefreshInterval);
     }
 
-    private void initializeClient(WindhagerConfiguration config,
-            Map<Integer, List<Channel>> channelsByRefreshInterval) {
-        if (disposed) {
+    private void initializeClient(WindhagerConfiguration config, Map<Integer, List<Channel>> channelsByRefreshInterval,
+            long generation) {
+        if (!isActive(generation)) {
             return;
         }
 
@@ -140,12 +147,12 @@ public class WindhagerHandler extends BaseThingHandler {
             localConnector = new WindhagerConnector(httpClient, config.hostname, config.port, config.username,
                     config.password);
         } catch (java.net.URISyntaxException | IllegalArgumentException e) {
-            if (!disposed) {
+            if (isActive(generation)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "The configured BioWin hostname is invalid.");
+                stopHttpClient();
             }
             logger.debug("Invalid BioWin server URI", e);
-            stopHttpClient();
             return;
         }
 
@@ -153,8 +160,8 @@ public class WindhagerHandler extends BaseThingHandler {
             httpClient.start();
         } catch (Exception e) {
             localConnector.dispose();
-            stopHttpClient();
-            if (!disposed) {
+            if (isActive(generation)) {
+                stopHttpClient();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not initialize the BioWin webserver connection.");
             }
@@ -163,9 +170,8 @@ public class WindhagerHandler extends BaseThingHandler {
         }
 
         synchronized (lifecycleLock) {
-            if (disposed) {
+            if (!isActive(generation)) {
                 localConnector.dispose();
-                stopHttpClient();
                 return;
             }
             connector = localConnector;
@@ -174,24 +180,24 @@ public class WindhagerHandler extends BaseThingHandler {
                 List<Channel> channels = entry.getValue();
                 logger.info("Scheduling {} channel(s) with refresh interval {} seconds", channels.size(),
                         refreshInterval);
-                ScheduledFuture<?> job = scheduler.scheduleWithFixedDelay(() -> refreshChannels(channels), 0,
-                        refreshInterval, TimeUnit.SECONDS);
+                ScheduledFuture<?> job = scheduler.scheduleWithFixedDelay(() -> refreshChannels(channels, generation),
+                        0, refreshInterval, TimeUnit.SECONDS);
                 refreshJobs.put(refreshInterval, job);
             }
         }
     }
 
-    private void refreshChannels(List<Channel> channels) {
+    private void refreshChannels(List<Channel> channels, long generation) {
         WindhagerConnector localConnector = connector;
-        if (disposed || localConnector == null) {
+        if (!isActive(generation) || localConnector == null) {
             return;
         }
 
         boolean communicationFailure = false;
         for (Channel channel : channels) {
-            communicationFailure |= refreshChannel(localConnector, channel);
+            communicationFailure |= refreshChannel(localConnector, channel, generation);
         }
-        if (!disposed) {
+        if (isActive(generation)) {
             if (communicationFailure) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not communicate with the BioWin webserver.");
@@ -201,12 +207,12 @@ public class WindhagerHandler extends BaseThingHandler {
         }
     }
 
-    private boolean refreshChannel(WindhagerConnector localConnector, Channel channel) {
+    private boolean refreshChannel(WindhagerConnector localConnector, Channel channel, long generation) {
         WindhagerChannelConfiguration channelConfig = channel.getConfiguration()
                 .as(WindhagerChannelConfiguration.class);
 
         WindhagerConnector.ValueReadResult result = localConnector.readValue(channelConfig.oid);
-        if (disposed) {
+        if (!isActive(generation)) {
             return result.communicationFailure();
         }
         BigDecimal value = result.value();
@@ -218,11 +224,16 @@ public class WindhagerHandler extends BaseThingHandler {
         return result.communicationFailure();
     }
 
+    private boolean isActive(long generation) {
+        return !disposed && lifecycleGeneration == generation;
+    }
+
     @Override
     public void dispose() {
         WindhagerConnector localConnector;
         synchronized (lifecycleLock) {
             disposed = true;
+            lifecycleGeneration++;
             ScheduledFuture<?> localInitializationJob = initializationJob;
             if (localInitializationJob != null) {
                 localInitializationJob.cancel(true);
