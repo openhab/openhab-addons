@@ -1612,13 +1612,13 @@ class KeContactCombinedHandlerTest {
                         .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(null));
                 handler.handleConfigurationUpdate(Map.of("modbusEnabled", true));
                 assertEquals(new ChannelTypeUID("keba", "phase-switch-state"),
-                        handler.getThing().getChannel(phaseState.getUID()).getChannelTypeUID());
+                        Objects.requireNonNull(handler.getThing().getChannel(phaseState.getUID())).getChannelTypeUID());
                 handler.handleConfigurationUpdate(Map.of("modbusEnabled", false));
                 assertEquals(new ChannelTypeUID("keba", "phase-switch-state-readonly"),
-                        handler.getThing().getChannel(phaseState.getUID()).getChannelTypeUID());
+                        Objects.requireNonNull(handler.getThing().getChannel(phaseState.getUID())).getChannelTypeUID());
                 handler.handleConfigurationUpdate(Map.of("udpEnabled", true, "udpDisplayOnly", true));
                 assertEquals(new ChannelTypeUID("keba", "phase-switch-state-readonly"),
-                        handler.getThing().getChannel(phaseState.getUID()).getChannelTypeUID());
+                        Objects.requireNonNull(handler.getThing().getChannel(phaseState.getUID())).getChannelTypeUID());
                 handler.handleConfigurationUpdate(Map.of("restEnabled", false));
                 assertNull(handler.getThing().getChannel(toggle));
                 verify(rest).dispose();
