@@ -58,7 +58,7 @@ public class TedeeApi implements TedeeClient {
     }
 
     public TedeeLock getLock(int id) throws TedeeApiException {
-        ContentResponse response = execute(newRequest("/lock/" + id, HttpMethod.GET));
+        ContentResponse response = executeGet("/lock/" + id);
         if (response.getStatus() != 200) {
             throw error(response);
         }
@@ -218,6 +218,19 @@ public class TedeeApi implements TedeeClient {
 
     private Request newRequest(String path, HttpMethod method) {
         return client.newRequest(baseUrl + path).method(method).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private ContentResponse executeGet(String path) throws TedeeApiException {
+        try {
+            return execute(newRequest(path, HttpMethod.GET));
+        } catch (TedeeApiException firstFailure) {
+            // A Tedee Bridge can close an otherwise valid keep-alive connection without an HTTP response.
+            // Retrying this idempotent GET once gives Jetty an opportunity to establish a fresh connection.
+            if (firstFailure.getStatus() != 500) {
+                throw firstFailure;
+            }
+            return execute(newRequest(path, HttpMethod.GET));
+        }
     }
 
     private ContentResponse execute(Request request) throws TedeeApiException {

@@ -272,6 +272,10 @@ public class TedeeLockHandler extends BaseThingHandler {
         updateState(TedeeBindingConstants.C_DOOR, new StringType(door(doorState)));
         updateState(TedeeBindingConstants.C_JAMMED, OnOffType.from(jammed != 0));
 
+        if (isTransientState(state)) {
+            scheduleRefresh(3);
+        }
+
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -340,6 +344,13 @@ public class TedeeLockHandler extends BaseThingHandler {
             case 9 -> "UNKNOWN";
             case 255 -> "UNPULLING";
             default -> "UNKNOWN";
+        };
+    }
+
+    private static boolean isTransientState(int state) {
+        return switch (state) {
+            case 4, 5, 7, 8, 255 -> true;
+            default -> false;
         };
     }
 
@@ -437,6 +448,8 @@ public class TedeeLockHandler extends BaseThingHandler {
                 if (!disposed && generation == commandGeneration) {
                     scheduleRefresh(1, generation);
                     scheduleRefresh(3, generation);
+                    scheduleRefresh(5, generation);
+                    scheduleRefresh(10, generation);
                 }
             }
         } catch (TedeeApiException e) {
