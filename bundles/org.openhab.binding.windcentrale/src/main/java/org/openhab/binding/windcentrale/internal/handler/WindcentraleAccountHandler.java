@@ -148,15 +148,33 @@ public class WindcentraleAccountHandler extends BaseBridgeHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String comment) {
+    protected void updateStatus(ThingStatus status) {
         ThingStatus oldStatus = thing.getStatus();
-        super.updateStatus(status, detail, comment);
+        super.updateStatus(status);
+        notifyStatusListeners(oldStatus);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        ThingStatus oldStatus = thing.getStatus();
+        super.updateStatus(status, description);
+        notifyStatusListeners(oldStatus);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        ThingStatus oldStatus = thing.getStatus();
+        super.updateStatus(detail, description);
+        notifyStatusListeners(oldStatus);
+    }
+
+    private void notifyStatusListeners(ThingStatus oldStatus) {
         ThingStatus newStatus = thing.getStatus();
 
         if (!oldStatus.equals(newStatus)) {
-            logger.debug("Updating listeners with status {}", status);
+            logger.debug("Updating listeners with status {}", newStatus);
             for (ThingStatusListener listener : thingStatusListeners) {
-                listener.thingStatusChanged(thing, status);
+                listener.thingStatusChanged(thing, newStatus);
             }
         }
     }
