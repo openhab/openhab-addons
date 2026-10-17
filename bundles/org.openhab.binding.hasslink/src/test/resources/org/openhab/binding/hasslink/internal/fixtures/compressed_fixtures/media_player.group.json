@@ -1,0 +1,26 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "media_player.group": {
+        "s": "playing",
+        "a": {
+          "sound_mode_list": [
+            "Music",
+            "Movie"
+          ],
+          "group_members": null,
+          "volume_level": 1.0,
+          "is_volume_muted": false,
+          "sound_mode": "Music",
+          "shuffle": false,
+          "friendly_name": "Group",
+          "supported_features": 643983
+        },
+        "c": "01M3201RGDHGMYCGMG2A6AZ4DA",
+        "lc": 1789994787.3413043
+      }
+    }
+  }
+}

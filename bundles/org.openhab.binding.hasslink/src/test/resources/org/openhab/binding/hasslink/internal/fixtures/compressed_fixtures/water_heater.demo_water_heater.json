@@ -1,0 +1,35 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "water_heater.demo_water_heater": {
+        "s": "eco",
+        "a": {
+          "min_temp": 43.3,
+          "max_temp": 60.0,
+          "target_temp_step": 1,
+          "operation_list": [
+            "eco",
+            "electric",
+            "performance",
+            "high_demand",
+            "heat_pump",
+            "gas",
+            "off"
+          ],
+          "current_temperature": null,
+          "temperature": 48.3,
+          "target_temp_high": null,
+          "target_temp_low": null,
+          "operation_mode": "eco",
+          "away_mode": "off",
+          "friendly_name": "Demo Water Heater",
+          "supported_features": 15
+        },
+        "c": "01M3201RH20RJ0RX5CPTPSK417",
+        "lc": 1789994787.3621233
+      }
+    }
+  }
+}

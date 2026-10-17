@@ -1,0 +1,36 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "camera.demo_camera_without_stream",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "camera.demo_camera_without_stream",
+        "state": "streaming",
+        "attributes": {
+          "access_token": "3a164b3f34be711c30b3cbc439f2b024b1e309e193e35ea3c4770d75b9ca5f3f",
+          "entity_picture": "/api/camera_proxy/camera.demo_camera_without_stream?token=3a164b3f34be711c30b3cbc439f2b024b1e309e193e35ea3c4770d75b9ca5f3f",
+          "friendly_name": "Demo camera without stream",
+          "supported_features": 1
+        },
+        "last_changed": "2026-09-21T12:46:27.329433+00:00",
+        "last_reported": "2026-09-22T05:36:27.115341+00:00",
+        "last_updated": "2026-09-22T05:36:27.115341+00:00",
+        "context": {
+          "id": "01M33SV3ZBDYBS0NAJJ5B5TQ0X",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

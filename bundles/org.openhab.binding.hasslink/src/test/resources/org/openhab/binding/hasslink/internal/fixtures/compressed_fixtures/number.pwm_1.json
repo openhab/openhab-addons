@@ -1,0 +1,20 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "number.pwm_1": {
+        "s": "0.42",
+        "a": {
+          "min": 0.0,
+          "max": 1.0,
+          "step": 0.01,
+          "mode": "box",
+          "friendly_name": "PWM 1"
+        },
+        "c": "01M3201RGFCTSX6FEFF9JDWZ04",
+        "lc": 1789994787.3434815
+      }
+    }
+  }
+}

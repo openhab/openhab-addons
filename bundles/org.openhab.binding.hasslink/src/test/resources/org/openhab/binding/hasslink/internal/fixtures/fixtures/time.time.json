@@ -1,0 +1,33 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "time.time",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "time.time",
+        "state": "12:00:00",
+        "attributes": {
+          "friendly_name": "Time"
+        },
+        "last_changed": "2026-09-21T12:46:27.356602+00:00",
+        "last_reported": "2026-09-21T12:46:27.374320+00:00",
+        "last_updated": "2026-09-21T12:46:27.356602+00:00",
+        "context": {
+          "id": "01M3201RGW6PDZ1E67GRKF8ZDA",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}
