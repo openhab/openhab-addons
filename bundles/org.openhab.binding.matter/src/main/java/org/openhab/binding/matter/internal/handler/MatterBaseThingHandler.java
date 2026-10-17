@@ -195,6 +195,28 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
+        updatePolling(status);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+        updatePolling(status);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        super.updateStatus(status, description);
+        updatePolling(status);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        super.updateStatus(detail, description);
+        updatePolling(getThing().getStatus());
+    }
+
+    private void updatePolling(ThingStatus status) {
         if (status != ThingStatus.ONLINE) {
             stopPolling();
         } else {
