@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="hager-flow-ems-device-identification">
+		<label>Device Identification</label>
+		<description>Identification of the device, read as ASCII strings.</description>
+		<channels>
+			<channel id="vendor-name" typeId="hager-flow-ems-vendor-name"/>
+			<channel id="product-code" typeId="hager-flow-ems-product-code"/>
+			<channel id="vendor-url" typeId="hager-flow-ems-vendor-url"/>
+			<channel id="product-serial-number" typeId="hager-flow-ems-product-serial-number"/>
+			<channel id="sw-version" typeId="hager-flow-ems-sw-version"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="hager-flow-ems-general-information">
+		<label>General Information</label>
+		<description>Setup of the energy manager, such as fuse rating and connected charging stations.</description>
+		<channels>
+			<channel id="max-current-phase" typeId="hager-flow-ems-max-current-phase"/>
+			<channel id="max-current-phase-derated" typeId="hager-flow-ems-max-current-phase-derated"/>
+			<channel id="max-power-phase" typeId="hager-flow-ems-max-power-phase"/>
+			<channel id="max-power-phase-derated" typeId="hager-flow-ems-max-power-phase-derated"/>
+			<channel id="max-power" typeId="hager-flow-ems-max-power"/>
+			<channel id="max-power-derated" typeId="hager-flow-ems-max-power-derated"/>
+			<channel id="evcs-count" typeId="hager-flow-ems-evcs-count"/>
+			<channel id="evcs-list-evcs-1" typeId="hager-flow-ems-evcs-list-evcs-1"/>
+			<channel id="evcs-list-evcs-2" typeId="hager-flow-ems-evcs-list-evcs-2"/>
+			<channel id="evcs-list-evcs-3" typeId="hager-flow-ems-evcs-list-evcs-3"/>
+			<channel id="evcs-list-evcs-4" typeId="hager-flow-ems-evcs-list-evcs-4"/>
+			<channel id="evcs-list-evcs-5" typeId="hager-flow-ems-evcs-list-evcs-5"/>
+			<channel id="evcs-list-evcs-6" typeId="hager-flow-ems-evcs-list-evcs-6"/>
+			<channel id="evcs-list-evcs-7" typeId="hager-flow-ems-evcs-list-evcs-7"/>
+			<channel id="evcs-list-evcs-8" typeId="hager-flow-ems-evcs-list-evcs-8"/>
+			<channel id="phase-number" typeId="hager-flow-ems-phase-number"/>
+			<channel id="sun-power-priority-battery-first" typeId="hager-flow-ems-sun-power-priority-battery-first"/>
+			<channel id="sun-power-priority-allow-battery-discharge-into-car"
+				typeId="hager-flow-ems-sun-power-priority-allow-battery-discharge-into-car"/>
+			<channel id="blackout-active" typeId="hager-flow-ems-blackout-active"/>
+			<channel id="sgready-brain-disable" typeId="hager-flow-ems-sgready-brain-disable"/>
+			<channel id="sgready-power" typeId="hager-flow-ems-sgready-power"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="hager-flow-ems-slave-id-identity">
+		<label>Slave ID identity</label>
+		<description>Type and index of the Modbus unit the energy manager is addressed as.</description>
+		<channels>
+			<channel id="slaveid-type" typeId="hager-flow-ems-slaveid-type"/>
+			<channel id="slave-id-index-by-type" typeId="hager-flow-ems-slave-id-index-by-type"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="hager-flow-ems-root-main-measurements">
+		<label>Slave ID 0 - Root/Main Measurements</label>
+		<description>Summed currents, powers and energy values of the whole system.</description>
+		<channels>
+			<channel id="root-main-current-sum" typeId="hager-flow-ems-root-main-current-sum"/>
+			<channel id="root-main-current-l1" typeId="hager-flow-ems-root-main-current-l1"/>
+			<channel id="root-main-current-l2" typeId="hager-flow-ems-root-main-current-l2"/>
+			<channel id="root-main-current-l3" typeId="hager-flow-ems-root-main-current-l3"/>
+			<channel id="root-main-power-sum" typeId="hager-flow-ems-root-main-power-sum"/>
+			<channel id="root-main-power-l1" typeId="hager-flow-ems-root-main-power-l1"/>
+			<channel id="root-main-power-l2" typeId="hager-flow-ems-root-main-power-l2"/>
+			<channel id="root-main-power-l3" typeId="hager-flow-ems-root-main-power-l3"/>
+			<channel id="all-evcs-current-sum" typeId="hager-flow-ems-all-evcs-current-sum"/>
+			<channel id="all-evcs-power-sum" typeId="hager-flow-ems-all-evcs-power-sum"/>
+			<channel id="all-pv-current-sum" typeId="hager-flow-ems-all-pv-current-sum"/>
+			<channel id="all-pv-power-sum" typeId="hager-flow-ems-all-pv-power-sum"/>
+			<channel id="all-battery-current-sum" typeId="hager-flow-ems-all-battery-current-sum"/>
+			<channel id="all-battery-power-sum" typeId="hager-flow-ems-all-battery-power-sum"/>
+			<channel id="battery-state-of-charge" typeId="hager-flow-ems-battery-state-of-charge"/>
+			<channel id="all-house-consumption-current-sum" typeId="hager-flow-ems-all-house-consumption-current-sum"/>
+			<channel id="all-house-consumption-power-sum" typeId="hager-flow-ems-all-house-consumption-power-sum"/>
+			<channel id="autarky-last-hour" typeId="hager-flow-ems-autarky-last-hour"/>
+			<channel id="self-consumption-last-hour" typeId="hager-flow-ems-self-consumption-last-hour"/>
+			<channel id="margin-to-max-power-total" typeId="hager-flow-ems-margin-to-max-power-total"/>
+			<channel id="margin-to-max-power-l1" typeId="hager-flow-ems-margin-to-max-power-l1"/>
+			<channel id="margin-to-max-power-l2" typeId="hager-flow-ems-margin-to-max-power-l2"/>
+			<channel id="margin-to-max-power-l3" typeId="hager-flow-ems-margin-to-max-power-l3"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="hager-flow-ems">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+		<label>Hager Flow EMS</label>
+		<description>Energy manager of a Hager Flow system, providing general settings and the summed measurements of all
+			connected devices.</description>
+		<channel-groups>
+			<channel-group id="device-identification" typeId="hager-flow-ems-device-identification"/>
+			<channel-group id="general-information" typeId="hager-flow-ems-general-information"/>
+			<channel-group id="slave-id-identity" typeId="hager-flow-ems-slave-id-identity"/>
+			<channel-group id="root-main-measurements" typeId="hager-flow-ems-root-main-measurements"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="slaveId" type="integer" min="0" max="247">
+				<label>Slave ID</label>
+				<description>Modbus unit id the energy manager answers to.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1000" unit="ms">
+				<label>Refresh Interval</label>
+				<description>Interval the registers are polled in milliseconds.</description>
+				<default>5000</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

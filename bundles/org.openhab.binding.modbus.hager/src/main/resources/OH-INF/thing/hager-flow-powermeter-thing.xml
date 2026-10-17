@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="hager-flow-powermeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hager-flow-ems"/>
+		</supported-bridge-type-refs>
+		<label>Hager Flow PowerMeter</label>
+		<description>Power meter of a Hager Flow system with per phase power, voltage and energy values.</description>
+		<channel-groups>
+			<channel-group id="identity" typeId="hager-flow-powermeter-identity"/>
+			<channel-group id="status" typeId="hager-flow-powermeter-status"/>
+			<channel-group id="measurements" typeId="hager-flow-powermeter-measurements"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="slaveId" type="integer" min="30" max="37">
+				<label>Slave ID</label>
+				<description>Modbus unit id of this power meter.</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1000" unit="ms">
+				<label>Refresh Interval</label>
+				<description>Interval the registers are polled in milliseconds.</description>
+				<default>5000</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
