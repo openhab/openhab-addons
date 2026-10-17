@@ -82,7 +82,7 @@ public abstract class JeeLinkSensorHandler<R extends Reading> extends BaseThingH
             return;
         }
         JeeLinkHandler previousBridge = registeredBridge;
-        if (previousBridge != jlh) {
+        if (!jlh.equals(previousBridge)) {
             if (previousBridge != null) {
                 previousBridge.removeReadingHandler(this);
             }
