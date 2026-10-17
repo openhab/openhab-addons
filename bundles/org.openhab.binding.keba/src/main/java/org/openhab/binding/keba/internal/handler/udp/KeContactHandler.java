@@ -652,10 +652,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if ((command instanceof RefreshType)) {
-            // let's assume we do frequent enough polling and ignore the REFRESH request here
-            // in order to prevent too many channel state updates
-        } else {
+        if (!(command instanceof RefreshType)) {
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
                     if (command instanceof QuantityType<?> quantityCommand) {

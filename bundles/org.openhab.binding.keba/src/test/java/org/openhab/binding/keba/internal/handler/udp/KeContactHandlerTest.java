@@ -178,7 +178,8 @@ class KeContactHandlerTest {
     @Test
     void ignoresShortProductValuesWithoutCrashingPollingParsing() {
         KeContactHandler handler = new KeContactHandler(mock(Thing.class), mock(KeContactTransceiver.class));
-        ByteBuffer response = Objects.requireNonNull(ByteBuffer.wrap("{\"Product\":\"P30\"}".getBytes()));
+        ByteBuffer response = Objects
+                .requireNonNull(ByteBuffer.wrap("{\"Product\":\"P30\"}".getBytes(StandardCharsets.US_ASCII)));
 
         assertDoesNotThrow(() -> handler.onData(response));
     }
@@ -186,8 +187,8 @@ class KeContactHandlerTest {
     @Test
     void ignoresUnknownProductSeriesWithoutCrashingPollingParsing() {
         KeContactHandler handler = new KeContactHandler(mock(Thing.class), mock(KeContactTransceiver.class));
-        ByteBuffer response = Objects
-                .requireNonNull(ByteBuffer.wrap("{\"Product\":\"KC-P30-123456Z-XXX\"}".getBytes()));
+        ByteBuffer response = Objects.requireNonNull(
+                ByteBuffer.wrap("{\"Product\":\"KC-P30-123456Z-XXX\"}".getBytes(StandardCharsets.US_ASCII)));
 
         assertDoesNotThrow(() -> handler.onData(response));
     }

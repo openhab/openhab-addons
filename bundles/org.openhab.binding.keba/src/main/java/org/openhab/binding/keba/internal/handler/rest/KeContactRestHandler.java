@@ -15,6 +15,7 @@ package org.openhab.binding.keba.internal.handler.rest;
 import java.net.URI;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
@@ -501,7 +502,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         if (source == null || source.isJsonNull()) {
             return null;
         }
-        return switch (source.getAsString().toUpperCase()) {
+        return switch (source.getAsString().toUpperCase(Locale.ROOT)) {
             case "CPM_PROFILES" -> 1;
             case "CPM_DIR_CTRL" -> 2;
             case "MODBUS" -> 3;
