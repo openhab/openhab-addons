@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tedee.internal.TedeeBindingConstants;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
 import org.openhab.binding.tedee.internal.api.TedeeLock;
@@ -455,7 +456,8 @@ public class TedeeLockHandler extends BaseThingHandler {
         } catch (TedeeApiException e) {
             logger.warn("Tedee action '{}' failed for lock {}: {}", action, deviceId, e.getMessage());
             updateStatus(ThingStatus.OFFLINE,
-                    e.getStatus() == 401 || e.getStatus() == 403 ? ThingStatusDetail.CONFIGURATION_ERROR
+                    e.getStatus() == HttpStatus.UNAUTHORIZED_401 || e.getStatus() == HttpStatus.FORBIDDEN_403
+                            ? ThingStatusDetail.CONFIGURATION_ERROR
                             : ThingStatusDetail.COMMUNICATION_ERROR,
                     e.getMessage());
         } catch (IllegalStateException e) {

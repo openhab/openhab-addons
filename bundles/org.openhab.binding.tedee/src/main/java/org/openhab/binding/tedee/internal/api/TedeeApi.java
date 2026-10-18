@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tedee.internal.TedeeBindingConstants;
 
 import com.google.gson.Gson;
@@ -59,21 +60,21 @@ public class TedeeApi implements TedeeClient {
 
     public TedeeLock getLock(int id) throws TedeeApiException {
         ContentResponse response = executeGet("/lock/" + id);
-        if (response.getStatus() != 200) {
+        if (response.getStatus() != HttpStatus.OK_200) {
             throw error(response);
         }
         String content = response.getContentAsString();
 
         TedeeLock lock = gson.fromJson(content, TedeeLock.class);
         if (lock == null) {
-            throw new TedeeApiException("Invalid Tedee lock response", 500);
+            throw new TedeeApiException("Invalid Tedee lock response", HttpStatus.INTERNAL_SERVER_ERROR_500);
         }
         return lock;
     }
 
     public List<TedeeLock> getLocks() throws TedeeApiException {
         ContentResponse response = execute(newRequest("/lock", HttpMethod.GET));
-        if (response.getStatus() != 200) {
+        if (response.getStatus() != HttpStatus.OK_200) {
             throw error(response);
         }
 
@@ -83,7 +84,7 @@ public class TedeeApi implements TedeeClient {
         try {
             root = JsonParser.parseString(content);
         } catch (RuntimeException e) {
-            throw new TedeeApiException("Invalid Tedee lock list response", 500, e);
+            throw new TedeeApiException("Invalid Tedee lock list response", HttpStatus.INTERNAL_SERVER_ERROR_500, e);
         }
 
         List<TedeeLock> locks = new ArrayList<>();
@@ -112,7 +113,7 @@ public class TedeeApi implements TedeeClient {
                 }
             }
         } else {
-            throw new TedeeApiException("Invalid Tedee lock list response", 500);
+            throw new TedeeApiException("Invalid Tedee lock list response", HttpStatus.INTERNAL_SERVER_ERROR_500);
         }
 
         return locks;
@@ -144,7 +145,7 @@ public class TedeeApi implements TedeeClient {
 
     public String getCallbacks() throws TedeeApiException {
         ContentResponse response = execute(newRequest("/callback", HttpMethod.GET));
-        if (response.getStatus() != 200) {
+        if (response.getStatus() != HttpStatus.OK_200) {
             throw error(response);
         }
         return response.getContentAsString();
@@ -168,7 +169,7 @@ public class TedeeApi implements TedeeClient {
 
         ContentResponse response = execute(request);
 
-        if (response.getStatus() < 200 || response.getStatus() >= 300) {
+        if (response.getStatus() < HttpStatus.OK_200 || response.getStatus() >= HttpStatus.MULTIPLE_CHOICES_300) {
             throw error(response);
         }
 
@@ -193,7 +194,7 @@ public class TedeeApi implements TedeeClient {
 
         ContentResponse response = execute(request);
 
-        if (response.getStatus() < 200 || response.getStatus() >= 300) {
+        if (response.getStatus() < HttpStatus.OK_200 || response.getStatus() >= HttpStatus.MULTIPLE_CHOICES_300) {
             throw error(response);
         }
     }
@@ -202,7 +203,7 @@ public class TedeeApi implements TedeeClient {
         Request request = newRequest("/callback/" + callbackId, HttpMethod.DELETE);
         ContentResponse response = execute(request);
 
-        if (response.getStatus() < 200 || response.getStatus() >= 300) {
+        if (response.getStatus() < HttpStatus.OK_200 || response.getStatus() >= HttpStatus.MULTIPLE_CHOICES_300) {
             throw error(response);
         }
     }
@@ -211,7 +212,7 @@ public class TedeeApi implements TedeeClient {
         Request request = newRequest(path, HttpMethod.POST);
         request.header("Content-Length", "0");
         ContentResponse response = execute(request);
-        if (response.getStatus() != 204) {
+        if (response.getStatus() != HttpStatus.NO_CONTENT_204) {
             throw error(response);
         }
     }
@@ -226,7 +227,7 @@ public class TedeeApi implements TedeeClient {
         } catch (TedeeApiException firstFailure) {
             // A Tedee Bridge can close an otherwise valid keep-alive connection without an HTTP response.
             // Retrying this idempotent GET once gives Jetty an opportunity to establish a fresh connection.
-            if (firstFailure.getStatus() != 500) {
+            if (firstFailure.getStatus() != HttpStatus.INTERNAL_SERVER_ERROR_500) {
                 throw firstFailure;
             }
             return execute(newRequest(path, HttpMethod.GET));
@@ -240,9 +241,9 @@ public class TedeeApi implements TedeeClient {
             return request.send();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new TedeeApiException("Interrupted", 408, e);
+            throw new TedeeApiException("Interrupted", HttpStatus.REQUEST_TIMEOUT_408, e);
         } catch (ExecutionException | TimeoutException e) {
-            throw new TedeeApiException("HTTP failed: " + e.getMessage(), 500, e);
+            throw new TedeeApiException("HTTP failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR_500, e);
         }
     }
 
@@ -253,7 +254,7 @@ public class TedeeApi implements TedeeClient {
                     .digest((apiToken + timestamp).getBytes(StandardCharsets.UTF_8)));
             return hash + timestamp;
         } catch (Exception e) {
-            throw new TedeeApiException("SHA-256 unavailable", 500, e);
+            throw new TedeeApiException("SHA-256 unavailable", HttpStatus.INTERNAL_SERVER_ERROR_500, e);
         }
     }
 

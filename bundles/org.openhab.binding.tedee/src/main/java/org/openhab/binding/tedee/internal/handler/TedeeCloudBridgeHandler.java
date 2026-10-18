@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
 import org.openhab.binding.tedee.internal.api.TedeeCloudApi;
 import org.openhab.binding.tedee.internal.api.TedeeLock;
@@ -208,9 +209,9 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
         } catch (TedeeApiException e) {
             logger.warn("Tedee Cloud check failed: {}", e.getMessage());
 
-            ThingStatusDetail detail = e.getStatus() == 401 || e.getStatus() == 403
-                    ? ThingStatusDetail.CONFIGURATION_ERROR
-                    : ThingStatusDetail.COMMUNICATION_ERROR;
+            ThingStatusDetail detail = e.getStatus() == HttpStatus.UNAUTHORIZED_401
+                    || e.getStatus() == HttpStatus.FORBIDDEN_403 ? ThingStatusDetail.CONFIGURATION_ERROR
+                            : ThingStatusDetail.COMMUNICATION_ERROR;
 
             updateStatus(ThingStatus.OFFLINE, detail,
                     localizedStatusDescription("status.api-communication-error", e.getMessage()));

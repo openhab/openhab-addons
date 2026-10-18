@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tedee.internal.api.TedeeApi;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
 import org.openhab.binding.tedee.internal.api.TedeeLock;
@@ -253,7 +254,7 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         }
 
         try {
-            if (currentApi.bridgeStatus() == 200) {
+            if (currentApi.bridgeStatus() == HttpStatus.OK_200) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -380,7 +381,7 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
      */
     public boolean isBridgeReachable() throws TedeeApiException {
         TedeeApi currentApi = api;
-        return currentApi != null && currentApi.bridgeStatus() == 200;
+        return currentApi != null && currentApi.bridgeStatus() == HttpStatus.OK_200;
     }
 
     private static boolean isBindingCallback(String url) {
