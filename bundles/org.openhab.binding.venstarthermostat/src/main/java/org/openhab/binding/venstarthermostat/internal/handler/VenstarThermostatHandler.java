@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -94,7 +93,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link VenstarThermostatHandler} is responsible for handling commands, which are
@@ -480,7 +479,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
                 log.debug("Failed to update thermostat: {}", reason);
                 goOffline(ThingStatusDetail.COMMUNICATION_ERROR, reason);
             }
-        } catch (VenstarCommunicationException | JsonSyntaxException e) {
+        } catch (VenstarCommunicationException | JsonParseException e) {
             log.debug("Unable to fetch info data", e);
             String message = e.getMessage();
             goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
@@ -497,8 +496,11 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             if (!isFutureValid(localUpdatesTask)) {
                 return;
             }
-            VenstarSensorData res = gson.fromJson(response, VenstarSensorData.class);
-            sensorData = res.getSensors();
+            List<VenstarSensor> sensors = parse(response, VenstarSensorData.class).getSensors();
+            if (sensors == null) {
+                throw invalidResponse(response);
+            }
+            sensorData = sensors;
             updateIfChanged(CHANNEL_TEMPERATURE, getTemperature());
             updateIfChanged(CHANNEL_EXTERNAL_TEMPERATURE, getOutdoorTemperature());
             updateIfChanged(CHANNEL_HUMIDITY, getHumidity());
@@ -508,8 +510,11 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
                 return;
             }
 
-            runtimeData = Objects.requireNonNull(gson.fromJson(response, VenstarRuntimeData.class));
+            runtimeData = parse(response, VenstarRuntimeData.class);
             List<VenstarRuntime> runtimes = runtimeData.getRuntimes();
+            if (runtimes == null) {
+                throw invalidResponse(response);
+            }
             Collections.reverse(runtimes);// reverse the list so that the most recent runtime data is first in the list
             int nRuntimes = Math.min(7, runtimes.size());// check how many runtimes are available, might be less than
                                                          // seven if equipment
@@ -530,7 +535,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             if (!isFutureValid(localUpdatesTask)) {
                 return;
             }
-            infoData = Objects.requireNonNull(gson.fromJson(response, VenstarInfoData.class));
+            infoData = parseInfoData(response);
             updateUnits(infoData);
             updateIfChanged(CHANNEL_HEATING_SETPOINT, getHeatingSetpoint());
             updateIfChanged(CHANNEL_COOLING_SETPOINT, getCoolingSetpoint());
@@ -550,13 +555,54 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             updateIfChanged(CHANNEL_SCHEDULE_PART_RAW, new DecimalType(infoData.getSchedulePart().part()));
 
             goOnline();
-        } catch (VenstarCommunicationException | JsonSyntaxException e) {
+        } catch (VenstarCommunicationException e) {
             log.debug("Unable to fetch info data", e);
             String message = e.getMessage();
             goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
         } catch (VenstarAuthenticationException e) {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
+        } catch (RuntimeException e) {
+            // An exception escaping a scheduleWithFixedDelay task cancels all future polls
+            log.debug("Unexpected error polling thermostat", e);
+            String message = e.getMessage();
+            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
         }
+    }
+
+    VenstarInfoData parseInfoData(String response) throws VenstarCommunicationException {
+        VenstarInfoData info = parse(response, VenstarInfoData.class);
+        if (!info.isComplete()) {
+            throw invalidResponse(response);
+        }
+        return info;
+    }
+
+    private <T> T parse(String response, Class<T> type) throws VenstarCommunicationException {
+        @Nullable
+        T result;
+        try {
+            result = gson.fromJson(response, type);
+        } catch (JsonParseException e) {
+            throw new VenstarCommunicationException(e);
+        }
+        if (result == null) {
+            throw invalidResponse(response);
+        }
+        return result;
+    }
+
+    // Thermostat errors come back as HTTP 200 with {"error":true,"reason":"..."}
+    private VenstarCommunicationException invalidResponse(String response) {
+        log.debug("Invalid response from thermostat: {}", response);
+        String reason = null;
+        try {
+            VenstarResponse res = gson.fromJson(response, VenstarResponse.class);
+            reason = res == null ? null : res.getReason();
+        } catch (JsonParseException e) {
+            log.trace("Response is not an error object", e);
+        }
+        return new VenstarCommunicationException(
+                reason != null && !reason.isBlank() ? reason : "Invalid response from thermostat");
     }
 
     private void updateIfChanged(String channelID, State state) {
