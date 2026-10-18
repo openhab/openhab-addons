@@ -117,12 +117,9 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
 
         int pollInterval = Math.max(5, cfg.pollInterval);
 
-        scheduler.execute(this::runInitialChecks);
+        job = scheduler.scheduleWithFixedDelay(this::runHealthCheck, 0, pollInterval, TimeUnit.SECONDS);
 
-        job = scheduler.scheduleWithFixedDelay(this::runHealthCheck, pollInterval, pollInterval, TimeUnit.SECONDS);
-
-        callbackJob = scheduler.scheduleWithFixedDelay(this::runCallbackCheck, CALLBACK_CHECK_INTERVAL_SECONDS,
-                CALLBACK_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        callbackJob = scheduler.scheduleWithFixedDelay(this::runCallbackCheck, 0,                 CALLBACK_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
     private synchronized void runInitialChecks() {
