@@ -40,13 +40,14 @@ For a Modbus proxy, set `modbusIpAddress`; UDP and REST still connect directly t
 | REST       | `password`            | -           | Required when REST is enabled                                         |
 | REST       | `verifyCertificate`   | true        | Verify the REST certificate and hostname                              |
 
-The binding enables Modbus by default, but Modbus must also be enabled on the wallbox.
-On a P20, disable Modbus and use UDP.
+The binding enables Modbus and UDP by default, but Modbus must also be enabled on the wallbox.
+On P20 models with firmware 2.5 or later, disable Modbus and use UDP.
 REST is optional and requires credentials.
 Disable `verifyCertificate` only for a trusted local wallbox with a self-signed certificate.
 
 For display commands without UDP measurements, set `udpEnabled=true` and `udpDisplayOnly=true`.
 This mode keeps the `display` channel and `setDisplay` action available without UDP polling.
+UDP must remain enabled for display commands; `udpDisplayOnly` disables cyclic reports, not commands and actions.
 It does not provide UDP measurement fallback.
 Shared polling intervals must still be at least 10 seconds.
 
@@ -71,9 +72,10 @@ Possible values include `unknown`, `available`, `unavailable`, `disabled` and `u
 ## Channels
 
 Available channels depend on enabled protocols and the detected wallbox model.
+Channels unsupported by the selected protocols or detected model are removed from the Thing.
+
 The first table lists every declared channel; protocol tables list channels unique to that protocol.
 Shared channels retain one ID and use protocol fallback where supported.
-`Yes` in the Read-only column means the channel cannot be commanded.
 
 ### All Channels
 
@@ -241,49 +243,65 @@ The OpenAPI specification lists these values but does not define their detailed 
 
 `maxsystemcurrent` is the wallbox hardware limit; `maxpilotcurrent` is the current offered to the vehicle;
 `maxpresetcurrent` is the writable user setpoint.
-`I1`–`I3` report actual measured current.
-The `wallbox`, `vehicle` and `locked` states use Modbus when available, with UDP or REST fallback.
 
 `phaseswitchstate` accepts 1 or 3 through Modbus or UDP and is read-only through REST.
 Use REST's `togglephaseswitch` to toggle phases; send ON to toggle, and the channel resets after success.
 `udpstop` is a String command that requires the session's 16-digit RFID tag.
-`output` controls UDP X2; `input` reports UDP X1; `restoutput` reports REST X2 state.
-
-The migration preserves legacy flat channel IDs such as `state`, `input`, `maxpilotcurrent`,
-`maxsystemcurrent`, `failsafecurrent` and `failsafetimeout`.
-Channels unsupported by the selected protocols or detected model are removed from the Thing.
 
 ## Rule Actions
 
 Use `setDisplay` to send transient display text through UDP.
 The REST API does not provide an equivalent transient display command.
-UDP actions also provide current and failsafe controls:
 
-```java
-keContactActions.setDisplay("TEXT$1")
-keContactActions.setDisplay("TEXT$2", 5, 10)
-keContactActions.setChargingCurrent(16000, 10)
-keContactActions.setFailsafe(16000, 60, true)
-```
+The other actions require full-data UDP and are unavailable in display-only mode.
 
-`text` accepts up to 23 ASCII characters.
-On the display, `~` represents Σ, `$` inserts a blank and `,` represents a comma.
-`durationMin` is the minimum display time in seconds before another command can replace the text.
-`durationMax` is the maximum display time in seconds when no further command arrives.
-Omit both duration values to use the wallbox defaults.
-`setChargingCurrent` takes milliamps and an activation delay in seconds.
-`setFailsafe` takes milliamps, a timeout in seconds and a persistence flag.
-These actions require full-data UDP and are unavailable in display-only mode.
+### `setDisplay` Parameters
+
+| Parameter                  | Description                                                                                                                |
+|----------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| `text`                     | Text to show on the display, up to 23 ASCII characters. `~` represents Σ, `$` inserts a blank, and `,` represents a comma. |
+| `durationMin` _(optional)_ | Minimum display time in seconds before another display command can replace the text.                                       |
+| `durationMax` _(optional)_ | Maximum display time in seconds if no further display command arrives.                                                     |
+
+### `setChargingCurrent` Parameters
+
+| Parameter      | Description                                                                                                            |
+|----------------|------------------------------------------------------------------------------------------------------------------------|
+| `current`      | Charging-current setpoint in milliamps: `0` to stop charging, or 6.000 mA up to the wallbox limit (maximum 63.000 mA). |
+| `delaySeconds` | Non-negative activation delay in seconds before applying the current setpoint; this is not a duration.                 |
+
+### `setFailsafe` Parameters
+
+| Parameter                | Description                                                                                                          |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------|
+| `current`                | Failsafe current in milliamps: `0`, or 6.000–63.000 mA.                                                              |
+| `timeoutSeconds`         | Timeout in seconds: `0` or 5–600.                                                                                    |
+| `persist`                | `true` saves the supplied failsafe current and timeout permanently; `false` applies them without saving permanently. |
 
 ## Example
+
+demo.Actions:
+
+```java
+rule "Set Display Text"
+when
+  System reached start level 100
+then
+  val keContactActions = getActions("keba", "keba:kecontact:1")
+  keContactActions.setDisplay("TEXT$1")           // Default duration
+  keContactActions.setDisplay("TEXT$2", 5, 10)    // Explicit duration set
+  keContactActions.setChargingCurrent(16000, 10)  // 16 A in 10 sec
+  keContactActions.setFailsafe(16000, 60, true)   // 16 A after 60 sec timeout, persistent
+end
+```
 
 demo.Things:
 
 ```java
-Thing keba:kecontact:combined [ipAddress="192.168.0.67", modbusEnabled=true, udpEnabled=true, restEnabled=true, password="secret"]
-Thing keba:kecontact:restdisplay [ipAddress="192.168.0.67", modbusEnabled=false, udpEnabled=true, udpDisplayOnly=true, restEnabled=true, password="secret"]
-Thing keba:kecontact:p20 [ipAddress="192.168.0.64", modbusEnabled=false, udpEnabled=true, restEnabled=false]
-Thing keba:kecontact:proxied [ipAddress="192.168.0.69", modbusIpAddress="192.168.0.20", modbusEnabled=true, unitId=255]
+Thing keba:kecontact:combined    [ipAddress="192.168.0.60", modbusEnabled=true,  udpEnabled=true, restEnabled=true, username="admin", password="secret"]
+Thing keba:kecontact:restdisplay [ipAddress="192.168.0.61", modbusEnabled=false, udpEnabled=true, restEnabled=true, username="admin", password="secret", udpDisplayOnly=true]   // data via rest + display action
+Thing keba:kecontact:p20         [ipAddress="192.168.0.62", modbusEnabled=false, udpEnabled=true]
+Thing keba:kecontact:proxied     [ipAddress="192.168.0.63", modbusEnabled=true,  udpEnabled=true, restEnabled=false, modbusIpAddress="192.168.0.20", unitId=255]  // UDP via *.63, Modbus via *.20
 ```
 
 demo.Items:
@@ -296,22 +314,22 @@ Number:ElectricCurrent    KebaFailSafeCurrent   "Failsafe supply current [%.3f A
 Number                    KebaState             "Operating State [%s]"                    {channel="keba:kecontact:combined:state"}
 Switch                    KebaEnabledSystem     "Enabled (System)"                        {channel="keba:kecontact:combined:enabledsystem"}
 Switch                    KebaEnabledUser       "Enabled (User)"                          {channel="keba:kecontact:combined:enableduser"}
-Switch                    KebaWallboxPlugged    "Plugged into wallbox"                     {channel="keba:kecontact:combined:wallbox"}
-Switch                    KebaVehiclePlugged    "Plugged into vehicle"                     {channel="keba:kecontact:combined:vehicle"}
-Switch                    KebaPlugLocked        "Plug locked"                              {channel="keba:kecontact:combined:locked"}
-Number:Time               KebaUptime            "Uptime [%.0f s]"                          {channel="keba:kecontact:combined:uptime"}
+Switch                    KebaWallboxPlugged    "Plugged into wallbox"                    {channel="keba:kecontact:combined:wallbox"}
+Switch                    KebaVehiclePlugged    "Plugged into vehicle"                    {channel="keba:kecontact:combined:vehicle"}
+Switch                    KebaPlugLocked        "Plug locked"                             {channel="keba:kecontact:combined:locked"}
+Number:Time               KebaUptime            "Uptime [%.0f s]"                         {channel="keba:kecontact:combined:uptime"}
 Number:ElectricCurrent    KebaI1                                                          {channel="keba:kecontact:combined:I1"}
 Number:ElectricCurrent    KebaI2                                                          {channel="keba:kecontact:combined:I2"}
 Number:ElectricCurrent    KebaI3                                                          {channel="keba:kecontact:combined:I3"}
 Number:ElectricPotential  KebaU1                                                          {channel="keba:kecontact:combined:U1"}
 Number:ElectricPotential  KebaU2                                                          {channel="keba:kecontact:combined:U2"}
 Number:ElectricPotential  KebaU3                                                          {channel="keba:kecontact:combined:U3"}
-Number:Power               KebaPower             "Charging power [%.1f W]"                 {channel="keba:kecontact:combined:power"}
-Number:Energy              KebaSessionEnergy                                               {channel="keba:kecontact:combined:sessionconsumption"}
-Number:Energy              KebaTotalEnergy       "Energy during all sessions [%.1f Wh]"    {channel="keba:kecontact:combined:totalconsumption"}
-Switch                     KebaInputSwitch                                                {channel="keba:kecontact:combined:input"}
-Switch                     KebaOutputSwitch                                               {channel="keba:kecontact:combined:output"}
-Number:Energy              KebaSetEnergyLimit    "Set charge energy limit [%.1f Wh]"       {channel="keba:kecontact:combined:setenergylimit"}
+Number:Power              KebaPower             "Charging power [%.1f W]"                 {channel="keba:kecontact:combined:power"}
+Number:Energy             KebaSessionEnergy                                               {channel="keba:kecontact:combined:sessionconsumption"}
+Number:Energy             KebaTotalEnergy       "Energy during all sessions [%.1f Wh]"    {channel="keba:kecontact:combined:totalconsumption"}
+Switch                    KebaInputSwitch                                                 {channel="keba:kecontact:combined:input"}
+Switch                    KebaOutputSwitch                                                {channel="keba:kecontact:combined:output"}
+Number:Energy             KebaSetEnergyLimit    "Set charge energy limit [%.1f Wh]"       {channel="keba:kecontact:combined:setenergylimit"}
 ```
 
 demo.Sitemap:
@@ -321,19 +339,19 @@ sitemap demo label="Main Menu"
 {
   Text label="Charging Station"
   {
-    Text    item=KebaState
-    Text    item=KebaUptime
-    Switch  item=KebaEnabledSystem
-    Switch  item=KebaEnabledUser
-    Switch  item=KebaWallboxPlugged
-    Switch  item=KebaVehiclePlugged
-    Switch  item=KebaPlugLocked
-    Slider  item=KebaCurrentRange
-    Text    item=KebaCurrent
-    Text    item=KebaSystemCurrent
-    Text    item=KebaFailSafeCurrent
-    Text    item=KebaSessionEnergy
-    Text    item=KebaTotalEnergy
+    Text     item=KebaState
+    Text     item=KebaUptime
+    Switch   item=KebaEnabledSystem
+    Switch   item=KebaEnabledUser
+    Switch   item=KebaWallboxPlugged
+    Switch   item=KebaVehiclePlugged
+    Switch   item=KebaPlugLocked
+    Slider   item=KebaCurrentRange
+    Text     item=KebaCurrent
+    Text     item=KebaSystemCurrent
+    Text     item=KebaFailSafeCurrent
+    Text     item=KebaSessionEnergy
+    Text     item=KebaTotalEnergy
     Setpoint item=KebaSetEnergyLimit
   }
 }
@@ -344,10 +362,11 @@ sitemap demo label="Main Menu"
 Enable `DEBUG` logging for `org.openhab.binding.keba`.
 For Modbus requests, also enable `DEBUG` logging for `org.openhab.core.io.transport.modbus`.
 UDP uses port 7090 on both the wallbox and openHAB host.
-The wallbox UDP and Modbus interface requires DIP switch 1.3 to be ON for full functionality.
-Check `DIP-Sw1` for the `0x20` enable bit.
-The default Modbus port is 502.
+On wallboxes equipped with DIP switches, switch 1.3 (`0x20` in `DIP-Sw1`) enables UDP command access.
+Consult the model's installation manual for the switch's default setting and location.
+After changing DIP switches, power-cycle the station; a software reset may not apply the new configuration.
+The KeContact P40 has no DIP switches; enable Modbus TCP and configure its port and Unit ID via the KEBA eMobility App, OCPP or REST API.
+The default Modbus TCP port is `502` (configurable via the `port` parameter); the default Unit ID is `255` (configurable via the `unitId` parameter).
 
 The REST API uses HTTPS and was tested with P30 x-series firmware 2.1.0 and KeMove API v2.5.0.
 Check REST credentials with the KEBA eMobility App and verify `https://<ipAddress>:<restPort>` reaches the wallbox.
-For a self-signed certificate, set `verifyCertificate=false` only on a trusted local network.
