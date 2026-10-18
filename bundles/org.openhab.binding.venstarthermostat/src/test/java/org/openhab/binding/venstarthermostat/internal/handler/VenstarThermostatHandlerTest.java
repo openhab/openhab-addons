@@ -57,6 +57,13 @@ class VenstarThermostatHandlerTest {
     }
 
     @Test
+    void rejectsReplyWithoutTempunits() {
+        String partial = INFO.replace("\"tempunits\":0,", "");
+        Exception e = assertThrows(Exception.class, () -> handler.parseInfoData(partial));
+        assertEquals("Invalid response from thermostat", e.getMessage());
+    }
+
+    @Test
     void rejectsEmptyReply() {
         assertThrows(Exception.class, () -> handler.parseInfoData(""));
     }

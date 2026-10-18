@@ -29,7 +29,7 @@ public class VenstarInfoData {
     private VenstarFanState fanstate;
     private VenstarScheduleMode schedule;
     private VenstarSchedulePart schedulepart;
-    private int tempunits;
+    private Integer tempunits;
 
     public VenstarInfoData() {
     }
@@ -50,7 +50,7 @@ public class VenstarInfoData {
 
     public boolean isComplete() {
         return cooltemp != null && heattemp != null && state != null && mode != null && away != null && fan != null
-                && fanstate != null && schedule != null && schedulepart != null;
+                && fanstate != null && schedule != null && schedulepart != null && tempunits != null;
     }
 
     public double getCooltemp() {
