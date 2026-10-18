@@ -14,6 +14,7 @@ package org.openhab.binding.hasslink.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -36,6 +37,9 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.hasslink.internal.handler.HassLinkBridgeHandler;
+import org.openhab.core.io.net.http.WebSocketFactory;
+import org.openhab.core.thing.Bridge;
 
 import com.google.gson.JsonParser;
 
@@ -133,6 +137,29 @@ class HomeAssistantWebSocketClientTest {
         assertNull(failure.get());
         assertEquals(List.of(1, 2), sentMessages.stream()
                 .map(message -> JsonParser.parseString(message).getAsJsonObject().get("id").getAsInt()).toList());
+    }
+
+    @Test
+    void compressedEventRemovesAttributeFromCacheUsingWireFrame() {
+        HassLinkBridgeHandler bridgeHandler = new HassLinkBridgeHandler(mock(Bridge.class),
+                mock(WebSocketFactory.class));
+        HomeAssistantWebSocketClient client = new HomeAssistantWebSocketClient(mock(WebSocketClient.class), "token",
+                bridgeHandler, mock(ScheduledExecutorService.class));
+
+        client.onWebSocketText("""
+                {"type":"event","event":{"a":{"sensor.test":{"s":"on","a":{"source":"mqtt","friendly_name":"Test"}}}}}
+                """);
+        client.onWebSocketText("""
+                {"type":"event","event":{"c":{"sensor.test":{"-":{"a":["source"]}}}}}
+                """);
+        client.onWebSocketText("""
+                {"type":"event","event":{"c":{"sensor.test":{"+":{"s":"off"}}}}}
+                """);
+
+        var cachedState = bridgeHandler.getCachedEntityState("sensor.test");
+        assertNotNull(cachedState);
+        assertEquals("off", cachedState.state());
+        assertEquals(Set.of("friendly_name"), cachedState.attributes().keySet());
     }
 
     private Thread.State awaitThreadState(Thread thread, Thread.State expected, Thread.State alternative) {

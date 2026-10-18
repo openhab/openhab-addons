@@ -663,8 +663,13 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
 
                 Map<String, JsonElement> attributesToRemove = diff.remove;
                 if (attributesToRemove != null && !cachedAttributes.isEmpty()) {
-                    for (String keyToRemove : attributesToRemove.keySet()) {
-                        cachedAttributes.remove(keyToRemove);
+                    JsonElement removedAttributeNames = attributesToRemove.get("a");
+                    if (removedAttributeNames != null && removedAttributeNames.isJsonArray()) {
+                        removedAttributeNames.getAsJsonArray().forEach(attributeName -> {
+                            if (attributeName.isJsonPrimitive() && attributeName.getAsJsonPrimitive().isString()) {
+                                cachedAttributes.remove(attributeName.getAsString());
+                            }
+                        });
                     }
                 }
 
