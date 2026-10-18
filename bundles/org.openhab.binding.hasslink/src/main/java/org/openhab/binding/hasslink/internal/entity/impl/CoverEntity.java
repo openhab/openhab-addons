@@ -88,7 +88,7 @@ public class CoverEntity implements EntityType {
                 CommandMapper.onUpDown(command, getType(), "open_cover_tilt", "close_cover_tilt", entityId)
                         .or(() -> CommandMapper.onStopMove(command, getType(), "stop_cover_tilt", null, entityId))
                         .or(() -> CommandMapper.onPercentInverted(command, getType(), "set_cover_tilt_position",
-                                "position", entityId));
+                                "tilt_position", entityId));
 
             default -> Optional.empty();
         };
