@@ -112,6 +112,13 @@
 				<description>Home Assistant custom standalone entity identifiers or glob patterns. Use this to add entities that do
 					not belong to any device.</description>
 			</parameter>
+			<parameter name="channelIdPrefixToStrip" type="text" required="false">
+				<label>Channel ID Prefix to Strip</label>
+				<description>Optional prefix of Home Assistant entity object IDs to remove when generating channel IDs.
+					Leave blank
+					to use the full object ID. This affects channel IDs only; labels use inferred prefix stripping.</description>
+				<advanced>true</advanced>
+			</parameter>
 
 			<!-- Advanced Domain Filters -->
 			<parameter name="includedDomains" type="text" multiple="true" groupName="filtering">

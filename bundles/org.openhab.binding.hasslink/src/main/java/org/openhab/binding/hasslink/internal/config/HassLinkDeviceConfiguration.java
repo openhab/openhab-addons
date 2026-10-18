@@ -28,6 +28,7 @@ public class HassLinkDeviceConfiguration {
 
     public @Nullable String deviceId;
     public List<String> entityIds = new ArrayList<>();
+    public @Nullable String channelIdPrefixToStrip;
 
     // Filtering Parameters
     public List<String> includedDomains = List.of();

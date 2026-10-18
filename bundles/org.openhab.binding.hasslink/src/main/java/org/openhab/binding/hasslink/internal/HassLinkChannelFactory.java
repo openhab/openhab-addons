@@ -66,6 +66,11 @@ public class HassLinkChannelFactory {
 
     public static List<Channel> buildChannels(List<EntityState> entityStates, ThingUID thingUID,
             @Nullable String thingLabel, HassLinkBridgeHandler bridgeHandler) {
+        return buildChannels(entityStates, thingUID, thingLabel, null, bridgeHandler);
+    }
+
+    public static List<Channel> buildChannels(List<EntityState> entityStates, ThingUID thingUID,
+            @Nullable String thingLabel, @Nullable String channelIdPrefixToStrip, HassLinkBridgeHandler bridgeHandler) {
 
         // Sort entity states by objectId (exclude the domain prefix)
         List<EntityState> sortedEntityStates = entityStates.stream() //
@@ -77,17 +82,18 @@ public class HassLinkChannelFactory {
         EntityContext context = new EntityContext(bridgeHandler, attr -> true, null);
 
         for (EntityState entity : sortedEntityStates) {
-            buildChannelsForEntity(entity, thingUID, commonPrefix, bridgeHandler, context, channels, knownChannelIds);
+            buildChannelsForEntity(entity, thingUID, commonPrefix, channelIdPrefixToStrip, bridgeHandler, context,
+                    channels, knownChannelIds);
         }
 
         return disambiguateDuplicateLabels(channels);
     }
 
     private static void buildChannelsForEntity(EntityState entity, ThingUID thingUID, CommonPrefix commonPrefix,
-            HassLinkBridgeHandler bridgeHandler, EntityContext context, List<Channel> channels,
-            Set<String> knownChannelIds) {
+            @Nullable String channelIdPrefixToStrip, HassLinkBridgeHandler bridgeHandler, EntityContext context,
+            List<Channel> channels, Set<String> knownChannelIds) {
 
-        String baseChannelId = computeBaseChannelId(entity.entityId(), commonPrefix);
+        String baseChannelId = computeBaseChannelId(entity.entityId(), channelIdPrefixToStrip);
 
         EntityType entityType = bridgeHandler.getEntityType(entity);
         List<ChannelSpec> channelSpecs = entityType.getChannelSpecs(entity, context);
@@ -277,13 +283,15 @@ public class HassLinkChannelFactory {
         return result;
     }
 
-    private static String computeBaseChannelId(String rawEntityId, CommonPrefix commonPrefix) {
+    private static String computeBaseChannelId(String rawEntityId, @Nullable String channelIdPrefixToStrip) {
         EntityId entityId = EntityUtils.parseEntityId(rawEntityId);
         if (entityId == null) {
             return "";
         }
 
-        String rawChannelId = stripPrefixes(entityId.objectId(), commonPrefix.candidates());
+        String rawChannelId = channelIdPrefixToStrip != null && !channelIdPrefixToStrip.isBlank()
+                ? stripSinglePrefix(entityId.objectId(), channelIdPrefixToStrip)
+                : entityId.objectId();
         if (rawChannelId.isBlank()) {
             rawChannelId = entityId.objectId();
         }

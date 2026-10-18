@@ -341,9 +341,9 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
                 }
 
                 // Pass all candidate states to factory so prefix calculation runs on the full set
-                // so the LCP (Longest Common Prefix) results are consistent and not affected by filtering.
+                // so label prefix inference is consistent and not affected by filtering.
                 List<Channel> candidateChannels = HassLinkChannelFactory.buildChannels(allCandidateEntityStates,
-                        getThing().getUID(), getThing().getLabel(), bridgeHandler);
+                        getThing().getUID(), getThing().getLabel(), config.channelIdPrefixToStrip, bridgeHandler);
 
                 for (Channel candidate : candidateChannels) {
                     Object entityIdObj = candidate.getConfiguration().get(CONFIG_ENTITY_ID);

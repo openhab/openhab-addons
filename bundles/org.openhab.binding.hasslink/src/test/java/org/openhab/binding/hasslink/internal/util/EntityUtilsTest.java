@@ -77,36 +77,83 @@ class EntityUtilsTest {
         return Stream.of(//
                 Arguments.of(List.of("sensor.flashforge_temperature", "sensor.flashforge_humidity"), //
                         null, //
+                        "flashforge_", //
                         List.of("sensor-temperature", "sensor-humidity"), //
                         List.of("Temperature", "Humidity")),
                 Arguments.of(
                         List.of("sensor.flashforge_temperature", "sensor.flashforge_adventurer_5m_pro_status",
                                 "sensor.flashforge_build_volume"),
-                        "Flashforge Adventurer 5M PRO",
-                        List.of("sensor-temperature", "sensor-status", "sensor-build_volume"),
+                        "Flashforge Adventurer 5M PRO", //
+                        "flashforge_",
+                        List.of("sensor-temperature", "sensor-adventurer_5m_pro_status", "sensor-build_volume"),
                         List.of("Temperature", "Status", "Build Volume")),
                 Arguments.of(List.of("sensor.adventurer_5m_pro_temperature", "sensor.adventurer_5m_pro_status"), //
                         null, //
+                        "adventurer_5m_pro_", //
                         List.of("sensor-temperature", "sensor-status"), //
                         List.of("Temperature", "Status")));
     }
 
     @ParameterizedTest(name = "{0} with label {1} produces {2}")
     @MethodSource("prefixStrippingCases")
-    @DisplayName("strips generic and model prefixes while building stable channel IDs")
-    void stripsPrefixesFromChannelIds(List<String> entityIds, String thingLabel, List<String> expectedChannelIds,
-            List<String> expectedLabels) {
+    @DisplayName("strips the configured fixed prefix from channel IDs")
+    void stripsConfiguredPrefixFromChannelIds(List<String> entityIds, String thingLabel, String prefixToStrip,
+            List<String> expectedChannelIds, List<String> expectedLabels) {
         HassLinkBridgeHandler bridge = mock(HassLinkBridgeHandler.class);
         when(bridge.getEntityType(any(EntityState.class))).thenReturn(new SensorEntity());
         List<EntityState> states = entityIds.stream().map(id -> new EntityState(id, "", Map.of())).toList();
 
         List<Channel> channels = HassLinkChannelFactory.buildChannels(states, new ThingUID("hasslink", "fixture"),
-                thingLabel, bridge);
+                thingLabel, prefixToStrip, bridge);
 
         assertThat(channels, hasSize(expectedChannelIds.size()));
         assertThat(channels.stream().map(channel -> channel.getUID().getId()).toList(),
                 containsInAnyOrder(expectedChannelIds.toArray(String[]::new)));
         assertThat(channels.stream().map(channel -> channel.getLabel()).toList(),
                 containsInAnyOrder(expectedLabels.toArray(String[]::new)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("prefixStabilityCases")
+    @DisplayName("keeps channel IDs stable when entities are added or labels change")
+    void keepsChannelIdsStableWithFixedPrefix(List<String> entityIds, String thingLabel,
+            List<String> expectedChannelIds) {
+        HassLinkBridgeHandler bridge = mock(HassLinkBridgeHandler.class);
+        when(bridge.getEntityType(any(EntityState.class))).thenReturn(new SensorEntity());
+        List<EntityState> states = entityIds.stream().map(id -> new EntityState(id, "", Map.of())).toList();
+
+        List<Channel> channels = HassLinkChannelFactory.buildChannels(states, new ThingUID("hasslink", "fixture"),
+                thingLabel, "kitchen_", bridge);
+
+        assertThat(channels.stream().map(channel -> channel.getUID().getId()).toList(),
+                containsInAnyOrder(expectedChannelIds.toArray(String[]::new)));
+    }
+
+    static Stream<Arguments> prefixStabilityCases() {
+        return Stream.of(//
+                Arguments.of(List.of("sensor.kitchen_temp", "sensor.kitchen_humidity"), "Kitchen",
+                        List.of("sensor-temp", "sensor-humidity")),
+                Arguments.of(List.of("sensor.kitchen_temp", "sensor.kitchen_humidity", "sensor.meter"), "Sensors",
+                        List.of("sensor-temp", "sensor-humidity", "sensor-meter")));
+    }
+
+    @ParameterizedTest
+    @MethodSource("unstrippedPrefixCases")
+    @DisplayName("uses full entity object IDs when no channel prefix is configured")
+    void keepsFullObjectIdByDefault(List<String> entityIds, List<String> expectedChannelIds) {
+        HassLinkBridgeHandler bridge = mock(HassLinkBridgeHandler.class);
+        when(bridge.getEntityType(any(EntityState.class))).thenReturn(new SensorEntity());
+        List<EntityState> states = entityIds.stream().map(id -> new EntityState(id, "", Map.of())).toList();
+
+        List<Channel> channels = HassLinkChannelFactory.buildChannels(states, new ThingUID("hasslink", "fixture"), null,
+                bridge);
+
+        assertThat(channels.stream().map(channel -> channel.getUID().getId()).toList(),
+                containsInAnyOrder(expectedChannelIds.toArray(String[]::new)));
+    }
+
+    static Stream<Arguments> unstrippedPrefixCases() {
+        return Stream.of(Arguments.of(List.of("sensor.kitchen_temp", "sensor.kitchen_humidity"),
+                List.of("sensor-kitchen_temp", "sensor-kitchen_humidity")));
     }
 }

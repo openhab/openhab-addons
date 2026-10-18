@@ -114,16 +114,17 @@ The `server` Bridge manages the persistent WebSocket connection to Home Assistan
 
 The `device` Thing maps one or more Home Assistant entities to openHAB channels and provides per-Thing channel creation filters. Standard wildcard glob patterns (`*`, `?`) are supported across all filter fields.
 
-| Parameter          | Type            | Default | Required | Description                                                                                                     |
-|:-------------------|:----------------|:--------|:---------|:----------------------------------------------------------------------------------------------------------------|
-| `deviceId`         | Text            | N/A     | No       | Home Assistant device registry identifier                                                                       |
-| `entityIds`        | Text (Multiple) | `[]`    | No       | Explicitly defined entity IDs or glob patterns; bypasses all device exclusions and filter rules                 |
-| `includedDomains`  | Text (Multiple) | `[]`    | No       | Whitelist of Home Assistant domains to restrict channels to (supports glob patterns, e.g., `sensor*`)           |
-| `excludedDomains`  | Text (Multiple) | `[]`    | No       | Blacklist of Home Assistant domains to exclude from creating channels (supports glob patterns, e.g., `update*`) |
-| `includedLabels`   | Text (Multiple) | `[]`    | No       | Whitelist of Home Assistant Labels/Tags for child entities (supports glob patterns)                             |
-| `excludedLabels`   | Text (Multiple) | `[]`    | No       | Blacklist of Home Assistant Labels/Tags for child entities (supports glob patterns)                             |
-| `includedEntities` | Text (Multiple) | `[]`    | No       | Specific Entity IDs or glob patterns (e.g., `sensor.*bed*`, `*_temperature`) to explicitly allow as channels    |
-| `excludedEntities` | Text (Multiple) | `[]`    | No       | Specific Entity IDs or glob patterns (e.g., `*battery*`, `*_rssi`) to exclude from channel creation             |
+| Parameter                | Type            | Default | Required | Description                                                                                                                |
+|:-------------------------|:----------------|:--------|:---------|:---------------------------------------------------------------------------------------------------------------------------|
+| `deviceId`               | Text            | N/A     | No       | Home Assistant device registry identifier                                                                                  |
+| `entityIds`              | Text (Multiple) | `[]`    | No       | Explicitly defined entity IDs or glob patterns; bypasses all device exclusions and filter rules                            |
+| `channelIdPrefixToStrip` | Text            | `""`    | No       | Fixed prefix of entity object IDs to remove from generated channel IDs (e.g., `kitchen_`). Blank keeps the full object ID. |
+| `includedDomains`        | Text (Multiple) | `[]`    | No       | Whitelist of Home Assistant domains to restrict channels to (supports glob patterns, e.g., `sensor*`)                      |
+| `excludedDomains`        | Text (Multiple) | `[]`    | No       | Blacklist of Home Assistant domains to exclude from creating channels (supports glob patterns, e.g., `update*`)            |
+| `includedLabels`         | Text (Multiple) | `[]`    | No       | Whitelist of Home Assistant Labels/Tags for child entities (supports glob patterns)                                        |
+| `excludedLabels`         | Text (Multiple) | `[]`    | No       | Blacklist of Home Assistant Labels/Tags for child entities (supports glob patterns)                                        |
+| `includedEntities`       | Text (Multiple) | `[]`    | No       | Specific Entity IDs or glob patterns (e.g., `sensor.*bed*`, `*_temperature`) to explicitly allow as channels               |
+| `excludedEntities`       | Text (Multiple) | `[]`    | No       | Specific Entity IDs or glob patterns (e.g., `*battery*`, `*_rssi`) to exclude from channel creation                        |
 
 > **Note:** At least one of `deviceId` or `entityIds` must be defined.
 
@@ -172,7 +173,10 @@ For Home Assistant `event` entities, `event` acts purely as an openHAB **Trigger
 
 ## Channel Naming Conventions
 
-Channels are generated dynamically using the following structure:
+Channels are generated dynamically using the following structure.
+By default, the full Home Assistant entity object ID is used, so `sensor.living_room_temperature` generates `sensor-living_room_temperature`.
+Configure `channelIdPrefixToStrip` on the device Thing to remove a fixed prefix from entity object IDs (for example, `living_room_` produces `sensor-temperature`).
+The prefix is not inferred from the current entity set, so adding or removing entities does not change existing channel IDs.
 
 - **Primary Channel:** `domain-entity_name` (e.g., `light-living_room_light`, `sensor-living_room_temperature`)
   Exposes the primary state of the entity (e.g., `ON`/`OFF`, numeric values, or string states).
