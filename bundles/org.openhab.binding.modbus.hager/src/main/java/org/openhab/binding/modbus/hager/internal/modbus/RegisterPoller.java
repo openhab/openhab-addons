@@ -38,6 +38,12 @@ import org.slf4j.LoggerFactory;
  * resulting channel states and the communication status to its {@link Listener}.
  * Individual read failures are logged at trace level, the poll status is logged when it changes. Every message carries
  * the Thing UID, so log files of installations with several Hager Flow devices stay attributable.
+ * <p>
+ * A poller is used once: a handler creates a new instance for every start and stops the previous one. All lifecycle
+ * operations are serialized by one lock, so that {@link #stop()} can neither miss a poll registered by a concurrent
+ * {@link #start(ModbusCommunicationInterface)} nor let a late response publish its values. For that reason the decoded
+ * values and the poll status are delivered while the lock is held: the listener callbacks are one-way state updates
+ * which do not call back into the poller, and no Modbus request is submitted while the lock is held.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -85,15 +91,18 @@ public class RegisterPoller {
     private final long refreshMillis;
     private final Listener listener;
     private final Map<ReadRange, List<Register>> blocks = new LinkedHashMap<>();
-    private final Map<ReadRange, Boolean> outcomes = new LinkedHashMap<>();
     private final List<PollTask> pollTasks = new ArrayList<>();
     private final List<Future<?>> oneTimeRequests = new ArrayList<>();
-    private final Object statusLock = new Object();
+    private final Map<ReadRange, Boolean> outcomes = new LinkedHashMap<>();
+    private final Object lock = new Object();
 
-    private volatile boolean running;
-    private volatile @Nullable ModbusCommunicationInterface comms;
-    private volatile @Nullable String lastFailure;
+    private @Nullable ModbusCommunicationInterface comms;
+    private @Nullable String lastFailure;
     private PollStatus status = PollStatus.PENDING;
+    // guarded by lock, not volatile: every read happens while holding the lock so that a check and the action
+    // which depends on it observe the same lifecycle state
+    private boolean running;
+    private boolean closed;
 
     /**
      * @param thingUid UID of the Thing this poller belongs to, used to attribute the log messages
@@ -114,34 +123,65 @@ public class RegisterPoller {
     }
 
     /**
-     * Starts the regular polls. Does nothing when the polls are already running.
+     * Starts the regular polls. Does nothing when the polls are already running or when the poller was stopped.
+     * Registering the polls and {@link #stop()} are mutually exclusive, therefore a stop can never leave a poll of a
+     * concurrent start behind.
      *
      * @param communicationInterface the communication interface to poll on
      */
     public void start(ModbusCommunicationInterface communicationInterface) {
-        if (running) {
-            LOGGER.debug("[{}] Polls for slave {} are already running", thingUid, slaveId);
-            return;
-        }
-        comms = communicationInterface;
-        running = true;
-        for (Map.Entry<ReadRange, List<Register>> block : blocks.entrySet()) {
-            ReadRange range = block.getKey();
-            pollTasks.add(communicationInterface.registerRegularPoll(readRequest(range), refreshMillis, 0,
-                    result -> handleResult(range, block.getValue(), result), failure -> handleFailure(range, failure)));
+        synchronized (lock) {
+            if (running || closed) {
+                LOGGER.debug("[{}] Polls for slave {} are already running or stopped already", thingUid, slaveId);
+                return;
+            }
+            comms = communicationInterface;
+            running = true;
+            try {
+                for (Map.Entry<ReadRange, List<Register>> block : blocks.entrySet()) {
+                    ReadRange range = block.getKey();
+                    pollTasks.add(communicationInterface.registerRegularPoll(readRequest(range), refreshMillis, 0,
+                            result -> handleResult(range, block.getValue(), result),
+                            failure -> handleFailure(range, failure)));
+                }
+            } catch (IllegalStateException e) {
+                // the endpoint closed the interface before the polls were registered; close() unregisters them again
+                LOGGER.debug("[{}] Communication interface is closed already: {}", thingUid, e.getMessage());
+                running = false;
+                comms = null;
+                pollTasks.clear();
+                return;
+            }
         }
         LOGGER.debug("[{}] Polling slave {} every {} ms with {} read blocks: {}", thingUid, slaveId, refreshMillis,
                 blocks.size(), blocks.keySet());
     }
 
     /**
-     * Stops the regular polls and prevents further state updates.
+     * Stops the regular polls and prevents any further state update. Responses which are still in flight are
+     * discarded, so a stopped poller cannot publish values or a poll status any more.
      */
     public void stop() {
-        running = false;
-        ModbusCommunicationInterface communicationInterface = comms;
+        List<PollTask> tasks;
+        List<Future<?>> requests;
+        ModbusCommunicationInterface communicationInterface;
+        synchronized (lock) {
+            if (closed) {
+                return;
+            }
+            closed = true;
+            running = false;
+            communicationInterface = comms;
+            comms = null;
+            tasks = List.copyOf(pollTasks);
+            pollTasks.clear();
+            requests = List.copyOf(oneTimeRequests);
+            oneTimeRequests.clear();
+            outcomes.clear();
+            status = PollStatus.PENDING;
+        }
         if (communicationInterface != null) {
-            for (PollTask task : pollTasks) {
+            for (PollTask task : tasks) {
                 try {
                     communicationInterface.unregisterRegularPoll(task);
                 } catch (IllegalStateException e) {
@@ -149,14 +189,7 @@ public class RegisterPoller {
                 }
             }
         }
-        pollTasks.clear();
-        oneTimeRequests.forEach(future -> future.cancel(true));
-        oneTimeRequests.clear();
-        synchronized (statusLock) {
-            outcomes.clear();
-            status = PollStatus.PENDING;
-        }
-        comms = null;
+        requests.forEach(future -> future.cancel(true));
         LOGGER.debug("[{}] Stopped polling slave {}", thingUid, slaveId);
     }
 
@@ -166,23 +199,33 @@ public class RegisterPoller {
      * @param register the register to refresh
      */
     public void refresh(Register register) {
-        ModbusCommunicationInterface communicationInterface = comms;
-        if (!running || communicationInterface == null) {
-            LOGGER.debug("[{}] Not refreshing {}, polls are not running", thingUid, register.channelId());
-            return;
-        }
-        for (Map.Entry<ReadRange, List<Register>> block : blocks.entrySet()) {
-            ReadRange range = block.getKey();
-            if (range.contains(register)) {
-                LOGGER.debug("[{}] Refreshing {} on request of channel {}", thingUid, range, register.channelId());
-                oneTimeRequests.add(communicationInterface.submitOneTimePoll(readRequest(range),
-                        result -> handleResult(range, block.getValue(), result),
-                        failure -> handleFailure(range, failure)));
-                oneTimeRequests.removeIf(Future::isDone);
+        ModbusCommunicationInterface communicationInterface;
+        Optional<Map.Entry<ReadRange, List<Register>>> target;
+        synchronized (lock) {
+            ModbusCommunicationInterface current = comms;
+            if (!running || current == null) {
+                LOGGER.debug("[{}] Not refreshing {}, polls are not running", thingUid, register.channelId());
                 return;
             }
+            communicationInterface = current;
+            target = blocks.entrySet().stream().filter(block -> block.getKey().contains(register)).findFirst();
         }
-        LOGGER.debug("[{}] No read block contains register {}", thingUid, register.channelId());
+        if (target.isEmpty()) {
+            LOGGER.debug("[{}] No read block contains register {}", thingUid, register.channelId());
+            return;
+        }
+        ReadRange range = target.get().getKey();
+        List<Register> blockRegisters = target.get().getValue();
+        LOGGER.debug("[{}] Refreshing {} on request of channel {}", thingUid, range, register.channelId());
+        Future<?> future;
+        try {
+            future = communicationInterface.submitOneTimePoll(readRequest(range),
+                    result -> handleResult(range, blockRegisters, result), failure -> handleFailure(range, failure));
+        } catch (IllegalStateException e) {
+            LOGGER.debug("[{}] Communication interface is closed already: {}", thingUid, e.getMessage());
+            return;
+        }
+        track(future);
     }
 
     /**
@@ -192,19 +235,49 @@ public class RegisterPoller {
      * @param value the raw value to write
      */
     public void write(Register register, int value) {
-        ModbusCommunicationInterface communicationInterface = comms;
-        if (!running || communicationInterface == null) {
-            LOGGER.debug("[{}] Not writing {}, polls are not running", thingUid, register.channelId());
-            return;
+        ModbusCommunicationInterface communicationInterface;
+        synchronized (lock) {
+            ModbusCommunicationInterface current = comms;
+            if (!running || current == null) {
+                LOGGER.debug("[{}] Not writing {}, polls are not running", thingUid, register.channelId());
+                return;
+            }
+            communicationInterface = current;
         }
         LOGGER.debug("[{}] Writing {} to {} at address {}", thingUid, value, register.channelId(), register.address());
         ModbusWriteRegisterRequestBlueprint request = new ModbusWriteRegisterRequestBlueprint(slaveId,
                 register.address(), new ModbusRegisterArray(value), false, MAX_TRIES);
-        oneTimeRequests.add(communicationInterface.submitOneTimeWrite(request,
-                result -> LOGGER.debug("[{}] Wrote {} to {}", thingUid, value, register.channelId()),
-                failure -> LOGGER.debug("[{}] Writing {} to {} failed: {}", thingUid, value, register.channelId(),
-                        failure.getCause().getMessage())));
-        oneTimeRequests.removeIf(Future::isDone);
+        Future<?> future;
+        try {
+            future = communicationInterface.submitOneTimeWrite(request,
+                    result -> LOGGER.debug("[{}] Wrote {} to {}", thingUid, value, register.channelId()),
+                    failure -> LOGGER.debug("[{}] Writing {} to {} failed: {}", thingUid, value, register.channelId(),
+                            failure.getCause().getMessage()));
+        } catch (IllegalStateException e) {
+            LOGGER.debug("[{}] Communication interface is closed already: {}", thingUid, e.getMessage());
+            return;
+        }
+        track(future);
+    }
+
+    /**
+     * Registers a submitted one-time request for cancellation, unless the poller was stopped in the meantime. A
+     * request which is submitted while {@link #stop()} runs would otherwise never be cancelled.
+     *
+     * @param future the request to track
+     */
+    private void track(Future<?> future) {
+        boolean discard;
+        synchronized (lock) {
+            discard = closed;
+            if (!discard) {
+                oneTimeRequests.add(future);
+                oneTimeRequests.removeIf(Future::isDone);
+            }
+        }
+        if (discard) {
+            future.cancel(true);
+        }
     }
 
     private ModbusReadRequestBlueprint readRequest(ReadRange range) {
@@ -213,59 +286,66 @@ public class RegisterPoller {
     }
 
     private void handleResult(ReadRange range, List<Register> blockRegisters, AsyncModbusReadResult result) {
-        if (!running) {
-            return;
+        synchronized (lock) {
+            if (!running) {
+                return;
+            }
+            Optional<ModbusRegisterArray> registers = result.getRegisters();
+            if (registers.isEmpty()) {
+                LOGGER.debug("[{}] Slave {} returned no registers for {}", thingUid, slaveId, range);
+                setOutcome(range, false);
+                return;
+            }
+            ModbusRegisterArray array = registers.get();
+            if (array.size() < range.length()) {
+                LOGGER.debug("[{}] Slave {} returned {} of {} registers for {}", thingUid, slaveId, array.size(),
+                        range.length(), range);
+                setOutcome(range, false);
+                return;
+            }
+            LOGGER.trace("[{}] Slave {} answered {} with {}", thingUid, slaveId, range, array.toHexString());
+            List<ChannelUpdate> updates = new ArrayList<>();
+            for (Register register : blockRegisters) {
+                updates.addAll(RegisterDecoder.decode(thingUid, register, array, range.start()));
+            }
+            if (!updates.isEmpty()) {
+                listener.onUpdates(updates);
+            }
+            setOutcome(range, true);
         }
-        Optional<ModbusRegisterArray> registers = result.getRegisters();
-        if (registers.isEmpty()) {
-            LOGGER.debug("[{}] Slave {} returned no registers for {}", thingUid, slaveId, range);
-            setOutcome(range, false);
-            return;
-        }
-        ModbusRegisterArray array = registers.get();
-        if (array.size() < range.length()) {
-            LOGGER.debug("[{}] Slave {} returned {} of {} registers for {}", thingUid, slaveId, array.size(),
-                    range.length(), range);
-            setOutcome(range, false);
-            return;
-        }
-        LOGGER.trace("[{}] Slave {} answered {} with {}", thingUid, slaveId, range, array.toHexString());
-        List<ChannelUpdate> updates = new ArrayList<>();
-        for (Register register : blockRegisters) {
-            updates.addAll(RegisterDecoder.decode(thingUid, register, array, range.start()));
-        }
-        if (!updates.isEmpty()) {
-            listener.onUpdates(updates);
-        }
-        setOutcome(range, true);
     }
 
     private void handleFailure(ReadRange range, AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
-        if (!running) {
-            return;
-        }
-        Exception cause = failure.getCause();
-        lastFailure = cause.getMessage();
-        LOGGER.trace("[{}] Slave {} failed to answer {}", thingUid, slaveId, range, cause);
-        setOutcome(range, false);
-    }
-
-    private void setOutcome(ReadRange range, boolean success) {
-        PollStatus newStatus;
-        long failed;
-        synchronized (statusLock) {
-            outcomes.put(range, success);
-            failed = outcomes.values().stream().filter(Boolean.FALSE::equals).count();
-            if (outcomes.size() < blocks.size()) {
-                newStatus = PollStatus.PENDING;
-            } else {
-                newStatus = failed > 0 ? PollStatus.FAILED : PollStatus.OK;
-            }
-            if (newStatus == status) {
+        synchronized (lock) {
+            if (!running) {
                 return;
             }
-            status = newStatus;
+            Exception cause = failure.getCause();
+            lastFailure = cause.getMessage();
+            LOGGER.trace("[{}] Slave {} failed to answer {}", thingUid, slaveId, range, cause);
+            setOutcome(range, false);
         }
+    }
+
+    /**
+     * Aggregates the outcome of the read block and reports the poll status when it changed. Called with the lock held.
+     *
+     * @param range the read block the outcome belongs to
+     * @param success whether the read block answered
+     */
+    private void setOutcome(ReadRange range, boolean success) {
+        outcomes.put(range, success);
+        long failed = outcomes.values().stream().filter(Boolean.FALSE::equals).count();
+        PollStatus newStatus;
+        if (outcomes.size() < blocks.size()) {
+            newStatus = PollStatus.PENDING;
+        } else {
+            newStatus = failed > 0 ? PollStatus.FAILED : PollStatus.OK;
+        }
+        if (newStatus == status) {
+            return;
+        }
+        status = newStatus;
         switch (newStatus) {
             case PENDING -> LOGGER.debug("[{}] Waiting for the first answer of slave {}", thingUid, slaveId);
             case OK -> LOGGER.debug("[{}] Slave {} answered all {} read blocks", thingUid, slaveId, blocks.size());

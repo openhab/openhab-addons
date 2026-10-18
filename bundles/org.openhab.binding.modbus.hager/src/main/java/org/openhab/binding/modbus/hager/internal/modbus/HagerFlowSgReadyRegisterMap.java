@@ -45,8 +45,8 @@ public final class HagerFlowSgReadyRegisterMap {
             null, Map.of(), List.of());
     public static final Register SGREADY_NAME = new Register("sgready-name", GROUP_IDENTITY, 4098, 50, STRING,
             READ_ONLY, null, Map.of(), List.of());
-    public static final Register SGREADY_ACTIVE = new Register("sgready-active", GROUP_STATUS, 4150, 1, BOOL, READ_ONLY,
-            null, Map.of(), List.of());
+    public static final Register SGREADY_ACTIVE = new Register("sgready-active", GROUP_STATUS, 4150, 1, U16, READ_ONLY,
+            null, Map.of(0, "Inactive", 1, "active"), List.of());
     public static final Register SGREADY_WORKING = new Register("sgready-working", GROUP_STATUS, 4151, 1, BOOL,
             READ_ONLY, null, Map.of(), List.of());
     public static final Register SGREADY_STATUS = new Register(

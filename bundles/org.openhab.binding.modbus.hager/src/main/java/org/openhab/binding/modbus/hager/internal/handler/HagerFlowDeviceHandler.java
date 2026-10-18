@@ -14,6 +14,8 @@ package org.openhab.binding.modbus.hager.internal.handler;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,6 +33,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
@@ -50,12 +53,18 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
     private static final Logger LOGGER = LoggerFactory.getLogger(HagerFlowDeviceHandler.class);
 
     private static final String BRIDGE_NOT_INITIALIZED = "Communication interface of the energy manager is not available";
+    private static final String BRIDGE_OFFLINE = "Energy manager is offline";
 
     private final HagerFlowRole role;
     private final HagerFlowChannels channels;
+    private final Object lifecycleLock = new Object();
 
-    private volatile @Nullable ModbusCommunicationInterface comms;
+    // guarded by lifecycleLock
     private @Nullable RegisterPoller poller;
+    private @Nullable ScheduledFuture<?> startupTask;
+    private long generation;
+
+    private volatile @Nullable HagerFlowConfiguration config;
 
     public HagerFlowDeviceHandler(Thing thing, HagerFlowRole role) {
         super(thing);
@@ -66,45 +75,74 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        HagerFlowConfiguration config = getConfigAs(HagerFlowConfiguration.class);
+        HagerFlowConfiguration currentConfig = getConfigAs(HagerFlowConfiguration.class);
         LOGGER.debug("[{}] Initializing {} with slave id {} and refresh {} ms", thing.getUID(), role.thingType(),
-                config.slaveId, config.refresh);
-        Optional<String> problem = role.validate(config.slaveId, config.refresh);
+                currentConfig.slaveId, currentConfig.refresh);
+        Optional<String> problem = role.validate(currentConfig.slaveId, currentConfig.refresh);
         if (problem.isPresent()) {
             LOGGER.debug("[{}] Rejected configuration: {}", thing.getUID(), problem.get());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, problem.get());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, problem.get());
             return;
         }
-        scheduler.execute(() -> start(config));
+        config = currentConfig;
+        restart(currentConfig);
     }
 
-    private void start(HagerFlowConfiguration config) {
-        ModbusCommunicationInterface communicationInterface = connectEndpoint();
-        if (communicationInterface == null) {
-            return;
-        }
-        RegisterPoller newPoller = new RegisterPoller(thing.getUID().toString(), config.slaveId, config.refresh,
-                role.registers(), this);
+    /**
+     * Restarts the polls from scratch: the queued startup of a previous run is invalidated, the running polls are
+     * stopped and the connection of the energy manager is acquired again. Called on initialization and whenever the
+     * bridge becomes available, so a startup before the energy manager provided its communication interface is
+     * repeated instead of leaving the Thing without polls.
+     *
+     * @param currentConfig the current Thing configuration
+     */
+    void restart(HagerFlowConfiguration currentConfig) {
         RegisterPoller previous;
-        synchronized (this) {
+        long expectedGeneration;
+        synchronized (lifecycleLock) {
+            expectedGeneration = ++generation;
+            cancelStartupTask();
             previous = poller;
-            poller = newPoller;
+            poller = null;
+            // scheduled while holding the lock, so a concurrent dispose cancels it or invalidates its generation
+            startupTask = scheduler.schedule(() -> start(expectedGeneration, currentConfig), 0, TimeUnit.MILLISECONDS);
         }
         if (previous != null) {
             previous.stop();
         }
+    }
+
+    private void start(long expectedGeneration, HagerFlowConfiguration currentConfig) {
+        synchronized (lifecycleLock) {
+            if (generation != expectedGeneration) {
+                LOGGER.debug("[{}] Discarding startup of obsolete generation {}", thing.getUID(), expectedGeneration);
+                return;
+            }
+        }
+        ModbusCommunicationInterface communicationInterface = connectEndpoint();
+        if (communicationInterface == null) {
+            // connectEndpoint reported the reason; the next bridge status change triggers another attempt
+            return;
+        }
+        RegisterPoller newPoller = new RegisterPoller(thing.getUID().toString(), currentConfig.slaveId,
+                currentConfig.refresh, role.registers(), this);
+        synchronized (lifecycleLock) {
+            if (generation != expectedGeneration) {
+                LOGGER.debug("[{}] Discarding startup of obsolete generation {}", thing.getUID(), expectedGeneration);
+                return;
+            }
+            poller = newPoller;
+        }
+        // started outside the lock: a dispose which already stopped this poller makes the start a no-op instead of
+        // leaving polls registered behind an invalidated handler
         newPoller.start(communicationInterface);
     }
 
     private @Nullable ModbusCommunicationInterface connectEndpoint() {
-        ModbusCommunicationInterface existing = comms;
-        if (existing != null) {
-            return existing;
-        }
         Bridge bridge = getBridge();
         ThingHandler handler = bridge == null ? null : bridge.getHandler();
         if (!(handler instanceof HagerFlowEmsHandler ems)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, BRIDGE_NOT_INITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, BRIDGE_NOT_INITIALIZED);
             LOGGER.debug("[{}] Bridge {} is not an energy manager, {}: {}", thing.getUID(),
                     bridge == null ? "<null>" : bridge.getUID(), BRIDGE_NOT_INITIALIZED,
                     handler == null ? "<null>" : handler.getClass().getSimpleName());
@@ -112,15 +150,30 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
         }
         ModbusCommunicationInterface communicationInterface = ems.getComms();
         if (communicationInterface == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, BRIDGE_NOT_INITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, BRIDGE_NOT_INITIALIZED);
             LOGGER.debug("[{}] Energy manager {} has no communication interface yet", thing.getUID(),
                     bridge == null ? "<null>" : bridge.getUID());
             return null;
         }
         LOGGER.debug("[{}] Using Modbus connection of energy manager {}", thing.getUID(),
                 bridge == null ? "<null>" : bridge.getUID());
-        comms = communicationInterface;
         return communicationInterface;
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        HagerFlowConfiguration currentConfig = config;
+        if (currentConfig == null) {
+            return;
+        }
+        switch (bridgeStatusInfo.getStatus()) {
+            case ONLINE -> restart(currentConfig);
+            case OFFLINE, UNINITIALIZED -> {
+                stopPolling();
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, BRIDGE_OFFLINE);
+            }
+            default -> LOGGER.debug("[{}] Ignoring bridge status {}", thing.getUID(), bridgeStatusInfo.getStatus());
+        }
     }
 
     @Override
@@ -131,7 +184,7 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
             LOGGER.debug("[{}] Unknown channel {}, command {} ignored", thing.getUID(), channelUID, command);
             return;
         }
-        RegisterPoller current = poller;
+        RegisterPoller current = currentPoller();
         if (current == null) {
             LOGGER.debug("[{}] Not handling {} for {}, polls are not running", thing.getUID(), command, channelUID);
             return;
@@ -163,24 +216,46 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
     public void onStatus(RegisterPoller.PollStatus status) {
         switch (status) {
             case OK -> updateStatus(ThingStatus.ONLINE);
-            case FAILED -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    HagerFlowBindingConstants.READ_ERROR);
+            case FAILED -> updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, HagerFlowBindingConstants.READ_ERROR);
             case PENDING -> LOGGER.debug("Waiting for the first Modbus response");
         }
     }
 
     @Override
     public void dispose() {
+        config = null;
+        stopPolling();
+        super.dispose();
+    }
+
+    private void stopPolling() {
         RegisterPoller current;
-        synchronized (this) {
+        synchronized (lifecycleLock) {
+            generation++;
+            cancelStartupTask();
             current = poller;
             poller = null;
         }
         if (current != null) {
             current.stop();
         }
-        // the communication interface is owned by the endpoint Thing handler
-        comms = null;
-        super.dispose();
+    }
+
+    private @Nullable RegisterPoller currentPoller() {
+        synchronized (lifecycleLock) {
+            return poller;
+        }
+    }
+
+    /**
+     * Cancels a startup task which was scheduled but did not start yet. Must be called while holding
+     * {@link #lifecycleLock}.
+     */
+    private void cancelStartupTask() {
+        ScheduledFuture<?> task = startupTask;
+        startupTask = null;
+        if (task != null) {
+            task.cancel(false);
+        }
     }
 }
