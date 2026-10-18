@@ -37,7 +37,7 @@ public class WindowTriggerType extends TriggerType {
 
     public static WindowTriggerType initialize() {
         List<ConfigDescriptionParameter> parameters = new ArrayList<>(WindowConfigDescriptions.window());
-        parameters.addAll(WindowConfigDescriptions.statusItems());
+        parameters.addAll(WindowConfigDescriptions.statusItems(false));
 
         List<Output> outputs = List.of(
                 new Output(OUTPUT_EVENT, String.class.getName(), "Event", "START or END", null, null, null),

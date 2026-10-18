@@ -63,6 +63,27 @@ public class OptimalWindowRuleTemplateTest {
     }
 
     @Test
+    void statusItemsArePassedToTheTriggerAsAdvancedParameters() {
+        Trigger trigger = template.getTriggers().get(0);
+        for (ConfigDescriptionParameter parameter : WindowConfigDescriptions.statusItems(true)) {
+            assertEquals("{{" + parameter.getName() + "}}", trigger.getConfiguration().get(parameter.getName()),
+                    parameter.getName());
+            ConfigDescriptionParameter templateParameter = template.getConfigurationDescriptions().stream()
+                    .filter(p -> p.getName().equals(parameter.getName())).findFirst().orElseThrow();
+            assertTrue(templateParameter.isAdvanced(), parameter.getName());
+            assertFalse(templateParameter.isRequired(), parameter.getName());
+        }
+    }
+
+    @Test
+    void targetItemIsRequired() {
+        ConfigDescriptionParameter targetItem = template.getConfigurationDescriptions().stream()
+                .filter(p -> p.getName().equals("targetItem")).findFirst().orElseThrow();
+        assertTrue(targetItem.isRequired());
+        assertEquals("item", targetItem.getContext());
+    }
+
+    @Test
     void everyReferenceHasATemplateParameter() {
         Set<String> parameters = template.getConfigurationDescriptions().stream()
                 .map(ConfigDescriptionParameter::getName).collect(Collectors.toSet());

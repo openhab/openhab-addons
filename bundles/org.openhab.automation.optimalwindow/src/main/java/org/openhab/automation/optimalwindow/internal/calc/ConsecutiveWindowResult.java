@@ -59,6 +59,7 @@ public class ConsecutiveWindowResult extends WindowResult {
             while (first < intervals.size() && !intervals.get(first).timerange().end().isAfter(start)) {
                 first++;
             }
+
             TimeRange window = new TimeRange(start, start.plus(length));
             double score = score(intervals, first, window, preferStart);
             if (!Double.isNaN(score)
@@ -100,13 +101,17 @@ public class ConsecutiveWindowResult extends WindowResult {
                 // gap in the forecast, or the window starts before the forecast
                 return Double.NaN;
             }
+
             double partLength = part.duration().toMillis();
+
             // the weight decreases linearly from 1 at the start of the window to 0 at its end, the average weight of
             // this part is the weight at its middle, so the score does not depend on the length of the intervals
             double weight = preferStart
                     ? (Duration.between(part.start(), window.end()).toMillis() - partLength / 2) / length
                     : 1;
+
             score += weight * intervals.get(j).value() * partLength;
+
             if (part.end().equals(window.end())) {
                 return score;
             }

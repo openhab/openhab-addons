@@ -60,12 +60,14 @@ public class WindowCalculator {
         List<ForecastInterval> intervals = toIntervals(values, range);
         if (intervals.isEmpty() || !intervals.getFirst().timerange().start().equals(range.start())
                 || !intervals.getLast().timerange().end().equals(range.end())) {
+
             return null;
         }
 
         WindowResult result = config.consecutive
                 ? new ConsecutiveWindowResult(intervals, range, config.length, config.maximum, config.preferStart)
                 : new NonConsecutiveWindowResult(intervals, range, config.length, config.maximum);
+
         return result.getRanges().isEmpty() ? null : result;
     }
 
@@ -122,7 +124,7 @@ public class WindowCalculator {
      * @param start the local start time of the range
      * @param duration the duration of the range
      * @param now the current time
-     * 
+     *
      * @return the range
      */
     public static TimeRange getRange(LocalTime start, Duration duration, ZonedDateTime now) {

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,7 +35,8 @@ import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
 import org.openhab.core.config.core.Configuration;
 
 /**
- * Rule template that switches an item ON when the optimal window starts and OFF when it ends.
+ * Rule template that switches an item ON when the optimal window starts and OFF
+ * when it ends.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  * @author Thomas Leber - Adapted for the Optimal Window automation
@@ -46,17 +48,22 @@ public class OptimalWindowRuleTemplate extends RuleTemplate {
 
     public static OptimalWindowRuleTemplate initialize() {
         List<ConfigDescriptionParameter> parameters = new ArrayList<>();
-        parameters.add(ConfigDescriptionParameterBuilder.create(CONFIG_TARGET_ITEM, Type.TEXT) //
-                .withRequired(true) //
-                .withContext("item") //
-                .withLabel("Target Item") //
-                .withDescription("Switch item that is turned ON when the window starts and OFF when it ends.") //
-                .build());
-        parameters.addAll(WindowConfigDescriptions.window());
 
-        // pass all window parameters of the template to the trigger
+        parameters.add(Objects.requireNonNull(ConfigDescriptionParameterBuilder.create(CONFIG_TARGET_ITEM, Type.TEXT)
+                .withRequired(true).withContext("item").withLabel("Item to Switch")
+                .withDescription(
+                        "The device the rule switches: it receives the command ON when the window starts and OFF when it ends.")
+                .build()));
+
+        List<ConfigDescriptionParameter> windowParameters = new ArrayList<>(WindowConfigDescriptions.window());
+
+        windowParameters.addAll(WindowConfigDescriptions.statusItems(true));
+        parameters.addAll(windowParameters);
+
+        // pass the window parameters and the status items of the template to the
+        // trigger, references of parameters left empty are ignored by the trigger
         Map<String, Object> triggerConfig = new HashMap<>();
-        for (ConfigDescriptionParameter parameter : WindowConfigDescriptions.window()) {
+        for (ConfigDescriptionParameter parameter : windowParameters) {
             triggerConfig.put(parameter.getName(), "{{" + parameter.getName() + "}}");
         }
 

@@ -2,8 +2,8 @@
 
 Run devices during the cheapest, cleanest or sunniest period.
 
-This automation finds the best time window in a forecast and switches a device on when the window starts and off when it ends.
-It works with any Number Item that has a forecast, for example:
+This automation finds the best time window in a forecast according to the specified goal and switches a device on when the window starts and off when it ends.
+It works with any `Number Item that has a forecast, for example:
 
 - electricity prices from the aWATTar, Energy-Charts, ENTSO-E, Energi Data Service or Tibber bindings
 - CO2 intensity of the grid
@@ -36,9 +36,26 @@ The automation finds the window within the range with the lowest values, e.g. th
 For example, `rangeStart=22:00`, `rangeDuration=8h` and `length=4h` finds the cheapest 4 hours between 22:00 and 06:00.
 This is repeated every day.
 
+```text
+price
+  |  ##
+  |  ##        ##                       ##
+  |  ##        ##        ##             ##
+  |  ##   ##   ##        ##        ##   ##
+  |  ##   ##   ##   ##   ##   ##   ##   ##
+  +------------------------------------------> time
+     22   23   00   01   02   03   04   05
+   |<---------- range: 22:00, 8h --------->|
+
+consecutive=true:  one block of 4 hours, 01:00 to 05:00
+                    ##   ##   ##   ##
+consecutive=false: the 4 cheapest hours, 23:00, 01:00, 03:00 and 04:00
+          ##        ##        ##   ##
+```
+
 - With `consecutive=false`, the window can be split into several parts, e.g. the 4 cheapest single hours.
 - With `goal=maximum`, the window with the highest values is found, e.g. the most PV power.
-- With `preferStart=true`, windows that start with the best values are preferred. This suits devices that often finish early, like a boiler or a car charger.
+- With `preferStart=true`, consecutive windows that start with the best values are preferred. This suits devices that often finish early, like a boiler or a car charger. It has no effect with `consecutive=false`.
 
 Times and lengths can be given in minutes, they don't have to match the forecast, e.g. `length=1h40m` with 15-minute prices.
 
@@ -49,27 +66,39 @@ Times and lengths can be given in minutes, they don't have to match the forecast
 Fires when the window starts and when it ends.
 With `consecutive=false`, it fires at the start and end of each part.
 
-| Parameter          | Description                                                                    | Default   |
-| ------------------ | ------------------------------------------------------------------------------ | --------- |
-| forecastItem       | Number Item with the forecast                                                  | required  |
-| rangeStart         | Start of the range, e.g. `22:00`                                               | `00:00`   |
-| rangeDuration      | Duration of the range, e.g. `8h` or `10h30m`, at most `48h`                    | `24h`     |
-| length             | Length of the window, e.g. `3h`, `45m` or `1h30m`                              | required  |
-| consecutive        | `true` for one block, `false` to allow several parts                           | `true`    |
-| goal               | `minimum` for the lowest values, e.g. prices, `maximum` for the highest values | `minimum` |
-| preferStart        | Prefer windows that start with the best values (advanced)                      | `false`   |
-| persistenceService | Persistence service with the forecast, the default service if empty (advanced) |           |
-| activeItem         | Switch Item, `ON` while the window is active                                   |           |
-| startItem          | DateTime Item for the start of the window                                      |           |
-| endItem            | DateTime Item for the end of the window                                        |           |
-| countdownItem      | Number:Time Item for the time until the window starts                          |           |
-| remainingItem      | Number:Time Item for the time until the window (or the current part) ends      |           |
-| windowTextItem     | String Item for the window as text, e.g. `01:00–05:00`                         |           |
+#### Window Inputs
 
-The Items at the end of the table are optional and only show the status, e.g. in the UI.
+| Parameter          | Type            | Required | Description                                                                                 | Default   |
+| ------------------ | --------------- | -------- | ------------------------------------------------------------------------------------------- | --------- |
+| forecastItem       | Number Item     | x        | Item with the forecast, must have a forecast persistence strategy applied                   |           |
+| rangeStart         | Text (time)     |          | Start of the range to search the window in, e.g. `22:00`                                    | `00:00`   |
+| rangeDuration      | Text (duration) |          | Duration of the range that is searched for the window, e.g. `8h` or `10h30m`, at most `48h` | `24h`     |
+| length             | Text (duration) | x        | Length of the window to search for, e.g. `3h`, `45m` or `1h30m`                             |           |
+| consecutive        | Boolean         |          | `true` for one block, `false` to allow several parts                                        | `true`    |
+| goal               | Text            |          | `minimum` for the lowest values, e.g. prices, `maximum` for the highest values              | `minimum` |
+| preferStart        | Boolean         |          | Prefer windows that start with the best values, only with `consecutive=true` (advanced)     | `false`   |
+| persistenceService | Text            |          | Persistence service with the forecast, the default service if empty (advanced)              |           |
+
+#### Status Items (Outputs)
+
+These optional parameters select the Items that receive the calculated status, e.g. to show it in the UI.
+
+| Parameter      | Type             | Description                                      |
+| -------------- | ---------------- | ------------------------------------------------ |
+| activeItem     | Switch Item      | `ON` while the window is active, otherwise `OFF` |
+| startItem      | DateTime Item    | Start of the window                              |
+| endItem        | DateTime Item    | End of the window                                |
+| countdownItem  | Number:Time Item | Time until the window starts                     |
+| remainingItem  | Number:Time Item | Time until the window (or the current part) ends |
+| windowTextItem | String Item      | Window as text, e.g. `01:00–05:00`               |
+
+They are updated, not commanded, so the `activeItem` does not switch a device.
+To switch a device, add an action that sends a command, or use the rule template, see [How a Rule Is Built](#how-a-rule-is-built).
 Persist the `activeItem` with the `forecast` strategy to see the planned window in a chart next to the prices.
 
-The trigger has these outputs, e.g. for scripts:
+#### Trigger Outputs
+
+These values are passed to the rule's conditions and actions, e.g. for scripts:
 
 | Output  | Description                                     |
 | ------- | ----------------------------------------------- |
@@ -79,15 +108,84 @@ The trigger has these outputs, e.g. for scripts:
 | end     | End of the window                               |
 | average | Average forecast value within the window        |
 
+### How a Rule Is Built
+
+| Part      | What it does                                                                    |
+| --------- | ------------------------------------------------------------------------------- |
+| Trigger   | finds the window, fires at its start and end, updates the optional status Items |
+| Condition | optional, can stop the actions, e.g. during holidays                            |
+| Action    | switches the device, e.g. "send a command" to the device Item                   |
+
+The outputs of the trigger reach the other modules of the rule:
+
+- "send a command" (`core.ItemCommandAction`): leave the command empty.
+  The action then sends what the trigger reports: `ON` when the window starts and `OFF` when it ends.
+- In script conditions and script actions, the outputs are variables: `command`, `event`, `start`, `end` and `average`.
+
+A rule without an action is fine, too.
+It only updates the status Items, e.g. to show the cheapest time for a device that is started by hand.
+
+A condition stops `ON` and `OFF` alike.
+To skip only the start, check `command` in a script condition.
+This rule does not switch on the boiler during holidays, but always switches it off:
+
+```yaml
+conditions:
+  - id: "3"
+    type: script.ScriptCondition
+    config:
+      type: application/javascript
+      script: |
+        !(command.toString() === 'ON' && items.Holiday.state === 'ON')
+actions:
+  - id: "2"
+    type: core.ItemCommandAction
+    config:
+      itemName: Boiler_Power
+```
+
 ### Condition "it is within the optimal window"
 
-True while the current time is within the window.
-It has the same parameters as the trigger, without the status Items.
-Use it to restrict other rules, e.g. to only start the dishwasher on PV surplus while the prices are low.
+Use the condition in a rule with a different trigger, to let that rule only run during the optimal window.
+The rule fires as usual, e.g. when an Item changes, and the condition checks whether the current time is within the window.
+
+The condition calculates the window on its own, with the same parameters as the trigger (without the status Items).
+It does not need a rule with the trigger.
+
+For example, start the dishwasher when there is PV surplus, but only during the 3 cheapest hours between 10:00 and 18:00:
+
+```yaml
+triggers:
+  - id: "1"
+    type: core.ItemStateChangeTrigger
+    config:
+      itemName: PV_Surplus
+      state: "ON"
+conditions:
+  - id: "2"
+    type: optimalwindow.InWindowCondition
+    config:
+      forecastItem: Electricity_Price
+      rangeStart: "10:00"
+      rangeDuration: 8h
+      length: 3h
+actions:
+  - id: "3"
+    type: core.ItemCommandAction
+    config:
+      itemName: Dishwasher_Start
+      command: "ON"
+```
 
 ### Rule Template "Run during optimal window"
 
-Creates a rule that switches an Item `ON` when the window starts and `OFF` when it ends, see [Quick Start](#quick-start).
+Creates a rule with the trigger and one action that switches an Item `ON` when the window starts and `OFF` when it ends, see [Quick Start](#quick-start).
+
+The template has one parameter of its own: `targetItem`, the Item to switch, e.g. the switch of the device (required).
+All other parameters are the ones of the [trigger](#trigger-an-optimal-window-starts-or-ends): the window parameters, and the optional status Items under the advanced settings.
+
+The template passes the values to the trigger.
+So the trigger of a rule created from the template shows the same values again, they only need to be set in the template.
 
 ## Good to Know
 
@@ -130,6 +228,52 @@ The status Items are plain Items without a channel link:
 Switch      CarLoader_Active    "Car loader active"
 String      CarLoader_Window    "Car loader window [%s]"
 Number:Time CarLoader_Remaining "Car loader ends in [%.0f min]"
+```
+
+### Rule in a YAML File
+
+The same rule as a file in `conf/yaml/`, e.g. `optimalwindow.yaml`:
+
+```yaml
+version: 1
+rules:
+  car_loader:
+    label: Charge the car in the cheapest window
+    triggers:
+      - id: "1"
+        type: optimalwindow.WindowTrigger
+        config:
+          forecastItem: Electricity_Price
+          rangeStart: "22:00"
+          rangeDuration: 8h
+          length: 4h
+          activeItem: CarLoader_Active
+          windowTextItem: CarLoader_Window
+    conditions: []
+    actions:
+      - id: "2"
+        type: core.ItemCommandAction
+        config:
+          itemName: CarLoader_Power
+```
+
+Quote times like `"22:00"`, YAML can read an unquoted `22:00` as a number.
+
+Or with the rule template, only the parameters:
+
+```yaml
+version: 1
+rules:
+  car_loader:
+    template: OptimalWindowRuleTemplate
+    label: Charge the car in the cheapest window
+    config:
+      targetItem: CarLoader_Power
+      forecastItem: Electricity_Price
+      rangeStart: "22:00"
+      rangeDuration: 8h
+      length: 4h
+      activeItem: CarLoader_Active
 ```
 
 ### Typical Configurations

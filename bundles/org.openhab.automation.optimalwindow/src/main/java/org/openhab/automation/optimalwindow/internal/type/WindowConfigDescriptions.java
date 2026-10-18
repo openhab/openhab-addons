@@ -89,23 +89,36 @@ public class WindowConfigDescriptions {
         return parameters;
     }
 
-    public static List<ConfigDescriptionParameter> statusItems() {
-        return List.of(
-                statusItem(CONFIG_ACTIVE_ITEM, "Active Item",
-                        "Switch item, ON while the window is active. Also receives the planned window as time series."),
-                statusItem(CONFIG_START_ITEM, "Start Item", "DateTime item for the start of the window."),
-                statusItem(CONFIG_END_ITEM, "End Item", "DateTime item for the end of the window."),
-                statusItem(CONFIG_COUNTDOWN_ITEM, "Countdown Item",
-                        "Number:Time item for the time until the next start of the window."),
-                statusItem(CONFIG_REMAINING_ITEM, "Remaining Item",
-                        "Number:Time item for the time until the end of the active part of the window."),
-                statusItem(CONFIG_WINDOW_TEXT_ITEM, "Window Text Item",
-                        "String item for the window as text, e.g. 10:45\u201314:45."));
+    /**
+     * The optional status items. They only show the window and are never commanded.
+     *
+     * @param advanced true to show them as advanced parameters, e.g. in the rule template
+     */
+    public static List<ConfigDescriptionParameter> statusItems(boolean advanced) {
+        List<ConfigDescriptionParameter> parameters = new ArrayList<>();
+        parameters.add(statusItem(CONFIG_ACTIVE_ITEM, "Window Active Status",
+                "Switch item, ON while the window is active. It is updated, not commanded, "
+                        + "so it does not switch a device. Also receives the planned window as time series.",
+                advanced));
+        parameters.add(statusItem(CONFIG_START_ITEM, "Status Item: Start",
+                "Status only: DateTime item for the start of the window.", advanced));
+        parameters.add(statusItem(CONFIG_END_ITEM, "Status Item: End",
+                "Status only: DateTime item for the end of the window.", advanced));
+        parameters.add(statusItem(CONFIG_COUNTDOWN_ITEM, "Status Item: Countdown",
+                "Status only: Number:Time item for the time until the next start of the window.", advanced));
+        parameters.add(statusItem(CONFIG_REMAINING_ITEM, "Status Item: Remaining",
+                "Status only: Number:Time item for the time until the end of the active part of the window.",
+                advanced));
+        parameters.add(statusItem(CONFIG_WINDOW_TEXT_ITEM, "Status Item: Window Text",
+                "Status only: String item for the window as text, e.g. 10:45\u201314:45.", advanced));
+        return parameters;
     }
 
-    private static ConfigDescriptionParameter statusItem(String name, String label, String description) {
+    private static ConfigDescriptionParameter statusItem(String name, String label, String description,
+            boolean advanced) {
         return ConfigDescriptionParameterBuilder.create(name, Type.TEXT) //
                 .withContext(ITEM) //
+                .withAdvanced(advanced) //
                 .withLabel(label) //
                 .withDescription(description) //
                 .build();

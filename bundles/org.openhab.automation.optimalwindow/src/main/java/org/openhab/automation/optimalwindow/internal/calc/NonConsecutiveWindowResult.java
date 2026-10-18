@@ -46,18 +46,23 @@ public class NonConsecutiveWindowResult extends WindowResult {
         if (maximum) {
             byValue = byValue.reversed();
         }
+
         // on equal values, prefer earlier intervals
         List<ForecastInterval> sorted = new ArrayList<>(intervals);
         sorted.sort(byValue.thenComparing(ForecastInterval::timerange));
 
         List<TimeRange> members = new ArrayList<>();
         Duration total = Duration.ZERO;
+
         for (ForecastInterval interval : sorted) {
             if (total.compareTo(length) >= 0) {
                 break;
             }
+
             TimeRange member = interval.timerange();
             Duration missing = length.minus(total);
+
+            // if the interval is longer than the missing duration, it will be trimmed to fit the total length
             if (member.duration().compareTo(missing) > 0) {
                 // the last selected interval is only used partially, so the window does not exceed the length. The
                 // used part is next to an already selected interval if possible, so the window is not split up.
@@ -65,9 +70,11 @@ public class NonConsecutiveWindowResult extends WindowResult {
                 Instant end = member.end();
                 boolean followsSelected = members.stream().anyMatch(selected -> selected.end().equals(start));
                 boolean precedesSelected = members.stream().anyMatch(selected -> selected.start().equals(end));
+
                 member = !followsSelected && precedesSelected ? new TimeRange(end.minus(missing), end)
                         : new TimeRange(start, start.plus(missing));
             }
+
             members.add(member);
             add(member, interval.value());
             total = total.plus(member.duration());
