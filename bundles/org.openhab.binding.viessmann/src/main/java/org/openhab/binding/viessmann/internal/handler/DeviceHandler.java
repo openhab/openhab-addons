@@ -916,6 +916,14 @@ public class DeviceHandler extends ViessmannThingHandler {
                 return;
             }
 
+            // VinEntry / MaterialIdEntry are structured API objects without a matching channel type;
+            // skip them so createOrUpdateChannel does not warn about unknown channel types.
+            if ("VinEntry".equalsIgnoreCase(typeEntry) || "MaterialIdEntry".equalsIgnoreCase(typeEntry)) {
+                logger.trace("Skipping unsupported property type {} ({}) on feature {}", typeEntry, entry,
+                        featureDataDTO.feature);
+                continue;
+            }
+
             if (msg.getDeviceId().contains(config.deviceId)) {
                 logger.trace("Feature: {} Type:{} Entry: {}={}", featureDataDTO.feature, typeEntry, entry, valueEntry);
 
@@ -1492,7 +1500,8 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private String convertChannelType(ThingMessageDTO msg) {
         String channelType = msg.getChannelType();
-        if (channelType.isBlank() || "object".equals(channelType)) {
+        if (channelType.isBlank() || "object".equals(channelType) || "VinEntry".equalsIgnoreCase(channelType)
+                || "MaterialIdEntry".equalsIgnoreCase(channelType)) {
             channelType = "string";
         }
 
