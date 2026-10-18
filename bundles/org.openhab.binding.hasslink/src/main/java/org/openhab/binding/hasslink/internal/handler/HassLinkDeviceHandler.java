@@ -36,6 +36,7 @@ import org.openhab.binding.hasslink.internal.entity.EntityContext;
 import org.openhab.binding.hasslink.internal.entity.EntityId;
 import org.openhab.binding.hasslink.internal.entity.EntityType;
 import org.openhab.binding.hasslink.internal.entity.ParsedData;
+import org.openhab.binding.hasslink.internal.entity.impl.WeatherEntity;
 import org.openhab.binding.hasslink.internal.registry.EntityRegistryEntry;
 import org.openhab.binding.hasslink.internal.util.EntityUtils;
 import org.openhab.binding.hasslink.internal.util.HassLinkEntityFilter;
@@ -186,6 +187,32 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
      */
     public void onEntityStateSnapshot(EntityState entityState) {
         applyEntityState(entityState, this::refreshChannelData);
+    }
+
+    /**
+     * Applies a forecast update without modifying the cached entity state or dispatching current conditions.
+     */
+    public void onWeatherForecast(String entityId, String forecastType, List<Map<String, Object>> forecast) {
+        if (getCallback() == null || !entityToChannelsMap.containsKey(entityId)) {
+            return;
+        }
+        HassLinkBridgeHandler bridgeHandler = getBridgeHandler();
+        EntityState entityState = bridgeHandler == null ? null : bridgeHandler.getCachedEntityState(entityId);
+        if (entityState == null) {
+            return;
+        }
+        EntityType entityType = bridgeHandler.getEntityTypeByDomain("weather");
+        if (!(entityType instanceof WeatherEntity weatherEntity)) {
+            return;
+        }
+        Map<String, ParsedData> parsedForecast = weatherEntity.parseForecast(entityState, forecastType, forecast);
+        for (ChannelUID channelUID : entityToChannelsMap.getOrDefault(entityId, Set.of())) {
+            Channel channel = getThing().getChannel(channelUID);
+            ParsedData data = channel == null ? null : parsedForecast.get(getAttribute(channel));
+            if (channel != null && data != null) {
+                dispatchChannelData(channel, data);
+            }
+        }
     }
 
     private void applyEntityState(EntityState entityState, BiConsumer<Channel, ParsedData> channelDataDispatcher) {

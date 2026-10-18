@@ -17,9 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.AbstractMap;
@@ -62,6 +65,7 @@ class HomeAssistantWebSocketClientTest {
         Session session = mock(Session.class);
         RemoteEndpoint remote = mock(RemoteEndpoint.class);
         when(session.getRemote()).thenReturn(remote);
+        when(session.isOpen()).thenReturn(true);
         client.onWebSocketConnect(session);
 
         CountDownLatch firstSerializationStarted = new CountDownLatch(1);
@@ -160,6 +164,43 @@ class HomeAssistantWebSocketClientTest {
         assertNotNull(cachedState);
         assertEquals("off", cachedState.state());
         assertEquals(Set.of("friendly_name"), cachedState.attributes().keySet());
+    }
+
+    @Test
+    void subscribesToAndRoutesWeatherForecastEventsBySubscriptionId() throws Exception {
+        WebSocketClient wsClient = mock(WebSocketClient.class);
+        HomeAssistantConnectionListener listener = mock(HomeAssistantConnectionListener.class);
+        HomeAssistantWebSocketClient client = new HomeAssistantWebSocketClient(wsClient, "token", listener,
+                mock(ScheduledExecutorService.class));
+        Session session = mock(Session.class);
+        RemoteEndpoint remote = mock(RemoteEndpoint.class);
+        when(session.getRemote()).thenReturn(remote);
+        when(session.isOpen()).thenReturn(true);
+        client.onWebSocketConnect(session);
+        List<String> sentMessages = new CopyOnWriteArrayList<>();
+        doAnswer(invocation -> {
+            sentMessages.add(invocation.getArgument(0));
+            return null;
+        }).when(remote).sendString(anyString());
+
+        client.updateWeatherForecastSubscriptions(Map.of("weather.demo", Set.of("daily")));
+
+        var command = JsonParser.parseString(sentMessages.getFirst()).getAsJsonObject();
+        int subscriptionId = command.get("id").getAsInt();
+        assertEquals("weather/subscribe_forecast", command.get("type").getAsString());
+        assertEquals("weather.demo", command.get("entity_id").getAsString());
+        assertEquals("daily", command.get("forecast_type").getAsString());
+
+        client.onWebSocketText("""
+                {"type":"result","id":%d,"success":true,"result":null}
+                """.formatted(subscriptionId));
+        client.onWebSocketText(
+                """
+                        {"type":"event","id":%d,"event":{"type":"daily","forecast":[{"datetime":"2026-10-18T12:00:00+00:00","temperature":18.5}]}}
+                        """
+                        .formatted(subscriptionId));
+
+        verify(listener).onWeatherForecast(eq("weather.demo"), eq("daily"), anyList());
     }
 
     private Thread.State awaitThreadState(Thread thread, Thread.State expected, Thread.State alternative) {

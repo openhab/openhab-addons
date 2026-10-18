@@ -53,6 +53,7 @@ import org.openhab.binding.hasslink.internal.api.dto.commands.GetEntitiesCommand
 import org.openhab.binding.hasslink.internal.api.dto.commands.RegistryListCommand;
 import org.openhab.binding.hasslink.internal.api.dto.commands.SubscribeEntitiesCommand;
 import org.openhab.binding.hasslink.internal.api.dto.commands.SubscribeEventsCommand;
+import org.openhab.binding.hasslink.internal.api.dto.commands.SubscribeWeatherForecastCommand;
 import org.openhab.binding.hasslink.internal.api.dto.commands.UnsubscribeEventsCommand;
 import org.openhab.binding.hasslink.internal.api.exception.CommunicationException;
 import org.slf4j.Logger;
@@ -65,6 +66,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link HomeAssistantWebSocketClient} manages the persistent WebSocket connection to Home Assistant.
@@ -121,6 +123,14 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
 
     private final Set<String> subscribedEntityIds = ConcurrentHashMap.newKeySet();
     private volatile int activeSubscriptionId = -1;
+
+    private record ForecastSubscription(String entityId, String forecastType) {
+    }
+
+    private final Map<ForecastSubscription, Integer> activeForecastSubscriptions = new ConcurrentHashMap<>();
+    private final Map<Integer, ForecastSubscription> forecastSubscriptionsById = new ConcurrentHashMap<>();
+    private static final java.lang.reflect.Type FORECAST_LIST_TYPE = new TypeToken<List<Map<String, Object>>>() {
+    }.getType();
 
     public HomeAssistantWebSocketClient(WebSocketClient wsClient, String accessToken,
             HomeAssistantConnectionListener listener, ScheduledExecutorService scheduler) {
@@ -310,6 +320,42 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
         }
     }
 
+    /**
+     * Reconciles Home Assistant weather forecast subscriptions.
+     *
+     * @param desiredSubscriptions map of weather entity IDs to supported forecast types
+     */
+    public void updateWeatherForecastSubscriptions(Map<String, Set<String>> desiredSubscriptions) {
+        synchronized (lifecycleLock) {
+            if (!isConnected()) {
+                return;
+            }
+            Set<ForecastSubscription> desired = new java.util.HashSet<>();
+            desiredSubscriptions.forEach((entityId, forecastTypes) -> forecastTypes
+                    .forEach(forecastType -> desired.add(new ForecastSubscription(entityId, forecastType))));
+
+            activeForecastSubscriptions.entrySet().removeIf(entry -> {
+                if (desired.contains(entry.getKey())) {
+                    return false;
+                }
+                int subscriptionId = entry.getValue();
+                sendCommandWithId(id -> new UnsubscribeEventsCommand(id, subscriptionId));
+                forecastSubscriptionsById.remove(subscriptionId);
+                return true;
+            });
+
+            for (ForecastSubscription subscription : desired) {
+                if (!activeForecastSubscriptions.containsKey(subscription)) {
+                    sendCommandWithId(id -> new SubscribeWeatherForecastCommand(id, subscription.entityId(),
+                            subscription.forecastType()), id -> {
+                                activeForecastSubscriptions.put(subscription, id);
+                                forecastSubscriptionsById.put(id, subscription);
+                            });
+                }
+            }
+        }
+    }
+
     @Override
     public void onWebSocketConnect(@NonNullByDefault({}) Session session) {
         logger.debug("Connected to Home Assistant WebSocket");
@@ -403,6 +449,26 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
         }
         JsonObject eventObj = eventElement.getAsJsonObject();
 
+        JsonElement messageIdElement = frame.get("id");
+        JsonElement forecastElement = eventObj.get("forecast");
+        JsonElement forecastTypeElement = eventObj.get("type");
+        if (messageIdElement != null && messageIdElement.isJsonPrimitive() && forecastElement != null
+                && forecastElement.isJsonArray() && forecastTypeElement != null
+                && forecastTypeElement.isJsonPrimitive()) {
+            int messageId = messageIdElement.getAsInt();
+            ForecastSubscription subscription = forecastSubscriptionsById.get(messageId);
+            if (subscription != null) {
+                String forecastType = forecastTypeElement.getAsString();
+                if (subscription.forecastType().equals(forecastType)) {
+                    List<Map<String, Object>> forecast = gson.fromJson(forecastElement, FORECAST_LIST_TYPE);
+                    if (forecast != null) {
+                        listener.onWeatherForecast(subscription.entityId(), forecastType, forecast);
+                    }
+                }
+            }
+            return;
+        }
+
         // Check for subscribe_entities compressed diff payload ("c", "a", or "r" keys)
         if (eventObj.has("c") || eventObj.has("a") || eventObj.has("r")) {
             EntityStateCompressedEvent compressedEvent = gson.fromJson(eventObj, EntityStateCompressedEvent.class);
@@ -446,6 +512,8 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
 
         activeSubscriptionId = -1;
         subscribedEntityIds.clear();
+        activeForecastSubscriptions.clear();
+        forecastSubscriptionsById.clear();
 
         listener.onAuthenticated(haVersion);
 
@@ -498,6 +566,16 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
                         error != null ? error.message : "unknown error");
                 sendCommandWithId(newId -> new SubscribeEventsCommand(newId, EVENT_TYPE_STATE_CHANGED),
                         newId -> pendingSubscribeId = newId);
+            }
+            return;
+        }
+        ForecastSubscription forecastSubscription = forecastSubscriptionsById.get(id);
+        if (forecastSubscription != null) {
+            if (!result.success) {
+                logger.warn("Failed to subscribe to {} forecast for {}: {}", forecastSubscription.forecastType(),
+                        forecastSubscription.entityId(), error != null ? error.message : "unknown error");
+                forecastSubscriptionsById.remove(id);
+                activeForecastSubscriptions.remove(forecastSubscription, id);
             }
             return;
         }

@@ -47,6 +47,7 @@ import org.openhab.binding.hasslink.internal.discovery.HassLinkDiscoveryService;
 import org.openhab.binding.hasslink.internal.entity.EntityId;
 import org.openhab.binding.hasslink.internal.entity.EntityType;
 import org.openhab.binding.hasslink.internal.entity.EntityTypeRegistry;
+import org.openhab.binding.hasslink.internal.entity.impl.WeatherEntity;
 import org.openhab.binding.hasslink.internal.entity.util.ImageUtils;
 import org.openhab.binding.hasslink.internal.registry.HomeAssistantRegistry;
 import org.openhab.binding.hasslink.internal.util.EndpointUtils;
@@ -274,6 +275,7 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
         });
 
         syncEntitySubscriptions();
+        syncWeatherForecastSubscriptions();
     }
 
     public void syncEntitySubscriptions() {
@@ -281,6 +283,34 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
         if (localClient != null && localClient.isConnected()) {
             localClient.updateEntitySubscriptions(Set.copyOf(entityHandlers.keySet()));
         }
+    }
+
+    private void syncWeatherForecastSubscriptions() {
+        HomeAssistantWebSocketClient localClient = this.client;
+        if (localClient == null || !localClient.isConnected()) {
+            return;
+        }
+        Map<String, Set<String>> desiredSubscriptions = new HashMap<>();
+        for (String entityId : entityHandlers.keySet()) {
+            EntityState state = lastKnownStates.get(entityId);
+            if (state == null || !"weather".equals(state.getDomain())) {
+                continue;
+            }
+            Set<String> forecastTypes = new java.util.HashSet<>();
+            if (state.isSupportedFeature(WeatherEntity.FORECAST_DAILY)) {
+                forecastTypes.add("daily");
+            }
+            if (state.isSupportedFeature(WeatherEntity.FORECAST_HOURLY)) {
+                forecastTypes.add("hourly");
+            }
+            if (state.isSupportedFeature(WeatherEntity.FORECAST_TWICE_DAILY)) {
+                forecastTypes.add("twice_daily");
+            }
+            if (!forecastTypes.isEmpty()) {
+                desiredSubscriptions.put(entityId, forecastTypes);
+            }
+        }
+        localClient.updateWeatherForecastSubscriptions(desiredSubscriptions);
     }
 
     public void sendRegistryListRequest() {
@@ -684,6 +714,15 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
                     lastKnownStates.remove(removedEntityId);
                 }
             }
+            syncWeatherForecastSubscriptions();
+        }
+    }
+
+    @Override
+    public void onWeatherForecast(String entityId, String forecastType, List<Map<String, Object>> forecast) {
+        Set<HassLinkDeviceHandler> handlers = entityHandlers.get(entityId);
+        if (handlers != null) {
+            handlers.forEach(handler -> handler.onWeatherForecast(entityId, forecastType, forecast));
         }
     }
 
@@ -708,6 +747,7 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
             return;
         }
         lastKnownStates.put(entityId, state);
+        syncWeatherForecastSubscriptions();
         Set<HassLinkDeviceHandler> handlers = entityHandlers.get(entityId);
         if (handlers != null) {
             handlers.forEach(handler -> handler.onEntityStateUpdate(state));
@@ -720,6 +760,7 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
             return;
         }
         lastKnownStates.put(entityId, state);
+        syncWeatherForecastSubscriptions();
         Set<HassLinkDeviceHandler> handlers = entityHandlers.get(entityId);
         if (handlers != null) {
             handlers.forEach(handler -> handler.onEntityStateSnapshot(state));

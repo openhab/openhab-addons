@@ -189,13 +189,20 @@ public class WeatherEntity implements EntityType {
             StateUnits units) {
 
         List<Map<String, Object>> forecastList = getForecastList(entityState.getAttributeAsList(forecastType));
+        return buildForecastTimeSeries(forecastType, forecastList, units);
+    }
+
+    private Map<String, TimeSeries> buildForecastTimeSeries(String forecastType,
+            @Nullable List<Map<String, Object>> forecastList, StateUnits units) {
         if (forecastList == null || forecastList.isEmpty()) {
             return Map.of();
         }
 
         Map<String, TimeSeries> timeSeriesMap = new HashMap<>();
         for (String forecastKey : forecastList.getFirst().keySet()) {
-            timeSeriesMap.put(forecastKey, new TimeSeries(TimeSeries.Policy.REPLACE));
+            if (!"datetime".equals(forecastKey)) {
+                timeSeriesMap.put(forecastKey, new TimeSeries(TimeSeries.Policy.REPLACE));
+            }
         }
 
         // Build the time series data for each forecast key (i.e. transpose the list of maps into a map of time series)
@@ -217,6 +224,39 @@ public class WeatherEntity implements EntityType {
             }
         }
         return timeSeriesMap;
+    }
+
+    /**
+     * Parses forecast entries received through Home Assistant's separate weather forecast subscription.
+     *
+     * @param entityState the current weather state, used for units and supported attribute formats
+     * @param forecastType Home Assistant forecast type (daily, hourly, or twice_daily)
+     * @param forecastList the forecast entries
+     * @return parsed time series keyed by channel attribute
+     */
+    public Map<String, ParsedData> parseForecast(EntityState entityState, String forecastType,
+            List<Map<String, Object>> forecastList) {
+        String channelPrefix = switch (forecastType) {
+            case "daily" -> "forecast";
+            case "hourly" -> "forecast_hourly";
+            case "twice_daily" -> "forecast_twice_daily";
+            default -> "";
+        };
+        if (channelPrefix.isEmpty()) {
+            return Map.of();
+        }
+        StateUnits units = new StateUnits( //
+                entityState.getAttributeAsString("temperature_unit"), //
+                entityState.getAttributeAsString("precipitation_unit"), //
+                entityState.getAttributeAsString("pressure_unit"), //
+                entityState.getAttributeAsString("wind_speed_unit"), //
+                entityState.getAttributeAsString("visibility_unit"), //
+                isWindBearingNumeric(entityState) //
+        );
+        Map<String, ParsedData> parsed = new HashMap<>();
+        buildForecastTimeSeries(channelPrefix, forecastList, units).forEach(
+                (key, timeSeries) -> parsed.put(channelPrefix + "_" + key, new ParsedData.TimeSeriesData(timeSeries)));
+        return parsed;
     }
 
     private State convertForecastDataToState(String forecastKey, Object value, StateUnits units) {

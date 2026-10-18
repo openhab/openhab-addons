@@ -13,6 +13,7 @@
 package org.openhab.binding.hasslink.internal.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.hasslink.internal.api.dto.EntityState;
@@ -100,4 +101,13 @@ public interface HomeAssistantConnectionListener {
      * @param compressedEvent the payload containing initial snapshots, state diffs, or removals
      */
     void onCompressedEvent(EntityStateCompressedEvent compressedEvent);
+
+    /**
+     * Called when a subscribed weather forecast is received.
+     *
+     * @param entityId the weather entity ID
+     * @param forecastType the Home Assistant forecast type (daily, hourly, or twice_daily)
+     * @param forecast the forecast entries
+     */
+    void onWeatherForecast(String entityId, String forecastType, List<Map<String, Object>> forecast);
 }

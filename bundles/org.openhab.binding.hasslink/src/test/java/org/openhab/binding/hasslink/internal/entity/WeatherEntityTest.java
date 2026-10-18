@@ -36,6 +36,8 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ThingUID;
 
+import com.google.gson.JsonPrimitive;
+
 /**
  * Tests channel discovery and state mapping for Home Assistant weather entities.
  *
@@ -122,5 +124,17 @@ class WeatherEntityTest extends AbstractEntityTest {
                         QuantityType.valueOf(state.getAttributeAsString(attribute) + " " + unit)))));
             }
         }
+    }
+
+    @org.junit.jupiter.api.Test
+    void parsesForecastSubscriptionIntoForecastChannels() {
+        EntityState state = new EntityState("weather.demo", "sunny", Map.of("temperature_unit", new JsonPrimitive("°C"),
+                "supported_features", new JsonPrimitive(WeatherEntity.FORECAST_DAILY)));
+        Map<String, ParsedData> parsed = entity.parseForecast(state, "daily",
+                List.of(Map.of("datetime", "2026-10-18T12:00:00Z", "temperature", 18.5)));
+
+        assertThat(parsed.keySet(), containsInAnyOrder("forecast_temperature"));
+        assertThat(parsed.get("forecast_temperature"),
+                is(org.hamcrest.Matchers.instanceOf(ParsedData.TimeSeriesData.class)));
     }
 }
