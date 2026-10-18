@@ -86,7 +86,7 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         cfg = getConfigAs(TedeeLockConfiguration.class);
         if (cfg.deviceId <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Device ID required");
             return;
         }
 
@@ -120,7 +120,7 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         TedeeTransportProvider provider = transportProvider();
         if (provider == null || !provider.ready()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport offline");
             return;
         }
 
@@ -156,7 +156,7 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         TedeeTransportProvider provider = transportProvider();
         if (provider == null || !provider.ready()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport offline");
             return;
         }
 
@@ -246,7 +246,7 @@ public class TedeeLockHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (TedeeApiException e) {
             logger.warn("Polling failed for Tedee lock {}: {}", deviceId, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
             logger.error("Unexpected error while polling Tedee lock {}", deviceId, e);
         }
@@ -455,14 +455,12 @@ public class TedeeLockHandler extends BaseThingHandler {
             }
         } catch (TedeeApiException e) {
             logger.warn("Tedee action '{}' failed for lock {}: {}", action, deviceId, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE,
-                    e.getStatus() == HttpStatus.UNAUTHORIZED_401 || e.getStatus() == HttpStatus.FORBIDDEN_403
-                            ? ThingStatusDetail.CONFIGURATION_ERROR
-                            : ThingStatusDetail.COMMUNICATION_ERROR,
-                    e.getMessage());
+            updateStatus(e.getStatus() == HttpStatus.UNAUTHORIZED_401 || e.getStatus() == HttpStatus.FORBIDDEN_403
+                    ? ThingStatusDetail.CONFIGURATION_ERROR
+                    : ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
             logger.warn("Tedee transport unavailable for lock {}: {}", deviceId, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } finally {
             synchronized (pendingCommands) {
                 pendingCommands.removeIf(ScheduledFuture::isDone);

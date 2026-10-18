@@ -85,8 +85,7 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
         cfg = getConfigAs(TedeeCloudConfiguration.class);
 
         if (cfg.personalAccessKey.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.cloud-bridge.access-key-required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.cloud-bridge.access-key-required");
             return;
         }
 
@@ -213,8 +212,7 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
                     || e.getStatus() == HttpStatus.FORBIDDEN_403 ? ThingStatusDetail.CONFIGURATION_ERROR
                             : ThingStatusDetail.COMMUNICATION_ERROR;
 
-            updateStatus(ThingStatus.OFFLINE, detail,
-                    localizedStatusDescription("status.api-communication-error", e.getMessage()));
+            updateStatus(detail, localizedStatusDescription("status.api-communication-error", e.getMessage()));
         } catch (RuntimeException e) {
             logger.error("Unexpected error while checking Tedee Cloud", e);
 

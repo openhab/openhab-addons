@@ -107,8 +107,7 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
         reconciledCallbackId = null;
         cfg = getConfigAs(TedeeBridgeConfiguration.class);
         if (cfg.ip.isBlank() || cfg.apiToken.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.local-bridge.configuration-required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.local-bridge.configuration-required");
             return;
         }
 
@@ -257,11 +256,10 @@ public class TedeeBridgeHandler extends BaseBridgeHandler implements TedeeTransp
             if (currentApi.bridgeStatus() == HttpStatus.OK_200) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/status.local-bridge.http-error");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.local-bridge.http-error");
             }
         } catch (TedeeApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     localizedStatusDescription("status.api-communication-error", e.getMessage()));
         }
     }
