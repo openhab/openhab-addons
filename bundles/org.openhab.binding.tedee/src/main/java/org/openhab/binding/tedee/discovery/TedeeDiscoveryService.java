@@ -143,7 +143,7 @@ public class TedeeDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         String label = lock.name;
         if (label == null || label.isBlank()) {
-            label = "Tedee Lock " + lock.id;
+            label = "@text/discovery.lock.label [ \"%s\" ]".formatted(lock.id);
         }
 
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(currentBridgeUID)

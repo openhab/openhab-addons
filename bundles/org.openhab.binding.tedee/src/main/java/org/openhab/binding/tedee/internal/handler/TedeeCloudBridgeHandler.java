@@ -222,8 +222,12 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
     }
 
     private static String localizedStatusDescription(String key, @Nullable String detail) {
+        if (detail == null || detail.isBlank()) {
+            return "@text/status.unknown-error";
+        }
+
         JsonArray arguments = new JsonArray();
-        arguments.add(detail == null ? "Unknown error" : detail);
+        arguments.add(detail);
         return "@text/" + key + " " + arguments;
     }
 
