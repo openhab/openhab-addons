@@ -117,6 +117,14 @@ public class RegisterDecoderTest {
     }
 
     @Test
+    public void testSgReadyActivePublishesTheDocumentedValues() {
+        assertEquals(new StringType("Inactive"),
+                decode(HagerFlowSgReadyRegisterMap.SGREADY_ACTIVE, new ModbusRegisterArray(0)));
+        assertEquals(new StringType("active"),
+                decode(HagerFlowSgReadyRegisterMap.SGREADY_ACTIVE, new ModbusRegisterArray(1)));
+    }
+
+    @Test
     public void testBitFlags() {
         Register register = new Register("evcs-state", GROUP, 0, 1, U16, READ_ONLY, null, Map.of(),
                 List.of(new BitFlag(0, "evcs-state-normal-mode", "normal mode", "not normal mode"),

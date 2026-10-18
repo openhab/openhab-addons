@@ -299,7 +299,7 @@ Switch                 HagerFlow_Evcs1Connected       "EVCS 1 Connected" { chann
 Switch                 HagerFlow_BatteryFirst         "Battery First" { channel="modbus:hager-flow-ems:flow:ems:general-information#sun-power-priority-battery-first" }
 String                 HagerFlow_BlackoutState        "Blackout State" { channel="modbus:hager-flow-ems:flow:ems:general-information#blackout-active" }
 String                 HagerFlow_EvseName             "Charging Station Name" { channel="modbus:hager-flow-evse:flow:ems:evse1:identity#evcs-name" }
-Switch                 HagerFlow_EvseConnected        "Charging Station Connected" { channel="modbus:hager-flow-evse:flow:ems:evse1:general-status-and-configuration#evcs-connection-state" }
+String                 HagerFlow_EvseConnected        "Charging Station Connected" { channel="modbus:hager-flow-evse:flow:ems:evse1:general-status-and-configuration#evcs-connection-state" }
 Switch                 HagerFlow_EvseBoostMode        "Charging Station Boost Mode" { channel="modbus:hager-flow-evse:flow:ems:evse1:general-status-and-configuration#evcs-boost-mode" }
 Number:Power           HagerFlow_EvseChargingPower    "Charging Power" { channel="modbus:hager-flow-evse:flow:ems:evse1:instantaneous-measures#charging-power-total" }
 Number:Energy          HagerFlow_EvseSessionEnergy    "Energy Of The Session" { channel="modbus:hager-flow-evse:flow:ems:evse1:charging-session-information#energy-session" }
@@ -378,5 +378,5 @@ around it, because the address column of that row is not contained in the text l
 
 ## Source
 
-The register addresses, data types and value ranges are transcribed from
-`doc/01.Modbus.table.Flow.pdf`, Hager Flow XEM470 Modbus table, document version `FR2_2024_03`.
+The register addresses, data types and value ranges are transcribed from the Hager Flow XEM470 Modbus table,
+document `01.Modbus.table.Flow` version `FR2_2024_03`.
