@@ -83,8 +83,9 @@ public class LightEntity implements EntityType {
 
         if (!supportedModes.isEmpty()) {
             boolean colorSupported = !Collections.disjoint(supportedModes, COLOR_MODES);
-            boolean brightnessSupported = !colorSupported && supportedModes.contains(MODE_BRIGHTNESS);
             boolean colorTempSupported = supportedModes.contains(MODE_COLOR_TEMP);
+            boolean brightnessSupported = !colorSupported
+                    && (colorTempSupported || supportedModes.contains(MODE_BRIGHTNESS));
 
             if (colorSupported) {
                 primaryItemType = ItemType.COLOR;
