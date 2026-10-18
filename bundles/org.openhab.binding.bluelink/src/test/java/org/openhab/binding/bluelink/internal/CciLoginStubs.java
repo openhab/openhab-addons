@@ -46,6 +46,13 @@ public final class CciLoginStubs {
     public static final String EXCHANGEABLE_TOKEN = "test-exchangeable-token";
     public static final String CCS_ACCESS_TOKEN = "test-ccs-access-token";
 
+    public static final String SIGNED_TOKEN_PATH = "/auth/v1/token";
+    public static final String SIGNED_TOKEN_EXCHANGE_PATH = "/auth/v1/token-exchange";
+    public static final String SIGNED_TOKEN_REFRESH_PATH = "/auth/v2/token-refresh";
+    public static final String TOKEN_PATH = "/domain/api/v1/auth/token";
+    public static final String TOKEN_EXCHANGE_PATH = "/domain/api/v1/auth/token-exchange";
+    public static final String TOKEN_REFRESH_PATH = "/domain/api/v2/auth/token-refresh";
+
     private static final KeyPair KEY_PAIR = generateKeyPair();
 
     private final WireMockServer server;
@@ -76,8 +83,9 @@ public final class CciLoginStubs {
                         .withBody("{\"retValue\":{\"kid\":\"test-kid\",\"n\":\"" + jwkParam(publicKey.getModulus())
                                 + "\",\"e\":\"" + jwkParam(publicKey.getPublicExponent()) + "\"}}")));
         stubSignInRedirect("https://oneapp.hyundai.com/redirect?code=" + AUTH_CODE + "&state=ccsp");
-        server.stubFor(post(urlPathEqualTo("/domain/api/v1/auth/token")).withQueryParam("code", equalTo(AUTH_CODE))
-                .willReturn(json(cciTokens(CCI_ACCESS_TOKEN, CCI_REFRESH_TOKEN))));
+        server.stubFor(
+                post(urlPathMatching(SIGNED_TOKEN_PATH + "|" + TOKEN_PATH)).withQueryParam("code", equalTo(AUTH_CODE))
+                        .willReturn(json(cciTokens(CCI_ACCESS_TOKEN, CCI_REFRESH_TOKEN))));
         stubTokenExchange(CCS_ACCESS_TOKEN, 86400);
     }
 
@@ -85,13 +93,14 @@ public final class CciLoginStubs {
         final String body = """
                 {"accessToken": "%s", "expiresTime": %d}
                 """.formatted(ccsAccessToken, expiresTime);
-        server.stubFor(post(urlPathEqualTo("/domain/api/v1/auth/token-exchange"))
+        server.stubFor(post(urlPathMatching(SIGNED_TOKEN_EXCHANGE_PATH + "|" + TOKEN_EXCHANGE_PATH))
                 .withQueryParam("serviceType", equalTo("CCS")).willReturn(json(body)));
     }
 
     public ResponseDefinitionBuilder stubTokenRefresh(final String accessToken, final String refreshToken) {
         final ResponseDefinitionBuilder response = json(cciTokens(accessToken, refreshToken));
-        server.stubFor(post(urlEqualTo("/domain/api/v2/auth/token-refresh")).willReturn(response));
+        server.stubFor(
+                post(urlPathMatching(SIGNED_TOKEN_REFRESH_PATH + "|" + TOKEN_REFRESH_PATH)).willReturn(response));
         return response;
     }
 
