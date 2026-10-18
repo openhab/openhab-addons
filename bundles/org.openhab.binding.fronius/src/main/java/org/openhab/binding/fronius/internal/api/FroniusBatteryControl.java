@@ -340,9 +340,9 @@ public class FroniusBatteryControl {
      * Warns when the new schedule entry conflicts with existing entries. The inverter accepts such entries through
      * its config API, but its web UI marks them as invalid and refuses to save the settings: entries of the same type
      * must not overlap, charging entries must not overlap discharging entries unless both are maximum power limits,
-     * and where a minimum and a maximum entry of charging or discharging overlap, the minimum power must be smaller
-     * than the maximum power. Entries that only touch (one ends exactly when the other starts) do not count as
-     * overlapping.
+     * and where a minimum and a maximum entry of charging or discharging overlap, the minimum power must not exceed
+     * the maximum power (equal values specify a fixed power). Entries that only touch (one ends exactly when the other
+     * starts) do not count as overlapping.
      *
      * @param existing the existing time of use entries
      * @param added the entry being added
@@ -365,7 +365,7 @@ public class FroniusBatteryControl {
                         record.timeTable().start(), record.timeTable().end());
             } else if (isContradiction(record, added)) {
                 logger.warn(
-                        "The new schedule ({} {} W {}-{}) contradicts an existing {} schedule ({} W {}-{}): the minimum power must be smaller than the maximum power. The inverter web UI will report the time of use settings as invalid.",
+                        "The new schedule ({} {} W {}-{}) contradicts an existing {} schedule ({} W {}-{}): the minimum power must not exceed the maximum power. The inverter web UI will report the time of use settings as invalid.",
                         added.scheduleType(), added.power(), added.timeTable().start(), added.timeTable().end(),
                         record.scheduleType(), record.power(), record.timeTable().start(), record.timeTable().end());
             }
@@ -413,7 +413,7 @@ public class FroniusBatteryControl {
                 && max.scheduleType() == ScheduleType.CHARGE_MAX;
         boolean discharging = min.scheduleType() == ScheduleType.DISCHARGE_MIN
                 && max.scheduleType() == ScheduleType.DISCHARGE_MAX;
-        return (charging || discharging) && min.power() >= max.power();
+        return (charging || discharging) && min.power() > max.power();
     }
 
     /**
