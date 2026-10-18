@@ -217,7 +217,7 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
         } catch (RuntimeException e) {
             logger.error("Unexpected error while checking Tedee Cloud", e);
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     localizedStatusDescription("status.cloud-bridge.unexpected-error", e.getMessage()));
         }
     }
