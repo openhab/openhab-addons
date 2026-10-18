@@ -249,7 +249,6 @@ public class TedeeCloudBridgeHandler extends BaseBridgeHandler implements TedeeT
     @Override
     public void dispose() {
         ScheduledFuture<?> currentJob = job;
-
         if (currentJob != null) {
             currentJob.cancel(true);
         }
