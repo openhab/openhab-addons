@@ -228,19 +228,19 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             updateState(CHANNEL_LOCAL_AUTH_LIST, new StringType(String.join(",", localAuthList)));
         }
         if (chargePointId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "chargePointId must be set to the charger's OCPP identity");
             return;
         }
         OcppServerBridgeHandler serverHandler = serverHandler();
         if (serverHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         this.server = serverHandler;
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
         }
@@ -270,7 +270,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             }
             failPendingSends();
             updateState(CHANNEL_CONNECTED, OnOffType.OFF);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -572,7 +572,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         }
         cancelScheduledWork();
         failPendingSends();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Charger disconnected");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Charger disconnected");
         updateState(CHANNEL_CONNECTED, OnOffType.OFF);
     }
 
@@ -1088,8 +1088,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         if (transport != null) {
             transport.closeSession(localSession);
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "No messages received (liveness timeout)");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No messages received (liveness timeout)");
         updateState(CHANNEL_CONNECTED, OnOffType.OFF);
     }
 

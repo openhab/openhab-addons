@@ -211,7 +211,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         remoteStartRetries = config.remoteStartRetries;
         OcppChargePointHandler parent = chargePointHandler();
         if (parent == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         this.chargePoint = parent;
@@ -221,7 +221,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         updateProperty(PROPERTY_UNIQUE_ID, uniqueConnectorId(parent.getChargePointId(), connectorId));
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
         }
@@ -280,7 +280,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 stuckTask = null;
                 pendingFlush = null;
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

@@ -108,7 +108,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         config = getConfigAs(OcppServerConfiguration.class);
         OcppServerConfiguration localConfig = config;
         if (!localConfig.authPassword.isEmpty() && !localConfig.authPassword.matches("[\\x21-\\x7E]{16,20}")) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "authPassword must be 16-20 visible ASCII characters — the OCPP library rejects other lengths "
                             + "before authentication, so every charger connection would fail");
             return;
@@ -123,7 +123,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         try {
             newTransport = createTransport(localConfig);
         } catch (RuntimeException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
         long generation;
@@ -152,7 +152,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
                     }
                 }
                 if (current) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "Could not start OCPP server: " + e.getMessage());
                 }
                 return;
