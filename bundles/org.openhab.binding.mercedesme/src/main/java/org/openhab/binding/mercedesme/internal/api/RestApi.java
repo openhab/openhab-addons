@@ -71,7 +71,7 @@ public class RestApi extends Authorization {
     }
 
     public Map<String, Object> restGetCapabilities(String vin) {
-        logger.trace("Get capabilities for VIN {}", vin);
+        logger.trace("Get capabilities for VIN {}", Utils.maskVin(vin));
         Map<String, Object> featureMap = new HashMap<>();
         try {
             // add vehicle capabilities

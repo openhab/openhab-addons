@@ -35,6 +35,7 @@ import org.openhab.binding.mercedesme.internal.exception.MercedesMeApiException;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeAuthException;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeBindingException;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
+import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.i18n.LocaleProvider;
@@ -66,13 +67,13 @@ import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsResponse;
  * The {@link AccountHandler} acts as Bridge between MercedesMe Account and the associated vehicles
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Added force update action
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
     private static final int VARIANCE_PERCENT = 15; // 15% variance for refresh interval
 
     // placeholders replacing personal data in TRACE output - see anonymizeForTrace()
-    private static final String TRACE_VIN_PLACEHOLDER = "ANONYMIZED";
     private static final double TRACE_POSITION_LAT_PLACEHOLDER = 1.23;
     private static final double TRACE_POSITION_LONG_PLACEHOLDER = 4.56;
 
@@ -86,7 +87,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Storage<String> storage;
     private final HttpClient httpClient;
 
-    private @Nullable ScheduledFuture<?> refreshScheduler;
+    // guards refreshScheduler: the read/cancel/replace sequence must be atomic, otherwise a scheduled and a
+    // forced refresh can each cancel the same future and install their own replacement, leaving one untracked
+    private final Object refreshSchedulerLock = new Object();
+    // package-private for AccountHandlerTest, which verifies that a forced update replaces the pending refresh
+    @Nullable
+    ScheduledFuture<?> refreshScheduler;
     private List<PushMessage> eventQueue = new ArrayList<>();
     private boolean updateRunning = false;
 
@@ -111,17 +117,33 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void initialize() {
+        initialize(null);
+    }
+
+    /**
+     * Activates the handler.
+     *
+     * @param apiToUse API implementation to activate with, or {@code null} to create the real {@link Websocket}
+     */
+    // package-private for AccountHandlerTest: it must install its WebSocket mock before the first refresh is
+    // scheduled, otherwise that refresh runs against the real API and can reach the network
+    void initialize(@Nullable Websocket apiToUse) {
         disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(AccountConfiguration.class);
-        String configValidReason = validateConfig();
-        if (!configValidReason.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
-        } else {
-            api = new Websocket(this, httpClient, config, localeProvider, storage);
-            api.websocketDispose(false);
-            scheduler.schedule(this::refresh, 2, TimeUnit.SECONDS);
+        Websocket apiLocal = apiToUse;
+        if (apiLocal == null) {
+            String configValidReason = validateConfig();
+            if (!configValidReason.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
+                return;
+            }
+            apiLocal = new Websocket(this, httpClient, config, localeProvider, storage);
         }
+        api = apiLocal;
+        api.websocketDispose(false);
+        // tracked like every other refresh, otherwise a forced update or a keep alive could not move it
+        scheduleRefresh(2);
     }
 
     /**
@@ -132,30 +154,46 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             logger.debug("AccountHandler is disposed, skipping refresh");
             return;
         }
-        if (api.authTokenIsValid()) {
+        if (api.authTokenIsValid() || authorize()) {
             // The REST "vehicleattributes" endpoint only returns the small widget-tile attribute set and can
             // never trigger keepAlive(), so every refresh goes through the WebSocket; each vehicle then decides
             // whether it needs to stay alive (driving or charging).
+            //
+            // A refresh with an invalid token resumes the login above; requesting the update in the same pass keeps
+            // a force update during startup or authentication recovery from being delayed by a whole interval. When
+            // login failed the next regular refresh retries it.
             api.websocketUpdate();
-        } else {
-            // token is not valid - try to resume login
-            authorize();
         }
         scheduleRefresh(nextRefreshSeconds());
     }
 
+    /**
+     * Refreshes vehicle data immediately, outside the regular refresh interval. The interval is restarted, so the
+     * next regular update is again {@code refreshInterval} minutes away instead of following shortly after this
+     * out-of-order update.
+     *
+     * @param vin vehicle which requested the force update - used for logging only
+     */
+    public void forceUpdate(String vin) {
+        logger.trace("Force update requested by {} - refreshing immediately and restarting refresh interval",
+                Utils.maskVin(vin));
+        refresh();
+    }
+
     private void scheduleRefresh(long delayInSeconds) {
-        if (disposed) {
-            logger.debug("AccountHandler is disposed, skipping scheduleRefresh");
-            return;
+        synchronized (refreshSchedulerLock) {
+            if (disposed) {
+                logger.debug("AccountHandler is disposed, skipping scheduleRefresh");
+                return;
+            }
+            ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
+            if (localRefreshScheduler != null) {
+                localRefreshScheduler.cancel(false);
+            }
+            Instant nextSchedule = Instant.now().plus(delayInSeconds, ChronoUnit.SECONDS);
+            logger.trace("Next schedule at {}", nextSchedule);
+            refreshScheduler = scheduler.schedule(this::refresh, delayInSeconds, TimeUnit.SECONDS);
         }
-        ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
-        if (localRefreshScheduler != null) {
-            localRefreshScheduler.cancel(false);
-        }
-        Instant nextSchedule = Instant.now().plus(delayInSeconds, ChronoUnit.SECONDS);
-        logger.trace("Next schedule at {}", nextSchedule);
-        refreshScheduler = scheduler.schedule(this::refresh, delayInSeconds, TimeUnit.SECONDS);
     }
 
     /**
@@ -209,12 +247,14 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void dispose() {
-        disposed = true;
-        ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
-        if (localRefreshScheduler != null) {
-            localRefreshScheduler.cancel(false);
+        synchronized (refreshSchedulerLock) {
+            disposed = true;
+            ScheduledFuture<?> localRefreshScheduler = refreshScheduler;
+            if (localRefreshScheduler != null) {
+                localRefreshScheduler.cancel(false);
+            }
+            refreshScheduler = null;
         }
-        refreshScheduler = null;
         eventQueue.clear();
         api.websocketDispose(true);
     }
@@ -303,9 +343,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             // TRACE-only dump of the raw update in protobuf TextFormat, meant to be turned into a test fixture;
             // VIN and GPS position are anonymized first (see anonymizeForTrace()).
             if (logger.isTraceEnabled()) {
-                vsu.getVehicleStatusUpdatesMap()
-                        .forEach((vin, update) -> logger.trace("Raw VehicleStatusUpdate for {}:\n{}",
-                                TRACE_VIN_PLACEHOLDER, anonymizeForTrace(update)));
+                vsu.getVehicleStatusUpdatesMap().forEach((vin, update) -> logger
+                        .trace("Raw VehicleStatusUpdate for {}:\n{}", Utils.maskVin(vin), anonymizeForTrace(update)));
             }
             Map<String, VehicleStatusAttributes> converted = new HashMap<>();
             vsu.getVehicleStatusUpdatesMap().forEach((vin, update) -> converted.put(vin,
@@ -348,19 +387,21 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         } else if (pm.hasDebugMessage()) {
             logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
         } else {
-            logger.trace("MB Message: {} not handled", pm.getAllFields());
+            logger.trace("MB Message: {} not handled", Utils.maskVinsIn(pm.getAllFields().toString()));
         }
     }
 
     /**
-     * Returns a copy of the given {@link VehicleStatusUpdate} with the personal data ({@code fin_or_vin} and the
-     * GPS position) replaced by fixed placeholders, so it is safe to log at TRACE level.
+     * Returns a copy of the given {@link VehicleStatusUpdate} with the personal data anonymized, so it is safe to log
+     * at TRACE level: the {@code fin_or_vin} is masked to its last 4 characters and the GPS position is replaced by
+     * fixed placeholders.
      *
      * @param update the raw update as received from the backend
      * @return an anonymized copy of update, safe for logging
      */
-    private static VehicleStatusUpdate anonymizeForTrace(VehicleStatusUpdate update) {
-        VehicleStatusUpdate.Builder anonymized = update.toBuilder().setFinOrVin(TRACE_VIN_PLACEHOLDER);
+    // package-private for AccountHandlerTest
+    static VehicleStatusUpdate anonymizeForTrace(VehicleStatusUpdate update) {
+        VehicleStatusUpdate.Builder anonymized = update.toBuilder().setFinOrVin(Utils.maskVin(update.getFinOrVin()));
         if (update.hasPositionLat()) {
             anonymized.setPositionLat(
                     DoubleAttribute.newBuilder(update.getPositionLat()).setValue(TRACE_POSITION_LAT_PLACEHOLDER));
@@ -387,7 +428,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         });
         notFoundList.forEach(vin -> {
             discovery(vin); // add vehicle to discovery
-            logger.trace("No VehicleHandler available for VIN {}", vin);
+            logger.trace("No VehicleHandler available for VIN {}", Utils.maskVin(vin));
         });
         return notFoundList.isEmpty();
     }
@@ -398,7 +439,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (h != null) {
                 h.distributeCommandStatus(value);
             } else {
-                logger.trace("No VehicleHandler available for VIN {}", key);
+                logger.trace("No VehicleHandler available for VIN {}", Utils.maskVin(key));
             }
         });
     }

@@ -901,4 +901,37 @@ class VehicleHandlerTest {
         assertEquals(70, ahm.getCommand().getInt("max_soc"),
                 "ChargingConfigure command sent instead of ChargeProgramConfigure");
     }
+
+    @Test
+    public void testForceUpdateDelegatesToAccountHandler() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        when(thingMock.getProperties()).thenReturn(Map.of());
+        VehicleHandler vHandler = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vehicleConfig.vin = "UNIT_TEST_VIN";
+        vHandler.config = vehicleConfig;
+        AccountHandler accountMock = mock(AccountHandler.class);
+        vHandler.accountHandler = accountMock;
+
+        vHandler.forceUpdate();
+
+        verify(accountMock).forceUpdate("UNIT_TEST_VIN");
+    }
+
+    @Test
+    public void testForceUpdateWithoutAccountIsIgnored() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        when(thingMock.getProperties()).thenReturn(Map.of());
+        VehicleHandler vHandler = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        vHandler.accountHandler = null;
+
+        // no exception means the missing account is ignored instead of breaking the rule
+        vHandler.forceUpdate();
+    }
 }
