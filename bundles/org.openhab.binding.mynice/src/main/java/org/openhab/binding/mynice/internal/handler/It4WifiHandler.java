@@ -200,7 +200,9 @@ public class It4WifiHandler extends BaseBridgeHandler {
         logger.debug("Received : {}", command);
         Event event = xstream.deserialize(command);
         if (event.error != null) {
-            logger.warn("Error code {} received : {}", event.error.code, event.error.info);
+            logger.debug("Error code {} received : {}", event.error.code, event.error.info);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error [ \"%d\" ]".formatted(event.error.code));
         } else {
             if (event instanceof Response responseEvent) {
                 handleResponse(responseEvent);
