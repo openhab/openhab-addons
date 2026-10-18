@@ -40,6 +40,8 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+
 /**
  * Handles a Tedee lock Thing, including polling its status, processing commands,
  * and applying updates received through webhooks.
@@ -86,7 +88,7 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         cfg = getConfigAs(TedeeLockConfiguration.class);
         if (cfg.deviceId <= 0) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Device ID required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.lock.device-id-required");
             return;
         }
 
@@ -120,7 +122,7 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         TedeeTransportProvider provider = transportProvider();
         if (provider == null || !provider.ready()) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.lock.transport-offline");
             return;
         }
 
@@ -156,7 +158,7 @@ public class TedeeLockHandler extends BaseThingHandler {
 
         TedeeTransportProvider provider = transportProvider();
         if (provider == null || !provider.ready()) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Tedee transport offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.lock.transport-offline");
             return;
         }
 
@@ -246,7 +248,8 @@ public class TedeeLockHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (TedeeApiException e) {
             logger.warn("Polling failed for Tedee lock {}: {}", deviceId, e.getMessage());
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                    localizedStatusDescription("status.lock.polling-error", e.getMessage()));
         } catch (RuntimeException e) {
             logger.error("Unexpected error while polling Tedee lock {}", deviceId, e);
         }
@@ -455,17 +458,26 @@ public class TedeeLockHandler extends BaseThingHandler {
             }
         } catch (TedeeApiException e) {
             logger.warn("Tedee action '{}' failed for lock {}: {}", action, deviceId, e.getMessage());
-            updateStatus(e.getStatus() == HttpStatus.UNAUTHORIZED_401 || e.getStatus() == HttpStatus.FORBIDDEN_403
-                    ? ThingStatusDetail.CONFIGURATION_ERROR
-                    : ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(
+                    e.getStatus() == HttpStatus.UNAUTHORIZED_401 || e.getStatus() == HttpStatus.FORBIDDEN_403
+                            ? ThingStatusDetail.CONFIGURATION_ERROR
+                            : ThingStatusDetail.COMMUNICATION_ERROR,
+                    localizedStatusDescription("status.lock.action-error", e.getMessage()));
         } catch (IllegalStateException e) {
             logger.warn("Tedee transport unavailable for lock {}: {}", deviceId, e.getMessage());
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
+                    localizedStatusDescription("status.lock.transport-unavailable", e.getMessage()));
         } finally {
             synchronized (pendingCommands) {
                 pendingCommands.removeIf(ScheduledFuture::isDone);
             }
         }
+    }
+
+    private static String localizedStatusDescription(String key, @Nullable String detail) {
+        JsonArray arguments = new JsonArray();
+        arguments.add(detail == null ? "Unknown error" : detail);
+        return "@text/" + key + " " + arguments;
     }
 
     /**
