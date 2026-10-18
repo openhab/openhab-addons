@@ -491,12 +491,16 @@ public class OcppConnectorHandler extends BaseThingHandler {
                             + "the requested {}-phase setting may be ignored",
                     cp != null ? cp.getChargePointId() : "?", connectorId, numberPhases);
         }
-        boolean powerSourced = !Double.isNaN(watts) && !paused && allowsPower;
+        boolean powerSourced = !Double.isNaN(watts) && !paused;
         ChargingRateUnitType wireUnit;
         double wireValue;
-        if (powerSourced) {
+        if (powerSourced && allowsPower) {
             wireUnit = ChargingRateUnitType.W;
             wireValue = watts;
+        } else if (powerSourced) {
+            // Rounded down: a cap converted up would let the car draw past the power it was given.
+            wireUnit = ChargingRateUnitType.A;
+            wireValue = Math.floor(watts / (nominalVoltage * conversionPhases) * 10) / 10;
         } else if (!allowsCurrent && allowsPower) {
             wireUnit = ChargingRateUnitType.W;
             wireValue = amps * nominalVoltage * conversionPhases;

@@ -181,6 +181,36 @@ class OcppConnectorReadinessTest {
     }
 
     @Test
+    void aPowerLimitOnACurrentOnlyChargerGoesOutAsAmpsRoundedDown() {
+        ready.set(true);
+        when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
+        List<Request> sent = captureAcceptedSends();
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_POWER_LIMIT), new QuantityType<>(3000, Units.WATT));
+
+        ChargingSchedule schedule = firstSchedule(sent);
+        org.junit.jupiter.api.Assertions.assertEquals(ChargingRateUnitType.A, schedule.getChargingRateUnit());
+        org.junit.jupiter.api.Assertions.assertEquals(13.0,
+                schedule.getChargingSchedulePeriod()[0].getLimit().doubleValue());
+        verify(callback).stateUpdated(new ChannelUID(CONN_UID, CHANNEL_POWER_LIMIT),
+                new QuantityType<>(3000.0, Units.WATT));
+    }
+
+    @Test
+    void aZeroPowerLimitOnACurrentOnlyChargerStopsInsteadOfClearing() {
+        ready.set(true);
+        when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
+        List<Request> sent = captureAcceptedSends();
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_POWER_LIMIT), new QuantityType<>(0, Units.WATT));
+
+        org.junit.jupiter.api.Assertions.assertEquals(0.0,
+                firstSchedule(sent).getChargingSchedulePeriod()[0].getLimit().doubleValue());
+        org.junit.jupiter.api.Assertions.assertTrue(sent.stream()
+                .noneMatch(eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileRequest.class::isInstance));
+    }
+
+    @Test
     void aCurrentChargerStillGetsAmpsUnconverted() {
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
