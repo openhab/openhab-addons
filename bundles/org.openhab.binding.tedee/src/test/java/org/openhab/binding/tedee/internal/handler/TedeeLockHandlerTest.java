@@ -14,6 +14,7 @@
 package org.openhab.binding.tedee.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -31,13 +32,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.tedee.internal.TedeeBindingConstants;
 import org.openhab.binding.tedee.internal.api.TedeeApiException;
+import org.openhab.binding.tedee.internal.api.TedeeLock;
 import org.openhab.binding.tedee.internal.configuration.TedeeLockConfiguration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.State;
 
 /**
  * Tests the action dispatching performed by {@link TedeeLockHandler}.
@@ -242,6 +247,83 @@ class TedeeLockHandlerTest {
         testHandler.dispose();
     }
 
+    @Test
+    void shouldDiscardRefreshResultAfterReinitialization() throws Exception {
+        TedeeBridgeHandler oldProvider = mock(TedeeBridgeHandler.class);
+        Bridge bridge = mock(Bridge.class);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ThingUID bridgeUid = mock(ThingUID.class);
+        TedeeLockConfiguration configuration = configuration(123);
+        TestableTedeeLockHandler testHandler = new TestableTedeeLockHandler(thing, configuration);
+        CountDownLatch refreshStarted = new CountDownLatch(1);
+        CountDownLatch releaseRefresh = new CountDownLatch(1);
+        CountDownLatch refreshFinished = new CountDownLatch(1);
+        TedeeLock lock = new TedeeLock();
+        lock.id = 123;
+        lock.state = 6;
+        lock.isConnected = 1;
+
+        when(thing.getBridgeUID()).thenReturn(bridgeUid);
+        when(callback.getBridge(bridgeUid)).thenReturn(bridge);
+        when(bridge.getHandler()).thenReturn(oldProvider);
+        testHandler.setCallback(callback);
+        when(oldProvider.ready()).thenReturn(true, false);
+        when(oldProvider.getLock(anyInt())).thenAnswer(invocation -> {
+            refreshStarted.countDown();
+            try {
+                releaseRefresh.await(5, TimeUnit.SECONDS);
+                return lock;
+            } finally {
+                refreshFinished.countDown();
+            }
+        });
+        testHandler.initialize();
+        assertTrue(refreshStarted.await(5, TimeUnit.SECONDS));
+
+        testHandler.dispose();
+        configuration.deviceId = 456;
+        testHandler.initialize();
+        releaseRefresh.countDown();
+        assertTrue(refreshFinished.await(5, TimeUnit.SECONDS));
+
+        assertTrue(testHandler.stateUpdates == 0);
+        assertTrue(testHandler.propertyUpdates == 0);
+        assertTrue(testHandler.onlineUpdates == 0);
+        testHandler.dispose();
+    }
+
+    @Test
+    void shouldDiscardRefreshResultForDifferentDevice() throws Exception {
+        TedeeBridgeHandler provider = mock(TedeeBridgeHandler.class);
+        Bridge bridge = mock(Bridge.class);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ThingUID bridgeUid = mock(ThingUID.class);
+        TedeeLockConfiguration configuration = configuration(123);
+        TestableTedeeLockHandler testHandler = new TestableTedeeLockHandler(thing, configuration);
+        CountDownLatch refreshFinished = new CountDownLatch(1);
+        TedeeLock lock = new TedeeLock();
+        lock.id = 456;
+        lock.state = 6;
+
+        when(thing.getBridgeUID()).thenReturn(bridgeUid);
+        when(callback.getBridge(bridgeUid)).thenReturn(bridge);
+        when(bridge.getHandler()).thenReturn(provider);
+        testHandler.setCallback(callback);
+        when(provider.ready()).thenReturn(true);
+        when(provider.getLock(123)).thenAnswer(invocation -> {
+            refreshFinished.countDown();
+            return lock;
+        });
+
+        testHandler.initialize();
+        assertTrue(refreshFinished.await(5, TimeUnit.SECONDS));
+
+        assertTrue(testHandler.stateUpdates == 0);
+        assertTrue(testHandler.propertyUpdates == 0);
+        assertTrue(testHandler.onlineUpdates == 0);
+        testHandler.dispose();
+    }
+
     private static TedeeLockConfiguration configuration(int deviceId) {
         TedeeLockConfiguration configuration = new TedeeLockConfiguration();
         configuration.deviceId = deviceId;
@@ -250,6 +332,9 @@ class TedeeLockHandlerTest {
 
     private static final class TestableTedeeLockHandler extends TedeeLockHandler {
         private final TedeeLockConfiguration configuration;
+        private int stateUpdates;
+        private int propertyUpdates;
+        private int onlineUpdates;
 
         TestableTedeeLockHandler(Thing thing, TedeeLockConfiguration configuration) {
             super(thing);
@@ -259,6 +344,27 @@ class TedeeLockHandlerTest {
         @Override
         protected <T> T getConfigAs(Class<T> configClass) {
             return configClass.cast(configuration);
+        }
+
+        @Override
+        protected void updateState(ChannelUID channelUID, State state) {
+            stateUpdates++;
+        }
+
+        @Override
+        public void updateThing(Thing thing) {
+            propertyUpdates++;
+        }
+
+        @Override
+        protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
+        }
+
+        @Override
+        protected void updateStatus(ThingStatus status) {
+            if (status == ThingStatus.ONLINE) {
+                onlineUpdates++;
+            }
         }
     }
 }
