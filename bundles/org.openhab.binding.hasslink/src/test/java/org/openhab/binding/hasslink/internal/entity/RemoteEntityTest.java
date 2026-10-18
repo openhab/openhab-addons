@@ -101,8 +101,15 @@ class RemoteEntityTest extends AbstractEntityTest {
                     "remote", "send_command", id, Map.of("command", "power"));
             assertService(entity.toServiceCall(id, "learn_command", OnOffType.ON, state, context).orElseThrow(),
                     "remote", "learn_command", id, null);
-            assertService(entity.toServiceCall(id, "delete_command", OnOffType.ON, state, context).orElseThrow(),
-                    "remote", "delete_command", id, null);
+            assertService(
+                    entity.toServiceCall(id, "delete_command", new StringType("power"), state, context).orElseThrow(),
+                    "remote", "delete_command", id, Map.of("command", "power"));
+            assertService(
+                    entity.toServiceCall(id, "delete_command",
+                            new StringType("{\"command\":[\"power\"],\"device\":\"TV\"}"), state, context)
+                            .orElseThrow(),
+                    "remote", "delete_command", id, Map.of("command", List.of("power"), "device", "TV"));
+            assertThat(entity.toServiceCall(id, "delete_command", OnOffType.ON, state, context).isEmpty(), is(true));
         }
     }
 }

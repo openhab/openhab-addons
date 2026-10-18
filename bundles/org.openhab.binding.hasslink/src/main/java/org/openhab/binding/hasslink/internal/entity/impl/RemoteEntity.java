@@ -28,11 +28,12 @@ import org.openhab.binding.hasslink.internal.entity.ParsedData;
 import org.openhab.binding.hasslink.internal.entity.util.ChannelSpecsBuilder;
 import org.openhab.binding.hasslink.internal.entity.util.CommandMapper;
 import org.openhab.binding.hasslink.internal.entity.util.StateMapBuilder;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 
 /**
  * The {@link RemoteEntity} class represents a remote control entity type in the Home Assistant binding.
- * Maps remote state to openHAB Switch channels and accepts String commands for send_command calls.
+ * Maps remote state to openHAB Switch channels and accepts String commands for remote services.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
@@ -70,8 +71,48 @@ public class RemoteEntity implements EntityType {
             case EntityType.PRIMARY_ATTR -> CommandMapper.onOff(command, "remote", entityId);
             case "send_command" -> CommandMapper.onString(command, "remote", "send_command", "command", entityId);
             case "learn_command" -> CommandMapper.onOffCustom(command, "remote", "learn_command", null, entityId);
-            case "delete_command" -> CommandMapper.onOffCustom(command, "remote", "delete_command", null, entityId);
+            case "delete_command" -> deleteCommand(command, entityId);
             default -> Optional.empty();
         };
+    }
+
+    private Optional<ServiceCall> deleteCommand(Command command, String entityId) {
+        if (!(command instanceof StringType stringCommand)) {
+            return Optional.empty();
+        }
+
+        String value = stringCommand.toString().trim();
+        if (value.isEmpty()) {
+            return Optional.empty();
+        }
+
+        StringType trimmedCommand = new StringType(value);
+        Optional<ServiceCall> serviceCall = value.startsWith("{")
+                ? CommandMapper.onJsonString(trimmedCommand, "remote", "delete_command", entityId)
+                : CommandMapper.onString(trimmedCommand, "remote", "delete_command", "command", entityId);
+        return serviceCall.filter(RemoteEntity::hasCommandName);
+    }
+
+    private static boolean hasCommandName(ServiceCall serviceCall) {
+        Map<String, Object> serviceData = serviceCall.serviceData();
+        if (serviceData == null) {
+            return false;
+        }
+        Object commandNames = serviceData.get("command");
+        if (commandNames instanceof String commandName) {
+            return !commandName.isBlank();
+        }
+        if (commandNames instanceof List<?> names) {
+            if (names.isEmpty()) {
+                return false;
+            }
+            for (Object name : names) {
+                if (!(name instanceof String) || ((String) name).isBlank()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -391,12 +391,16 @@ _Home Assistant Documentation:_ [`remote`](https://www.home-assistant.io/integra
 
 Remote entities represent universal IR/RF remotes and media control hubs.
 
-| Channel           | Item Type | R/W | Description                                                               |
-|:------------------|:----------|:----|:--------------------------------------------------------------------------|
-| **Primary**       | `Switch`  | R/W | Power state of the remote control hub (`ON`/`OFF`).                       |
-| `#send_command`   | `String`  | W   | Transmits remote key commands via `remote.send_command`.                  |
-| `#learn_command`  | `Switch`  | W   | Triggers command learning mode via `remote.learn_command` (if supported). |
-| `#delete_command` | `Switch`  | W   | Deletes stored commands via `remote.delete_command` (if supported).       |
+| Channel           | Item Type | R/W | Description                                                                                                     |
+|:------------------|:----------|:----|:----------------------------------------------------------------------------------------------------------------|
+| **Primary**       | `Switch`  | R/W | Power state of the remote control hub (`ON`/`OFF`).                                                             |
+| `#send_command`   | `String`  | W   | Transmits remote key commands via `remote.send_command`.                                                        |
+| `#learn_command`  | `Switch`  | W   | Triggers command learning mode via `remote.learn_command` (if supported).                                       |
+| `#delete_command` | `String`  | W   | Deletes stored commands via `remote.delete_command` (if supported); send a command name or JSON service fields. |
+
+For `#delete_command`, a plain String supplies the required `command` field. Send a JSON object such as
+`{"command":["power"],"device":"TV"}` to specify one or more command names and optional integration-specific
+fields such as `device`.
 
 ---
 
