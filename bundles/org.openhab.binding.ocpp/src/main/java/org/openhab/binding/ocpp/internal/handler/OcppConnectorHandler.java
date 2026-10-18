@@ -97,6 +97,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private static final EnumSet<ChargePointStatus> TRANSIENT = EnumSet.of(ChargePointStatus.Preparing,
             ChargePointStatus.Finishing);
     private static final long STUCK_STATE_SECONDS = 120;
+    private static final int PROFILE_RETRY_LIMIT = 3;
     private static final long REMOTE_START_RETRY_DELAY_SECONDS = 5;
 
     private record DynamicChannel(String channelTypeId, String itemType, @Nullable String label) {
@@ -180,6 +181,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollTask;
     private @Nullable ScheduledFuture<?> stuckTask;
     private volatile @Nullable ScheduledFuture<?> remoteStartRetryTask;
+    private @Nullable ScheduledFuture<?> profileRetryTask;
+    private int profileRetries;
+    long profileRetryMillis = TimeUnit.SECONDS.toMillis(30);
     // A start answered after a stop, or after a newer start, must not schedule another attempt.
     private final AtomicInteger remoteStartRun = new AtomicInteger();
     private @Nullable CompletableFuture<eu.chargetime.ocpp.model.Confirmation> pendingPoll;
@@ -293,8 +297,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
         synchronized (lock) {
             cancel(stuckTask);
             cancel(pendingFlush);
+            cancel(profileRetryTask);
             stuckTask = null;
             pendingFlush = null;
+            profileRetryTask = null;
         }
         OcppChargePointHandler parent = chargePoint;
         if (parent != null) {
@@ -432,6 +438,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     public void onChargePointReady() {
+        synchronized (lock) {
+            profileRetries = 0;
+        }
         if (limitDeferred) {
             limitDeferred = false;
             applyLimit();
@@ -541,6 +550,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                     if (ex == null && confirmation instanceof SetChargingProfileConfirmation profile
                             && profile.getStatus() == ChargingProfileStatus.Accepted) {
                         if (claimPublication(claim)) {
+                            profileLanded();
                             publishAcceptedLimit(claim);
                         } else {
                             logger.debug("Stale SetChargingProfile confirmation on connector {} ignored", connectorId);
@@ -549,8 +559,40 @@ public class OcppConnectorHandler extends BaseThingHandler {
                         logger.debug("SetChargingProfile on connector {} not accepted: {}", connectorId, confirmation);
                     } else {
                         limitDeferred = true;
+                        retryProfileLater();
                     }
                 });
+    }
+
+    /**
+     * A CALL that went unanswered leaves the session up, so waiting for the next connect could hold a stale
+     * limit for days. Bounded, because a charger that keeps dropping this one CALL will not answer a retry either.
+     */
+    private void retryProfileLater() {
+        synchronized (lock) {
+            if (profileRetries >= PROFILE_RETRY_LIMIT || profileRetryTask != null) {
+                return;
+            }
+            profileRetries++;
+            profileRetryTask = scheduler.schedule(() -> {
+                synchronized (lock) {
+                    profileRetryTask = null;
+                }
+                if (limitDeferred && isReadyToSend()) {
+                    limitDeferred = false;
+                    applyLimit();
+                }
+            }, profileRetryMillis, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void profileLanded() {
+        limitDeferred = false;
+        synchronized (lock) {
+            profileRetries = 0;
+            cancel(profileRetryTask);
+            profileRetryTask = null;
+        }
     }
 
     private void publishAcceptedLimit(ProfileClaim claim) {
@@ -574,6 +616,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                             && (cleared.getStatus() == ClearChargingProfileStatus.Accepted
                                     || cleared.getStatus() == ClearChargingProfileStatus.Unknown)) {
                         if (claimPublication(claim)) {
+                            profileLanded();
                             updateState(CHANNEL_CHARGE_LIMIT, UnDefType.UNDEF);
                             updateState(CHANNEL_POWER_LIMIT, UnDefType.UNDEF);
                             updateState(CHANNEL_PAUSE, OnOffType.OFF);
@@ -586,6 +629,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                                 confirmation);
                     } else {
                         limitDeferred = true;
+                        retryProfileLater();
                     }
                 });
     }

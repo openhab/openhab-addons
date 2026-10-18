@@ -211,6 +211,38 @@ class OcppConnectorReadinessTest {
     }
 
     @Test
+    void aProfileTheChargerNeverAnsweredIsSentAgainWhileTheSessionStaysUp() {
+        ready.set(true);
+        handler.profileRetryMillis = 50;
+        java.util.concurrent.atomic.AtomicInteger sends = new java.util.concurrent.atomic.AtomicInteger();
+        when(parent.send(argThat(OcppConnectorReadinessTest::isSetChargingProfile)))
+                .thenAnswer(invocation -> sends.getAndIncrement() == 0
+                        ? CompletableFuture.failedFuture(new java.util.concurrent.TimeoutException("no response"))
+                        : CompletableFuture
+                                .completedFuture(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted)));
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(6, Units.AMPERE));
+
+        verify(parent, org.mockito.Mockito.timeout(2000).times(2))
+                .send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
+        verify(callback, org.mockito.Mockito.timeout(2000)).stateUpdated(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT),
+                new QuantityType<>(6.0, Units.AMPERE));
+    }
+
+    @Test
+    void aChargerThatNeverAnswersIsOnlyRetriedAFewTimes() {
+        ready.set(true);
+        handler.profileRetryMillis = 20;
+        when(parent.send(argThat(OcppConnectorReadinessTest::isSetChargingProfile)))
+                .thenReturn(CompletableFuture.failedFuture(new java.util.concurrent.TimeoutException("no response")));
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(6, Units.AMPERE));
+
+        verify(parent, org.mockito.Mockito.after(1000).times(4))
+                .send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
+    }
+
+    @Test
     void aCurrentChargerStillGetsAmpsUnconverted() {
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
