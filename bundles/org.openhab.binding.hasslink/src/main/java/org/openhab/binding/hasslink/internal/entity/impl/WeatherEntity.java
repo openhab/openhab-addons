@@ -76,8 +76,8 @@ public class WeatherEntity implements EntityType {
 
         ChannelSpecsBuilder builder = ChannelSpecsBuilder.create(entityState, context) //
                 .addPrimaryChannel(ItemType.STRING) //
-                .addAttr("cloud_coverage", ItemType.number("Dimensionless")) //
-                .addAttr("humidity", ItemType.number("Humidity")) //
+                .addAttr("cloud_coverage", ItemType.DIMENSIONLESS) //
+                .addAttr("humidity", ItemType.DIMENSIONLESS) //
                 .addAttr("apparent_temperature", ItemType.number("Temperature")) //
                 .addAttr("dew_point", ItemType.number("Temperature")) //
                 .addAttr("precipitation", ItemType.number("Length")) //
@@ -110,7 +110,7 @@ public class WeatherEntity implements EntityType {
 
     private void buildForecastChannelSpecs(ChannelSpecsBuilder builder, String forecastType,
             ItemType windBearingItemType) {
-        ItemType dimensionless = ItemType.number("Dimensionless");
+        ItemType dimensionless = ItemType.DIMENSIONLESS;
         ItemType temperature = ItemType.number("Temperature");
         ItemType length = ItemType.number("Length");
         ItemType pressure = ItemType.number("Pressure");
