@@ -518,7 +518,7 @@ Group gTedee "Tedee Locks"
 Switch TedeeFrontDoorLock "Front Door Lock" (gTedee) {channel="tedee:lock:home:frontdoor:lock"}
 String TedeeFrontDoorState "Front Door State [%s]" (gTedee) {channel="tedee:lock:home:frontdoor:state"}
 String TedeeFrontDoorDoorState "Front Door Door State [%s]" (gTedee) {channel="tedee:lock:home:frontdoor:door-state"}
-Number TedeeFrontDoorBatt}
+Number TedeeFrontDoorBattery "Front Door Battery [%d %%]" (gTedee) {channel="tedee:lock:home:frontdoor:battery"}
 Switch TedeeFrontDoorCharging "Front Door Charging" (gTedee) {channel="tedee:lock:home:frontdoor:charging"}
 Switch TedeeFrontDoorJammed "Front Door Jammed" (gTedee) {channel="tedee:lock:home:frontdoor:jammed"}
 Switch TedeeFrontDoorConnected "Front Door Connected" (gTedee) {channel="tedee:lock:home:frontdoor:connected"}
