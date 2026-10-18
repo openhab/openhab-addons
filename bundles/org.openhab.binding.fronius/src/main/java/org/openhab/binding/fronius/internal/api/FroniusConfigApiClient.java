@@ -90,6 +90,20 @@ public class FroniusConfigApiClient {
         return httpUtil.executeExclusively(() -> executeAuthenticatedRequest(endpoint, method, uri, body));
     }
 
+    /**
+     * Executes an operation of multiple requests, e.g. a read-modify-write sequence, without any other request to the
+     * inverter interleaving with it.
+     *
+     * @param operation the operation to execute
+     * @return the result of the operation
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public <T> T executeExclusively(FroniusHttpUtil.ExclusiveOperation<T> operation)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        return httpUtil.executeExclusively(operation);
+    }
+
     private String executeAuthenticatedRequest(FroniusConfigApiEndpoint endpoint, HttpMethod method, URI uri,
             @Nullable String body) throws FroniusCommunicationException, FroniusUnauthorizedException {
         FroniusDigestSession establishedSession = session;

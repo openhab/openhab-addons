@@ -213,6 +213,28 @@ public class FroniusBatteryControl {
     }
 
     /**
+     * Modifies the time of use settings without any other request to the inverter interleaving. Channel commands and
+     * actions read, modify and write the whole table, so interleaved modifications would silently undo each other,
+     * which the read-back verification cannot detect.
+     *
+     * @param modification the requests modifying the time of use settings
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    private void modifyTimeOfUse(TimeOfUseModification modification)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        configApiClient.executeExclusively(() -> {
+            modification.execute();
+            return null;
+        });
+    }
+
+    @FunctionalInterface
+    private interface TimeOfUseModification {
+        void execute() throws FroniusCommunicationException, FroniusUnauthorizedException;
+    }
+
+    /**
      * Sets an all-day, all-week schedule entry for the given schedule type, replacing an existing all-time entry of
      * that type. Entries of other schedule types are preserved, unlike with the reset based battery control methods.
      *
@@ -231,23 +253,25 @@ public class FroniusBatteryControl {
         if (powerInWatts.intValue() < 0) {
             throw new IllegalArgumentException("power must be non-negative");
         }
-        List<TimeOfUseRecord> records = new ArrayList<>();
-        for (TimeOfUseRecord record : getTimeOfUse().records()) {
-            if (record.scheduleType() != scheduleType) {
-                records.add(record);
-            } else if (!isAllTimeEntry(record)) {
-                // The inverter web UI rejects overlapping entries of the same type, so an all-time entry cannot
-                // coexist with other entries of its type, and replacing them would destroy the user's schedules
-                throw new IllegalArgumentException("There are existing time of use schedules of type " + scheduleType
-                        + ", please manage them through the battery control actions instead");
-            }
-        }
         TimeOfUseRecord allTimeEntry = new TimeOfUseRecord(true, powerInWatts.intValue(), scheduleType,
                 new TimeTableRecord(BEGIN_OF_DAY.format(TIME_FORMATTER), END_OF_DAY.format(TIME_FORMATTER)),
                 new WeekdaysRecord(true, true, true, true, true, true, true));
-        warnAboutConflicts(records.toArray(TimeOfUseRecord[]::new), allTimeEntry);
-        records.add(allTimeEntry);
-        setTimeOfUse(new TimeOfUseRecords(records.toArray(TimeOfUseRecord[]::new)));
+        modifyTimeOfUse(() -> {
+            List<TimeOfUseRecord> records = new ArrayList<>();
+            for (TimeOfUseRecord record : getTimeOfUse().records()) {
+                if (record.scheduleType() != scheduleType) {
+                    records.add(record);
+                } else if (!isAllTimeEntry(record)) {
+                    // The inverter web UI rejects overlapping entries of the same type, so an all-time entry cannot
+                    // coexist with other entries of its type, and replacing them would destroy the user's schedules
+                    throw new IllegalArgumentException("There are existing time of use schedules of type "
+                            + scheduleType + ", please manage them through the battery control actions instead");
+                }
+            }
+            warnAboutConflicts(records.toArray(TimeOfUseRecord[]::new), allTimeEntry);
+            records.add(allTimeEntry);
+            setTimeOfUse(new TimeOfUseRecords(records.toArray(TimeOfUseRecord[]::new)));
+        });
     }
 
     /**
@@ -289,10 +313,6 @@ public class FroniusBatteryControl {
      */
     public void addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power,
             Set<DayOfWeek> weekdays) throws FroniusCommunicationException, FroniusUnauthorizedException {
-        TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
-        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
-        System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
-
         QuantityType<Power> powerInWatts = power.toUnit(Units.WATT);
         if (powerInWatts == null) {
             throw new IllegalArgumentException("power must be convertible to Watt unit");
@@ -306,9 +326,14 @@ public class FroniusBatteryControl {
                         weekdays.contains(DayOfWeek.WEDNESDAY), weekdays.contains(DayOfWeek.THURSDAY),
                         weekdays.contains(DayOfWeek.FRIDAY), weekdays.contains(DayOfWeek.SATURDAY),
                         weekdays.contains(DayOfWeek.SUNDAY)));
-        timeOfUse[timeOfUse.length - 1] = holdCharge;
-        warnAboutConflicts(currentTimeOfUse.records(), holdCharge);
-        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+        modifyTimeOfUse(() -> {
+            TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
+            TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
+            System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
+            timeOfUse[timeOfUse.length - 1] = holdCharge;
+            warnAboutConflicts(currentTimeOfUse.records(), holdCharge);
+            setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+        });
     }
 
     /**
@@ -399,7 +424,7 @@ public class FroniusBatteryControl {
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
     public void reset() throws FroniusCommunicationException, FroniusUnauthorizedException {
-        setTimeOfUse(new TimeOfUseRecords(new TimeOfUseRecord[0]));
+        modifyTimeOfUse(() -> setTimeOfUse(new TimeOfUseRecords(new TimeOfUseRecord[0])));
     }
 
     /**
@@ -409,8 +434,10 @@ public class FroniusBatteryControl {
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
     public void holdBatteryCharge() throws FroniusCommunicationException, FroniusUnauthorizedException {
-        reset();
-        addHoldBatteryChargeSchedule(BEGIN_OF_DAY, END_OF_DAY);
+        modifyTimeOfUse(() -> {
+            reset();
+            addHoldBatteryChargeSchedule(BEGIN_OF_DAY, END_OF_DAY);
+        });
     }
 
     /**
@@ -436,8 +463,10 @@ public class FroniusBatteryControl {
      */
     public void forceBatteryCharging(QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        reset();
-        addForcedBatteryChargingSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+        modifyTimeOfUse(() -> {
+            reset();
+            addForcedBatteryChargingSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+        });
     }
 
     /**
@@ -463,8 +492,10 @@ public class FroniusBatteryControl {
      */
     public void limitBatteryCharging(QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        reset();
-        addBatteryChargingLimitSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+        modifyTimeOfUse(() -> {
+            reset();
+            addBatteryChargingLimitSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+        });
     }
 
     /**
@@ -491,8 +522,10 @@ public class FroniusBatteryControl {
      */
     public void limitBatteryDischarging(QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        reset();
-        addBatteryDischargingLimitSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+        modifyTimeOfUse(() -> {
+            reset();
+            addBatteryDischargingLimitSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+        });
     }
 
     /**
@@ -517,8 +550,10 @@ public class FroniusBatteryControl {
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
     public void preventBatteryCharging() throws FroniusCommunicationException, FroniusUnauthorizedException {
-        reset();
-        addPreventBatteryChargingSchedule(BEGIN_OF_DAY, END_OF_DAY);
+        modifyTimeOfUse(() -> {
+            reset();
+            addPreventBatteryChargingSchedule(BEGIN_OF_DAY, END_OF_DAY);
+        });
     }
 
     /**
@@ -543,8 +578,10 @@ public class FroniusBatteryControl {
      */
     public void forceBatteryDischarging(QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        reset();
-        addForcedBatteryDischargingSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+        modifyTimeOfUse(() -> {
+            reset();
+            addForcedBatteryDischargingSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+        });
     }
 
     /**
