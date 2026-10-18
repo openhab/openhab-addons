@@ -290,7 +290,9 @@ public class Go2RtcManager {
                     .append("'\n");
         }
         yaml.append("api:\n  listen: \"127.0.0.1:").append(apiPort).append("\"\n");
-        yaml.append("webrtc:\n  listen: \":").append(webRtcPort).append("\"\n");
+        // TCP only: the DTLS handshake over UDP ICE does not complete with Firefox/Chrome clients
+        yaml.append("webrtc:\n  listen: \":").append(webRtcPort).append("/tcp\"\n");
+        yaml.append("  filters:\n    networks: [tcp4, tcp6]\n");
         yaml.append("  candidates:\n").append(candidates);
         return yaml.toString();
     }
