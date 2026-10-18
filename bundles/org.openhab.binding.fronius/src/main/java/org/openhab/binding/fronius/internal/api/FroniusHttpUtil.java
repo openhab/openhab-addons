@@ -47,6 +47,34 @@ public class FroniusHttpUtil {
     }
 
     /**
+     * An operation that must not be interleaved with other requests to the bridge, see {@link #executeExclusively}.
+     */
+    @FunctionalInterface
+    public interface ExclusiveOperation<T> {
+        T execute() throws FroniusCommunicationException, FroniusUnauthorizedException;
+    }
+
+    /**
+     * Execute an operation while holding the request lock of this bridge, so that no other request can interleave
+     * with it: control requests wait until the operation is completed, polling requests are skipped. The lock is
+     * reentrant, so the operation itself may issue requests through this instance.
+     *
+     * @param operation the operation to execute
+     * @return the result of the operation
+     * @throws FroniusCommunicationException when the operation failed or was interrupted
+     * @throws FroniusUnauthorizedException when the operation failed due to invalid credentials
+     */
+    public <T> T executeExclusively(ExclusiveOperation<T> operation)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        acquireLock(requestLock, RequestMode.CONTROL, "");
+        try {
+            return operation.execute();
+        } finally {
+            requestLock.unlock();
+        }
+    }
+
+    /**
      * Issue a HTTP request and retry on failure.
      *
      * @param httpMethod the HTTP method to use

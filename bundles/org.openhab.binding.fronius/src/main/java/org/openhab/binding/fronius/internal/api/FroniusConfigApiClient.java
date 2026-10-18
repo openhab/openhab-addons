@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
  * <br>
  * The digest session established by a login is kept and reused for subsequent requests, which avoids the costly login
  * handshake for every single request. Because the inverter expects the nonce counts of a session to arrive in
- * ascending order, the authentication header is created and the request is sent while holding the client's lock.
+ * ascending order, the authentication header is created and the request is sent while holding the request lock of the
+ * bridge's {@link FroniusHttpUtil}, which also keeps the requests from overlapping with the Solar API polling.
  * <br>
  * An instance of this class is held by the {@link org.openhab.binding.fronius.internal.handler.FroniusBridgeHandler},
  * so that all requests to an inverter share the same session.
@@ -63,11 +64,13 @@ public class FroniusConfigApiClient {
     private static final Duration GATEWAY_ERROR_RETRY_DELAY = Duration.ofMillis(500);
 
     private final Logger logger = LoggerFactory.getLogger(FroniusConfigApiClient.class);
+    private final FroniusHttpUtil httpUtil;
     private final HttpClient httpClient;
 
     private @Nullable FroniusDigestSession session;
 
-    public FroniusConfigApiClient(HttpClient httpClient) {
+    public FroniusConfigApiClient(FroniusHttpUtil httpUtil, HttpClient httpClient) {
+        this.httpUtil = httpUtil;
         this.httpClient = httpClient;
     }
 
@@ -82,7 +85,12 @@ public class FroniusConfigApiClient {
      * @throws FroniusCommunicationException when an error occurs during communication with the inverter
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
-    public synchronized String executeRequest(FroniusConfigApiEndpoint endpoint, HttpMethod method, URI uri,
+    public String executeRequest(FroniusConfigApiEndpoint endpoint, HttpMethod method, URI uri, @Nullable String body)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        return httpUtil.executeExclusively(() -> executeAuthenticatedRequest(endpoint, method, uri, body));
+    }
+
+    private String executeAuthenticatedRequest(FroniusConfigApiEndpoint endpoint, HttpMethod method, URI uri,
             @Nullable String body) throws FroniusCommunicationException, FroniusUnauthorizedException {
         FroniusDigestSession establishedSession = session;
         if (establishedSession != null && establishedSession.isReusableFor(endpoint, SESSION_TTL)) {

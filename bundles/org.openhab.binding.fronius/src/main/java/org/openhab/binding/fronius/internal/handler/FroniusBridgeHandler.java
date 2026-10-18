@@ -68,7 +68,7 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     public FroniusBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        this.configApiClient = new FroniusConfigApiClient(httpClient);
+        this.configApiClient = new FroniusConfigApiClient(httpUtil, httpClient);
     }
 
     private void setupTlsTrustManager(String host) throws CertificateException, IOException {
