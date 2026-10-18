@@ -1823,6 +1823,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Preserve the firmware update state when the resource is otherwise reported ONLINE. Other statuses pass through
+     * unchanged.
+     */
     @Override
     protected void updateStatus(ThingStatus thingStatus) {
         if (thingStatus != ThingStatus.ONLINE || !updateFirmwareStatus()) {
@@ -1830,6 +1834,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Use the firmware update state's translatable description for ONLINE updates instead of the caller's description.
+     * Other statuses and descriptions pass through unchanged.
+     */
     @Override
     protected void updateStatus(ThingStatus thingStatus, @Nullable String description) {
         if (thingStatus != ThingStatus.ONLINE || !updateFirmwareStatus()) {
@@ -1837,6 +1845,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Use the firmware update state's translatable description for FIRMWARE_UPDATING requests. Other details and
+     * descriptions pass through unchanged.
+     */
     @Override
     protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
         if (detail != ThingStatusDetail.FIRMWARE_UPDATING || !updateFirmwareStatus()) {
@@ -1844,6 +1856,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Apply the firmware state stored in the Thing property. INSTALLING sets OFFLINE with FIRMWARE_UPDATING;
+     * READY_TO_INSTALL keeps the Thing ONLINE. Both use the update state's translatable description.
+     *
+     * @return true if the firmware state replaced the requested status
+     */
     private boolean updateFirmwareStatus() {
         String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
         UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
