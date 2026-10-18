@@ -1151,7 +1151,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
     }
 
-    private @Nullable AdditionalProperty resolveAdditionalProperty(FeatureProperties properties, String entry) {
+    static @Nullable AdditionalProperty resolveAdditionalProperty(FeatureProperties properties, String entry) {
         JsonElement additional = properties.additionalProperties.get(entry);
         if (additional == null) {
             return null;
@@ -1179,11 +1179,12 @@ public class DeviceHandler extends ViessmannThingHandler {
                     } else {
                         valueEntry = valueElement.getAsString();
                     }
-                } else {
+                } else if (valueElement.isJsonArray()) {
+                    typeEntry = "array";
                     valueEntry = valueElement.toString();
-                    if (valueElement.isJsonArray() && typeElement == null) {
-                        typeEntry = "array";
-                    }
+                } else {
+                    typeEntry = "string";
+                    valueEntry = valueElement.toString();
                 }
             } else {
                 valueEntry = obj.toString();
@@ -1208,7 +1209,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         return new AdditionalProperty(typeEntry, valueEntry, unit, boolValue);
     }
 
-    private record AdditionalProperty(String type, String value, @Nullable String unit, boolean boolValue) {
+    record AdditionalProperty(String type, String value, @Nullable String unit, boolean boolValue) {
     }
 
     /**
