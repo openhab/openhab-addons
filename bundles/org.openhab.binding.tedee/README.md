@@ -197,19 +197,12 @@ Channels need to be linked to Items before their states are consumed by openHAB 
 
 ```java
 Switch Tedee_Lock "Lock" {channel="tedee:lock:home:locknamehome:lock"}
-
 String Tedee_State "Lock State [%s]" {channel="tedee:lock:home:locknamehome:state"}
-
 String Tedee_Door_State "Door State [%s]" {channel="tedee:lock:home:locknamehome:door-state"}
-
 Number Tedee_Battery "Battery [%.0f %%]" {channel="tedee:lock:home:locknamehome:battery"}
-
 Switch Tedee_Charging "Charging" {channel="tedee:lock:home:locknamehome:charging"}
-
 Switch Tedee_Jammed "Jammed" {channel="tedee:lock:home:locknamehome:jammed"}
-
 Switch Tedee_Connected "Connected" {channel="tedee:lock:home:locknamehome:connected"}
-
 String Tedee_Action "Action" {channel="tedee:lock:home:locknamehome:action"}
 ```
 
@@ -245,25 +238,15 @@ Switch Tedee_Cloud_Connected "Cloud Lock Connected" {channel="tedee:lock:cloud:l
 
 ```java
 Switch Tedee_AutoLockEnabled "Auto Lock Enabled" {channel="tedee:lock:home:locknamehome:auto-lock-enabled"}
-
 Number Tedee_AutoLockDelay "Auto Lock Delay" {channel="tedee:lock:home:locknamehome:auto-lock-delay"}
-
 Switch Tedee_PullSpringEnabled "Pull Spring Enabled" {channel="tedee:lock:home:locknamehome:pull-spring-enabled"}
-
 Number Tedee_PullSpringDuration "Pull Spring Duration" {channel="tedee:lock:home:locknamehome:pull-spring-duration"}
-
 Switch Tedee_Tedee_AutoLockImplicitEnabled "Auto Lock Implicit Enabled" {channel="tedee:lock:home:locknamehome:auto-lock-implicit-enabled"}
-
 Number Tedee_AutoLockImplicitDelay "Auto Lock Implicit Delay" {channel="tedee:lock:home:locknamehome:auto-lock-implicit-delay"}
-
 Switch Tedee_AutoPullSpringEnabled "Auto Pull Spring Enabled" {channel="tedee:lock:home:locknamehome:auto-pull-spring-enabled"}
-
 Switch Tedee_PostponedLockEnabled "Postponed Lock Enabled" {channel="tedee:lock:home:locknamehome:postponed-lock-enabled"}
-
 Number Tedee_PostponedLockDelay "Postponed Lock Delay" {channel="tedee:lock:home:locknamehome:postponed-lock-delay"}
-
 Switch Tedee_ButtonLockEnabled "Button Lock Enabled" {channel="tedee:lock:home:locknamehome:button-lock-enabled"}
-
 Switch Tedee_ButtonUnlockEnabled "Button Unlock Enabled" {channel="tedee:lock:home:locknamehome:button-unlock-enabled"}
 ```
 
@@ -532,43 +515,18 @@ The bridge IDs (`home` and `account`) and lock IDs (`frontdoor` and `frontdoor-c
 ```text
 Group gTedee "Tedee Locks"
 
-Switch TedeeFrontDoorLock "Front Door Lock" (gTedee) {
-    channel="tedee:lock:home:frontdoor:lock"
-}
-String TedeeFrontDoorState "Front Door State [%s]" (gTedee) {
-    channel="tedee:lock:home:frontdoor:state"
-}
-String TedeeFrontDoorDoorState "Front Door Door State [%s]" (gTedee) {
-    channel="tedee:lock:home:frontdoor:door-state"
-}
-Number TedeeFrontDoorBattery "Front Door Battery [%d %%]" (gTedee) {
-    channel="tedee:lock:home:frontdoor:battery"
-}
-Switch TedeeFrontDoorCharging "Front Door Charging" (gTedee) {
-    channel="tedee:lock:home:frontdoor:charging"
-}
-Switch TedeeFrontDoorJammed "Front Door Jammed" (gTedee) {
-    channel="tedee:lock:home:frontdoor:jammed"
-}
-Switch TedeeFrontDoorConnected "Front Door Connected" (gTedee) {
-    channel="tedee:lock:home:frontdoor:connected"
-}
-String TedeeFrontDoorAction "Front Door Action [%s]" (gTedee) {
-    channel="tedee:lock:home:frontdoor:action"
-}
-Switch TedeeFrontDoorAutoLockEnabled "Front Door Auto-Lock" (gTedee) {
-    channel="tedee:lock:home:frontdoor:auto-lock-enabled"
-}
-Number TedeeFrontDoorAutoLockDelay "Front Door Auto-Lock Delay [%d s]" (gTedee) {
-    channel="tedee:lock:home:frontdoor:auto-lock-delay"
-}
-
-Switch TedeeCloudFrontDoorLock "Front Door Lock (Cloud)" {
-    channel="tedee:lock:account:frontdoor-cloud:lock"
-}
-String TedeeCloudFrontDoorState "Front Door State (Cloud) [%s]" {
-    channel="tedee:lock:account:frontdoor-cloud:state"
-}
+Switch TedeeFrontDoorLock "Front Door Lock" (gTedee) {channel="tedee:lock:home:frontdoor:lock"}
+String TedeeFrontDoorState "Front Door State [%s]" (gTedee) {channel="tedee:lock:home:frontdoor:state"}
+String TedeeFrontDoorDoorState "Front Door Door State [%s]" (gTedee) {channel="tedee:lock:home:frontdoor:door-state"}
+Number TedeeFrontDoorBatt}
+Switch TedeeFrontDoorCharging "Front Door Charging" (gTedee) {channel="tedee:lock:home:frontdoor:charging"}
+Switch TedeeFrontDoorJammed "Front Door Jammed" (gTedee) {channel="tedee:lock:home:frontdoor:jammed"}
+Switch TedeeFrontDoorConnected "Front Door Connected" (gTedee) {channel="tedee:lock:home:frontdoor:connected"}
+String TedeeFrontDoorAction "Front Door Action [%s]" (gTedee) {channel="tedee:lock:home:frontdoor:action"}
+Switch TedeeFrontDoorAutoLockEnabled "Front Door Auto-Lock" (gTedee) {channel="tedee:lock:home:frontdoor:auto-lock-enabled"}
+Number TedeeFrontDoorAutoLockDelay "Front Door Auto-Lock Delay [%d s]" (gTedee) {channel="tedee:lock:home:frontdoor:auto-lock-delay"}
+Switch TedeeCloudFrontDoorLock "Front Door Lock (Cloud)" {channel="tedee:lock:account:frontdoor-cloud:lock"}
+String TedeeCloudFrontDoorState "Front Door State (Cloud) [%s]" {channel="tedee:lock:account:frontdoor-cloud:state"}
 ```
 
 The `lock` channel accepts `ON` and `OFF` commands. Use the `action` channel to send the string commands `LOCK`, `UNLOCK`, `UNLOCK_NO_PULL`, `UNLOCK_OR_PULL`, or `PULL`.
