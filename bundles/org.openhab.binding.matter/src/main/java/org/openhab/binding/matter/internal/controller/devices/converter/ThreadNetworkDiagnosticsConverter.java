@@ -12,30 +12,69 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
+import java.math.BigInteger;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster.RoutingRoleEnum;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.StateDescription;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 
 /**
  * A converter for translating {@link ThreadNetworkDiagnosticsCluster} events and attributes to openHAB channels and
  * back again.
  *
+ * Thread extended addresses are 64-bit values, which JavaScript clients cannot parse as JSON numbers without losing
+ * precision, so they are written to properties as 16 digit hex strings.
+ *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
 public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNetworkDiagnosticsCluster> {
+    private static final Gson THREAD_GSON = new GsonBuilder()
+            .registerTypeAdapter(BigInteger.class,
+                    (JsonSerializer<BigInteger>) (src, type, context) -> new JsonPrimitive(toExtAddressHex(src)))
+            .create();
+
+    private static final Map<String, Function<ThreadNetworkDiagnosticsCluster, @Nullable Object>> POLLED_ATTRIBUTES = Map
+            .of(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE, c -> c.routingRole,
+                    ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME, c -> c.networkName,
+                    ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID, c -> c.extendedPanId,
+                    ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PARTITION_ID, c -> c.partitionId,
+                    ThreadNetworkDiagnosticsCluster.ATTRIBUTE_LEADER_ROUTER_ID, c -> c.leaderRouterId,
+                    ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE, c -> c.neighborTable,
+                    ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE, c -> c.routeTable,
+                    ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, c -> c.rloc16,
+                    ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS, c -> c.extAddress);
+    // Only read when the device supports them, they are new in Matter 1.4
+    private static final Set<String> OPTIONAL_ATTRIBUTES = Set.of(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16,
+            ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS);
+    private static final Long ATTRIBUTE_ID_EXT_ADDRESS = 63L;
+    private static final Long ATTRIBUTE_ID_RLOC16 = 64L;
+
+    private final AtomicBoolean pollInProgress = new AtomicBoolean();
+    private volatile @Nullable RoutingRoleEnum routingRole;
 
     public ThreadNetworkDiagnosticsConverter(ThreadNetworkDiagnosticsCluster cluster, MatterBaseThingHandler handler,
             int endpointNumber, String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix);
+        routingRole = cluster.routingRole;
     }
 
     @Override
@@ -45,43 +84,103 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
 
     @Override
     public void onEvent(AttributeChangedMessage message) {
-        switch (message.path.attributeName) {
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL:
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE:
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME:
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID:
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID:
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16:
-                updateThingAttributeProperty(message.path.attributeName, message.value);
-                break;
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE:
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE:
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS:
-                updateThingAttributeProperty(message.path.attributeName,
-                        message.value != null ? GSON.toJson(message.value) : null);
-                break;
-        }
+        updateAttribute(message.path.attributeName, message.value);
         super.onEvent(message);
     }
 
     @Override
     public void initState() {
         logger.debug("initState");
-        updateThingProperties(initializingCluster);
+        ThreadNetworkDiagnosticsCluster cluster = initializingCluster;
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL, cluster.channel);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE, cluster.routingRole);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME, cluster.networkName);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID, cluster.panId);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID, cluster.extendedPanId);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PARTITION_ID, cluster.partitionId);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_LEADER_ROUTER_ID, cluster.leaderRouterId);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE, cluster.neighborTable);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE, cluster.routeTable);
+        updateAttribute(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS, cluster.extAddress);
     }
 
-    private void updateThingProperties(ThreadNetworkDiagnosticsCluster cluster) {
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL, cluster.channel);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE, cluster.routingRole);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME, cluster.networkName);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID, cluster.panId);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID, cluster.extendedPanId);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE,
-                cluster.neighborTable != null ? GSON.toJson(cluster.neighborTable) : null);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE,
-                cluster.routeTable != null ? GSON.toJson(cluster.routeTable) : null);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS,
-                cluster.extAddress != null ? GSON.toJson(cluster.extAddress) : null);
+    /**
+     * Devices rarely report Thread topology changes on their own, so read them from the device in one request.
+     * Sleepy end devices are skipped, as their tables only hold their parent and reading them wakes the device.
+     * A reply can overwrite a newer subscription report that arrived while it was in flight, the next report or poll
+     * corrects it.
+     */
+    @Override
+    public void pollCluster() {
+        if (routingRole == RoutingRoleEnum.SLEEPY_END_DEVICE || !pollInProgress.compareAndSet(false, true)) {
+            return;
+        }
+        List<String> attributeNames = POLLED_ATTRIBUTES.keySet().stream()
+                .filter(name -> !OPTIONAL_ATTRIBUTES.contains(name) || isSupported(name)).toList();
+        handler.readAttributes(ThreadNetworkDiagnosticsCluster.class, endpointNumber,
+                ThreadNetworkDiagnosticsCluster.CLUSTER_NAME, attributeNames).thenAccept(cluster -> {
+                    // The read can finish after the thing went offline or was disposed
+                    if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
+                        return;
+                    }
+                    for (String name : attributeNames) {
+                        // Attributes missing from the reply keep their last known value
+                        Object value = POLLED_ATTRIBUTES.get(name).apply(cluster);
+                        if (value != null) {
+                            updateAttribute(name, value);
+                        }
+                    }
+                }).exceptionally(e -> {
+                    logger.debug("Error polling Thread network diagnostics: {}", e.getMessage());
+                    return null;
+                }).whenComplete((result, e) -> pollInProgress.set(false));
+    }
+
+    /**
+     * Both attributes are null while the Thread interface is not up, so support is taken from the attribute list. Only
+     * devices that do not report one fall back to the initial value.
+     */
+    private boolean isSupported(String attributeName) {
+        List<Long> attributeList = initializingCluster.attributeList;
+        return switch (attributeName) {
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16 ->
+                attributeList != null ? attributeList.contains(ATTRIBUTE_ID_RLOC16)
+                        : initializingCluster.rloc16 != null;
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS ->
+                attributeList != null ? attributeList.contains(ATTRIBUTE_ID_EXT_ADDRESS)
+                        : initializingCluster.extAddress != null;
+            default -> true;
+        };
+    }
+
+    private void updateAttribute(String attributeName, @Nullable Object value) {
+        switch (attributeName) {
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE:
+                routingRole = value instanceof RoutingRoleEnum role ? role : null;
+                updateThingAttributeProperty(attributeName, value);
+                break;
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PARTITION_ID:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_LEADER_ROUTER_ID:
+                updateThingAttributeProperty(attributeName, value);
+                break;
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE:
+                updateThingAttributeProperty(attributeName, value != null ? THREAD_GSON.toJson(value) : null);
+                break;
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS:
+                updateThingAttributeProperty(attributeName,
+                        value instanceof BigInteger extAddress ? toExtAddressHex(extAddress) : null);
+                break;
+        }
+    }
+
+    static String toExtAddressHex(BigInteger extAddress) {
+        return String.format("%016X", extAddress);
     }
 }

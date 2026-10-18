@@ -93,6 +93,9 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         if (getBridgeHandler() != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 initializeConfig();
+                if (applyThingStructureUpdates()) {
+                    return;
+                }
                 if (validateConfig()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
@@ -125,6 +128,10 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     }
 
     abstract void initializeConfig();
+
+    protected boolean applyThingStructureUpdates() {
+        return false;
+    }
 
     abstract boolean validateConfig();
 
@@ -198,7 +205,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         return UnDefType.UNDEF;
     }
 
-    protected void setState(ChannelUID channelUID, State state) {
+    public void setState(ChannelUID channelUID, State state) {
         updateState(channelUID, state);
     }
 

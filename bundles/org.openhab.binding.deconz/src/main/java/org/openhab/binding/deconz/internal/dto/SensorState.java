@@ -50,6 +50,7 @@ public class SensorState {
     public @Nullable Boolean on;
     public @Nullable Boolean open;
     public Integer @Nullable [] orientation;
+    public @Nullable Integer pm2_5;
     public @Nullable Double power;
     public @Nullable Boolean presence;
     public @Nullable Integer pressure;
@@ -73,10 +74,10 @@ public class SensorState {
                 + dark + ", daylight=" + daylight + ", fire=" + fire + ", gesture=" + gesture + ", humidity=" + humidity
                 + ", lastupdated='" + lastupdated + "'" + ", lightlevel=" + lightlevel + ", lowbattery=" + lowbattery
                 + ", lux=" + lux + ", moisture=" + moisture + ", on=" + on + ", open=" + open + ", orientation="
-                + Arrays.toString(orientation) + ", power=" + power + ", presence=" + presence + ", pressure="
-                + pressure + ", status=" + status + ", tampered=" + tampered + ", temperature=" + temperature
-                + ", tiltangle=" + tiltangle + ", valve=" + valve + ", vibration=" + vibration + ", vibrationstrength="
-                + vibrationstrength + ", voltage=" + voltage + ", water=" + water + ", windowopen='" + windowopen + "'"
-                + ", xy=" + Arrays.toString(xy) + "}";
+                + Arrays.toString(orientation) + ", pm2_5=" + pm2_5 + ", power=" + power + ", presence=" + presence
+                + ", pressure=" + pressure + ", status=" + status + ", tampered=" + tampered + ", temperature="
+                + temperature + ", tiltangle=" + tiltangle + ", valve=" + valve + ", vibration=" + vibration
+                + ", vibrationstrength=" + vibrationstrength + ", voltage=" + voltage + ", water=" + water
+                + ", windowopen='" + windowopen + "'" + ", xy=" + Arrays.toString(xy) + "}";
     }
 }

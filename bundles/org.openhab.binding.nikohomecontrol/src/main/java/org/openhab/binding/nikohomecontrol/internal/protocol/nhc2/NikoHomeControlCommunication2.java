@@ -761,33 +761,33 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void updateRollershutterState(NhcAction2 action, List<NhcProperty> deviceProperties) {
-        deviceProperties.stream().map(p -> p.position).filter(Objects::nonNull).findFirst().ifPresent(position -> {
-            try {
-                logger.debug("setting action {} internally to {}", action.getId(), position);
-                action.setState(Integer.parseInt(position));
-            } catch (NumberFormatException e) {
-                logger.trace("received empty or invalid rollershutter {} position info {}", action.getId(), position);
-            }
-        });
+        Long state = deviceProperties.stream().map(p -> p.position).map(NikoHomeControlCommunication2::tryParseDouble)
+                .filter(Objects::nonNull).findFirst().map(Math::round).orElse(null);
+        if (state != null) {
+            logger.debug("setting action {} internally to {}", action.getId(), state);
+            action.setState(state);
+        } else {
+            logger.trace("received empty or invalid rollershutter {} position info", action.getId());
+        }
     }
 
     private void updateThermostatState(NhcThermostat2 thermostat, List<NhcProperty> deviceProperties) {
         Boolean overruleActiveProperty = deviceProperties.stream().map(p -> p.overruleActive).filter(Objects::nonNull)
-                .map(t -> Boolean.parseBoolean(t)).findFirst().orElse(null);
-        Integer overruleSetpointProperty = deviceProperties.stream().map(p -> p.overruleSetpoint)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
-                .filter(Objects::nonNull).findFirst().orElse(null);
-        Integer overruleTimeProperty = deviceProperties.stream().map(p -> p.overruleTime)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                .filter(Objects::nonNull).findFirst().orElse(null);
-        Integer setpointTemperatureProperty = deviceProperties.stream().map(p -> p.setpointTemperature)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
-                .filter(Objects::nonNull).findFirst().orElse(null);
+                .findFirst().map(t -> Boolean.parseBoolean(t)).orElse(null);
+        Long overruleSetpointProperty = deviceProperties.stream().map(p -> p.overruleSetpoint)
+                .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).findFirst()
+                .map(v -> Math.round(v) * 10).orElse(null);
+        Long overruleTimeProperty = deviceProperties.stream().map(p -> p.overruleTime)
+                .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).findFirst()
+                .map(Math::round).orElse(null);
+        Long setpointTemperatureProperty = deviceProperties.stream().map(p -> p.setpointTemperature)
+                .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).findFirst()
+                .map(v -> Math.round(v) * 10).orElse(null);
         Boolean ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave)
                 .map(s -> s != null ? Boolean.parseBoolean(s) : null).filter(Objects::nonNull).findFirst().orElse(null);
-        Integer ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
-                .filter(Objects::nonNull).findFirst().orElse(null);
+        Long ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
+                .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).findFirst()
+                .map(v -> Math.round(v) * 10).orElse(null);
         Optional<String> demandProperty = deviceProperties.stream().map(p -> p.demand).filter(Objects::nonNull)
                 .findFirst();
         Optional<String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)
@@ -798,11 +798,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         int mode = IntStream.range(0, THERMOSTATMODES.length).filter(i -> THERMOSTATMODES[i].equals(modeString))
                 .findFirst().orElse(thermostat.getMode());
 
-        int measured = ambientTemperatureProperty != null ? ambientTemperatureProperty : thermostat.getMeasured();
-        int setpoint = setpointTemperatureProperty != null ? setpointTemperatureProperty : thermostat.getSetpoint();
+        long measured = ambientTemperatureProperty != null ? ambientTemperatureProperty : thermostat.getMeasured();
+        long setpoint = setpointTemperatureProperty != null ? setpointTemperatureProperty : thermostat.getSetpoint();
 
-        int overrule = 0;
-        int overruletime = 0;
+        long overrule = 0;
+        long overruletime = 0;
         if (overruleActiveProperty == null || overruleActiveProperty) {
             overrule = overruleSetpointProperty != null ? overruleSetpointProperty : thermostat.getOverrule();
             overruletime = overruleTimeProperty != null ? overruleTimeProperty : thermostat.getRemainingOverruletime();
@@ -837,16 +837,15 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     private void updateMeterState(NhcMeter2 meter, List<NhcProperty> deviceProperties) {
         try {
             Optional<Double> electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
-                    .map(s -> (!((s == null) || s.isEmpty())) ? Double.parseDouble(s) : null).filter(Objects::nonNull)
-                    .findFirst();
+                    .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).findFirst();
             @SuppressWarnings("null")
             double powerFromGrid = deviceProperties.stream().map(p -> p.electricalPowerFromGrid)
-                    .map(s -> (!((s == null) || s.isEmpty())) ? Double.parseDouble(s) : null).filter(Objects::nonNull)
-                    .findFirst().orElse(0.0);
+                    .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).findFirst()
+                    .orElse(0.0);
             @SuppressWarnings("null")
             double powerToGrid = deviceProperties.stream().map(p -> p.electricalPowerToGrid)
-                    .map(s -> (!((s == null) || s.isEmpty())) ? Double.parseDouble(s) : null).filter(Objects::nonNull)
-                    .findFirst().orElse(0.0);
+                    .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).findFirst()
+                    .orElse(0.0);
             @SuppressWarnings("null")
             double power = electricalPower.orElse(powerFromGrid - powerToGrid);
             logger.trace("setting energy meter {} power to {}, powerFromGrid to {}, powerToGrid to {}", meter.getId(),
@@ -947,9 +946,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 .orElse(null);
         String couplingStatus = deviceProperties.stream().map(p -> p.couplingStatus).filter(Objects::nonNull)
                 .findFirst().orElse(null);
-        Integer electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                .filter(Objects::nonNull).findFirst().orElse(null);
+        Long electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
+                .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).map(Math::round)
+                .findFirst().orElse(null);
         if (status != null || chargingStatus != null || evStatus != null || couplingStatus != null
                 || electricalPower != null) {
             logger.debug(
@@ -959,17 +958,17 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
 
         String chargingMode = deviceProperties.stream().map(p -> p.chargingMode).filter(Objects::nonNull).findFirst()
-                .orElse(carChargerDevice.getChargingMode());
-        Float targetDistance = deviceProperties.stream().map(p -> p.targetDistance).filter(Objects::nonNull).findFirst()
-                .map(Float::parseFloat).orElse(null);
+                .orElse(null);
+        Double targetDistance = deviceProperties.stream().map(p -> p.targetDistance)
+                .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).findFirst().orElse(null);
         String targetTime = deviceProperties.stream().map(p -> p.targetTime).filter(Objects::nonNull).findFirst()
-                .orElse(carChargerDevice.getTargetTime());
+                .orElse(null);
         Boolean boost = deviceProperties.stream().map(p -> p.boost).filter(Objects::nonNull).findFirst()
                 .map(b -> NHCTRUE.equals(b) ? true : false).orElse(carChargerDevice.isBoost());
-        Float reachableDistance = deviceProperties.stream().map(p -> p.reachableDistance).filter(Objects::nonNull)
-                .findFirst().map(Float::parseFloat).orElse(carChargerDevice.getReachableDistance());
+        Double reachableDistance = deviceProperties.stream().map(p -> p.reachableDistance)
+                .map(NikoHomeControlCommunication2::tryParseDouble).filter(Objects::nonNull).findFirst().orElse(null);
         String nextChargingTime = deviceProperties.stream().map(p -> p.nextChargingTime).filter(Objects::nonNull)
-                .findFirst().orElse(carChargerDevice.getNextChargingTime());
+                .findFirst().orElse(null);
         if (chargingMode != null || targetDistance != null || targetTime != null || boost != null
                 || reachableDistance != null || nextChargingTime != null) {
             logger.debug(
@@ -978,6 +977,17 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     nextChargingTime);
             carChargerDevice.setChargingMode(chargingMode, targetDistance, targetTime, boost, reachableDistance,
                     nextChargingTime);
+        }
+    }
+
+    private static @Nullable Double tryParseDouble(@Nullable String s) {
+        if (s == null || s.isEmpty()) {
+            return null;
+        }
+        try {
+            return Double.parseDouble(s);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 
@@ -1089,7 +1099,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     @Override
-    public void executeThermostat(String thermostatId, int overruleTemp, int overruleTime) {
+    public void executeThermostat(String thermostatId, long overruleTemp, long overruleTime) {
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
@@ -1437,7 +1447,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     @Override
-    public void executeCarChargerChargingMode(String carChargerId, String chargingMode, float targetDistance,
+    public void executeCarChargerChargingMode(String carChargerId, String chargingMode, double targetDistance,
             String targetTime) {
         NhcMessage2 message = new NhcMessage2();
 

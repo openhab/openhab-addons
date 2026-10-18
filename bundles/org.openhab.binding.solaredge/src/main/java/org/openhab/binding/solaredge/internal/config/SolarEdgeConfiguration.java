@@ -27,11 +27,16 @@ public class SolarEdgeConfiguration {
 
     private boolean meterInstalled = false;
     private boolean usePrivateApi = false;
+    private PublicApiVersion publicApiVersion = PublicApiVersion.V1;
+    private PublicApiAuthentication publicApiAuthentication = PublicApiAuthentication.API_KEY;
+    private String oAuthClientId = "";
+    private String oAuthClientSecret = "";
 
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
     private Integer liveDataPollingInterval = 10;
     private Integer aggregateDataPollingInterval = 60;
+    private Integer batteryCriticalLevel = 10;
 
     public String getTokenOrApiKey() {
         return tokenOrApiKey;
@@ -81,6 +86,14 @@ public class SolarEdgeConfiguration {
         this.aggregateDataPollingInterval = aggregateDataPollingInterval;
     }
 
+    public Integer getBatteryCriticalLevel() {
+        return batteryCriticalLevel;
+    }
+
+    public void setBatteryCriticalLevel(Integer batteryCriticalLevel) {
+        this.batteryCriticalLevel = batteryCriticalLevel;
+    }
+
     public boolean isMeterInstalled() {
         return meterInstalled;
     }
@@ -97,12 +110,51 @@ public class SolarEdgeConfiguration {
         this.usePrivateApi = usePrivateApi;
     }
 
+    public PublicApiVersion getPublicApiVersion() {
+        return publicApiVersion;
+    }
+
+    public void setPublicApiVersion(PublicApiVersion publicApiVersion) {
+        this.publicApiVersion = publicApiVersion;
+    }
+
+    public PublicApiAuthentication getPublicApiAuthentication() {
+        return publicApiAuthentication;
+    }
+
+    public void setPublicApiAuthentication(PublicApiAuthentication publicApiAuthentication) {
+        this.publicApiAuthentication = publicApiAuthentication;
+    }
+
+    public String getOAuthClientId() {
+        return oAuthClientId;
+    }
+
+    public void setOAuthClientId(String oAuthClientId) {
+        this.oAuthClientId = oAuthClientId;
+    }
+
+    public String getOAuthClientSecret() {
+        return oAuthClientSecret;
+    }
+
+    public void setOAuthClientSecret(String oAuthClientSecret) {
+        this.oAuthClientSecret = oAuthClientSecret;
+    }
+
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{ tokenOrApiKey=" + getTokenOrApiKey() + ", solarId=" + getSolarId()
+        return getClass().getSimpleName() + "{ tokenOrApiKey=" + mask(getTokenOrApiKey()) + ", solarId=" + getSolarId()
                 + ", meterInstalled=" + isMeterInstalled() + ", usePrivateApi=" + isUsePrivateApi()
-                + ", live data pollingInterval=" + getLiveDataPollingInterval() + ", aggregate data pollingInterval="
-                + getAggregateDataPollingInterval() + ", asyncTimeout=" + getAsyncTimeout() + ", syncTimeout="
+                + ", publicApiVersion=" + getPublicApiVersion() + ", publicApiAuthentication="
+                + getPublicApiAuthentication() + ", oAuthClientId=" + mask(getOAuthClientId()) + ", oAuthClientSecret="
+                + mask(getOAuthClientSecret()) + ", live data pollingInterval=" + getLiveDataPollingInterval()
+                + ", aggregate data pollingInterval=" + getAggregateDataPollingInterval() + ", batteryCriticalLevel="
+                + getBatteryCriticalLevel() + ", asyncTimeout=" + getAsyncTimeout() + ", syncTimeout="
                 + getSyncTimeout() + "}";
+    }
+
+    private String mask(String value) {
+        return value.isBlank() ? "<empty>" : "***";
     }
 }

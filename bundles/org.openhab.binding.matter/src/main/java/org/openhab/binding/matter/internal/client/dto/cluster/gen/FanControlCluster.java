@@ -60,8 +60,8 @@ public class FanControlCluster extends BaseCluster {
      * If an attempt is made to set this attribute to a value not supported by the server as indicated in the
      * FanModeSequence attribute, the server shall respond with CONSTRAINT_ERROR.
      * When this attribute is successfully written to, the PercentSetting and SpeedSetting (if present) attributes shall
-     * be set to appropriate values, as defined by Section 4.4.6.3.1, “Percent Rules” and Section 4.4.6.6.1, “Speed
-     * Rules” respectively, unless otherwise specified below.
+     * be set to appropriate values, as defined by Section 4.4.6.3.1, "Percent Rules" and Section 4.4.6.6.1, "Speed
+     * Rules" respectively, unless otherwise specified below.
      * When this attribute is set to any valid value, the PercentCurrent and SpeedCurrent (if present) attributes shall
      * indicate the actual currently operating fan speed, unless otherwise specified below.
      */
@@ -89,7 +89,7 @@ public class FanControlCluster extends BaseCluster {
      * 25%, the value of this attribute may stay above 25% for a period necessary to dissipate internal heat, maintain
      * product operational safety, etc.
      * When the value of the FanMode attribute is AUTO, the value of this attribute may vary across the range over time.
-     * See Section 4.4.6.3.1, “Percent Rules” for more details.
+     * See Section 4.4.6.3.1, "Percent Rules" for more details.
      */
     public Integer percentCurrent; // 3 percent R V
     /**
@@ -114,7 +114,7 @@ public class FanControlCluster extends BaseCluster {
      * value of this attribute may stay above 2 for a period necessary to dissipate internal heat, maintain product
      * operational safety, etc.
      * When the value of the FanMode attribute is AUTO, the value of this attribute may vary across the range over time.
-     * See Section 4.4.6.6.1, “Speed Rules” for more details.
+     * See Section 4.4.6.6.1, "Speed Rules" for more details.
      */
     public Integer speedCurrent; // 6 uint8 R V
     /**
@@ -128,8 +128,9 @@ public class FanControlCluster extends BaseCluster {
      * CONSTRAINT_ERROR shall be returned.
      * If a combination of supported bits is set by a client, and the server does not support the combination, the
      * lowest supported single bit in the combination shall be set and active, and all other bits shall indicate zero.
-     * For example: If RockUpDown and RockRound are both set, but this combination is not possible, then only RockUpDown
-     * becomes active.
+     * > [!NOTE]
+     * > For example: If RockUpDown and RockRound are both set, but this combination is not possible, then only
+     * RockUpDown becomes active.
      */
     public RockBitmap rockSetting; // 8 RockBitmap RW VO
     /**
@@ -143,7 +144,8 @@ public class FanControlCluster extends BaseCluster {
      * CONSTRAINT_ERROR shall be returned.
      * If a combination of supported bits is set by a client, and the server does not support the combination, the
      * lowest supported single bit in the combination shall be set and active, and all other bits shall indicate zero.
-     * For example: If Sleep Wind and Natural Wind are set, but this combination is not possible, then only Sleep Wind
+     * > [!NOTE]
+     * > For example: If Sleep Wind and Natural Wind are set, but this combination is not possible, then only Sleep Wind
      * becomes active.
      */
     public WindBitmap windSetting; // 10 WindBitmap RW VO
@@ -296,7 +298,7 @@ public class FanControlCluster extends BaseCluster {
          * implementations are capable of determining, from the server, the number of speeds supported between 1, 2, or
          * 3, and whether automatic speed control is supported.
          * The MultiSpeed feature includes attributes that support a running fan speed value from 0 to SpeedMax.
-         * See Section 4.4.6.6.1, “Speed Rules” for more details.
+         * See Section 4.4.6.6.1, "Speed Rules" for more details.
          */
         public boolean multiSpeed;
         /**
@@ -352,11 +354,13 @@ public class FanControlCluster extends BaseCluster {
      * fan by pressing the toggle switch up or down until the desired fan speed is reached. How this command is
      * interpreted by the server and how it affects the values of the speed-oriented attributes is implementation
      * specific.
-     * For example, a fan supports this command, and the value of the FanModeSequence attribute is 0. The current value
-     * of the FanMode attribute is 2, or Medium. This command is received with the Direction field set to Increase. As
-     * per it’s specific implementation, the server reacts to the command by setting the value of the FanMode attribute
-     * to 3, or High, which in turn sets the PercentSetting and SpeedSetting (if present) attributes to appropriate
-     * values, as defined by Section 4.4.6.3.1, “Percent Rules” and Section 4.4.6.6.1, “Speed Rules” respectively.
+     * > [!NOTE]
+     * > For example, a fan supports this command, and the value of the FanModeSequence attribute is 0. The current
+     * value of the FanMode attribute is 2, or Medium. This command is received with the Direction field set to
+     * Increase. As per it's specific implementation, the server reacts to the command by setting the value of the
+     * FanMode attribute to 3, or High, which in turn sets the PercentSetting and SpeedSetting (if present) attributes
+     * to appropriate values, as defined by Section 4.4.6.3.1, "Percent Rules" and Section 4.4.6.6.1, "Speed Rules"
+     * respectively.
      * This command supports these fields:
      */
     public static ClusterCommand step(StepDirectionEnum direction, Boolean wrap, Boolean lowestOff) {

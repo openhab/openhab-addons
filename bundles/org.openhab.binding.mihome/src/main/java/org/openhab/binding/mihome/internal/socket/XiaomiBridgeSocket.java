@@ -14,6 +14,7 @@ package org.openhab.binding.mihome.internal.socket;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 
@@ -56,12 +57,13 @@ public class XiaomiBridgeSocket extends XiaomiSocket {
             logger.debug("Setup socket");
             socket = new MulticastSocket(getPort());
 
-            if (netIf != null) {
-                socket.setNetworkInterface(NetworkInterface.getByName(netIf));
+            NetworkInterface networkInterface = netIf != null ? NetworkInterface.getByName(netIf) : null;
+            if (networkInterface != null) {
+                socket.setNetworkInterface(networkInterface);
             }
 
             setSocket(socket); // must bind receive side
-            socket.joinGroup(InetAddress.getByName(MCAST_ADDR));
+            socket.joinGroup(new InetSocketAddress(InetAddress.getByName(MCAST_ADDR), getPort()), networkInterface);
             logger.debug("Initialized socket to {}:{} on {}:{} bound to {} network interface",
                     socket.getRemoteSocketAddress(), socket.getPort(), socket.getLocalAddress(), socket.getLocalPort(),
                     socket.getNetworkInterface());

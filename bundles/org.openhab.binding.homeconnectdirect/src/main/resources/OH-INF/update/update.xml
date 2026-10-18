@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="homeconnectdirect:coffeemaker">
+		<instruction-set targetVersion="1">
+			<remove-channel id="coffeemaker-program-command"/>
+			<add-channel id="program-command">
+				<type>homeconnectdirect:program-command-channel</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="homeconnectdirect:oven">
+		<instruction-set targetVersion="1">
+			<remove-channel id="oven-program-command"/>
+			<add-channel id="program-command">
+				<type>homeconnectdirect:program-command-channel</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="homeconnectdirect:warmingdrawer">
+		<instruction-set targetVersion="1">
+			<remove-channel id="oven-program-command"/>
+			<add-channel id="program-command">
+				<type>homeconnectdirect:program-command-channel</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

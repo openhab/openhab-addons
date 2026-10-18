@@ -13,8 +13,8 @@
 package org.openhab.automation.jsscripting.internal.scope;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -51,7 +51,7 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Override
     public Collection<String> getDefaultPresets() {
-        return Collections.emptyList();
+        return List.of();
     }
 
     @Override
@@ -73,15 +73,15 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Override
     public Map<String, Object> importPreset(String scriptIdentifier, String preset) {
-        if (getPresetName().equals(preset)) {
-            Map<String, Object> results = new HashMap<>(types.size());
-            for (String type : types.keySet()) {
-                results.put(type, get(scriptIdentifier, type));
-            }
-            return results;
+        if (!getPresetName().equals(preset)) {
+            return Map.of();
         }
 
-        return Collections.emptyMap();
+        Map<String, Object> results = new HashMap<>(types.size());
+        for (String type : types.keySet()) {
+            results.put(type, get(scriptIdentifier, type));
+        }
+        return results;
     }
 
     @Override

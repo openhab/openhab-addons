@@ -50,6 +50,7 @@ public class RRMapDrawOptions {
     private static final Color COLOR_PATH = new Color(147, 194, 238);
     private static final Color COLOR_ZONES = new Color(0xAD, 0xD8, 0xFF, 0x8F);
     private static final Color COLOR_NO_GO_ZONES = new Color(255, 33, 55, 127);
+    private static final Color COLOR_EXT_ZONES = new Color(76, 175, 80, 127);
     private static final Color COLOR_CHARGER_HALO = new Color(0x66, 0xfe, 0xda, 0x7f);
     private static final Color COLOR_ROBO = new Color(75, 235, 149);
     private static final Color COLOR_SCAN = new Color(0xDF, 0xDF, 0xDF);
@@ -122,6 +123,9 @@ public class RRMapDrawOptions {
     @SerializedName("colorNoGoZones")
     @Expose
     private Color colorNoGoZones = COLOR_NO_GO_ZONES;
+    @SerializedName("colorExtZones")
+    @Expose
+    private Color colorExtZones = COLOR_EXT_ZONES;
     @SerializedName("colorChargerHalo")
     @Expose
     private Color colorChargerHalo = COLOR_CHARGER_HALO;
@@ -214,6 +218,14 @@ public class RRMapDrawOptions {
 
     public void setColorNoGoZones(Color colorNoGoZones) {
         this.colorNoGoZones = colorNoGoZones;
+    }
+
+    public Color getColorExtZones() {
+        return colorExtZones;
+    }
+
+    public void setColorExtZones(Color colorExtZones) {
+        this.colorExtZones = colorExtZones;
     }
 
     public Color getColorChargerHalo() {

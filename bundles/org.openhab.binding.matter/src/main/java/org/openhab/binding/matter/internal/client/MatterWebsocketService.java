@@ -13,6 +13,7 @@
 package org.openhab.binding.matter.internal.client;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,6 +36,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -63,20 +66,20 @@ public class MatterWebsocketService {
     private static final int SHUTDOWN_TIMEOUT_SECONDS = 3;
     // Delay before retrying to start the node process if it fails
     private static final int STARTUP_RETRY_DELAY_SECONDS = 30;
-    private final List<NodeProcessListener> processListeners = new ArrayList<>();
+    private final List<NodeProcessListener> processListeners = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(3,
             new NamedThreadFactory("matter.MatterWebsocketService-executor"));
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool("matter.MatterWebsocketService-scheduler");
     private final NodeJSRuntimeManager nodeManager;
-    private @Nullable ScheduledFuture<?> notifyFuture;
-    private @Nullable ScheduledFuture<?> restartFuture;
+    private volatile @Nullable ScheduledFuture<?> notifyFuture;
+    private volatile @Nullable ScheduledFuture<?> restartFuture;
     // The Node.js process running the matter.js script
-    private @Nullable Process nodeProcess;
+    private volatile @Nullable Process nodeProcess;
     // The state of the service, STARTING, READY, SHUTTING_DOWN
-    private ServiceState state = ServiceState.STARTING;
+    private volatile ServiceState state = ServiceState.STARTING;
     // the port the node process is listening on
-    private int port;
+    private volatile int port;
     private AtomicBoolean restarting = new AtomicBoolean(false);
 
     @Activate
@@ -112,6 +115,7 @@ public class MatterWebsocketService {
         state = ServiceState.SHUTTING_DOWN;
         cancelFutures();
         Process nodeProcess = this.nodeProcess;
+        this.nodeProcess = null;
         if (nodeProcess != null && nodeProcess.isAlive()) {
             nodeProcess.destroy();
             try {
@@ -135,13 +139,19 @@ public class MatterWebsocketService {
     }
 
     private void cancelFutures() {
+        cancelNotifyFuture();
+        ScheduledFuture<?> restartFuture = this.restartFuture;
+        if (restartFuture != null && restartFuture.cancel(true)) {
+            restarting.set(false);
+        }
+    }
+
+    private void cancelNotifyFuture() {
         ScheduledFuture<?> notifyFuture = this.notifyFuture;
         if (notifyFuture != null) {
+            // null the field so the next startup re-arms the READY transition in processStream()
             notifyFuture.cancel(true);
-        }
-        ScheduledFuture<?> restartFuture = this.restartFuture;
-        if (restartFuture != null) {
-            restartFuture.cancel(true);
+            this.notifyFuture = null;
         }
     }
 
@@ -171,6 +181,14 @@ public class MatterWebsocketService {
         String nodePath = nodeManager.getNodePath();
         Path scriptPath = extractResourceToTempFile(resourcePath);
 
+        // matter.js 0.17 locks each storage directory with a "matter.lock"/"matter.pid" pair. The node process
+        // normally releases these on shutdown, but if it was killed abruptly (e.g. SIGKILL) they are left behind.
+        // matter.js then refuses to start if the recorded pid still appears alive, and because the check is a bare
+        // kill(pid, 0) it can match an unrelated process or even one of the openHAB JVM's own thread ids (TIDs share
+        // the pid number space on Linux), permanently blocking startup. We own a single node process whose previous
+        // instance is always stopped before we get here, so clear any leftover lock files before (re)spawning.
+        clearStaleStorageLocks();
+
         port = findAvailablePort();
         List<String> command = new ArrayList<>();
         command.add(nodePath);
@@ -182,21 +200,22 @@ public class MatterWebsocketService {
         command.addAll(List.of(additionalArgs));
 
         ProcessBuilder pb = new ProcessBuilder(command);
-        nodeProcess = pb.start();
+        Process process = pb.start();
+        nodeProcess = process;
 
-        // Start output and error stream readers
-        executorService.submit(this::readOutputStream);
-        executorService.submit(this::readErrorStream);
+        // Start output and error stream readers, bound to this specific process so a stale reader
+        // cannot drive the READY transition for a newer process
+        executorService.submit(
+                () -> processStream(process, process.getInputStream(), "Error reading Node process output", true));
+        executorService.submit(() -> processStream(process, process.getErrorStream(),
+                "Error reading Node process error stream", false));
 
         // Wait for the process to exit in a separate thread
         executorService.submit(() -> {
             int exitCode = -1;
             try {
-                Process nodeProcess = this.nodeProcess;
-                if (nodeProcess != null) {
-                    exitCode = nodeProcess.waitFor();
-                    logger.debug("Node process exited with code: {}", exitCode);
-                }
+                exitCode = process.waitFor();
+                logger.debug("Node process exited with code: {}", exitCode);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.debug("Interrupted while waiting for Node process to exit", e);
@@ -209,6 +228,9 @@ public class MatterWebsocketService {
                 }
 
                 if (state != ServiceState.SHUTTING_DOWN) {
+                    // the process died unexpectedly; drop a pending READY transition so it cannot flip a
+                    // dead process to READY, then schedule the restart
+                    cancelNotifyFuture();
                     logger.debug("trying to restart, state: {}", state);
                     scheduledStart(STARTUP_DELAY_SECONDS);
                 }
@@ -217,30 +239,20 @@ public class MatterWebsocketService {
         return port;
     }
 
-    private void readOutputStream() {
-        Process nodeProcess = this.nodeProcess;
-        if (nodeProcess != null) {
-            processStream(nodeProcess.getInputStream(), "Error reading Node process output", true);
-        }
-    }
-
-    private void readErrorStream() {
-        Process nodeProcess = this.nodeProcess;
-        if (nodeProcess != null) {
-            processStream(nodeProcess.getErrorStream(), "Error reading Node process error stream", false);
-        }
-    }
-
-    private void processStream(InputStream inputStream, String errorMessage, boolean triggerNotify) {
+    private void processStream(Process process, InputStream inputStream, String errorMessage, boolean triggerNotify) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                // we only want to do this once!
-                if (state == ServiceState.STARTING && triggerNotify && notifyFuture == null) {
+                // we only want to do this once, and only for the process this reader belongs to
+                if (state == ServiceState.STARTING && triggerNotify && notifyFuture == null
+                        && process.equals(nodeProcess)) {
                     notifyFuture = scheduler.schedule(() -> {
-                        state = ServiceState.READY;
                         this.notifyFuture = null;
-                        notifyReadyListeners();
+                        // only flip to READY if this is still the current, live process
+                        if (process.equals(nodeProcess) && process.isAlive() && state == ServiceState.STARTING) {
+                            state = ServiceState.READY;
+                            notifyReadyListeners();
+                        }
                     }, STARTUP_DELAY_SECONDS, TimeUnit.SECONDS);
                 }
                 if (logger.isTraceEnabled()) {
@@ -283,6 +295,45 @@ public class MatterWebsocketService {
         }
         tempFile.toFile().deleteOnExit(); // Ensure the temp file is deleted on JVM exit
         return tempFile;
+    }
+
+    /**
+     * Safety net for a node process that was killed abruptly: matter.js storage locks are normally released on
+     * shutdown, but leftovers would otherwise block startup.
+     */
+    private void clearStaleStorageLocks() {
+        File matterFolder = new File(OpenHAB.getUserDataFolder(), "matter");
+        if (!matterFolder.isDirectory()) {
+            return;
+        }
+        deleteStorageLocksRecursively(matterFolder);
+    }
+
+    private void deleteStorageLocksRecursively(File dir) {
+        File[] entries = dir.listFiles();
+        if (entries == null) {
+            return;
+        }
+        for (File entry : entries) {
+            if (entry.isDirectory()) {
+                // Skip symlinked directories to avoid following symlink loops or traversing outside the
+                // matter storage folder.
+                if (Files.isSymbolicLink(entry.toPath())) {
+                    continue;
+                }
+                deleteStorageLocksRecursively(entry);
+            } else {
+                String name = entry.getName();
+                if ("matter.lock".equals(name) || "matter.pid".equals(name)) {
+                    try {
+                        Files.delete(entry.toPath());
+                        logger.debug("Removed stale matter storage lock file {}", entry);
+                    } catch (IOException e) {
+                        logger.debug("Failed to remove stale matter storage lock file {}", entry, e);
+                    }
+                }
+            }
+        }
     }
 
     private int findAvailablePort() throws IOException {

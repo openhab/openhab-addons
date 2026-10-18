@@ -260,7 +260,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 updateState(CHANNEL_TYPE_ERRORCODE, new StringType(value));
                 break;
             case "ERRSTATUS":
-                updateState(CHANNEL_TYPE_ERRORSTATUS, new StringType(value));
+                updateState(CHANNEL_ID_ERRORSTATUS, new StringType(value));
                 if ("ERR".equals(value)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "device reported an error");

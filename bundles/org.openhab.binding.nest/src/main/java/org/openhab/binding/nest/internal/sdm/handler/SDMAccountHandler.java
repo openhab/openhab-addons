@@ -225,7 +225,7 @@ public class SDMAccountHandler extends BaseBridgeHandler {
             }
 
             pubSubAPI.checkAccessTokenValidity();
-            pubSubAPI.createSubscription(config.pubsubSubscriptionId, PUBSUB_TOPIC_NAME_PREFIX + config.sdmProjectId);
+            pubSubAPI.createSubscription(config.pubsubSubscriptionId, getPubSubTopicName());
             pubSubAPI.addSubscriptionListener(config.pubsubSubscriptionId, subscriptionListener);
 
             return pubSubAPI;
@@ -234,6 +234,11 @@ public class SDMAccountHandler extends BaseBridgeHandler {
             pubSubException = e;
             return null;
         }
+    }
+
+    private String getPubSubTopicName() {
+        String topicName = config.pubsubTopicName.trim();
+        return topicName.isEmpty() ? PUBSUB_TOPIC_NAME_PREFIX + config.sdmProjectId : topicName;
     }
 
     @Override

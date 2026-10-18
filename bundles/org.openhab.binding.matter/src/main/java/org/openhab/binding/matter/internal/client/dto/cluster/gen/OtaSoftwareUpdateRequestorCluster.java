@@ -56,7 +56,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
     public Boolean updatePossible; // 1 bool R V
     /**
      * This field shall reflect the current state of the OTA Requestor with regards to obtaining software updates. See
-     * Section 11.20.7.4.2, “UpdateStateEnum Type” for possible values.
+     * Section 11.20.7.4.2, "UpdateStateEnum Type" for possible values.
      * This field SHOULD be updated in a timely manner whenever OTA Requestor internal state updates.
      */
     public UpdateStateEnum updateState; // 2 UpdateStateEnum R V
@@ -93,10 +93,10 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
          * This field shall be set to the target SoftwareVersion which is the subject of the operation, whenever the
          * NewState is Downloading, Applying or RollingBack. Otherwise TargetSoftwareVersion shall be null.
          */
-        public Integer targetSoftwareVersion; // uint32
+        public Long targetSoftwareVersion; // uint32
 
         public StateTransition(UpdateStateEnum previousState, UpdateStateEnum newState, ChangeReasonEnum reason,
-                Integer targetSoftwareVersion) {
+                Long targetSoftwareVersion) {
             this.previousState = previousState;
             this.newState = newState;
             this.reason = reason;
@@ -113,7 +113,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
          * This field shall be set to the same value as the one available in the Software Version attribute of the Basic
          * Information Cluster for the newly executing version.
          */
-        public Integer softwareVersion; // uint32
+        public Long softwareVersion; // uint32
         /**
          * This field shall be set to the ProductID applying to the executing version, as reflected by the Basic
          * Information Cluster. This can be used to detect a product updating its definition due to a large-scale
@@ -122,7 +122,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
          */
         public Integer productId; // uint16
 
-        public VersionApplied(Integer softwareVersion, Integer productId) {
+        public VersionApplied(Long softwareVersion, Integer productId) {
             this.softwareVersion = softwareVersion;
             this.productId = productId;
         }
@@ -136,7 +136,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
          * This field shall be set to the value of the SoftwareVersion being downloaded, matching the SoftwareVersion
          * field of the QueryImageResponse that caused the failing download to take place.
          */
-        public Integer softwareVersion; // uint32
+        public Long softwareVersion; // uint32
         /**
          * This field shall be set to the number of bytes that have been downloaded during the failing transfer that
          * caused this event to be generated.
@@ -155,7 +155,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
          */
         public BigInteger platformCode; // int64
 
-        public DownloadError(Integer softwareVersion, BigInteger bytesDownloaded, Integer progressPercent,
+        public DownloadError(Long softwareVersion, BigInteger bytesDownloaded, Integer progressPercent,
                 BigInteger platformCode) {
             this.softwareVersion = softwareVersion;
             this.bytesDownloaded = bytesDownloaded;
@@ -284,8 +284,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
      * If the accessing fabric index is 0, this command shall fail with an UNSUPPORTED_ACCESS status code.
      */
     public static ClusterCommand announceOtaProvider(BigInteger providerNodeId, Integer vendorId,
-            AnnouncementReasonEnum announcementReason, OctetString metadataForNode, Integer endpoint,
-            Integer fabricIndex) {
+            AnnouncementReasonEnum announcementReason, OctetString metadataForNode, Integer endpoint) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (providerNodeId != null) {
             map.put("providerNodeId", providerNodeId);
@@ -301,9 +300,6 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         }
         if (endpoint != null) {
             map.put("endpoint", endpoint);
-        }
-        if (fabricIndex != null) {
-            map.put("fabricIndex", fabricIndex);
         }
         return new ClusterCommand("announceOtaProvider", map);
     }

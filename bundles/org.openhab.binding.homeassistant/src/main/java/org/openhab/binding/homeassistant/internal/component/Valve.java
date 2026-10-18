@@ -15,7 +15,6 @@ package org.openhab.binding.homeassistant.internal.component;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -370,9 +369,7 @@ public class Valve extends AbstractComponent<Valve.Configuration> implements Cha
             }
 
             Map<String, String> result = new HashMap<>();
-            Iterator<Entry<String, JsonNode>> it = node.fields();
-            while (it.hasNext()) {
-                Entry<String, JsonNode> field = it.next();
+            for (Entry<String, JsonNode> field : node.properties()) {
                 result.put(field.getKey(), field.getValue().asText());
             }
             return result;

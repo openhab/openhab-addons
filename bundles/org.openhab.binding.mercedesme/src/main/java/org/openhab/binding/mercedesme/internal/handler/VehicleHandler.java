@@ -76,6 +76,7 @@ import com.daimler.mbcarkit.proto.Client.ClientMessage;
 import com.daimler.mbcarkit.proto.VehicleCommands.AuxheatStart;
 import com.daimler.mbcarkit.proto.VehicleCommands.AuxheatStop;
 import com.daimler.mbcarkit.proto.VehicleCommands.ChargeProgramConfigure;
+import com.daimler.mbcarkit.proto.VehicleCommands.ChargingConfigure;
 import com.daimler.mbcarkit.proto.VehicleCommands.CommandRequest;
 import com.daimler.mbcarkit.proto.VehicleCommands.DoorsLock;
 import com.daimler.mbcarkit.proto.VehicleCommands.DoorsUnlock;
@@ -102,7 +103,6 @@ import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
@@ -131,12 +131,15 @@ public class VehicleHandler extends BaseThingHandler {
     private int ignitionState = -1;
     private boolean chargingState = false;
     private int selectedChargeProgram = -1;
+    // True once a chargePrograms list was received; false means max-soc must be read/written
+    // via the flat maxSoc / ChargingConfigure fallback (e.g. MB-BEV-CLA)
+    private boolean hasChargePrograms = false;
     private int activeTemperaturePoint = -1;
     private Map<Integer, QuantityType<Temperature>> temperaturePointsStorage = new HashMap<>();
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<>();
     private String vehicleType = NOT_SET;
-    private List<VEPUpdate> eventQueue = new ArrayList<>();
+    private List<VehicleStatusAttributes> eventQueue = new ArrayList<>();
     private boolean updateRunning = false;
 
     Map<String, ChannelStateMap> eventStorage = new HashMap<>();
@@ -211,7 +214,7 @@ public class VehicleHandler extends BaseThingHandler {
 
         AccountHandler localAccountHandler = accountHandler;
         if (localAccountHandler == null) {
-            logger.info("Sending command not possible without active account");
+            logger.warn("Sending command not possible without active account");
             return;
         }
         var crBuilder = CommandRequest.newBuilder().setVin(config.vin).setRequestId(UUID.randomUUID().toString());
@@ -425,6 +428,27 @@ public class VehicleHandler extends BaseThingHandler {
                 }
                 break; // position group
             case GROUP_CHARGE:
+                if (OH_CHANNEL_MAX_SOC.equals(channel) && !hasChargePrograms) {
+                    /**
+                     * Vehicle doesn't report a chargePrograms list (e.g. MB-BEV-CLA) - set max-soc
+                     * directly via ChargingConfigure, which needs no charge program selection, instead of
+                     * ChargeProgramConfigure.
+                     */
+                    int flatMaxSocToSelect;
+                    if (command instanceof QuantityType<?> quantityTypeCommand) {
+                        flatMaxSocToSelect = quantityTypeCommand.intValue();
+                    } else if (command instanceof DecimalType decimalTypeCommand) {
+                        flatMaxSocToSelect = decimalTypeCommand.intValue();
+                    } else {
+                        logger.trace("Cannot handle max-soc command {}", command);
+                        return;
+                    }
+                    Int32Value maxSocValue = Int32Value.newBuilder().setValue(flatMaxSocToSelect).build();
+                    ChargingConfigure cc = ChargingConfigure.newBuilder().setMaxSoc(maxSocValue).build();
+                    CommandRequest cr = crBuilder.setChargingConfigure(cc).build();
+                    localAccountHandler.sendCommand(createCM(cr));
+                    break;
+                }
                 if (!supports(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE)) {
                     logger.trace("Charge Program Configure not supported");
                     return;
@@ -589,13 +613,14 @@ public class VehicleHandler extends BaseThingHandler {
                         observer);
                 updateChannel(csmUpdated);
             } catch (IllegalArgumentException iae) {
-                logger.trace("Cannot decode command {} {}", value.getAllFields().toString(), iae.getMessage());
+                logger.trace("Cannot decode command {} {}", Utils.maskVinsIn(value.getAllFields().toString()),
+                        iae.getMessage());
                 // silent ignore update
             }
         });
     }
 
-    public void enqueueUpdate(VEPUpdate update) {
+    public void enqueueUpdate(VehicleStatusAttributes update) {
         synchronized (eventQueue) {
             eventQueue.add(update);
             scheduler.execute(this::scheduleUpdate);
@@ -603,7 +628,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void scheduleUpdate() {
-        VEPUpdate data;
+        VehicleStatusAttributes data;
         synchronized (eventQueue) {
             while (updateRunning) {
                 try {
@@ -631,13 +656,15 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    public void handleUpdate(VEPUpdate update) {
+    public void handleUpdate(VehicleStatusAttributes update) {
+        boolean fullUpdate = update.fullUpdate();
+        logger.trace("{} received {} attributes - full update? {}", Utils.maskVin(config.vin),
+                update.attributes().size(), fullUpdate);
         updateStatus(ThingStatus.ONLINE);
-        boolean fullUpdate = update.getFullUpdate();
         /**
          * Deliver proto update
          */
-        String newProto = Utils.proto2Json(update, thing.getThingTypeUID());
+        String newProto = Utils.proto2Json(update.attributes(), thing.getThingTypeUID());
         String combinedProto = newProto;
         ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, OH_CHANNEL_PROTO_UPDATE);
         ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
@@ -655,7 +682,7 @@ public class VehicleHandler extends BaseThingHandler {
 
         // check if soc or soc-max value changed
         final AtomicBoolean socChanged = new AtomicBoolean(false);
-        Map<String, VehicleAttributeStatus> atts = update.getAttributesMap();
+        Map<String, VehicleAttributeStatus> atts = update.attributes();
         /**
          * handle "simple" values
          */
@@ -713,18 +740,21 @@ public class VehicleHandler extends BaseThingHandler {
                     case OH_CHANNEL_FUEL_LEVEL:
                         if (!Constants.BEV.equals(vehicleType)) {
                             if (config.fuelCapacity > 0) {
-                                float fuelLevelValue = ((QuantityType<?>) csm.getState()).floatValue();
-                                float fuelCapacity = config.fuelCapacity;
-                                float litersInTank = Math.round(fuelLevelValue * 1000 * fuelCapacity / 1000)
-                                        / (float) 100;
-                                ChannelStateMap tankFilled = new ChannelStateMap(OH_CHANNEL_TANK_REMAIN, GROUP_RANGE,
-                                        QuantityType.valueOf(litersInTank, Mapper.defaultVolumeUnit));
-                                updateChannel(tankFilled);
-                                float litersFree = Math.round((100 - fuelLevelValue) * 1000 * fuelCapacity / 1000)
-                                        / (float) 100;
-                                ChannelStateMap tankOpen = new ChannelStateMap(OH_CHANNEL_TANK_OPEN, GROUP_RANGE,
-                                        QuantityType.valueOf(litersFree, Mapper.defaultVolumeUnit));
-                                updateChannel(tankOpen);
+                                // fuel level may be UNDEF (see Utils.isNil()) - keep the last known tank values
+                                if (csm.getState() instanceof QuantityType<?> fuelLevelQuantity) {
+                                    float fuelLevelValue = fuelLevelQuantity.floatValue();
+                                    float fuelCapacity = config.fuelCapacity;
+                                    float litersInTank = Math.round(fuelLevelValue * 1000 * fuelCapacity / 1000)
+                                            / (float) 100;
+                                    ChannelStateMap tankFilled = new ChannelStateMap(OH_CHANNEL_TANK_REMAIN,
+                                            GROUP_RANGE, QuantityType.valueOf(litersInTank, Mapper.defaultVolumeUnit));
+                                    updateChannel(tankFilled);
+                                    float litersFree = Math.round((100 - fuelLevelValue) * 1000 * fuelCapacity / 1000)
+                                            / (float) 100;
+                                    ChannelStateMap tankOpen = new ChannelStateMap(OH_CHANNEL_TANK_OPEN, GROUP_RANGE,
+                                            QuantityType.valueOf(litersFree, Mapper.defaultVolumeUnit));
+                                    updateChannel(tankOpen);
+                                }
                             } else {
                                 ChannelStateMap tankFilled = new ChannelStateMap(OH_CHANNEL_TANK_REMAIN, GROUP_RANGE,
                                         QuantityType.valueOf(0, Mapper.defaultVolumeUnit));
@@ -906,6 +936,7 @@ public class VehicleHandler extends BaseThingHandler {
                     ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, OH_CHANNEL_PROGRAM);
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
+                    hasChargePrograms = true;
                 } else {
                     logger.trace("No Charge Program property available for {}", thing.getThingTypeUID());
                 }
@@ -926,29 +957,49 @@ public class VehicleHandler extends BaseThingHandler {
                     selectedChargeProgram = ChargeProgram.DEFAULT_CHARGE_PROGRAM_VALUE;
                 }
             }
-            if (selectedChargeProgram != -1 && !chargeGroupValueStorage.isEmpty()) {
-                if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
-                    ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
-                            new DecimalType(selectedChargeProgram));
-                    updateChannel(programMap);
-                    JSONObject chargeProgramValues = chargeGroupValueStorage
-                            .getJSONObject(Integer.toString(selectedChargeProgram));
-                    int maxSocToSelect = chargeProgramValues.getInt(Constants.MAX_SOC_KEY);
+            if (hasChargePrograms) {
+                if (selectedChargeProgram != -1 && !chargeGroupValueStorage.isEmpty()) {
+                    if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
+                        ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
+                                new DecimalType(selectedChargeProgram));
+                        updateChannel(programMap);
+                        JSONObject chargeProgramValues = chargeGroupValueStorage
+                                .getJSONObject(Integer.toString(selectedChargeProgram));
+                        int maxSocToSelect = chargeProgramValues.getInt(Constants.MAX_SOC_KEY);
+                        ChannelStateMap maxSocMap = new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
+                                QuantityType.valueOf(maxSocToSelect, Units.PERCENT));
+                        updateChannel(maxSocMap);
+                        socChanged.set(true);
+                        boolean autoUnlockToSelect = chargeProgramValues.getBoolean(Constants.AUTO_UNLOCK_KEY);
+                        ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
+                                OnOffType.from(autoUnlockToSelect));
+                        updateChannel(autoUnlockMap);
+                    } else {
+                        logger.trace("Charge Program index {} not found in {}", selectedChargeProgram,
+                                chargeGroupValueStorage);
+                    }
+                } else {
+                    logger.trace("Either Charge Program index {} not valid or charge programs not supported {} ",
+                            selectedChargeProgram, chargeGroupValueStorage);
+                }
+            } else {
+                /**
+                 * Fallback: vehicle doesn't report a chargePrograms list (e.g. MB-BEV-CLA) - read the
+                 * flat maxSoc attribute directly and derive command options from maxSocLowerLimit/UpperLimit
+                 * instead of the static XML option list.
+                 */
+                VehicleAttributeStatus maxSocVas = atts.get(MB_KEY_MAX_SOC);
+                if (maxSocVas != null && !Utils.isNil(maxSocVas)) {
+                    int maxSocToSelect = (int) maxSocVas.getIntValue();
                     ChannelStateMap maxSocMap = new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
                             QuantityType.valueOf(maxSocToSelect, Units.PERCENT));
                     updateChannel(maxSocMap);
                     socChanged.set(true);
-                    boolean autoUnlockToSelect = chargeProgramValues.getBoolean(Constants.AUTO_UNLOCK_KEY);
-                    ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
-                            OnOffType.from(autoUnlockToSelect));
-                    updateChannel(autoUnlockMap);
                 } else {
-                    logger.trace("Charge Program index {} not found in {}", selectedChargeProgram,
-                            chargeGroupValueStorage);
+                    logger.trace("No chargePrograms and no flat maxSoc attribute found for {}",
+                            thing.getThingTypeUID());
                 }
-            } else {
-                logger.trace("Either Charge Program index {} not valid or charge programs not supported {} ",
-                        selectedChargeProgram, chargeGroupValueStorage);
+                updateMaxSocCommandOptions(atts);
             }
         }
 
@@ -995,11 +1046,46 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * For vehicles without a chargePrograms list, derive the max-soc command options from the
+     * vehicle-reported maxSocLowerLimit/maxSocUpperLimit instead of the static option list in
+     * charge-channel-types.xml. Options are offered in 10 % steps within the reported bounds.
+     */
+    private void updateMaxSocCommandOptions(Map<String, VehicleAttributeStatus> atts) {
+        VehicleAttributeStatus lowerLimitVas = atts.get(MB_KEY_MAX_SOC_LOWER_LIMIT);
+        VehicleAttributeStatus upperLimitVas = atts.get(MB_KEY_MAX_SOC_UPPER_LIMIT);
+        if (lowerLimitVas == null || upperLimitVas == null || Utils.isNil(lowerLimitVas)
+                || Utils.isNil(upperLimitVas)) {
+            return;
+        }
+        int lowerLimit = (int) lowerLimitVas.getIntValue();
+        int upperLimit = (int) upperLimitVas.getIntValue();
+        if (lowerLimit <= 0 || upperLimit <= 0 || lowerLimit > upperLimit) {
+            logger.trace("Ignoring implausible max-soc limits [{}, {}]", lowerLimit, upperLimit);
+            return;
+        }
+        List<CommandOption> commandOptions = new ArrayList<>();
+        List<StateOption> stateOptions = new ArrayList<>();
+        int step = (lowerLimit / 10) * 10;
+        if (step < lowerLimit) {
+            step += 10;
+        }
+        for (; step <= upperLimit; step += 10) {
+            String label = step + " %";
+            commandOptions.add(new CommandOption(label, label));
+            stateOptions.add(new StateOption(label, label));
+        }
+        ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, OH_CHANNEL_MAX_SOC);
+        mmcop.setCommandOptions(cuid, commandOptions);
+        mmsop.setStateOptions(cuid, stateOptions);
+    }
+
     private void energyUpdate() {
         ChannelStateMap socMap = eventStorage.get(GROUP_RANGE + "#" + OH_CHANNEL_SOC);
         ChannelStateMap socMaxMap = eventStorage.get(GROUP_CHARGE + "#" + OH_CHANNEL_MAX_SOC);
-        if (config.batteryCapacity > 0 && socMap != null) {
-            float socValue = ((QuantityType<?>) socMap.getState()).floatValue();
+        // socMap/socMaxMap may hold UNDEF instead of a QuantityType - fall through to the "no data" branch
+        if (config.batteryCapacity > 0 && socMap != null && socMap.getState() instanceof QuantityType<?> socQuantity) {
+            float socValue = socQuantity.floatValue();
             float batteryCapacity = config.batteryCapacity;
             float chargedValue = Math.round(socValue * batteryCapacity) / 100f;
             ChannelStateMap charged = new ChannelStateMap(OH_CHANNEL_CHARGED, GROUP_RANGE,
@@ -1009,8 +1095,8 @@ public class VehicleHandler extends BaseThingHandler {
             ChannelStateMap uncharged = new ChannelStateMap(OH_CHANNEL_UNCHARGED, GROUP_RANGE,
                     QuantityType.valueOf(unchargedValue, Units.KILOWATT_HOUR));
             updateChannel(uncharged);
-            if (socMaxMap != null) {
-                float socMaxValue = ((QuantityType<?>) socMaxMap.getState()).floatValue();
+            if (socMaxMap != null && socMaxMap.getState() instanceof QuantityType<?> socMaxQuantity) {
+                float socMaxValue = socMaxQuantity.floatValue();
                 float percentToMax = socMaxValue > socValue ? socMaxValue - socValue : 0;
                 float energyToMaxValue = Math.round(percentToMax * batteryCapacity) / 100f;
                 ChannelStateMap energyToMax = new ChannelStateMap(OH_CHANNEL_ENERGY_TO_MAX_SOC, GROUP_RANGE,
@@ -1162,9 +1248,21 @@ public class VehicleHandler extends BaseThingHandler {
     public void sendPoi(JSONObject poi) {
         AccountHandler localAccountHandler = accountHandler;
         if (localAccountHandler == null) {
-            logger.info("Sending POI not possible without active account");
+            logger.warn("Sending POI not possible without active account");
             return;
         }
         localAccountHandler.sendPoi(config.vin, poi);
+    }
+
+    /**
+     * Triggers an immediate update for this vehicle, outside the regular refresh interval
+     */
+    public void forceUpdate() {
+        AccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler == null) {
+            logger.trace("Force update not possible without active account");
+            return;
+        }
+        localAccountHandler.forceUpdate(config.vin);
     }
 }

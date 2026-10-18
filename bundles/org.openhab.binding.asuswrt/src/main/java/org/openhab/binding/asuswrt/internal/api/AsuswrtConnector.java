@@ -17,6 +17,9 @@ import static org.openhab.binding.asuswrt.internal.constants.AsuswrtErrorConstan
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.getValueOrDefault;
 
 import java.net.NoRouteToHostException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.SSLException;
@@ -24,6 +27,7 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLKeyException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtConfiguration;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtCredentials;
@@ -47,6 +51,8 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     private AsuswrtCredentials credentials;
     private AsuswrtConfiguration routerConfig;
     protected Long lastQuery = 0L;
+    // serializes device requests so the next one is only sent once the previous one has finished
+    private CompletableFuture<@Nullable Void> commandQueue = CompletableFuture.completedFuture(null);
 
     public AsuswrtConnector(AsuswrtRouter router) {
         super(router);
@@ -69,7 +75,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         logout(); // logout (unset cookie) first
         router.errorHandler.reset();
 
-        logger.trace("({}) perform login to '{}' with '{}'", uid, url, encodedCredentials);
+        logger.trace("({}) perform login to '{}'", uid, url);
 
         payload = "login_authorization=" + encodedCredentials + "}";
         ContentResponse response = getSyncRequest(url, payload);
@@ -100,10 +106,29 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     /**
      * Queries data from the device.
      *
+     * Requests are serialized: the next call will only be sent to the device once the previous one has finished.
+     *
      * @param command command constant to sent
      * @param asyncRequest <code>true</code> if request should be sent asynchronous, <code>false</code> if synchronous
      */
     public void queryDeviceData(String command, boolean asyncRequest) {
+        synchronized (this) {
+            commandQueue = commandQueue.thenCompose(v -> {
+                CompletableFuture<@Nullable Void> requestDone = new CompletableFuture<>();
+                queryDeviceDataInternal(command, asyncRequest, () -> requestDone.complete(null));
+                return requestDone;
+            });
+        }
+    }
+
+    /**
+     * Queries data from the device.
+     *
+     * @param command command constant to sent
+     * @param asyncRequest <code>true</code> if request should be sent asynchronous, <code>false</code> if synchronous
+     * @param onComplete callback run once the request has finished, or {@code null} if not needed
+     */
+    private void queryDeviceDataInternal(String command, boolean asyncRequest, @Nullable Runnable onComplete) {
         logger.trace("({}) queryDeviceData", uid);
         Long now = System.currentTimeMillis();
 
@@ -123,12 +148,76 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
 
             // Send asynchronous or synchronous HTTP request
             if (asyncRequest) {
-                sendAsyncRequest(url, payload, command);
+                sendAsyncRequest(url, payload, command, onComplete);
             } else {
                 sendSyncRequest(url, payload, command);
+                if (onComplete != null) {
+                    onComplete.run();
+                }
             }
         } else {
             logger.trace("({}) query skipped cause of min_gap: {} <- {}", uid, now, lastQuery);
+            if (onComplete != null) {
+                onComplete.run();
+            }
+        }
+    }
+
+    /**
+     * Applies an update to nvram variable on the device. Will execute rcService if provided.
+     *
+     * Requests are serialized: the next call will only be sent to the device once the previous one has finished.
+     *
+     * @param variable nvram variable to update
+     * @param value new value for the nvram variable
+     * @param rcService optional rc service to apply the change
+     * @param asyncRequest <code>true</code> if request should be sent asynchronous, <code>false</code> if synchronous
+     */
+    public void applyNVRAMCommand(String variable, String value, @Nullable String rcService, boolean asyncRequest) {
+        synchronized (this) {
+            commandQueue = commandQueue.thenCompose(v -> {
+                CompletableFuture<@Nullable Void> requestDone = new CompletableFuture<>();
+                applyNVRAMCommandInternal(variable, value, rcService, asyncRequest, () -> requestDone.complete(null));
+                return requestDone;
+            });
+        }
+    }
+
+    /**
+     * Applies an update to nvram variable on the device. Will execute rcService if provided.
+     *
+     * @param variable nvram variable to update
+     * @param value new value for the nvram variable
+     * @param rcService optional rc service to apply the change
+     * @param asyncRequest <code>true</code> if request should be sent asynchronous, <code>false</code> if synchronous
+     * @param onComplete callback run once the request has finished, or {@code null} if not needed
+     */
+    private void applyNVRAMCommandInternal(String variable, String value, @Nullable String rcService,
+            boolean asyncRequest, @Nullable Runnable onComplete) {
+
+        router.errorHandler.reset();
+        if (cookieStore.cookieIsExpired()) {
+            login();
+        }
+
+        String url = getURL("apply.cgi");
+        String payload = "action_mode=apply&" + URLEncoder.encode(variable, StandardCharsets.UTF_8) + "="
+                + URLEncoder.encode(value, StandardCharsets.UTF_8);
+
+        if (rcService != null) {
+            payload += "&action_script=" + URLEncoder.encode(rcService, StandardCharsets.UTF_8);
+        }
+
+        logger.trace("Setting NVRAM variable: name={}, service={}", variable, rcService);
+
+        // Send asynchronous or synchronous HTTP request
+        if (asyncRequest) {
+            sendAsyncRequest(url, payload, "applyNVRAMCommand", onComplete);
+        } else {
+            sendSyncRequest(url, payload, "applyNVRAMCommand");
+            if (onComplete != null) {
+                onComplete.run();
+            }
         }
     }
 

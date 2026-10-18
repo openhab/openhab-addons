@@ -24,7 +24,7 @@ public class SignCodeV3 {
     public String message = "";
     public SignCodeV3Data data;
 
-    public class SignCodeV3Data {
+    public static class SignCodeV3Data {
         public String k = "";
     }
 

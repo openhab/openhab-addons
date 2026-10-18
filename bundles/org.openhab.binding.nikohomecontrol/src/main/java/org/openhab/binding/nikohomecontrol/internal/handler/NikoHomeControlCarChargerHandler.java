@@ -282,7 +282,7 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
 
     @Override
     public void chargingStatusEvent(boolean status, @Nullable String chargingStatus, @Nullable String evStatus,
-            @Nullable String couplingStatus, @Nullable Integer electricalPower) {
+            @Nullable String couplingStatus, @Nullable Long electricalPower) {
         NhcCarCharger nhcCarCharger = this.nhcCarCharger;
         if (nhcCarCharger == null) {
             logger.debug("car charger device with ID {} not initialized", deviceId);
@@ -306,8 +306,8 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
     }
 
     @Override
-    public void chargingModeEvent(@Nullable String chargingMode, float targetDistance, @Nullable String targetTime,
-            boolean boost, float reachableDistance, @Nullable String nextChargingTime) {
+    public void chargingModeEvent(@Nullable String chargingMode, double targetDistance, @Nullable String targetTime,
+            boolean boost, double reachableDistance, @Nullable String nextChargingTime) {
         NhcCarCharger nhcCarCharger = this.nhcCarCharger;
         if (nhcCarCharger == null) {
             logger.debug("car charger device with ID {} not initialized", deviceId);

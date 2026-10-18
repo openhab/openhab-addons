@@ -71,4 +71,10 @@
 			<description>The ID of the circuit which is controlled by this charger.</description>
 		</parameter>
 	</config-description>
+	<config-description uri="thing-type:easee:user">
+		<parameter name="id" type="text" required="true">
+			<label>User ID</label>
+			<description>The ID of the user.</description>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

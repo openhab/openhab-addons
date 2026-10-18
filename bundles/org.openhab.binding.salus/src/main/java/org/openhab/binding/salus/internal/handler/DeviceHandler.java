@@ -37,7 +37,6 @@ import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
@@ -218,8 +217,6 @@ public class DeviceHandler extends BaseThingHandler {
                 handleBoolCommand(channelUID, typedCommand == OnOffType.ON);
             } else if (command instanceof UpDownType typedCommand) {
                 handleBoolCommand(channelUID, typedCommand == UpDownType.UP);
-            } else if (command instanceof OpenClosedType typedCommand) {
-                handleBoolCommand(channelUID, typedCommand == OpenClosedType.OPEN);
             } else if (command instanceof PercentType typedCommand) {
                 handleDecimalCommand(channelUID, typedCommand.as(DecimalType.class));
             } else if (command instanceof DecimalType typedCommand) {

@@ -1,14 +1,19 @@
 {
 	"deviceMapping": {
 		"id": [
+			"viomi.vacuum.v3",
 			"viomi.vacuum.v6",
 			"viomi.vacuum.v7",
-			"viomi.vacuum.v8"
+			"viomi.vacuum.v8",
+			"viomi.vacuum.v9",
+			"viomi.vacuum.v10"
 		],
+		"maxProperties": 10,
+		"experimental": false,
 		"channels": [
 			{
 				"property": "",
-				"friendlyName": "Vacuum Action",
+				"friendlyName": "Vacuum action",
 				"channel": "vacuumaction",
 				"type": "Number",
 				"stateDescription": {
@@ -28,6 +33,22 @@
 						{
 							"value": "3",
 							"label": "Dock"
+						},
+						{
+							"value": "4",
+							"label": "Cancel return to dock"
+						},
+						{
+							"value": "5",
+							"label": "Start vacuum and mop"
+						},
+						{
+							"value": "6",
+							"label": "Start mop"
+						},
+						{
+							"value": "7",
+							"label": "Find robot"
 						}
 					]
 				},
@@ -57,20 +78,83 @@
 						}
 					},
 					{
+						"command": "set_mode_withroom",
+						"parameterType": "NUMBER",
+						"parameters": [
+							1,
+							"$value$",
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "5",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "set_mode_withroom",
+						"parameterType": "NUMBER",
+						"parameters": [
+							3,
+							"$value$",
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "6",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
 						"command": "set_charge",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$"
+						],
 						"condition": {
 							"name": "matchValue",
 							"parameters": [
 								{
 									"matchValue": "3",
 									"returnValue": 1
+								},
+								{
+									"matchValue": "4",
+									"returnValue": 0
+								}
+							]
+						}
+					},
+					{
+						"command": "set_resetpos",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "7",
+									"returnValue": 1
 								}
 							]
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Start\",\"0\"\u003d\"Stop\",\"2\"\u003d\"Pause\",\"3\"\u003d\"Dock\"]`"
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Start, Pause and Stop are sent as `set_mode_withroom` like the Mi Home app does (cleaning type, action, number of rooms). Start uses cleaning type 0 (vacuum); the app derives the type from the `is_mop` channel, use Start vacuum and mop or Start mop for those types. The app pauses with action 2 from its main button (3 in some other flows; python-miio documents 2). Dock sends `set_charge` 1, Cancel return to dock sends `set_charge` 0, Find robot sends `set_resetpos` 1 (the app Find function). Not exposed: room, zone and spot cleaning, virtual walls and map editing (need several values). Value mapping `[\"1\"\u003d\"Start\",\"0\"\u003d\"Stop\",\"2\"\u003d\"Pause\",\"3\"\u003d\"Dock\",\"4\"\u003d\"Cancel return to dock\",\"5\"\u003d\"Start vacuum and mop\",\"6\"\u003d\"Start mop\",\"7\"\u003d\"Find robot\"]`"
 			},
 			{
 				"property": "run_state",
@@ -82,11 +166,11 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Idle Undocked"
+							"label": "Sleeping"
 						},
 						{
 							"value": "1",
-							"label": "Idle"
+							"label": "Standby"
 						},
 						{
 							"value": "2",
@@ -94,11 +178,11 @@
 						},
 						{
 							"value": "3",
-							"label": "Sweeping"
+							"label": "Vacuuming"
 						},
 						{
 							"value": "4",
-							"label": "Go Charging"
+							"label": "Returning to dock"
 						},
 						{
 							"value": "5",
@@ -106,7 +190,7 @@
 						},
 						{
 							"value": "6",
-							"label": "Sweeping and Mopping"
+							"label": "Vacuuming and mopping"
 						},
 						{
 							"value": "7",
@@ -116,11 +200,15 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Idle Undocked\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Sweeping\",\"4\"\u003d\"Go Charging\",\"5\"\u003d\"Charging\",\"6\"\u003d\"Sweeping and Mopping\",\"7\"\u003d\"Mopping\"]`"
+				"category": "cleaningrobot",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Labels as shown by the Mi Home app (python-miio: 0 idle not docked, 1 idle). Value mapping `[\"0\"\u003d\"Sleeping\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Vacuuming\",\"4\"\u003d\"Returning to dock\",\"5\"\u003d\"Charging\",\"6\"\u003d\"Vacuuming and mopping\",\"7\"\u003d\"Mopping\"]`"
 			},
 			{
 				"property": "mode",
-				"friendlyName": "Clean Mode",
+				"friendlyName": "Cleaning mode",
 				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
@@ -128,33 +216,34 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Everywhere"
+							"label": "Whole home"
 						},
 						{
 							"value": "1",
-							"label": "Edges"
+							"label": "Whole home (mop mode)"
 						},
 						{
 							"value": "2",
-							"label": "Surface"
+							"label": "Along edges"
 						},
 						{
 							"value": "3",
-							"label": "Fixed Location"
+							"label": "Zone"
+						},
+						{
+							"value": "4",
+							"label": "Spot"
 						}
 					]
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_mode",
-						"parameterType": "NUMBER"
-					}
-				],
+				"actions": [],
+				"category": "status",
 				"tags": [
-					"Control"
+					"Status",
+					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Everywhere\",\"1\"\u003d\"Edges\",\"2\"\u003d\"Surface\",\"3\"\u003d\"Fixed Location\"]`"
+				"readmeComment": "Read only: the Mi Home app selects the mode with the start command (edge, zone and spot cleaning need more values). Value mapping `[\"0\"\u003d\"Whole home\",\"1\"\u003d\"Whole home (mop mode)\",\"2\"\u003d\"Along edges\",\"3\"\u003d\"Zone\",\"4\"\u003d\"Spot\"]`"
 			},
 			{
 				"property": "err_state",
@@ -166,7 +255,7 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Sleeping and not charging"
+							"label": "No error"
 						},
 						{
 							"value": "500",
@@ -174,7 +263,7 @@
 						},
 						{
 							"value": "501",
-							"label": "Wheels stuck"
+							"label": "Wheels suspended"
 						},
 						{
 							"value": "502",
@@ -182,19 +271,23 @@
 						},
 						{
 							"value": "503",
-							"label": "Dust bin missing"
+							"label": "Dust bin or 2-in-1 bin not installed"
+						},
+						{
+							"value": "507",
+							"label": "Could not reposition"
 						},
 						{
 							"value": "508",
-							"label": "Uneven ground"
+							"label": "Not on level surface"
 						},
 						{
 							"value": "509",
-							"label": "Cliff sensor erro"
+							"label": "Cliff sensor error"
 						},
 						{
 							"value": "510",
-							"label": "Collision sensor error"
+							"label": "Collision sensor stuck"
 						},
 						{
 							"value": "511",
@@ -202,7 +295,7 @@
 						},
 						{
 							"value": "512",
-							"label": "Could not return to dock"
+							"label": "Could not return to dock (512)"
 						},
 						{
 							"value": "513",
@@ -214,23 +307,31 @@
 						},
 						{
 							"value": "515",
-							"label": "Charging erro"
+							"label": "Charging error"
 						},
 						{
 							"value": "516",
-							"label": "Mop temperature error"
+							"label": "Temperature error"
+						},
+						{
+							"value": "517",
+							"label": "Updating system"
+						},
+						{
+							"value": "518",
+							"label": "Battery too low to start"
 						},
 						{
 							"value": "521",
-							"label": "Water tank is not installed"
+							"label": "Water tank not installed"
 						},
 						{
 							"value": "522",
-							"label": "Mop is not installed"
+							"label": "Mop not installed"
 						},
 						{
 							"value": "525",
-							"label": "Insufficient water in water tank"
+							"label": "Insufficient water"
 						},
 						{
 							"value": "527",
@@ -238,23 +339,31 @@
 						},
 						{
 							"value": "528",
-							"label": "Dust bin missing"
+							"label": "Dust bin or 2-in-1 bin not installed (528)"
 						},
 						{
 							"value": "529",
-							"label": "Mop and water tank missing"
+							"label": "Mop and 550 ml water tank not installed"
 						},
 						{
 							"value": "530",
-							"label": "Mop and water tank missin"
+							"label": "2-in-1 bin and mop not installed"
 						},
 						{
 							"value": "531",
-							"label": "Water tank is not installed"
+							"label": "2-in-1 bin not installed"
+						},
+						{
+							"value": "537",
+							"label": "Do not disturb active, no cleaning"
+						},
+						{
+							"value": "2100",
+							"label": "Cleaning finished"
 						},
 						{
 							"value": "2101",
-							"label": "Unsufficient battery, continuing cleaning after recharge"
+							"label": "Low battery, charging before continuing"
 						},
 						{
 							"value": "2103",
@@ -263,24 +372,53 @@
 						{
 							"value": "2104",
 							"label": "Fully charged"
+						},
+						{
+							"value": "2108",
+							"label": "Repositioning"
+						},
+						{
+							"value": "2109",
+							"label": "Cleaning again"
+						},
+						{
+							"value": "2110",
+							"label": "Self-inspecting"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Sleeping and not charging\",\"500\"\u003d\"Radar timed out\",\"501\"\u003d\"Wheels stuck\",\"502\"\u003d\"Low battery\",\"503\"\u003d\"Dust bin missing\",\"508\"\u003d\"Uneven ground\",\"509\"\u003d\"Cliff sensor erro\",\"510\"\u003d\"Collision sensor error\",\"511\"\u003d\"Could not return to dock\",\"512\"\u003d\"Could not return to dock\",\"513\"\u003d\"Could not navigate\",\"514\"\u003d\"Vacuum stuck\",\"515\"\u003d\"Charging erro\",\"516\"\u003d\"Mop temperature error\",\"521\"\u003d\"Water tank is not installed\",\"522\"\u003d\"Mop is not installed\",\"525\"\u003d\"Insufficient water in water tank\",\"527\"\u003d\"Remove mop\",\"528\"\u003d\"Dust bin missing\",\"529\"\u003d\"Mop and water tank missing\",\"530\"\u003d\"Mop and water tank missin\",\"531\"\u003d\"Water tank is not installed\",\"2101\"\u003d\"Unsufficient battery, continuing cleaning after recharge\",\"2103\"\u003d\"Charging\",\"2104\"\u003d\"Fully charged\"]`"
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Labels from the Mi Home app error table (500 to 537) and state texts (507, 517, 518, 2108 to 2110). 2100 is only used internally by the app; 2103 and 2104 are not used by the app (earlier community lists). Value mapping `[\"0\"\u003d\"No error\",\"500\"\u003d\"Radar timed out\",\"501\"\u003d\"Wheels suspended\",\"502\"\u003d\"Low battery\",\"503\"\u003d\"Dust bin or 2-in-1 bin not installed\",\"507\"\u003d\"Could not reposition\",\"508\"\u003d\"Not on level surface\",\"509\"\u003d\"Cliff sensor error\",\"510\"\u003d\"Collision sensor stuck\",\"511\"\u003d\"Could not return to dock\",\"512\"\u003d\"Could not return to dock (512)\",\"513\"\u003d\"Could not navigate\",\"514\"\u003d\"Vacuum stuck\",\"515\"\u003d\"Charging error\",\"516\"\u003d\"Temperature error\",\"517\"\u003d\"Updating system\",\"518\"\u003d\"Battery too low to start\",\"521\"\u003d\"Water tank not installed\",\"522\"\u003d\"Mop not installed\",\"525\"\u003d\"Insufficient water\",\"527\"\u003d\"Remove mop\",\"528\"\u003d\"Dust bin or 2-in-1 bin not installed (528)\",\"529\"\u003d\"Mop and 550 ml water tank not installed\",\"530\"\u003d\"2-in-1 bin and mop not installed\",\"531\"\u003d\"2-in-1 bin not installed\",\"537\"\u003d\"Do not disturb active, no cleaning\",\"2100\"\u003d\"Cleaning finished\",\"2101\"\u003d\"Low battery, charging before continuing\",\"2103\"\u003d\"Charging\",\"2104\"\u003d\"Fully charged\",\"2108\"\u003d\"Repositioning\",\"2109\"\u003d\"Cleaning again\",\"2110\"\u003d\"Self-inspecting\"]`"
 			},
 			{
 				"property": "battary_life",
 				"friendlyName": "Battery",
 				"channel": "battery_life",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%d %unit%"
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
 			},
 			{
 				"property": "box_type",
-				"friendlyName": "Box type",
+				"friendlyName": "Bin / tank type",
 				"channel": "box_type",
 				"type": "Number",
 				"stateDescription": {
@@ -288,51 +426,70 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "No Bin"
+							"label": "None"
 						},
 						{
 							"value": "1",
-							"label": "Sweep"
+							"label": "Dust bin"
 						},
 						{
 							"value": "2",
-							"label": "Mop"
+							"label": "Water tank"
 						},
 						{
 							"value": "3",
-							"label": "Sweep and Mop"
+							"label": "Dust bin and water tank"
 						}
 					]
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"parameterType": "EMPTY"
-					}
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"No Bin\",\"1\"\u003d\"Sweep\",\"2\"\u003d\"Mop\",\"3\"\u003d\"Sweep and Mop\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Dust bin\",\"2\"\u003d\"Water tank\",\"3\"\u003d\"Dust bin and water tank\"]`"
 			},
 			{
 				"property": "mop_type",
-				"friendlyName": "mop_type",
+				"friendlyName": "Mop installed",
 				"channel": "mop_type",
 				"type": "Number",
-				"actions": []
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No"
+						},
+						{
+							"value": "1",
+							"label": "Yes"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No\",\"1\"\u003d\"Yes\"]`"
 			},
 			{
 				"property": "mop_route",
-				"friendlyName": "Mop Route",
+				"friendlyName": "Mop pattern",
 				"channel": "mop_route",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "0",
-							"label": "S-Pattern"
+							"label": "S-pattern"
 						},
 						{
 							"value": "1",
-							"label": "Y-Pattern"
+							"label": "Y-pattern"
 						}
 					]
 				},
@@ -340,40 +497,57 @@
 				"actions": [
 					{
 						"command": "set_moproute",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$"
+						]
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"S-Pattern\",\"1\"\u003d\"Y-Pattern\"]`"
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Not offered by the app plugin of the oldest v3 and v6 firmware. Value mapping `[\"0\"\u003d\"S-pattern\",\"1\"\u003d\"Y-pattern\"]`"
 			},
 			{
 				"property": "s_time",
 				"friendlyName": "Clean time",
-				"channel": "s_time",
-				"type": "Number",
+				"channel": "clean_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_mode",
-						"parameterType": "NUMBER"
-					}
-				]
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				],
+				"readmeComment": "Minutes, as shown by the Mi Home app (rounded there)."
 			},
 			{
 				"property": "s_area",
-				"friendlyName": "Clean Area",
-				"channel": "s_area",
-				"type": "Number",
+				"friendlyName": "Clean area",
+				"channel": "clean_area",
+				"type": "Number:Area",
+				"unit": "square_meter",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_mode",
-						"parameterType": "NUMBER"
-					}
-				]
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Measurement"
+				],
+				"readmeComment": "Square meter, as shown by the Mi Home app (rounded there)."
 			},
 			{
 				"property": "suction_grade",
-				"friendlyName": "suction_grade",
+				"friendlyName": "Suction power",
 				"channel": "suction_grade",
 				"type": "Number",
 				"stateDescription": {
@@ -384,7 +558,7 @@
 						},
 						{
 							"value": "1",
-							"label": "Basic"
+							"label": "Standard"
 						},
 						{
 							"value": "2",
@@ -392,7 +566,7 @@
 						},
 						{
 							"value": "3",
-							"label": "Strong"
+							"label": "Turbo"
 						}
 					]
 				},
@@ -400,14 +574,22 @@
 				"actions": [
 					{
 						"command": "set_suction",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$"
+						]
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Basic\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]`"
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Turbo\"]`"
 			},
 			{
 				"property": "water_grade",
-				"friendlyName": "water_grade",
+				"friendlyName": "Water level",
 				"channel": "water_grade",
 				"type": "Number",
 				"stateDescription": {
@@ -430,31 +612,96 @@
 				"actions": [
 					{
 						"command": "set_suction",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$"
+						]
 					}
 				],
-				"readmeComment": "Value mapping `[\"11\"\u003d\"Low\",\"12\"\u003d\"Medium\",\"13\"\u003d\"High\"]`"
+				"category": "water",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Suction power and water level are both set with `set_suction`; the app uses 11 to 13 for the water level. Value mapping `[\"11\"\u003d\"Low\",\"12\"\u003d\"Medium\",\"13\"\u003d\"High\"]`"
 			},
 			{
 				"property": "remember_map",
-				"friendlyName": "remember_map",
+				"friendlyName": "Map remembered",
 				"channel": "remember_map",
-				"type": "Number",
+				"type": "Switch",
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "set_remember",
+						"parameterType": "ONOFFNUMBER",
+						"parameters": [
+							"$value$"
+						]
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
 			},
 			{
 				"property": "has_map",
-				"friendlyName": "has_map",
+				"friendlyName": "Has map",
 				"channel": "has_map",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No"
+						},
+						{
+							"value": "1",
+							"label": "Yes"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No\",\"1\"\u003d\"Yes\"]`"
+			},
+			{
+				"property": "has_newmap",
+				"friendlyName": "New map available",
+				"channel": "has_newmap",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No"
+						},
+						{
+							"value": "1",
+							"label": "Yes"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No\",\"1\"\u003d\"Yes\"]`"
 			},
 			{
 				"property": "is_mop",
-				"friendlyName": "is_mop",
-				"channel": "is_mop",
+				"friendlyName": "Cleaning type",
+				"channel": "cleaning_type",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -464,33 +711,274 @@
 						},
 						{
 							"value": "1",
-							"label": "Vacuum And Mop"
+							"label": "Vacuum and mop"
 						},
 						{
 							"value": "2",
 							"label": "Mop"
-						},
-						{
-							"value": "3",
-							"label": "CleanZone"
-						},
-						{
-							"value": "4",
-							"label": "CleanSpot"
 						}
 					]
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Vacuum\",\"1\"\u003d\"Vacuum And Mop\",\"2\"\u003d\"Mop\",\"3\"\u003d\"CleanZone\",\"4\"\u003d\"CleanSpot\"]`"
+				"actions": [
+					{
+						"command": "set_mop",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "[0-2]"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Selects what the next cleaning does, as in the app. python-miio also lists 3 and 4 (zone, spot) which the app does not use here. Value mapping `[\"0\"\u003d\"Vacuum\",\"1\"\u003d\"Vacuum and mop\",\"2\"\u003d\"Mop\"]`"
 			},
 			{
-				"property": "has_newmap",
-				"friendlyName": "has_newmap",
-				"channel": "has_newmap",
-				"type": "Number",
+				"property": "repeat_state",
+				"friendlyName": "Repeat cleaning",
+				"channel": "repeat_cleaning",
+				"type": "Switch",
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "set_repeat",
+						"parameterType": "ONOFFNUMBER",
+						"parameters": [
+							"$value$"
+						]
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Repeats the cleaning once (app: Secondary cleanup, takes effect once)."
+			},
+			{
+				"property": "v_state",
+				"friendlyName": "Volume",
+				"channel": "volume",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10,
+					"step": 1,
+					"pattern": "%d"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_voice",
+						"parameterType": "NUMBER",
+						"parameters": [
+							1,
+							"$value$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "([1-9]|10)"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_voice",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							5
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0",
+									"returnValue": 0
+								}
+							]
+						}
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Setpoint",
+					"SoundVolume"
+				],
+				"readmeComment": "Level 0 (voice off) to 10. The app switches the voice with `set_voice [on, level]` and sets the level with `set_voice [1, level]`."
+			},
+			{
+				"property": "side_brush_hours",
+				"friendlyName": "Side brush remaining time",
+				"channel": "side_brush_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				],
+				"readmeComment": "Expected remaining hours, as shown by the Mi Home app."
+			},
+			{
+				"property": "main_brush_hours",
+				"friendlyName": "Main brush remaining time",
+				"channel": "main_brush_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				],
+				"readmeComment": "Expected remaining hours, as shown by the Mi Home app."
+			},
+			{
+				"property": "hypa_hours",
+				"friendlyName": "Dust compartment filter remaining time",
+				"channel": "hypa_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				],
+				"readmeComment": "Expected remaining hours, as shown by the Mi Home app."
+			},
+			{
+				"property": "mop_hours",
+				"friendlyName": "Mop remaining time",
+				"channel": "mop_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				],
+				"readmeComment": "Expected remaining hours, as shown by the Mi Home app."
+			},
+			{
+				"property": "side_brush_life",
+				"friendlyName": "Side brush life",
+				"channel": "side_brush_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%d %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				],
+				"readmeComment": "Remaining life in percent, as shown by the Mi Home app."
+			},
+			{
+				"property": "main_brush_life",
+				"friendlyName": "Main brush life",
+				"channel": "main_brush_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%d %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				],
+				"readmeComment": "Remaining life in percent, as shown by the Mi Home app."
+			},
+			{
+				"property": "hypa_life",
+				"friendlyName": "Dust compartment filter life",
+				"channel": "hypa_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%d %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				],
+				"readmeComment": "Remaining life in percent, as shown by the Mi Home app."
+			},
+			{
+				"property": "mop_life",
+				"friendlyName": "Mop life",
+				"channel": "mop_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%d %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				],
+				"readmeComment": "Remaining life in percent, as shown by the Mi Home app."
 			}
 		]
 	}

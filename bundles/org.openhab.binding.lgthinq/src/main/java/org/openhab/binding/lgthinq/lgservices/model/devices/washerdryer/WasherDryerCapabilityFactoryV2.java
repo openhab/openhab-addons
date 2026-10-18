@@ -15,7 +15,6 @@ package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +82,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
         JsonNode valuesMappingNode = featureNode.path("valueMapping");
         if (!valuesMappingNode.isMissingNode()) {
             Map<String, String> valuesMapping = new HashMap<>();
-            valuesMappingNode.fields().forEachRemaining(e -> {
+            valuesMappingNode.properties().forEach(e -> {
                 // collect values as:
                 //
                 // "POWEROFF": {
@@ -206,8 +205,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
             return Collections.emptyMap();
         }
         Map<String, CommandDefinition> commands = new HashMap<>();
-        for (Iterator<Map.Entry<String, JsonNode>> it = commandNode.fields(); it.hasNext();) {
-            Map.Entry<String, JsonNode> e = it.next();
+        for (Map.Entry<String, JsonNode> e : commandNode.properties()) {
             String commandName = e.getKey();
             if ("vtCtrl".equals(commandName)) {
                 // ignore command
@@ -219,7 +217,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
             JsonNode dataValues = thisCommandNode.path("data").path("washerDryer");
             if (!dataValues.isMissingNode()) {
                 Map<String, Object> data = new HashMap<>();
-                dataValues.fields().forEachRemaining(f -> {
+                dataValues.properties().forEach(f -> {
                     // only load features outside escape.
                     if (!escapeDataValues.contains(f.getKey())) {
                         if (f.getValue().isValueNode()) {

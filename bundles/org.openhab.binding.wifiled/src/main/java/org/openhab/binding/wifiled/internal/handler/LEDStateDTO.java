@@ -23,6 +23,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * The {@link LEDStateDTO} class holds the data and the settings for a LED device (i.e. the selected colors, the running
@@ -171,7 +172,7 @@ public class LEDStateDTO {
     }
 
     public int getRGB() {
-        return hsbType.getRGB();
+        return ColorUtil.hsbTosRgb(hsbType);
     }
 
     public HSBType getHSB() {

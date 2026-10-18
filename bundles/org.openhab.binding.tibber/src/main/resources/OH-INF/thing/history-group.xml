@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tibber"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="history">
+		<label>History</label>
+		<description>History for consumption, cost and production</description>
+		<channels>
+			<channel id="yearly-consumption" typeId="energy">
+				<label>Yearly Consumption</label>
+				<description>Yearly energy consumption</description>
+			</channel>
+			<channel id="yearly-cost" typeId="cost">
+				<label>Yearly Cost</label>
+				<description>Yearly energy costs</description>
+			</channel>
+			<channel id="yearly-production" typeId="energy">
+				<label>Yearly Production</label>
+				<description>Yearly energy production</description>
+			</channel>
+			<channel id="monthly-consumption" typeId="energy">
+				<label>Monthly Consumption</label>
+				<description>Monthly energy consumption</description>
+			</channel>
+			<channel id="monthly-cost" typeId="cost">
+				<label>Monthly Cost</label>
+				<description>Monthly energy costs</description>
+			</channel>
+			<channel id="monthly-production" typeId="energy">
+				<label>Monthly Production</label>
+				<description>Monthly energy production</description>
+			</channel>
+			<channel id="weekly-consumption" typeId="energy">
+				<label>Weekly Consumption</label>
+				<description>Weekly energy consumption</description>
+			</channel>
+			<channel id="weekly-cost" typeId="cost">
+				<label>Weekly Cost</label>
+				<description>Weekly energy costs</description>
+			</channel>
+			<channel id="weekly-production" typeId="energy">
+				<label>Weekly Production</label>
+				<description>Weekly energy production</description>
+			</channel>
+			<channel id="daily-consumption" typeId="energy">
+				<label>Daily Consumption</label>
+				<description>Daily energy consumption</description>
+			</channel>
+			<channel id="daily-cost" typeId="cost">
+				<label>Daily Cost</label>
+				<description>Daily energy costs</description>
+			</channel>
+			<channel id="daily-production" typeId="energy">
+				<label>Daily Production</label>
+				<description>Daily energy production</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

@@ -20,6 +20,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enphase.internal.MessageTranslator;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
+import org.openhab.binding.enphase.internal.dto.PdmDeviceDataDTO;
+import org.openhab.binding.enphase.internal.dto.PdmDeviceDataDTO.ChannelDataDTO;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -35,11 +37,15 @@ import org.openhab.core.types.UnDefType;
  * sent to one of the channels.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Cedric Boon - Added support for detailed inverter stats
  */
 @NonNullByDefault
 public class EnphaseInverterHandler extends EnphaseDeviceHandler {
 
+    private static final int SECONDS_PER_HOUR = 3600;
+
     private @Nullable InverterDTO lastKnownState;
+    private @Nullable ChannelDataDTO lastKnownEnergyState;
 
     public EnphaseInverterHandler(final Thing thing, MessageTranslator messageTranslator) {
         super(thing, messageTranslator);
@@ -59,6 +65,18 @@ public class EnphaseInverterHandler extends EnphaseDeviceHandler {
                     break;
                 case INVERTER_CHANNEL_LAST_REPORT_DATE:
                     refreshLastReportDate(lastKnownState);
+                    break;
+                case INVERTER_CHANNEL_WATT_HOURS_TODAY:
+                    refreshWattHoursToday(lastKnownEnergyState);
+                    break;
+                case INVERTER_CHANNEL_WATT_HOURS_SEVEN_DAYS:
+                    refreshWattHoursSevenDays(lastKnownEnergyState);
+                    break;
+                case INVERTER_CHANNEL_WATT_HOURS_LIFETIME:
+                    refreshWattHoursLifetime(lastKnownEnergyState);
+                    break;
+                case INVERTER_CHANNEL_WATTS_NOW:
+                    refreshWattsNow(lastKnownEnergyState);
                     break;
                 default:
                     super.handleCommandRefresh(channelId);
@@ -93,5 +111,45 @@ public class EnphaseInverterHandler extends EnphaseDeviceHandler {
             state = new DateTimeType(Instant.ofEpochSecond(inverterDTO.lastReportDate));
         }
         updateState(INVERTER_CHANNEL_LAST_REPORT_DATE, state);
+    }
+
+    /**
+     * Updates the watt-hours today/7-days/lifetime and current watts channels from the Envoy per-device energy data
+     * ({@code /ivp/pdm/device_data}).
+     *
+     * @param deviceData the device data of this inverter, or null if not (yet) available.
+     */
+    public void refreshInverterEnergyChannels(final @Nullable PdmDeviceDataDTO deviceData) {
+        final ChannelDataDTO channel = deviceData == null || deviceData.channels == null
+                || deviceData.channels.length == 0 ? null : deviceData.channels[0];
+
+        refreshWattHoursToday(channel);
+        refreshWattHoursSevenDays(channel);
+        refreshWattHoursLifetime(channel);
+        refreshWattsNow(channel);
+        lastKnownEnergyState = channel;
+    }
+
+    private void refreshWattHoursToday(final @Nullable ChannelDataDTO channel) {
+        updateState(INVERTER_CHANNEL_WATT_HOURS_TODAY, channel == null || channel.wattHours == null ? UnDefType.UNDEF
+                : new QuantityType<>(channel.wattHours.today, Units.WATT_HOUR));
+    }
+
+    private void refreshWattHoursSevenDays(final @Nullable ChannelDataDTO channel) {
+        updateState(INVERTER_CHANNEL_WATT_HOURS_SEVEN_DAYS,
+                channel == null || channel.wattHours == null ? UnDefType.UNDEF
+                        : new QuantityType<>(channel.wattHours.week, Units.WATT_HOUR));
+    }
+
+    private void refreshWattHoursLifetime(final @Nullable ChannelDataDTO channel) {
+        updateState(INVERTER_CHANNEL_WATT_HOURS_LIFETIME,
+                channel == null || channel.lifetime == null ? UnDefType.UNDEF
+                        : new QuantityType<>(Math.round(channel.lifetime.joulesProduced / (double) SECONDS_PER_HOUR),
+                                Units.WATT_HOUR));
+    }
+
+    private void refreshWattsNow(final @Nullable ChannelDataDTO channel) {
+        updateState(INVERTER_CHANNEL_WATTS_NOW, channel == null || channel.watts == null ? UnDefType.UNDEF
+                : new QuantityType<>(channel.watts.now, Units.WATT));
     }
 }

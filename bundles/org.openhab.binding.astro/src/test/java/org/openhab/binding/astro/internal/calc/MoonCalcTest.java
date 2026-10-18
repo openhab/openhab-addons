@@ -14,8 +14,6 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.Instant;
-import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -29,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
+import org.openhab.core.types.UnDefType;
 
 /***
  * Specific unit tests to check if {@link MoonCalc} generates correct data for
@@ -57,7 +56,7 @@ public class MoonCalcTest {
 
     @BeforeEach
     public void init() {
-        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1551225600000L)));
+        moonCalc = new MoonCalc();
     }
 
     @Test
@@ -73,7 +72,8 @@ public class MoonCalcTest {
         assertNotNull(moon.getPosition());
         assertNotNull(moon.getRise());
         assertNotNull(moon.getSet());
-        assertNotNull(moon.getZodiac());
+        // for an old date the phase should not be calculated
+        assertEquals(UnDefType.UNDEF, moon.getPhaseSet().getName());
     }
 
     @Test

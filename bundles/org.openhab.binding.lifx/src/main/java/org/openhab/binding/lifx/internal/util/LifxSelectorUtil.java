@@ -179,7 +179,6 @@ public class LifxSelectorUtil {
                         } else if (isRemoteAddress(address.getAddress())) {
                             supplyParsedPacketToConsumer(readBuffer, address, packetConsumer, logId);
                         }
-
                     }
                 } catch (Exception e) {
                     LOGGER.debug("{} while reading data for the light ({}) : {}", e.getClass().getSimpleName(), logId,

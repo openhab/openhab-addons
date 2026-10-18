@@ -14,6 +14,7 @@ package org.openhab.automation.jrubyscripting.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,7 @@ import java.util.SortedSet;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
@@ -97,7 +99,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList( //
+        return List.of( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
                 buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
                         "starts an interactive JRuby console"), //
@@ -500,9 +502,49 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     /*
+     * Configure the engine to redirect output to the provided console.
+     */
+    private void configureEngineConsoleOutput(ScriptEngine engine, @Nullable Console console) {
+        if (console == null) {
+            return;
+        }
+
+        ScriptContext context = engine.getContext();
+
+        // Adapter that forwards characters to the openHAB Console
+        Writer consoleAdapter = new Writer() {
+            @Override
+            public void write(char @Nullable [] cbuf, int off, int len) {
+                if (cbuf != null && len > 0) {
+                    char[] buf = cbuf;
+                    console.print(new String(buf, off, len));
+                }
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+
+        // Fall back to consoleAdapter if JSR-223 writers are null
+        Writer baseWriter = context.getWriter();
+        Writer effectiveWriter = (baseWriter != null) ? baseWriter : consoleAdapter;
+
+        Writer baseErrorWriter = context.getErrorWriter();
+        Writer effectiveErrorWriter = (baseErrorWriter != null) ? baseErrorWriter : effectiveWriter;
+
+        context.setWriter(new ConsoleWriter(effectiveWriter));
+        context.setErrorWriter(new ConsoleWriter(effectiveErrorWriter));
+    }
+
+    /*
      * Create a full openHAB-managed JRuby engine with openHAB scoped variables
      * including any injected required gems.
-     * 
+     *
      * This will run the script with the helper library if configured.
      */
     private @Nullable Object executeWithFullJRuby(Console console, EngineEvalFunction process) {
@@ -516,6 +558,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         }
         ScriptEngine engine = container.getScriptEngine();
         try {
+            configureEngineConsoleOutput(engine, console);
             printLoadingMessage(console, false);
             return process.apply(engine);
         } catch (ScriptException e) {
@@ -535,6 +578,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             if (engine == null) {
                 throw new ScriptException("Unable to create JRuby script engine.");
             }
+            configureEngineConsoleOutput(engine, console);
             return process.apply(engine);
         } catch (ScriptException e) {
             if (console != null) {
@@ -543,6 +587,76 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 logger.warn("Error: {}", e.getMessage());
             }
             return null;
+        }
+    }
+
+    // ============================================================================
+    // Inner Classes
+    // ============================================================================
+
+    /**
+     * A Writer wrapper that normalizes LF line endings to CRLF while preserving all other characters.
+     */
+    static class ConsoleWriter extends Writer {
+        private final Writer delegate;
+        private boolean previousWasCarriageReturn = false;
+        private boolean closed = false;
+
+        ConsoleWriter(Writer delegate) {
+            super(delegate);
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void write(char @Nullable [] c, int off, int len) throws IOException {
+            synchronized (lock) {
+                if (closed) {
+                    throw new IOException("Writer is closed");
+                }
+                if (c == null || len <= 0) {
+                    return;
+                }
+
+                StringBuilder buffer = new StringBuilder(len + 16);
+
+                for (int i = off; i < off + len; i++) {
+                    char ch = c[i];
+                    if (ch == '\r') {
+                        buffer.append('\r');
+                        previousWasCarriageReturn = true;
+                    } else if (ch == '\n') {
+                        if (!previousWasCarriageReturn) {
+                            buffer.append('\r');
+                        }
+                        buffer.append('\n');
+                        previousWasCarriageReturn = false;
+                    } else {
+                        buffer.append(ch);
+                        previousWasCarriageReturn = false;
+                    }
+                }
+
+                char[] output = new char[buffer.length()];
+                buffer.getChars(0, buffer.length(), output, 0);
+                delegate.write(output, 0, output.length);
+            }
+        }
+
+        @Override
+        public void flush() throws IOException {
+            synchronized (lock) {
+                delegate.flush();
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            synchronized (lock) {
+                if (!closed) {
+                    closed = true;
+                    delegate.close();
+                }
+            }
         }
     }
 

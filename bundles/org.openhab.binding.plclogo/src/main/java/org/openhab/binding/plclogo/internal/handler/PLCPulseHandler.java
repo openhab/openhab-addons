@@ -98,13 +98,9 @@ public class PLCPulseHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
-            } else if ((command instanceof OpenClosedType) || (command instanceof OnOffType)) {
+            } else if (command instanceof OnOffType) {
                 String type = channel.getAcceptedItemType();
-                if (DIGITAL_INPUT_ITEM.equalsIgnoreCase(type)) {
-                    final var received = OpenClosedType.CLOSED.equals(command);
-                    S7.SetBitAt(buffer, 0, 0, received);
-                    this.received = received;
-                } else if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
+                if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
                     final var received = OnOffType.ON.equals(command);
                     S7.SetBitAt(buffer, 0, 0, received);
                     this.received = received;

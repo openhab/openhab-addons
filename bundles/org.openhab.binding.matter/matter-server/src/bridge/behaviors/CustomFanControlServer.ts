@@ -19,7 +19,7 @@ export class CustomFanControlServer extends FanControlServer {
         percentSetting: 0,
     } as const;
 
-    static features(fanControlValues: any): FanControl.Feature[] {
+    static selectFeatures(fanControlValues: any): FanControl.Feature[] {
         const feats: FanControl.Feature[] = [];
         if (fanControlValues?.featureMap?.step) feats.push(FanControl.Feature.Step);
         switch (fanControlValues?.fanModeSequence) {

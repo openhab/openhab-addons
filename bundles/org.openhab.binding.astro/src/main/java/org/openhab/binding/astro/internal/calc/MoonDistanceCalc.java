@@ -15,10 +15,9 @@ package org.openhab.binding.astro.internal.calc;
 import static java.lang.Math.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.calc.moon.LunarArguments;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.MoonDistance;
-import org.openhab.binding.astro.internal.util.AstroConstants;
-import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
  * Moon Distance Calculator
@@ -50,15 +49,8 @@ public class MoonDistanceCalc {
      * Calculates the distance from the moon to earth in metres
      */
     public static MoonDistance calculate(double jd) {
-        double t = DateTimeUtils.toJulianCenturies(jd);
-        double t2 = t * t;
-        double t3 = t2 * t;
-        double t4 = t3 * t;
-        double d = toRadians(297.8502042 + 445267.11151686 * t - .00163 * t2 + t3 / 545868 - t4 / 113065000);
-        double m = toRadians(AstroConstants.E05_0 + 35999.0502909 * t - .0001536 * t2 + t3 / 24490000);
-        double m1 = toRadians(134.9634114 + 477198.8676313 * t + .008997 * t2 + t3 / 69699 - t4 / 14712000);
-        double f = toRadians(93.2720993 + 483202.0175273 * t - .0034029 * t2 - t3 / 3526000 + t4 / 863310000);
-        return new MoonDistance(jd, 385000560 + getCoefficient(d, m, m1, f));
+        LunarArguments la = new LunarArguments(jd);
+        return new MoonDistance(jd, 385000560 + getCoefficient(la.d, la.m, la.m1, la.f));
     }
 
     public static MoonDistance get(DistanceType type, double julianDate) {

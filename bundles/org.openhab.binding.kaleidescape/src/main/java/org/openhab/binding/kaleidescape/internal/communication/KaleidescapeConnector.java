@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.kaleidescape.internal.communication;
 
+import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,7 +25,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,7 +162,7 @@ public abstract class KaleidescapeConnector {
      * @throws KaleidescapeException - In case of any problem
      */
     public void ping() throws KaleidescapeException {
-        sendCommand(KaleidescapeBindingConstants.GET_TIME);
+        sendCommand(GET_TIME);
     }
 
     /**
@@ -248,9 +249,13 @@ public abstract class KaleidescapeConnector {
             if (matcher.find()) {
                 dispatchKeyValue(matcher.group(3), matcher.group(4), false);
             } else {
-                logger.debug("no match on message: {}", message);
-                if (message.contains(KaleidescapeBindingConstants.STANDBY_MSG)) {
-                    dispatchKeyValue(KaleidescapeBindingConstants.STANDBY_MSG, "", false);
+                if (message.contains(STANDBY_MSG)) {
+                    dispatchKeyValue(STANDBY_MSG, EMPTY, false);
+                } else if (message.contains(CINEMASCAPE_MASK_ERR_MSG)) {
+                    // workaround for GET_CINEMASCAPE_MASK error not containing a message key
+                    dispatchKeyValue("CINEMASCAPE_MASK", EMPTY, false);
+                } else {
+                    logger.debug("no match on message: {}", message);
                 }
             }
         }

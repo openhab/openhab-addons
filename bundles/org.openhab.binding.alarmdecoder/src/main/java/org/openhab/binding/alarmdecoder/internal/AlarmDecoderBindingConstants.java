@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.alarmdecoder.internal;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -41,8 +38,8 @@ public class AlarmDecoderBindingConstants {
     public static final ThingTypeUID THING_TYPE_KEYPAD = new ThingTypeUID(BINDING_ID, "keypad");
     public static final ThingTypeUID THING_TYPE_LRR = new ThingTypeUID(BINDING_ID, "lrr");
 
-    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_ZONE, THING_TYPE_RFZONE, THING_TYPE_KEYPAD, THING_TYPE_LRR).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Set.of(THING_TYPE_ZONE, THING_TYPE_RFZONE,
+            THING_TYPE_KEYPAD, THING_TYPE_LRR);
 
     // Bridge properties
     public static final String PROPERTY_SERIALNUM = "serialNumber";

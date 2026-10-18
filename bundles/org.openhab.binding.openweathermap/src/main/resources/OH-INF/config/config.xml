@@ -153,4 +153,12 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:openweathermap:onecall-forecast">
+		<parameter name="location" type="text" required="true">
+			<context>location</context>
+			<label>Location of Weather</label>
+			<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>

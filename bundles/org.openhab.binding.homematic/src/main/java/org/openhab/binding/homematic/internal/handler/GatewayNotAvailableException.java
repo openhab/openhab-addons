@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception if the HomematicGateway is not available.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GatewayNotAvailableException extends Exception {
     private static final long serialVersionUID = 95628391238530L;
 

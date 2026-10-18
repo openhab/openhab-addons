@@ -41,18 +41,23 @@ Currently binding supports the following panels: EVO192, EVO48 (not tested), EVO
 
 ### IP150 Bridge Channels
 
-| Channel              | Description                                                                                           |
-|----------------------|-------------------------------------------------------------------------------------------------------|
-| communicationCommand | Possible values [LOGOUT, LOGIN, RESET]                                                                |
-| communicationState   | Shows the communication status to Paradox (may differ from Bridge status). Values: [Offline, Online]. |
+| Channel              | Description                                                                                                                            |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| communicationCommand | Possible values [LOGOUT, LOGIN, RESET, SYNC_TIME]                                                                                      |
+| communicationState   | Shows the communication status to Paradox (may differ from Bridge status). Values: [Offline, Online].                                 |
 
 #### Communication Command Values
 
-| Value  | Description                                                                                                            |
-|--------|------------------------------------------------------------------------------------------------------------------------|
-| LOGOUT | Logs out and disconnects from Paradox alarm system.                                                                    |
-| LOGIN  | Creates socket if necessary, connects to Paradox system, and uses the logon data from the Thing parameters to connect. |
-| RESET  | Does logout and then login with recreation of communicator objects inside the code.                                    |
+| Value     | Description                                                                                                                    |
+|-----------|--------------------------------------------------------------------------------------------------------------------------------|
+| LOGOUT    | Logs out and disconnects from Paradox alarm system.                                                                            |
+| LOGIN     | Creates socket if necessary, connects to Paradox system, and uses the logon data from the Thing parameters to connect.        |
+| RESET     | Does logout and then login with recreation of communicator objects inside the code.                                            |
+| SYNC_TIME | Pushes the current openHAB host time to the panel clock on demand.                                                             |
+
+**Note on SYNC_TIME timezone:** The time sent to the panel uses the JVM default timezone of the openHAB host (i.e. the timezone configured for the Java process or the OS).
+If the host runs in UTC (e.g. a Docker container without an explicit timezone setting) but the panel is installed in a different timezone, the panel clock will be set to the wrong local time.
+To avoid this, ensure the openHAB host timezone matches the timezone where the panel is located — for example, by setting the `TZ` environment variable on the container.
 
 ### Entities (zones, partitions) Configuration
 
@@ -63,13 +68,17 @@ Currently binding supports the following panels: EVO192, EVO48 (not tested), EVO
 
 ### Panel Channels
 
-| Channel                  | Type                       | Description                                                                               |
-|--------------------------|----------------------------|-------------------------------------------------------------------------------------------|
-| state                    | String                     | Overall panel state                                                                       |
-| inputVoltage             | Number:ElectricPotential   | Supply Voltage                                                                            |
-| boardVoltage             | Number:ElectricPotential   | Board DC Voltage                                                                          |
-| batteryVoltage           | Number:ElectricPotential   | Battery Voltage                                                                           |
-| panelTime                | DateTime                   | Panel internal time (Timezone is set to the default zone of the Java virtual machine).    |
+| Channel                      | Type                       | Description                                                                               |
+|------------------------------|----------------------------|-------------------------------------------------------------------------------------------|
+| state                        | String                     | Overall panel state                                                                       |
+| inputVoltage                 | Number:ElectricPotential   | Supply Voltage                                                                            |
+| boardVoltage                 | Number:ElectricPotential   | Board DC Voltage                                                                          |
+| batteryVoltage               | Number:ElectricPotential   | Battery Voltage                                                                           |
+| panelTime                    | DateTime                   | Panel internal time (Timezone is set to the default zone of the Java virtual machine).    |
+| acTrouble                    | Switch                     | AC power supply failure                                                                   |
+| batteryTrouble               | Switch                     | Backup battery failure                                                                    |
+| moduleSupervisionTrouble     | Switch                     | A bus module has lost supervision                                                         |
+| communicationTrouble         | Switch                     | PC/reporting communication failure                                                        |
 
 ### Partition Channels
 
@@ -155,10 +164,14 @@ Currently binding supports the following panels: EVO192, EVO48 (not tested), EVO
     String paradoxSendCommand "Send command to IP150" {channel="paradoxalarm:ip150:ip150:communicationCommand"}
 
     String panelState "Paradox panel state: [%s]"<network> (Paradox) { channel = "paradoxalarm:ip150:ip150:communicationState" }
-    Number paradoxAcVoltage “Input Voltage: [%.1f V]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:inputVoltage” }
-    Number paradoxDcVoltage “Board DC Voltage: [%.1f V]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:boardVoltage” }
-    Number paradoxBatteryVoltage “Battery Voltage: [%.1f V]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:batteryVoltage” }
-    DateTime paradoxTime "Paradox Time: [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1tS]" <lock> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:panelTime" }
+    Number paradoxAcVoltage "Input Voltage: [%.1f V]" <energy> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:inputVoltage" }
+    Number paradoxDcVoltage "Board DC Voltage: [%.1f V]" <energy> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:boardVoltage" }
+    Number paradoxBatteryVoltage "Battery Voltage: [%.1f V]" <energy> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:batteryVoltage" }
+    DateTime paradoxTime "Paradox Time: [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1tS]" <time> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:panelTime" }
+    Switch paradoxAcTrouble "AC Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:acTrouble" }
+    Switch paradoxBatteryTrouble "Battery Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:batteryTrouble" }
+    Switch paradoxModuleSupervisionTrouble "Module Supervision Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:moduleSupervisionTrouble" }
+    Switch paradoxCommunicationTrouble "Communication Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:communicationTrouble" }
 
 //PARTITIONS
     String partition1State "Magnetic sensors - Floor 1: [%s]" (Partitions) { channel = "paradoxalarm:partition:ip150:partition1:state" }
@@ -175,13 +188,17 @@ Currently binding supports the following panels: EVO192, EVO48 (not tested), EVO
     Text label="Security" icon="lock" {
         Frame label="IP150 communication" {
             Text item=panelState valuecolor=[panelState=="Online"="green", panelState=="Offline"="red"]
-            Selection item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset"]
+            Selection item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset", "SYNC_TIME"="Sync Time"]
         }
         Frame label="Panel" {
             Text item=paradoxTime
             Text item=paradoxAcVoltage
             Text item=paradoxDcVoltage
             Text item=paradoxBatteryVoltage
+            Text item=paradoxAcTrouble label="AC Trouble [MAP(yesno.map):%s]" valuecolor=[paradoxAcTrouble=="ON"="red", paradoxAcTrouble=="OFF"="green"]
+            Text item=paradoxBatteryTrouble label="Battery Trouble [MAP(yesno.map):%s]" valuecolor=[paradoxBatteryTrouble=="ON"="red", paradoxBatteryTrouble=="OFF"="green"]
+            Text item=paradoxModuleSupervisionTrouble label="Module Supervision Trouble [MAP(yesno.map):%s]" valuecolor=[paradoxModuleSupervisionTrouble=="ON"="red", paradoxModuleSupervisionTrouble=="OFF"="green"]
+            Text item=paradoxCommunicationTrouble label="Communication Trouble [MAP(yesno.map):%s]" valuecolor=[paradoxCommunicationTrouble=="ON"="red", paradoxCommunicationTrouble=="OFF"="green"]
         }
         Frame label="Partitions" {
             Text item=partition1State valuecolor=[partition1State=="Disarmed"="green", partition1State=="Armed"="red"]

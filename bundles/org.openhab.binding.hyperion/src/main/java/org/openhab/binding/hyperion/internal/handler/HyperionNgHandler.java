@@ -14,13 +14,13 @@ package org.openhab.binding.hyperion.internal.handler;
 
 import static org.openhab.binding.hyperion.internal.HyperionBindingConstants.*;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +37,7 @@ import org.openhab.binding.hyperion.internal.protocol.ng.Component;
 import org.openhab.binding.hyperion.internal.protocol.ng.ComponentState;
 import org.openhab.binding.hyperion.internal.protocol.ng.ComponentStateCommand;
 import org.openhab.binding.hyperion.internal.protocol.ng.Hyperion;
+import org.openhab.binding.hyperion.internal.protocol.ng.InstanceInfo;
 import org.openhab.binding.hyperion.internal.protocol.ng.NgInfo;
 import org.openhab.binding.hyperion.internal.protocol.ng.NgResponse;
 import org.openhab.binding.hyperion.internal.protocol.ng.Priority;
@@ -59,6 +60,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +95,8 @@ public class HyperionNgHandler extends BaseThingHandler {
     private int priority;
     private String origin;
     private HyperionStateDescriptionProvider stateDescriptionProvider;
+    private final CopyOnWriteArrayList<Integer> instanceIndices = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<Integer> availableInstanceIndices = new CopyOnWriteArrayList<>();
 
     private Runnable refreshJob = new Runnable() {
         @Override
@@ -143,6 +147,15 @@ public class HyperionNgHandler extends BaseThingHandler {
             priority = ((BigDecimal) config.get(PROP_PRIORITY)).intValue();
             origin = (String) config.get(PROP_ORIGIN);
 
+            // parse optional instances configuration (comma separated list of integers)
+            Object instancesObj = config.get(PROP_INSTANCES);
+            List<Integer> parsedInstances = parseInstanceIndices(instancesObj != null ? instancesObj.toString() : null);
+            instanceIndices.clear();
+            instanceIndices.addAll(parsedInstances);
+            if (!parsedInstances.isEmpty()) {
+                logger.debug("Configured Hyperion instance indices: {}", parsedInstances);
+            }
+
             connection = new JsonTcpConnection(address, port);
             connectFuture = scheduler.scheduleWithFixedDelay(connectionJob, 0, refreshInterval, TimeUnit.SECONDS);
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
@@ -170,13 +183,48 @@ public class HyperionNgHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Parses the optional {@code instances} configuration value into an ordered list of unique,
+     * non-negative instance indices. Blank, negative and non-numeric tokens are ignored.
+     *
+     * @param instancesConfig the raw comma-separated configuration value, may be {@code null}
+     * @return the parsed instance indices, never {@code null}
+     */
+    static List<Integer> parseInstanceIndices(String instancesConfig) {
+        List<Integer> result = new ArrayList<>();
+        if (instancesConfig == null) {
+            return result;
+        }
+        for (String part : instancesConfig.split(",")) {
+            String trimmed = part.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            try {
+                int idx = Integer.parseInt(trimmed);
+                if (idx >= 0 && !result.contains(idx)) {
+                    result.add(idx);
+                }
+            } catch (NumberFormatException e) {
+                // ignore invalid tokens
+            }
+        }
+        return result;
+    }
+
     protected void handleServerInfoResponse(NgResponse response) {
         NgInfo info = response.getInfo();
         if (info != null) {
             // update Hyperion, older API compatibility
             Hyperion hyperion = info.getHyperion();
             if (hyperion != null) {
-                updateHyperion(hyperion);
+                if (instanceIndices.isEmpty()) {
+                    updateHyperion(hyperion);
+                } else {
+                    logger.debug(
+                            "Skipping updateHyperion from serverinfo because specific instances are configured: {}",
+                            instanceIndices);
+                }
             }
 
             // populate the effect states
@@ -189,7 +237,35 @@ public class HyperionNgHandler extends BaseThingHandler {
 
             // update components
             List<Component> components = info.getComponents();
-            updateComponents(components);
+            // If the user configured specific instances, avoid updating the global
+            // `ALL` component from serverinfo because that would overwrite per-instance
+            // intents (e.g., turning instance 1 off shouldn't be reverted by a global
+            // ALL=true reported by the server). Filter out the ALL component in that case.
+            if (components != null) {
+                if (!instanceIndices.isEmpty()) {
+                    List<Component> filtered = new ArrayList<>();
+                    for (Component c : components) {
+                        if (!COMPONENTS_ALL.equals(c.getName())) {
+                            filtered.add(c);
+                        }
+                    }
+                    updateComponents(filtered);
+                } else {
+                    updateComponents(components);
+                }
+            }
+
+            // update available instances (if server provides them) so that when user did not
+            // configure specific instances we can target all available instances
+            List<InstanceInfo> instances = info.getInstance();
+            if (instances != null && !instances.isEmpty()) {
+                List<Integer> newIndices = new ArrayList<>(instances.size());
+                for (InstanceInfo ii : instances) {
+                    newIndices.add(ii.getInstance());
+                }
+                availableInstanceIndices.clear();
+                availableInstanceIndices.addAll(newIndices);
+            }
 
             // update colors/effects
             List<Priority> priorities = info.getPriorities();
@@ -398,10 +474,9 @@ public class HyperionNgHandler extends BaseThingHandler {
                     break;
             }
 
-            boolean state = command == OnOffType.ON ? true : false;
+            boolean state = command == OnOffType.ON;
             componentState.setState(state);
-            ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
-            sendCommand(stateCommand);
+            sendToInstances(new ComponentStateCommand(componentState));
         } else {
             logger.debug("Channel {} unable to process command {}", channel, command);
         }
@@ -411,12 +486,31 @@ public class HyperionNgHandler extends BaseThingHandler {
         if (command instanceof OnOffType) {
             ComponentState componentState = new ComponentState();
             componentState.setComponent(COMPONENTS_ALL);
-            boolean state = command == OnOffType.ON ? true : false;
+            boolean state = command == OnOffType.ON;
             componentState.setState(state);
-            ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
-            sendCommand(stateCommand);
+            sendToInstances(new ComponentStateCommand(componentState));
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_HYPERION_ENABLED, command);
+        }
+    }
+
+    /**
+     * Sends the given command to every targeted instance. Configured instances take precedence over the instances
+     * reported by the server. Hyperion.ng's {@code componentstate} command rejects multiple instances, so one command
+     * is sent per instance with a single-element array. When no instances are known the command is sent as-is for
+     * backwards compatibility.
+     */
+    private void sendToInstances(HyperionCommand command) throws IOException, CommandUnsuccessfulException {
+        List<Integer> targetInstances = !instanceIndices.isEmpty() ? new ArrayList<>(instanceIndices)
+                : new ArrayList<>(availableInstanceIndices);
+        if (targetInstances.isEmpty()) {
+            sendCommand(command);
+            return;
+        }
+        for (int instance : targetInstances) {
+            command.setInstance(List.of(instance));
+            logger.debug("Sending {} command to instance {}", command.getCommand(), instance);
+            sendCommand(command);
         }
     }
 
@@ -428,7 +522,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             adjustment.setBrightness(brightnessValue);
 
             AdjustmentCommand brightnessCommand = new AdjustmentCommand(adjustment);
-            sendCommand(brightnessCommand);
+            sendToInstances(brightnessCommand);
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command);
         }
@@ -436,14 +530,14 @@ public class HyperionNgHandler extends BaseThingHandler {
 
     private void handleColor(Command command) throws IOException, CommandUnsuccessfulException {
         if (command instanceof HSBType hsbCommand) {
-            Color c = new Color(hsbCommand.getRGB());
-            int r = c.getRed();
-            int g = c.getGreen();
-            int b = c.getBlue();
+            int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
+            int r = rgb[0];
+            int g = rgb[1];
+            int b = rgb[2];
 
             ColorCommand colorCommand = new ColorCommand(r, g, b, priority);
             colorCommand.setOrigin(origin);
-            sendCommand(colorCommand);
+            sendToInstances(colorCommand);
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_COLOR, command);
         }
@@ -458,7 +552,7 @@ public class HyperionNgHandler extends BaseThingHandler {
 
             effectCommand.setOrigin(origin);
 
-            sendCommand(effectCommand);
+            sendToInstances(effectCommand);
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_EFFECT, command);
         }
@@ -469,11 +563,11 @@ public class HyperionNgHandler extends BaseThingHandler {
             String cmd = command.toString();
             if ("ALL".equals(cmd)) {
                 ClearAllCommand clearCommand = new ClearAllCommand();
-                sendCommand(clearCommand);
+                sendToInstances(clearCommand);
             } else {
                 int priority = Integer.parseInt(cmd);
                 ClearCommand clearCommand = new ClearCommand(priority);
-                sendCommand(clearCommand);
+                sendToInstances(clearCommand);
             }
         }
     }

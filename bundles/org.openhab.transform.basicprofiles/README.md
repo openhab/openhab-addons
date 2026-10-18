@@ -3,13 +3,14 @@
 This bundle provides a list of useful profiles:
 
 | Profile                                                         | Description                                                                                   |
-| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+|-----------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | [Generic Command Profile](#generic-command-profile)             | Sends a command to the Item when an event is triggered                                        |
 | [Generic Toggle Switch Profile](#generic-toggle-switch-profile) | Toggles a Switch Item when an event is triggered                                              |
 | [Debounce (Counting) Profile](#debounce-counting-profile)       | Counts and skips a number of state changes                                                    |
 | [Debounce (Time) Profile](#debounce-time-profile)               | Reduces the frequency of commands or state updates                                            |
+| [Debounce (State) Profile](#debounce-state-profile)             | Delays ON/OFF (or OPEN/CLOSED) state changes per direction with an independent cooldown       |
 | [Invert / Negate Profile](#invert-negate-profile)               | Inverts or negates a command or state                                                         |
-| [Round Profile](#round-profile)                                 | Reduces the number of decimal places from input data                                          |
+| [Round Profile](#round-profile)                                 | Rounds numeric and DateTime input data                                                        |
 | [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                     |
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType`  |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                     |
@@ -94,6 +95,36 @@ It can be used to debounce Item states/commands or prevent excessive load on net
 Number:Temperature debouncedSetpoint { channel="xxx" [profile="basic-profiles:debounce-time", toHandlerDelay=1000] }
 ```
 
+## Debounce (State) Profile
+
+Delays `ON`/`OFF` (Switch) or `OPEN`/`CLOSED` (Contact) state updates coming from the handler, with an independent delay per direction.
+An `ON`/`OPEN` value is held for `onDelay` milliseconds, an `OFF`/`CLOSED` value for `offDelay` milliseconds.
+A pending value is cancelled if the opposite value arrives before the delay elapses, and repeated identical values do not restart the timer.
+
+A typical use is a "cooldown" for a flapping binary sensor: forward `ON` immediately (`onDelay=0`) but keep it `ON` for a while after the device reports `OFF` (`offDelay` set to the cooldown), so it does not rapidly switch on and off.
+
+### Debounce (Time) vs. Debounce (State)
+
+Both profiles smooth out noisy inputs, but they target different cases:
+
+- Use **Debounce (Time)** for a single, type-agnostic delay that applies to every value regardless of its content (numbers, strings, switches, …). It is the right choice when you simply want to throttle the update/command frequency of a channel.
+- Use **Debounce (State)** for binary `Switch`/`Contact` channels when you need a _different_ delay depending on the direction of the change. Only the active→inactive transition (or vice versa) is delayed, the opposite transition can be forwarded immediately, and an opposing value cancels a still-pending one. This makes it ideal for an asymmetric "cooldown" (e.g. react to `ON` at once but linger on `OFF`) that `debounce-time` cannot express.
+
+### Debounce (State) Profile Configuration
+
+| Configuration Parameter | Type    | Description                                                                                   |
+|-------------------------|---------|-----------------------------------------------------------------------------------------------|
+| `onDelay`               | integer | Delay in ms before an `ON` (Switch) / `OPEN` (Contact) value is forwarded. `0` = immediate.   |
+| `offDelay`              | integer | Delay in ms before an `OFF` (Switch) / `CLOSED` (Contact) value is forwarded. `0` = immediate. |
+
+### Debounce (State) Profile Example
+
+Hold the "is it raining" status `ON` for 2 minutes after the device reports dry:
+
+```java
+Switch Raining { channel="fineoffsetweatherstation:gateway:xxx:rain-state" [profile="basic-profiles:debounce-state", onDelay=0, offDelay=120000] }
+```
+
 ## Invert / Negate Profile<a id="invert-negate-profile"></a>
 
 The Invert / Negate Profile inverts or negates a command or state.
@@ -121,26 +152,41 @@ Switch invertedSwitch { channel="xxx" [profile="basic-profiles:invert"] }
 
 ## Round Profile
 
-The Round Profile scales the State to a specific number of decimal places based on the power of ten.
+The Round Profile rounds numeric values and `DateTime` values.
+
+For `numeric` values, it scales the State to a specific number of decimal places based on the power of ten.
 It can also limit the precision of the State to a specific number of [significant digits](https://en.wikipedia.org/wiki/Significant_figures).
 When scaling, a specific [Rounding mode](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/RoundingMode.html) may be applied.
-Source Channels should accept Item Type `Number`.
+
+For `DateTime` values, rounding is applied to the UTC timestamp using the following scale mapping:
+
+- `0` = days
+- `1` = hours
+- `2` = minutes
+- `3` = seconds (default)
+- `4` = milliseconds
+
+A missing `scale` defaults to `3`(seconds) for a `DateTime` value. `precision` is ignored for a `DateTime` value.
+
+Source Channels should accept Item Type `Number` or `DateTime`.
 
 ### Round Profile Configuration
 
-| Configuration Parameter | Type    | Description                                                                                                                 |
-|-------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------|
-| `precision`             | integer | Limit the number of significant digits in the output (min: 1, max: 16, STEP: 1).                                            |
-| `scale`                 | integer | Scale to indicate the resulting number of decimal places (min: -16, max: 16, STEP: 1) .                                     |
-| `mode`                  | text    | Rounding mode to be used for scaling (e.g. "UP", "DOWN", "CEILING", "FLOOR", "HALF_UP" or "HALF_DOWN" (default: "HALF_UP"). |
+| Configuration Parameter | Type    | Description                                                                                                                                                                                                                      |
+|-------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `precision`             | integer | Limits the number of significant digits in the output for numeric values (ignored for `DateTime` values.) |
+| `scale`                 | integer | For numeric values, indicates the resulting number of decimal places (min: -16, max: 16, STEP: 1). For `DateTime` values, `0` rounds to days, `1` to hours, `2` to minutes, `3` to seconds (default), and `4` to milliseconds. |
+| `mode`                  | text    | Rounding mode to be used (e.g. `UP`, `DOWN`, `CEILING`, `FLOOR`, `HALF_UP`, or `HALF_DOWN`; default: `HALF_UP`).                                                                                                                 |
 
-Either `precision` or `scale` must be given. When both are given, `precision` is applied first, then `scale`.
+For numeric values, either `precision` or `scale` must be given. When both are given, `precision` is applied first, then `scale`.
 
 ### Round Profile Example
 
 ```java
 Number roundedNumber { channel="xxx" [profile="basic-profiles:round", scale=0] }
 Number:Temperature roundedTemperature { channel="xxx" [profile="basic-profiles:round", scale=1] }
+DateTime roundedTimestamp { channel="xxx" [profile="basic-profiles:round", scale=3] }
+DateTime roundedTimestampDefault { channel="xxx" [profile="basic-profiles:round"] }
 ```
 
 ## Threshold Profile

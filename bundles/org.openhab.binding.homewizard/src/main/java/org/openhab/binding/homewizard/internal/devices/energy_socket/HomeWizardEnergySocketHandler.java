@@ -36,6 +36,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Daniël van Os - Initial contribution
  * @author Gearrel Welvaart - Added extra channels and restructured a bit
+ * @author Leo Siepel - Guard state polling across lifecycle changes
  *
  */
 @NonNullByDefault
@@ -54,15 +55,24 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
     }
 
     @Override
-    protected void retrieveData() {
-        super.retrieveData();
+    protected boolean retrieveData(long generation) {
+        if (!super.retrieveData(generation)) {
+            return false;
+        }
 
         try {
-            handleStateData(getStateData());
+            String stateData = getStateData();
+            synchronized (this) {
+                if (generation != lifecycleGeneration.get()) {
+                    return false;
+                }
+                handleStateData(stateData);
+            }
+            return true;
         } catch (JsonSyntaxException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
-            return;
+            return false;
         }
     }
 

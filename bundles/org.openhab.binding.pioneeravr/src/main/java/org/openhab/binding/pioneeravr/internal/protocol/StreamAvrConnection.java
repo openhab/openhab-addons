@@ -202,6 +202,11 @@ public abstract class StreamAvrConnection implements AvrConnection {
     }
 
     @Override
+    public boolean sendSpeakerSelectionQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.SPEAKER_SELECTION_QUERY));
+    }
+
+    @Override
     public boolean sendPowerCommand(Command command, int zone) throws CommandTypeNotSupportedException {
         AvrCommand commandToSend = null;
 
@@ -328,6 +333,16 @@ public abstract class StreamAvrConnection implements AvrConnection {
         }
 
         return sendCommand(commandToSend);
+    }
+
+    @Override
+    public boolean sendSpeakerSelectionCommand(Command command) throws CommandTypeNotSupportedException {
+        if (command instanceof StringType stringCommand) {
+            return sendCommand(
+                    RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.SPEAKER_SELECTION_SET)
+                            .setParameter(stringCommand.toString()));
+        }
+        throw new CommandTypeNotSupportedException("Command type not supported.");
     }
 
     /**

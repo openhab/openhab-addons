@@ -34,8 +34,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -45,11 +43,11 @@ import java.util.regex.Pattern;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.io.IOAccess;
@@ -57,9 +55,12 @@ import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.automation.jsscripting.internal.scope.ScriptExtensionModuleProvider;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
+import org.openhab.automation.jsscripting.internal.util.Slf4jOutputStream;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.automation.module.script.LockableScriptEngine;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;
 import org.openhab.core.automation.module.script.internal.handler.ScriptActionHandler;
@@ -68,6 +69,7 @@ import org.openhab.core.items.Item;
 import org.openhab.core.library.types.QuantityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
 
@@ -82,10 +84,10 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalJSScriptEngine>
-        implements Lock {
+        implements LockableScriptEngine {
 
     // see private constant GraalJSScriptEngine.ID
-    private static final String LANGUAGE_ID = "js";
+    static final String LANGUAGE_ID = "js";
 
     private static final Source GLOBAL_SOURCE;
     static {
@@ -124,9 +126,6 @@ public class OpenhabGraalJSScriptEngine
         File cachePath = Path.of(OpenHAB.getUserDataFolder(), "cache", "org.graalvm.polyglot").toFile();
         System.setProperty("polyglot.engine.userResourceCache", cachePath.getAbsolutePath());
     }
-    /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
-    private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
-            .option("engine.WarnInterpreterOnly", "false").build();
     /** Provides unlimited host access as well as custom translations from JS to Java Objects */
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
             // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
@@ -175,13 +174,15 @@ public class OpenhabGraalJSScriptEngine
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine(GraalJSScriptEngineConfiguration configuration,
+    public OpenhabGraalJSScriptEngine(GraalJSScriptEngineConfiguration configuration, Engine engine,
             JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialized, so we cannot set it immediately
         this.configuration = configuration;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
-        delegate = GraalJSScriptEngine.create(ENGINE, Context.newBuilder(LANGUAGE_ID) //
+        Logger contextLogger = LoggerFactory
+                .getLogger(OpenhabGraalJSScriptEngine.class.getPackageName() + ".org.graalvm.polyglot.Context");
+        delegate = GraalJSScriptEngine.create(engine, Context.newBuilder(LANGUAGE_ID) //
                 .allowIO(IOAccess.newBuilder() //
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
                             @Override
@@ -256,6 +257,9 @@ public class OpenhabGraalJSScriptEngine
                 .hostClassLoader(getClass().getClassLoader()) //
                 // allow experimental options
                 .allowExperimentalOptions(true) //
+                // redirect context's out/err streams to SLF4J
+                .out(new Slf4jOutputStream(contextLogger, Level.DEBUG)) //
+                .err(new Slf4jOutputStream(contextLogger, Level.WARN)) //
                 // choose the path to look for CommonJS module (i.e. node_modules)
                 .option("js.commonjs-require-cwd", jsDependencyTracker.getLibraryPath().toString()) //
                 // enable Nashorn compat mode as openhab-js relies on accessors, see
@@ -308,7 +312,7 @@ public class OpenhabGraalJSScriptEngine
         scriptDependencyListener = localScriptDependencyListener;
 
         ScriptExtensionModuleProvider scriptExtensionModuleProvider = new ScriptExtensionModuleProvider(
-                scriptExtensionAccessor, lock, lifecycleTracker);
+                scriptExtensionAccessor, lock, getLockAcquisitionTimeoutMs(), lifecycleTracker);
 
         // Wrap the "require" function to also allow loading modules from the ScriptExtensionModuleProvider
         Function<Function<Object[], Object>, Function<String, Object>> wrapRequireFn = originalRequireFn -> moduleName -> scriptExtensionModuleProvider
@@ -462,7 +466,7 @@ public class OpenhabGraalJSScriptEngine
 
     /**
      * Tests if the script is a script file, i.e. it is loaded from a JavaScript file.
-     * 
+     *
      * @return true if the script is loaded from a JavaScript file, false otherwise
      */
     private boolean isScriptFile() {
@@ -476,7 +480,7 @@ public class OpenhabGraalJSScriptEngine
 
     /**
      * Get the module type id (if any) of the module executing the script.
-     * 
+     *
      * @return the module type id (if any) of the module executing the script, or null if the script is not a module
      */
     private @Nullable String getModuleTypeId() {
@@ -496,7 +500,7 @@ public class OpenhabGraalJSScriptEngine
     /**
      * Tests if the script is a script module, i.e. executed by an implementation of
      * {@link AbstractScriptModuleHandler}.
-     * 
+     *
      * @return true if the script is a script module, false otherwise
      */
     private boolean isScriptModule() {
@@ -506,7 +510,7 @@ public class OpenhabGraalJSScriptEngine
 
     /**
      * Tests if a script is a script action, i.e. executed by the ScriptActionHandler.
-     * 
+     *
      * @return true if the script is a script action, false otherwise
      */
     private boolean isScriptAction() {
@@ -515,7 +519,7 @@ public class OpenhabGraalJSScriptEngine
 
     /**
      * Tests if the script is a script condition, i.e. executed by the ScriptConditionHandler.
-     * 
+     *
      * @return true if the script is a script condition, false otherwise
      */
     private boolean isScriptCondition() {
@@ -524,7 +528,7 @@ public class OpenhabGraalJSScriptEngine
 
     /**
      * Tests if the script is a transformation script, i.e. created from the script transformation service.
-     * 
+     *
      * @return true if it is a transformation script, false otherwise
      */
     private boolean isTransformation() {
@@ -572,43 +576,12 @@ public class OpenhabGraalJSScriptEngine
     }
 
     @Override
-    public void lock() {
-        lock.lock();
-        logger.debug("Lock acquired for engine '{}'.", engineIdentifier);
+    public @NonNull Lock getLock() {
+        return lock;
     }
 
     @Override
-    public void lockInterruptibly() throws InterruptedException {
-        lock.lockInterruptibly();
-    }
-
-    @Override
-    public boolean tryLock() {
-        return lock.tryLock();
-    }
-
-    @Override
-    public boolean tryLock(long l, TimeUnit timeUnit) throws InterruptedException {
-        return lock.tryLock(l, timeUnit);
-    }
-
-    @Override
-    public void unlock() {
-        lock.unlock();
-        logger.debug("Lock released for engine '{}'.", engineIdentifier);
-    }
-
-    @Override
-    public Condition newCondition() {
-        return lock.newCondition();
-    }
-
-    /**
-     * Gets the Graal language of {@link OpenhabGraalJSScriptEngine}.
-     * 
-     * @return the Graal language of {@link OpenhabGraalJSScriptEngine} or {@code null} if not available
-     */
-    public static @Nullable Language getLanguage() {
-        return ENGINE.getLanguages().get(LANGUAGE_ID);
+    public long getLockAcquisitionTimeoutMs() {
+        return configuration.getLockAcquisitionTimeout();
     }
 }

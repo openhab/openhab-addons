@@ -421,7 +421,7 @@ public class ChannelState implements MqttMessageSubscriber {
         } else {
             commandTopic = config.commandTopic;
         }
-        return connection.publish(commandTopic, commandString.getBytes(), qos, config.retained);
+        return connection.publish(commandTopic, commandString.getBytes(StandardCharsets.UTF_8), qos, config.retained);
     }
 
     /**

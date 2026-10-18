@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bticinosmarther.internal;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -108,6 +107,5 @@ public class SmartherBindingConstants {
     public static final String CHANNEL_CONFIG_FETCH_PROGRAMS = "config#fetchPrograms";
 
     // List of all adressable things
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_BRIDGE, THING_TYPE_MODULE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_MODULE);
 }

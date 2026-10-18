@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.miio.internal.cloud;
 
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -20,105 +25,112 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class CloudLoginDTO {
 
     @SerializedName("qs")
     @Expose
-    private String qs;
+    private @Nullable String qs;
     @SerializedName("psecurity")
     @Expose
-    private String psecurity;
+    private @Nullable String psecurity;
     @SerializedName("nonce")
     @Expose
-    private Integer nonce;
+    private @Nullable Integer nonce;
     @SerializedName("ssecurity")
     @Expose
-    private String ssecurity;
+    private @Nullable String ssecurity;
     @SerializedName("passToken")
     @Expose
-    private String passToken;
+    private @Nullable String passToken;
     @SerializedName("userId")
     @Expose
-    private String userId;
+    private @Nullable String userId;
     @SerializedName("cUserId")
     @Expose
-    private String cUserId;
+    private @Nullable String cUserId;
     @SerializedName("securityStatus")
     @Expose
-    private Integer securityStatus;
+    private @Nullable Integer securityStatus;
     @SerializedName("pwd")
     @Expose
-    private Integer pwd;
+    private @Nullable Integer pwd;
     @SerializedName("code")
     @Expose
-    private String code;
+    private @Nullable String code;
     @SerializedName("desc")
     @Expose
-    private String desc;
+    private @Nullable String desc;
     @SerializedName("location")
     @Expose
-    private String location;
+    private @Nullable String location;
     @SerializedName("captchaUrl")
     @Expose
-    private Object captchaUrl;
-
-    public String getSsecurity() {
-        return ssecurity != null ? ssecurity : "";
-    }
-
-    public String getUserId() {
-        return userId != null ? userId : "";
-    }
-
-    public String getcUserId() {
-        return cUserId != null ? cUserId : "";
-    }
-
-    public String getPassToken() {
-        return passToken != null ? passToken : "";
-    }
-
-    public String getLocation() {
-        return location != null ? location : "";
-    }
-
-    public String getCode() {
-        return code;
-    }
+    private @Nullable String captchaUrl;
+    @SerializedName("callback")
+    @Expose
+    private @Nullable String callback;
+    @SerializedName("notificationUrl")
+    @Expose
+    private @Nullable String notificationUrl;
 
     public String getQs() {
-        return qs;
+        return Objects.requireNonNullElse(qs, "");
     }
 
     public String getPsecurity() {
-        return psecurity;
+        return Objects.requireNonNullElse(psecurity, "");
     }
 
     public Integer getNonce() {
-        return nonce;
+        return Objects.requireNonNullElse(nonce, 0);
     }
 
-    public String getCUserId() {
-        return cUserId;
+    public String getSsecurity() {
+        return Objects.requireNonNullElse(ssecurity, "");
+    }
+
+    public String getPassToken() {
+        return Objects.requireNonNullElse(passToken, "");
+    }
+
+    public String getUserId() {
+        return Objects.requireNonNullElse(userId, "");
+    }
+
+    public String getcUserId() {
+        return Objects.requireNonNullElse(cUserId, "");
     }
 
     public Integer getSecurityStatus() {
-        return securityStatus;
+        return Objects.requireNonNullElse(securityStatus, -1);
     }
 
     public Integer getPwd() {
-        return pwd;
+        return Objects.requireNonNullElse(pwd, 0);
+    }
+
+    public String getCode() {
+        return Objects.requireNonNullElse(code, "");
     }
 
     public String getDesc() {
-        return desc;
+        return Objects.requireNonNullElse(desc, "");
     }
 
-    public Object getCaptchaUrl() {
-        return captchaUrl;
+    public String getLocation() {
+        return Objects.requireNonNullElse(location, "");
     }
 
-    public void setCaptchaUrl(Object captchaUrl) {
-        this.captchaUrl = captchaUrl;
+    public String getCaptchaUrl() {
+        return Objects.requireNonNullElse(captchaUrl, "");
+    }
+
+    public String getCallback() {
+        return Objects.requireNonNullElse(callback, "");
+    }
+
+    public String getNotificationUrl() {
+        return Objects.requireNonNullElse(notificationUrl, "");
     }
 }

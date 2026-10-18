@@ -25,6 +25,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Bat
  * The binding of a sensor to the gateway.
  *
  * @author Andreas Berger - Initial contribution
+ * @author Giovanni Fabiani - Add support for WS85 sensor
  */
 @NonNullByDefault
 public enum SensorGatewayBinding {
@@ -81,9 +82,34 @@ public enum SensorGatewayBinding {
     WH35_CH6((byte) 45, Sensor.WH35, 6),
     WH35_CH7((byte) 46, Sensor.WH35, 7),
     WH35_CH8((byte) 47, Sensor.WH35, 8),
-    WH90((byte) 48, Sensor.WH90, null);
+    WH90((byte) 48, Sensor.WH90, null),
+    WS85((byte) 49, Sensor.WS85, null),
+    // eWH48_SENSORCH1 = 50, // Not currently used (start)
+    // eWH48_SENSORCH2 = 51,
+    // eWH48_SENSORCH3 = 52,
+    // eWH48_SENSORCH4 = 53,
+    // eWH48_SENSORCH5 = 54,
+    // eWH48_SENSORCH6 = 55,
+    // eWH48_SENSORCH7 = 56,
+    // eWH48_SENSORCH8 = 57, Not currently used (end)
+    WH51_CH9((byte) 58, Sensor.WH51, 9),
+    WH51_CH10((byte) 59, Sensor.WH51, 10),
+    WH51_CH11((byte) 60, Sensor.WH51, 11),
+    WH51_CH12((byte) 61, Sensor.WH51, 12),
+    WH51_CH13((byte) 62, Sensor.WH51, 13),
+    WH51_CH14((byte) 63, Sensor.WH51, 14),
+    WH51_CH15((byte) 64, Sensor.WH51, 15),
+    WH51_CH16((byte) 65, Sensor.WH51, 16),
+    WH54_CH1((byte) 66, Sensor.WH54, 1),
+    WH54_CH2((byte) 67, Sensor.WH54, 2),
+    WH54_CH3((byte) 68, Sensor.WH54, 3),
+    WH54_CH4((byte) 69, Sensor.WH54, 4),
+    WN20((byte) 70, Sensor.WN20, null),
+    WN38((byte) 71, Sensor.WN38, null);
 
     private static final Map<Byte, List<SensorGatewayBinding>> SENSOR_LOOKUP = new HashMap<>();
+
+    private static final Map<Sensor, Map<@Nullable Integer, SensorGatewayBinding>> SENSOR_CHANNEL_LOOKUP = new HashMap<>();
 
     static {
         for (SensorGatewayBinding sensorGatewayBinding : values()) {
@@ -93,6 +119,8 @@ public enum SensorGatewayBinding {
             if (bindings != null) {
                 bindings.add(sensorGatewayBinding);
             }
+            SENSOR_CHANNEL_LOOKUP.computeIfAbsent(sensorGatewayBinding.sensor, s -> new HashMap<>())
+                    .put(sensorGatewayBinding.channel, sensorGatewayBinding);
         }
     }
 
@@ -110,8 +138,25 @@ public enum SensorGatewayBinding {
         return SENSOR_LOOKUP.get(idx);
     }
 
+    /**
+     * Reverse lookup of the binding for a measured value's producing {@link Sensor} and channel index. Several
+     * measurands may share the same {@code (sensor, channel)} (e.g. WH51 soil moisture and soil temperature of the
+     * same physical sensor), so they all resolve to the one binding - and thus to one sensor Thing.
+     *
+     * @param channel the 1-based channel index, or {@code null} for single-instance sensors (e.g. WH57, WH45)
+     * @return the matching binding, or {@code null} if no sensor uses that {@code (sensor, channel)} combination
+     */
+    public static @Nullable SensorGatewayBinding forSensorAndChannel(Sensor sensor, @Nullable Integer channel) {
+        Map<@Nullable Integer, SensorGatewayBinding> byChannel = SENSOR_CHANNEL_LOOKUP.get(sensor);
+        return byChannel == null ? null : byChannel.get(channel);
+    }
+
     public BatteryStatus getBatteryStatus(byte data) {
         return sensor.getBatteryStatus(data);
+    }
+
+    public BatteryStatus getHttpBatteryStatus(byte data) {
+        return sensor.getHttpBatteryStatus(data);
     }
 
     public Sensor getSensor() {

@@ -41,6 +41,10 @@
 			<channel-group id="info" typeId="info"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>duid</representation-property>
 
 		<config-description>
@@ -48,12 +52,83 @@
 				<label>Device ID</label>
 				<description>Specifies the vacuum's Device UID.</description>
 			</parameter>
+			<parameter name="communication" type="text" required="false">
+				<label>Communication Mode</label>
+				<description>Select cloud or direct communication transport for command routing.</description>
+				<default>cloud</default>
+				<options>
+					<option value="cloud">Cloud</option>
+					<option value="direct">Direct</option>
+				</options>
+			</parameter>
+			<parameter name="localHost" type="text" required="false">
+				<label>Local Host Override</label>
+				<advanced>true</advanced>
+				<description>Optional local IP/hostname override used in direct mode.</description>
+			</parameter>
+			<parameter name="localPort" type="integer" min="1" max="65535" required="false">
+				<label>Local Port</label>
+				<advanced>true</advanced>
+				<description>Local port used for direct mode communication.</description>
+				<default>58867</default>
+			</parameter>
+			<parameter name="cloudMapRefresh" type="text" required="false">
+				<label>Cloud Map Refresh</label>
+				<advanced>true</advanced>
+				<description>Controls cloud map retrieval while communication mode is direct.</description>
+				<default>on</default>
+				<options>
+					<option value="on">On</option>
+					<option value="off">Off</option>
+				</options>
+			</parameter>
+			<parameter name="cloudMetadataRefresh" type="text" required="false">
+				<label>Cloud Metadata Refresh</label>
+				<advanced>true</advanced>
+				<description>Controls cloud metadata refresh (routines and cloud-only metadata) while communication mode is direct.</description>
+				<default>on</default>
+				<options>
+					<option value="on">On</option>
+					<option value="off">Off</option>
+				</options>
+			</parameter>
 			<parameter name="refresh" type="integer" unit="min" min="1" required="false">
 				<label>Refresh Interval</label>
 				<advanced>true</advanced>
-				<description>Specifies the refresh interval in minutes.</description>
+				<description>Legacy compatibility refresh interval in minutes. Existing Thing configurations continue to use this
+					setting.</description>
 				<unitLabel>Minutes</unitLabel>
 				<default>5</default>
+			</parameter>
+			<parameter name="fastRefreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Fast Refresh Interval</label>
+				<advanced>true</advanced>
+				<description>Specifies direct-mode status refresh interval in seconds while Vacuum channel is ON.</description>
+				<unitLabel>Seconds</unitLabel>
+				<default>15</default>
+			</parameter>
+			<parameter name="mapRefreshCloudCleaningInterval" type="integer" unit="s" min="30" required="false">
+				<label>Map Refresh While Cleaning (Cloud Mode)</label>
+				<advanced>true</advanced>
+				<description>Specifies map refresh interval in seconds while cleaning when communication mode is cloud. Minimum
+					value is 30 seconds.</description>
+				<unitLabel>Seconds</unitLabel>
+				<default>30</default>
+			</parameter>
+			<parameter name="mapRefreshDirectCleaningInterval" type="integer" unit="s" min="15" required="false">
+				<label>Map Refresh While Cleaning (Direct Mode)</label>
+				<advanced>true</advanced>
+				<description>Specifies map refresh interval in seconds while cleaning when communication mode is direct. Minimum
+					value is 15 seconds.</description>
+				<unitLabel>Seconds</unitLabel>
+				<default>15</default>
+			</parameter>
+			<parameter name="cloudRefreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Cloud Refresh Interval</label>
+				<advanced>true</advanced>
+				<description>Specifies the refresh interval in seconds for cloud-only refresh tasks in direct mode. Falls back to
+					Refresh Interval when unset; enforced minimum is 60 seconds.</description>
+				<unitLabel>Seconds</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -87,6 +162,7 @@
 			<channel id="segment-status" typeId="segment-status"/>
 			<channel id="map-status" typeId="map-status"/>
 			<channel id="led-status" typeId="led-status"/>
+			<channel id="current-room" typeId="current-room"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
@@ -310,6 +386,17 @@
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-room">
+		<item-type>String</item-type>
+		<label>Current Room</label>
+		<description>Name of the room the robot is currently in, resolved from the live map segment at the robot's position.
+			While the robot is docked, the channel reflects the room of the charging dock.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Dynamic Status Channels -->
@@ -611,10 +698,10 @@
 		<state>
 			<options>
 				<option value="none">Select Consumable</option>
-				<option value="main-brush-work-time">Reset Mainbrush</option>
-				<option value="side-brush-work-time">Reset Sidebrush</option>
-				<option value="filter-work-time">Reset Filter</option>
-				<option value="sensor-dirty-time">Reset Sensors</option>
+				<option value="main_brush_work_time">Reset Mainbrush</option>
+				<option value="side_brush_work_time">Reset Sidebrush</option>
+				<option value="filter_work_time">Reset Filter</option>
+				<option value="sensor_dirty_time">Reset Sensors</option>
 			</options>
 		</state>
 	</channel-type>
@@ -899,6 +986,15 @@
 	<channel-type id="rpc" advanced="true">
 		<item-type>String</item-type>
 		<label>Execute RPC (cloud) Command</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="dpcommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute DP (cloud) Command</label>
+		<description>Execute a raw flat data-point payload to B01/Q10 devices. (Example payload: {"201": {"cmd": 1}})</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Mode</tag>

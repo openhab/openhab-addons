@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.govee.internal.CommunicationManager.GoveeDiscoveryListener;
 import org.openhab.binding.govee.internal.model.DiscoveryData;
+import org.openhab.binding.govee.internal.model.DiscoveryMsg;
 import org.openhab.binding.govee.internal.model.DiscoveryResponse;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -78,6 +79,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Stefan Höhn - Initial Contribution
  * @author Danny Baumann - Thread-Safe design refactoring
+ * @author Lee Ballard - Network MAC discovery enrichment
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.govee")
@@ -115,22 +117,28 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     }
 
     public @Nullable DiscoveryResult responseToResult(DiscoveryResponse response) {
-        final DiscoveryData data = response.msg().data();
-        final String macAddress = data.device();
-        if (macAddress.isEmpty()) {
-            logger.warn("Empty Mac address received during discovery - ignoring {}", response);
+        final DiscoveryMsg msg = response.msg();
+        if (!"scan".equals(msg.cmd())) {
+            logger.trace("Ignoring non-scan message received during discovery - {}", response);
+            return null;
+        }
+
+        final DiscoveryData data = msg.data();
+        final String deviceId = data.device();
+        if (deviceId == null || deviceId.isEmpty()) {
+            logger.warn("Missing device ID received during discovery - ignoring {}", response);
             return null;
         }
 
         final String ipAddress = data.ip();
-        if (ipAddress.isEmpty()) {
-            logger.warn("Empty IP address received during discovery - ignoring {}", response);
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            logger.debug("Ignoring scan response without IP address (device not reachable over LAN) - {}", response);
             return null;
         }
 
         final String sku = data.sku();
-        if (sku.isEmpty()) {
-            logger.warn("Empty SKU (product name) received during discovery - ignoring {}", response);
+        if (sku == null || sku.isEmpty()) {
+            logger.warn("Missing SKU (product name) received during discovery - ignoring {}", response);
             return null;
         }
 
@@ -144,10 +152,10 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
         }
         String nameForLabel = productName != null ? productName + " " + sku : sku;
 
-        ThingUID thingUid = new ThingUID(GoveeBindingConstants.THING_TYPE_LIGHT, macAddress.replace(":", "_"));
+        ThingUID thingUid = new ThingUID(GoveeBindingConstants.THING_TYPE_LIGHT, deviceId.replace(":", "_"));
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUid)
-                .withRepresentationProperty(GoveeBindingConstants.MAC_ADDRESS)
-                .withProperty(GoveeBindingConstants.MAC_ADDRESS, macAddress)
+                .withRepresentationProperty(GoveeBindingConstants.DEVICE_ID)
+                .withProperty(GoveeBindingConstants.DEVICE_ID, deviceId)
                 .withProperty(GoveeBindingConstants.IP_ADDRESS, ipAddress)
                 .withProperty(GoveeBindingConstants.DEVICE_TYPE, sku)
                 .withLabel(String.format("Govee %s (%s)", nameForLabel, ipAddress));
@@ -157,11 +165,11 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
         }
 
         String hwVersion = data.wifiVersionHard();
-        if (!hwVersion.isEmpty()) {
+        if (hwVersion != null && !hwVersion.isEmpty()) {
             builder.withProperty(GoveeBindingConstants.HW_VERSION, hwVersion);
         }
         String swVersion = data.wifiVersionSoft();
-        if (!swVersion.isEmpty()) {
+        if (swVersion != null && !swVersion.isEmpty()) {
             builder.withProperty(GoveeBindingConstants.SW_VERSION, swVersion);
         }
 
@@ -188,7 +196,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     }
 
     /**
-     * Command the {@link CommunicationManager) to run the scans.
+     * Command the {@link CommunicationManager} to run the scans.
      */
     private void doDiscovery() {
         communicationManager.runDiscoveryForInterfaces(getLocalNetworkInterfaces(), this);

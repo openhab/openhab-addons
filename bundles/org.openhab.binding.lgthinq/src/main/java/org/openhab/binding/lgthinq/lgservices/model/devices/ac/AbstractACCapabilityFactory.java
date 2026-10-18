@@ -76,7 +76,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
             throw new LGThinqApiException("Error extracting options supported by the device");
         } else {
             List<String> values = new ArrayList<>();
-            optionsNode.fields().forEachRemaining(e -> {
+            optionsNode.properties().forEach(e -> {
                 values.add(e.getValue().asText());
             });
             return values;
@@ -89,7 +89,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
             return Collections.emptyMap();
         } else {
             Map<String, String> modes = new HashMap<String, String>();
-            optionsNode.fields().forEachRemaining(e -> {
+            optionsNode.properties().forEach(e -> {
                 if (invertKeyValue) {
                     modes.put(e.getValue().asText(), e.getKey());
                 } else {
@@ -145,7 +145,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
 
         JsonNode supRacSubModeOps = valuesNode.path(getSupSubRacModeNodeName()).path(getOptionsMapNodeName());
         if (!supRacSubModeOps.isMissingNode()) {
-            supRacSubModeOps.fields().forEachRemaining(f -> {
+            supRacSubModeOps.properties().forEach(f -> {
                 if (CAP_AC_SUB_MODE_COOL_JET.equals(f.getValue().asText())) {
                     acCap.setJetModeAvailable(true);
                 }
@@ -162,7 +162,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         if (acCap.isJetModeAvailable()) {
             JsonNode jetModeOps = valuesNode.path(getJetModeNodeName()).path(getOptionsMapNodeName());
             if (!jetModeOps.isMissingNode()) {
-                jetModeOps.fields().forEachRemaining(j -> {
+                jetModeOps.properties().forEach(j -> {
                     String value = j.getValue().asText();
                     if (CAP_AC_COOL_JET.containsKey(value)) {
                         acCap.setCoolJetModeCommandOn(j.getKey());
@@ -194,7 +194,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         JsonNode supRACModeOps = valuesNode.path(getSupRacModeNodeName()).path(getOptionsMapNodeName());
 
         if (!supRACModeOps.isMissingNode()) {
-            supRACModeOps.fields().forEachRemaining(r -> {
+            supRACModeOps.properties().forEach(r -> {
                 String racOpValue = r.getValue().asText();
                 switch (racOpValue) {
                     case CAP_AC_AUTODRY:
@@ -241,9 +241,10 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         if (HEAT_PUMP.equals(acCap.getDeviceType())) {
             JsonNode supHpAirSwitchNode = valuesNode.path(getHpAirWaterSwitchNodeName()).path(getOptionsMapNodeName());
             if (!supHpAirSwitchNode.isMissingNode()) {
-                supHpAirSwitchNode.fields().forEachRemaining(r -> {
-                    r.getValue().asText();
-                });
+                // TODO no-op code for future use
+                // supHpAirSwitchNode.properties().forEach(r -> {
+                // r.getValue().asText();
+                // });
             }
         }
 

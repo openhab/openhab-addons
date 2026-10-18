@@ -52,6 +52,14 @@ For the cloud API thing, the following parameters must be configured:
 | password  | The cloud account password                                                                                                    |
 | continent | The continent you are residing on, or 'World' if none matches. This is used to select the correct cloud server to connect to. |
 
+Initially, the cloud API thing will be offline because Ecovacs' servers require a second verification step via verification code that is sent via E-mail.
+The cloud API thing provides thing actions for doing so:
+
+- First, a verification code must be requested using the 'Request Verification Code' action. This will trigger reception of the mail containing the verification code.
+- Once the verification code arrived, the 'Enter Verification Code' action needs to be used to enter the code. Once that happened, the API thing becomes online.
+
+This login procedure should be required only once; the binding refreshes the session automatically.
+
 For the vacuum things, there is no required configuration (when using discovery). The following parameters exist:
 
 | Config       | Description                                                                                                                   |

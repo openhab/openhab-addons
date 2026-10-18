@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDevice {
     private final Logger logger = LoggerFactory.getLogger(HmDevice.class);
 
@@ -36,19 +39,19 @@ public class HmDevice {
     private final HmInterface hmInterface;
     private final String address;
     private final String type;
-    private String name;
-    private final String firmware;
+    private String name = "";
+    private final @Nullable String firmware;
     private final String gatewayId;
-    private final String homegearId;
+    private final @Nullable String homegearId;
 
     private List<HmChannel> channels = new ArrayList<>();
 
-    public HmDevice(String address, HmInterface hmInterface, String type, String gatewayId, String homegearId,
-            String firmware) {
+    public HmDevice(String address, HmInterface hmInterface, String type, String gatewayId, @Nullable String homegearId,
+            @Nullable String firmware) {
         this.address = address;
         this.hmInterface = hmInterface;
         this.firmware = firmware;
-        if ("HM-ES-TX-WM".equals(type) && Float.valueOf(firmware) > 2.0) {
+        if ("HM-ES-TX-WM".equals(type) && firmware != null && Float.valueOf(firmware) > 2.0) {
             logger.debug("Found HM-ES-TX-WM with firmware version > 2.0, creating virtual type");
             this.type = type + "2";
         } else {
@@ -103,7 +106,7 @@ public class HmDevice {
     /**
      * Returns the firmware of the device.
      */
-    public String getFirmware() {
+    public @Nullable String getFirmware() {
         return firmware;
     }
 
@@ -117,7 +120,7 @@ public class HmDevice {
     /**
      * Returns the homegearId of the device.
      */
-    public String getHomegearId() {
+    public @Nullable String getHomegearId() {
         return homegearId;
     }
 
@@ -130,9 +133,12 @@ public class HmDevice {
     }
 
     /**
-     * Returns the channel with the given channelNumber.
+     * Returns the channel with the given channel number.
+     *
+     * @param channelNumber the channel number to look up
+     * @return the matching channel, or {@code null} if no channel exists for the given number
      */
-    public HmChannel getChannel(int channelNumber) {
+    public @Nullable HmChannel getChannel(int channelNumber) {
         for (HmChannel hmChannel : channels) {
             if (hmChannel.getNumber() == channelNumber) {
                 return hmChannel;
@@ -212,12 +218,11 @@ public class HmDevice {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof HmDevice)) {
-            return false;
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof HmDevice other) {
+            return Objects.equals(address, other.address);
         }
-        HmDevice comp = (HmDevice) obj;
-        return Objects.equals(address, comp.getAddress());
+        return false;
     }
 
     @Override

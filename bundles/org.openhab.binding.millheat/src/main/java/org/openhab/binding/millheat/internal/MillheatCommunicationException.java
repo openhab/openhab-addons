@@ -13,35 +13,51 @@
 package org.openhab.binding.millheat.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.millheat.internal.dto.AbstractRequest;
-import org.openhab.binding.millheat.internal.dto.AbstractResponse;
+import org.eclipse.jetty.http.HttpStatus;
 
 /**
- * The {@link MillheatCommunicationException} class wraps exceptions raised when communicating with the API
+ * Wraps failures encountered while talking to the Mill cloud API.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Carry the HTTP status instead of the legacy error code
  */
 @NonNullByDefault
 public class MillheatCommunicationException extends Exception {
-    private static final long serialVersionUID = 1L;
-    private int errorCode = 0;
+    private static final long serialVersionUID = 2L;
+
+    /** Used when the failure was not an HTTP error response, for example a timeout. */
+    public static final int NO_STATUS = 0;
+
+    private final int httpStatus;
 
     public MillheatCommunicationException(final String message, final Throwable cause) {
         super(message, cause);
+        this.httpStatus = NO_STATUS;
     }
 
     public MillheatCommunicationException(final String message) {
         super(message);
+        this.httpStatus = NO_STATUS;
     }
 
-    public MillheatCommunicationException(final AbstractRequest request, final AbstractResponse response) {
-        super("Server responded with error to request " + request.getClass().getSimpleName() + "/"
-                + request.getRequestUrl() + ": " + response.errorCode + "/" + response.errorName + "/"
-                + response.errorDescription);
-        this.errorCode = response.errorCode;
+    public MillheatCommunicationException(final int httpStatus, final String message) {
+        super(message);
+        this.httpStatus = httpStatus;
     }
 
-    public int getErrorCode() {
-        return errorCode;
+    /**
+     * The HTTP status the server responded with, or {@link #NO_STATUS} if the request never
+     * produced a response.
+     */
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+
+    public boolean isUnauthorized() {
+        return httpStatus == HttpStatus.UNAUTHORIZED_401;
+    }
+
+    public boolean isRateLimited() {
+        return httpStatus == HttpStatus.TOO_MANY_REQUESTS_429;
     }
 }

@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,6 +23,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
@@ -84,6 +86,10 @@ public interface ShellyThingInterface {
 
     void updateChannelDefinitions(Map<String, Channel> dynChannels);
 
+    boolean updateThingChannels(Map<String, Channel> channelUpdates, Map<String, Channel> newChannels);
+
+    boolean removeChannels(Set<String> channelIds);
+
     void postEvent(String event, boolean force);
 
     void triggerChannel(String group, String channelID, String event);
@@ -100,11 +106,15 @@ public interface ShellyThingInterface {
 
     ShellyThingConfiguration getThingConfig();
 
+    ShellyApiConfiguration getApiConfig();
+
     HttpClient getHttpClient();
 
     String getProperty(String key);
 
     void updateProperties(String key, String value);
+
+    void removeProperty(String key);
 
     boolean updateWakeupReason(@Nullable List<Object> valueArray);
 

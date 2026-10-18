@@ -31,8 +31,8 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class HomeWizardEnergyMeterSubHandler {
 
-    protected final Logger logger = LoggerFactory.getLogger(HomeWizardEnergyMeterSubHandler.class);
-    private final static Gson gson = new GsonBuilder()
+    protected static final Logger logger = LoggerFactory.getLogger(HomeWizardEnergyMeterSubHandler.class);
+    private static final Gson gson = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
     /**

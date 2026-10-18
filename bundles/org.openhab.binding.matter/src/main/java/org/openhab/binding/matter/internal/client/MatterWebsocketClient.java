@@ -280,8 +280,14 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                 switch (event.type) {
                     case "attributeChanged":
                         logger.debug("attributeChanged message {}", event.data);
-                        AttributeChangedMessage changedMessage = gson.fromJson(event.data,
-                                AttributeChangedMessage.class);
+                        AttributeChangedMessage changedMessage;
+                        try {
+                            changedMessage = gson.fromJson(event.data, AttributeChangedMessage.class);
+                        } catch (JsonParseException e) {
+                            // otherwise lost silently, as nothing reads the result of the submitted task
+                            logger.debug("Could not deserialize AttributeChangedMessage {}", event.data, e);
+                            return;
+                        }
                         if (changedMessage == null) {
                             logger.debug("invalid AttributeChangedMessage");
                             return;
@@ -423,14 +429,13 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
 
     protected CompletableFuture<JsonElement> sendMessage(String namespace, String functionName, @Nullable Object args[],
             int timeoutSeconds) {
-        if (timeoutSeconds <= 0) {
-            timeoutSeconds = REQUEST_TIMEOUT_SECONDS;
-        }
+        final int effectiveTimeoutSeconds = timeoutSeconds > 0 ? timeoutSeconds : REQUEST_TIMEOUT_SECONDS;
         CompletableFuture<JsonElement> responseFuture = new CompletableFuture<>();
 
         Session session = this.session;
         if (session == null) {
             logger.debug("Could not send {} {} : no valid session", namespace, functionName);
+            responseFuture.completeExceptionally(new MatterRequestException("No valid session", null));
             return responseFuture;
         }
         String requestId = UUID.randomUUID().toString();
@@ -445,9 +450,9 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             CompletableFuture<JsonElement> future = pendingRequests.remove(requestId);
             if (future != null && !future.isDone()) {
                 future.completeExceptionally(new TimeoutException(String.format(
-                        "Request %s:%s timed out after %d seconds", namespace, functionName, REQUEST_TIMEOUT_SECONDS)));
+                        "Request %s:%s timed out after %d seconds", namespace, functionName, effectiveTimeoutSeconds)));
             }
-        }, timeoutSeconds, TimeUnit.SECONDS);
+        }, effectiveTimeoutSeconds, TimeUnit.SECONDS);
 
         return responseFuture;
     }
@@ -593,7 +598,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                     // Use reflection to find the field type
                     Field field = getField(clusterClass, path.attributeName);
                     if (field != null) {
-                        value = context.deserialize(valueElement, field.getType());
+                        value = context.deserialize(valueElement, field.getGenericType());
                     }
                 } catch (NoSuchFieldException e) {
                     logger.debug("Field not found for attribute: {}", path.attributeName, e);
@@ -657,7 +662,14 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             if (BaseCluster.MatterEnum.class.isAssignableFrom(rawType) && rawType.isEnum()) {
                 @SuppressWarnings("unchecked")
                 Class<? extends BaseCluster.MatterEnum> enumType = (Class<? extends BaseCluster.MatterEnum>) rawType;
-                return BaseCluster.MatterEnum.fromValue(enumType, value);
+                try {
+                    return BaseCluster.MatterEnum.fromValue(enumType, value);
+                } catch (IllegalArgumentException e) {
+                    // Some devices report values outside the values defined by the Matter spec. Treat these as null
+                    // rather than failing the deserialization of the entire cluster.
+                    logger.debug("Unknown value {} for enum {}, returning null", value, rawType.getSimpleName());
+                    return null;
+                }
             }
 
             throw new JsonParseException("Unable to deserialize " + typeOfT);

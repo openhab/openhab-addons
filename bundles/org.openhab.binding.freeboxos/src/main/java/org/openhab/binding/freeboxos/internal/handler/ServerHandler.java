@@ -255,7 +255,7 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         updateChannelQuantity(GROUP_CONNECTION_STATUS, RATE + "-" + orientation, rateUp);
         updateChannelQuantity(GROUP_CONNECTION_STATUS, BW + "-" + orientation, bandwidthUp);
         updateChannelQuantity(GROUP_CONNECTION_STATUS, PCT_BW + "-" + orientation,
-                !bandwidthUp.equals(QuantityType.ZERO) ? rateUp.divide(bandwidthUp) : QuantityType.ZERO, PERCENT);
+                bandwidth != 0 ? rateUp.divide(bandwidthUp) : QuantityType.ZERO, PERCENT);
     }
 
     @Override

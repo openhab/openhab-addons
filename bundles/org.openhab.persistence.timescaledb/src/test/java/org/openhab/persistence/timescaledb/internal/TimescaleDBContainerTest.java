@@ -90,7 +90,7 @@ import com.zaxxer.hikari.HikariDataSource;
  * @author René Ulbricht - Initial contribution
  */
 @Tag("integration")
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @NonNullByDefault({ DefaultLocation.RETURN_TYPE, DefaultLocation.PARAMETER })
 @SuppressWarnings("null")
@@ -716,6 +716,25 @@ class TimescaleDBContainerTest {
         service.deactivate();
         assertNull(dsField.get(service), "DataSource must be null after deactivate()");
         assertNull(jobField.get(service), "Downsampling job must be null after deactivate()");
+    }
+
+    @Test
+    @Order(70)
+    void serviceActivateAcceptsPostgresqlUrlWithoutJdbcPrefix() throws Exception {
+        MetadataRegistry mr = mock(MetadataRegistry.class);
+        when(mr.getAll()).thenReturn(Collections.emptyList());
+        TimescaleDBPersistenceService service = new TimescaleDBPersistenceService(mock(ItemRegistry.class), mr,
+                new TimescaleDBMetadataService(mr));
+
+        String urlWithoutJdbc = DB.getJdbcUrl().replaceFirst("^jdbc:", "");
+        service.activate(Map.of("url", urlWithoutJdbc, "user", DB.getUsername(), "password", DB.getPassword()));
+
+        var dsField = TimescaleDBPersistenceService.class.getDeclaredField("dataSource");
+        dsField.setAccessible(true);
+        assertNotNull(dsField.get(service), "DataSource must be initialized for postgresql:// URL");
+
+        service.deactivate();
+        assertNull(dsField.get(service), "DataSource must be null after deactivate()");
     }
 
     @Test

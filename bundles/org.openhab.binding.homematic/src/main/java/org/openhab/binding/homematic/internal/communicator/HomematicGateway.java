@@ -14,6 +14,8 @@ package org.openhab.binding.homematic.internal.communicator;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -26,6 +28,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface HomematicGateway {
 
     /**
@@ -92,7 +95,7 @@ public interface HomematicGateway {
      *            {@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"}
      *            for wakeup mode, or null for the default mode)
      */
-    void sendDatapoint(HmDatapoint dp, HmDatapointConfig dpConfig, Object newValue, String rxMode)
+    void sendDatapoint(HmDatapoint dp, HmDatapointConfig dpConfig, @Nullable Object newValue, @Nullable String rxMode)
             throws IOException, HomematicClientException;
 
     /**

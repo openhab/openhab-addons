@@ -55,7 +55,7 @@ public class BasicInformationCluster extends BaseCluster {
 
     /**
      * This attribute shall be set to the revision number of the Data Model against which the Node is certified. The
-     * value of this attribute shall be one of the valid values listed in Section 7.1.1, “Revision History”.
+     * value of this attribute shall be one of the valid values listed in Section 7.1.1, "Revision History".
      */
     public Integer dataModelRevision; // 0 uint16 R V
     /**
@@ -85,8 +85,8 @@ public class BasicInformationCluster extends BaseCluster {
      * This attribute shall be an ISO 3166-1 alpha-2 code to represent the country, dependent territory, or special area
      * of geographic interest in which the Node is located at the time of the attribute being set. This attribute shall
      * be set during initial commissioning (unless already set) and may be updated by further reconfigurations. This
-     * attribute may affect some regulatory aspects of the Node’s operation, such as radio transmission power levels in
-     * given spectrum allocation bands if technologies where this is applicable are used. The Location’s region code
+     * attribute may affect some regulatory aspects of the Node's operation, such as radio transmission power levels in
+     * given spectrum allocation bands if technologies where this is applicable are used. The Location's region code
      * shall be interpreted in a case-insensitive manner. If the Node cannot understand the location code with which it
      * was configured, or the location code has not yet been configured, it shall configure itself in a region-agnostic
      * manner as determined by the vendor, avoiding region-specific assumptions as much as is practical. The special
@@ -107,17 +107,16 @@ public class BasicInformationCluster extends BaseCluster {
     /**
      * This attribute shall contain the current version number for the software running on this Node. A larger value of
      * SoftwareVersion is newer than a lower value, from the perspective of software updates (see Section 11.20.3.3,
-     * “Availability of Software Images”). Nodes may query this field to determine the currently running version of
+     * "Availability of Software Images"). Nodes may query this field to determine the currently running version of
      * software on another given Node.
      */
-    public Integer softwareVersion; // 9 uint32 R V
+    public Long softwareVersion; // 9 uint32 R V
     /**
      * This attribute shall contain a current human-readable representation for the software running on the Node. This
      * version information may be conveyed to users. The maximum length of the SoftwareVersionString attribute is 64
      * bytes of UTF-8 characters. The contents SHOULD only use simple 7-bit ASCII alphanumeric and punctuation
      * characters, so as to simplify the conveyance of the value to a variety of cultures.
-     * Examples of version strings include &quot;1.0&quot;, &quot;1.2.3456&quot;, &quot;1.2-2&quot;,
-     * &quot;1.0b123&quot;, &quot;1.2_3&quot;.
+     * Examples of version strings include "1.0", "1.2.3456", "1.2-2", "1.0b123", "1.2_3".
      */
     public String softwareVersionString; // 10 string R V
     /**
@@ -154,7 +153,7 @@ public class BasicInformationCluster extends BaseCluster {
     /**
      * This attribute shall allow a local Node configuration to be disabled. When this attribute is set to True the Node
      * shall disable the ability to configure the Node through an on-Node user interface. The value of the
-     * LocalConfigDisabled attribute shall NOT in any way modify, disable, or otherwise affect the user’s ability to
+     * LocalConfigDisabled attribute shall NOT in any way modify, disable, or otherwise affect the user's ability to
      * trigger a factory reset on the Node.
      */
     public Boolean localConfigDisabled; // 16 bool RW VM
@@ -173,10 +172,10 @@ public class BasicInformationCluster extends BaseCluster {
      * - it shall NOT be identical to the SerialNumber attribute
      * - it shall NOT be printed on the product or delivered with the product
      * The value does not need to be human readable, since it is intended for machine to machine (M2M) communication.
-     * &gt; [!NOTE]
-     * &gt; The conformance of the UniqueID attribute was optional in cluster revisions prior to revision 4.
-     * &gt; [!NOTE]
-     * &gt; This UniqueID attribute shall NOT be the same as the Persistent Unique ID which is used in the Rotating
+     * > [!NOTE]
+     * > NOTE: The conformance of the UniqueID attribute was optional in cluster revisions prior to revision 4.
+     * > [!NOTE]
+     * > NOTE: This UniqueID attribute shall NOT be the same as the Persistent Unique ID which is used in the Rotating
      * Device Identifier mechanism.
      */
     public String uniqueId; // 18 string R V
@@ -219,10 +218,10 @@ public class BasicInformationCluster extends BaseCluster {
      * Comparison of SpecificationVersion shall always include the total value over 32 bits, without masking reserved
      * parts.
      */
-    public Integer specificationVersion; // 21 uint32 R V
+    public Long specificationVersion; // 21 uint32 R V
     /**
-     * Indicates the maximum number of elements in a single InvokeRequests list (see Section 8.8.2, “Invoke Request
-     * Action”) that the Node is able to process. Note that since this attribute may change over time, both increasing
+     * Indicates the maximum number of elements in a single InvokeRequests list (see Section 8.8.2, "Invoke Request
+     * Action") that the Node is able to process. Note that since this attribute may change over time, both increasing
      * and decreasing, as software versions change for a given Node, clients SHOULD take care not to assume forever
      * unchanging values and SHOULD NOT cache this value permanently at Commissioning time.
      * If the MaxPathsPerInvoke attribute is absent or zero, such as in Basic Information cluster revisions prior to
@@ -233,7 +232,7 @@ public class BasicInformationCluster extends BaseCluster {
      * This attribute shall contain the current version number for the configuration of the Node. A larger value of
      * ConfigurationVersion shall indicate a newer configuration than a lower value.
      */
-    public Integer configurationVersion; // 24 uint32 R V
+    public Long configurationVersion; // 24 uint32 R V
 
     // Structs
     /**
@@ -245,9 +244,9 @@ public class BasicInformationCluster extends BaseCluster {
         /**
          * This field shall be set to the same value as the one available in the SoftwareVersion attribute.
          */
-        public Integer softwareVersion; // uint32
+        public Long softwareVersion; // uint32
 
-        public StartUp(Integer softwareVersion) {
+        public StartUp(Long softwareVersion) {
             this.softwareVersion = softwareVersion;
         }
     }
@@ -299,7 +298,7 @@ public class BasicInformationCluster extends BaseCluster {
     }
 
     /**
-     * This structure provides a description of the product’s appearance.
+     * This structure provides a description of the product's appearance.
      */
     public static class ProductAppearanceStruct {
         /**
@@ -326,20 +325,50 @@ public class BasicInformationCluster extends BaseCluster {
         /**
          * This field shall indicate the actual minimum number of concurrent CASE sessions that are supported per
          * fabric.
-         * This value shall NOT be smaller than the required minimum indicated in Section 4.14.2.8, “Minimal Number of
-         * CASE Sessions”.
+         * This value shall NOT be smaller than the required minimum indicated in Section 4.14.2.8, "Minimal Number of
+         * CASE Sessions".
          */
         public Integer caseSessionsPerFabric; // uint16
         /**
          * This field shall indicate the actual minimum number of concurrent subscriptions supported per fabric.
-         * This value shall NOT be smaller than the required minimum indicated in Section 8.5.1, “Subscribe
-         * Transaction”.
+         * This value shall NOT be smaller than the required minimum indicated in Section 8.5.1, "Subscribe
+         * Transaction".
          */
         public Integer subscriptionsPerFabric; // uint16
+        /**
+         * This field shall indicate the actual maximum number of concurrent Invoke interactions that can be processed
+         * simultaneously by the node before possibly returning a BUSY status code.
+         */
+        public Integer simultaneousInvocationsSupported; // uint16
+        /**
+         * This field shall indicate the actual minimum number of concurrent Write interactions that can be processed
+         * simultaneously by the node before possibly returning a BUSY status code.
+         */
+        public Integer simultaneousWritesSupported; // uint16
+        /**
+         * This field shall indicate the actual maximum number of read paths (i.e. the sum of lengths of the lists of
+         * AttributePathIB and EventPathIB in the action) which a node guarantees being able to process in any Read
+         * Request Action.
+         * This is related to Section 2.11.2.1, "Read Interaction Limits".
+         */
+        public Integer readPathsSupported; // uint16
+        /**
+         * This field shall indicate the actual maximum number of subscription paths (i.e. the sum of lengths of the
+         * lists of AttributePathIB and EventPathIB in the action) which a node guarantees being able to process in any
+         * Subscribe Request Action.
+         * This is related to Section 2.11.2.2, "Subscribe Interaction Limits".
+         */
+        public Integer subscribePathsSupported; // uint16
 
-        public CapabilityMinimaStruct(Integer caseSessionsPerFabric, Integer subscriptionsPerFabric) {
+        public CapabilityMinimaStruct(Integer caseSessionsPerFabric, Integer subscriptionsPerFabric,
+                Integer simultaneousInvocationsSupported, Integer simultaneousWritesSupported,
+                Integer readPathsSupported, Integer subscribePathsSupported) {
             this.caseSessionsPerFabric = caseSessionsPerFabric;
             this.subscriptionsPerFabric = subscriptionsPerFabric;
+            this.simultaneousInvocationsSupported = simultaneousInvocationsSupported;
+            this.simultaneousWritesSupported = simultaneousWritesSupported;
+            this.readPathsSupported = readPathsSupported;
+            this.subscribePathsSupported = subscribePathsSupported;
         }
     }
 

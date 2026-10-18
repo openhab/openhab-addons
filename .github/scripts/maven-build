@@ -92,7 +92,9 @@ function build_all() {
 }
 
 function changed_files() {
-    sed 's#,#\n#g' <<< $CHANGED_FILES
+    if [[ -f "${CHANGED_FILES_FILE:-}" ]]; then
+        cat "$CHANGED_FILES_FILE"
+    fi
 }
 
 function addon_unrelated_changed_files() {

@@ -11,6 +11,7 @@
 			<channel id="power" typeId="system.power"/>
 			<channel id="channel" typeId="vdrChannel"/>
 			<channel id="channelName" typeId="vdrChannelName"/>
+			<channel id="audio" typeId="vdrAudioTrack"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="recording" typeId="vdrRecordingActive"/>
 			<channel id="diskUsage" typeId="vdrDiskUsage"/>
@@ -50,6 +51,7 @@
 
 		<properties>
 			<property name="version">VDR Version</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -94,6 +96,12 @@
 		<label>Channel Name</label>
 		<description>Current Channel Name</description>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vdrAudioTrack">
+		<item-type>Number</item-type>
+		<label>Audio Track</label>
+		<description>Current Audio Track</description>
+		<state readOnly="false" pattern="%d"/>
 	</channel-type>
 	<channel-type id="vdrRecordingActive">
 		<item-type>Switch</item-type>

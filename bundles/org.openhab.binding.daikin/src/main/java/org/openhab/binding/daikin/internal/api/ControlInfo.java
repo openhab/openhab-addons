@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.daikin.internal.api.Enums.AdvancedMode;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
@@ -35,19 +36,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ControlInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ControlInfo.class);
-
     public String ret = "";
     public boolean power = false;
     // Store the accepted auto mode for later use.
     public int autoModeValue = Mode.AUTO.getValue();
     public Mode mode = Mode.AUTO;
     // Degrees in Celsius.
-    public Optional<Double> temp = Optional.empty();
+    public @Nullable Double temp;
     public FanSpeed fanSpeed = FanSpeed.AUTO;
     public FanMovement fanMovement = FanMovement.STOPPED;
     // Not supported by all units. Sets the target humidity for dehumidifying.
-    public Optional<Integer> targetHumidity = Optional.empty();
+    public @Nullable Integer targetHumidity;
     public AdvancedMode advancedMode = AdvancedMode.UNKNOWN;
     public boolean separatedDirectionParams = false;
 
@@ -55,7 +54,8 @@ public class ControlInfo {
     }
 
     public static ControlInfo parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(ControlInfo.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
@@ -69,7 +69,7 @@ public class ControlInfo {
             info.autoModeValue = info.mode.getValue();
             info.mode = Mode.AUTO;
         }
-        info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
+        info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(InfoParser::parseDouble).orElse(null);
         info.fanSpeed = Objects.requireNonNull(Optional.ofNullable(responseMap.get("f_rate"))
                 .map(value -> FanSpeed.fromValue(value)).orElse(FanSpeed.AUTO));
         // determine if device has combined direction (f_dir) or separated directions (f_dir_ud/f_dir_lr)
@@ -88,7 +88,7 @@ public class ControlInfo {
             }
         }
 
-        info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> InfoParser.parseInt(value));
+        info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(InfoParser::parseInt).orElse(null);
 
         info.advancedMode = Objects.requireNonNull(Optional.ofNullable(responseMap.get("adv"))
                 .map(value -> AdvancedMode.fromValue(value)).orElse(AdvancedMode.UNKNOWN));
@@ -110,9 +110,8 @@ public class ControlInfo {
         } else {
             params.put("f_dir", Integer.toString(fanMovement.getValue()));
         }
-        params.put("stemp", temp.orElse(20.0).toString());
-        params.put("shum", Objects.requireNonNull(targetHumidity.map(value -> value.toString()).orElse("")));
-
+        params.put("stemp", temp != null ? temp.toString() : "20.0");
+        params.put("shum", targetHumidity != null ? targetHumidity.toString() : "");
         return params;
     }
 

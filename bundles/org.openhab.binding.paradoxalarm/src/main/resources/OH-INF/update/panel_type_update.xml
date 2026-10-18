@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="paradoxalarm:panel">
+		<instruction-set targetVersion="1">
+			<add-channel id="acTrouble">
+				<type>paradoxalarm:troubleFlag</type>
+				<label>AC Trouble</label>
+				<description>AC power supply failure</description>
+			</add-channel>
+			<add-channel id="batteryTrouble">
+				<type>paradoxalarm:troubleFlag</type>
+				<label>Battery Trouble</label>
+				<description>Backup battery failure</description>
+			</add-channel>
+			<add-channel id="moduleSupervisionTrouble">
+				<type>paradoxalarm:troubleFlag</type>
+				<label>Module Supervision Trouble</label>
+				<description>A bus module has lost supervision</description>
+			</add-channel>
+			<add-channel id="communicationTrouble">
+				<type>paradoxalarm:troubleFlag</type>
+				<label>Communication Trouble</label>
+				<description>PC/reporting communication failure</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

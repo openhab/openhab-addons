@@ -72,14 +72,14 @@ public class PowerSourceCluster extends BaseCluster {
     /**
      * Indicates the relative preference with which the Node will select this source to provide power. A source with a
      * lower order shall be selected by the Node to provide power before any other source with a higher order, if the
-     * lower order source is available (see Section 11.7.7.1, “Status Attribute”).
+     * lower order source is available (see Section 11.7.7.1, "Status Attribute").
      * Note, Order is read-only and therefore NOT intended to allow clients control over power source selection.
      */
     public Integer order; // 1 uint8 R V
     /**
      * This attribute shall provide a user-facing description of this source, used to distinguish it from other power
-     * sources, e.g. &quot;DC Power&quot;, &quot;Primary Battery&quot; or &quot;Battery back-up&quot;. This attribute
-     * shall NOT be used to convey information such as battery form factor, or chemistry.
+     * sources, e.g. "DC Power", "Primary Battery" or "Battery back-up". This attribute shall NOT be used to convey
+     * information such as battery form factor, or chemistry.
      */
     public String description; // 2 string R V
     /**
@@ -87,7 +87,7 @@ public class PowerSourceCluster extends BaseCluster {
      * of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not connected,
      * but the Node is still able to assess a value, then the assessed value may be reported.
      */
-    public Integer wiredAssessedInputVoltage; // 3 uint32 R V
+    public Long wiredAssessedInputVoltage; // 3 uint32 R V
     /**
      * Indicates the assessed frequency of the voltage, currently provided by the hard-wired source, in Hz. A value of
      * NULL shall indicate the Node is currently unable to assess the value. If the wired source is not connected, but
@@ -104,17 +104,17 @@ public class PowerSourceCluster extends BaseCluster {
      * value of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not
      * connected, but the Node is still able to assess a value, then the assessed value may be reported.
      */
-    public Integer wiredAssessedCurrent; // 6 uint32 R V
+    public Long wiredAssessedCurrent; // 6 uint32 R V
     /**
-     * Indicates the nominal voltage, printed as part of the Node’s regulatory compliance label in mV (millivolts),
+     * Indicates the nominal voltage, printed as part of the Node's regulatory compliance label in mV (millivolts),
      * expected to be provided by the hard-wired source.
      */
-    public Integer wiredNominalVoltage; // 7 uint32 R V
+    public Long wiredNominalVoltage; // 7 uint32 R V
     /**
-     * Indicates the maximum current, printed as part of the Node’s regulatory compliance label in mA (milliamps),
+     * Indicates the maximum current, printed as part of the Node's regulatory compliance label in mA (milliamps),
      * expected to be provided by the hard-wired source.
      */
-    public Integer wiredMaximumCurrent; // 8 uint32 R V
+    public Long wiredMaximumCurrent; // 8 uint32 R V
     /**
      * Indicates if the Node detects that the hard-wired power source is properly connected.
      */
@@ -134,7 +134,7 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the currently measured output voltage of the battery in mV (millivolts). A value of NULL shall indicate
      * the Node is currently unable to assess the value.
      */
-    public Integer batVoltage; // 11 uint32 R V
+    public Long batVoltage; // 11 uint32 R V
     /**
      * Indicates the estimated percentage of battery charge remaining until the battery will no longer be able to
      * provide power to the Node. Values are expressed in half percent units, ranging from 0 to 200. E.g. a value of 48
@@ -153,7 +153,7 @@ public class PowerSourceCluster extends BaseCluster {
      * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
-    public Integer batTimeRemaining; // 13 uint32 R V
+    public Long batTimeRemaining; // 13 uint32 R V
     /**
      * Indicates a coarse ranking of the charge level of the battery, used to indicate when intervention is required as
      * specified in BatChargeLevelEnum.
@@ -209,7 +209,7 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the preferred minimum charge capacity rating in mAh of individual, user- or factory-serviceable battery
      * cells or packs in the battery source.
      */
-    public Integer batCapacity; // 24 uint32 R V
+    public Long batCapacity; // 24 uint32 R V
     /**
      * Indicates the quantity of individual, user- or factory-serviceable battery cells or packs in the battery source.
      */
@@ -226,7 +226,7 @@ public class PowerSourceCluster extends BaseCluster {
      * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
-    public Integer batTimeToFullCharge; // 27 uint32 R V
+    public Long batTimeToFullCharge; // 27 uint32 R V
     /**
      * Indicates whether the Node can remain operational while the battery source is charging.
      */
@@ -235,7 +235,7 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates assessed current in mA (milliamps) presently supplied to charge the battery source. A value of NULL
      * shall indicate the Node is currently unable to assess the value.
      */
-    public Integer batChargingCurrent; // 29 uint32 R V
+    public Long batChargingCurrent; // 29 uint32 R V
     /**
      * Indicates the set of charge faults currently detected by the Node on this power source. This set is represented
      * as a list of BatChargeFaultEnum. When the Node detects a fault has been raised, the appropriate
@@ -257,21 +257,26 @@ public class PowerSourceCluster extends BaseCluster {
      * A cluster instance with a non-empty list shall include the endpoint, upon which the cluster instance resides.
      * The above rules allow that some endpoints can have an unknown power source, and therefore would not be indicated
      * by any instance of this cluster.
-     * ### Legacy Implementations
-     * Legacy implementations of this cluster before revision 2, before this attribute was defined, would have
-     * implemented this cluster on an application endpoint without indicating it in EndpointList (since that attribute
-     * did not exist in revision 1), because it represented a power source for the endpoint, not the entire node.
-     * For example: Bridge implementations support endpoints for bridged devices that have different power sources.
-     * Such implementations followed device type requirements and semantics outside of this cluster, because this
-     * attribute did not exist.
-     * Future updates of such a cluster instance on the same endpoint, would allow that same endpoint to be an entry in
-     * the EndpointList attribute. Therefore it is valid to list the endpoint upon which the cluster instance exists.
-     * Typically, there is one power source for the node. Also common is mains power for the node with battery backup
-     * power for the node. In both these common cases, for each cluster instance described, the list is empty.
-     * A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
-     * back up source with Order as 1, which means this list is empty for the Power Source cluster associated with the
-     * mains power, because it indicates the entire node, but the Power Source cluster instance associated with the
-     * battery backup would list the endpoints that have a battery backup.
+     * > [!NOTE]
+     * > Legacy Implementations Legacy implementations of this cluster before revision 2, before this attribute was
+     * defined, would have implemented this cluster on an application endpoint without indicating it in EndpointList
+     * (since that attribute did not exist in revision 1), because it represented a power source for the endpoint, not
+     * the entire node. For example: Bridge implementations support endpoints for bridged devices that have different
+     * power sources. Such implementations followed device type requirements and semantics outside of this cluster,
+     * because this attribute did not exist. Future updates of such a cluster instance on the same endpoint, would allow
+     * that same endpoint to be an entry in the EndpointList attribute. Therefore it is valid to list the endpoint upon
+     * which the cluster instance exists.
+     * ### Empty list examples
+     * : Typically, there is one power source for the node.
+     * Also common is mains power for the node with battery backup power for the node.
+     * In both these common cases, for each cluster instance described, the list is empty.
+     * ### Populated list example
+     * : A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
+     * back up source with Order as 1,
+     * which means this list is empty for the Power Source cluster associated with the mains power,
+     * because it indicates the entire node,
+     * but the Power Source cluster instance associated with the battery backup would list the endpoints that have a
+     * battery backup.
      */
     public List<Integer> endpointList; // 31 list R V
 

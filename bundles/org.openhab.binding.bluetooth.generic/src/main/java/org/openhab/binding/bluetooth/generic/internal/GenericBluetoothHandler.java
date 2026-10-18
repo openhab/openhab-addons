@@ -200,7 +200,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     List<BluetoothCharacteristic> broadcastCharacteristics = service.getCharacteristics().stream()
                             .filter((characteristic) -> characteristic
                                     .hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_BROADCAST))
-                            .collect(Collectors.toUnmodifiableList());
+                            .toList();
 
                     if (broadcastCharacteristics.isEmpty()) {
                         logger.info(
@@ -233,14 +233,14 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     logger.trace("{} processing characteristic {}", address, characteristic.getUuid());
                     CharacteristicHandler handler = getCharacteristicHandler(characteristic);
                     List<Channel> chans = handler.buildChannels();
-                    List<ChannelUID> chanUids = chans.stream().map(Channel::getUID).collect(Collectors.toList());
+                    List<ChannelUID> chanUids = chans.stream().map(Channel::getUID).toList();
                     for (ChannelUID channel : chanUids) {
                         channelHandlers.put(channel, handler);
                     }
                     handlerToChannels.put(handler, chanUids);
                     return chans.stream();
                 })//
-                .collect(Collectors.toList());
+                .toList();
 
         ThingBuilder builder = editThing();
         boolean changed = false;

@@ -14,6 +14,7 @@ package org.openhab.binding.tivo.internal.handler;
 
 import static org.openhab.binding.tivo.internal.TiVoBindingConstants.*;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -82,7 +83,7 @@ public class TiVoHandler extends BaseThingHandler {
         TivoStatusData currentStatus = tivoConnection.get().getServiceStatus();
         String commandKeyword = "";
 
-        String commandParameter = command.toString().toUpperCase();
+        String commandParameter = command.toString().toUpperCase(Locale.ENGLISH);
         if (command instanceof RefreshType) {
             // Future enhancement, if we can come up with a sensible set of actions when a REFRESH is issued
             logger.debug("TiVo '{}' skipping REFRESH command for channel: '{}'.", getThing().getUID(),
@@ -104,13 +105,51 @@ public class TiVoHandler extends BaseThingHandler {
                 commandKeyword = "IRCODE";
                 break;
             case CHANNEL_TIVO_KBDCMD:
-                commandKeyword = "KEYBOARD";
+                commandKeyword = KEYBOARD;
                 break;
+            case CHANNEL_TIVO_SEARCH:
+                if (commandParameter.isBlank()) {
+                    logger.debug("Search string was blank");
+                    return;
+                }
+
+                try {
+                    sendCommand("TELEPORT", "SEARCH", currentStatus);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+
+                // Wait 1 second for the SEARCH screen to load
+                scheduler.schedule(() -> {
+                    try {
+                        for (int i = 0; i < commandParameter.length(); i++) {
+                            if (commandParameter.charAt(i) >= 'A' && commandParameter.charAt(i) <= 'Z') {
+                                sendCommand(KEYBOARD, String.valueOf(commandParameter.charAt(i)), currentStatus);
+                            } else if (Character.isDigit(commandParameter.charAt(i))) {
+                                sendCommand(KEYBOARD, "NUM" + commandParameter.charAt(i), currentStatus);
+                            } else if (Character.isSpaceChar(commandParameter.charAt(i))) {
+                                sendCommand(KEYBOARD, "SPACE", currentStatus);
+                            } else {
+                                logger.debug("Search character not supported: {}",
+                                        String.valueOf(commandParameter.charAt(i)));
+                            }
+                            TimeUnit.MILLISECONDS.sleep(100);
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }, 1, TimeUnit.SECONDS);
+                return;
+            default:
+                logger.debug("TiVo '{}' ignoring command '{}' for unsupported channel '{}'.", getThing().getUID(),
+                        command, channelUID.getId());
+                return;
         }
         try {
             sendCommand(commandKeyword, commandParameter, currentStatus);
         } catch (InterruptedException e) {
-            // TiVo handler disposed or openHAB exiting, do nothing
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -190,7 +229,7 @@ public class TiVoHandler extends BaseThingHandler {
             try {
                 tivoConnection.get().connTivoDisconnect();
             } catch (InterruptedException e) {
-                // TiVo handler disposed or openHAB exiting, do nothing
+                Thread.currentThread().interrupt();
             }
             tivoConnection = Optional.empty();
         }
@@ -207,7 +246,7 @@ public class TiVoHandler extends BaseThingHandler {
                 try {
                     connection.statusRefresh();
                 } catch (InterruptedException e) {
-                    // TiVo handler disposed or openHAB exiting, do nothing
+                    Thread.currentThread().interrupt();
                 }
             });
         };
@@ -229,7 +268,7 @@ public class TiVoHandler extends BaseThingHandler {
                 try {
                     connection.statusRefresh();
                 } catch (InterruptedException e) {
-                    // TiVo handler disposed or openHAB exiting, do nothing
+                    Thread.currentThread().interrupt();
                 }
             });
         }

@@ -156,6 +156,14 @@ public class GoveeHandler extends BaseThingHandler {
     public void initialize() {
         goveeConfiguration = getConfigAs(GoveeConfiguration.class);
 
+        final String deviceId = goveeConfiguration.getDeviceId();
+        if (deviceId.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.device-id.missing");
+            return;
+        }
+        thing.setProperty(DEVICE_ID, deviceId);
+
         final String ipAddress = goveeConfiguration.hostname;
         if (ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

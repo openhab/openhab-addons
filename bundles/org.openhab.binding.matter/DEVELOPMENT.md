@@ -9,7 +9,7 @@ This document describes how to set up your development environment and contribut
 ## General Build Requirements
 
 - Java 17 or higher
-- Node.js 18 or higher
+- Node.js 22 or higher
 - npm 9 or higher
 
 ## Building the Project

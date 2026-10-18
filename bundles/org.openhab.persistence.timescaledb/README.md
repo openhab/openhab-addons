@@ -49,7 +49,7 @@ Configure via `$OPENHAB_CONF/services/timescaledb.cfg` or in the UI under `Setti
 
 | Property               | Default   | Required | Description                                               |
 |------------------------|-----------|:--------:|-----------------------------------------------------------|
-| `url`                  |           | Yes      | JDBC URL, e.g. `jdbc:postgresql://localhost:5432/openhab` |
+| `url`                  |           | Yes      | Database URL, e.g. `jdbc:postgresql://localhost:5432/openhab` or `postgresql://localhost:5432/openhab` (`jdbc:` is added automatically if missing) |
 | `user`                 | `openhab` | No       | Database user                                             |
 | `password`             |           | Yes      | Database password                                         |
 | `chunkInterval`        | `7 days`  | No       | TimescaleDB chunk interval for the hypertable             |

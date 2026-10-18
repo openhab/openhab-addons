@@ -50,6 +50,7 @@ public class NeatoRobotConfig {
 
     @Override
     public String toString() {
-        return "NeatoRobotConfig [refresh=" + refresh + ", secret=" + secret + ", serial=" + serial + "]";
+        return "NeatoRobotConfig [refresh=" + refresh + ", secret=" + (secret != null && !secret.isBlank())
+                + ", serial=" + serial + "]";
     }
 }

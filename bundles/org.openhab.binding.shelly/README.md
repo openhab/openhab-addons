@@ -1,3 +1,11 @@
+---
+children:
+  - ["doc/ShellyManager", "Shelly Manager"]
+  - ["doc/AdvancedUsers", "Advanced Users"]
+  - ["doc/UseCaseSmartRoller", "Smartify Roller Shutters with openHAB and Shelly"]
+  - ["doc/UseCaseWS90WeatherStation", "WS90 Weather Station: Setup and Rain Automation with openHAB"]
+---
+
 # Shelly Binding
 
 This Binding integrates [Shelly devices](https://shelly.cloud) developed by Allterco.
@@ -11,6 +19,8 @@ The binding co-exists with Shelly App for Smartphones, Shelly Device Web UI, She
 The binding focuses on reporting the device status and device control.
 Initial setup and device configuration has to be performed using the Shelly Apps (Web UI or Smartphone App).
 The binding gets in sync with the next status refresh.
+
+**If you're upgrading, check the channel migration and deprecated-channel notes in the [Channels](#channels) section below.**
 
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
 
@@ -34,7 +44,8 @@ The binding supports both hardware generations
 
 The binding provides the same feature set across all devices as good as possible and depending on device specific features.
 
-`Note:` Using BLU devices or the Plus/Pro Range Extender mode require some additional configuration steps.
+`Note:`
+Using BLU devices or the Plus/Pro Range Extender mode require some additional configuration steps.
 See section [Discovery](#discovery) for details.
 
 ### Generation 1
@@ -53,23 +64,22 @@ See section [Discovery](#discovery) for details.
 | shellydimmer2     | Shelly Dimmer2                                         | SHDM-2              |
 | shellyix3         | Shelly ix3                                             | SHIX3-1             |
 | shellyuni         | Shelly UNI, Shelly Plus UNI                            | SHUNI-1             |
-| shellyplug        | Shelly Plug                                            | SHPLG2-1            |
+| shellyplug        | Shelly Plug                                            | SHPLG-1, SHPLG2-1   |
 | shellyplugs       | Shelly Plug-S                                          | SHPLG-S             |
+| shellyplugu1      | Shelly Plug U1                                         | SHPLG-U1, SHPLG-US  |
 | shellyem          | Shelly EM with integrated Power Meters                 | SHEM                |
 | shellyem3         | Shelly 3EM with 3 integrated Power Meter               | SHEM-3              |
 | shellyrgbw2-color | Shelly RGBW2 Controller in Color Mode                  | SHRGBW2             |
 | shellyrgbw2-white | Shelly RGBW2 Controller in White Mode                  | SHRGBW2             |
 | shellybulb-color  | Shelly Bulb in Color Mode                              | SHBLB-1             |
 | shellybulb-white  | Shelly Bulb in White Mode                              | SHBLB-1             |
-| shellybulbduo     | Shelly Duo White                                       | SHBDUO-1            |
-| shellybulbduo     | Shelly Duo White G10                                   | SHBDUO-1            |
+| shellybulbduo     | Shelly Duo White / Duo White G10                       | SHBDUO-1            |
 | shellycolorbulb   | Shelly Duo Color G10                                   | SHCB-1              |
 | shellyvintage     | Shelly Vintage (White Mode)                            | SHVIN-1             |
 | shellyht          | Shelly Sensor (temperature+humidity)                   | SHHT-1              |
 | shellyflood       | Shelly Flood Sensor                                    | SHWT-1              |
-| shellysmoke       | Shelly Smoke Sensor                                    | SHSM-1              |
-| shellymotion      | Shelly Motion Sensor                                   | SHMOS-01            |
-| shellymotion2     | Shelly Motion Sensor 2                                 | SHMOS-02            |
+| shellysmoke       | Shelly Smoke Sensor                                    | SHSM-01             |
+| shellymotion      | Shelly Motion Sensor, Shelly Motion Sensor 2           | SHMOS-01, SHMOS-02  |
 | shellygas         | Shelly Gas Sensor                                      | SHGS-1              |
 | shellydw          | Shelly Door/Window                                     | SHDW-1              |
 | shellydw2         | Shelly Door/Window 2                                   | SHDW-2              |
@@ -81,62 +91,76 @@ See section [Discovery](#discovery) for details.
 ### Shelly Plus series (Generation 2+3+4)
 
 | thing-type           | Model                                                    | Vendor ID                                                                 |
-|----------------------|----------------------------------------------------------|---------------------------------------------------------------------------|
-| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S3SW-001X16EU, S4SW-001X16EU                |
-| shellyplus1l         | Shelly Plus 1L with 1x relay                             | S3SW-0A1X1EUL                                                             |
+| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------- |
+| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S4SW-001X16EU                               |
+| shellyplus1l         | Shelly Plus 1L with 1x relay                             | S3SW-0A1X1EUL, S4SW-0A1X1EUL                                              |
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU, S4SW-001P16EU                               |
-| shellyplus2l         | Shelly Plus 2L with 2x relay                             | S3SW-0A2X4EUL                                                             |
+| shellyplus2l         | Shelly Plus 2L with 2x relay                             | S3SW-0A2X4EUL, S4SW-0A2X4EUL                                              |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU |
 | shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU |
 | shellyplusshutter    | Shelly Plus Shutter for 1x roller                        | S3SH-0A2P4EU                                                              |
-| shellyplusem         | Shelly Plus EM                                           | S3EM-002CXCEU                                                             |
-| shellyplus3em63      | Shelly Plus 3EM-63                                       | S3EM-002CXCEU                                                             |
+| shellyplusem         | Shelly Plus EM                                           | S3EM-002CXCEU, S4EM-002CXCEU                                              |
+| shellyplus3em63      | Shelly Plus 3EM-63                                       | S3EM-003CXCEU63                                                           |
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU, S3PL-00112EU                                  |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                                              |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                                              |
-| shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | S3PL-00112EU                                                              |
+| shellyplusplug       | Shelly Plug-S Gen 3                                      | S3PL-00112EU                                                              |
 | shellyplusplug       | Shelly AZ Plug                                           | S3PL-10112EU                                                              |
 | shellyplusplug       | Shelly Outdoor Plug-S                                    | S3PL-20112EU                                                              |
+| shellyplusplug       | Shelly Plug M Gen3                                       | S3PL-30110EU                                                              |
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                                              |
-| shellyplusstrip      | Shelly Plus Power Strip 4                                | S4PL-00416EU                                                              |
-| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                                                    |
+| shellyplugusg4       | Shelly Plug US Gen4                                      | S4PL-00116US                                                              |
+| shellyplusplugcpm    | Shelly Plus Plug CPM (EU C-type, Gen4)                   | S4PL-00116EU                                                              |
+| shellyplusplugpm     | Shelly Plug PM Gen3 (power meter, no relay)              | S3PL-30116EU                                                              |
+| shellyplusstrip      | Shelly Plus Power Strip 4                                | S4PL-00416EU, S4PL-10416EU                                                |
+| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X, S4SN-0A24X                                        |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                                                |
-| shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW                                                 |
+| shellyplus10v        | Shelly Plus Dimmer 0-10V (Gen 2) or 0/1-10V (Gen 3/4)    | SNDM-00100WW, SNGW-0A11WW010, S3DM-0010WW, S4DM-0010WW                    |
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
-| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
+| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A, S3SN-1U12A                                        |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
-| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
-| shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
+| shellyplusflood      | Shelly Flood Gen4 / Flood S Gen4 water leak sensor       | S4SN-0071A, S4SN-0071Z                                                    |
+| shellypluspresence   | Shelly Presence Gen4 mmWave radar sensor                 | S4SN-0U61X                                                                |
+| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US, S4DM-0A102US                                                 |
+| shellyplusdimmer     | Shelly Plus Dimmer                                       | SNDM-0011EU, S3DM-0A101WWL, S4DM-0A101WWL                                 |
+| shellyplusdalidimmer | Shelly Plus DALI Dimmer                                  | S3DM-0A1WW, S4DM-0A1WW                                                    |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
+| shellyprorgbwwpm     | Shelly Pro RGBWW PM                                      | SPDC-0D5PE16EU                                                            |
+| shellyplusduobulb    | Shelly Duo Bulb E27 Gen3                                 | S3BL-D010009AEU                                                           |
+| shellypluscolorbulb  | Shelly Multicolor Bulb E27 Gen3                          | S3BL-C010007AEU                                                           |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
 | shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
 
 ### Shelly Plus Mini series (Generation 2+3+4)
 
-| thing-type           | Model                                                    | Vendor ID                                     |
-| -------------------- | -------------------------------------------------------- | --------------------------------------------- |
-| shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU, S4SW-001X8EU      |
-| shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU, S4SW-001P8EU      |
-| shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16                |
-| shellyemmini         | Shelly Plus EM Mini with 1x power meter                  | S4EM-001PXCEU16                               |
+| thing-type    | Model                                            | Vendor ID                                |
+| ------------- | ------------------------------------------------ | ---------------------------------------- |
+| shelly1mini   | Shelly Plus 1 Mini with 1x relay                 | SNSW-001X8EU, S3SW-001X8EU, S4SW-001X8EU |
+| shelly1pmmini | Shelly Plus 1PM Mini with 1x relay + power meter | SNSW-001P8EU, S3SW-001P8EU, S4SW-001P8EU |
+| shellypmmini  | Shelly Plus PM Mini with 1x power meter          | SNPM-001PCEU16, S3PM-001PCEU16           |
+| shellyemmini  | Shelly EM Mini / EM63 G4 with 1x power meter     | S4EM-001PXCEU16, S4EM-001CXCEU63         |
 
 ### Shelly Pro Series (Generation 2+3)
 
-| thing-type          | Model                                                    | Vendor ID                                      |
-| ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
-| shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
-| shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
-| shellypro1cb        | Shelly Pro 1 Circuit Breaker with 1x relay + volt meter  | SPCB-01VENEU                                   |
-| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
-| shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
-| shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
-| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
-| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU       |
-| shellyproem50       | Shelly Pro EM-50 - 2 channel, single phase energy meter  | SPEM-002CEBEU50                                |
-| shellypro3em        | Shelly Pro 3EM - 3-phase energy meter                    | SPEM-003CEBEU, SPEM-003CEBEU120                |
-| shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter| SPEM-003CEBEU63                                |
-| shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                | SPEM-003CEBEU400                               |
+| thing-type          | Model                                                                            | Vendor ID                                                |
+| ------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| shellypro1          | Shelly Pro 1 with 1x relay                                                       | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU           |
+| shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter                                      | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU           |
+| shellyprocb         | Shelly Pro 1CB/2CB/3CB/4CB Circuit Breaker with 1x breaker + 1-3x volt meter    | SPCB-01VENEU, SPCB-02VENEU, SPCB-03VENEU, SPCB-04VENEU   |
+| shellypro1cb        | Shelly Pro 1 Circuit Breaker (legacy thing type, use shellyprocb for new things) | SPCB-01VENEU                                             |
+| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                                           | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU           |
+| shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode                          | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU           |
+| shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode                         | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU           |
+| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                                        | SPSW-003XE16EU                                           |
+| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter                                      | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU, SPSW-204PE16EU |
+| shellyproem50       | Shelly Pro EM-50 - 2 channel, single phase energy meter                          | SPEM-002CEBEU50                                          |
+| shellypro3em        | Shelly Pro 3EM - 3-phase energy meter                                            | SPEM-003CEBEU, SPEM-003CEBEU120                          |
+| shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter                        | SPEM-003CEBEU63                                          |
+| shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                                        | SPEM-003CEBEU400                                         |
+| shellyprodimmer1pm  | Shelly Pro Dimmer 1PM - Smart dimmer with power monitoring                       | SPDM-001PE01EU                                           |
+| shellyprodm2pm      | Shelly Pro Dimmer 2PM - Dual channel smart dimmer with power meter               | SPDM-002PE01EU                                           |
+| shellyprodimmer10v  | Shelly Pro Dimmer 0/1-10V PM - 0/1-10V dimming driver controller                 | SPCC-001PE10EU                                           |
 
 ### Shelly BLU
 
@@ -146,19 +170,24 @@ See section [Discovery](#discovery) for details.
 | shellyblubutton      | Shelly BLU Tough ZB                                    | SBBT-102C               |
 | shellybluwallswitch4 | Shelly BLU Wallswitch 4                                | SBBT-EU5027             |
 | shellyblurcbutton4   | Shelly BLU RC Button 4                                 | SBBT-004CUS             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4 ZB                              | SBBT-104CUS             |
 | shellybluht          | Shelly BLU H&T                                         | SBHT-003C               |
 | shellybluht          | Shelly BLU H&T ZB                                      | SBHT-203C               |
+| shellybluht          | Shelly BLU H&T Display ZB                              | SBHT-103C               |
 | shellybludw          | Shelly BLU Door/Windows                                | SBDW-002C               |
+| shellybludw          | Shelly BLU Door/Window ZB                              | SBDW-103C               |
 | shellyblumotion      | Shelly BLU Motion                                      | SBMO-003Z               |
+| shellyblumotion      | Shelly BLU Motion ZB                                   | SBMO-103Z               |
 | shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
 | shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
+| shellybluws90        | Ecowitt WS90 Weather Station (Shelly BLU)              | SBWS-90CM               |
 
 ### Special Thing Types
 
-| thing-type        | Model                                                  | Vendor ID |
-| ----------------- | ------------------------------------------------------ | --------- |
-| shellydevice      | A password protected Shelly device or an unknown type  |           |
-| shellyunknown     | An unknown Shelly device / model has been detected     |           |
+| thing-type    | Model                                                 | Vendor ID |
+| ------------- | ----------------------------------------------------- | --------- |
+| shellydevice  | A password protected Shelly device or an unknown type |           |
+| shellyunknown | An unknown Shelly device / model has been detected    |           |
 
 ## Binding Configuration
 
@@ -209,9 +238,11 @@ Battery powered devices need to wake up by pressing the button, they will stay a
 
 The binding uses mDNS to discover the Shelly devices.
 They periodically announce their presence, which is used by the binding to find them on the local network.
+Most devices announce themselves as a web server (`_http._tcp`), newer firmware releases use a Shelly-specific announcement (`_shelly._tcp`) instead.
+The binding listens to both, so no additional setup is required.
 Sometimes you need to run the manual discovery multiple times until you see all your devices.
 
-`Important for Generation 1 Devices`:
+`Important for Generation 1 Devices:`
 It's strongly recommended to enable CoIoT in the device settings for faster response times (event driven rather than polling).
 Open the device's Web UI, section "COIOT settings" and select "Enable COCIOT".
 It's recommended to switch the Shelly devices to CoAP peer mode if you have only your openHAB system controlling the device.
@@ -236,12 +267,19 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 - Click the device button again, the binding gets another event and creates the channels and Thing changes status to ONLINE
 - Finally link the channels to the equipment in the model
 
-`Note`:
+`Note:`
 
 - During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
 - Shelly BLU Motion: It may take some time until channels like Lux show up.
+- Ecowitt WS90: The WS90 is solar-powered and broadcasts continuously — no button press is required to add it to the Inbox.
+  It will appear automatically once it is within range of a configured BLU gateway.
 
 Try moving the device to force status updates.
+
+#### Custom oh-blu-scanner.js
+
+The binding automatically manages the installation of `oh-blu-scanner.js` on the gateway device.
+See [Advanced Users](doc/AdvancedUsers.md) for how to change the script's log level (DEBUG/TRACE) or override the installed script for prototyping.
 
 Every time an event is received sensors#lastUpdate and channels are updated with the reported values.
 `device#wifiSignal` indicates the Bluetooth signal strength and gets updated when the device sends an event.
@@ -303,12 +341,85 @@ The channel `roller#rollerFav` allows to select those from openHAB and the rolle
 In the Thing configuration you could also configure an id when the `roller#control` channel receives UP or DOWN.
 Values 1-4 are selecting the corresponding favorite id in the Shelly App, 0 means no favorite.
 
+## Power / Energy Meters
+
+There are different types of meters.
+
+- Standard relay and roller devices have Meters or Enhanced Meters - e.g. Shelly Plus 1PM, 2PM
+- There are various devices providing an Energy Meter like 3EM/EM-50, EM Mini etc. - those are specifically designed for energy management
+
+The device dynamically detects which meter data is provided and creates channels representing the data.
+Each meter is represented by a meter channel group.
+Devices with a single meter only have the `meter` group, devices with more than one meter have `meter1`, `meter2`... channel groups.
+
+| Device family                   | Meters | Total energy | Returned energy | Reactive power | Apparent power | Minute energy | Frequency |
+| ------------------------------- | ------ | ------------ | --------------- | -------------- | -------------- | ------------- | --------- |
+| Gen1 relay-PM (Shelly 1PM, 2.5) | 1      | Yes          | —               | —              | —              | Yes           | —         |
+| Gen1 3EM                        | 3      | Yes          | Yes             | Yes            | —              | Yes           | —         |
+| Plus 1PM / Plus 2PM (Gen2/Gen3) | 1–2    | Yes          | —               | —              | —              | Yes           | —         |
+| Plus 1PM Gen4                   | 1      | Yes          | —               | —              | —              | Yes           | Yes       |
+| Plus Plug S                     | 1      | Yes          | —               | —              | —              | Yes           | —         |
+| Pro 3EM / 3EM-63 / 3EM-400      | 3      | Yes          | Yes             | —              | Yes            | Yes           | Yes       |
+| Pro EM-50                       | 1–2    | Yes          | Yes             | —              | Yes            | Yes           | Yes       |
+| Plus EM Mini Gen4               | 1      | Yes          | Yes             | —              | Yes            | Yes           | Yes       |
+
+The Pro 3EM monophase profile treats its three clamps as three independent single-phase meters rather than one 3-phase meter.
+
+Channels are created depending on device generation / series (1..4, BLU), capabilities and firmware.
+Therefore, not all channels are available for all devices.
+
+### Minute Energy — Units and Conversion
+
+The firmware reports the energy of the last complete minute in different raw units per generation.
+The binding converts both to Wh so the value is directly comparable across devices:
+
+| Generation | Source field           | Raw unit              | Conversion        |
+| ---------- | ---------------------- | --------------------- | ----------------- |
+| Gen1       | `meters[].counters[0]` | Watt-minutes (W-min)  | value ÷ 60 → Wh   |
+| Gen2+      | `aenergy.by_minute[0]` | Milliwatt-hours (mWh) | value ÷ 1000 → Wh |
+
+This applies to Gen1 devices with a power meter (e.g. 1PM, Plug-S, Shelly 2/2.5, dimmers) and to Gen2+ relay, roller and PM devices.
+EM/3EM energy-meter devices of any generation (e.g. Shelly EM, 3EM, Plus EM, EM Mini, Pro 3EM, Pro EM-50) do not report per-minute energy at all, so `energyHistMin1`/`2`/`3` and `energyAvgLast3Min` are never created for those devices.
+
+### Last-Minute Energy Samples and 3-Minute Average
+
+The device firmware reports the energy of each of the previous 3 complete minutes as independent per-minute sums, not as a running average.
+`energyHistMin1`, `energyHistMin2` and `energyHistMin3` expose those raw per-minute totals (in Wh) unchanged — `energyHistMin1` is the total for minute -1 (the most recently completed minute), `energyHistMin2` for minute -2, and `energyHistMin3` for minute -3.
+They only get created if the device actually reports that many per-minute samples — some devices only report the most recent minute.
+
+`energyAvgLast3Min` (advanced channel) is computed by the binding as the average of `energyHistMin1`/`2`/`3` (their sum divided by 3) and is only created once all three samples are available.
+It smooths out short spikes and dips, which is useful for automations that should react to a sustained load change rather than a single noisy sample.
+
+### Power Factor Range
+
+Power factor is reported as a plain number between −1.0 and +1.0 (not a dimensionless quantity), consistent across all devices that report it (3EM, EM-50, EM Mini).
+
+### Returned (Fed-Back) Energy
+
+Devices that measure bidirectional energy flow (3EM, EM-50, EM Mini, solar/grid-tie setups) report returned energy separately from consumed energy.
+Single-clamp devices (EM Mini, Pro EM-50 single clamp) report the clamp's own returned-energy total; the same value doubles as the device-level total when only one clamp is present.
+Three-phase devices (Pro 3EM) report returned energy per phase and an aggregated device-level total across all phases.
+
+openHAB 5.2.1 renamed several meter-related channels; see [Channel Migration and Deprecated Channels](#channel-migration-and-deprecated-channels) for the full old-to-new mapping.
+
+### Resetting Accumulated Energy
+
+The `resetTotals` channel (type Switch) resets a device's accumulated energy counters when set to ON.
+Its placement depends on the device type:
+
+- Gen2+ devices with a meter (relay-PM, roller, PM, EM/EM1 clamp meters, EM-50, EM Mini) and the Gen1 EM expose `resetTotals` per meter group (`meter#resetTotals`, `meter1#resetTotals`, ...), resetting only that meter's counters.
+- Three-phase 3EM devices (Gen1 3EM, Plus 3EM-63, Pro 3EM) expose `resetTotals` once in the common `device` group; it resets all phases together.
+- Gen1 devices with a simple power meter (e.g. 1PM, Plug-S, Shelly 2/2.5, dimmers) have no reset API in the firmware, so no `resetTotals` channel is created for them.
+- The Duo Bulb G3 and Multicolor Bulb G3 meter on CCT/RGBCCT components, which likewise have no reset API in the firmware, so no `resetTotals` channel is created for them.
+- The Plus RGBW PM and Pro RGBWW PM expose `resetTotals` only for channels running as plain `Light` components (profile `light`, or the light channels of `rgbx2light`).
+  Channels running as RGB/RGBW/CCT components have no reset API in the firmware, so no `resetTotals` channel is created for them.
+
 ### Thing Status
 
 The binding sets the following Thing status depending on the device status:
 
 | Status                | Description                                                                                                                                                                                                                  |
-|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | INITIALIZING          | This is the default status while initializing the Thing. Once the initialization is triggered the Thing switches to Status ONLINE.CONFIGURATION_PENDING.                                                                     |
 | UNKNOWN               | Indicates that the status is currently unknown, which must not show a problem. Once the device is reachable and was initialized the Thing switches to status ONLINE.                                                         |
 | CONFIGURATION_PENDING | Device initialization in progress or pending (e.g., waiting for device wake-up).                                                                                                                                             |
@@ -322,8 +433,9 @@ The binding sets the following Thing status depending on the device status:
 For more details see  [Thing Concept](https://www.openhab.org/docs/concepts/things.html#status-details) in openHAB documentation.
 
 `Battery powered devices:`
-If the device is in sleep mode and can't be reached by the binding, the Thing will change into CONFIG_PENDING.
+If the device is in sleep mode and hasn't been initialized yet, the Thing will change into CONFIG_PENDING.
 Once the device wakes up, the Thing will perform initialization and the state will change to ONLINE.
+Afterwards the Thing stays ONLINE while the device sleeps, the watchdog detects a device that stops reporting (see below).
 
 The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted.  Waking up the device triggers the a status report (CoIoT packet for event url for Gen1 and WebSocket call for Gen2), which is processed by the binding and triggers initialization. Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart unless you change the battery. In this case press the button and run the discovery again.
 
@@ -339,11 +451,16 @@ Communication errors are handled depending on the device type:
 The binding also monitors that the device is responding at least once within a given time period.
 The period is computed depending on the device type and configuration:
 
-- battery  powered devices: &lt;sleepPeriod from device config&gt; + 10min, usually 12h+10min=730min
+- battery powered devices: &lt;sleepPeriod from device config&gt; + 10% + 1min, usually 12h → 13h13min (Smoke: another 30min).
+  If the device doesn't provide its sleep period, the longest possible period of 24h is assumed.
 - else, if CoIoT or WebSocket is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
 - else 2*60+10sec = 130sec
 
 Once the timer expires the device switches to OFFLINE and the bindings starts to re-initialize the device periodically.
+A battery powered device is not polled while it sleeps, it switches back to ONLINE with its next report.
+If a battery powered device reports less often than configured, the binding learns the longer interval and extends the watchdog period accordingly.
+Buttons and remotes only report when a button is pressed, so they are never set OFFLINE by the watchdog.
+A BLU device set OFFLINE by the watchdog switches back to ONLINE with its next advertisement.
 
 You could also create a rule to catch those status changes or device alarms (see rule examples).
 
@@ -366,35 +483,40 @@ You could also create a rule to catch those status changes or device alarms (see
 | favoriteUP         | 0-4: Favorite id for UP (see Roller Favorites)                | no        | 0 = no favorite id                                 |
 | favoriteDOWN       | 0-4: Favorite id for DOWN (see Roller Favorites)              | no        | 0 = no favorite id                                 |
 | enableBluGateway   | true: Activate BLU gateway support (install script)           | no        | false                                              |
+| altitude           | Station altitude (m) for sea-level pressure (WS90 only)       | no        | 0 = use openHAB system location altitude           |
 
 ### General Notes
 
 Every device has a channel group `device` with the following channels:
 
-| Group  | Channel             | Type     | read-only | Description                                                                    |
-| ------ | ------------------- | -------- | --------- | ------------------------------------------------------------------------------ |
-| device | deviceName          | String   | yes       | Device name as configured in the Shelly App                                    |
-|        | uptime              | Number   | yes       | Number of seconds since the device was powered up                              |
-|        | wifiSignal          | Number   | yes       | WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none) |
-|        | internalTemp        | Number   | yes       | Internal device temperature (when provided by the device)                      |
-|        | selfTest            | String   | yes       | Result from device self-test (pending/not_completed/running/completed/unknown) |
-|        | alarm               | Trigger  | yes       | Self-Test result not_completed/completed/running/pending                       |
-|        | supplyVoltage       | Number   | yes       | Shelly 1PM, 1L, 2.5: Supply voltage (fixed or measured depending on device)    |
-|        | accumulatedWatts    | Number   | yes       | Accumulated power in W of the device (including all meters)                    |
-|        | accumulatedTotal    | Number   | yes       | Accumulated total energy in kWh for the device (including all meters)          |
-|        | accumulatedReturned | Number   | yes       | Accumulated returned energy in kWh for the device (including all meters)       |
-|        | heartBeat           | DateTime | yes       | Timestamp of the last successful device communication                          |
-|        | updateAvailable     | Switch   | yes       | ON: A firmware update is available                                             |
-|        | statusLed           | Switch   | r/w       | ON: Status LED is disabled, OFF: LED enabled                                   |
-|        | powerLed            | Switch   | r/w       | ON: Power LED is disabled, OFF: LED enabled                                    |
-|        | charger             | Switch   | yes       | ON: USB charging cable is connected external power supply activated.           |
-|        | calibrated          | Switch   | yes       | ON: Device/sensor is calibrated (if supported by device).                      |
+| Group  | Channel                   | Type          | read-only | Description                                                                    |
+| ------ | ------------------------- | ------------- | --------- | ------------------------------------------------------------------------------ |
+| device | deviceName                | String        | yes       | Device name as configured in the Shelly App                                    |
+|        | uptime                    | Number        | yes       | Number of seconds since the device was powered up                              |
+|        | wifiSignal                | Number        | yes       | WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none) |
+|        | internalTemp              | Number        | yes       | Internal device temperature (when provided by the device)                      |
+|        | selfTest                  | String        | yes       | Result from device self-test (pending/not_completed/running/completed/unknown) |
+|        | alarm                     | Trigger       | yes       | Self-Test result not_completed/completed/running/pending                       |
+|        | supplyVoltage             | Number        | yes       | Shelly 1PM, 1L, 2.5: Supply voltage (fixed or measured depending on device)    |
+|        | accumulatedPower          | Number:Power  | yes       | Total instantaneous active power across all meters of the device               |
+|        | totalEnergy               | Number:Energy | yes       | Total energy consumption of the device in kWh (device total or binding sum)    |
+|        | accumulatedReturnedEnergy | Number:Energy | yes       | Accumulated returned energy in kWh for the device (including all meters)       |
+|        | accumulatedApparent       | Number:Power  | yes       | Accumulated apparent power in VA for the device (including all meters)         |
+|        | resetTotals               | Switch        | r/w       | 3EM devices only: Send ON to reset accumulated energy counters (all phases)    |
+|        | heartBeat                 | DateTime      | yes       | Timestamp of the last successful device communication                          |
+|        | updateAvailable           | Switch        | yes       | ON: A firmware update is available                                             |
+|        | statusLed                 | Switch        | r/w       | ON: Status LED is disabled, OFF: LED enabled                                   |
+|        | powerLed                  | Switch        | r/w       | ON: Power LED is disabled, OFF: LED enabled                                    |
+|        | charger                   | Switch        | yes       | ON: USB charging cable is connected external power supply activated.           |
+|        | calibrated                | Switch        | yes       | ON: Device/sensor is calibrated (if supported by device).                      |
 
 Availability of channels is depending on the device type.
 The binding detects many of those channels on-the-fly (when Thing changes to ONLINE state) and adjusts the Thing's channel structure.
 The device must be discovered and ONLINE to successfully complete this process.
-The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and 3EM.
-The LED channels are available for the Plug-S with firmware 1.6x and for various other devices with firmware 1.8 or newer. The binding detects them automatically.
+The accumulated channels are only available for devices with more than 1 meter.
+`accumulatedReturnedEnergy` and `accumulatedApparent` are available for multi-meter EM devices (Gen1: Shelly EM, 3EM; Gen2: Plus EM, Plus 3EM-63, Pro 3EM, Pro EM-50).
+The LED channels are available for the Plug-S with firmware 1.6x and for various other devices with firmware 1.8 or newer.
+The binding detects them automatically.
 
 ## Events
 
@@ -402,32 +524,34 @@ The LED channels are available for the Plug-S with firmware 1.6x and for various
 
 Depending on the firmware release, Shelly devices support two different mechanisms to report sensor updates or events.
 
-1. Action URLs
-    Usually the binding polls the device to update the status and maps the returned values to the various channels.
-    In addition the binding can register so-called Action URLs. Those events are triggered by the device to report special events.
-    You need to disable autoCoIoT in the binding configuration to make specific selections for the Action events.
+Action URLs
+Usually the binding polls the device to update the status and maps the returned values to the various channels.
+In addition the binding can register so-called Action URLs. Those events are triggered by the device to report special events.
+You need to disable autoCoIoT in the binding configuration to make specific selections for the Action events.
 
-    The following event types could be registered when enabled in the Thing configuration:
+The following event types could be registered when enabled in the Thing configuration:
 
-    | Event Type         | Description                                                                                                                 |
-    | ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-    | eventsButton       | This event is triggered when the device is in button mode. The device reports the ON/OFF status of the button.              |
-    | eventsSwitch       | This event reports the status of the relay output. This could change by the button or API calls.                            |
-    | eventsPush         | The device reports the short/longpush events when in  button mode momentary, momentary_on_release, one_button or two_button |
-    | eventsSensorReport | Sensor devices (like H&T) provide sensor updates when this action URL is enabled.                                           |
+| Event Type         | Description                                                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| eventsButton       | This event is triggered when the device is in button mode. The device reports the ON/OFF status of the button.              |
+| eventsSwitch       | This event reports the status of the relay output. This could change by the button or API calls.                            |
+| eventsPush         | The device reports the short/longpush events when in  button mode momentary, momentary_on_release, one_button or two_button |
+| eventsSensorReport | Sensor devices (like H&T) provide sensor updates when this action URL is enabled.                                           |
 
-    Important: The binding defaults to CoIoT when firmware 1.6 or newer is detected.
-    This has significant experience improvements and also prevents interfering with other applications, because the device only supports one set of Action URLs.
-1. CoIoT / CoAP
-    Starting with version 1.6 the devices reports most status values via the CoIoT protocol.
-    CoIoT provides near-realtime updates and better event support.
-    Firmware 1.7 adds additional status values, also supported by the binding.
-    Version 1.8 introduces CoIoT version 2, which fixes various issues with version 1 and provides almost all relevant status updates.
+`Important:`
+The binding defaults to CoIoT when firmware 1.6 or newer is detected.
+This has significant experience improvements and also prevents interfering with other applications, because the device only supports one set of Action URLs.
 
-    If there is no specific reason you should enable CoIoT.
-    Check section [Network Settings](doc/AdvancedUsers.md) for more information.
+CoIoT / CoAP
+Starting with version 1.6 the devices reports most status values via the CoIoT protocol.
+CoIoT provides near-realtime updates and better event support.
+Firmware 1.7 adds additional status values, also supported by the binding.
+Version 1.8 introduces CoIoT version 2, which fixes various issues with version 1 and provides almost all relevant status updates.
 
-    Enable the autoCoIoT option in the binding configuration or eventsCoIoT in the Thing configuration to activate CoIoT.
+If there is no specific reason you should enable CoIoT.
+Check section [Network Settings](doc/AdvancedUsers.md) for more information.
+
+Enable the autoCoIoT option in the binding configuration or eventsCoIoT in the Thing configuration to activate CoIoT.
 
 ### Generation 2: WebSockets
 
@@ -485,6 +609,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | VALVE_ERROR  | Device reported a problem with the valve.                                         |
 | VIBRATION    | Device reported vibration.                                                        |
 | LOW_BATTERY  | Device reported low battery.                                                      |
+| LORA_RECEIVED | A datagram has been received via LoRa protocol                                   |
 
 ### Sensors
 
@@ -506,24 +631,154 @@ Refer to section [Full Example](#full-example) for examples how to catch alarm t
 
 Depending on the device type and firmware release channels might be not available or stay with value NaN.
 
+### Channel Migration and Deprecated Channels
+
+openHAB 5.2.1 renamed several meter- related channels for naming consistency.
+And openHAB 5.2.2 renamed several light- related channels for naming consistency, as well as promoting some channels to 'advanced'.
+The binding migrates existing Things automatically at startup (one-time, schema-versioned); no re-discovery is required.
+Old channel IDs stay active as deprecated, advanced channels and keep receiving updates, so existing item links and rules keep working; move to the new channel ID at your convenience since deprecated channels will be removed in a future release.
+
+| Old channel ID               | New channel ID                     | Notes                                                                                  |
+|------------------------------|------------------------------------|----------------------------------------------------------------------------------------|
+| `meterN#currentWatts`        | `meterN#currentPower`              | unit unchanged (W)                                                                     |
+| `meterN#totalKWH`            | `meterN#totalEnergy`               | unit unchanged (kWh)                                                                   |
+| `meterN#returnedKWH`         | `meterN#returnedEnergy`            | unit unchanged (kWh)                                                                   |
+| `meterN#reactiveWatts`       | `meterN#reactivePower`             | old channel keeps its W unit, new channel reports VAR                                  |
+| `meterN#lastPower1`          | `meterN#energyHistMin1`            | old channel reports average power in W, new channel reports energy in Wh               |
+| `device#accumulatedWatts`    | `device#accumulatedPower`          | unit unchanged (W)                                                                     |
+| `device#accumulatedReturned` | `device#accumulatedReturnedEnergy` | unit unchanged (kWh)                                                                   |
+| `device#accumulatedWTotal`   | `device#totalEnergy`               | old channel reported incorrect values; use the new channel                             |
+| `device#totalKWH`            | `device#totalEnergy`               | unit unchanged (kWh)                                                                   |
+| `nmeter#nmTreshhold`         | `nmeter#nmThreshold`               | unit unchanged (A)                                                                     |
+| `channelN#...`               | `lightN#...`                       | channel group prefix changed for better understanding of the meaning                   |
+| `color#hsb`                  | `color#hsb`                        | unchanged but becomes the primary light control channel under the OH light convention  |
+| `control#power`              | `control#power`                    | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `control#mode`               | `control#mode`                     | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#full`                 | `color#full`                       | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#red`                  | `color#red`                        | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#green`                | `color#green`                      | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#blue`                 | `color#blue`                       | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#white`                | `color#white`                      | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#gai`                  | `color#gain`                       | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#effect`               | `color#effect`                     | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `white#brightness`           | `white#brightness`                 | promoted to advanced channel type on combined color/white devices                      |
+| `white#temperature`          | `white#temperature`                | changed from a hybrid `Dimmer` / `Number:Temperature` to pure `Number:Temperature`     |
+|                              | `white#temperature-pct`            | new channel for pure `Dimmer` percent-based white temperature control                  |
+| `lightN#brightness`          | `lightN#brightness`                | refreshed for light-model based white/light profiles                                   |
+| `lightN#temperature`         | `lightN#temperature`               | changed from a hybrid `Dimmer` / `Number:Temperature` to pure `Number:Temperature`     |
+|                              | `lightN#temperature-pct`           | new channel for pure `Dimmer` percent-based white temperature control                  |
+
+`meterN#powerFactor` additionally changed type from `Number:Dimensionless` to plain `Number` (range −1.0 to +1.0).
+This is an in-place type change on the same channel ID, not a rename, so there is no dual-write; items statically linked as `Number:Dimensionless` need relinking.
+
+`white#temperature` and `lightN#temperature` were hybrid hybrid `Dimmer` and `Number:Temperature` channels and are now pure `Number:Temperature` only.
+So `Dimmer` type items that were linked to `...#temperature` need to be relinked to the counterpart `...#temperature-pct` channels.
+
+Also the `brightnessAutoOn` configuration parameter is removed.
+A brightness value greater than 0 now always switches the light ON.
+A value of 0 switches it OFF.
+
+### Extra Channels Features for Lights according to openHAB Light Control Convention
+
+The Shelly lighting ecosystem exposes different mixes of channels for different light models according to their different capabilities.
+In previous binding versions the channels were "orthogonal" where each channel was distinctly responsible for one specific light attribute e.g. on-off, brightness, color, etc.
+So three distinct commands were required to turn on a light with a specific color and brightness.
+By contrast the openHAB Light Control Convention expects integrated channels which are responsible for multiple light attributes; and one command covers all such attributes.
+So the current binding version extends the channels so that they also can follow the openHAB Light Control Convention, as described in the following chapters.
+
+### Extra Features for HSB (was ColorPicker) Channels (*)
+
+Full color lights have a `color#hsb` channel.
+This is now the single main control entry point for lights that support rgb(w) outputs, or rgb(w) and color temperature combined.
+This `color#hsb` channel is no longer just a color picker; it can be linked to many Item types as follows, marked with (*) in the tables below:
+
+- It can be linked to `Color` Items in which case the H(ue) and S(aturation) parts control the color rgb or rgbw as appropriate, the B(rightness) part controls the brightness, and depending if the B part is zero or not, also the on-off state.
+  The HS parts are always dynamically updated to reflect the real actual state of the light, so if it is in `color` mode the HS parts show the color being produced by the rgb(w) LEDs, and if it is in `white` mode they show the effective "color" of the cool or warm output.
+
+- It can also be linked to `Dimmer` Items in which case the slider controls the brightness, and depending if it is zero or not, also the On-Off state.
+  The brightness (and the B part of the HSB above) are always dynamically updated to reflect the real actual state of the light, so if it is in `color` mode it shows the gain, and if it is in `white` mode it shows the brightness.
+  And if the light is off then the brightness (and the B part of the HSB above) are zero.
+
+- It can also be linked to `RollerShutter` Items in which case the up/down buttons increase or decrease the brightness, and depending if the resulting brightness is zero or not, also the On-Off state.
+
+- It can also be linked to `Switch` Items in which case the switch controls the On-Off state.
+
+### Extra Features for Brightness Channels (*)
+
+White only lights have a `white#brightness` channel.
+This is the single main control entry point for lights that support white only output.
+The `white#brightness` is not just an intensity control; it can be linked to several Item types as follows, marked with (*) in the tables below:
+
+- It can be linked to `Dimmer` Items in which case the slider controls the brightness, and depending if it is zero or not, also the On-Off state.
+
+- It can also be linked to `RollerShutter` Items in which case the up/down buttons control the brightness, and depending if the resulting brightness is 0 or not, also the On-Off state.
+
+- It can also be linked to `Switch` Items in which case the switch controls the On-Off state.
+
+### Extra Features for Color Temperature Channels (*)
+
+Some lights have `white#temperature` and `white#temperature-pct` channels, as follows:
+
+1. The `white#temperature-pct` channel represents the color temperature in percent from "cool" to "warm".
+   - This can be linked to `Dimmer` Items in which case the slider controls the color temperature in percent.
+   - This can also be linked to `RollerShutter` Items in which case the up/down buttons increase or decrease the color temperature percent.
+
+1. The `white#temperature` channel represents the color temperature in Kelvin.
+   This can be linked to `Number:Temperature` Items in which case it displays and controls the color temperature in Kelvin.
+
+### Extra Features on Secondary Channels
+
+Some hybrid light devices have a main `rgb` ir `rgbw` light plus one or more secondary `cct` or `light` lights.
+Such secondary lights have extra features as follows:
+
+- The `lightN#brightness` channels behave as the `white#brightness` channel above.
+- The `lightN#temperature` channels behave as the `white#temperature` channel above.
+- The `lightN#temperature-pct` channels behave as the `white#temperature-pct` channel above.
+
+### LoRa Add-On (Channel Group: lora)
+
+Two LoRa add-on variants are supported:
+
+- **Shelly LoRa Add-On** (standard form factor): attaches to Gen3 and Gen4 devices — 1, 1PM, 2PM, Shutter, EM, and Dimmer 0/1-10V PM Gen3/Gen4. Requires firmware 1.6 or later. Gen2 Plus devices and the Shelly Wall Dimmer Gen3 do not support this add-on.
+- **Shelly Pro LoRa Add-On** (DIN-rail): attaches to Pro series devices supported by this binding — Pro 1, Pro 1PM, Pro 2, Pro 2PM, Pro 3EM, Pro EM-50, Pro Dimmer 1PM, Pro Dimmer 2PM, Pro Dimmer 0/1-10V PM, and Pro RGBWW PM. Requires firmware 2.0 or later.
+
+The binding detects the LoRa Add-On automatically and keeps the `lora` channel group in sync with the device configuration: the channels are created when the add-on is installed, the RX channels follow the add-on's RX-enable setting, and all channels are removed when the add-on is removed.
+No thing configuration is required.
+Both raw LoRa datagrams (`LoRa.SendBytes`) and SheLR datagrams (`LoRa.Send`, AES-CCM encrypted) received by the add-on are reported on the RX channels; sending uses raw LoRa datagrams.
+The add-on firmware version is shown in the Thing property `addonFirmware`; the device reports it asynchronously, so the property appears shortly after the Thing goes online.
+
+| Group   | Channel      | Type              | read-only | Description                                                                       |
+| ------- | ------------ | ----------------- | --------- | --------------------------------------------------------------------------------- |
+| lora    | dataRx       | String            | yes       | Received LoRa datagram decoded as UTF-8 text. Use the LORA_RECEIVED trigger event.|
+|         | dataRxRaw    | String            | yes       | Received LoRa datagram, BASE64-encoded raw payload.                               |
+|         | bytesRx      | Number:DataAmount | yes       | Number of bytes received from LoRa network so far.                                |
+|         | dataTx       | String            | r/w       | Send a UTF-8 text string; the binding encodes it as BASE64 before transmitting.   |
+|         | dataTxRaw    | String            | r/w       | Send a BASE64-encoded datagram directly to the LoRa network.                      |
+|         | bytesTx      | Number:DataAmount | yes       | Number of bytes sent to the LoRa network so far.                                  |
+|         | errorsTx     | Number            | yes       | Number of failed transmissions to the LoRa network.                               |
+|         | rssi         | Number:Power      | yes       | RSSI (received signal strength in dBm) of the last received packet.               |
+|         | snr          | Number:Dimensionless | yes    | SNR (signal-to-noise ratio in dB) of the last received packet.                    |
+|         | airtime      | Number:Time       | yes       | Transmission air time of the LoRa Add-On during the last 60 minutes.              |
+
 ### Shelly 1 (thing-type: shelly1)
 
-| Group   | Channel      | Type    | read-only | Description                                                                       |
-| ------- | ------------ | ------- | --------- | --------------------------------------------------------------------------------- |
-| relay   | output       | Switch  | r/w       | Controls the relay's output channel (on/off)                                      |
-|         | outputName   | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|         | input        | Switch  | yes       | ON: Input/Button is powered, see general notes on channels                        |
-|         | button       | Trigger | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                     |
-|         | lastEvent    | String  | yes       | Last event type (S/SS/SSS/L)                                                      |
-|         | eventCount   | Number  | yes       | Counter gets incremented every time the device issues a button event.             |
-|         | autoOn       | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff      | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|         | timerActive  | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| sensors | temperature1 | Number  | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon)          |
-|         | temperature2 | Number  | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)          |
-|         | temperature3 | Number  | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon)          |
-|         | humidity     | Number  | yes       | Humidity in percent (if connected to temp/hum addon)                              |
-|         | input1       | Contact | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on         |
+| Group   | Channel      | Type     | read-only | Description                                                                       |
+| ------- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay   | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|         | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|         | input        | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|         | button       | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                     |
+|         | lastEvent    | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
+|         | eventCount   | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|         | autoOn       | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff      | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
+|         | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon)          |
+|         | temperature2 | Number   | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)          |
+|         | temperature3 | Number   | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon)          |
+|         | humidity     | Number   | yes       | Humidity in percent (if connected to temp/hum addon)                              |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last sensor update (heartbeat)                                   |
+|         | input1       | Contact  | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on         |
 
 ### Shelly 1L (thing-type: shelly1l)
 
@@ -539,167 +794,197 @@ Depending on the device type and firmware release channels might be not availabl
 |         | button2      | Trigger  | yes       | Event trigger, see section Button Events                                          |
 |         | lastEvent2   | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
 |         | eventCount2  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|         | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | autoOn       | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff      | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |         | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
+| meter   | currentPower | Number   | yes       | Current power consumption in Watts                                                |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 | sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon)          |
 |         | temperature2 | Number   | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)          |
 |         | temperature3 | Number   | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon)          |
 |         | humidity     | Number   | yes       | Humidity in percent (if connected to temp/hum addon)                              |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last sensor update (heartbeat)                                   |
 |         | input1       | Contact  | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on         |
 
-Note: The `meter`for the Shelly 1L is kind of fake.
+`Note:`
+The `meter` for the Shelly 1L is kind of fake.
 It doesn't have a real power meter, but you could setup an estimated consumption in the Shelly App, e.g. 60W if you have attached a good old light bulb to the output channel.
 In this case the is no real measurement based on power consumption, but the Shelly reports the configured value when the relay is ON.
 
 ### Shelly 1PM (thing-type: shelly1pm)
 
-| Group   | Channel      | Type     | read-only | Description                                                                     |
-| ------- | ------------ | -------- | --------- | ------------------------------------------------------------------------------- |
-| relay   | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                    |
-|         | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App               |
-|         | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                      |
-|         | button       | Trigger  | yes       | Event trigger, see section Button Events                                        |
-| meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | The average power for the previous minute                                       |
-|         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
-|         | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                              |
-|         |              |          |           |                                                                                 |
-|         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
-| sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon)        |
-|         | temperature2 | Number   | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)        |
-|         | temperature3 | Number   | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon)        |
-|         | humidity     | Number   | yes       | Humidity in percent (if connected to temp/hum addon)                            |
-|         | input1       | Contact  | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on       |
+| Group   | Channel           | Type     | read-only | Description                                                                                        |
+| ------- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay   | output            | Switch   | r/w       | Controls the relay's output channel (on/off)                                                       |
+|         | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|         | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|         | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| meter   | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|         | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|         | frequency         | Number   | yes       | Grid frequency (Hz) - Gen4 only                                                                    |
+|         |                   |          |           |                                                                                                    |
+|         | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+| sensors | temperature1      | Number   | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon)                           |
+|         | temperature2      | Number   | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)                           |
+|         | temperature3      | Number   | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon)                           |
+|         | humidity          | Number   | yes       | Humidity in percent (if connected to temp/hum addon)                                               |
+|         | lastUpdate        | DateTime | yes       | Timestamp of the last sensor update (heartbeat)                                                    |
+|         | input1            | Contact  | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on                          |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly EM (thing-type: shellyem)
 
-| Group  | Channel       | Type     | read-only | Description                                                                       |
-| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
-|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
-|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly 3EM (thing-type: shellyem3)
 
-Please note: The product is called Shelly 3EM whereas the device propagates the service under shellyem3.
+`Note:`
+The product is called Shelly 3EM whereas the device propagates the service under shellyem3.
 The Thing id is derived from the service name, so that's the reason why the Thing is named shelly**em3** and not shelly3em.
 
-| Group  | Channel       | Type     | read-only | Description                                                                       |
-| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
-|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
-|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| nmeter | ncurrent      | Number   | yes       | Current current based on N clamp (requires calibration)                           |
-|        | ixsum         | Number   | yes       | Measured current over all phases                                                  |
-|        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
-|        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter3 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| nmeter | ncurrent       | Number       | yes       | Neutral current based on N clamp (requires calibration)                           |
+|        | ixsum          | Number       | yes       | Measured current over all phases                                                  |
+|        | nmismatch      | Switch       | yes       | ON: abs(ncurrent-ixsum) is greater than nmThreshold                               |
+|        | nmThreshold    | Number       | yes       | Threshold (delta) before nMismatch goes ON                                        |
 
-_Note:
-You should calibrate the device if you want to use "neutral current" measurements.
-Check the Shelly documentation for details._
+`Note:`
+
+- totalEnergy might reset on restart depending on device type and firmware version
+- You should calibrate the device if you want to use "neutral current" measurements.
+- Check the Shelly documentation for details.
 
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
 
-| Group  | Channel      | Type     | read-only | Description                                                                       |
-| ------ | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay1 | output       | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
-|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| relay2 | output       | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
-|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn       | Number   | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff      | Number   | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
-|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| meter  | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|        | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
-|        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group  | Channel           | Type     | read-only | Description                                                                                        |
+| ------ | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay1 | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
+|        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|        | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|        | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
+|        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| relay2 | output            | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                                             |
+|        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|        | autoOn            | Number   | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|        | timerActive       | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                                       |
+|        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| meter  | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|        | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|        | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|        | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|        | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|        | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|        | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+|        | returnedEnergy    | Number   | yes       | Total returned energy, kWh                                                                         |
 
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
-| Group  | Channel      | Type          | read-only | Description                                                                           |
-| ------ | ------------ | ------------- | --------- | ------------------------------------------------------------------------------------- |
-| roller | control      | Rollershutter | r/w       | can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)  |
-|        | input        | Switch        | yes       | ON: Input/Button is powered, see General Notes on Channels                            |
-|        | event        | Trigger       | yes       | Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP            |
-|        | rollerpos    | Number        | r/w       | Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes |
-|        | rollerFav    | Number        | r/w       | Select roller position favorite (1-4, 0=no), see Notes                                |
-|        | state        | String        | yes       | Roller state: open/close/stop                                                         |
-|        | stopReason   | String        | yes       | Last stop reasons: normal, safety_switch or obstacle                                  |
-|        | safety       | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off               |
-| meter  | currentWatts | Number        | yes       | Current power consumption in Watts                                                    |
-|        | lastPower1   | Number        | yes       | Accumulated energy consumption in Watts for the full last minute                      |
-|        | totalKWH     | Number        | yes       | Total energy consumption in kWh since the device powered up (reset on restart)        |
-|        | lastUpdate   | DateTime      | yes       | Timestamp of the last measurement                                                     |
+| Group  | Channel           | Type          | read-only | Description                                                                                        |
+| ------ | ----------------- | ------------- | --------- | -------------------------------------------------------------------------------------------------- |
+| roller | control           | Rollershutter | r/w       | can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)               |
+|        | input             | Switch        | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|        | event             | Trigger       | yes       | Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP                         |
+|        | rollerpos         | Number        | r/w       | Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes              |
+|        | rollerFav         | Number        | r/w       | Select roller position favorite (1-4, 0=no), see Notes                                             |
+|        | state             | String        | yes       | Roller state: open/close/stop                                                                      |
+|        | stopReason        | String        | yes       | Last stop reasons: normal, safety_switch or obstacle                                               |
+|        | safety            | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off                            |
+| meter  | currentPower      | Number        | yes       | Current power consumption in Watts                                                                 |
+|        | energyHistMin1    | Number        | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|        | energyHistMin2    | Number        | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|        | energyHistMin3    | Number        | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|        | energyAvgLast3Min | Number        | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|        | totalEnergy       | Number        | yes       | Total energy consumption in kWh                                                                    |
+|        | lastUpdate        | DateTime      | yes       | Timestamp of the last measurement                                                                  |
 
-_Note: The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can't be set._
+`Note:`
+The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can't be set.
 
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
 
-### Shelly 2.5 - relay mode (thing-type:shelly25-relay)
+totalEnergy might reset on restart depending on device type and firmware version
+
+### Shelly 2.5 - relay mode (thing-type: shelly25-relay)
 
 The Shelly 2.5 includes 2 meters, one for each channel.
 Firmware 1.9.2 or newer is required to use the roller position favorites, which are defined in the Shelly App.
@@ -732,7 +1017,7 @@ For this the binding aggregates the power consumption of both relays and include
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
 
-### Shelly4 Pro (thing-type: shelly4pro)
+### Shelly 4Pro (thing-type: shelly4pro)
 
 The Shelly 4Pro provides 4 relays and 4 power meters.
 
@@ -756,31 +1041,37 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 
 ### Shelly Dimmer 1 + 2 (thing-type: shellydimmer, shellydimmer2)
 
-| Group | Channel      | Type     | read-only | Description                                                                       |
-| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay | brightness   | Dimmer   | r/w       | Currently selected brightness.                                                    |
-|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|       | input1       | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels            |
-|       | button1      | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|       | lastEvent1   | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                          |
-|       | eventCount1  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|       | input2       | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels          |
-|       | button2      | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|       | lastEvent2   | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
-|       | eventCount2  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
-|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay | brightness        | Dimmer   | r/w       | Currently selected brightness.                                                                     |
+|       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|       | input1            | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels                             |
+|       | button1           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+|       | lastEvent1        | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                                           |
+|       | eventCount1       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
+|       | input2            | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels                           |
+|       | button2           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+|       | lastEvent2        | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                                           |
+|       | eventCount2       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
+|       | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|       | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
 
-`Note: The Dimmer should be calibrated using the device Web UI or Shelly App.`
+`Note:`
+The Dimmer should be calibrated using the device Web UI or Shelly App.
 
 Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
 `true`:  Brightness will be set and device output is powered = light turns on with the new brightness
 `false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
+
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly ix3 (thing-type: shellyix3)
 
@@ -797,47 +1088,45 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ### Shelly UNI, Shelly Plus UNI (thing-type: shellyuni)
 
-| Group   | Channel      | Type    | read-only | Description                                                              |
-| ------- | ------------ | ------- | --------- | ------------------------------------------------------------------------ |
-| relay1  |              |         |           | See group relay1 for Shelly 2, no autoOn/autoOff/timerActive channels    |
-| relay2  |              |         |           | See group relay1 for Shelly 2, no autoOn/autoOff/timerActive channels    |
-| sensors | temperature1 | Number  | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon) |
-|         | temperature2 | Number  | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon) |
-|         | temperature3 | Number  | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon) |
-|         | humidity     | Number  | yes       | Humidity in percent (if connected to temp/hum addon)                     |
-|         | voltage      | Number  | yes       | ADCS voltage                                                             |
-| status  | input1       | Switch  | yes       | State of Input 1                                                         |
-|         | input2       | Switch  | yes       | State of Input 2                                                         |
-|         | button       | Trigger | yes       | Event trigger, see section Button Events                                 |
-|         | lastEvent    | String  | yes       | S/SS/SSS for 1/2/3x Shortpush or L for Longpush                          |
-|         | eventCount   | Number  | yes       | Counter gets incremented every time the device issues a button event.    |
+| Group   | Channel      | Type     | read-only | Description                                                              |
+| ------- | ------------ | -------- | --------- | ------------------------------------------------------------------------ |
+| relay1  |              |          |           | See group relay1 for Shelly 2, no autoOn/autoOff/timerActive channels    |
+| relay2  |              |          |           | See group relay1 for Shelly 2, no autoOn/autoOff/timerActive channels    |
+| sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon) |
+|         | temperature2 | Number   | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon) |
+|         | temperature3 | Number   | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon) |
+|         | humidity     | Number   | yes       | Humidity in percent (if connected to temp/hum addon)                     |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last sensor update (heartbeat)                          |
+|         | voltage      | Number   | yes       | ADCS voltage                                                             |
+| status  | input1       | Switch   | yes       | State of Input 1                                                         |
+|         | input2       | Switch   | yes       | State of Input 2                                                         |
+|         | button       | Trigger  | yes       | Event trigger, see section Button Events                                 |
+|         | lastEvent    | String   | yes       | S/SS/SSS for 1/2/3x Shortpush or L for Longpush                          |
+|         | eventCount   | Number   | yes       | Counter gets incremented every time the device issues a button event.    |
 
 ### Shelly Bulb (thing-type: shellybulb)
 
-| Group   | Channel     | Type   | read-only | Description                                                            |
-| ------- | ----------- | ------ | --------- | ---------------------------------------------------------------------- |
-| control | power       | Switch | r/w       | Switch light ON/OFF                                                    |
-|         | mode        | Switch | r/w       | Color mode: color or white                                             |
-|         | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF; in sec            |
-|         | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON: in sec            |
-|         | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                     |
-| color   |             |        |           | Color settings: only valid in COLOR mode                               |
-|         | hsb         | HSB    | r/w       | Represents the color picker (HSBType), control r/g/b, but not white    |
-|         | full        | String | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode           |
-|         |             |        | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w" |
-|         | red         | Dimmer | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)       |
-|         | green       | Dimmer | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)   |
-|         | blue        | Dimmer | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)     |
-|         | white       | Dimmer | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)   |
-|         | gain        | Dimmer | r/w       | Gain setting: 0..100%     or 0..100                                    |
-|         | effect      | Number | r/w       | Puts the light into effect mode: 0..6)                                 |
-|         |             |        |           | 0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Breath                |
-|         |             |        |           | 4=Flash, 5=On/Off Gradual, 6=Red/Green Change                          |
-| white   |             |        |           | Color settings: only valid in WHITE mode                               |
-|         | temperature | Number | r/w       | color temperature (K): 0..100% or 3000..6500                           |
-|         | brightness  | Dimmer |           | Brightness: 0..100% or 0..100                                          |
+| Group   | Channel         | Type               | read-only | Advanced | Description                                                                                                                                 |
+|---------|-----------------|--------------------|-----------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                                                                         |
+|         | mode            | Switch             | r/w       | yes      | Color mode: color or white                                                                                                                  |
+|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF; in sec                                                                                  |
+|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON: in sec                                                                                  |
+|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                                                                          |
+| color   | hsb             | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                                                                       |
+|         | full            | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                                                                      |
+|         | red             | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                                                                            |
+|         | green           | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                                                                        |
+|         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                                                                          |
+|         | white           | Dimmer             | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                                                                        |
+|         | gain            | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                                                                         |
+|         | effect          | Number             | r/w       |          | Puts the light into effect mode: 0..6 0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Breath 4=Flash, 5=On/Off Gradual, 6=Red/Green Change |
+| white   | brightness      | Dimmer             | r/w       | yes      | Brightness: 0..100%                                                                                                                         |
+|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention                                                        |
+|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention                                                        |
 
-Note: The openHAB color picker has only values for red/green/blue (RGB), not for white as supported by the RGBW2.
+`Note:`
+The openHAB color picker has only values for red/green/blue (RGB), not for white as supported by the RGBW2.
 Beside channel `hsb` the binding also offers the `white` channel (hsb as only RGB values).
 Or control each color separately with channels `red`, `blue`, `green` (those are advanced channels).
 
@@ -845,138 +1134,163 @@ Or control each color separately with channels `red`, `blue`, `green` (those are
 
 This information applies to the Shelly Duo-1 as well as the Duo White for the G10 socket.
 
-| Group   | Channel      | Type     | read-only | Description                                                                     |
-| ------- | ------------ | -------- | --------- | ------------------------------------------------------------------------------- |
-| control | autoOn       | Number   | r/w       | Sets a  timer to turn the device ON after every OFF; in sec                     |
-|         | autoOff      | Number   | r/w       | Sets a  timer to turn the device OFF after every ON: in sec                     |
-|         | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                              |
-| white   |              |          |           | Color settings: only valid in WHITE mode                                        |
-|         | temperature  | Number   | r/w       | color temperature (K): 0..100% or 2700..6500                                    |
-|         | brightness   | Dimmer   |           | Brightness: 0..100% or 0..100                                                   |
-| meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption in Watts for a round minute, 1 minute  ago                   |
-|         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
-|         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
+| Group   | Channel           | Type               | read-only | Advanced | Description                                                                                        |
+| ------- | ----------------- | ------------------ | --------- | -------- | -------------------------------------------------------------------------------------------------- |
+| control | power             | Switch             | r/w       | yes      | Switch light ON/OFF                                                                                |
+|         | autoOn            | Number             | r/w       |          | Sets a  timer to turn the device ON after every OFF; in sec                                        |
+|         | autoOff           | Number             | r/w       |          | Sets a  timer to turn the device OFF after every ON: in sec                                        |
+|         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| white   | brightness        | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                                 |
+|         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention               |
+|         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention               |
+| meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                                 |
+|         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                                    |
+|         | energyHistMin1    | Number             | yes       | yes      | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number             | yes       | yes      | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number             | yes       | yes      | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number             | yes       | yes      | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | lastUpdate        | DateTime           | yes       | yes      | Timestamp of the last measurement                                                                  |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Vintage (thing-type: shellyvintage)
 
-| Group   | Channel      | Type     | read-only | Description                                                                     |
-| ------- | ------------ | -------- | --------- | ------------------------------------------------------------------------------- |
-| control | autoOn       | Number   | r/w       | Sets a  timer to turn the device ON after every OFF; in sec                     |
-|         | autoOff      | Number   | r/w       | Sets a  timer to turn the device OFF after every ON: in sec                     |
-|         | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                              |
-| white   |              |          |           | Color settings: only valid in WHITE mode                                        |
-|         | brightness   | Dimmer   |           | Brightness: 0..100% or 0..100                                                   |
-| meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                            |
-|         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
-|         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
+| Group   | Channel           | Type         | read-only | Advanced | Description                                                                                        |
+| ------- | ----------------- | ------------ | --------- | -------- | -------------------------------------------------------------------------------------------------- |
+| control | power             | Switch       | r/w       | yes      | Switch light ON/OFF                                                                                |
+|         | autoOn            | Number       | r/w       |          | Sets a  timer to turn the device ON after every OFF; in sec                                        |
+|         | autoOff           | Number       | r/w       |          | Sets a  timer to turn the device OFF after every ON: in sec                                        |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| white   | brightness        | Multiple (*) | r/w       |          | Main dimming control according to openHAB Light Control Convention                                 |
+| meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts                                                                 |
+|         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                                                    |
+|         | energyHistMin1    | Number       | yes       | yes      | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number       | yes       | yes      | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number       | yes       | yes      | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number       | yes       | yes      | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | lastUpdate        | DateTime     | yes       | yes      | Timestamp of the last measurement                                                                  |
 
-### Shelly Duo Color (thing-type: shellyduocolor-color)
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
-| Group   | Channel      | Type    | read-only | Description                                                                              |
-| ------- | ------------ | ------- | --------- | ---------------------------------------------------------------------------------------- |
-| control | power        | Switch  | r/w       | Switch light ON/OFF                                                                      |
-|         | button       | Trigger | yes       | Event trigger, see section Button Events                                                 |
-|         | autoOn       | Number  | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|         | autoOff      | Number  | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                  |
-|         | timerActive  | Switch  | yes       | ON: An auto-on/off timer is active                                                       |
-| color   |              |         |           | Color settings: only valid in COLOR mode                                                 |
-|         | hsb          | HSB     | r/w       | Represents the color picker (HSBType), control r/g/b, but not white                      |
-|         | full         | String  | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode                             |
-|         |              |         | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                   |
-|         | red          | Dimmer  | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)                         |
-|         | green        | Dimmer  | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)                     |
-|         | blue         | Dimmer  | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)                       |
-|         | white        | Dimmer  | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)                     |
-|         | gain         | Dimmer  | r/w       | Gain setting: 0..100%     or 0..100                                                      |
-|         | effect       | Number  | r/w       | Puts the light into effect mode: 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash |
-| white   |              |         |           | Color settings: only valid in WHITE mode                                                 |
-|         | temperature  | Number  | r/w       | color temperature (K): 0..100% or 3000..6500                                             |
-|         | brightness   | Dimmer  |           | Brightness: 0..100% or 0..100                                                            |
-| meter   | currentWatts | Number  | yes       | Current power consumption in Watts                                                       |
+### Shelly Duo Color (thing-type: shellycolorbulb)
 
-Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
-`true`:  Brightness will be set and device output is powered = light turns on with the new brightness
-`false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
+| Group   | Channel           | Type               | read-only | Advanced | Description                                                                              |
+|---------|-------------------|--------------------|-----------|----------|------------------------------------------------------------------------------------------|
+| control | power             | Switch             | r/w       | yes      | Switch light ON/OFF                                                                      |
+|         | button            | Trigger            | yes       |          | Event trigger, see section Button Events                                                 |
+|         | autoOn            | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|         | autoOff           | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                       |
+| color   | hsb               | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                    |
+|         | full              | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                   |
+|         | red               | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                         |
+|         | green             | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                     |
+|         | blue              | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                       |
+|         | white             | Dimmer             | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                     |
+|         | gain              | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                      |
+|         | effect            | Number             | r/w       |          | Puts the light into effect mode: 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash |
+| white   | brightness        | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                       |
+|         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention     |
+|         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention     |
+| meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                       |
+|         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                          |
+|         | energyHistMin1    | Number             | yes       | yes      | Total energy consumed during the previous minute, minute -1 (Wh)                         |
+|         | energyHistMin2    | Number             | yes       | yes      | Total energy consumed during minute -2 (Wh)                                              |
+|         | energyHistMin3    | Number             | yes       | yes      | Total energy consumed during minute -3 (Wh)                                              |
+|         | energyAvgLast3Min | Number             | yes       | yes      | Average energy per minute over minutes -1 to -3 (Wh)                                     |
+|         | lastUpdate        | DateTime           | yes       | yes      | Timestamp of the last measurement                                                        |
 
 ### Shelly Duo RGBW Color Bulb (thing-type: shellycolorbulb)
 
-| Group   | Channel      | Type    | read-only | Description                                                             |
-| ------- | ------------ | ------- | --------- | ----------------------------------------------------------------------- |
-| control | power        | Switch  | r/w       | Switch light ON/OFF                                                     |
-|         | button       | Trigger | yes       | Event trigger, see section Button Events                                |
-|         | autoOn       | Number  | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff      | Number  | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
-|         | timerActive  | Switch  | yes       | ON: An auto-on/off timer is active                                      |
-| color   |              |         |           | Color settings: only valid in COLOR mode                                |
-|         | hsb          | HSB     | r/w       | Represents the color picker (HSBType); control r/g/b, bright, not white |
-|         | full         | String  | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
-|         |              |         | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
-|         | red          | Dimmer  | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)        |
-|         | green        | Dimmer  | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)    |
-|         | blue         | Dimmer  | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)      |
-|         | white        | Dimmer  | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)    |
-|         | gain         | Dimmer  | r/w       | Gain setting: 0..100%     or 0..100                                     |
-|         | effect       | Number  | r/w       | Puts the light into effect mode: 0..3)                                  |
-|         |              |         |           | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                 |
-| meter   | currentWatts | Number  | yes       | Current power consumption in Watts                                      |
-
-Channels in group `color`or `white`apply depending on the selected mode - they are not active at the same time.
-
-Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
-`true`:  Brightness will be set and device output is powered = light turns on with the new brightness
-`false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
+| Group   | Channel           | Type         | read-only | Advanced | Description                                                            |
+|---------|-------------------|--------------|-----------|----------|------------------------------------------------------------------------|
+| control | power             | Switch       | r/w       | yes      | Switch light ON/OFF                                                    |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                               |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                     |
+| color   | hsb               | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention  |
+|         | full              | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w" |
+|         | red               | Dimmer       | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)       |
+|         | green             | Dimmer       | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)   |
+|         | blue              | Dimmer       | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)     |
+|         | white             | Dimmer       | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)   |
+|         | gain              | Dimmer       | r/w       | yes      | Gain setting: 0..100% or 0..100                                        |
+|         | effect            | Number       | r/w       |          | Puts the light into effect mode: 0..3                                  |
+|         |                   |              |           |          | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                |
+| meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts                                     |
+|         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                        |
+|         | energyHistMin1    | Number       | yes       | yes      | Total energy consumed during the previous minute, minute -1 (Wh)       |
+|         | energyHistMin2    | Number       | yes       | yes      | Total energy consumed during minute -2 (Wh)                            |
+|         | energyHistMin3    | Number       | yes       | yes      | Total energy consumed during minute -3 (Wh)                            |
+|         | energyAvgLast3Min | Number       | yes       | yes      | Average energy per minute over minutes -1 to -3 (Wh)                   |
+|         | lastUpdate        | DateTime     | yes       | yes      | Timestamp of the last measurement                                      |
 
 ### Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
-| Group   | Channel      | Type     | read-only | Description                                                                     |
-| ------- | ------------ | -------- | --------- | ------------------------------------------------------------------------------- |
-| control | power        | Switch   | r/w       | Switch light ON/OFF                                                             |
-|         | autoOn       | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds         |
-|         | autoOff      | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds         |
-|         | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                              |
-| color   | hsb          | HSB      | r/w       | Represents the color picker (HSBType); control r/g/b, bright, not white         |
-|         | full         | String   | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode                    |
-|         |              |          | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"          |
-|         | red          | Dimmer   | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)                |
-|         | green        | Dimmer   | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)            |
-|         | blue         | Dimmer   | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)              |
-|         | white        | Dimmer   | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)            |
-|         | gain         | Dimmer   | r/w       | Gain setting: 0..100%     or 0..100                                             |
-|         | effect       | Number   | r/w       | Puts the light into effect mode: 0..3)                                          |
-|         |              |          |           | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                         |
-| meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                            |
-|         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
-|         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
+| Group   | Channel           | Type         | read-only | Advanced | Description                                                                                        |
+| ------- | ----------------- | ------------ | --------- | -------- | -------------------------------------------------------------------------------------------------- |
+| control | power             | Switch       | r/w       | yes      | Switch light ON/OFF                                                                                |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| color   | hsb               | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention                              |
+|         | full              | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                             |
+|         | red               | Dimmer       | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                                   |
+|         | green             | Dimmer       | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                               |
+|         | blue              | Dimmer       | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                                 |
+|         | white             | Dimmer       | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                               |
+|         | gain              | Dimmer       | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                                |
+|         | effect            | Number       | r/w       |          | Puts the light into effect mode: 0..3 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash      |
+| meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts                                                                 |
+|         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                                                    |
+|         | energyHistMin1    | Number       | yes       | yes      | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number       | yes       | yes      | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number       | yes       | yes      | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number       | yes       | yes      | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | lastUpdate        | DateTime     | yes       | yes      | Timestamp of the last measurement                                                                  |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-white)
 
-| Group    | Channel      | Type    | read-only | Description                                                             |
-| -------- | ------------ | ------- | --------- | ----------------------------------------------------------------------- |
-| control  | input        | Switch  | yes       | State of Input                                                          |
-| channel1 | brightness   | Dimmer  | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF          |
-|          | button       | Trigger | yes       | Event trigger, see section Button Events                                |
-|          | autoOn       | Number  | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
-|          | autoOff      | Number  | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
-|          | timerActive  | Switch  | yes       | ON: An auto-on/off timer is active                                      |
-| channel2 | brightness   | Dimmer  | r/w       | Channel 2: Brightness: 0..100, control power state with ON/OFF          |
-|          | button       | Trigger | yes       | Event trigger, see section Button Events                                |
-|          | autoOn       | Number  | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
-|          | autoOff      | Number  | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
-|          | timerActive  | Switch  | yes       | ON: An auto-on/off timer is active                                      |
-| channel3 | brightness   | Dimmer  | r/w       | Channel 3: Brightness: 0..100, control power state with ON/OFF          |
-|          | button       | Trigger | yes       | Event trigger, see section Button Events                                |
-|          | autoOn       | Number  | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
-|          | autoOff      | Number  | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
-|          | timerActive  | Switch  | yes       | ON: An auto-on/off timer is active                                      |
-| channel4 | brightness   | Dimmer  | r/w       | Channel 4: Brightness: 0..100, control power state with ON/OFF          |
-|          | button       | Trigger | yes       | Event trigger, see section Button Events                                |
-|          | autoOn       | Number  | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
-|          | autoOff      | Number  | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
-|          | timerActive  | Switch  | yes       | ON: An auto-on/off timer is active                                      |
-| meter    | currentWatts | Number  | yes       | Current power consumption in Watts (all channels)                       |
+| Group   | Channel           | Type         | read-only | Advanced | Description                                                                                        |
+|---------|-------------------|--------------|-----------|----------|----------------------------------------------------------------------------------------------------|
+| control | input             | Switch       | yes       |          | State of Input                                                                                     |
+| light1  | brightness        | Multiple (*) | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention                        |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                                                           |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| light2  | brightness        | Multiple (*) | r/w       |          | Light 2: Main dimming control according to openHAB Light Control Convention                        |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                                                           |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| light3  | brightness        | Multiple (*) | r/w       |          | Light 3: Main dimming control according to openHAB Light Control Convention                        |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                                                           |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| light4  | brightness        | Multiple (*) | r/w       |          | Light 4: Main dimming control according to openHAB Light Control Convention                        |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                                                           |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts (all channels)                                                  |
+|         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                                                    |
+|         | energyHistMin1    | Number       | yes       | yes      | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number       | yes       | yes      | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number       | yes       | yes      | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number       | yes       | yes      | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | lastUpdate        | DateTime     | yes       | yes      | Timestamp of the last measurement                                                                  |
+
+`Note`:
+channel1..channel4 are deprecated, use light1..light4 instead (same channels, without the button trigger).
+Already-discovered Things get the light1..light4 channels created automatically; channel1..channel4 are kept for backward compatibility.
 
 Please note that the settings of channel group color are only valid in color mode and vice versa for white mode.
 The current firmware doesn't support the timestamp report for the meters.
@@ -992,6 +1306,54 @@ Sending brightness 0 will automatically turn off the channel if it's currently o
 Sending brightness > 0 will automatically turn on the channel if it's currently off.
 You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see example rules.
 
+### Shelly Duo Bulb E27 Gen3 (thing-type: shellyplusduobulb)
+
+| Group   | Channel           | Type               | read-only | Advanced | Description                                                                          |
+|---------|-------------------|--------------------|-----------|----------|--------------------------------------------------------------------------------------|
+| control | autoOn            | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+|         | autoOff           | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
+|         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
+| white   | brightness        | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                   |
+|         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+| meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                   |
+|         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                      |
+|         | energyHistMin1    | Number             | yes       | yes      | Total energy consumed during the previous minute, minute -1 (Wh)                     |
+|         | energyHistMin2    | Number             | yes       | yes      | Total energy consumed during minute -2 (Wh)                                          |
+|         | energyHistMin3    | Number             | yes       | yes      | Total energy consumed during minute -3 (Wh)                                          |
+|         | energyAvgLast3Min | Number             | yes       | yes      | Average energy per minute over minutes -1 to -3 (Wh)                                 |
+|         | lastUpdate        | DateTime           | yes       | yes      | Timestamp of the last measurement                                                    |
+
+The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo - it has no RGB color output.
+It has power metering hardware and reports current power and energy consumption.
+
+### Shelly Multicolor Bulb E27 Gen3 (thing-type: shellypluscolorbulb)
+
+| Group   | Channel           | Type               | read-only | Advanced | Description                                                                          |
+|---------|-------------------|--------------------|-----------|----------|--------------------------------------------------------------------------------------|
+| control | autoOn            | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+|         | autoOff           | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
+|         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
+| color   | hsb               | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                |
+|         | full              | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"                 |
+|         | red               | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                     |
+|         | green             | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                 |
+|         | blue              | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
+| white   | brightness        | Dimmer             | r/w       | yes      | Brightness: 0..100% or 0..100; also controls power (ON/OFF)                          |
+|         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+| meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                   |
+|         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                      |
+|         | energyHistMin1    | Number             | yes       | yes      | Total energy consumed during the previous minute, minute -1 (Wh)                     |
+|         | energyHistMin2    | Number             | yes       | yes      | Total energy consumed during minute -2 (Wh)                                          |
+|         | energyHistMin3    | Number             | yes       | yes      | Total energy consumed during minute -3 (Wh)                                          |
+|         | energyAvgLast3Min | Number             | yes       | yes      | Average energy per minute over minutes -1 to -3 (Wh)                                 |
+|         | lastUpdate        | DateTime           | yes       | yes      | Timestamp of the last measurement                                                    |
+
+The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
+Sending a color (`color#hsb`, `color#red`/`green`/`blue` switches to color mode; sending `white#temperature`, or `white#temperature-pct` switches back to white mode.
+It has power metering hardware and reports current power and energy consumption in both modes.
+
 ### Shelly H&T (thing-type: shellyht)
 
 | Group   | Channel      | Type     | read-only | Description                                             |
@@ -1002,7 +1364,8 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
-`Please Note:` If you have connected an USB cable to the H&T, but channel charger is off make sure that "Use external power supply" settings is activated in the Shelly App's device settings.
+`Note:`
+If you have connected an USB cable to the H&T, but channel charger is off make sure that "Use external power supply" settings is activated in the Shelly App's device settings.
 
 ### Shelly Flood (thing-type: shellyflood)
 
@@ -1031,7 +1394,8 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 ### Shelly Motion (thing-type: shellymotion)
 
-Note: You might need to restart the device to enable the discovery mode for 3 minutes(use the Web UI).
+`Note:`
+You might need to restart the device to enable the discovery mode for 3 minutes(use the Web UI).
 As an alternativ you could press the reset button shortly (refer to the manual to locate the reset button).
 While the device is in low power mode (usual operation) it will not respond to discovery requests
 
@@ -1044,7 +1408,7 @@ While the device is in low power mode (usual operation) it will not respond to d
 |         | vibration       | Switch   | yes       | ON: Vibration detected                                                 |
 |         | charger         | Switch   | yes       | ON: USB charging cable is connected external power supply activated.   |
 |         | motionActive    | Switch   | yes       | ON: Motion detection is currently active                               |
-|         | sensorSleepTime | Number   | no        | Specifies the number of sec the sensor should not report events      ] |
+|         | sensorSleepTime | Number   | no        | Specifies the number of sec the sensor should not report events        |
 |         | lastUpdate      | DateTime | yes       | Timestamp of the last update (any sensor value changed)                |
 | battery | batteryLevel    | Number   | yes       | Battery Level in %                                                     |
 |         | lowBattery      | Switch   | yes       | Low battery alert (< 20%)                                              |
@@ -1054,7 +1418,7 @@ You have a Motion controlling your light.
 You switch off the light and want to leave the room, but the motion sensor immediately switches light back on.
 Using 'sensorSleepTime' you can suppress motion events while leaving the room (e.g., for 5 seconds) so the light doesn't switch on.
 
-### Shelly Motion 2 (thing-type: shellymotion2)
+### Shelly Motion 2 (thing-type: shellymotion)
 
 | Group   | Channel         | Type     | read-only | Description                                                            |
 | ------- | --------------- | -------- | --------- | ---------------------------------------------------------------------- |
@@ -1066,14 +1430,15 @@ Using 'sensorSleepTime' you can suppress motion events while leaving the room (e
 |         | vibration       | Switch   | yes       | ON: Vibration detected                                                 |
 |         | charger         | Switch   | yes       | ON: USB charging cable is connected external power supply activated.   |
 |         | motionActive    | Switch   | yes       | ON: Motion detection is currently active                               |
-|         | sensorSleepTime | Number   | no        | Specifies the number of sec the sensor should not report events      ] |
+|         | sensorSleepTime | Number   | no        | Specifies the number of sec the sensor should not report events        |
 |         | lastUpdate      | DateTime | yes       | Timestamp of the last update (any sensor value changed)                |
 | battery | batteryLevel    | Number   | yes       | Battery Level in %                                                     |
 |         | lowBattery      | Switch   | yes       | Low battery alert (< 20%)                                              |
 
 ### Shelly TRV (thing-type: shellytrv)
 
-Note: You might need to reboot the device to enable the discovery mode for 3 minutes(use the Web UI).
+`Note:`
+You might need to reboot the device to enable the discovery mode for 3 minutes(use the Web UI).
 As an alternative you could press the reset button shortly (refer to the manual to locate the reset button).
 While the device is in low power mode (usual operation) it will not respond to discovery requests
 
@@ -1085,7 +1450,7 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |         | state           | Contact  | yes       | Valve status: OPEN or CLOSED (position = 0)                         |
 |         | lastUpdate      | DateTime | yes       | Timestamp of the last update (any sensor value changed)             |
 | control | targetTemp      | Number   | no        | Temperature in °C: 4=Low/Min; 5..30=target temperature;31=Hi/Max    |
-|         | position        | Dimmer   | no        | Set valve to manual mode (0..100%) disables auto-temp)              |
+|         | position        | Dimmer   | no        | Set valve to manual mode (0..100%) disables auto-temp               |
 |         | mode            | String   | no        | Switch between manual and automatic mode                            |
 |         | selectedProfile | String   | no        | Select profile Id: "0"=disable, "1"-"n": profile index              |
 |         | boost           | Number   | no        | Enable/disable boost mode (full heating power)                      |
@@ -1154,100 +1519,120 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 | relay | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |       | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |       | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|       | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
 If the Shelly Add-On is installed:
 
-| Group   | Channel      | Type   | read-only | Description                                               |
-| ------- | ------------ | ------ | --------- | --------------------------------------------------------- |
-| sensors | temperature1 | Number | yes       | Temperature value of external sensor #1                   |
-|         | temperature2 | Number | yes       | Temperature value of external sensor #2                   |
-|         | temperature3 | Number | yes       | Temperature value of external sensor #3                   |
-|         | temperature4 | Number | yes       | Temperature value of external sensor #4                   |
-|         | temperature5 | Number | yes       | Temperature value of external sensor #5                   |
-|         | humidity     | Number | yes       | Relative Humidity in percent                              |
-|         | voltage      | Number | yes       | Measured voltage                                          |
-|         | analogInput  | Number | yes       | Percentage of reference voltage (VREF) at analogous input |
-|         | digitalInput | Switch | yes       | State of digital input (ON/OFF)                           |
+| Group   | Channel      | Type     | read-only | Description                                               |
+| ------- | ------------ | -------- | --------- | --------------------------------------------------------- |
+| sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1                   |
+|         | temperature2 | Number   | yes       | Temperature value of external sensor #2                   |
+|         | temperature3 | Number   | yes       | Temperature value of external sensor #3                   |
+|         | temperature4 | Number   | yes       | Temperature value of external sensor #4                   |
+|         | temperature5 | Number   | yes       | Temperature value of external sensor #5                   |
+|         | humidity     | Number   | yes       | Relative Humidity in percent                              |
+|         | voltage      | Number   | yes       | Measured voltage                                          |
+|         | analogInput  | Number   | yes       | Percentage of reference voltage (VREF) at analogous input |
+|         | digitalInput | Switch   | yes       | State of digital input (ON/OFF)                           |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last sensor update (heartbeat)           |
 
 ### Shelly Plus 1PM (thing-type: shellyplus1pm)
 
-| Group | Channel      | Type     | read-only | Description                                                                       |
-| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay | output       | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
-|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|       | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
+|       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|       | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|       | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|       | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
+|       | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 If the Shelly Add-On is installed:
 
-| Group   | Channel      | Type   | read-only | Description                                               |
-| ------- | ------------ | ------ | --------- | --------------------------------------------------------- |
-| sensors | temperature1 | Number | yes       | Temperature value of external sensor #1                   |
-|         | temperature2 | Number | yes       | Temperature value of external sensor #2                   |
-|         | temperature3 | Number | yes       | Temperature value of external sensor #3                   |
-|         | temperature4 | Number | yes       | Temperature value of external sensor #4                   |
-|         | temperature5 | Number | yes       | Temperature value of external sensor #5                   |
-|         | humidity     | Number | yes       | Relative Humidity in percent                              |
-|         | voltage      | Number | yes       | Measured voltage                                          |
-|         | analogInput  | Number | yes       | Percentage of reference voltage (VREF) at analogous input |
-|         | digitalInput | Switch | yes       | State of digital input (ON/OFF)                           |
+| Group   | Channel      | Type     | read-only | Description                                               |
+| ------- | ------------ | -------- | --------- | --------------------------------------------------------- |
+| sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1                   |
+|         | temperature2 | Number   | yes       | Temperature value of external sensor #2                   |
+|         | temperature3 | Number   | yes       | Temperature value of external sensor #3                   |
+|         | temperature4 | Number   | yes       | Temperature value of external sensor #4                   |
+|         | temperature5 | Number   | yes       | Temperature value of external sensor #5                   |
+|         | humidity     | Number   | yes       | Relative Humidity in percent                              |
+|         | voltage      | Number   | yes       | Measured voltage                                          |
+|         | analogInput  | Number   | yes       | Percentage of reference voltage (VREF) at analogous input |
+|         | digitalInput | Switch   | yes       | State of digital input (ON/OFF)                           |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last sensor update (heartbeat)           |
 
 ### Shelly Plus 2PM - relay mode (thing-type: shellyplus2pm-relay)
 
-| Group  | Channel      | Type     | read-only | Description                                                                       |
-| ------ | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay1 | output       | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
-|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| meter1 | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|        | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-| relay2 | output       | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
-|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn       | Number   | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff      | Number   | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
-|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| meter2 | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|        | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group  | Channel           | Type     | read-only | Description                                                                                        |
+| ------ | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay1 | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
+|        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|        | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|        | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
+|        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| meter1 | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|        | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|        | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|        | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|        | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|        | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|        | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|        | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+| relay2 | output            | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                                             |
+|        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|        | autoOn            | Number   | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|        | timerActive       | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                                       |
+|        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| meter2 | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|        | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|        | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|        | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|        | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|        | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|        | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|        | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Plus 2L (thing-type: shellyplus2l)
 
-| Group  | Channel      | Type     | read-only | Description                                                                       |
-| ------ | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay1 | output       | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
-|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| relay2 | output       | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
-|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn       | Number   | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff      | Number   | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
-|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| Group  | Channel     | Type    | read-only | Description                                                                       |
+| ------ | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
+| relay1 | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
+|        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
+|        | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
+| relay2 | output      | Switch  | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
+|        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn      | Number  | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds  |
+|        | timerActive | Switch  | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
+|        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
 ### Shelly Plus 2PM - roller mode (thing-type: shellyplus2pm-roller)
 
@@ -1281,135 +1666,157 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
 
-### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug, shellyplusplugus)
+### Shelly Plus Plug-S/IT/UK/US/CPM/USG4 (thing-type: shellyplusplug, shellyplusplugus, shellyplusplugcpm, shellyplugusg4)
 
-| Group | Channel      | Type     | read-only | Description                                                                       |
-| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|       | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|       | autoOn       | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds           |
-|       | autoOff      | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds           |
-|       | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                                |
-|       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay | output            | Switch   | r/w       | Controls the relay's output channel (on/off)                                                       |
+|       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|       | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|       | autoOn            | Number   | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|       | autoOff           | Number   | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|       | timerActive       | Switch   | yes       | ON: An auto-on/off timer is active                                                                 |
+|       | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Plus Power Strip 4 (thing-type: shellyplusstrip)
 
-| Group  | Channel     | Type    | read-only | Description                                                                         |
-| ------ | ----------- | ------- | --------- | ----------------------------------------------------------------------------------- |
-| relay1 |             |         | r/w       | Relay #1 with control options and status values                                     |
-| relay2 |             |         | r/w       | Relay #2 with control options and status values                                     |
-| relay3 |             |         | r/w       | Relay #3 with control options and status values                                     |
-| relay4 |             |         | r/w       | Relay #4 with control options and status values                                     |
-| meter1 |             |         | r/w       | Power Meter #1 with measurement values                                              |
-| meter2 |             |         | r/w       | Power Meter #1 with measurement values                                              |
-| meter3 |             |         | r/w       | Power Meter #1 with measurement values                                              |
-| meter4 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| Group  | Channel | Type | read-only | Description                                     |
+| ------ | ------- | ---- | --------- | ----------------------------------------------- |
+| relay1 |         |      | r/w       | Relay #1 with control options and status values |
+| relay2 |         |      | r/w       | Relay #2 with control options and status values |
+| relay3 |         |      | r/w       | Relay #3 with control options and status values |
+| relay4 |         |      | r/w       | Relay #4 with control options and status values |
+| meter1 |         |      | r/w       | Power Meter #1 with measurement values          |
+| meter2 |         |      | r/w       | Power Meter #1 with measurement values          |
+| meter3 |         |      | r/w       | Power Meter #1 with measurement values          |
+| meter4 |         |      | r/w       | Power Meter #1 with measurement values          |
 
 ### Shelly Plus EM (thing-type: shellyplusem)
 
-| Group  | Channel       | Type     | read-only | Description                                                                       |
-| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
-|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
-|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Plus 3EM-63 (thing-type: shellyplus3em63)
 
-| Group  | Channel       | Type     | read-only | Description                                                                       |
-| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
-|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
-|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| nmeter | ncurrent      | Number   | yes       | Current current based on N clamp (requires calibration)                           |
-|        | ixsum         | Number   | yes       | Measured current over all phases                                                  |
-|        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
-|        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter3 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| nmeter | ncurrent       | Number       | yes       | Neutral current based on N clamp (requires calibration)                           |
+|        | ixsum          | Number       | yes       | Measured current over all phases                                                  |
+|        | nmismatch      | Switch       | yes       | ON: abs(ncurrent-ixsum) is greater than nmThreshold                               |
+|        | nmThreshold    | Number       | yes       | Threshold (delta) before nMismatch goes ON                                        |
 
-### Shelly Plus Dimmer / 10V (thing-type: shellyplusdimmer, shellyplus10v)
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
-| Group | Channel      | Type     | read-only | Description                                                                       |
-| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay | brightness   | Dimmer   | r/w       | Currently selected brightness.                                                    |
-|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|       | input1       | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels            |
-|       | button1      | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|       | lastEvent1   | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                          |
-|       | eventCount1  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|       | input2       | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels          |
-|       | button2      | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|       | lastEvent2   | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
-|       | eventCount2  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+### Shelly Plus Dimmer / 10V / DALI Dimmer (thing-type: shellyplusdimmer, shellyplus10v, shellyplusdalidimmer)
 
-`Note: The Dimmer should be calibrated using the device Web UI or Shelly App.`
+| Group | Channel         | Type     | read-only | Description                                                                       |
+| ----- | --------------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay | brightness      | Dimmer   | r/w       | Currently selected brightness.                                                    |
+|       | outputName      | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | input1          | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels            |
+|       | button1         | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|       | lastEvent1      | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                          |
+|       | eventCount1     | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|       | input2          | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels          |
+|       | button2         | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|       | lastEvent2      | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
+|       | eventCount2     | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|       | autoOn          | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff         | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive     | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|       | daliDeviceCount | Number   | yes       | DALI Dimmer only: Number of control gears (devices) found on the DALI bus         |
+|       | daliScanActive  | Switch   | yes       | DALI Dimmer only: ON: A scan of the DALI bus is currently in progress             |
+| meter | currentPower    | Number   | yes       | Current power consumption in Watts                                                |
+|       | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                   |
+|       | resetTotals     | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|       | lastUpdate      | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+`Note:`
+The Dimmer should be calibrated using the device Web UI or Shelly App.
 
 Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
 `true`:  Brightness will be set and device output is powered = light turns on with the new brightness
 `false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
+
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
 
@@ -1446,15 +1853,278 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
+### Shelly Flood Gen4 (thing-type: shellyplusflood)
+
+The Shelly Flood Gen4 (S4SN-0071A) and Shelly Flood S Gen4 (S4SN-0071Z) are battery-powered water-leak sensors with a configurable alarm mode.
+The Flood Gen4 uses a cable-connected sensor probe; if the cable is unplugged, the `lastError` channel is updated and a `SENSOR_ERROR` event is posted to `device#alarm`.
+The Flood S Gen4 instead uses integrated stainless-steel sensor pads.
+
+`Note:`
+The `alarmMode` and `reportHoldoff` channels are writable but only take effect while the sensor is online (awake and connected).
+There is no API to mute a flood alarm remotely, only the physical button on the device; the mute state is reported via an `ALARM_MUTED` event on `device#alarm` rather than a dedicated channel.
+
+The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
+
+- **Rain mode** (`rain`): rain detection only — the flood alarm is inactive.
+- **Flood mode, Intense** (`intense`): loud acoustic alarm triggered by flooding (mute via physical button on device).
+- **Flood mode, Normal** (`normal`): acoustic alarm triggered by flooding (mute via physical button on device).
+- **Flood mode, Silent** (`disabled`): flood detection only, no acoustic alarm.
+
+| Group   | Channel       | Type        | read-only | Description                                                                                                      |
+| ------- | ------------- | ----------- | --------- | ---------------------------------------------------------------------------------------------------------------- |
+| sensors | flood         | Switch      | yes       | ON: Water/flooding detected, OFF: dry                                                                            |
+|         | lastUpdate    | DateTime    | yes       | Timestamp of the last update (any sensor value changed)                                                          |
+|         | lastError     | String      | yes       | Last device error (e.g. `cable_unplugged`)                                                                       |
+| control | alarmMode     | String      | no        | Alarm mode: `rain`, `intense`, `normal`, `disabled` (see note above)                                             |
+|         | reportHoldoff | Number:Time | no        | Minimum time (s) between consecutive flood reports                                                               |
+| battery | batteryLevel  | Number      | yes       | Battery level in %                                                                                               |
+|         | lowBattery    | Switch      | yes       | ON: Low battery alert (< 20%)                                                                                    |
+| device  | alarm         | Trigger     | yes       | Trigger: `FLOOD` on flood alarm, `SENSOR_ERROR` on cable fault, `ALARM_MUTED` when muted via the physical button |
+
+### Shelly Presence Gen4 (thing-type: shellypluspresence)
+
+Mains-powered (USB-C) mmWave radar occupancy sensor.
+`presence` and `objectCount` are pushed in real time when the device reports a change and are also refreshed on every poll cycle.
+The remaining channels are updated on the poll cycle.
+The device supports up to 10 detection zones.
+The binding reports the zone that is selected as main zone in the Shelly App, which is the same zone the device uses for its own presence indication.
+Readings from the other zones are not published.
+
+| Group   | Channel      | Type               | read-only | Description                                                   |
+| ------- | ------------ | ------------------ | --------- | ------------------------------------------------------------- |
+| sensors | presence     | Switch             | yes       | ON: Occupancy detected in the main detection zone              |
+|         | objectCount  | Number             | yes       | Number of persons/objects currently detected in the main zone  |
+|         | lux          | Number:Illuminance | yes       | Brightness in Lux (see note below)                              |
+|         | illumination | String             | yes       | Ambient light class (dark / twilight / bright)                 |
+|         | lastUpdate   | DateTime           | yes       | Timestamp of the last update                                   |
+| control | sensorEnable | Switch             | r/w       | Enable or disable the mmWave radar sensor                      |
+
+Real Presence Gen4 hardware never reports a numeric lux value, only the `illumination` class - `lux` stays `NULL`/undefined.
+
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
-|Group  | Channel     |Type     |read-only  |Description                                                                        |
-|-------|-------------|---------|-----------|-----------------------------------------------------------------------------------|
-| relay | brightness  | Dimmer  | r/w       | Currently selected brightness.                                                    |
-|       | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| Group | Channel      | Type     | read-only | Description                                                            |
+| ----- | ------------ | -------- | --------- | ---------------------------------------------------------------------- |
+| relay | brightness   | Dimmer   | r/w       | Currently selected brightness.                                         |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App      |
+|       | input1       | Switch   | yes       | ON: Input/Button is powered, see general notes on channels             |
+|       | button1      | Trigger  | yes       | Event trigger, see section Button Events                               |
+|       | lastEvent1   | String   | yes       | Last event type (S/SS/SSS/L)                                           |
+|       | eventCount1  | Number   | yes       | Counter gets incremented every time the device issues a button event.  |
+|       | autoOn       | Number   | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff      | Number   | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                     |
+| meter | currentPower | Number   | yes       | Current power consumption in Watts                                     |
+|       | totalEnergy  | Number   | yes       | Total energy consumption in kWh                                        |
+|       | resetTotals  | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter        |
+|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                      |
+
+### Shelly Pro Dimmer 1PM (thing-type: shellyprodimmer1pm)
+
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay | brightness        | Dimmer   | r/w       | Currently selected brightness.                                                                     |
+|       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|       | input1            | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels                             |
+|       | button1           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+|       | lastEvent1        | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                                           |
+|       | eventCount1       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
+|       | input2            | Switch   | yes       | ON: Input/Button for input 2 is powered, see general notes on channels                             |
+|       | button2           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+|       | lastEvent2        | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                                           |
+|       | eventCount2       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
+|       | autoOn            | Number   | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|       | autoOff           | Number   | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|       | timerActive       | Switch   | yes       | ON: An auto-on/off timer is active                                                                 |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+
+`Note:`
+**Calibration required:** The output must be calibrated using the Shelly App or device Web UI before brightness commands can be used.
+Until calibration is complete the device rejects all brightness and transition commands.
+When a brightness command is rejected the device may still turn on at full brightness (100%) — this is device behaviour, not a binding issue.
+Use the `brightnessAutoOn` configuration option to control whether brightness > 0 turns the light on.
+totalEnergy might reset on restart depending on device type and firmware version.
+
+### Shelly Pro Dimmer 2PM (thing-type: shellyprodm2pm)
+
+The Pro Dimmer 2PM is a dual-channel dimmer.
+Each channel uses its own relay group (relay1/relay2) and power meter group (meter1/meter2).
+
+| Group  | Channel           | Type     | read-only | Description                                                                                        |
+| ------ | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay1 | brightness        | Dimmer   | r/w       | Channel 1: Currently selected brightness.                                                          |
+|        | outputName        | String   | yes       | Logical name of channel 1 output as configured in the Shelly App                                   |
+|        | input1            | Switch   | yes       | ON: Input/Button for channel 1 is powered, see general notes on channels                           |
+|        | button1           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+|        | lastEvent1        | String   | yes       | Last event type (S/SS/SSS/L) for channel 1 input                                                   |
+|        | eventCount1       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
+|        | autoOn            | Number   | r/w       | Sets a timer to turn channel 1 ON after every OFF command; in seconds                              |
+|        | autoOff           | Number   | r/w       | Sets a timer to turn channel 1 OFF after every ON command; in seconds                              |
+|        | timerActive       | Switch   | yes       | ON: An auto-on/off timer is active for channel 1                                                   |
+| relay2 |                   |          |           | Same channels as relay1, controlling channel 2                                                     |
+| meter1 | currentPower      | Number   | yes       | Channel 1: Current power consumption in Watts                                                      |
+|        | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|        | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|        | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|        | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|        | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|        | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|        | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+| meter2 |                   |          |           | Same channels as meter1, for channel 2 power measurement                                           |
+
+`Note:`
+**Calibration required:** The output must be calibrated using the Shelly App or device Web UI before brightness commands can be used.
+Until calibration is complete the device rejects all brightness and transition commands.
+When a brightness command is rejected the device may still turn on at full brightness (100%) — this is device behaviour, not a binding issue.
+Use the `brightnessAutoOn` configuration option to control whether brightness > 0 turns the light on.
+totalEnergy might reset on restart depending on device type and firmware version.
+
+### Shelly Pro Dimmer 0/1-10V PM (thing-type: shellyprodimmer10v)
+
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay | brightness        | Dimmer   | r/w       | Currently selected brightness (0-100%).                                                            |
+|       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|       | input1            | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels                             |
+|       | button1           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+|       | lastEvent1        | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                                           |
+|       | eventCount1       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
+|       | input2            | Switch   | yes       | ON: Input/Button for input 2 is powered, see general notes on channels                             |
+|       | button2           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+|       | lastEvent2        | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                                           |
+|       | eventCount2       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
+|       | autoOn            | Number   | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|       | autoOff           | Number   | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|       | timerActive       | Switch   | yes       | ON: An auto-on/off timer is active                                                                 |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+
+`Note:`
+The Pro Dimmer 0/1-10V PM controls external dimmable ballasts or LED drivers via a 0-10V or 1-10V control signal.
+**Calibration required:** The output must be calibrated using the Shelly App or device Web UI before brightness commands can be used.
+Until calibration is complete the device rejects all brightness and transition commands.
+When a brightness command is rejected the device may still turn on at full brightness (100%) — this is device behaviour, not a binding issue.
+Use the `brightnessAutoOn` configuration option to control whether brightness > 0 turns the light on.
+totalEnergy might reset on restart depending on device type and firmware version.
+
+### Shelly Plus RGBW PM (thing-type: shellyplusrgbwpm)
+
+The active device profile (`rgbw`, `rgb` or `light`) is selected in the Shelly App/device settings and determines which channel groups below are populated.
+Changing the profile requires deleting and re-discovering the Thing.
+
+In `rgbw` or `rgb` profile (color mode):
+
+| Group   | Channel        | Type         | read-only | Advanced | Description                                                             |
+| ------- | -------------- | ------------ | --------- | -------- | ----------------------------------------------------------------------- |
+| control | power          | Switch       | r/w       | yes      | Switch light ON/OFF                                                     |
+|         | brightness     | Multiple (*) | r/w       | yes      | Dimming control according to openHAB Light Control Convention           |
+|         | autoOn         | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff        | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds  |
+|         | timerActive    | Switch       | yes       |          | ON: An auto-on/off timer is active                                      |
+| color   | hsb            | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention   |
+|         | full           | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
+|         | red            | Dimmer       | r/w       | yes      | Red brightness: 0..100% (control only the red channel)                  |
+|         | green          | Dimmer       | r/w       | yes      | Green brightness: 0..100% (control only the green channel)              |
+|         | blue           | Dimmer       | r/w       | yes      | Blue brightness: 0..100% (control only the blue channel)                |
+|         | white          | Dimmer       | r/w       | yes      | White brightness: 0..100% (control only the white channel)              |
+| meter   | currentPower   | Number       | yes       |          | Current power consumption in Watts                                      |
+|         | energyHistMin1 | Number       | yes       |          | Total energy consumed during the previous complete minute (Wh)          |
+|         | totalEnergy    | Number       | yes       |          | Total energy consumption in kWh                                         |
+|         | lastUpdate     | DateTime     | yes       |          | Timestamp of the last measurement                                       |
+
+In `light` profile (white mode), each of the 4 LED output channels is exposed as its own group:
+
+| Group  | Channel     | Type         | read-only | Advanced | Description                                                                  |
+| ------ | ----------- | ------------ | --------- | -------- | ---------------------------------------------------------------------------- |
+| light1 | brightness  | Multiple (*) | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention  |
+|        | autoOn      | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds       |
+|        | autoOff     | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds       |
+|        | timerActive | Switch       | yes       |          | ON: An auto-on/off timer is active                                           |
+| light2 |             |              |           |          | Same for LED light 2                                                         |
+| light3 |             |              |           |          | Same for LED light 3                                                         |
+| light4 |             |              |           |          | Same for LED light 4                                                         |
+| meter  |             |              |           |          | Same as color mode, see above                                                |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
+
+### Shelly Pro RGBWW PM (thing-type: shellyprorgbwwpm)
+
+The active device profile (`light`, `rgbcct`, `cctx2` or `rgbx2light`) is selected in the Shelly App/device settings and determines which channel groups below are populated.
+Changing the profile requires deleting and re-discovering the Thing.
+
+In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color component (color mode):
+
+| Group   | Channel       | Type         | read-only | Advanced | Description                                                             |
+| ------- | ------------- | ------------ | --------- | -------- | ----------------------------------------------------------------------- |
+| control | power         | Switch       | r/w       | yes      | Switch light ON/OFF                                                     |
+|         | brightness    | Multiple (*) | r/w       | yes      | Dimming control according to openHAB Light Control Convention           |
+|         | autoOn        | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff       | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds  |
+|         | timerActive   | Switch       | yes       |          | ON: An auto-on/off timer is active                                      |
+| color   | hsb           | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention   |
+|         | full          | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"    |
+|         | red           | Dimmer       | r/w       | yes      | Red brightness: 0..100% (control only the red channel)                  |
+|         | green         | Dimmer       | r/w       | yes      | Green brightness: 0..100% (control only the green channel)              |
+|         | blue          | Dimmer       | r/w       | yes      | Blue brightness: 0..100% (control only the blue channel)                |
+| meter1  | currentPower  | Number       | yes       |          | Current power consumption in Watts                                      |
+|         | energyAvg1Min | Number       | yes       |          | Energy consumed in the previous minute (Wh)                             |
+|         | totalEnergy   | Number       | yes       |          | Total energy consumption in kWh                                         |
+|         | lastUpdate    | DateTime     | yes       |          | Timestamp of the last measurement                                       |
+
+`Note`:
+`rgbcct` and `rgbx2light` combine the RGB component above with additional CCT (`rgbcct`) or Light
+(`rgbx2light`) components. Each additional component is exposed as its own `light1`/`light2` group
+(same layout as the `light` profile below) with its own independent meter (`meter2`/`meter3`).
+Since every profile has more than one meter, the device also gets the aggregated `device#accumulatedPower`/`device#totalEnergy` channels described in the general notes on channels above.
+
+In `light` profile (white mode), each of the 5 LED output channels is exposed as its own group:
+
+| Group  | Channel     | Type         | read-only | Advanced | Description                                                                 |
+| ------ | ----------- | ------------ | --------- | -------- | --------------------------------------------------------------------------- |
+| light1 | brightness  | Multiple (*) | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention |
+|        | autoOn      | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
+|        | autoOff     | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
+|        | timerActive | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
+| light2 |             |              |           |          | Same for LED light 2                                                        |
+| light3 |             |              |           |          | Same for LED light 3                                                        |
+| light4 |             |              |           |          | Same for LED light 4                                                        |
+| light5 |             |              |           |          | Same for LED light 5                                                        |
+| meter1 |             |              |           |          | Meter for LED light 1, see meter group in color mode above                  |
+| meter2 |             |              |           |          | Meter for LED light 2 (if configured)                                       |
+| meter3 |             |              |           |          | Meter for LED light 3 (if configured)                                       |
+| meter4 |             |              |           |          | Meter for LED light 4 (if configured)                                       |
+| meter5 |             |              |           |          | Meter for LED light 5 (if configured)                                       |
+
+In `cctx2` profile (dual color-temperature mode), the device exposes two independent CCT components (`CCT:0` and `CCT:1`), each controlling its own warm/cold white pair; they are each exposed as their own channel group, with its own independent meter:
+
+| Group  | Channel         | Type               | read-only | Advanced | Description                                                                          |
+| ------ | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
+| light1 | brightness      | Multiple (*)       | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention          |
+|        | temperature-pct | Multiple (*)       | r/w       |          | Color temperature percent control according to openHAB Light Control Convention      |
+|        | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+|        | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+|        | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
+|        | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
+| light2 |                 |                    |           |          | Same for CCT light 2                                                                 |
+| meter1 |                 |                    |           |          | Meter for CCT light 1, see meter group above                                         |
+| meter2 |                 |                    |           |          | Meter for CCT light 2, see meter group above                                         |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ## Shelly Plus Mini Series
 
@@ -1465,67 +2135,106 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | relay | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |       | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |       | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|       | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
 ### Shelly Plus 1PM Mini (thing-type: shelly1pmmini)
 
-| Group | Channel      | Type     | read-only | Description                                                                       |
-| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay | output       | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
-|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|       | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-|       | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                                |
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
+|       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|       | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|       | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|       | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
+|       | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+|       | frequency         | Number   | yes       | Grid frequency in Hertz (Hz)                                                                       |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Plus PM Mini (thing-type: shellypmmini)
 
-| Group | Channel      | Type     | read-only | Description                                                                       |
-| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-|       | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                                |
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+|       | frequency         | Number   | yes       | Grid frequency in Hertz (Hz)                                                                       |
 
-### Shelly Plus EM (thing-type: shellyemmini)
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
-| Group  | Channel       | Type     | read-only | Description                                                                       |
-| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
-|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
-|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
-| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
+### Shelly Plug PM Gen3 (thing-type: shellyplusplugpm)
+
+The Plug PM Gen3 measures power only, it has no relay to switch.
+
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+|       | voltage           | Number   | yes       | Voltage in Volt (V)                                                                                |
+|       | current           | Number   | yes       | Current in Ampere (A)                                                                              |
+|       | frequency         | Number   | yes       | Grid frequency in Hertz (Hz)                                                                       |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
+
+### Shelly EM Mini (thing-type: shellyemmini)
+
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | frequency      | Number       | yes       | Grid frequency (Hz)                                                               |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | frequency      | Number       | yes       | Grid frequency (Hz)                                                               |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
 
 ## Shelly Pro Series
 
@@ -1543,43 +2252,54 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | button2     | Trigger | yes       | Event trigger, see section Button Events                                          |
 |       | lastEvent2  | String  | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
 |       | eventCount2 | Number  | yes       | Counter gets incremented every time the device issues a button event.             |
-|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|       | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 
-## Shelly BLU Gateway, BLU Gateway 3 (thing-type: shellyblugw)
+### Shelly BLU Gateway, BLU Gateway 3 (thing-type: shellyblugw)
 
 There are no additional channels besides the device group.
 
 ### Shelly Pro 1 PM (thing-type: shellypro1pm)
 
-| Group | Channel      | Type     | read-only | Description                                                                       |
-| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|       | input1       | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels            |
-|       | button1      | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|       | lastEvent1   | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                          |
-|       | eventCount1  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|       | input2       | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels          |
-|       | button2      | Trigger  | yes       | Event trigger, see section Button Events                                          |
-|       | lastEvent2   | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
-|       | eventCount2  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay | output            | Switch   | r/w       | Controls the relay's output channel (on/off)                                                       |
+|       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|       | input1            | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels                             |
+|       | button1           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+|       | lastEvent1        | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                                           |
+|       | eventCount1       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
+|       | input2            | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels                           |
+|       | button2           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+|       | lastEvent2        | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                                           |
+|       | eventCount2       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
+|       | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|       | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
 
-### Shelly Pro 1CB (thing-type: shellypro1cb)
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
-| Group | Channel      | Type     | read-only | Description                                                                      |
-| ----- | ------------ | -------- | --------- | -------------------------------------------------------------------------------- |
-| relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                     |
-|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                |
-| meter | voltage      | Number   | yes       | RMS voltage, Volts                                                               |
+### Shelly Pro CB (thing-type: shellyprocb, shellypro1cb)
+
+| Group | Channel    | Type   | read-only | Description                                                       |
+| ----- | ---------- | ------ | --------- | ----------------------------------------------------------------- |
+| relay | output     | Switch | r/w       | Controls the relay's output channel (on/off)                      |
+|       | outputName | String | yes       | Logical name of this relay output as configured in the Shelly App |
+| meter | voltage    | Number | yes       | RMS voltage, Volts                                                |
+
+All models have a single circuit breaker in group `relay`.
+A model with one voltmeter reports the voltage in group `meter`, a model with several voltmeters uses `meter1`..`meter3`.
+New things are created as `shellyprocb`, existing `shellypro1cb` things keep working.
 
 ### Shelly Pro 2 (thing-type: shellypro2-relay)
 
@@ -1588,56 +2308,70 @@ There are no additional channels besides the device group.
 | relay1 | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 | relay2 | output      | Switch  | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
 ### Shelly Pro 2 PM - relay mode (thing-type: shellypro2pm-relay)
 
-| Group  | Channel      | Type     | read-only | Description                                                                       |
-| ------ | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay1 | output       | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
-|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| relay2 | output       | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
-|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn       | Number   | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff      | Number   | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
-|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| meter  | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|        | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group  | Channel           | Type     | read-only | Description                                                                                        |
+| ------ | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| relay1 | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
+|        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|        | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|        | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
+|        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| relay2 | output            | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                                             |
+|        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
+|        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|        | autoOn            | Number   | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|        | timerActive       | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                                       |
+|        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
+| meter  | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|        | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|        | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|        | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|        | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|        | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|        | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|        | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Pro 2 PM - roller mode (thing-type: shellypro2pm-roller)
 
-| Group  | Channel      | Type          | read-only | Description                                                                          |
-| ------ | ------------ | ------------- | --------- | ------------------------------------------------------------------------------------ |
-| roller | control      | Rollershutter | r/w       | can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close) |
-|        | rollerPos    | Dimmer        | r/w       | Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
-|        | input        | Switch        | yes       | ON: Input/Button is powered, see General Notes on Channels                           |
-|        | state        | String        | yes       | Roller state: open/close/stop                                                        |
-|        | stopReason   | String        | yes       | Last stop reasons: normal, safety_switch or obstacle                                 |
-|        | safety       | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off              |
-|        | event        | Trigger       | yes       | Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
-| meter  | currentWatts | Number        | yes       | Current power consumption in Watts                                                   |
-|        | lastPower1   | Number        | yes       | Energy consumption for a round minute, 1 minute  ago                                 |
-|        | totalKWH     | Number        | yes       | Total energy consumption in kwh since the device powered up (resets on restart)      |
-|        | lastUpdate   | DateTime      | yes       | Timestamp of the last measurement                                                    |
+| Group  | Channel           | Type          | read-only | Description                                                                                        |
+| ------ | ----------------- | ------------- | --------- | -------------------------------------------------------------------------------------------------- |
+| roller | control           | Rollershutter | r/w       | can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)               |
+|        | rollerPos         | Dimmer        | r/w       | Roller position: 100%=open...0%=closed; gets updated when the roller stopped                       |
+|        | input             | Switch        | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
+|        | state             | String        | yes       | Roller state: open/close/stop                                                                      |
+|        | stopReason        | String        | yes       | Last stop reasons: normal, safety_switch or obstacle                                               |
+|        | safety            | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off                            |
+|        | event             | Trigger       | yes       | Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP                         |
+| meter  | currentPower      | Number        | yes       | Current power consumption in Watts                                                                 |
+|        | energyHistMin1    | Number        | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|        | energyHistMin2    | Number        | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|        | energyHistMin3    | Number        | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|        | energyAvgLast3Min | Number        | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|        | totalEnergy       | Number        | yes       | Total energy consumption in kWh                                                                    |
+|        | resetTotals       | Switch        | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|        | lastUpdate        | DateTime      | yes       | Timestamp of the last measurement                                                                  |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Pro 3 (thing-type: shellypro3)
 
@@ -1646,99 +2380,104 @@ There are no additional channels besides the device group.
 | relay1 | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 | relay2 | output      | Switch  | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 | relay3 | output      | Switch  | r/w       | Relay #3: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #3: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #3: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #3: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #3: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #3: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Relay #3:  Event trigger, see section Button Events                               |
 
 ### Shelly Pro 3EM (thing-type: shellypro3em)
 
-| Group  | Channel       | Type     | read-only | Description                                                                       |
-| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| Group  | Channel        | Type         | read-only | Description                        |
+| ------ | -------------- | ------------ | --------- | ---------------------------------- |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh    |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh         |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR) |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)  |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                 |
+|        | current        | Number       | yes       | Current in A                       |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)         |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement  |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh    |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh         |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR) |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)  |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                 |
+|        | current        | Number       | yes       | Current in A                       |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)         |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement  |
+| meter3 | currentPower   | Number       | yes       | Current power consumption in Watts |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh    |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh         |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR) |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)  |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                 |
+|        | current        | Number       | yes       | Current in A                       |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)         |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement  |
 
 ### Shelly Pro EM-50 (thing-type: shellyproem50)
 
-| Group  | Channel       | Type     | read-only | Description                                                                       |
-| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
-|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| relay  | output        | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
-|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input         | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| relay  | output         | Switch       | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
 
-## Shelly Pro 4PM (thing-type: shelly4pro)
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
-| Group  | Channel     | Type    | read-only | Description                                                                         |
-| ------ | ----------- | ------- | --------- | ----------------------------------------------------------------------------------- |
-| relay1 |             |         | r/w       | Relay #1 with control options and status values                                     |
-| relay2 |             |         | r/w       | Relay #2 with control options and status values                                     |
-| relay3 |             |         | r/w       | Relay #3 with control options and status values                                     |
-| relay4 |             |         | r/w       | Relay #4 with control options and status values                                     |
-| meter1 |             |         | r/w       | Power Meter #1 with measurement values                                              |
-| meter2 |             |         | r/w       | Power Meter #2 with measurement values                                              |
-| meter3 |             |         | r/w       | Power Meter #3 with measurement values                                              |
-| meter4 |             |         | r/w       | Power Meter #4 with measurement values                                              |
+### Shelly Pro 4PM (thing-type: shellypro4pm)
+
+| Group  | Channel | Type | read-only | Description                                     |
+| ------ | ------- | ---- | --------- | ----------------------------------------------- |
+| relay1 |         |      | r/w       | Relay #1 with control options and status values |
+| relay2 |         |      | r/w       | Relay #2 with control options and status values |
+| relay3 |         |      | r/w       | Relay #3 with control options and status values |
+| relay4 |         |      | r/w       | Relay #4 with control options and status values |
+| meter1 |         |      | r/w       | Power Meter #1 with measurement values          |
+| meter2 |         |      | r/w       | Power Meter #2 with measurement values          |
+| meter3 |         |      | r/w       | Power Meter #3 with measurement values          |
+| meter4 |         |      | r/w       | Power Meter #4 with measurement values          |
 
 ## Shelly BLU Devices
 
@@ -1756,7 +2495,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-## Shelly BLU Wall Switch 4 (thing-type: shellybluwallswitch4)
+### Shelly BLU Wall Switch 4 (thing-type: shellybluwallswitch4)
 
 See notes on discovery of Shelly BLU devices above.
 
@@ -1782,7 +2521,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-## Shelly BLU RC Button 4 (thing-type: shellyblurcbutton4)
+### Shelly BLU RC Button 4 (thing-type: shellyblurcbutton4)
 
 See notes on discovery of Shelly BLU devices above.
 
@@ -1808,7 +2547,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-## Shelly BLU Door/Window Sensor (thing-type: shellybludw)
+### Shelly BLU Door/Window Sensor (thing-type: shellybludw)
 
 See notes on discovery of Shelly BLU devices above.
 
@@ -1828,19 +2567,19 @@ See notes on discovery of Shelly BLU devices above.
 
 See notes on discovery of Shelly BLU devices above.
 
-| Group   | Channel       | Type     | read-only | Description                                                                         |
-| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
-| sensors | motion        | Switch   | yes       | ON: Motion detected                                                                 |
-| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
-|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
-| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+| Group   | Channel       | Type   | read-only | Description                                                                         |
+| ------- | ------------- | ------ | --------- | ----------------------------------------------------------------------------------- |
+| sensors | motion        | Switch | yes       | ON: Motion detected                                                                 |
+| battery | batteryLevel  | Number | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-### Shelly BLU H&T(thing-type: shellybluht)
+### Shelly BLU H&T (thing-type: shellybluht)
 
 See notes on discovery of Shelly BLU devices above.
 
 | Group   | Channel      | Type     | read-only | Description                                                           |
-|---------|--------------|----------|-----------|-----------------------------------------------------------------------|
+| ------- | ------------ | -------- | --------- | --------------------------------------------------------------------- |
 | sensors | temperature  | Number   | yes       | Temperature, unit is reported by tempUnit                             |
 |         | humidity     | Number   | yes       | Relative humidity in %                                                |
 |         | eventCount   | Number   | yes       | Counter gets incremented every time the device issues a button event. |
@@ -1849,17 +2588,17 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                                    |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                                             |
 
-### Shelly BLU Distance(thing-type: shellybludistance)
+### Shelly BLU Distance (thing-type: shellybludistance)
 
 See notes on discovery of Shelly BLU devices above.
 
-| Group   | Channel       | Type     | read-only | Description                                                                         |
-| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
-| sensors | distance      | Number   | yes       | Distance in mm                                                                      |
-|         | vibration     | Switch   | yes       | ON: Vibration detected                                                              |
-| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
-|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
-| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+| Group   | Channel       | Type   | read-only | Description                                                                         |
+| ------- | ------------- | ------ | --------- | ----------------------------------------------------------------------------------- |
+| sensors | distance      | Number | yes       | Distance in mm                                                                      |
+|         | vibration     | Switch | yes       | ON: Vibration detected                                                              |
+| battery | batteryLevel  | Number | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
 ### Shelly BLU Remote (thing-type: shellybluremote)
 
@@ -1884,6 +2623,55 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
+### Ecowitt WS90 Weather Station (Shelly BLU) (thing-type: shellybluws90)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel          | Type                     | read-only | Description                                                                         |
+| ------- | ---------------- | ------------------------ | --------- | ----------------------------------------------------------------------------------- |
+| sensors | temperature      | Number:Temperature       | yes       | Temperature in degrees Celsius                                                      |
+|         | humidity         | Number:Dimensionless     | yes       | Relative humidity in %                                                              |
+|         | uvIndex          | Number                   | yes       | UV Index (dimensionless, 0-11+)                                                     |
+|         | lux              | Number:Illuminance       | yes       | Brightness in Lux (created once the device reports a value)                         |
+|         | windSpeed        | Number:Speed             | yes       | Wind speed in m/s                                                                   |
+|         | windDirection    | Number:Angle             | yes       | Wind direction in degrees (0-360)                                                   |
+|         | windDirectionStr | String                   | yes       | Wind direction as 16-point compass rose label (N, NNE, NE, ...)                     |
+|         | gustSpeed        | Number:Speed             | yes       | Wind gust speed in m/s                                                              |
+|         | pressure         | Number:Pressure          | yes       | Atmospheric pressure in hPa                                                         |
+|         | seaLevelPressure | Number:Pressure          | yes       | Atmospheric pressure reduced to sea level using the `altitude` configuration        |
+|         | dewPoint         | Number:Temperature       | yes       | Dew point in degrees Celsius                                                        |
+|         | apparentTemp     | Number:Temperature       | yes       | Perceived ("feels like") temperature from temperature, humidity and wind (Steadman) |
+|         | rainStatus       | Switch                   | yes       | ON: It's raining, OFF: It's not raining                                             |
+|         | precipitation    | Number:Length            | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
+|         | lastUpdate       | DateTime                 | yes       | Timestamp of the last update (any sensor value changed)                             |
+| battery | batteryLevel     | Number                   | yes       | Battery Level in %                                                                  |
+|         | lowBattery       | Switch                   | yes       | Low battery alert (< 20%)                                                           |
+|         | capacitorVoltage | Number:ElectricPotential | yes       | Voltage of the internal energy storage capacitor charged by the solar panel in V    |
+| device  | gatewayDevice    | String                   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+|         | firmware         | String                   | yes       | Firmware version (may be empty — not all firmware versions report it)               |
+
+The `rainStatus` channel latches ON for a while after it has actually stopped raining, a hardware behavior of the WS90's piezo rain sensor rather than a binding issue.
+
+The WS90 reports additional metrics (hourly/24h rainfall totals, all-time high/low records) that are not exposed as channels.
+These are cumulative statistics tracked by the sensor itself rather than live measurements, and are better handled with openHAB's own persistence/rules (e.g. via `rrd4j` or `influxdb` on `precipitation`/`temperature`) than duplicated as binding channels.
+
+See [WS90 Weather Station: Setup and Rain Automation with openHAB](doc/UseCaseWS90WeatherStation.md) for a tutorial covering setup, this firmware behavior, and example rules for reliable rain detection and deriving 1h/24h rainfall totals via openHAB persistence.
+
+A debounced "is it raining" switch (holding ON for a while after `rainStatus` turns OFF) can be built with a small rule instead of a binding feature:
+
+```java
+rule "WS90 Rain Switch with hold-off"
+when
+    Item ShellyWS90_RainStatus changed
+then
+    if (ShellyWS90_RainStatus.state == ON) {
+        RainSwitch.postUpdate(ON)
+    } else {
+        createTimer(now.plusMinutes(10), [ | RainSwitch.postUpdate(OFF) ])
+    }
+end
+```
+
 ## Shelly Wall Displays
 
 | Group   | Channel     | Type     | read-only | Description                                                                       |
@@ -1891,8 +2679,8 @@ See notes on discovery of Shelly BLU devices above.
 | relay   | output      | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
 |         | outputName  | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |         | input       | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|         | autoOn      | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff     | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | autoOn      | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff     | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |         | timerActive | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |         | button      | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | sensors | temperature | Number   | yes       | Temperature reported by the integrated sensor                                     |
@@ -1946,7 +2734,7 @@ Switch DimmerSwitch     "Light on/off"                       {channel="shelly:sh
 Dimmer DimmerBrightness "Garage Light Brightness"            {channel="shelly:shellydimmer:XXX:relay#brightness"}
 Dimmer DimmerIncDec     "Garage Light +/-"                   {channel="shelly:shellydimmer:XXX:relay#brightness"}
 
-Number Shelly_Power     "Bath Room Light Power"                {channel="shelly:shelly1:XXXXXX:meter#currentWatts"} /* Power Meter */
+Number Shelly_Power     "Bath Room Light Power"                {channel="shelly:shelly1:XXXXXX:meter#currentPower"} /* Power Meter */
 
 ```
 

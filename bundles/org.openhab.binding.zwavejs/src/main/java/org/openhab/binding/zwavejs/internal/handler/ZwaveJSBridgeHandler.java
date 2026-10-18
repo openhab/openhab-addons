@@ -25,8 +25,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.naming.CommunicationException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
@@ -46,6 +44,7 @@ import org.openhab.binding.zwavejs.internal.api.dto.messages.BaseMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.VersionMessage;
+import org.openhab.binding.zwavejs.internal.api.exception.CommunicationException;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSBridgeConfiguration;
 import org.openhab.binding.zwavejs.internal.discovery.NodeDiscoveryService;
 import org.openhab.core.io.net.http.WebSocketFactory;
@@ -118,8 +117,6 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             stopInitialConnectionJob();
         } catch (CommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
@@ -180,9 +177,13 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                     }
                     break;
                 case "value updated":
-                case "value notification":
                     if (nodeListener != null) {
                         nodeListener.onNodeStateChanged(eventMsg.event);
+                    }
+                    break;
+                case "value notification":
+                    if (nodeListener != null) {
+                        nodeListener.onNodeStateChanged(normalizeValueNotification(eventMsg.event));
                     }
                     break;
                 case "alive":
@@ -228,6 +229,21 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
         normalizedEvent.args.newValue = new Gson().toJson(event.args);
         normalizedEvent.nodeId = event.nodeId;
         return normalizedEvent;
+    }
+
+    /**
+     * "value notification" events report stateless CC values (e.g. Central Scene or Scene Activation).
+     * Unlike "value updated" events they carry the datum in {@code args.value}; copy it to
+     * {@code args.newValue} so downstream handling is identical for both event types.
+     *
+     * @param event the incoming value notification event
+     * @return the same event with {@code args.newValue} populated
+     */
+    static Event normalizeValueNotification(Event event) {
+        if (event.args != null && event.args.newValue == null) {
+            event.args.newValue = event.args.value;
+        }
+        return event;
     }
 
     private @Nullable Event createEventFromMessageId(String messageId, @Nullable Object value) {
@@ -413,11 +429,21 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                 .toArray();
     }
 
-    private static Object convertValueType(String value) {
+    /**
+     * Converts a string value to a Boolean, Double or String, in that order of precedence.
+     * Package-private (rather than private) so it can be unit tested directly.
+     */
+    static Object convertValueType(String value) {
+        String trimmed = value.trim();
+
+        if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
+            return Boolean.parseBoolean(trimmed);
+        }
+
         try {
-            return Double.parseDouble(value.trim());
+            return Double.parseDouble(trimmed);
         } catch (NumberFormatException e) {
-            return value;
+            return trimmed;
         }
     }
 }

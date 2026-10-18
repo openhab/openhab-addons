@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,6 +63,7 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
     protected List<String> allChannels = new ArrayList<>();
 
     private @Nullable ScheduledFuture<?> refreshJob;
+    private final AtomicInteger refreshGeneration = new AtomicInteger();
 
     public GoEChargerBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -122,41 +124,60 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
     protected void updateChannelsAndStatus(@Nullable GoEStatusResponseBaseDTO goeResponse, @Nullable String message) {
     }
 
-    private void refresh() {
+    private void refresh(int generation) {
         // Request new GoE data and update channels/status
         try {
             synchronized (this) {
                 GoEStatusResponseBaseDTO goeResponse = getGoEData();
-                updateChannelsAndStatus(goeResponse, null);
+                if (isCurrent(generation)) {
+                    updateChannelsAndStatus(goeResponse, null);
+                }
             }
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
-            updateChannelsAndStatus(null, ie.getMessage());
         } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
-            logger.warn("Error fetching GoE data: {}", e.getMessage(), e);
-            updateChannelsAndStatus(null, e.getMessage());
+            if (isCurrent(generation)) {
+                logger.warn("Error fetching GoE data: {}", e.getMessage(), e);
+                updateChannelsAndStatus(null, e.getMessage());
+            }
         } catch (IllegalArgumentException e) {
-            logger.debug("Invalid configuration getting data: {}", e.toString());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            if (isCurrent(generation)) {
+                logger.debug("Invalid configuration getting data: {}", e.toString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            }
+        } catch (RuntimeException e) {
+            // scheduleWithFixedDelay silently stops the periodic execution once an exception escapes the task.
+            // An unexpected value in a single response must not kill the refresh job for good.
+            if (isCurrent(generation)) {
+                logger.warn("Unexpected error while refreshing go-e Charger data", e);
+                updateChannelsAndStatus(null, e.toString());
+            }
         }
+    }
+
+    // A refresh that was started before dispose() must not publish into a re-initialized handler.
+    private boolean isCurrent(int generation) {
+        return generation == refreshGeneration.get();
     }
 
     private void startAutomaticRefresh() {
         ScheduledFuture<?> refreshJob = this.refreshJob;
-        if (refreshJob != null && !refreshJob.isCancelled()) {
+        if (refreshJob != null && !refreshJob.isDone()) {
             logger.debug("Refresh job is already running, not starting a new one.");
             return;
         }
 
         int delay = config.refreshInterval.intValue();
         logger.debug("Running refresh job with delay {} s", delay);
-        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, delay, TimeUnit.SECONDS);
+        int generation = refreshGeneration.get();
+        this.refreshJob = scheduler.scheduleWithFixedDelay(() -> refresh(generation), 0, delay, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing the Go-eCharger handler.");
 
+        refreshGeneration.incrementAndGet();
         final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);

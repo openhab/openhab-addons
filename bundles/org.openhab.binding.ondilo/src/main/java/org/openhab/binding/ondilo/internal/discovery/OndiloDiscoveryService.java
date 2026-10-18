@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link OndiloDiscoveryService} is responsible for discovering new devices
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class OndiloDiscoveryService extends AbstractDiscoveryService {

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.handler;
 
-import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.CHANNEL_RESET;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -509,8 +509,8 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     updateStatus(ThingStatus.ONLINE);
                     DeviceConfig config = getConfigAs(DeviceConfig.class);
                     if (!filledDescription && config.getFetch()) {
-                        Future<?> descriptionJob = this.descriptionJob;
-                        if (descriptionJob == null || descriptionJob.isCancelled()) {
+                        Future<?> currentDescriptionJob = this.descriptionJob;
+                        if (currentDescriptionJob == null || currentDescriptionJob.isCancelled()) {
                             long initialDelay = Math.round(config.getPingInterval() * random.nextFloat());
                             this.descriptionJob = getBackgroundScheduler().schedule(() -> {
                                 filledDescription = describeDevice(address);
@@ -537,17 +537,22 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         DeviceConfig config = getConfigAs(DeviceConfig.class);
         try {
             if (!config.getAddress().isEmpty()) {
-                updateStatus(ThingStatus.UNKNOWN);
                 address = new IndividualAddress(config.getAddress());
 
                 long pingInterval = config.getPingInterval();
-                long initialPingDelay = Math.round(INITIAL_PING_DELAY * random.nextFloat());
+                if (pingInterval <= 0) {
+                    logger.debug("Polling disabled for '{}' (pingInterval={})", getThing().getUID(), pingInterval);
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.UNKNOWN);
+                    long initialPingDelay = Math.round(INITIAL_PING_DELAY * random.nextFloat());
 
-                ScheduledFuture<?> pollingJob = this.pollingJob;
-                if ((pollingJob == null || pollingJob.isCancelled())) {
-                    logger.debug("'{}' will be polled every {}s", getThing().getUID(), pingInterval);
-                    this.pollingJob = getBackgroundScheduler().scheduleWithFixedDelay(this::pollDeviceStatus,
-                            initialPingDelay, pingInterval, TimeUnit.SECONDS);
+                    ScheduledFuture<?> currentPollingJob = this.pollingJob;
+                    if ((currentPollingJob == null || currentPollingJob.isCancelled())) {
+                        logger.debug("'{}' will be polled every {}s", getThing().getUID(), pingInterval);
+                        this.pollingJob = getBackgroundScheduler().scheduleWithFixedDelay(this::pollDeviceStatus,
+                                initialPingDelay, pingInterval, TimeUnit.SECONDS);
+                    }
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);

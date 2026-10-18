@@ -53,14 +53,14 @@ public class BindingCluster extends BaseCluster {
          */
         public Integer endpoint; // endpoint-no
         /**
-         * This field is the cluster ID (client &amp; server) on the local and target endpoint(s). If this field is
-         * present, the client cluster shall also exist on this endpoint (with this Binding cluster). If this field is
-         * present, the target shall be this cluster on the target endpoint(s).
+         * This field is the cluster ID (client & server) on the local and target endpoint(s). If this field is present,
+         * the client cluster shall also exist on this endpoint (with this Binding cluster). If this field is present,
+         * the target shall be this cluster on the target endpoint(s).
          */
-        public Integer cluster; // cluster-id
+        public Long cluster; // cluster-id
         public Integer fabricIndex; // FabricIndex
 
-        public TargetStruct(BigInteger node, Integer group, Integer endpoint, Integer cluster, Integer fabricIndex) {
+        public TargetStruct(BigInteger node, Integer group, Integer endpoint, Long cluster, Integer fabricIndex) {
             this.node = node;
             this.group = group;
             this.endpoint = endpoint;

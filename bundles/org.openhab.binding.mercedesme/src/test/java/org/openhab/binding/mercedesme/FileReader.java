@@ -18,6 +18,9 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -40,6 +43,19 @@ public class FileReader {
             return buf.toString();
         } catch (IOException e) {
             // fail if file cannot be read
+            fail();
+        }
+        return "ERR";
+    }
+
+    /**
+     * Reads a file into a String preserving its original line breaks, unlike {@link #readFileInString(String)},
+     * whose line concatenation would merge adjacent protobuf TextFormat fields into one bogus token.
+     */
+    public static String readRawFileInString(String filename) {
+        try {
+            return Files.readString(Path.of(filename), StandardCharsets.UTF_8);
+        } catch (IOException e) {
             fail();
         }
         return "ERR";

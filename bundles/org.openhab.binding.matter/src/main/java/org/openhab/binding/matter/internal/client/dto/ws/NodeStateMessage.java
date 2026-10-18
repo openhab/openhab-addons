@@ -14,6 +14,8 @@ package org.openhab.binding.matter.internal.client.dto.ws;
 
 import java.math.BigInteger;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * NodeStateMessage
  *
@@ -22,4 +24,9 @@ import java.math.BigInteger;
 public class NodeStateMessage {
     public BigInteger nodeId;
     public NodeState state;
+    /**
+     * Physical device properties forwarded by the bridge on Connected events.
+     * Null for non-Connected events and for older bridges that do not emit it.
+     */
+    public @Nullable PhysicalDeviceProperties physicalProperties;
 }

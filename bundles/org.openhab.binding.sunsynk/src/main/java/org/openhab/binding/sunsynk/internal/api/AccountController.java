@@ -44,7 +44,6 @@ import org.openhab.binding.sunsynk.internal.api.dto.Details;
 import org.openhab.binding.sunsynk.internal.api.dto.Inverter;
 import org.openhab.binding.sunsynk.internal.api.dto.SunSynkLogin;
 import org.openhab.binding.sunsynk.internal.api.dto.SunSynkPublicKey;
-import org.openhab.binding.sunsynk.internal.api.dto.TokenRefresh;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkAuthenticateException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkClientAuthenticateException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkInverterDiscoveryException;
@@ -68,7 +67,6 @@ public class AccountController {
     private static final int TIMEOUT_IN_MS = 4000;
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
     private static final String BEARER_TYPE = "Bearer ";
-    private static final long EXPIRYSECONDS = 100L; // 100 seconds before expiry
     private static final String SECRET_KEY = "POWER_VIEW"; // Is the SunSynk Connect App secret key
     private static final String SOURCE = "sunsynk"; // Is the SunSynk Connect App source identifier
     private Client sunAccount = new Client();
@@ -86,7 +84,7 @@ public class AccountController {
      * @throws SunSynkAuthenticateException
      * @throws SunSynkTokenException
      */
-    public void clientAuthenticate(String username, String userPassword)
+    public void clientAuthenticate(String userName, String userPassword)
             throws SunSynkClientAuthenticateException, SunSynkAuthenticateException {
         long nonce = Instant.now().toEpochMilli();
         String signSource = "nonce=" + nonce + "&source=" + SOURCE + SECRET_KEY;
@@ -94,7 +92,7 @@ public class AccountController {
             String authEndpoint = "nonce=" + nonce + "&source=" + SOURCE + "&sign=" + getSign(signSource);
             httpGetPublicKey(authEndpoint);
             String encryptedPassword = getEncryptPassword(userPassword, this.publicKey.getPublicKey());
-            userAuthenticate(username, encryptedPassword);
+            userAuthenticate(userName, encryptedPassword);
         } catch (NoSuchAlgorithmException e) {
             throw new SunSynkClientAuthenticateException("Error attempting to authenticate client:" + e.getMessage());
         } catch (NoSuchPaddingException e) {
@@ -142,25 +140,15 @@ public class AccountController {
     }
 
     /**
-     * Checks if a Sunsynk Connect account token is expired and gets a new one if required.
+     * calculates the time until the Sunsynk Connect account token is expired.
      * 
-     * @param username
+     * @return long, seconds remaining on bearer token.
      * @throws SunSynkAuthenticateException
-     * @throws SunSynkTokenException
      */
-    public void refreshAccount(String username) throws SunSynkAuthenticateException, SunSynkTokenException {
-        Long expiresIn = this.sunAccount.getExpiresIn();
-        Long issuedAt = this.sunAccount.getIssuedAt();
-        if ((issuedAt + expiresIn) - Instant.now().getEpochSecond() > EXPIRYSECONDS) {
-            logger.debug("Account configuration token not expired.");
-            return;
-        }
-        if (this.sunAccount.getRefreshTokenString().isEmpty()) {
-            throw new SunSynkTokenException("No refresh token available, re-authentication required.");
-        }
-        logger.debug("Account configuration token expired : {}", this.sunAccount.getData().toString());
-        String payload = makeRefreshBody(username, this.sunAccount.getRefreshTokenString());
-        httpTokenPost(payload);
+    public long checkExpireTime() throws SunSynkAuthenticateException {
+        long expiresIn = this.sunAccount.getExpiresIn();
+        long issuedAt = this.sunAccount.getIssuedAt();
+        return (issuedAt + expiresIn) - Instant.now().getEpochSecond();
     }
 
     private void httpGetPublicKey(String endpoint) throws SunSynkClientAuthenticateException, JsonSyntaxException {
@@ -306,12 +294,6 @@ public class AccountController {
         Gson gson = new Gson();
         SunSynkLogin login = new SunSynkLogin(username, password, signature, nonce);
         return gson.toJson(login);
-    }
-
-    private static String makeRefreshBody(String username, String refreshToken) {
-        Gson gson = new Gson();
-        TokenRefresh refresh = new TokenRefresh(username, refreshToken);
-        return gson.toJson(refresh);
     }
 
     private void getToken() throws SunSynkAuthenticateException {

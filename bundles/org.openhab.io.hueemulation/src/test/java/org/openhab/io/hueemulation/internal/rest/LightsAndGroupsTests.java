@@ -333,6 +333,25 @@ public class LightsAndGroupsTests {
     }
 
     @Test
+    public void changeOnAndInvalidBriValues() throws Exception {
+        HueLightEntry hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        HueStateColorBulb stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(false));
+        assertThat(stateColorBulb.bri, is(1));
+
+        String body = "{'on':true,'bri':0}";
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("success"));
+        hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(true));
+        assertThat(stateColorBulb.bri, is(1));
+    }
+
+    @Test
     public void changeHueSatValues() throws Exception {
         HueLightEntry hueLightEntry = cs.ds.lights.get("2");
         assertNotNull(hueLightEntry);

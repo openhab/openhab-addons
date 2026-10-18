@@ -197,6 +197,13 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                         hsbCommand = new HSBType(hsbCommand.getHue(), hsbCommand.getSaturation(), PercentType.HUNDRED);
                     }
                     updateState(channelUID, hsbCommand);
+                } else if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)
+                        && command instanceof OnOffType onOffCommand) {
+                    // Handle switch command
+                    boolean isOn = onOffCommand == OnOffType.ON;
+                    writeSingleChannel(adapter, config.subnetId, config.id, channelConfig.channelNumber, isOn ? 100 : 0,
+                            -1);
+                    pollDevice(); // Read back actual RGBW state so the channel is updated with an HSBType
                 } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)
                         && command instanceof OnOffType onOffCommand) {
                     // Handle switch command

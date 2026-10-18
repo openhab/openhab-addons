@@ -27,6 +27,7 @@ The binding has the following configuration options, which can be set for "bindi
 | webSocketToken          | Websocket Token          | Security token for secure websocket connection         | no       |
 | subscription            | Subscribe to UPNP        | Reduces polling on UPNP devices, default false         | no       |
 | orientationKey          | Orientation Key          | Key press to send to rotate auto-rotation mount        | no       |
+| legacyCipherSuites      | Legacy Cipher Suites     | Legacy TLS suites for older TVs, default true          | no       |
 | smartThingsApiKey       | Smartthings PAT          | Smartthings Personal Access Token                      | no       |
 | smartThingsDeviceId     | Smartthings Device ID    | Smartthings Device ID for this TV                      | no       |
 | smartThingsSubscription | Smartthings Subscription | Reduces polling on Smartthings channels, default true  | no       |
@@ -63,6 +64,8 @@ The binding will try to automatically discover the correct protocol for your TV,
 Under `advanced`, you can enter a Smartthings PAT, and Device Id. This enables more channels via the Smartthings cloud. This is only for TV's that support Smartthings. No hub is required. The binding will attempt to discover the device ID for your TV automatically, you can enter it manually if automatic detection fails.
 
 Also under `advanced`, you have the ability to turn on _"Subscribe to UPnP events"_. This is off by default. This option reduces (but does not eliminate) the polling of UPnP services. You can enable it if you want to test it out. If you disable this setting (after testing), you should power cycle your TV to remove the old subscriptions.
+
+Also under `advanced`, _"Legacy Cipher Suites"_ is on by default. It keeps the secure websocket on a client that accepts any certificate and allows every TLS cipher suite the runtime knows, including the ones Jetty excludes as weak, which is what older TVs may need. Each connection then logs ten Jetty warnings. Turning it off keeps Jetty's exclusions and removes the warnings. It does not validate the TV certificate either: openHAB accepts any certificate whose common name is `SmartViewSDK`, so that is what the TV has to present. Without that common name the TLS handshake fails and you have to turn the setting back on.
 
 For >2019 TV's, there is an app workaround, see [App Discovery](#app-discovery) for details.
 

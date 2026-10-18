@@ -48,6 +48,20 @@ public class ZoneUpdate {
     private Integer vol;
 
     @Schema
+    @SerializedName("vol_f")
+    /**
+     * Output volume as a fraction of the volume range (0.0 - 1.0)
+     **/
+    private Double volF;
+
+    @Schema
+    @SerializedName("vol_delta_f")
+    /**
+     * Change in output volume as a fraction of the volume range (-1.0 - 1.0)
+     **/
+    private Double volDeltaF;
+
+    @Schema
     /**
      * Set to true if not connected to a speaker
      **/
@@ -130,6 +144,46 @@ public class ZoneUpdate {
     }
 
     /**
+     * Output volume as a fraction of the volume range
+     * minimum: 0.0
+     * maximum: 1.0
+     *
+     * @return volF
+     **/
+    public Double getVolF() {
+        return volF;
+    }
+
+    public void setVolF(Double volF) {
+        this.volF = volF;
+    }
+
+    public ZoneUpdate volF(Double volF) {
+        this.volF = volF;
+        return this;
+    }
+
+    /**
+     * Change in output volume as a fraction of the volume range
+     * minimum: -1.0
+     * maximum: 1.0
+     *
+     * @return volDeltaF
+     **/
+    public Double getVolDeltaF() {
+        return volDeltaF;
+    }
+
+    public void setVolDeltaF(Double volDeltaF) {
+        this.volDeltaF = volDeltaF;
+    }
+
+    public ZoneUpdate volDeltaF(Double volDeltaF) {
+        this.volDeltaF = volDeltaF;
+        return this;
+    }
+
+    /**
      * Set to true if not connected to a speaker
      *
      * @return disabled
@@ -156,6 +210,8 @@ public class ZoneUpdate {
         sb.append("    sourceId: ").append(toIndentedString(sourceId)).append("\n");
         sb.append("    mute: ").append(toIndentedString(mute)).append("\n");
         sb.append("    vol: ").append(toIndentedString(vol)).append("\n");
+        sb.append("    volF: ").append(toIndentedString(volF)).append("\n");
+        sb.append("    volDeltaF: ").append(toIndentedString(volDeltaF)).append("\n");
         sb.append("    disabled: ").append(toIndentedString(disabled)).append("\n");
         sb.append("}");
         return sb.toString();

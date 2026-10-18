@@ -22,12 +22,14 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Contains the result or partial result of a presence detection. This class is thread-safe.
  *
  * @author David Graeff - Initial contribution
  * @author Ravi Nadahar - Made class thread-safe
+ * @author Alexander Friese - Add HTTP status code
  */
 @NonNullByDefault
 public class PresenceDetectionValue {
@@ -44,6 +46,9 @@ public class PresenceDetectionValue {
 
     /* All access must be guarded by "this" */
     private final List<Integer> reachableTcpPorts = new ArrayList<>();
+
+    /* All access must be guarded by "this" */
+    private @Nullable Integer httpStatusCode;
 
     /**
      * Create a new {@link PresenceDetectionValue} with an initial latency.
@@ -148,12 +153,28 @@ public class PresenceDetectionValue {
         reachableTcpPorts.add(tcpPort);
     }
 
+    /**
+     * Return the HTTP status code which was returned by the target, <code>null</code> if no HTTP request was
+     * performed or if no response was received. A status code is also available if it made the target being
+     * considered unreachable.
+     */
+    public synchronized @Nullable Integer getHttpStatusCode() {
+        return httpStatusCode;
+    }
+
+    /**
+     * Set the HTTP status code which was returned by the target.
+     */
+    synchronized void setHttpStatusCode(int httpStatusCode) {
+        this.httpStatusCode = httpStatusCode;
+    }
+
     @Override
     public String toString() {
         synchronized (this) {
             return "PresenceDetectionValue [hostAddress=" + hostAddress + ", latency=" + durationToMillis(latency)
                     + "ms, reachableDetectionTypes=" + reachableDetectionTypes + ", reachableTcpPorts="
-                    + reachableTcpPorts + "]";
+                    + reachableTcpPorts + ", httpStatusCode=" + httpStatusCode + "]";
         }
     }
 }

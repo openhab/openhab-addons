@@ -93,7 +93,8 @@ public abstract class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
             reconnectJob = connectionTaskExecutor.scheduleWithFixedDelay(() -> {
                 try {
                     if (device.getConnectionState() != ConnectionState.CONNECTED) {
-                        if (device.connect()) {
+                        device.connect();
+                        if (device.awaitConnection(30, TimeUnit.SECONDS)) {
                             if (!alwaysConnected) {
                                 cancel(reconnectJob, false);
                                 reconnectJob = null;
@@ -110,7 +111,7 @@ public abstract class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
                             logger.debug("Error while discovering services");
                         }
                     }
-                } catch (RuntimeException ex) {
+                } catch (RuntimeException | InterruptedException ex) {
                     logger.warn("Unexpected error occurred", ex);
                 }
             }, 0, 30, TimeUnit.SECONDS);
@@ -166,7 +167,7 @@ public abstract class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
                 throw new ConnectionException("Failed to start connecting");
             }
         }
-        if (!device.awaitConnection(1, TimeUnit.SECONDS)) {
+        if (!device.awaitConnection(30, TimeUnit.SECONDS)) {
             throw new TimeoutException("Connection attempt timeout.");
         }
         if (!device.isServicesDiscovered()) {

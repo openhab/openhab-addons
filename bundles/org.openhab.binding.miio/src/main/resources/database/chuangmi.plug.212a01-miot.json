@@ -115,7 +115,7 @@
 				"piid": 2,
 				"friendlyName": "Power Consumption - Electric Current",
 				"channel": "electric-current",
-				"type": "Number:Current",
+				"type": "Number:ElectricCurrent",
 				"unit": "mA",
 				"stateDescription": {
 					"minimum": 0,

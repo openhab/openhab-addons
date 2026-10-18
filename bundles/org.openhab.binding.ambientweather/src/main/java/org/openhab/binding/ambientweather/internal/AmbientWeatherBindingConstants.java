@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.ambientweather.internal;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,8 +33,7 @@ public class AmbientWeatherBindingConstants {
     // Bridge
     public static final String THING_TYPE_BRIDGE = "bridge";
     public static final ThingTypeUID UID_BRIDGE = new ThingTypeUID(BINDING_ID, THING_TYPE_BRIDGE);
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(UID_BRIDGE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Set.of(UID_BRIDGE);
 
     // WS-1400-IP series weather stations
     public static final String THING_TYPE_WS1400IP = "ws1400ip";
@@ -62,14 +60,13 @@ public class AmbientWeatherBindingConstants {
     public static final ThingTypeUID UID_WS0265 = new ThingTypeUID(BINDING_ID, THING_TYPE_WS0265);
 
     // Collection of weather station thing types
-    public static final Set<ThingTypeUID> SUPPORTED_STATION_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(UID_WS1400IP, UID_WS2902A, UID_WS2902B, UID_WS8482, UID_WS0900IP, UID_WS0265)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_STATION_THING_TYPES_UIDS = Set.of(UID_WS1400IP, UID_WS2902A,
+            UID_WS2902B, UID_WS8482, UID_WS0900IP, UID_WS0265);
 
     // Collection of all supported thing types
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.concat(SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream(), SUPPORTED_STATION_THING_TYPES_UIDS.stream())
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream(), SUPPORTED_STATION_THING_TYPES_UIDS.stream())
+            .collect(Collectors.toUnmodifiableSet());
 
     // Channel groups for specific weather stations
     public static final String CHGRP_WS1400IP = "weatherDataWs1400ip";

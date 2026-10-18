@@ -12,7 +12,16 @@
  */
 package org.openhab.binding.miio.internal.basic;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
 /**
  * Various types of parameters to be send
@@ -20,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
+@JsonAdapter(value = CommandParameterType.Adapter.class, nullSafe = false)
 public enum CommandParameterType {
     NONE("none"),
     EMPTY("empty"),
@@ -28,9 +38,6 @@ public enum CommandParameterType {
     ONOFFBOOL("onoffbool"),
     ONOFFBOOLSTRING("onoffboolstring"),
     ONOFFNUMBER("onoffnumber"),
-    OPENCLOSE("openclose"),
-    OPENCLOSENUMBER("openclosenumber"),
-    OPENCLOSESWITCH("opencloseswitch"),
     STRING("string"),
     CUSTOMSTRING("customstring"),
     NUMBER("number"),
@@ -50,5 +57,30 @@ public enum CommandParameterType {
             }
         }
         return UNKNOWN;
+    }
+
+    /**
+     * Reads the type from a database file without regard to case; an unrecognized value becomes {@link #UNKNOWN}
+     * instead of the {@code null} of the default Gson enum handling.
+     */
+    static class Adapter extends TypeAdapter<CommandParameterType> {
+        @Override
+        public @Nullable CommandParameterType read(@Nullable JsonReader in) throws IOException {
+            if (in == null) {
+                return UNKNOWN;
+            }
+            if (in.peek() == JsonToken.NULL) {
+                in.nextNull();
+                return UNKNOWN;
+            }
+            return fromString(in.nextString());
+        }
+
+        @Override
+        public void write(@Nullable JsonWriter out, @Nullable CommandParameterType value) throws IOException {
+            if (out != null) {
+                out.value(value != null ? value.name() : null);
+            }
+        }
     }
 }

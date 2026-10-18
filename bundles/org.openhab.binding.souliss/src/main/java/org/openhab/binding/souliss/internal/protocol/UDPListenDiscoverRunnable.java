@@ -83,7 +83,6 @@ public class UDPListenDiscoverRunnable implements Runnable {
                         localDecoder.decodeVNetDatagram(packet);
                     }
                 }
-
             } catch (BindException e) {
                 logger.warn("UDP Port busy, Souliss already listening? {} ", e.getLocalizedMessage());
                 try {

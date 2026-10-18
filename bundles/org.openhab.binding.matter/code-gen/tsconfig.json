@@ -10,15 +10,15 @@
     "incremental": true,
 
     // We should probably boost this at least to ES 2017
-    "target": "es2020",
+    "target": "es2022",
 
     // Generate modules as ES2020 or CommonJS
-    "module": "commonjs",
+    "module": "node16",
 
-    // Use node-style dependency resolution
-    "moduleResolution": "node",
+    // Use node-style dependency resolution (node16 honors package.json exports map)
+    "moduleResolution": "node16",
 
-    "lib": ["ES2015", "DOM"],
+    "lib": ["ES2022", "DOM"],
 
     // Do not load globals from node_modules by default
     "types": [

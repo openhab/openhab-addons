@@ -42,20 +42,19 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates a user-friendly name identifying the device model or product of the Border Router in MeshCOP (DNS-SD
-     * service name) as defined in the Thread specification, and has the following recommended format:
-     * &lt;VendorName&gt; &lt;ProductName&gt;._meshcop._udp. An example name would be ACME Border Router
-     * (74be)._meshcop._udp.
+     * service name) as defined in the Thread specification, and has the following recommended format: <VendorName>
+     * <ProductName>._meshcop._udp. An example name would be ACME Border Router (74be)._meshcop._udp.
      */
     public String borderRouterName; // 0 string R V
     /**
      * Indicates a 16-byte globally unique ID for a Thread Border Router device. This ID is manufacturer-specific, and
-     * it is created and managed by the border router’s implementation.
+     * it is created and managed by the border router's implementation.
      */
     public OctetString borderAgentId; // 1 octstr R V
     /**
      * Indicates the Thread version supported by the Thread interface configured by the cluster instance.
-     * The format shall match the value mapping defined in the &quot;Version TLV&quot; section of the Thread
-     * specification. For example, Thread 1.3.0 would have ThreadVersion set to 4.
+     * The format shall match the value mapping defined in the "Version TLV" section of the Thread specification. For
+     * example, Thread 1.3.0 would have ThreadVersion set to 4.
      */
     public Integer threadVersion; // 2 uint16 R V
     /**
@@ -83,8 +82,8 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
          * 
          * This feature shall indicate the ability of the Border Router to change its already configured PAN to another,
          * by setting a pending dataset.
-         * &gt; [!NOTE]
-         * &gt; This feature flag can be used to protect an already-configured network from accidental configuration
+         * > [!NOTE]
+         * > NOTE: This feature flag can be used to protect an already-configured network from accidental configuration
          * change, e.g. when the Thread Border Router serves non-Matter devices that do not support PAN change for an
          * implementation-specific reason.
          */

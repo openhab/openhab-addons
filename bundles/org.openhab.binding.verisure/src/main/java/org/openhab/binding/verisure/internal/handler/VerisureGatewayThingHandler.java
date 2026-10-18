@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Gui;
 import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO.CommunicationState;
 import org.openhab.core.library.types.StringType;
@@ -89,7 +90,8 @@ public class VerisureGatewayThingHandler extends VerisureThingHandler<VerisureGa
                 String state = communicationState.getResult();
                 return state != null ? new StringType(state) : UnDefType.NULL;
             case CHANNEL_GATEWAY_MODEL:
-                String model = communicationState.getDevice().getGui().getLabel();
+                Gui gui = communicationState.getDevice().getGui();
+                String model = gui != null ? gui.getLabel() : null;
                 return model != null ? new StringType(model) : UnDefType.NULL;
             case CHANNEL_LOCATION:
                 String location = communicationState.getDevice().getArea();

@@ -40,6 +40,11 @@ public class SonosXMLParserTest {
     }
 
     @Test
+    public void buildThingTypeIdFromModelWithSpaceAndDigit() {
+        assertEquals("Roam2", SonosXMLParser.buildThingTypeIdFromModelName("Sonos Roam 2"));
+    }
+
+    @Test
     public void buildThingTypeIdFromModelWithColon() {
         assertEquals("PLAY5", SonosXMLParser.buildThingTypeIdFromModelName("Sonos PLAY:5"));
     }

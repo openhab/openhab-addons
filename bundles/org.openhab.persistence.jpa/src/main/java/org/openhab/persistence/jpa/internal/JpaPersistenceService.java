@@ -169,9 +169,9 @@ public class JpaPersistenceService implements QueryablePersistenceService {
                 // a duplicate timestamp. Just ignore
                 logger.debug("Failed to persist item {} because of duplicate timestamp", name);
             } else {
-                logger.error("Error while persisting item! Rolling back!", e);
+                logger.error("Error while persisting item! Rolling back if needed.", e);
             }
-            em.getTransaction().rollback();
+            rollbackIfActive(em, "persisting item " + name);
         } finally {
             em.close();
         }
@@ -266,7 +266,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             return historicList;
         } catch (Exception e) {
             logger.error("Error while querying database!", e);
-            em.getTransaction().rollback();
+            rollbackIfActive(em, "querying historic items");
         } finally {
             em.close();
         }
@@ -323,6 +323,16 @@ public class JpaPersistenceService implements QueryablePersistenceService {
      */
     protected boolean isEntityManagerFactoryOpen() {
         return emf != null && emf.isOpen();
+    }
+
+    private void rollbackIfActive(EntityManager em, String operation) {
+        try {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+        } catch (Exception rollbackException) {
+            logger.warn("Rollback after {} failed", operation, rollbackException);
+        }
     }
 
     /**

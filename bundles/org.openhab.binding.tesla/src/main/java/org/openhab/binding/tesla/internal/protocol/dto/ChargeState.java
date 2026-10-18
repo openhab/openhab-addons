@@ -63,6 +63,8 @@ public class ChargeState {
     public float idealBatteryRange;
     @SerializedName("time_to_full_charge")
     public float timeToFullCharge;
+    @SerializedName("minutes_to_full_charge")
+    public Integer minutesToFullCharge;
     @SerializedName("battery_level")
     public int batteryLevel;
     @SerializedName("charge_amps")

@@ -45,9 +45,30 @@
 			</parameter>
 			<parameter name="activityRequestDelay" type="integer" min="2" unit="s">
 				<label>Activity Request Delay</label>
-				<description>The number of seconds between a voice command was detected and the received command is requested from
-					the server.</description>
+				<description>The number of seconds the binding waits between the event that indicates a voice command and the voice
+					history request. Amazon needs a few seconds to write a spoken command into the history; a request that comes too
+					early returns nothing and lastVoiceCommand stays empty. Increase this value if voice commands are missed although
+					the connection works.</description>
 				<default>10</default>
+			</parameter>
+			<parameter name="activityRequestWindow" type="integer" min="1" unit="s">
+				<label>Activity Request Window</label>
+				<description>The number of seconds of voice history a request covers, counted backwards from the request time. The
+					default of 120 seconds is sufficient when push events trigger the requests. When polling (via
+					activityPollingInterval or a rule on refreshActivity), the window must be at least as large as the polling
+					interval, otherwise commands spoken between two polls are missed. The recommended minimum is 60 seconds.</description>
+				<default>120</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="activityPollingInterval" type="integer" min="0" unit="s">
+				<label>Activity Polling Interval</label>
+				<description>The number of seconds between automatic voice history requests. 0 (default) disables polling. Polling
+					is meant for accounts that no longer receive push events, where lastVoiceCommand stays empty otherwise. Each poll
+					sends one request to Amazon, so values below 60 seconds risk rate limiting. Commands arrive with a delay of up to
+					one polling interval. Polling never replays commands from before openHAB started; the refreshActivity switch
+					does.</description>
+				<default>0</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -447,7 +468,8 @@
 	<channel-type id="refreshActivity">
 		<item-type>Switch</item-type>
 		<label>Refresh Activity</label>
-		<description>A command send to this channel refreshes the customer history activity (write-only)</description>
+		<description>ON requests the customer history activity; the channel answers OFF when the request is
+			done</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>

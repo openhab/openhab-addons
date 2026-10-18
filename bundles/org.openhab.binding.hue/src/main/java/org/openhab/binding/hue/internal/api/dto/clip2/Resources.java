@@ -27,8 +27,8 @@ public class Resources {
     private List<Error> errors = new ArrayList<>();
     private List<Resource> data = new ArrayList<>();
 
-    public List<String> getErrors() {
-        return errors.stream().map(Error::getDescription).toList();
+    public List<Error> getErrors() {
+        return errors;
     }
 
     public boolean hasErrors() {

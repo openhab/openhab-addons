@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -509,7 +508,7 @@ public class BluetoothDiscoveryServiceTest {
 
         @Override
         public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-            return Collections.emptySet();
+            return Set.of();
         }
 
         @Override

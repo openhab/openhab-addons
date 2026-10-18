@@ -27,7 +27,9 @@ public enum ZigbeeStatus {
     CONNECTED,
     DISCONNECTED,
     CONNECTIVITY_ISSUE,
-    UNIDIRECTIONAL_INCOMING;
+    UNIDIRECTIONAL_INCOMING,
+    // documented for 'zgp_connectivity' resources, a pending pairing rather than a connectivity issue
+    PENDING_DISCOVERY;
 
     private static final Set<ZigbeeStatus> CONNECTIVITY_ISSUES = Set.of(DISCONNECTED, CONNECTIVITY_ISSUE);
 

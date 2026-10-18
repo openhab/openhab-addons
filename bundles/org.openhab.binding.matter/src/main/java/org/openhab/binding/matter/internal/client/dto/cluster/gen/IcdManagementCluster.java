@@ -49,12 +49,12 @@ public class IcdManagementCluster extends BaseCluster {
      * Indicates the maximum interval in seconds the server can stay in idle mode. The IdleModeDuration shall NOT be
      * smaller than the ActiveModeDuration.
      */
-    public Integer idleModeDuration; // 0 uint32 R V
+    public Long idleModeDuration; // 0 uint32 R V
     /**
      * Indicates the minimum interval in milliseconds the server typically will stay in active mode after initial
      * transition out of idle mode. The ActiveModeDuration does not include the ActiveModeThreshold.
      */
-    public Integer activeModeDuration; // 1 uint32 R V
+    public Long activeModeDuration; // 1 uint32 R V
     /**
      * Indicates the minimum amount of time in milliseconds the server typically will stay active after network activity
      * when in active mode.
@@ -67,9 +67,10 @@ public class IcdManagementCluster extends BaseCluster {
      */
     public List<MonitoringRegistrationStruct> registeredClients; // 3 list R F A
     /**
-     * This attribute returns the value of the ICD Counter.
+     * Indicates the value of the ICD Counter. The ICD Counter is used as the Check-In Counter to encrypt the check-in
+     * message for this client.
      */
-    public Integer icdCounter; // 4 uint32 R A
+    public Long icdCounter; // 4 uint32 R A
     /**
      * Indicates the maximum number of entries that the server is able to store for each fabric in the RegisteredClients
      * attribute.
@@ -89,19 +90,19 @@ public class IcdManagementCluster extends BaseCluster {
     public UserActiveModeTriggerBitmap userActiveModeTriggerHint; // 6 UserActiveModeTriggerBitmap R V
     /**
      * The meaning of the attribute is dependent upon the UserActiveModeTriggerHint attribute value, and the conformance
-     * is in indicated in the &quot;dependency&quot; column in UserActiveModeTriggerHint table. The
+     * is in indicated in the "dependency" column in UserActiveModeTriggerHint table. The
      * UserActiveModeTriggerInstruction attribute may give additional information on how to transition the device to
      * Active Mode. If the attribute is present, the value shall be encoded as a valid UTF-8 string with a maximum
      * length of 128 bytes. If the UserActiveModeTriggerHint has the ActuateSensorSeconds, ActuateSensorTimes,
      * ResetButtonSeconds, ResetButtonTimes, SetupButtonSeconds or SetupButtonTimes set, the string shall consist solely
      * of an encoding of N as a decimal unsigned integer using the ASCII digits 0-9, and without leading zeros.
-     * For example, given UserActiveModeTriggerHint&#x3D;&quot;1024&quot;, ResetButtonSeconds is set which indicates
-     * &quot;Press Reset Button for N seconds&quot;. Therefore, a value of
-     * UserActiveModeTriggerInstruction&#x3D;&quot;6&quot; would indicate that N is 6 in that context.
+     * For example, given UserActiveModeTriggerHint="1024", ResetButtonSeconds is set which indicates "Press Reset
+     * Button for N seconds". Therefore, a value of UserActiveModeTriggerInstruction="6" would indicate that N is 6 in
+     * that context.
      * When CustomInstruction is set by the UserActiveModeTriggerHint attribute, indicating presence of a custom string,
-     * the ICD SHOULD perform localization (translation to user’s preferred language, as indicated in the Device’s
+     * the ICD SHOULD perform localization (translation to user's preferred language, as indicated in the Device's
      * currently configured locale). The Custom Instruction option SHOULD NOT be used by an ICD that does not have
-     * knowledge of the user’s language preference.
+     * knowledge of the user's language preference.
      * When the UserActiveModeTriggerHint key indicates a light to blink (ActuateSensorLightsBlink,
      * ResetButtonLightsBlink or SetupButtonLightsBlink), information on color of light may be made available via the
      * UserActiveModeTriggerInstruction attribute. When using such color indication in the
@@ -120,7 +121,7 @@ public class IcdManagementCluster extends BaseCluster {
      * MaximumCheckInBackoff shall NOT be smaller than the IdleModeDuration.
      * If the MaximumCheckInBackoff is equal to the IdleModeDuration, it means the ICD does not back-off.
      */
-    public Integer maximumCheckInBackoff; // 9 uint32 R V
+    public Long maximumCheckInBackoff; // 9 uint32 R V
 
     // Structs
     public static class MonitoringRegistrationStruct {
@@ -140,9 +141,9 @@ public class IcdManagementCluster extends BaseCluster {
          * Matching shall be determined using the subject_matches function defined in the Access Control Privilege
          * Granting Algorithm.
          * For example, if the MonitoredSubject is Node ID 0x1111_2222_3333_AAAA, and one of the subscribers to the
-         * server on the entry’s associated fabric bears that Node ID, then the entry matches.
+         * server on the entry's associated fabric bears that Node ID, then the entry matches.
          * Another example is if the MonitoredSubject has the value 0xFFFF_FFFD_AA12_0002, and one of the subscribers to
-         * the server on the entry’s associated fabric bears the CASE Authenticated TAG value 0xAA12 and the version
+         * the server on the entry's associated fabric bears the CASE Authenticated TAG value 0xAA12 and the version
          * 0x0002 or higher within its NOC, then the entry matches.
          */
         public BigInteger monitoredSubject; // subject-id
@@ -151,7 +152,7 @@ public class IcdManagementCluster extends BaseCluster {
          */
         public String key;
         /**
-         * This field shall indicate the client’s type to inform the ICD of the availability for communication of the
+         * This field shall indicate the client's type to inform the ICD of the availability for communication of the
          * client.
          */
         public ClientTypeEnum clientType; // ClientTypeEnum
@@ -352,18 +353,8 @@ public class IcdManagementCluster extends BaseCluster {
      * client to request the server to stay active and responsive for this period to allow a sequence of message
      * exchanges during that period. The client may slightly overestimate the duration it wants the ICD to be active
      * for, in order to account for network delays.
-     * ### Effect on Receipt
-     * When receiving a StayActiveRequest command, the server shall calculate the maximum PromisedActiveDuration it can
-     * remain active as the greater of the following two values:
-     * - StayActiveDuration: Specified in the received command by the client.
-     * - Remaining Active Time: The server’s planned remaining active time based on the ActiveModeThreshold and its
-     * internal resources and power budget.
-     * A server may replace StayActiveDuration with Minimum Active Duration in the above calculation.
-     * PromisedActiveDuration represents the guaranteed minimum time the server will remain active, taking into account
-     * both the requested duration and the server’s capabilities.
-     * The ICD shall report the calculated PromisedActiveDuration in a StayActiveResponse message back to the client.
      */
-    public static ClusterCommand stayActiveRequest(Integer stayActiveDuration) {
+    public static ClusterCommand stayActiveRequest(Long stayActiveDuration) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (stayActiveDuration != null) {
             map.put("stayActiveDuration", stayActiveDuration);

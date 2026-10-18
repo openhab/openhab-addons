@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.kostalinverter.internal.thirdgeneration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /***
  * The {@link ThirdGenerationChannelMappingToWebApi}} is used to map the channel name to the web API commands
  *
  * @author René Stakemeier - Initial contribution
  *
  */
+@NonNullByDefault
 class ThirdGenerationChannelMappingToWebApi {
 
     String channelUID;

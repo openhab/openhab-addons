@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -145,7 +146,7 @@ public class SubscribeFieldToMQTTtopicTests {
         CompletableFuture<@Nullable Void> future = subscriber.subscribeAndReceive(connectionMock, 1000);
 
         // Simulate a received MQTT message
-        subscriber.processMessage("ignored", "10".getBytes());
+        subscriber.processMessage("ignored", "10".getBytes(StandardCharsets.UTF_8));
         // No timeout should happen
         future.get(50, TimeUnit.MILLISECONDS);
         assertThat(attributes.aInt, is(10));

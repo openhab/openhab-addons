@@ -323,6 +323,6 @@ class TestModel {
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
         assertEquals(69, all.size(), "All Devices");
         assertEquals(56, resolved.size(), "All Resolved Devices");
-        assertEquals(61, discovery.discoveries.size(), "Discovery Devices");
+        assertEquals(64, discovery.discoveries.size(), "Discovery Devices"); // 61 devices + 3 light sets
     }
 }

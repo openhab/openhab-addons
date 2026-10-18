@@ -12,19 +12,15 @@
  */
 package org.openhab.binding.airgradient.internal.discovery;
 
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.BACKGROUND_DISCOVERY;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_LOCATION;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_NAME;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.SEARCH_TIME;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.THING_TYPE_LOCATION;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.handler.AirGradientAPIHandler;
@@ -128,6 +124,6 @@ public class AirGradientLocationDiscoveryService extends AbstractThingHandlerDis
     }
 
     private AirGradientAPIHandler getApiHandler() {
-        return (@NonNull AirGradientAPIHandler) getThingHandler();
+        return Objects.requireNonNull(getThingHandler());
     }
 }

@@ -60,7 +60,7 @@ public class SrpAuthentication {
                     + "7050807005509320424799678417036867928316761272274230314067548291"
                     + "1335824795830614395775593471019617714061736843785227034834953370"
                     + "37655006751328447510550299250924469288819");
-    private final static BigInteger g = BigInteger.valueOf(2L);
+    private static final BigInteger g = BigInteger.valueOf(2L);
 
     // Username
     private String I;
@@ -138,6 +138,7 @@ public class SrpAuthentication {
         BigInteger B = new BigInteger(1, b64Decode(initBody.get("b").getAsString()));
         byte[] s = b64Decode(initBody.get("salt").getAsString());
         String c = initBody.get("c").getAsString();
+        String protocol = initBody.get("protocol").getAsString();
         int iterations = initBody.get("iteration").getAsInt();
         int keyLength = 32;
 
@@ -150,7 +151,7 @@ public class SrpAuthentication {
 
         // Calculate S
         Digest digest = new SHA256Digest();
-        BigInteger x = SRP6Util.calculateX(digest, N, s, "".getBytes(StandardCharsets.UTF_8), srpPassword.encode());
+        BigInteger x = SRP6Util.calculateX(digest, N, s, new byte[0], srpPassword.encode(protocol));
         BigInteger u = SRP6Util.calculateU(digest, N, A, B);
 
         BigInteger k = SRP6Util.calculateK(digest, N, g);
@@ -176,7 +177,12 @@ public class SrpAuthentication {
         requestBody.put("m1", b64Encode(M1));
         requestBody.put("m2", b64Encode(M2));
         requestBody.put("rememberMe", true);
-        requestBody.put("trustTokens", new String[] { httpClient.getTrustToken() });
+        String trustToken = httpClient.getTrustToken();
+        if (trustToken != null && !trustToken.isEmpty()) {
+            requestBody.put("trustTokens", new String[] { trustToken });
+        } else {
+            requestBody.put("trustTokens", new String[] {});
+        }
         httpClient.post(authEndpoint + "/signin/complete?isRememberMeEnabled=true", JsonUtils.toJson(requestBody),
                 sessionHeaders);
     }

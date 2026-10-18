@@ -22,6 +22,19 @@ import com.google.gson.annotations.SerializedName;
  */
 public class DriveState {
 
+    // Only reported while a route is active in the navigation, otherwise null
+    @SerializedName("active_route_destination")
+    public String activeRouteDestination;
+    @SerializedName("active_route_latitude")
+    public Double activeRouteLatitude;
+    @SerializedName("active_route_longitude")
+    public Double activeRouteLongitude;
+    @SerializedName("active_route_miles_to_arrival")
+    public Double activeRouteMilesToArrival;
+    @SerializedName("active_route_minutes_to_arrival")
+    public Double activeRouteMinutesToArrival;
+    @SerializedName("active_route_traffic_minutes_delay")
+    public Double activeRouteTrafficMinutesDelay;
     @SerializedName("gps_as_of")
     public int gpsAsOf;
     @SerializedName("heading")

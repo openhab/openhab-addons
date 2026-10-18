@@ -19,6 +19,7 @@ Refer to below sections which devices are supported and are covered by `things` 
 | `dimmable-light`      | Light with brightness support                              | [Lights](#dimmable-lights)                | TRÅDFRI                                   |
 | `temperature-light`   | Light with color temperature support                       | [Lights](#temperature-lights)             | TRÅDFRI, FLOALT                           |
 | `color-light`         | Light with color support                                   | [Lights](#color-lights)                   | TRÅDFRI, ORMANÅS                          |
+| `light-set`           | Group of lights controlled as one logical unit             | [Lights](#light-set)                      | Set of lights which are handled together  |
 | `light-controller`    | Controller to handle light attributes                      | [Controller](#light-controller)           | TRÅDFRI, RODRET,STYRBAAR                  |
 | `motion-sensor`       | Sensor detecting motion events                             | [Sensors](#motion-sensor)                 | TRÅDFRI                                   |
 | `motion-light-sensor` | Sensor detecting motion events and measures light level    | [Sensors](#motion-light-sensor)           | VALLHORN                                  |
@@ -375,6 +376,38 @@ Channel `color` can receive
 - ON / OFF
 - numbers from 0 to 100 as brightness in percent where 0 will switch the light OFF, any other > 0 switches light ON
 - triple values for hue, saturation, brightness
+
+## Light Set
+
+A Light Set is a group of individual lights that the IKEA Home smart app manages under a single logical device.
+The `light-set` thing maps to this group and provides the same channels as [Color Lights](#color-lights).
+
+| Channel                   | Type                  | Read/Write | Description                                          | Advanced |
+|---------------------------|-----------------------|------------|------------------------------------------------------|----------|
+| `power`                   | Switch                | RW         | Power state of the light set                         |          |
+| `brightness`              | Dimmer                | RW         | Brightness of the light set in percent               |          |
+| `color-temperature`       | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
+| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature in Kelvin                          |    X     |
+| `color`                   | Color                 | RW         | Color with hue, saturation and brightness            |          |
+| `startup`                 | Number                | RW         | Startup behavior after power cutoff                  |          |
+| `custom-name`             | String                | RW         | Name given in the IKEA Home smart app                |          |
+
+### Availability (ONLINE / OFFLINE)
+
+The `light-set` thing tracks reachability individually for each member bulb.
+It reports **ONLINE** as long as at least one member is reachable.
+It goes **OFFLINE** only when every member reports `isReachable=false`.
+
+### Important: Inconsistent State
+
+Because each member bulb inside a set can be controlled independently, like a physical switch, or another openHAB rule, the actual state of the individual bulbs may diverge from each other.
+The `light-set` channels reflect the state reported by whichever member sent the most recent websocket update.
+This means the channel values represent the state of one member, not a guaranteed aggregate of all members.
+
+**Sets are designed as a control surface, not a state mirror.**
+Use the `light-set` channels to issue uniform commands to the group.
+Do not rely on the channel state to accurately reflect what every individual bulb in the set is currently doing.
+If per-bulb state accuracy is required, add each bulb as its own `color-light` thing alongside the set.
 
 ## Power Plugs
 

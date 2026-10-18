@@ -19,12 +19,14 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.network.internal.utils.HttpPingResult;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
@@ -43,11 +46,14 @@ import org.openhab.core.util.SameThreadExecutorService;
  * Tests cases for {@see PresenceDetectionValue}
  *
  * @author David Graeff - Initial contribution
+ * @author Alexander Friese - Add HTTP presence detection
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class PresenceDetectionTest {
+
+    private static final URI HTTP_URI = URI.create("http://127.0.0.1/status");
 
     private @NonNullByDefault({}) PresenceDetection subject;
     private @NonNullByDefault({}) PresenceDetection asyncSubject;
@@ -55,6 +61,7 @@ public class PresenceDetectionTest {
     private @Mock @NonNullByDefault({}) Consumer<PresenceDetectionValue> callback;
     private @Mock @NonNullByDefault({}) PresenceDetectionListener listener;
     private @Mock @NonNullByDefault({}) NetworkUtils networkUtils;
+    private @Mock @NonNullByDefault({}) HttpClient httpClient;
 
     @BeforeEach
     public void setUp() {
@@ -180,5 +187,75 @@ public class PresenceDetectionTest {
         asyncSubject.cache.invalidateValue();
         asyncSubject.getValue(callback);
         verify(callback, times(3)).accept(any());
+    }
+
+    @Test
+    public void httpRequestDetectionTest() throws InterruptedException {
+        doReturn(new HttpPingResult(200, Duration.ofMillis(10))).when(networkUtils).httpPing(any(), eq(HTTP_URI),
+                any());
+        PresenceDetection httpSubject = createHttpSubject(false, true);
+
+        PresenceDetectionValue pdv = httpSubject.performPresenceDetection().join();
+
+        assertThat(httpSubject.detectionChecks, is(1));
+        assertTrue(pdv.isReachable());
+        assertThat(pdv.getHttpStatusCode(), is(200));
+        assertThat(pdv.getSuccessfulDetectionTypes(), is("HTTP_REQUEST"));
+        verify(listener).partialDetectionResult(pdv);
+        verify(listener).finalDetectionResult(pdv);
+    }
+
+    @Test
+    public void httpStatusCodeEvaluationTest() throws InterruptedException {
+        assertTrue(detectHttp(200, false, true).isReachable());
+        assertTrue(detectHttp(204, true, true).isReachable());
+        // Redirections and client errors are evaluated according to the configuration
+        assertTrue(detectHttp(301, false, true).isReachable());
+        assertFalse(detectHttp(301, true, true).isReachable());
+        assertFalse(detectHttp(404, false, true).isReachable());
+        assertTrue(detectHttp(404, false, false).isReachable());
+        // Informational and server error status codes are always treated as an error
+        assertFalse(detectHttp(100, false, false).isReachable());
+        assertFalse(detectHttp(500, false, false).isReachable());
+    }
+
+    @Test
+    public void httpStatusCodeOfUnreachableTargetTest() throws InterruptedException {
+        PresenceDetectionValue pdv = detectHttp(503, false, true);
+
+        assertFalse(pdv.isReachable());
+        assertThat(pdv.getHttpStatusCode(), is(503));
+        assertThat(pdv.getSuccessfulDetectionTypes(), is(""));
+    }
+
+    @Test
+    public void httpWithoutResponseTest() throws InterruptedException {
+        doReturn(null).when(networkUtils).httpPing(any(), any(), any());
+        PresenceDetection httpSubject = createHttpSubject(false, true);
+
+        PresenceDetectionValue pdv = httpSubject.performPresenceDetection().join();
+
+        assertFalse(pdv.isReachable());
+        assertNull(pdv.getHttpStatusCode());
+    }
+
+    private PresenceDetectionValue detectHttp(int statusCode, boolean treatRedirectAsError,
+            boolean treatClientErrorAsError) throws InterruptedException {
+        doReturn(new HttpPingResult(statusCode, Duration.ofMillis(10))).when(networkUtils).httpPing(any(), any(),
+                any());
+        return createHttpSubject(treatRedirectAsError, treatClientErrorAsError).performPresenceDetection().join();
+    }
+
+    /**
+     * Creates a {@link PresenceDetection} which uses HTTP requests as its only detection method and which runs all
+     * detections synchronously.
+     */
+    private PresenceDetection createHttpSubject(boolean treatRedirectAsError, boolean treatClientErrorAsError) {
+        PresenceDetection httpSubject = spy(new PresenceDetection(listener, Duration.ofSeconds(2), Runnable::run));
+        httpSubject.networkUtils = networkUtils;
+        httpSubject.setHostname("127.0.0.1");
+        httpSubject.setTimeout(Duration.ofMillis(300));
+        httpSubject.setUseHttpRequest(httpClient, HTTP_URI, treatRedirectAsError, treatClientErrorAsError);
+        return httpSubject;
     }
 }

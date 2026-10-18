@@ -38,7 +38,8 @@ The binding uses the following configuration parameters.
 | targetTemperature  | Number:Temperature | The currently set target temperature (if applicable)   | range between 18°C and 30°C                             |
 | ambientTemperature | Number:Temperature | (Readonly) The ambient air temperature (if applicable) |                                                         |
 | outdoorTemperature | Number:Temperature | (Readonly) The outdoor air temperature (if applicable) |                                                         |
-| errorStatus        | String             | (Readonly) The error status of the device              | OK,ERR                                                  |
+| errorStatus        | Switch             | (Readonly) The error status of the device              | On/Off (`intesisHome`)                                  |
+| errorStatus        | String             | (Readonly) The error status of the device              | OK,ERR (`intesisBox`)                                   |
 | errorCode          | String             | (Readonly) The error code if an error encountered      | not documented                                          |
 | wifiSignal         | Number             | (Readonly) WiFi signal strength                        | 4=excellent, 3=very good, 2=good, 1=acceptable, 0=low   |
 

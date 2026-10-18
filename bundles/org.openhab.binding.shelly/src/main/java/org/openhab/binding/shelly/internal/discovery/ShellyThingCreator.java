@@ -77,7 +77,8 @@ public class ShellyThingCreator {
         }
 
         if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUG_PREFIX) && !serviceNameLowerCase.contains("plugus")
-                && !serviceNameLowerCase.contains("plugsg3")) {
+                && !serviceNameLowerCase.contains("plugsg3") && !serviceNameLowerCase.contains("plugmg3")
+                && !serviceNameLowerCase.contains("plugpm")) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
             // for the thing types: <thing type>-<mode>
             if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUGS_PREFIX)
@@ -94,6 +95,10 @@ public class ShellyThingCreator {
         }
 
         if (!deviceType.isEmpty()) {
+            // RGBW2 is mode-sensitive regardless of service name (custom hostnames bypass the check above)
+            if (SHELLYDT_RGBW2.equals(deviceType)) {
+                return SHELLY_MODE_COLOR.equals(mode) ? THING_TYPE_SHELLYRGBW2_COLOR : THING_TYPE_SHELLYRGBW2_WHITE;
+            }
             Map<String, ThingTypeUID> deviceTypeMap = switch (mode) {
                 case SHELLY_MODE_RELAY -> RELAY_THING_TYPE_BY_DEVICE_TYPE;
                 case SHELLY_MODE_ROLLER -> ROLLER_THING_TYPE_BY_DEVICE_TYPE;
@@ -101,6 +106,10 @@ public class ShellyThingCreator {
             };
 
             ThingTypeUID res = deviceTypeMap.get(deviceType);
+            if (res == null && deviceTypeMap != THING_TYPE_BY_DEVICE_TYPE) {
+                // single-mode devices (e.g. SHSW-1, SHSW-PM, SHDM-2) are only listed in the general map
+                res = THING_TYPE_BY_DEVICE_TYPE.get(deviceType);
+            }
             if (res != null) {
                 return res;
             }

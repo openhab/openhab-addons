@@ -38,7 +38,8 @@ public class Response implements AvrResponse {
         LISTENING_MODE("[0-9]{4}", "SR"),
         PLAYING_LISTENING_MODE("[0-9a-f]{4}", "LM"),
         DISPLAY_INFORMATION("[0-9a-fA-F]{30}", "FL"),
-        MCACC_MEMORY("[1-6]{1}", "MC");
+        MCACC_MEMORY("[1-6]{1}", "MC"),
+        SPEAKER_SELECTION("[0-3]{1}", "SPK");
 
         private String[] responsePrefixZone;
 

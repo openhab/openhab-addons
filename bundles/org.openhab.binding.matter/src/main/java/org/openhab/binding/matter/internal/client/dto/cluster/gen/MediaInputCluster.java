@@ -162,7 +162,7 @@ public class MediaInputCluster extends BaseCluster {
 
     /**
      * Upon receipt, this command shall rename the input at a specific index in the Input List.
-     * Updates to the input name shall appear in the device’s settings menus.
+     * Updates to the input name shall appear in the device's settings menus.
      */
     public static ClusterCommand renameInput(Integer index, String name) {
         Map<String, Object> map = new LinkedHashMap<>();

@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.lghorizon.internal.handler;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+/**
+ * Configuration for the {@code account} bridge thing.
+ *
+ * @author Mark Herwege - Initial contribution
+ */
+@NonNullByDefault
+public class LGHorizonAccountConfiguration {
+
+    public @Nullable String provider;
+    public String country = "";
+    public String apiUrl = "";
+    public boolean useRefreshToken = false;
+    public @Nullable String username;
+    public @Nullable String password;
+    public String refreshToken = "";
+}

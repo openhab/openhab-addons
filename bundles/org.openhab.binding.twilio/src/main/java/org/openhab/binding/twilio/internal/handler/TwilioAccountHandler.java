@@ -69,6 +69,12 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         config = getConfigAs(TwilioAccountConfiguration.class);
 
+        // If the user turned cloud webhooks off, drop our registration with the shared service.
+        // The webhook is only actually removed from the cloud when no account still wants it.
+        if (!config.useCloudWebhook) {
+            cloudWebhookService.unregister(getThing().getUID().getAsString());
+        }
+
         String accountSid = config.accountSid;
         if (accountSid == null || accountSid.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -97,6 +103,12 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
         }
         apiClient = null;
         super.dispose();
+    }
+
+    @Override
+    public void handleRemoval() {
+        cloudWebhookService.unregister(getThing().getUID().getAsString());
+        super.handleRemoval();
     }
 
     @Override
@@ -191,7 +203,7 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
         try {
             if (client.validateAccount()) {
                 if (config.useCloudWebhook) {
-                    cloudWebhookService.register();
+                    cloudWebhookService.register(getThing().getUID().getAsString());
                 }
                 updateStatus(ThingStatus.ONLINE);
             } else {

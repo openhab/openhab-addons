@@ -16,23 +16,21 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,21 +41,12 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = { ChannelTypeProvider.class, BasicChannelTypeProvider.class })
 @NonNullByDefault
-public class BasicChannelTypeProvider implements ChannelTypeProvider {
-    private final Map<String, ChannelType> channelTypes = new ConcurrentHashMap<>();
+public class BasicChannelTypeProvider extends AbstractStorageBasedTypeProvider {
     private final Logger logger = LoggerFactory.getLogger(BasicChannelTypeProvider.class);
 
-    @Override
-    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return channelTypes.values();
-    }
-
-    @Override
-    public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        if (channelTypes.containsKey(channelTypeUID.getAsString())) {
-            return channelTypes.get(channelTypeUID.getAsString());
-        }
-        return null;
+    @Activate
+    public BasicChannelTypeProvider(@Reference StorageService storageService) {
+        super(storageService);
     }
 
     public void addChannelType(MiIoBasicChannel miChannel, String model) {
@@ -112,7 +101,7 @@ public class BasicChannelTypeProvider implements ChannelTypeProvider {
             if (tags != null && !tags.isEmpty()) {
                 channelTypeBuilder.withTags(tags);
             }
-            channelTypes.put(channelTypeUID.getAsString(), channelTypeBuilder.build());
+            putChannelType(channelTypeBuilder.build());
         } catch (Exception e) {
             logger.warn("Failed creating channelType {}: {} ", channelTypeUID, e.getMessage());
         }

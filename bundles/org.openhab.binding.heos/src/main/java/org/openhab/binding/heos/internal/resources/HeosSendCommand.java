@@ -92,7 +92,7 @@ public class HeosSendCommand {
     }
 
     public void disconnect() {
-        if (client.isConnected()) {
+        if (!client.isConnected()) {
             return;
         }
 

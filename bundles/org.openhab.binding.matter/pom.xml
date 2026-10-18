@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.2.0-SNAPSHOT</version>
+    <version>5.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.matter</artifactId>
@@ -23,12 +23,6 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>2.0.0</version>
-        <configuration>
-          <nodeVersion>v24.11.1</nodeVersion>
-          <npmVersion>11.6.2</npmVersion>
-        </configuration>
-
         <executions>
           <!-- Matter server webpack commands -->
           <execution>
@@ -49,7 +43,7 @@
             </goals>
             <configuration>
               <workingDirectory>matter-server</workingDirectory>
-              <arguments>install</arguments>
+              <arguments>ci</arguments>
             </configuration>
           </execution>
 
@@ -99,11 +93,6 @@
           <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
-            <version>2.0.0</version>
-            <configuration>
-              <nodeVersion>v24.11.1</nodeVersion>
-              <npmVersion>11.6.2</npmVersion>
-            </configuration>
             <executions>
               <execution>
                 <id>Install node and npm for codegen</id>
@@ -124,7 +113,7 @@
                 <phase>generate-sources</phase>
                 <configuration>
                   <workingDirectory>code-gen</workingDirectory>
-                  <arguments>install</arguments>
+                  <arguments>ci</arguments>
                 </configuration>
               </execution>
 
@@ -176,7 +165,7 @@
                 <goals>
                   <goal>copy-resources</goal>
                 </goals>
-                <phase>generate-sources</phase>
+                <phase>process-sources</phase>
                 <configuration>
                   <outputDirectory>${generated.code.dir}</outputDirectory>
                   <resources>
@@ -199,7 +188,7 @@
                 <goals>
                   <goal>run</goal>
                 </goals>
-                <phase>generate-sources</phase>
+                <phase>process-sources</phase>
                 <configuration>
                   <target>
                     <delete dir="code-gen/out"/>

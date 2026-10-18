@@ -12,18 +12,22 @@
  */
 package org.openhab.binding.smhi.internal;
 
+import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.openhab.binding.smhi.provider.ParameterMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,16 +58,9 @@ public class SmhiConnector {
      */
     public ZonedDateTime getCreatedTime() throws SmhiException {
         logger.debug("Fetching reference time");
-        Request req = httpClient.newRequest(CREATED_TIME_URL);
-        req.accept(ACCEPT);
-        ContentResponse resp;
-        try {
-            resp = req.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new SmhiException(e);
-        }
-        logger.debug("Received response with status {} - {}", resp.getStatus(), resp.getReason());
-        if (resp.getStatus() == 200) {
+        ContentResponse resp = makeRequest(CREATED_TIME_URL);
+
+        if (resp.getStatus() == OK_200) {
             return Parser.parseCreatedTime(resp.getContentAsString());
         } else {
             throw new SmhiException(resp.getReason());
@@ -80,27 +77,51 @@ public class SmhiConnector {
     public SmhiTimeSeries getForecast(double lat, double lon) throws SmhiException, PointOutOfBoundsException {
         logger.debug("Fetching new forecast");
         String url = String.format(Locale.ROOT, POINT_FORECAST_URL, lon, lat);
-        Request req = httpClient.newRequest(url);
-        req.accept(ACCEPT);
-        ContentResponse resp;
-        try {
-            resp = req.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new SmhiException(e);
-        }
-        logger.debug("Received response with status {} - {}", resp.getStatus(), resp.getReason());
+        ContentResponse resp = makeRequest(url);
+
         switch (resp.getStatus()) {
-            case 200:
+            case OK_200:
                 try {
                     return Parser.parseTimeSeries(resp.getContentAsString());
                 } catch (JsonParseException | DateTimeParseException e) {
                     throw new SmhiException(e);
                 }
-            case 400:
-            case 404:
+            case BAD_REQUEST_400:
+            case NOT_FOUND_404:
                 throw new PointOutOfBoundsException();
             default:
                 throw new SmhiException(resp.getReason());
         }
+    }
+
+    public List<ParameterMetadata> getParameterMetadata() throws SmhiException {
+        logger.debug("Fetching parameter metadata");
+        ContentResponse resp = makeRequest(PARAMETER_METADATA_URL);
+
+        if (resp.getStatus() == OK_200) {
+            try {
+                return Parser.parseParameterMetadata(resp.getContentAsString());
+            } catch (JsonParseException | DateTimeParseException e) {
+                throw new SmhiException(e);
+            }
+        }
+        throw new SmhiException(resp.getReason());
+    }
+
+    private ContentResponse makeRequest(String url) throws SmhiException {
+        Request req = httpClient.newRequest(url);
+        req.timeout(5, TimeUnit.SECONDS);
+        req.accept(ACCEPT);
+        ContentResponse resp;
+        try {
+            resp = req.send();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new SmhiException(e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new SmhiException(e);
+        }
+        logger.debug("Received response with status {} - {}", resp.getStatus(), resp.getReason());
+        return resp;
     }
 }

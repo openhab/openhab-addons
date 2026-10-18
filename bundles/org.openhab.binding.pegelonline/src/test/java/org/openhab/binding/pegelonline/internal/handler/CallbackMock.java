@@ -74,6 +74,10 @@ public class CallbackMock implements ThingHandlerCallback {
         }
     }
 
+    public void clearStates() {
+        stateMap.clear();
+    }
+
     @Override
     public void postCommand(ChannelUID channelUID, Command command) {
     }

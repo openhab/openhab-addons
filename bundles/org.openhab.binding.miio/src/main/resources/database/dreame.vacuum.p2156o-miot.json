@@ -28,11 +28,11 @@
 						},
 						{
 							"value": "brush-cleaner-reset-brush-life",
-							"label": "Brush Cleaner Reset Brush Life"
+							"label": "Main Cleaning Brush Reset Brush Life"
 						},
 						{
-							"value": "brush-cleaner-reset-brush-life",
-							"label": "Brush Cleaner Reset Brush Life"
+							"value": "brush-cleaner-reset-brush-life1",
+							"label": "Side Cleaning Brush Reset Brush Life"
 						},
 						{
 							"value": "filter-reset-filter-life",
@@ -134,7 +134,7 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "brush-cleaner-reset-brush-life"
+									"matchValue": "brush-cleaner-reset-brush-life1"
 								}
 							]
 						}
@@ -264,7 +264,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Sweep\",\"vacuum-stop-sweeping\"\u003d\"Stop Sweeping\",\"battery-start-charge\"\u003d\"Start Charge\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"vacuum-extend-start-clean\"\u003d\"Vacuum Extend Start Clean\",\"vacuum-extend-stop-clean\"\u003d\"Vacuum Extend Stop Clean\",\"map-map-req\"\u003d\"Map Map Req\",\"map-update-map\"\u003d\"Map Update Map\",\"audio-position\"\u003d\"Audio Position\",\"audio-play-sound\"\u003d\"Audio Play Sound\",\"time-delete-timer\"\u003d\"Time Delete Timer\"]`"
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Sweep\",\"vacuum-stop-sweeping\"\u003d\"Stop Sweeping\",\"battery-start-charge\"\u003d\"Start Charge\",\"brush-cleaner-reset-brush-life\"\u003d\"Main Cleaning Brush Reset Brush Life\",\"brush-cleaner-reset-brush-life1\"\u003d\"Side Cleaning Brush Reset Brush Life\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"vacuum-extend-start-clean\"\u003d\"Vacuum Extend Start Clean\",\"vacuum-extend-stop-clean\"\u003d\"Vacuum Extend Stop Clean\",\"map-map-req\"\u003d\"Map Map Req\",\"map-update-map\"\u003d\"Map Update Map\",\"audio-position\"\u003d\"Audio Position\",\"audio-play-sound\"\u003d\"Audio Play Sound\",\"time-delete-timer\"\u003d\"Time Delete Timer\"]`"
 			},
 			{
 				"property": "status",

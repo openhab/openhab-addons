@@ -31,11 +31,13 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -61,6 +63,8 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     protected String model;
     protected Boolean autoRelease;
     protected Boolean advancedChannels = false;
+    protected boolean useTriggerChannels = true;
+    protected String triggerChannelTypeId = "buttonTrigger";
 
     protected Map<Integer, String> componentChannelMap = new HashMap<>(50);
 
@@ -130,10 +134,19 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
         // add channels for buttons
         for (KeypadComponent component : buttonList) {
-            channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "buttonAdvanced" : "button");
             channelUID = new ChannelUID(getThing().getUID(), component.channel());
-            channel = ChannelBuilder.create(channelUID, "Switch").withType(channelTypeUID)
-                    .withLabel(component.description()).build();
+            if (useTriggerChannels) {
+                // Physical keypad buttons are momentary events, modeled as trigger channels. An item can still be
+                // linked to them via a trigger profile (e.g. system:rawbutton-toggle-switch).
+                channelTypeUID = new ChannelTypeUID(BINDING_ID, triggerChannelTypeId);
+                channel = ChannelBuilder.create(channelUID).withType(channelTypeUID).withKind(ChannelKind.TRIGGER)
+                        .withLabel(component.description()).build();
+            } else {
+                // Virtual keypad buttons are bidirectional and stay Switch state channels.
+                channelTypeUID = new ChannelTypeUID(BINDING_ID, advancedChannels ? "buttonAdvanced" : "button");
+                channel = ChannelBuilder.create(channelUID, "Switch").withType(channelTypeUID)
+                        .withLabel(component.description()).build();
+            }
             channelList.add(channel);
         }
 
@@ -202,8 +215,10 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             }
         }
 
-        Boolean arParam = (Boolean) getThing().getConfiguration().get("autorelease");
-        autoRelease = arParam == null ? true : arParam;
+        if (!useTriggerChannels) {
+            Boolean arParam = (Boolean) getThing().getConfiguration().get("autorelease");
+            autoRelease = arParam == null ? true : arParam;
+        }
 
         // schedule a thread to finish initialization asynchronously since it can take several seconds
         scheduler.schedule(this::asyncInitialize, 0, TimeUnit.SECONDS);
@@ -299,9 +314,11 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             return;
         }
 
-        // For buttons, handle OnOffType commands
+        // For buttons, handle OnOffType commands. Trigger channels (physical keypads) do not accept commands.
         if (isButton(componentID)) {
-            if (command instanceof OnOffType) {
+            if (useTriggerChannels) {
+                logger.debug("Commands not supported on trigger channel {} device {}", channelUID, getThing().getUID());
+            } else if (command instanceof OnOffType) {
                 // Annotate commands with LEAP button number for LEAP bridge
                 Integer leapComponent = (this.leapButtonMap == null) ? null : leapButtonMap.get(componentID);
                 if (command == OnOffType.ON) {
@@ -342,8 +359,8 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             queryDevice(commandTargetType, id, DeviceCommand.ACTION_LED_STATE);
         }
         // Button and CCI state can't be queried, only monitored for updates.
-        // Init button state to OFF on channel init.
-        if (isButton(id)) {
+        // Init button state to OFF on channel init. Trigger channels (physical keypads) have no state.
+        if (isButton(id) && !useTriggerChannels) {
             updateState(channelUID, OnOffType.OFF);
         }
         // Leave CCI channel state undefined on channel init.
@@ -381,22 +398,52 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                     }
                 } else if (DeviceCommand.ACTION_PRESS.toString().equals(parameters[1])) {
                     if (isButton(component)) {
-                        updateState(channelUID, OnOffType.ON);
-                        if (autoRelease) {
-                            updateState(channelUID, OnOffType.OFF);
+                        if (useTriggerChannels) {
+                            triggerChannel(channelUID, CommonTriggerEvents.PRESSED);
+                        } else {
+                            updateState(channelUID, OnOffType.ON);
+                            if (autoRelease) {
+                                updateState(channelUID, OnOffType.OFF);
+                            }
                         }
                     } else { // component is CCI
                         updateState(channelUID, OpenClosedType.CLOSED);
                     }
                 } else if (DeviceCommand.ACTION_RELEASE.toString().equals(parameters[1])) {
                     if (isButton(component)) {
-                        updateState(channelUID, OnOffType.OFF);
+                        if (useTriggerChannels) {
+                            triggerChannel(channelUID, CommonTriggerEvents.RELEASED);
+                        } else {
+                            updateState(channelUID, OnOffType.OFF);
+                        }
                     } else { // component is CCI
                         updateState(channelUID, OpenClosedType.OPEN);
                     }
                 } else if (DeviceCommand.ACTION_HOLD.toString().equals(parameters[1])) {
-                    updateState(channelUID, OnOffType.OFF); // Signal a release if we receive a hold code as we will not
-                                                            // get a subsequent release.
+                    if (isButton(component)) {
+                        if (useTriggerChannels) {
+                            // A hold-programmed button reports a hold instead of a release. Fire RELEASED after
+                            // LONG_PRESSED so trigger profiles don't get stuck in the pressed state. Systems that
+                            // also report a hold release will fire a harmless duplicate RELEASED.
+                            triggerChannel(channelUID, CommonTriggerEvents.LONG_PRESSED);
+                            triggerChannel(channelUID, CommonTriggerEvents.RELEASED);
+                        } else {
+                            // Signal a release; Lutron does not send a subsequent release after a hold.
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+                    }
+                } else if (DeviceCommand.ACTION_DBLTAP.toString().equals(parameters[1])) {
+                    if (isButton(component) && useTriggerChannels) {
+                        triggerChannel(channelUID, CommonTriggerEvents.DOUBLE_PRESSED);
+                    }
+                } else if (DeviceCommand.ACTION_HOLDRELEASE.toString().equals(parameters[1])) {
+                    if (isButton(component)) {
+                        if (useTriggerChannels) {
+                            triggerChannel(channelUID, CommonTriggerEvents.RELEASED);
+                        } else {
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+                    }
                 }
             } else {
                 logger.warn("Unable to determine channel for component {} in keypad update event message",

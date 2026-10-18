@@ -29,9 +29,8 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
@@ -41,23 +40,24 @@ import java.util.stream.Collectors;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.io.IOAccess;
 import org.openhab.automation.pythonscripting.internal.context.ContextInput;
 import org.openhab.automation.pythonscripting.internal.context.ContextOutput;
-import org.openhab.automation.pythonscripting.internal.context.ContextOutputLogger;
+import org.openhab.automation.pythonscripting.internal.context.ThreadLocalContextOutputLogger;
 import org.openhab.automation.pythonscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker;
 import org.openhab.automation.pythonscripting.internal.provider.ScriptExtensionModuleProvider;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine;
+import org.openhab.core.automation.module.script.LockableScriptEngine;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;
 import org.openhab.core.library.types.DateTimeType;
@@ -76,16 +76,12 @@ import org.slf4j.event.Level;
  * @author Holger Hees - Initial contribution
  * @author Jeff James - Initial contribution
  */
-public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine implements Lock {
+public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine implements LockableScriptEngine {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngine.class);
 
     public static final String CONTEXT_KEY_ENGINE_LOGGER_OUTPUT = "ctx.engine-logger-output";
     public static final String CONTEXT_KEY_ENGINE_LOGGER_INPUT = "ctx.engine-logger-input";
     private static final String CONTEXT_KEY_SCRIPT_FILENAME = "javax.script.filename";
-
-    private static final String PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY = "engine.WarnInterpreterOnly";
-
-    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
 
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
     private static final String PYTHON_OPTION_EMULATEJYTHON = "python.EmulateJython";
@@ -105,16 +101,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     private static final int STACK_TRACE_LENGTH = 5;
 
     private static final String LOGGER_INIT_NAME = "__logger_init__";
-
-    /** Shared Polyglot {@link Engine} across all instances of {@link PythonScriptEngine} */
-    private static Engine engine = Engine.newBuilder()
-            // disable warning about fallback runtime (is only available in graalvm)
-            .option(PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY, Boolean.toString(false)).build();
-
-    static {
-        // disable warning about missing TruffleAttach library (is only available in graalvm)
-        System.getProperties().setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
-    }
 
     // private static final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
@@ -166,12 +152,12 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
-    public PythonScriptEngine(PythonScriptEngineConfiguration pythonScriptEngineConfiguration,
+    public PythonScriptEngine(PythonScriptEngineConfiguration pythonScriptEngineConfiguration, Engine engine,
             PythonScriptEngineFactory pythonScriptEngineFactory) {
         this.pythonScriptEngineConfiguration = pythonScriptEngineConfiguration;
 
-        this.scriptOutputStream = new ContextOutput(new ContextOutputLogger(logger, Level.INFO));
-        this.scriptErrorStream = new ContextOutput(new ContextOutputLogger(logger, Level.ERROR));
+        this.scriptOutputStream = new ContextOutput(new ThreadLocalContextOutputLogger(logger, Level.INFO));
+        this.scriptErrorStream = new ContextOutput(new ThreadLocalContextOutputLogger(logger, Level.ERROR));
         this.scriptInputStream = new ContextInput(null);
 
         this.lifecycleTracker = new LifecycleTracker();
@@ -306,7 +292,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 getBindings(ScriptContext.ENGINE_SCOPE).put(ScriptExtensionModuleProvider.IMPORT_PROXY_NAME,
                         wrapImportFn);
                 try {
-                    if (!isScriptFile() && !isScriptModule() && !isTransformation()) {
+                    if (!isScriptFile() && !isScriptModule() && !isTransformation() && !isCLI()) {
                         logger.warn(
                                 "Unknown script environment detected for engine '{}': Neither script file, script module nor transformation.",
                                 engineIdentifier);
@@ -426,34 +412,13 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     }
 
     @Override
-    public void lock() {
-        lock.lock();
-        logger.debug("Lock acquired for engine '{}'.", this.engineIdentifier);
+    public @NonNull Lock getLock() {
+        return lock;
     }
 
     @Override
-    public void lockInterruptibly() throws InterruptedException {
-        lock.lockInterruptibly();
-    }
-
-    @Override
-    public boolean tryLock() {
-        boolean acquired = lock.tryLock();
-        logger.debug("{} for engine '{}'", acquired ? "Lock acquired." : "Lock not acquired.", this.engineIdentifier);
-        return acquired;
-    }
-
-    @Override
-    public boolean tryLock(long l, @Nullable TimeUnit timeUnit) throws InterruptedException {
-        boolean acquired = lock.tryLock(l, timeUnit);
-        logger.debug("{} for engine '{}'", acquired ? "Lock acquired." : "Lock not acquired.", this.engineIdentifier);
-        return acquired;
-    }
-
-    @Override
-    public void unlock() {
-        lock.unlock();
-        logger.debug("Lock released for engine '{}'.", this.engineIdentifier);
+    public long getLockAcquisitionTimeoutMs() {
+        return pythonScriptEngineConfiguration.getLockAcquisitionTimeout();
     }
 
     @Override
@@ -481,11 +446,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
         lock.unlock();
     }
 
-    @Override
-    public Condition newCondition() {
-        return lock.newCondition();
-    }
-
     /**
      * Initializes the logger.
      * This cannot be done on script engine creation because the context variables are not yet initialized.
@@ -510,8 +470,8 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
 
         Logger scriptLogger = LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
 
-        scriptOutputStream.setOutputStream(new ContextOutputLogger(scriptLogger, Level.INFO));
-        scriptErrorStream.setOutputStream(new ContextOutputLogger(scriptLogger, Level.ERROR));
+        scriptOutputStream.setOutputStream(new ThreadLocalContextOutputLogger(scriptLogger, Level.INFO));
+        scriptErrorStream.setOutputStream(new ThreadLocalContextOutputLogger(scriptLogger, Level.ERROR));
     }
 
     private String stringifyThrowable(Throwable throwable) {
@@ -581,6 +541,20 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
         return engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
     }
 
+    /**
+     * Tests if the script is used in the karaf console, i.e. created from the ConsoleCommandExtension service.
+     *
+     * @return true if it is a cli script, false otherwise
+     */
+    private boolean isCLI() {
+        ScriptContext ctx = getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return false;
+        }
+        return this.engineIdentifier.startsWith("pythonscripting-cli");
+    }
+
     private static Set<String> transformArrayToSet(Value value) {
         try {
             Set<String> set = new HashSet<>();
@@ -632,7 +606,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                         : ""));
     }
 
-    public static @Nullable Language getLanguage() {
-        return engine.getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
+    public Map<String, Object> getScope() {
+        return scriptExtensionModuleProvider.getScope();
     }
 }

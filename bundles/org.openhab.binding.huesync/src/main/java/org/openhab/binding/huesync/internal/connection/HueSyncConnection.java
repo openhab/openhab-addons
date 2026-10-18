@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -49,7 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * 
  * @author Patrik Gfeller - Initial Contribution
- * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
+ * @author Patrik Gfeller - Issue #18376, Exception message is not resolved using language resource strings
  */
 @NonNullByDefault
 public class HueSyncConnection {
@@ -71,7 +70,7 @@ public class HueSyncConnection {
     private final HttpClient httpClient;
     private final URI deviceUri;
 
-    private Optional<HueSyncAuthenticationResult> authentication = Optional.empty();
+    private @Nullable HueSyncAuthenticationResult authentication = null;
 
     private class Request {
 
@@ -132,8 +131,8 @@ public class HueSyncConnection {
         if (!id.isBlank() && !token.isBlank()) {
             this.registrationId = id;
 
-            this.authentication = Optional.of(new HueSyncAuthenticationResult(this.deviceUri, token));
-            this.httpClient.getAuthenticationStore().addAuthenticationResult(this.authentication.get());
+            this.authentication = new HueSyncAuthenticationResult(this.deviceUri, token);
+            this.httpClient.getAuthenticationStore().addAuthenticationResult(this.authentication);
         }
     }
 
@@ -153,7 +152,7 @@ public class HueSyncConnection {
     }
 
     protected boolean isRegistered() {
-        return this.authentication.isPresent();
+        return this.authentication != null;
     }
 
     protected void unregisterDevice() throws HueSyncConnectionException {
@@ -243,7 +242,7 @@ public class HueSyncConnection {
         this.httpClient.setAuthenticationStore(store);
 
         this.registrationId = "";
-        this.authentication = Optional.empty();
+        this.authentication = null;
     }
 
     // #endregion

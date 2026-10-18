@@ -21,19 +21,19 @@
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
 			<label>Button Events</label>
-			<description>Activates the Button Action URLS</description>
+			<description>Activates the Button Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
 			<label>Output Events</label>
-			<description>Activates the Output Action URLS</description>
+			<description>Activates the Output Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
 			<label>Push Events</label>
-			<description>Activates the Push Button Action URLS</description>
+			<description>Activates the Push Button Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -81,7 +81,7 @@
 		</parameter>
 		<parameter name="eventsRoller" type="boolean" required="false">
 			<label>Roller Events</label>
-			<description>Activates the Roller Action URLS</description>
+			<description>Activates the Roller Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -123,19 +123,19 @@
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
 			<label>Button Events</label>
-			<description>Activates the Button Action URLS</description>
+			<description>Activates the Button Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
 			<label>Output Events</label>
-			<description>Activates the Output Action URLS</description>
+			<description>Activates the Output Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
 			<label>Push Events</label>
-			<description>Activates the Push Button Action URLS</description>
+			<description>Activates the Push Button Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -169,15 +169,9 @@
 			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="brightnessAutoOn" type="boolean" required="false">
-			<label>Brightness Auto-ON</label>
-			<description>ON: Light is switched on when a brightness value greater than 0 is set; OFF: Brightness is set, but the
-				device is not switched on</description>
-			<default>true</default>
-		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
 			<label>Output Events</label>
-			<description>Activates the Output Action URLS</description>
+			<description>Activates the Output Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -210,12 +204,6 @@
 			<label>Password</label>
 			<description>Password for API access</description>
 			<context>password</context>
-		</parameter>
-		<parameter name="brightnessAutoOn" type="boolean" required="false">
-			<label>Brightness Auto-ON</label>
-			<description>ON: Light is switched on when a brightness value greater than 0 is set; OFF: Brightness is set, but the
-				device is not switched on</description>
-			<default>true</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Activate CoIoT</label>

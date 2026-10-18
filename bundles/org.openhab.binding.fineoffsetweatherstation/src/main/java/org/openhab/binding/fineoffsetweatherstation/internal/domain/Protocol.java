@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.handler.ThingStatusListener;
 import org.openhab.binding.fineoffsetweatherstation.internal.service.ELVGatewayQueryService;
+import org.openhab.binding.fineoffsetweatherstation.internal.service.EcowittHttpGatewayQueryService;
 import org.openhab.binding.fineoffsetweatherstation.internal.service.FineOffsetGatewayQueryService;
 import org.openhab.binding.fineoffsetweatherstation.internal.service.GatewayQueryService;
 
@@ -28,18 +29,19 @@ import org.openhab.binding.fineoffsetweatherstation.internal.service.GatewayQuer
 @NonNullByDefault
 public enum Protocol {
     DEFAULT(FineOffsetGatewayQueryService::new, null),
-    ELV(ELVGatewayQueryService::new, Measurand.ParserCustomizationType.ELV);
+    ELV(ELVGatewayQueryService::new, ParserCustomizationType.ELV),
+    HTTP_ECOWITT(EcowittHttpGatewayQueryService::new, null);
 
     private final GatewayQueryServiceFactory queryServiceFactory;
-    private final Measurand.@Nullable ParserCustomizationType parserCustomizationType;
+    private final @Nullable ParserCustomizationType parserCustomizationType;
 
     Protocol(GatewayQueryServiceFactory queryServiceFactory,
-            Measurand.@Nullable ParserCustomizationType parserCustomizationType) {
+            @Nullable ParserCustomizationType parserCustomizationType) {
         this.queryServiceFactory = queryServiceFactory;
         this.parserCustomizationType = parserCustomizationType;
     }
 
-    public Measurand.@Nullable ParserCustomizationType getParserCustomizationType() {
+    public @Nullable ParserCustomizationType getParserCustomizationType() {
         return parserCustomizationType;
     }
 

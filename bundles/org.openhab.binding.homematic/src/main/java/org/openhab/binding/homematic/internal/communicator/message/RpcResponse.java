@@ -12,20 +12,25 @@
  */
 package org.openhab.binding.homematic.internal.communicator.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A RPC response definition for reveiving data from the Homematic server.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface RpcResponse {
 
     /**
      * Returns the decoded methodName.
      */
+    @Nullable
     String getMethodName();
 
     /**
      * Returns the decoded data.
      */
-    Object[] getResponseData();
+    Object @Nullable [] getResponseData();
 }

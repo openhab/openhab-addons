@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<featureMappingFile xsi:schemaLocation="http://www.home-connect.com/schemas/FeatureMapping/20140417 https://www.home-connect.com/schemas/FeatureMapping/20140417/HC_INT_BSH_FeatureMapping.xsd" xmlns="http://www.home-connect.com/schemas/FeatureMapping/20140417" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <xi:include href="HC_INT_PCP_MCC9555DWC_34-0_DeviceDescription.xml" parse="xml">
+    <xi:fallback>
+      <error>xinclude error: file &quot;HC_INT_PCP_MCC9555DWC_34-0_DeviceDescription.xml&quot; not found</error>
+    </xi:fallback>
+  </xi:include>
+  <featureDescription>
+    <feature refUID="0200">BSH.Common.Command.AbortProgram</feature>
+    <feature refUID="0006">BSH.Common.Command.AcknowledgeEvent</feature>
+    <feature refUID="0252">BSH.Common.Command.AllowSoftwareDownload</feature>
+    <feature refUID="0263">BSH.Common.Command.AllowSoftwareUpdate</feature>
+    <feature refUID="023F">BSH.Common.Command.AllowSoftwareUpdateLocalWiFi</feature>
+    <feature refUID="0229">BSH.Common.Command.ApplyFactoryReset</feature>
+    <feature refUID="000C">BSH.Common.Command.Next</feature>
+    <feature refUID="0219">BSH.Common.Command.PauseProgram</feature>
+    <feature refUID="000E">BSH.Common.Command.Previous</feature>
+    <feature refUID="0010">BSH.Common.Command.RejectEvent</feature>
+    <feature refUID="0222">BSH.Common.Command.ResumeProgram</feature>
+    <feature refUID="0032">BSH.Common.Event.Content.DownloadError</feature>
+    <feature refUID="0221">BSH.Common.Event.ProgramAborted</feature>
+    <feature refUID="021C">BSH.Common.Event.ProgramFinished</feature>
+    <feature refUID="0251">BSH.Common.Event.SoftwareDownloadAvailable</feature>
+    <feature refUID="0015">BSH.Common.Event.SoftwareUpdateAvailable</feature>
+    <feature refUID="0253">BSH.Common.Event.SoftwareUpdateSuccessful</feature>
+    <feature refUID="0011">BSH.Common.Option.Content.SourceId</feature>
+    <feature refUID="0020">BSH.Common.Option.Content.VariantId</feature>
+    <feature refUID="0013">BSH.Common.Option.CurrentStepNumber</feature>
+    <feature refUID="002B">BSH.Common.Option.CurrentStepProgress</feature>
+    <feature refUID="0016">BSH.Common.Option.CurrentStepRemainingTime</feature>
+    <feature refUID="0017">BSH.Common.Option.CurrentStepRemainingTime.AutoCounting</feature>
+    <feature refUID="0037">BSH.Common.Option.HeatupProgress</feature>
+    <feature refUID="021E">BSH.Common.Option.ProgramProgress</feature>
+    <feature refUID="0034">BSH.Common.Option.ReadyToStart</feature>
+    <feature refUID="0220">BSH.Common.Option.RemainingProgramTime</feature>
+    <feature refUID="0030">BSH.Common.Option.TotalNumberOfSteps</feature>
+    <feature refUID="0028">BSH.Common.Program.AutomaticProgram</feature>
+    <feature refUID="0018">BSH.Common.Program.GuidedProgram</feature>
+    <feature refUID="0019">BSH.Common.ProgramGroup.BuildingBlock</feature>
+    <feature refUID="0100">BSH.Common.Root.ActiveProgram</feature>
+    <feature refUID="0105">BSH.Common.Root.CommandList</feature>
+    <feature refUID="0104">BSH.Common.Root.EventList</feature>
+    <feature refUID="0106">BSH.Common.Root.OptionList</feature>
+    <feature refUID="0107">BSH.Common.Root.ProgramGroup</feature>
+    <feature refUID="0101">BSH.Common.Root.SelectedProgram</feature>
+    <feature refUID="0103">BSH.Common.Root.SettingList</feature>
+    <feature refUID="0102">BSH.Common.Root.StatusList</feature>
+    <feature refUID="0003">BSH.Common.Setting.AllowBackendConnection</feature>
+    <feature refUID="0026">BSH.Common.Setting.AutoStandbyTime</feature>
+    <feature refUID="021B">BSH.Common.Setting.PowerState</feature>
+    <feature refUID="001E">BSH.Common.Setting.Sound.Button.Power</feature>
+    <feature refUID="001F">BSH.Common.Setting.Sound.Button.Volume</feature>
+    <feature refUID="0005">BSH.Common.Status.BackendConnected</feature>
+    <feature refUID="0228">BSH.Common.Status.OperationState</feature>
+    <feature refUID="0250">BSH.Common.Status.SoftwareUpdateTransactionID</feature>
+    <feature refUID="3003">ConsumerProducts.CookProcessor.Event.ResumingRecipe</feature>
+    <feature refUID="3002">ConsumerProducts.CookProcessor.Event.StepFinished</feature>
+    <feature refUID="5B07">ConsumerProducts.CookProcessor.Option.BuildingBlock.Action</feature>
+    <feature refUID="5B0C">ConsumerProducts.CookProcessor.Option.BuildingBlock.ConversionFactor</feature>
+    <feature refUID="5B02">ConsumerProducts.CookProcessor.Option.BuildingBlock.Duration</feature>
+    <feature refUID="5B10">ConsumerProducts.CookProcessor.Option.BuildingBlock.ExitCriteria</feature>
+    <feature refUID="5B15">ConsumerProducts.CookProcessor.Option.BuildingBlock.HeaderText</feature>
+    <feature refUID="5B17">ConsumerProducts.CookProcessor.Option.BuildingBlock.HintPicture</feature>
+    <feature refUID="5B16">ConsumerProducts.CookProcessor.Option.BuildingBlock.HintText1</feature>
+    <feature refUID="5B18">ConsumerProducts.CookProcessor.Option.BuildingBlock.HintText2</feature>
+    <feature refUID="5B0B">ConsumerProducts.CookProcessor.Option.BuildingBlock.LidType</feature>
+    <feature refUID="5B08">ConsumerProducts.CookProcessor.Option.BuildingBlock.NeededLidState</feature>
+    <feature refUID="5B06">ConsumerProducts.CookProcessor.Option.BuildingBlock.NeededTool</feature>
+    <feature refUID="5B0F">ConsumerProducts.CookProcessor.Option.BuildingBlock.PresentedStirrerSpeed</feature>
+    <feature refUID="5B05">ConsumerProducts.CookProcessor.Option.BuildingBlock.RotationOffTime</feature>
+    <feature refUID="5B04">ConsumerProducts.CookProcessor.Option.BuildingBlock.RotationOnTime</feature>
+    <feature refUID="5B03">ConsumerProducts.CookProcessor.Option.BuildingBlock.RotationSetPoint</feature>
+    <feature refUID="5B14">ConsumerProducts.CookProcessor.Option.BuildingBlock.StepPicture</feature>
+    <feature refUID="5B01">ConsumerProducts.CookProcessor.Option.BuildingBlock.TargetTemperature</feature>
+    <feature refUID="5B0A">ConsumerProducts.CookProcessor.Option.BuildingBlock.TargetVolume</feature>
+    <feature refUID="5B09">ConsumerProducts.CookProcessor.Option.BuildingBlock.TargetWeight</feature>
+    <feature refUID="5B11">ConsumerProducts.CookProcessor.Option.BuildingBlock.UseAdditionalTemperatureSensor</feature>
+    <feature refUID="5B12">ConsumerProducts.CookProcessor.Option.BuildingBlock.UserInstruction</feature>
+    <feature refUID="5B13">ConsumerProducts.CookProcessor.Option.BuildingBlock.UserInstructionDuringOperation</feature>
+    <feature refUID="5B00">ConsumerProducts.CookProcessor.OptionList.BuildingBlock</feature>
+    <feature refUID="6B37">ConsumerProducts.CookProcessor.Program.BuildingBlock.AutomaticWarmingUpViscousDishes</feature>
+    <feature refUID="6B0B">ConsumerProducts.CookProcessor.Program.BuildingBlock.Beating</feature>
+    <feature refUID="6B1D">ConsumerProducts.CookProcessor.Program.BuildingBlock.Boiling</feature>
+    <feature refUID="6B2B">ConsumerProducts.CookProcessor.Program.BuildingBlock.Braising</feature>
+    <feature refUID="6B2C">ConsumerProducts.CookProcessor.Program.BuildingBlock.BraisingBigParts</feature>
+    <feature refUID="6B1B">ConsumerProducts.CookProcessor.Program.BuildingBlock.Browning</feature>
+    <feature refUID="6B29">ConsumerProducts.CookProcessor.Program.BuildingBlock.Caramelizing</feature>
+    <feature refUID="6B08">ConsumerProducts.CookProcessor.Program.BuildingBlock.Chopping</feature>
+    <feature refUID="6B3E">ConsumerProducts.CookProcessor.Program.BuildingBlock.ColdPreCleaning</feature>
+    <feature refUID="6B39">ConsumerProducts.CookProcessor.Program.BuildingBlock.CookingFoamingFoods</feature>
+    <feature refUID="6B28">ConsumerProducts.CookProcessor.Program.BuildingBlock.CookingSugarSirup</feature>
+    <feature refUID="6B1C">ConsumerProducts.CookProcessor.Program.BuildingBlock.Defrosting</feature>
+    <feature refUID="6B10">ConsumerProducts.CookProcessor.Program.BuildingBlock.DoughProving</feature>
+    <feature refUID="6B00">ConsumerProducts.CookProcessor.Program.BuildingBlock.FreetextInstruction</feature>
+    <feature refUID="6B2A">ConsumerProducts.CookProcessor.Program.BuildingBlock.FryingRoastingSearing</feature>
+    <feature refUID="6B09">ConsumerProducts.CookProcessor.Program.BuildingBlock.Grating</feature>
+    <feature refUID="6B30">ConsumerProducts.CookProcessor.Program.BuildingBlock.HeatingManualMode1</feature>
+    <feature refUID="6B31">ConsumerProducts.CookProcessor.Program.BuildingBlock.HeatingManualMode2</feature>
+    <feature refUID="6B3D">ConsumerProducts.CookProcessor.Program.BuildingBlock.HeatingManualMode3</feature>
+    <feature refUID="6B18">ConsumerProducts.CookProcessor.Program.BuildingBlock.HotFoodPureeing</feature>
+    <feature refUID="6B17">ConsumerProducts.CookProcessor.Program.BuildingBlock.KeepWarmHighViscous</feature>
+    <feature refUID="6B19">ConsumerProducts.CookProcessor.Program.BuildingBlock.KeepWarmLowViscous</feature>
+    <feature refUID="6B0D">ConsumerProducts.CookProcessor.Program.BuildingBlock.KneadingHeavyDough</feature>
+    <feature refUID="6B2E">ConsumerProducts.CookProcessor.Program.BuildingBlock.KneadingSoftDough</feature>
+    <feature refUID="6B12">ConsumerProducts.CookProcessor.Program.BuildingBlock.LeaveToCulture</feature>
+    <feature refUID="6B03">ConsumerProducts.CookProcessor.Program.BuildingBlock.LidChange</feature>
+    <feature refUID="6B38">ConsumerProducts.CookProcessor.Program.BuildingBlock.ManualCookingParameter</feature>
+    <feature refUID="6B3F">ConsumerProducts.CookProcessor.Program.BuildingBlock.ManualCookingParameterWithSeaLevelCompensation</feature>
+    <feature refUID="6B11">ConsumerProducts.CookProcessor.Program.BuildingBlock.Melting</feature>
+    <feature refUID="6B0A">ConsumerProducts.CookProcessor.Program.BuildingBlock.Mixing</feature>
+    <feature refUID="6B13">ConsumerProducts.CookProcessor.Program.BuildingBlock.MixingBatter</feature>
+    <feature refUID="6B14">ConsumerProducts.CookProcessor.Program.BuildingBlock.Poaching</feature>
+    <feature refUID="6B0F">ConsumerProducts.CookProcessor.Program.BuildingBlock.Pureeing</feature>
+    <feature refUID="6B01">ConsumerProducts.CookProcessor.Program.BuildingBlock.Serving</feature>
+    <feature refUID="6B35">ConsumerProducts.CookProcessor.Program.BuildingBlock.ServingOrKeepWarmHighViscous</feature>
+    <feature refUID="6B36">ConsumerProducts.CookProcessor.Program.BuildingBlock.ServingOrKeepWarmLowViscous</feature>
+    <feature refUID="6B25">ConsumerProducts.CookProcessor.Program.BuildingBlock.SimmeringFruitSpread</feature>
+    <feature refUID="6B26">ConsumerProducts.CookProcessor.Program.BuildingBlock.SimmeringInstantSoup</feature>
+    <feature refUID="6B23">ConsumerProducts.CookProcessor.Program.BuildingBlock.SimmeringLiquidDishes</feature>
+    <feature refUID="6B0E">ConsumerProducts.CookProcessor.Program.BuildingBlock.Slicing</feature>
+    <feature refUID="6B27">ConsumerProducts.CookProcessor.Program.BuildingBlock.Soaking</feature>
+    <feature refUID="6B15">ConsumerProducts.CookProcessor.Program.BuildingBlock.SousVide</feature>
+    <feature refUID="6B32">ConsumerProducts.CookProcessor.Program.BuildingBlock.SteamingHigh</feature>
+    <feature refUID="6B3A">ConsumerProducts.CookProcessor.Program.BuildingBlock.SteamingHighReduced</feature>
+    <feature refUID="6B34">ConsumerProducts.CookProcessor.Program.BuildingBlock.SteamingLow</feature>
+    <feature refUID="6B33">ConsumerProducts.CookProcessor.Program.BuildingBlock.SteamingMiddle</feature>
+    <feature refUID="6B3C">ConsumerProducts.CookProcessor.Program.BuildingBlock.SteamingSpecial</feature>
+    <feature refUID="6B3B">ConsumerProducts.CookProcessor.Program.BuildingBlock.SteamingTowerCooking</feature>
+    <feature refUID="6B22">ConsumerProducts.CookProcessor.Program.BuildingBlock.Stewing</feature>
+    <feature refUID="6B24">ConsumerProducts.CookProcessor.Program.BuildingBlock.StewingSensibleDishes</feature>
+    <feature refUID="6B0C">ConsumerProducts.CookProcessor.Program.BuildingBlock.Stirring</feature>
+    <feature refUID="6B1A">ConsumerProducts.CookProcessor.Program.BuildingBlock.Sweating</feature>
+    <feature refUID="6B02">ConsumerProducts.CookProcessor.Program.BuildingBlock.ToolChange</feature>
+    <feature refUID="6B04">ConsumerProducts.CookProcessor.Program.BuildingBlock.Waiting</feature>
+    <feature refUID="6B2F">ConsumerProducts.CookProcessor.Program.BuildingBlock.WarmWhipping</feature>
+    <feature refUID="6B1E">ConsumerProducts.CookProcessor.Program.BuildingBlock.WarmingMilk</feature>
+    <feature refUID="6B1F">ConsumerProducts.CookProcessor.Program.BuildingBlock.WarmingMilkBasedDishes</feature>
+    <feature refUID="6B21">ConsumerProducts.CookProcessor.Program.BuildingBlock.WarmingUpLiquidDishes</feature>
+    <feature refUID="6B20">ConsumerProducts.CookProcessor.Program.BuildingBlock.WarmingUpViscousDishes</feature>
+    <feature refUID="6B16">ConsumerProducts.CookProcessor.Program.BuildingBlock.WaterFastBoiling</feature>
+    <feature refUID="6B05">ConsumerProducts.CookProcessor.Program.BuildingBlock.Weighing</feature>
+    <feature refUID="6B06">ConsumerProducts.CookProcessor.Program.BuildingBlock.WeighingVolume</feature>
+    <feature refUID="6B07">ConsumerProducts.CookProcessor.Program.BuildingBlock.Whipping</feature>
+    <feature refUID="6001">ConsumerProducts.CookProcessor.Program.ManualProgram</feature>
+    <feature refUID="6002">ConsumerProducts.CookProcessor.Program.Turbo</feature>
+    <feature refUID="6200">ConsumerProducts.CookProcessor.ProgramGroup.Automatic</feature>
+    <feature refUID="6100">ConsumerProducts.CookProcessor.ProgramGroup.Guided</feature>
+    <feature refUID="6000">ConsumerProducts.CookProcessor.ProgramGroup.Manual</feature>
+    <feature refUID="2005">ConsumerProducts.CookProcessor.Setting.BoilingPointAdjustment</feature>
+    <feature refUID="2004">ConsumerProducts.CookProcessor.Setting.BrightnessDisplay</feature>
+  </featureDescription>
+  <errorDescription>
+    <error refEID="00C8">BSH.Common.Error.200.OK</error>
+    <error refEID="00CA">BSH.Common.Error.202.Accepted</error>
+    <error refEID="0190">BSH.Common.Error.400.BadRequest</error>
+    <error refEID="0193">BSH.Common.Error.403.Forbidden</error>
+    <error refEID="0194">BSH.Common.Error.404.NotFound</error>
+    <error refEID="0195">BSH.Common.Error.405.MethodNotAllowed</error>
+    <error refEID="019D">BSH.Common.Error.413.RequestEntityTooLong</error>
+    <error refEID="019C">BSH.Common.Error.414.RequestUriTooLong</error>
+    <error refEID="01AD">BSH.Common.Error.429.TooManyRequests</error>
+    <error refEID="01F4">BSH.Common.Error.500.InternalServerError</error>
+    <error refEID="01F5">BSH.Common.Error.501.NotImplemented</error>
+    <error refEID="01F6">BSH.Common.Error.502.BadGateway</error>
+    <error refEID="01F7">BSH.Common.Error.503.ServiceUnavailable</error>
+    <error refEID="01F8">BSH.Common.Error.504.GatewayTimeout</error>
+    <error refEID="01FB">BSH.Common.Error.507.InsufficientMemory</error>
+    <error refEID="021E">BSH.Common.Error.BackendNotConnected</error>
+    <error refEID="0203">BSH.Common.Error.Busy</error>
+    <error refEID="0217">BSH.Common.Error.CmdViolation</error>
+    <error refEID="021C">BSH.Common.Error.DeviceStateNotCompliant</error>
+    <error refEID="021F">BSH.Common.Error.EnergyManagementNotConnected</error>
+    <error refEID="0215">BSH.Common.Error.Incomplete</error>
+    <error refEID="0216">BSH.Common.Error.Inconsistent</error>
+    <error refEID="0218">BSH.Common.Error.InvalidFormat</error>
+    <error refEID="0214">BSH.Common.Error.InvalidUIDValue</error>
+    <error refEID="021B">BSH.Common.Error.LockedByLocalControl</error>
+    <error refEID="0206">BSH.Common.Error.NoAccess</error>
+    <error refEID="0209">BSH.Common.Error.NoAccessByList</error>
+    <error refEID="0212">BSH.Common.Error.NoExecution</error>
+    <error refEID="020C">BSH.Common.Error.NotAvailable</error>
+    <error refEID="020F">BSH.Common.Error.NotAvailableByList</error>
+    <error refEID="0220">BSH.Common.Error.NotInLocalWiFi</error>
+    <error refEID="021D">BSH.Common.Error.ProcessStateNotCompliant</error>
+    <error refEID="0205">BSH.Common.Error.ReadRequest.Busy</error>
+    <error refEID="0208">BSH.Common.Error.ReadRequest.NoAccess</error>
+    <error refEID="020B">BSH.Common.Error.ReadRequest.NoAccessByList</error>
+    <error refEID="020E">BSH.Common.Error.ReadRequest.NotAvailable</error>
+    <error refEID="0211">BSH.Common.Error.ReadRequest.NotAvailableByList</error>
+    <error refEID="0202">BSH.Common.Error.ReadRequest.UnknownUID</error>
+    <error refEID="0219">BSH.Common.Error.RemoteControlNotActive</error>
+    <error refEID="021A">BSH.Common.Error.RemoteStartNotActive</error>
+    <error refEID="0200">BSH.Common.Error.UnknownUID</error>
+    <error refEID="0213">BSH.Common.Error.ValueOutOfRange</error>
+    <error refEID="0204">BSH.Common.Error.WriteRequest.Busy</error>
+    <error refEID="0207">BSH.Common.Error.WriteRequest.NoAccess</error>
+    <error refEID="020A">BSH.Common.Error.WriteRequest.NoAccessByList</error>
+    <error refEID="020D">BSH.Common.Error.WriteRequest.NotAvailable</error>
+    <error refEID="0210">BSH.Common.Error.WriteRequest.NotAvailableByList</error>
+    <error refEID="0201">BSH.Common.Error.WriteRequest.UnknownUID</error>
+  </errorDescription>
+  <enumDescriptionList>
+    <enumDescription refENID="0231" enumKey="BSH.Common.EnumType.AutoStandbyTime">
+      <enumMember refValue="2">00Hours05Minutes</enumMember>
+      <enumMember refValue="3">00Hours10Minutes</enumMember>
+      <enumMember refValue="4">00Hours15Minutes</enumMember>
+      <enumMember refValue="5">00Hours20Minutes</enumMember>
+      <enumMember refValue="6">00Hours25Minutes</enumMember>
+      <enumMember refValue="7">00Hours30Minutes</enumMember>
+      <enumMember refValue="8">00Hours35Minutes</enumMember>
+      <enumMember refValue="9">00Hours40Minutes</enumMember>
+      <enumMember refValue="10">00Hours45Minutes</enumMember>
+      <enumMember refValue="11">00Hours50Minutes</enumMember>
+      <enumMember refValue="12">00Hours55Minutes</enumMember>
+      <enumMember refValue="13">01Hours00Minutes</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0001" enumKey="BSH.Common.EnumType.EventPresentState">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">Present</enumMember>
+      <enumMember refValue="2">Confirmed</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0203" enumKey="BSH.Common.EnumType.OperationState">
+      <enumMember refValue="0">Inactive</enumMember>
+      <enumMember refValue="1">Ready</enumMember>
+      <enumMember refValue="3">Run</enumMember>
+      <enumMember refValue="4">Pause</enumMember>
+      <enumMember refValue="5">ActionRequired</enumMember>
+      <enumMember refValue="6">Finished</enumMember>
+      <enumMember refValue="7">Error</enumMember>
+      <enumMember refValue="8">Aborting</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0204" enumKey="BSH.Common.EnumType.PowerState">
+      <enumMember refValue="2">On</enumMember>
+      <enumMember refValue="3">Standby</enumMember>
+    </enumDescription>
+    <enumDescription refENID="2005" enumKey="ConsumerProducts.CookProcessor.EnumType.Altitude">
+      <enumMember refValue="0">Above0m</enumMember>
+      <enumMember refValue="50">Above50m</enumMember>
+      <enumMember refValue="300">Above300m</enumMember>
+      <enumMember refValue="600">Above600m</enumMember>
+      <enumMember refValue="900">Above900m</enumMember>
+      <enumMember refValue="1200">Above1200m</enumMember>
+      <enumMember refValue="1500">Above1500m</enumMember>
+      <enumMember refValue="1800">Above1800m</enumMember>
+    </enumDescription>
+    <enumDescription refENID="5B07" enumKey="ConsumerProducts.CookProcessor.EnumType.BuildingBlock.Action">
+      <enumMember refValue="0">Add</enumMember>
+      <enumMember refValue="1">Remove</enumMember>
+    </enumDescription>
+    <enumDescription refENID="5B10" enumKey="ConsumerProducts.CookProcessor.EnumType.BuildingBlock.ExitCriteria">
+      <enumMember refValue="1">TimeExpired</enumMember>
+      <enumMember refValue="2">TimeExpiredAfterTemperatureReached</enumMember>
+      <enumMember refValue="3">UserConfirmation</enumMember>
+      <enumMember refValue="4">TemperatureReached</enumMember>
+    </enumDescription>
+    <enumDescription refENID="5B0B" enumKey="ConsumerProducts.CookProcessor.EnumType.BuildingBlock.LidType">
+      <enumMember refValue="1">RaspingLid</enumMember>
+      <enumMember refValue="2">CookingLidWithoutInsert</enumMember>
+      <enumMember refValue="3">CookingLidWithMeasuringCup</enumMember>
+    </enumDescription>
+    <enumDescription refENID="5B08" enumKey="ConsumerProducts.CookProcessor.EnumType.BuildingBlock.NeededLidState">
+      <enumMember refValue="0">DontCare</enumMember>
+      <enumMember refValue="1">Closed</enumMember>
+      <enumMember refValue="2">Open</enumMember>
+    </enumDescription>
+    <enumDescription refENID="5B06" enumKey="ConsumerProducts.CookProcessor.EnumType.BuildingBlock.NeededTool">
+      <enumMember refValue="1">GratingDiscFine</enumMember>
+      <enumMember refValue="2">AsianVegetableDisc</enumMember>
+      <enumMember refValue="3">SupercutDiscRaw</enumMember>
+      <enumMember refValue="4">SupercutDiscFine</enumMember>
+      <enumMember refValue="5">FrenchFriesDisc</enumMember>
+      <enumMember refValue="10">DiscRaspingRaw</enumMember>
+      <enumMember refValue="20">DiscRaspingFine</enumMember>
+      <enumMember refValue="30">DiscCuttingRaw</enumMember>
+      <enumMember refValue="40">DiscCuttingFine</enumMember>
+      <enumMember refValue="50">None</enumMember>
+      <enumMember refValue="60">Knife</enumMember>
+      <enumMember refValue="61">KnifeIce</enumMember>
+      <enumMember refValue="70">Stirrer</enumMember>
+      <enumMember refValue="80">Whisk</enumMember>
+      <enumMember refValue="90">Disc</enumMember>
+      <enumMember refValue="100">ToolSelectionNeeded</enumMember>
+    </enumDescription>
+    <enumDescription refENID="5B0F" enumKey="ConsumerProducts.CookProcessor.EnumType.BuildingBlock.SpeedLevel">
+      <enumMember refValue="0">Level0</enumMember>
+      <enumMember refValue="10">Level10</enumMember>
+      <enumMember refValue="20">Level20</enumMember>
+      <enumMember refValue="30">Level30</enumMember>
+      <enumMember refValue="40">Level40</enumMember>
+      <enumMember refValue="50">Level50</enumMember>
+      <enumMember refValue="60">Level60</enumMember>
+      <enumMember refValue="70">Level70</enumMember>
+      <enumMember refValue="80">Level80</enumMember>
+      <enumMember refValue="90">Level90</enumMember>
+      <enumMember refValue="100">Level100</enumMember>
+      <enumMember refValue="110">Level110</enumMember>
+      <enumMember refValue="120">Level120</enumMember>
+      <enumMember refValue="130">Level130</enumMember>
+      <enumMember refValue="140">Level140</enumMember>
+      <enumMember refValue="150">Level150</enumMember>
+      <enumMember refValue="160">Level160</enumMember>
+      <enumMember refValue="170">Level170</enumMember>
+      <enumMember refValue="180">Level180</enumMember>
+    </enumDescription>
+  </enumDescriptionList>
+</featureMappingFile>

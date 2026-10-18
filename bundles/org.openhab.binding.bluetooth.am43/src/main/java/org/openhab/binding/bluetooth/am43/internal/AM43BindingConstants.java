@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.am43.internal;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,7 +54,7 @@ public class AM43BindingConstants {
     public static final UUID CHARACTERISTIC_UUID = UUID.fromString("0000fe51-0000-1000-8000-00805f9b34fb");
 
     public static List<String> getAllChannels() {
-        return Arrays.asList(CHANNEL_ID_DIRECTION, CHANNEL_ID_TOP_LIMIT_SET, CHANNEL_ID_BOTTOM_LIMIT_SET,
+        return List.of(CHANNEL_ID_DIRECTION, CHANNEL_ID_TOP_LIMIT_SET, CHANNEL_ID_BOTTOM_LIMIT_SET,
                 CHANNEL_ID_HAS_LIGHT_SENSOR, CHANNEL_ID_OPERATION_MODE, CHANNEL_ID_SPEED, CHANNEL_ID_ELECTRIC,
                 CHANNEL_ID_POSITION, CHANNEL_ID_LENGTH, CHANNEL_ID_DIAMETER, CHANNEL_ID_TYPE, CHANNEL_ID_LIGHT_LEVEL);
     }

@@ -330,6 +330,40 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Cleaning Robot -->
+	<thing-type id="cleaningrobot">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Cleaning Robot</label>
+		<description>Home Connect connected cleaning robot.</description>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
+		<channels>
+			<channel id="power_state" typeId="system.power"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="active_program_state" typeId="active_program_state"/>
+			<channel id="selected_program_state" typeId="selected_program_state"/>
+			<channel id="basic_actions_state" typeId="cleaning_robot_actions_state"/>
+			<channel id="cleaning_mode_state" typeId="cleaning_mode_state"/>
+			<channel id="suction_power_state" typeId="suction_power_state"/>
+			<channel id="water_flow_rate_state" typeId="water_flow_rate_state"/>
+			<channel id="cleaning_passes_state" typeId="cleaning_passes_state"/>
+			<channel id="carpet_boost" typeId="carpet_boost"/>
+			<channel id="cleaning_speed_state" typeId="cleaning_speed_state"/>
+			<channel id="mop_extension" typeId="mop_extension"/>
+			<channel id="program_progress_state" typeId="program_progress_state"/>
+			<channel id="current_map" typeId="current_map"/>
+			<channel id="battery_level" typeId="battery_level"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<!-- Channel types -->
 	<channel-type id="basic_actions_state">
 		<item-type>String</item-type>
@@ -948,5 +982,147 @@
 			<tag>Color</tag>
 		</tags>
 		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="battery_level">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<description>This status describes the battery level of the home appliance.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="cleaning_robot_actions_state">
+		<item-type>String</item-type>
+		<label>Program Actions</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="start">Start program</option>
+				<option value="stop">Stop program</option>
+				<option value="pause">Pause program</option>
+				<option value="resume">Resume program</option>
+				<option value="gohome">Go Home</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="cleaning_mode_state">
+		<item-type>String</item-type>
+		<label>Cleaning Mode</label>
+		<description>The cleaning mode of the cleaning robot.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningMode.Silent">Silent</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningMode.Standard">Standard</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningMode.Power">Power</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningMode.IntelligentMode">Intelligent Mode</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningMode.VacuumOnly">Vacuum Only</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningMode.MopOnly">Mop Only</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningMode.VacuumAndMop">Vacuum and Mop</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningMode.MopAfterVacuum">Mop after Vacuum</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="suction_power_state">
+		<item-type>String</item-type>
+		<label>Suction Power</label>
+		<description>The suction power of the cleaning robot (Spotless series only).</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.SuctionPower.Silent">Silent</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.SuctionPower.Standard">Standard</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.SuctionPower.Max">Max</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="water_flow_rate_state">
+		<item-type>String</item-type>
+		<label>Water Flow Rate</label>
+		<description>The water flow rate of the cleaning robot (Spotless series only).</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.WaterFlowRate.Low">Low</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.WaterFlowRate.Medium">Medium</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.WaterFlowRate.High">High</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="cleaning_passes_state">
+		<item-type>String</item-type>
+		<label>Cleaning Passes</label>
+		<description>The number of cleaning passes of the cleaning robot (Spotless series only).</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningPasses.Once">Once</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleaningPasses.Twice">Twice</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="carpet_boost">
+		<item-type>Switch</item-type>
+		<label>Carpet Boost</label>
+		<description>Indicates whether the carpet boost mode of the cleaning robot is enabled (Spotless series only).</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="cleaning_speed_state">
+		<item-type>String</item-type>
+		<label>Cleaning Speed</label>
+		<description>The cleaning speed of the cleaning robot (Spotless series only).</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleanSpeed.Quick">Quick</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleanSpeed.Default">Default</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.CleanSpeed.Intensive">Intensive</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="mop_extension">
+		<item-type>Switch</item-type>
+		<label>Mop Extension</label>
+		<description>Indicates whether the mop extension of the cleaning robot is enabled (Spotless series only).</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current_map">
+		<item-type>String</item-type>
+		<label>Current Map</label>
+		<description>The current map of the cleaning robot.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.AvailableMaps.TempMap">Temporary map</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.AvailableMaps.Map1">User-defined map 1</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.AvailableMaps.Map2">User-defined map 2</option>
+				<option value="ConsumerProducts.CleaningRobot.EnumType.AvailableMaps.Map3">User-defined map 3</option>
+			</options>
+		</state>
 	</channel-type>
 </thing:thing-descriptions>

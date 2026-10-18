@@ -61,8 +61,6 @@ import org.openhab.core.transform.TransformationHelper;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,8 +72,6 @@ import org.slf4j.LoggerFactory;
  */
 public class GlobalCacheHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(GlobalCacheHandler.class);
-
-    private final BundleContext bundleContext;
 
     private static final String GLOBALCACHE_THREAD_POOL = "globalCacheHandler";
 
@@ -98,7 +94,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
         commandProcessor = new CommandProcessor();
         scheduledFuture = null;
         this.ipv4Address = ipv4Address;
-        this.bundleContext = FrameworkUtil.getBundle(GlobalCacheHandler.class).getBundleContext();
     }
 
     @Override
@@ -250,7 +245,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
             return null;
         }
 
-        TransformationService transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
+        TransformationService transformService = TransformationHelper.getTransformationService("MAP");
         if (transformService == null) {
             logger.error("Failed to get MAP transformation service for thing {}; is bundle installed?", thingID());
             return null;

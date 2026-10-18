@@ -20,10 +20,25 @@ Follow the instructions under:
 When registering your new Spotify application for the openHAB Spotify bridge, you must specify the allowed "Redirect URIs" (allowlist).
 Here you have to specify the URL to the bridge authorization servlet on your server.
 
-For example, if you run your openHAB server on `http://openhab:8080`, you should add [http://openhab:8080/connectspotify](http://openhab:8080/connectspotify) as the redirect URI.
+Spotify only accepts `http://` redirect URIs when the host is a loopback IP literal (`127.0.0.1` or `[::1]`) — not the `localhost` hostname.
+For every other host, including your public domain or LAN hostname, the redirect URI **must** use `https://`.
+
+- Local/development access from the same machine: [http://127.0.0.1:8080/connectspotify](http://127.0.0.1:8080/connectspotify)
+- Any other access (LAN hostname, public domain, or through a reverse proxy): `https://<your openHAB address>/connectspotify`, for example [https://openhab.example.com/connectspotify](https://openhab.example.com/connectspotify)
+
+If openHAB itself does not terminate https (e.g. it sits behind a reverse proxy that does), see [Binding Configuration](#binding-configuration) below for the `forceHttps` setting, which may be required for the binding to generate a matching `https://` redirect URI.
 
 This is important since the authorization process with Spotify uses your web browser, and Spotify must know the correct URL to your openHAB server for authorization to complete.
 After authorizing with Spotify, this redirect URI is where authorization tokens for your openHAB Spotify bridge will be sent, and they have to be received by the servlet on `/connectspotify`.
+The `/connectspotify` page itself always shows you the exact redirect URI the binding will send to Spotify — make sure it matches what you registered, including the scheme.
+
+### Binding Configuration
+
+The binding has the following configuration options, available under the Spotify Binding add-on settings:
+
+| Parameter  | Type    | Description                                                                                                                                                                                                                                                    |
+|------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| forceHttps | Boolean | Always use `https` for the Spotify redirect URI, regardless of the scheme openHAB detects for the incoming request. Enable this when openHAB is reachable through a reverse proxy that terminates https but does not identify itself through a recognized forwarded-proto header (`X-Forwarded-Proto`, `X-Forwarded-Ssl`, `Front-End-Https`, or `Forwarded`), causing the redirect URI shown on `/connectspotify` to incorrectly use `http`. Defaults to `false`. |
 
 ### Configure the binding
 
@@ -32,7 +47,7 @@ After authorizing with Spotify, this redirect URI is where authorization tokens 
 1. Make sure you have your Spotify application _Client ID_ and _Client Secret_ available.
 1. Add a new **"Spotify Player Bridge"** Thing. Choose a new ID for the player (unless you prefer the generated one), and enter the _Client ID_ and _Client Secret_ from the Spotify application registration in the corresponding fields of the bridge configuration. You can leave _refreshPeriod_ as is. Save the bridge.
 1. The bridge Thing will stay in state _INITIALIZING_ and eventually go _OFFLINE_ — this is fine. You have to authorize this bridge with Spotify.
-1. Go to the authorization page of your server: `http://<your openHAB address>:8080/connectspotify`. Your newly added bridge should be listed there.
+1. Go to the authorization page of your server: `https://<your openHAB address>/connectspotify` (or `http://127.0.0.1:8080/connectspotify` for local/development access). Your newly added bridge should be listed there.
 1. Press the _"Authorize Player"_ button. This will take you either to the Spotify login page or directly to the authorization screen. Log in and/or authorize the application. If the redirect URIs are correct, you will be returned and the entry should show you are authorized with your Spotify username/ID. If not, go back to your Spotify application and ensure you have the correct redirect URIs.
 1. The binding will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with the Spotify Web API whenever required.
 

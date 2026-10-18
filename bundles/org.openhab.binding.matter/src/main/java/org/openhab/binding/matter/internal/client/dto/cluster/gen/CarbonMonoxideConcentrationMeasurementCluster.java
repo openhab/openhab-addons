@@ -43,7 +43,7 @@ public class CarbonMonoxideConcentrationMeasurementCluster extends BaseCluster {
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * Indicates the most recent measurement as a single-precision floating-point number. MeasuredValue’s unit is
+     * Indicates the most recent measurement as a single-precision floating-point number. MeasuredValue's unit is
      * represented by MeasurementUnit.
      * A value of null indicates that the measurement is unknown or outside the valid range.
      * MinMeasuredValue and MaxMeasuredValue define the valid range for MeasuredValue.
@@ -67,7 +67,7 @@ public class CarbonMonoxideConcentrationMeasurementCluster extends BaseCluster {
     /**
      * Indicates the window of time used for determining the PeakMeasuredValue. The value is in seconds.
      */
-    public Integer peakMeasuredValueWindow; // 4 elapsed-s R V
+    public Long peakMeasuredValueWindow; // 4 elapsed-s R V
     /**
      * Indicates the average value of MeasuredValue that has been measured during the AverageMeasuredValueWindow. If
      * this attribute is provided, the AverageMeasuredValueWindow attribute shall also be provided.
@@ -76,7 +76,7 @@ public class CarbonMonoxideConcentrationMeasurementCluster extends BaseCluster {
     /**
      * Indicates the window of time used for determining the AverageMeasuredValue. The value is in seconds.
      */
-    public Integer averageMeasuredValueWindow; // 6 elapsed-s R V
+    public Long averageMeasuredValueWindow; // 6 elapsed-s R V
     /**
      * Indicates the range of error or deviation that can be found in MeasuredValue and PeakMeasuredValue. This is
      * considered a +/- value and should be considered to be in MeasurementUnit.

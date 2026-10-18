@@ -12,23 +12,22 @@
  */
 package org.openhab.binding.modbus.kermi.internal.dto;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
- * Test for {@link StateDTO} class
- * 
- * @author Kai Neuhaus - Initial contribution
+ * Tests for {@link StateDTO}.
+ *
+ * @author Peter Winterer - Initial contribution
  */
 public class StateDTOTest {
 
-    @BeforeEach
-    void setUp() {
-    }
+    @Test
+    public void globalStateIdTest() {
+        StateDTO state = new StateDTO(new byte[] { 0x00, 0x02 });
 
-    @AfterEach
-    void tearDown() {
+        assertThat(state.globalStateId.intValue(), is(2));
     }
 }

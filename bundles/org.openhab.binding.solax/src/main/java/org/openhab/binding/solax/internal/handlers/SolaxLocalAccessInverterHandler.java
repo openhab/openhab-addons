@@ -192,6 +192,11 @@ public class SolaxLocalAccessInverterHandler extends SolaxLocalAccessAbstractHan
         updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE3, inverterData.getFrequencyPhase3(),
                 Units.HERTZ, supportedChannels);
 
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_TEMPERATURE1, inverterData.getInverterTemperature1(),
+                SIUnits.CELSIUS, supportedChannels);
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_TEMPERATURE2, inverterData.getInverterTemperature2(),
+                SIUnits.CELSIUS, supportedChannels);
+
         // Binding provided data
         updateState(SolaxBindingConstants.CHANNEL_TIMESTAMP, new DateTimeType());
     }

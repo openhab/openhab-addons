@@ -15,7 +15,7 @@ package org.openhab.voice.voicerss.internal;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.Voice;
 import org.openhab.voice.voicerss.internal.cloudapi.VoiceRSSCloudImpl;
 
 /**

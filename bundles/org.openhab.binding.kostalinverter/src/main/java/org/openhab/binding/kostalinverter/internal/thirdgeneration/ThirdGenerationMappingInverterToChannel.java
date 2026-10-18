@@ -19,8 +19,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link ThirdGenerationMappingInverterToChannel} is responsible for the management of the channels
@@ -28,6 +31,7 @@ import java.util.stream.Stream;
  *
  * @author René Stakemeier - Initial contribution
  */
+@NonNullByDefault
 class ThirdGenerationMappingInverterToChannel {
 
     private static final Map<ThirdGenerationInverterTypes, List<ThirdGenerationChannelMappingToWebApi>> CHANNEL_MAPPING = new HashMap<>();
@@ -217,7 +221,7 @@ class ThirdGenerationMappingInverterToChannel {
     static Map<String, List<ThirdGenerationChannelMappingToWebApi>> getModuleToChannelsMappingForInverter(
             ThirdGenerationInverterTypes inverter) {
         Map<String, List<ThirdGenerationChannelMappingToWebApi>> results = new HashMap<>();
-        for (ThirdGenerationChannelMappingToWebApi mapping : CHANNEL_MAPPING.get(inverter)) {
+        for (ThirdGenerationChannelMappingToWebApi mapping : Objects.requireNonNull(CHANNEL_MAPPING.get(inverter))) {
             List<ThirdGenerationChannelMappingToWebApi> channelList = null;
             if (results.containsKey(mapping.moduleId)) {
                 channelList = results.get(mapping.moduleId);
@@ -225,7 +229,7 @@ class ThirdGenerationMappingInverterToChannel {
                 channelList = new ArrayList<>();
                 results.put(mapping.moduleId, channelList);
             }
-            channelList.add(mapping);
+            Objects.requireNonNull(channelList).add(mapping);
         }
         return results;
     }
@@ -235,7 +239,7 @@ class ThirdGenerationMappingInverterToChannel {
         if (!CHANNEL_MAPPING.containsKey(inverter)) {
             CHANNEL_MAPPING.put(inverter, new ArrayList<>());
         }
-        CHANNEL_MAPPING.get(inverter).add(mapping);
+        Objects.requireNonNull(CHANNEL_MAPPING.get(inverter)).add(mapping);
     }
 
     private static void addInverterChannel(ThirdGenerationInverterTypes inverter, String channelUID, String moduleId,

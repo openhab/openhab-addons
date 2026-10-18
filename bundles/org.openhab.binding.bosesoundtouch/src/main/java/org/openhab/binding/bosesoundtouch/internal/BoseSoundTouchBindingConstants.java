@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -46,10 +43,9 @@ public class BoseSoundTouchBindingConstants {
             "waveSoundTouchMusicSystemIV");
     public static final ThingTypeUID BST_SA5A_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "sa5Amplifier");
 
-    public static final Set<ThingTypeUID> SUPPORTED_KNOWN_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(BST_UNKNOWN_THING_TYPE_UID, BST_10_THING_TYPE_UID, BST_20_THING_TYPE_UID, BST_30_THING_TYPE_UID,
-                    BST_300_THING_TYPE_UID, BST_WLA_THING_TYPE_UID, BST_WSMS_THING_TYPE_UID, BST_SA5A_THING_TYPE_UID)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_KNOWN_THING_TYPES_UIDS = Set.of(BST_UNKNOWN_THING_TYPE_UID,
+            BST_10_THING_TYPE_UID, BST_20_THING_TYPE_UID, BST_30_THING_TYPE_UID, BST_300_THING_TYPE_UID,
+            BST_WLA_THING_TYPE_UID, BST_WSMS_THING_TYPE_UID, BST_SA5A_THING_TYPE_UID);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(SUPPORTED_KNOWN_THING_TYPES_UIDS);
 
@@ -84,13 +80,13 @@ public class BoseSoundTouchBindingConstants {
     public static final String CHANNEL_NOWPLAYING_TRACK = "nowPlayingTrack";
     public static final String CHANNEL_NOTIFICATION_SOUND = "notificationsound";
 
-    public static final List<String> CHANNEL_IDS = Collections.unmodifiableList(
-            Stream.of(CHANNEL_POWER, CHANNEL_VOLUME, CHANNEL_MUTE, CHANNEL_OPERATIONMODE, CHANNEL_PLAYER_CONTROL,
-                    CHANNEL_PRESET, CHANNEL_BASS, CHANNEL_RATEENABLED, CHANNEL_SKIPENABLED, CHANNEL_SKIPPREVIOUSENABLED,
-                    CHANNEL_SAVE_AS_PRESET, CHANNEL_KEY_CODE, CHANNEL_NOWPLAYING_ALBUM, CHANNEL_NOWPLAYING_ARTWORK,
-                    CHANNEL_NOWPLAYING_ARTIST, CHANNEL_NOWPLAYING_DESCRIPTION, CHANNEL_NOWPLAYING_GENRE,
-                    CHANNEL_NOWPLAYING_ITEMNAME, CHANNEL_NOWPLAYING_STATIONLOCATION, CHANNEL_NOWPLAYING_STATIONNAME,
-                    CHANNEL_NOWPLAYING_TRACK, CHANNEL_NOTIFICATION_SOUND).collect(Collectors.toList()));
+    public static final List<String> CHANNEL_IDS = List.of(CHANNEL_POWER, CHANNEL_VOLUME, CHANNEL_MUTE,
+            CHANNEL_OPERATIONMODE, CHANNEL_PLAYER_CONTROL, CHANNEL_PRESET, CHANNEL_BASS, CHANNEL_RATEENABLED,
+            CHANNEL_SKIPENABLED, CHANNEL_SKIPPREVIOUSENABLED, CHANNEL_SAVE_AS_PRESET, CHANNEL_KEY_CODE,
+            CHANNEL_NOWPLAYING_ALBUM, CHANNEL_NOWPLAYING_ARTWORK, CHANNEL_NOWPLAYING_ARTIST,
+            CHANNEL_NOWPLAYING_DESCRIPTION, CHANNEL_NOWPLAYING_GENRE, CHANNEL_NOWPLAYING_ITEMNAME,
+            CHANNEL_NOWPLAYING_STATIONLOCATION, CHANNEL_NOWPLAYING_STATIONNAME, CHANNEL_NOWPLAYING_TRACK,
+            CHANNEL_NOTIFICATION_SOUND);
 
     // Device information parameters;
     public static final String DEVICE_INFO_NAME = "INFO_NAME";

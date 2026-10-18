@@ -18,13 +18,21 @@ import static org.openhab.binding.icloud.internal.ICloudBindingConstants.THING_T
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+
 import org.bouncycastle.crypto.CryptoException;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
+import org.bouncycastle.crypto.params.KeyParameter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,7 +110,49 @@ public class TestICloud {
 
         byte[] expected = new byte[] { 66, -77, 114, 66, -54, -84, 100, 100, 77, 71, -77, 83, -6, -42, 88, 43, -78, 95,
                 35, 45, -105, 111, -9, 106, 12, -89, -111, 63, -36, -34, -101, -104 };
-        assertArrayEquals(expected, srpPassword.encode());
+        assertArrayEquals(expected, srpPassword.encode("s2k"));
+    }
+
+    @Test
+    public void testSrpPasswordS2kFo() throws Exception {
+        String password = "testpassword";
+        byte[] salt = new byte[] { 1, 2, 3, 4 };
+        int iterations = 20622;
+        int keyLength = 32;
+        byte[] passwordHash = MessageDigest.getInstance("SHA-256").digest(password.getBytes(StandardCharsets.UTF_8));
+        String hexPasswordHash = org.bouncycastle.util.encoders.Hex.toHexString(passwordHash);
+        PBEKeySpec spec = new PBEKeySpec(hexPasswordHash.toCharArray(), salt, iterations, keyLength * 8);
+        byte[] expected = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).getEncoded();
+
+        SrpPassword srpPassword = new SrpPassword(password);
+        srpPassword.setEncryptInfo(salt, iterations, keyLength);
+
+        assertArrayEquals(expected, srpPassword.encode("s2k_fo"));
+    }
+
+    @Test
+    public void testSrpPasswordWithUnicodePassword() throws Exception {
+        String password = "Gr\u00fc\u00dfe-\u6771\u4eac";
+        byte[] salt = new byte[] { 1, 2, 3, 4 };
+        int iterations = 20622;
+        int keyLength = 32;
+        byte[] passwordHash = MessageDigest.getInstance("SHA-256").digest(password.getBytes(StandardCharsets.UTF_8));
+
+        PKCS5S2ParametersGenerator s2kGenerator = new PKCS5S2ParametersGenerator(new SHA256Digest());
+        s2kGenerator.init(passwordHash, salt, iterations);
+        byte[] expectedS2k = ((KeyParameter) s2kGenerator.generateDerivedParameters(keyLength * 8)).getKey();
+
+        String hexPasswordHash = org.bouncycastle.util.encoders.Hex.toHexString(passwordHash);
+        PBEKeySpec s2kFoSpec = new PBEKeySpec(hexPasswordHash.toCharArray(), salt, iterations, keyLength * 8);
+        byte[] expectedS2kFo = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(s2kFoSpec)
+                .getEncoded();
+        s2kFoSpec.clearPassword();
+
+        SrpPassword srpPassword = new SrpPassword(password);
+        srpPassword.setEncryptInfo(salt, iterations, keyLength);
+
+        assertArrayEquals(expectedS2k, srpPassword.encode("s2k"));
+        assertArrayEquals(expectedS2kFo, srpPassword.encode("s2k_fo"));
     }
 
     @Test

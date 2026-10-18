@@ -80,7 +80,6 @@ public class VolvoVehicleDiscoveryService extends AbstractThingHandlerDiscoveryS
                                 .withLabel(attributes.vehicleType + " " + attributes.registrationNumber)
                                 .withBridge(bridgeUID).withProperty(VehicleConfiguration.VIN, attributes.vin)
                                 .withRepresentationProperty(VehicleConfiguration.VIN).build());
-
                     } catch (VolvoOnCallException e) {
                         logger.warn("Error while getting vehicle informations : {}", e.getMessage());
                     }

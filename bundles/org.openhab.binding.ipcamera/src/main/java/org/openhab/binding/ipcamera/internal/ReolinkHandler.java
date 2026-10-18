@@ -20,6 +20,9 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.ReolinkState.GetAbilityResponse;
+import org.openhab.binding.ipcamera.internal.ReolinkState.GetAbilityResponse.Value.Ability;
+import org.openhab.binding.ipcamera.internal.ReolinkState.GetAbilityResponse.Value.Ability.AbilityChn;
+import org.openhab.binding.ipcamera.internal.ReolinkState.GetAbilityResponse.Value.Ability.AbilityKey;
 import org.openhab.binding.ipcamera.internal.ReolinkState.GetAiStateResponse;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
@@ -54,6 +57,46 @@ public class ReolinkHandler extends ChannelDuplexHandler {
         ipCameraHandler = thingHandler;
     }
 
+    /**
+     * NVRs and hubs report one abilityChn entry per input channel, so the entry of the configured channel is used.
+     * Stand-alone cameras report a single entry for channel 0.
+     */
+    static AbilityChn channelAbility(Ability ability, int nvrChannel) {
+        AbilityChn[] abilityChn = ability.abilityChn;
+        if (nvrChannel >= 0 && nvrChannel < abilityChn.length && abilityChn[nvrChannel] != null) {
+            return abilityChn[nvrChannel];
+        }
+        if (abilityChn.length > 0 && abilityChn[0] != null) {
+            return abilityChn[0];
+        }
+        return ability.new AbilityChn();
+    }
+
+    /**
+     * NVRs and hubs report some per channel abilities only with a version and permit 0, e.g. supportAudioAlarm of
+     * the Home Hub, so either value marks the ability as supported.
+     */
+    static boolean isSupported(@Nullable AbilityKey key) {
+        return key != null && (key.permit != 0 || key.ver > 0);
+    }
+
+    /**
+     * Removes the channel if this camera channel does not report the ability, or adds it again if an earlier reply or
+     * version of the binding removed it.
+     */
+    private void checkChannelAbility(@Nullable AbilityKey key, String channelId, String name,
+            List<org.openhab.core.thing.Channel> removeChannels) {
+        if (isSupported(key)) {
+            ipCameraHandler.addMissingChannels(List.of(channelId));
+            return;
+        }
+        ipCameraHandler.logger.debug("Camera has no {} support.", name);
+        org.openhab.core.thing.Channel channel = ipCameraHandler.getThing().getChannel(channelId);
+        if (channel != null) {
+            removeChannels.add(channel);
+        }
+    }
+
     public void setURL(String url) {
         requestUrl = url;
     }
@@ -82,10 +125,18 @@ public class ReolinkHandler extends ChannelDuplexHandler {
             } else {
                 cutDownURL = requestUrl.substring(0, afterCommand);
             }
+            if (ReolinkStatus.isLoginRequired(content) && requestUrl.contains(ipCameraHandler.reolinkAuth)) {
+                // only react if the request used the current token, not a token that was just renewed
+                ipCameraHandler.reolinkTokenRejected();
+            }
             switch (cutDownURL) {// Use a cutdown URL as we can not use variables in a switch()
                 case "/api.cgi?cmd=Login":
+                    String previousAuth = ipCameraHandler.reolinkAuth;
                     ipCameraHandler.reolinkAuth = "&token=" + Helper.searchString(content, "\"name\" : \"");
                     if (ipCameraHandler.reolinkAuth.length() > 7) {
+                        if (!previousAuth.equals(ipCameraHandler.reolinkAuth)) {
+                            ipCameraHandler.logoutReolinkToken(previousAuth);
+                        }
                         ipCameraHandler.logger.debug("Your Reolink camera gave a login:{}",
                                 ipCameraHandler.reolinkAuth);
                         ipCameraHandler.snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel="
@@ -114,6 +165,10 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                     getAbilityResponse[0].error.detail);
                             return;
                         }
+                        AbilityChn chnAbility = channelAbility(getAbilityResponse[0].value.ability,
+                                ipCameraHandler.cameraConfig.getNvrChannel());
+                        ipCameraHandler.logger.debug("GetAbility of channel {}: {}",
+                                ipCameraHandler.cameraConfig.getNvrChannel(), gson.toJson(chnAbility));
                         if (getAbilityResponse[0].value.ability.scheduleVersion == null) {
                             ipCameraHandler.logger.debug("Camera has no Schedule support.");
                         } else {
@@ -135,38 +190,14 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiDogCat == null
-                                || getAbilityResponse[0].value.ability.abilityChn[0].supportAiDogCat.permit == 0) {
-                            ipCameraHandler.logger.debug("Camera has no AiDogCat support.");
-                            channel = ipCameraHandler.getThing().getChannel(CHANNEL_ANIMAL_ALARM);
-                            if (channel != null) {
-                                removeChannels.add(channel);
-                            }
-                        }
-                        if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiTrackClassify == null
-                                || getAbilityResponse[0].value.ability.abilityChn[0].supportAiTrackClassify.permit == 0) {
-                            ipCameraHandler.logger.debug("Camera has no AiTrackClassify support.");
-                            channel = ipCameraHandler.getThing().getChannel(CHANNEL_AUTO_TRACKING);
-                            if (channel != null) {
-                                removeChannels.add(channel);
-                            }
-                        }
-                        if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiPeople == null
-                                || getAbilityResponse[0].value.ability.abilityChn[0].supportAiPeople.permit == 0) {
-                            ipCameraHandler.logger.debug("Camera has no AiPeople support.");
-                            channel = ipCameraHandler.getThing().getChannel(CHANNEL_HUMAN_ALARM);
-                            if (channel != null) {
-                                removeChannels.add(channel);
-                            }
-                        }
-                        if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiVehicle == null
-                                || getAbilityResponse[0].value.ability.abilityChn[0].supportAiVehicle.permit == 0) {
-                            ipCameraHandler.logger.debug("Camera has no AiVehicle support.");
-                            channel = ipCameraHandler.getThing().getChannel(CHANNEL_CAR_ALARM);
-                            if (channel != null) {
-                                removeChannels.add(channel);
-                            }
-                        }
+                        checkChannelAbility(chnAbility.supportAiDogCat, CHANNEL_ANIMAL_ALARM, "AiDogCat",
+                                removeChannels);
+                        checkChannelAbility(chnAbility.supportAiTrackClassify, CHANNEL_AUTO_TRACKING, "AiTrackClassify",
+                                removeChannels);
+                        checkChannelAbility(chnAbility.supportAiPeople, CHANNEL_HUMAN_ALARM, "AiPeople",
+                                removeChannels);
+                        checkChannelAbility(chnAbility.supportAiVehicle, CHANNEL_CAR_ALARM, "AiVehicle",
+                                removeChannels);
                         if (getAbilityResponse[0].value.ability.supportEmailEnable == null
                                 || getAbilityResponse[0].value.ability.supportEmailEnable.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no EmailEnable support.");
@@ -191,32 +222,57 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAudioAlarmEnable == null
-                                || getAbilityResponse[0].value.ability.supportAudioAlarmEnable.permit == 0) {
+                        boolean audioAlarmEnable = getAbilityResponse[0].value.ability.supportAudioAlarmEnable != null
+                                && getAbilityResponse[0].value.ability.supportAudioAlarmEnable.permit != 0;
+                        if (!audioAlarmEnable) {
                             ipCameraHandler.logger.debug("Camera has no support for controlling AudioAlarms.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_THRESHOLD_AUDIO_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
+                        }
+                        // NVRs and hubs report the siren (AudioAlarmV20) per channel only.
+                        if (!audioAlarmEnable && !isSupported(chnAbility.supportAudioAlarm)) {
+                            ipCameraHandler.logger.debug("Camera has no siren that can be enabled.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_AUDIO_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
+                        } else {
+                            ipCameraHandler.logger.debug("Camera supports enabling the siren (enableAudioAlarm).");
+                            // re-add the channel if an earlier version removed it based on the global ability only
+                            ipCameraHandler.addMissingChannels(List.of(CHANNEL_ENABLE_AUDIO_ALARM));
                         }
-                        if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiFace == null
-                                || getAbilityResponse[0].value.ability.abilityChn[0].supportAiFace.permit == 0) {
-                            ipCameraHandler.logger.debug("Camera has no AiFace support.");
-                            channel = ipCameraHandler.getThing().getChannel(CHANNEL_FACE_DETECTED);
-                            if (channel != null) {
-                                removeChannels.add(channel);
+                        if (chnAbility.ptzType != null && chnAbility.ptzType.ver > 0) {
+                            ipCameraHandler.logger.debug("Camera supports PTZ via the Reolink API (ptzType {}).",
+                                    chnAbility.ptzType.ver);
+                            ipCameraHandler.reolinkPtz.setSupported(true);
+                            ipCameraHandler.addMissingChannels(List.of(CHANNEL_PAN, CHANNEL_TILT));
+                            ipCameraHandler.reolinkPtz.requestPresets();
+                            ipCameraHandler.reolinkPtz.requestPosition();
+                        } else {
+                            ipCameraHandler.logger.debug("Camera has no PTZ support via the Reolink API.");
+                            ipCameraHandler.reolinkPtz.setSupported(false);
+                            if (!ipCameraHandler.onvifCamera.supportsPTZ()
+                                    || !ipCameraHandler.onvifCamera.isConnected()) {
+                                List<org.openhab.core.thing.Channel> ptzChannels = new ArrayList<>();
+                                for (String id : List.of(CHANNEL_PAN, CHANNEL_TILT)) {
+                                    org.openhab.core.thing.Channel ptzChannel = ipCameraHandler.getThing()
+                                            .getChannel(id);
+                                    if (ptzChannel != null) {
+                                        ptzChannels.add(ptzChannel);
+                                    }
+                                }
+                                ipCameraHandler.removeChannels(ptzChannels);
                             }
                         }
+                        checkChannelAbility(chnAbility.supportAiFace, CHANNEL_FACE_DETECTED, "AiFace", removeChannels);
+                        ipCameraHandler.reolinkStatus
+                                .initialize(chnAbility.battery != null && chnAbility.battery.ver > 0);
                     } catch (JsonParseException e) {
                         ipCameraHandler.logger.warn("API command GetAbility may not be supported by the camera");
                     }
-                    if (channel != null) {
-                        ipCameraHandler.removeChannels(removeChannels);
-                    }
+                    ipCameraHandler.removeChannels(removeChannels);
                     break;
                 case "/api.cgi?cmd=GetAiState":
                     ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
@@ -254,8 +310,10 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.logger.debug("API GetAiState is not supported by the camera.");
                     }
                     break;
-                case "/api.cgi?cmd=GetAudioAlarm":
                 case "/api.cgi?cmd=GetAudioAlarmV20":
+                    ipCameraHandler.reolinkStatus.handleAudioAlarmResponse(content);
+                    break;
+                case "/api.cgi?cmd=GetAudioAlarm":
                     if (content.contains("\"enable\" : 1")) {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
                     } else {
@@ -329,6 +387,32 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_RECORDINGS, OnOffType.ON);
                     }
+                    break;
+                case "/api.cgi?cmd=GetChannelstatus":
+                    ipCameraHandler.reolinkStatus.handleChannelStatusResponse(content);
+                    break;
+                case "/api.cgi?cmd=GetBatteryInfo":
+                    ipCameraHandler.reolinkStatus.handleBatteryResponse(content);
+                    break;
+                case "/api.cgi?cmd=GetHddInfo":
+                    ipCameraHandler.reolinkStatus.handleStorageResponse(content);
+                    break;
+                case "/api.cgi?cmd=GetAudioCfg":
+                    ipCameraHandler.reolinkStatus.handleVolumeResponse(content);
+                    break;
+                case "/api.cgi?cmd=GetChnTypeInfo":
+                    ipCameraHandler.reolinkStatus.handleDeviceInfoResponse(content);
+                    break;
+                case "/api.cgi?cmd=GetPtzCurPos":
+                    ipCameraHandler.reolinkPtz.handlePositionResponse(content);
+                    break;
+                case "/api.cgi?cmd=GetPtzPreset":
+                    ipCameraHandler.reolinkPtz.handlePresetResponse(content);
+                    break;
+                case "/api.cgi?cmd=PtzCtrl":
+                    ipCameraHandler.reolinkPtz.handleCtrlResponse(requestUrl);
+                    break;
+                case "/api.cgi?cmd=Logout":
                     break;
                 case "/api.cgi?cmd=Reboot":
                     // This handles reboot action response.
@@ -459,6 +543,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                 enableAlarmBuilder("SetAudioAlarm", "Audio", "0"));
                     }
                 }
+                // read back the state, e.g. if the camera did not accept the change
+                ipCameraHandler.scheduleTask(ipCameraHandler.reolinkStatus::requestAudioAlarm, 1000);
                 break;
             case CHANNEL_ENABLE_FTP:
                 if (OnOffType.ON.equals(command)) {

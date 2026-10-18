@@ -16,13 +16,13 @@ package org.openhab.binding.bluelink.internal.dto;
  * @author Marcus Better - Initial contribution
  */
 public interface ITirePressureWarning {
-    int all();
+    boolean all();
 
-    int frontLeft();
+    boolean frontLeft();
 
-    int frontRight();
+    boolean frontRight();
 
-    int rearLeft();
+    boolean rearLeft();
 
-    int rearRight();
+    boolean rearRight();
 }

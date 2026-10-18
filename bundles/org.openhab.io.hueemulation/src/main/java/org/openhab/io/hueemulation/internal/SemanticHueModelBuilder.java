@@ -66,6 +66,21 @@ public class SemanticHueModelBuilder {
             Map.entry(Location.LAUNDRY_ROOM, "Laundry room"), //
             Map.entry(Location.PORCH, "Porch")); //
 
+    private static final Map<SemanticTag, String> EQUIPMENT_TO_ARCHETYPE = Map.ofEntries( //
+            Map.entry(Equipment.ACCENT_LIGHT, "huebloom"), //
+            Map.entry(Equipment.CHANDELIER, "ceilinground"), //
+            Map.entry(Equipment.DOWNLIGHT, "recessedceiling"), //
+            Map.entry(Equipment.FLOOD_LIGHT, "floodbulb"), //
+            Map.entry(Equipment.LAMP, "tableshade"), //
+            Map.entry(Equipment.LIGHT_STRIP, "huelightstrip"), //
+            Map.entry(Equipment.LIGHT_STRIPE, "huelightstrip"), //
+            Map.entry(Equipment.LIGHTBULB, "classicbulb"), //
+            Map.entry(Equipment.PENDANT, "pendantround"), //
+            Map.entry(Equipment.SCONCE, "wallshade"), //
+            Map.entry(Equipment.SPOT_LIGHT, "singlespot"), //
+            Map.entry(Equipment.TRACK_LIGHT, "singlespot"), //
+            Map.entry(Equipment.WALL_LIGHT, "wallshade")); //
+
     private final ItemRegistry itemRegistry;
     private final ConfigStore configStore;
 
@@ -154,8 +169,10 @@ public class SemanticHueModelBuilder {
             String hueID = configStore.mapItemUIDtoHueID(member);
             String name = lightSource.getLabel();
 
-            lightEntries.add(new HueLightEntry(genericItem, configStore.getHueUniqueId(hueID), targetType,
-                    name != null ? name : ""));
+            var entry = new HueLightEntry(genericItem, configStore.getHueUniqueId(hueID), targetType,
+                    name != null ? name : "");
+            entry.config = new HueLightEntry.Config(getArchetype(lightSource));
+            lightEntries.add(entry);
         }
 
         return lightEntries;
@@ -169,6 +186,16 @@ public class SemanticHueModelBuilder {
             }
         }
         return HueGroupEntry.DEFAULT_ROOM_CLASS;
+    }
+
+    private String getArchetype(GroupItem lightSource) {
+        for (Map.Entry<SemanticTag, String> entry : EQUIPMENT_TO_ARCHETYPE.entrySet()) {
+            Class<? extends Tag> tagClass = SemanticTags.getById(entry.getKey().getUID());
+            if (tagClass != null && SemanticsPredicates.isA(tagClass).test(lightSource)) {
+                return entry.getValue();
+            }
+        }
+        return HueLightEntry.DEFAULT_ARCHETYPE;
     }
 
     private static boolean isSemanticItem(Item item, SemanticTag tag) {

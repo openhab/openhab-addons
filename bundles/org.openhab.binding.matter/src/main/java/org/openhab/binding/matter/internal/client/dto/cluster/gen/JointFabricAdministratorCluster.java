@@ -34,7 +34,7 @@ public class JointFabricAdministratorCluster extends BaseCluster {
     public static final String ATTRIBUTE_ADMINISTRATOR_FABRIC_INDEX = "administratorFabricIndex";
 
     /**
-     * The AdministratorFabricIndex attribute shall indicate the FabricIndex from the Endpoint 0’s Operational Cluster
+     * The AdministratorFabricIndex attribute shall indicate the FabricIndex from the Endpoint 0's Operational Cluster
      * Fabrics attribute (i.e. the Fabric Table) which is associated with the JointFabric. This field shall have the
      * value of null if there is no fabric associated with the JointFabric.
      */
@@ -42,7 +42,7 @@ public class JointFabricAdministratorCluster extends BaseCluster {
 
     // Enums
     /**
-     * This enumeration is used by the ICACResponse command to convey the outcome of this cluster’s operations.
+     * This enumeration is used by the AddICAC command to convey the outcome of this cluster's operations.
      */
     public enum ICACResponseStatusEnum implements MatterEnum {
         OK(0, "Ok"),
@@ -69,7 +69,7 @@ public class JointFabricAdministratorCluster extends BaseCluster {
     }
 
     /**
-     * This enumeration is used by the TransferAnchorResponse command to convey the detailed outcome of this cluster’s
+     * This enumeration is used by the TransferAnchorResponse command to convey the detailed outcome of this cluster's
      * TransferAnchorRequest command.
      */
     public enum TransferAnchorResponseStatusEnum implements MatterEnum {
@@ -96,17 +96,18 @@ public class JointFabricAdministratorCluster extends BaseCluster {
         }
     }
 
-    public enum StatusCodeEnum implements MatterEnum {
-        BUSY(2, "Busy"),
-        PAKE_PARAMETER_ERROR(3, "Pake Parameter Error"),
-        WINDOW_NOT_OPEN(4, "Window Not Open"),
-        VID_NOT_VERIFIED(5, "Vid Not Verified"),
-        INVALID_ADMINISTRATOR_FABRIC_INDEX(6, "Invalid Administrator Fabric Index");
+    public enum ICACCSRResponseStatusCodeEnum implements MatterEnum {
+        OK(0, "Ok"),
+        BUSY(1, "Busy"),
+        PAKE_PARAMETER_ERROR(2, "Pake Parameter Error"),
+        WINDOW_NOT_OPEN(3, "Window Not Open"),
+        VID_NOT_VERIFIED(4, "Vid Not Verified"),
+        INVALID_ADMINISTRATOR_FABRIC_INDEX(5, "Invalid Administrator Fabric Index");
 
         private final Integer value;
         private final String label;
 
-        private StatusCodeEnum(Integer value, String label) {
+        private ICACCSRResponseStatusCodeEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -134,12 +135,6 @@ public class JointFabricAdministratorCluster extends BaseCluster {
     /**
      * This command shall be generated during Joint Commissioning Method and subsequently be responded in the form of an
      * ICACCSRResponse command.
-     * If this command is received without an armed fail-safe context (see Section 11.10.7.2, “ArmFailSafe Command”),
-     * then this command shall fail with a FAILSAFE_REQUIRED status code sent back to the initiator.
-     * If this command is received from a peer against FabricFabric Table Vendor ID Verification Procedure hasn’t been
-     * executed then it shall fail with a JfVidNotVerified status code sent back to the initiator.
-     * If a prior AddICAC command was successfully executed within the fail-safe timer period, then this command shall
-     * fail with a CONSTRAINT_ERROR status code sent back to the initiator.
      */
     public static ClusterCommand icaccsrRequest() {
         return new ClusterCommand("icaccsrRequest");
@@ -163,15 +158,15 @@ public class JointFabricAdministratorCluster extends BaseCluster {
     }
 
     /**
-     * &gt; [!NOTE]
-     * &gt; This is an alias onto the OpenCommissioningWindow command within the Joint Fabric Administrator Cluster.
+     * > [!NOTE]
+     * > NOTE: This is an alias onto the OpenCommissioningWindow command within the Joint Fabric Administrator Cluster.
      * Refer to the OpenCommissioningWindow command for a description of the command behavior and parameters.
      * This command shall fail with a InvalidAdministratorFabricIndex status code sent back to the initiator if the
-     * AdministratorFabricIndex field has the value of null.
+     * AdministratorFabricIndex attribute has the value of null.
      * The parameters for OpenJointCommissioningWindow command are as follows:
      */
     public static ClusterCommand openJointCommissioningWindow(Integer commissioningTimeout,
-            OctetString pakePasscodeVerifier, Integer discriminator, Integer iterations, OctetString salt) {
+            OctetString pakePasscodeVerifier, Integer discriminator, Long iterations, OctetString salt) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (commissioningTimeout != null) {
             map.put("commissioningTimeout", commissioningTimeout);

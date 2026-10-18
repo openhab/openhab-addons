@@ -22,14 +22,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "A command to execute on a stream ")
 public class Command {
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @SerializedName("stream_id")
     /**
      * Stream to execute the command on
      **/
     private Integer streamId;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     /**
      * Command to execute
      **/

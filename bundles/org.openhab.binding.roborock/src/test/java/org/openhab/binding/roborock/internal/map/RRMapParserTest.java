@@ -18,9 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.roborock.internal.RoborockException;
 
+@NonNullByDefault({})
 class RRMapParserTest {
 
     @Test

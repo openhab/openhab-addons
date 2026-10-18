@@ -14,12 +14,16 @@ package org.openhab.binding.kostalinverter.internal.firstgeneration;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Christian Schneider - Initial contribution
  * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  */
+@NonNullByDefault
 public class ChannelConfig {
-    public ChannelConfig(String id, String tag, int num, Unit<?> unit) {
+    public ChannelConfig(String id, String tag, int num, @Nullable Unit<?> unit) {
         this.id = id;
         this.tag = tag;
         this.num = num;
@@ -29,5 +33,6 @@ public class ChannelConfig {
     String id;
     String tag;
     int num;
+    @Nullable
     Unit<?> unit;
 }

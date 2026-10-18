@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api1;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
@@ -21,12 +22,14 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
-import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -73,7 +76,7 @@ public class Shelly1CoIoTProtocol {
     }
 
     protected boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
-            Map<String, State> updates, ShellyColorUtils col) {
+            Map<String, State> updates, LightModelAccessor.@Nullable LightModels lightModels) {
         // Process status information and convert into channel updates
         int rIndex = getIdFromBlk(sen);
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
@@ -99,12 +102,12 @@ public class Shelly1CoIoTProtocol {
                 switch (sen.desc.toLowerCase(Locale.ROOT)) {
                     case "state": // Relay status +
                     case "output":
-                        updatePower(profile, updates, rIndex, sen, s, sensorUpdates);
+                        updatePower(profile, updates, rIndex, sen, s, sensorUpdates, lightModels);
                         break;
                     case "input":
                         handleInput(sen, s, rGroup, updates);
                         break;
-                    case "brightness":
+                    case SHELLY_COLOR_BRIGHTNESS:
                         // already handled by state/output
                         break;
                     case "overtemp": // ++
@@ -124,7 +127,7 @@ public class Shelly1CoIoTProtocol {
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
                                 OnOffType.from(s.value == 1));
                         break;
-                    case "vibration": // DW with FW1.6.5+
+                    case SHELLY_EVENT_VIBRATION: // DW with FW1.6.5+
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                                 OnOffType.from(s.value == 1));
                         if (s.value == 1) {
@@ -140,30 +143,41 @@ public class Shelly1CoIoTProtocol {
                                 OnOffType.from(s.value == 1));
                         break;
                     // RGBW2/Bulb
-                    case "red":
-                        col.setRed((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED,
-                                ShellyColorUtils.toPercent((int) s.value));
-                        break;
-                    case "green":
-                        col.setGreen((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
-                                ShellyColorUtils.toPercent((int) s.value));
-                        break;
-                    case "blue":
-                        col.setBlue((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
-                                ShellyColorUtils.toPercent((int) s.value));
-                        break;
-                    case "white":
-                        col.setWhite((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
-                                ShellyColorUtils.toPercent((int) s.value));
-                        break;
-                    case "gain":
-                        col.setGain((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
-                                ShellyColorUtils.toPercent((int) s.value, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
+                    case SHELLY_COLOR_RED:
+                    case SHELLY_COLOR_GREEN:
+                    case SHELLY_COLOR_BLUE:
+                    case SHELLY_COLOR_WHITE:
+                    case SHELLY_COLOR_GAIN:
+                    case "effect":
+                        if (!profile.inColor) {
+                            break;
+                        }
+                        ShellyLightModel model = getLightModelForSensor(sen, lightModels);
+                        if (model != null) {
+                            switch (sen.desc.toLowerCase(Locale.ROOT)) {
+                                case SHELLY_COLOR_RED:
+                                    model.setColor(R, (int) s.value);
+                                    break;
+                                case SHELLY_COLOR_GREEN:
+                                    model.setColor(G, (int) s.value);
+                                    break;
+                                case SHELLY_COLOR_BLUE:
+                                    model.setColor(B, (int) s.value);
+                                    break;
+                                case SHELLY_COLOR_WHITE:
+                                    model.setColor(CW, (int) s.value);
+                                    break;
+                                case SHELLY_COLOR_GAIN:
+                                    model.setGain((int) s.value);
+                                    break;
+                                case "effect":
+                                    model.setEffect((int) s.value);
+                                    break;
+                            }
+                        } else {
+                            logger.debug("{}: Unable to update color channel {} for sensor {}", thingName, sen.desc,
+                                    sen.id);
+                        }
                         break;
                     case "sensorerror":
                         String sensorError = s.valueStr != null ? getString(s.valueStr) : "" + s.value;
@@ -222,35 +236,23 @@ public class Shelly1CoIoTProtocol {
 
     /**
      *
-     * Handles the combined updated of the brightness channel:
-     * brightness$Switch is the OnOffType (power state)
-     * brightness&amp;Value is the brightness value
+     * Handles the combined update of the brightness channel: the power state and brightness sensor values are
+     * combined into a single Percent update (0% when off) rather than publishing the power state separately, so a
+     * Dimmer-linked item never sees an intermediate OnOffType state.
      *
      * @param profile Device profile, required to select the channel group and name
-     * @param updates List of updates. updatePower will add brightness$Switch and brightness&amp;Value if changed
+     * @param updates List of updates. updatePower will add brightness$Value if changed
      * @param id Sensor id from the update
      * @param sen Sensor description from the update
      * @param s New sensor value
-     * @param allUpdates List of updates. This is required, because we need to update both values at the same time
+     * @param allUpdates List of updates. This is required, because we need power and brightness from the same batch
+     * @param lightModelHandler Optional light model handler, required for RGBW2/Bulb to update the model state
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
-            CoIotSensor s, List<CoIotSensor> allUpdates) {
-        String group = "";
-        String channel = CHANNEL_BRIGHTNESS;
-        String checkL = ""; // RGBW-white uses 4 different Power, Brightness, VSwitch values
+            CoIotSensor s, List<CoIotSensor> allUpdates, LightModelAccessor.@Nullable LightModels lightModels) {
         if (profile.isLight || profile.isDimmer) {
-            if (profile.isBulb || profile.inColor) {
-                group = CHANNEL_GROUP_LIGHT_CONTROL;
-                channel = CHANNEL_LIGHT_POWER;
-            } else if (profile.isDuo) {
-                group = CHANNEL_GROUP_WHITE_CONTROL;
-            } else if (profile.isDimmer) {
-                group = CHANNEL_GROUP_RELAY_CONTROL;
-            } else if (profile.isRGBW2) {
-                checkL = String.valueOf(id); // String.valueOf(id - 1); // id is 1-based, L is 0-based
-                group = CHANNEL_GROUP_LIGHT_CHANNEL + id;
-                logger.trace("{}: updatePower() for L={}", thingName, checkL);
-            }
+            // RGBW-white uses 4 different Power, Brightness, VSwitch values
+            String checkL = profile.isRGBW2 && !profile.inColor ? String.valueOf(id) : "";
 
             // We need to update brightness and on/off state at the same time to avoid "flipping brightness slider" in
             // the UI
@@ -262,21 +264,39 @@ public class Shelly1CoIoTProtocol {
                     // continue until we find the correct one
                     continue;
                 }
-                if ("brightness".equalsIgnoreCase(d.desc)) {
+                if (SHELLY_COLOR_BRIGHTNESS.equalsIgnoreCase(d.desc)) {
                     brightness = update.value;
                 } else if ("output".equalsIgnoreCase(d.desc) || "state".equalsIgnoreCase(d.desc)) {
                     power = update.value;
                 }
             }
-            if (power != -1) {
-                updateChannel(updates, group, channel + "$Switch", OnOffType.from(power == 1));
-            }
-            if (brightness != -1) {
-                updateChannel(updates, group, channel + "$Value",
-                        toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
+            if (profile.isDimmer) {
+                if (power != -1) {
+                    updateChannel(updates, CHANNEL_GROUP_RELAY_CONTROL, CHANNEL_BRIGHTNESS + "$Switch",
+                            OnOffType.from(power == 1));
+                }
+                if (brightness != -1) {
+                    updateChannel(updates, CHANNEL_GROUP_RELAY_CONTROL, CHANNEL_BRIGHTNESS + "$Value",
+                            toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
+                }
+            } else if (profile.isLight) {
+                if (lightModels != null && lightModels.getByApiLightIndex(id - 1) instanceof ShellyLightModel model) {
+                    if (brightness != -1) {
+                        if (ShellyLightModel.Mode.COLOR == model.getMode()) {
+                            model.setGain((int) brightness);
+                        } else {
+                            model.setBrightness((int) brightness);
+                        }
+                    }
+                    if (power != -1) {
+                        model.setOnOff(power == 1.0); // do power after gain / brightness
+                    }
+                } else {
+                    logger.debug("{}: updatePower() for index={} but no light model found!", thingName, id - 1);
+                }
             }
         } else if (profile.hasRelays) {
-            group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + id;
+            String group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + id;
             updateChannel(updates, group, CHANNEL_OUTPUT, OnOffType.from(s.value == 1));
         } else if (profile.isSensor) {
             // Sensor state
@@ -332,6 +352,9 @@ public class Shelly1CoIoTProtocol {
                     }
                     if (desc.substring(0, 6).equalsIgnoreCase(SHELLY_CLASS_ROLLER)) {
                         idx = Integer.parseInt(substringAfter(desc, SHELLY_CLASS_ROLLER));
+                    }
+                    if (desc.substring(0, SHELLY_CLASS_LIGHT.length()).equalsIgnoreCase(SHELLY_CLASS_LIGHT)) {
+                        idx = Integer.parseInt(substringAfter(desc, SHELLY_CLASS_LIGHT));
                     }
                     if (desc.substring(0, SHELLY_CLASS_EMETER.length()).equalsIgnoreCase(SHELLY_CLASS_EMETER)) {
                         idx = Integer.parseInt(substringAfter(desc, SHELLY_CLASS_EMETER));
@@ -389,5 +412,18 @@ public class Shelly1CoIoTProtocol {
 
     public String getLastWakeup() {
         return lastWakeup;
+    }
+
+    @Nullable
+    protected ShellyLightModel getLightModelForSensor(CoIotDescrSen sen,
+            LightModelAccessor.@Nullable LightModels lightModels) {
+        if (lightModels == null) {
+            return null;
+        }
+        int channelGroupSuffix = getIdFromBlk(sen) - 1; // convert to 0-based index for light model
+        if (channelGroupSuffix < 0) {
+            return null;
+        }
+        return lightModels.getByChannelGroupSuffix(channelGroupSuffix);
     }
 }

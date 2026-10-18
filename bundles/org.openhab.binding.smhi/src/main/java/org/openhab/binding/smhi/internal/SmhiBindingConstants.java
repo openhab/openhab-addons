@@ -15,8 +15,17 @@ package org.openhab.binding.smhi.internal;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.measure.MetricPrefix;
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smhi.provider.ParameterMetadata;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -66,28 +75,52 @@ public class SmhiBindingConstants {
     public static final String WIND_MIN = "wind_speed_min";
     public static final String PRECIPITATION_TOTAL = "precipitation_amount_total";
 
-    public static final List<String> HOURLY_CHANNELS = List.of(PRESSURE, TEMPERATURE, CLOUD_BASE_ALTITUDE,
-            CLOUD_TOP_ALTITUDE, VISIBILITY, WIND_DIRECTION, WIND_SPEED, RELATIVE_HUMIDITY, THUNDER_PROBABILITY,
-            TOTAL_CLOUD_COVER, LOW_CLOUD_COVER, MEDIUM_CLOUD_COVER, HIGH_CLOUD_COVER, GUST, PRECIPITATION_MIN,
-            PRECIPITATION_MAX, PRECIPITATION_MEAN, PRECIPITATION_MEDIAN, PRECIPITATION_PROBABILITY, PERCENT_FROZEN,
-            FROZEN_PROBABILITY, PRECIPITATION_CATEGORY, WEATHER_SYMBOL);
+    public static final Set<String> STANDARD_CHANNELS = Set.of(PRESSURE, TEMPERATURE, TEMPERATURE_MAX, TEMPERATURE_MIN,
+            WIND_DIRECTION, WIND_SPEED, WIND_MAX, WIND_MIN, RELATIVE_HUMIDITY, TOTAL_CLOUD_COVER, GUST,
+            PRECIPITATION_MIN, PRECIPITATION_MAX, PRECIPITATION_TOTAL, PRECIPITATION_PROBABILITY,
+            PRECIPITATION_CATEGORY, WEATHER_SYMBOL);
 
-    public static final List<String> DAILY_CHANNELS = List.of(PRESSURE, TEMPERATURE, CLOUD_BASE_ALTITUDE,
-            CLOUD_TOP_ALTITUDE, TEMPERATURE_MAX, TEMPERATURE_MIN, VISIBILITY, WIND_DIRECTION, WIND_SPEED, WIND_MAX,
-            WIND_MIN, RELATIVE_HUMIDITY, THUNDER_PROBABILITY, TOTAL_CLOUD_COVER, LOW_CLOUD_COVER, MEDIUM_CLOUD_COVER,
-            HIGH_CLOUD_COVER, GUST, PRECIPITATION_MIN, PRECIPITATION_MAX, PRECIPITATION_TOTAL, PRECIPITATION_MEAN,
-            PRECIPITATION_MEDIAN, PRECIPITATION_PROBABILITY, PERCENT_FROZEN, FROZEN_PROBABILITY, PRECIPITATION_CATEGORY,
-            WEATHER_SYMBOL);
+    public static final Set<String> AGGREGATE_CHANNELS = Set.of(TEMPERATURE_MAX, TEMPERATURE_MIN, WIND_MAX, WIND_MIN,
+            PRECIPITATION_TOTAL);
 
     public static final String BASE_URL = "https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/";
     public static final String CREATED_TIME_URL = BASE_URL + "createdtime.json";
     public static final String POINT_FORECAST_URL = BASE_URL + "geotype/point/lon/%.6f/lat/%.6f/data.json";
+    public static final String PARAMETER_METADATA_URL = BASE_URL + "parameter.json";
 
     public static final BigDecimal OCTAS_TO_PERCENT = BigDecimal.valueOf(12.5);
     public static final BigDecimal FRACTION_TO_PERCENT = BigDecimal.valueOf(100);
     public static final BigDecimal DEFAULT_MISSING_VALUE = BigDecimal.valueOf(9999);
 
-    // TODO: Remove for 6.0 release
+    public static final List<ParameterMetadata> AGGREGATE_CHANNELS_METADATA = List.of(
+            new ParameterMetadata(TEMPERATURE_MAX, "", "Highest temperature of the day", "", BigDecimal.ZERO, "Cel",
+                    DEFAULT_MISSING_VALUE),
+            new ParameterMetadata(TEMPERATURE_MIN, "", "Lowest temperature of the day", "", BigDecimal.ZERO, "Cel",
+                    DEFAULT_MISSING_VALUE),
+            new ParameterMetadata(WIND_MAX, "", "Highest wind speed of the day", "", BigDecimal.ZERO, "m/s",
+                    DEFAULT_MISSING_VALUE),
+            new ParameterMetadata(WIND_MIN, "", "Lowest wind speed of the day", "", BigDecimal.ZERO, "m/s",
+                    DEFAULT_MISSING_VALUE),
+            new ParameterMetadata(PRECIPITATION_TOTAL, "", "Total amount of precipitation during the day", "",
+                    BigDecimal.ZERO, "mm", DEFAULT_MISSING_VALUE));
+
+    public static final Map<String, Unit<?>> UNIT_MAP = Map.ofEntries(Map.entry("Cel", SIUnits.CELSIUS),
+            Map.entry("degree", Units.DEGREE_ANGLE), Map.entry("m/s", Units.METRE_PER_SECOND),
+            Map.entry("m s**-1", Units.METRE_PER_SECOND), Map.entry("percent", Units.PERCENT),
+            Map.entry("hPa", MetricPrefix.HECTO(SIUnits.PASCAL)), Map.entry("km", MetricPrefix.KILO(SIUnits.METRE)),
+            Map.entry("fraction", Units.PERCENT), Map.entry("octas", Units.PERCENT), Map.entry("m", SIUnits.METRE),
+            Map.entry("kg/m2", Units.MILLIMETRE_PER_HOUR), Map.entry("%", Units.PERCENT),
+            Map.entry("mm", MetricPrefix.MILLI(SIUnits.METRE)));
+
+    public static final Map<Unit<?>, SemanticTag> SEMANTIC_PROPERTIES = Map.ofEntries(
+            Map.entry(MetricPrefix.HECTO(SIUnits.PASCAL), DefaultSemanticTags.Property.PRESSURE),
+            Map.entry(SIUnits.CELSIUS, DefaultSemanticTags.Property.TEMPERATURE),
+            Map.entry(Units.DEGREE_ANGLE, DefaultSemanticTags.Property.WIND),
+            Map.entry(Units.METRE_PER_SECOND, DefaultSemanticTags.Property.WIND),
+            Map.entry(Units.MILLIMETRE_PER_HOUR, DefaultSemanticTags.Property.PRECIPITATION),
+            Map.entry(MetricPrefix.MILLI(SIUnits.METRE), DefaultSemanticTags.Property.PRECIPITATION));
+
+    // TODO: Remove after last 2026 release
     public static final String PMP3G_PRESSURE = "msl";
     public static final String PMP3G_TEMPERATURE = "t";
     public static final String PMP3G_VISIBILITY = "vis";

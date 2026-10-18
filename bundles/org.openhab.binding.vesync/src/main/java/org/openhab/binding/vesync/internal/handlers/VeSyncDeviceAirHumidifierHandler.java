@@ -29,16 +29,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.v2_1.SetNightLightBrightness;
-import org.openhab.binding.vesync.internal.dto.requests.v2_1.SetTargetHumidity;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.EmptyPayload;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.Enabled;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetLevel;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetMode;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetState;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetSwitch;
+import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev1.SetNightLightBrightness;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev1.SetTargetHumidity;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.Enabled;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetLevel;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetMode;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetState;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetSwitch;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
-import org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airhumidifier.StatusResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2.rev2.airhumidifier.StatusResp;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -382,7 +382,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                 humidifierStatus = VeSyncConstants.GSON.fromJson(response, StatusResp.class);
             } else {
                 humidifierStatus = VeSyncConstants.GSON.fromJson(response,
-                        org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airhumidifier.StatusResp.class);
+                        org.openhab.binding.vesync.internal.dto.responses.devices.v2.rev1.airhumidifier.StatusResp.class);
             }
 
             if (humidifierStatus == null) {
@@ -405,7 +405,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
 
         if (devContraints.protocolV2Version != 2) {
             parseV2Ver1Poll(
-                    (org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airhumidifier.StatusResp) humidifierStatus,
+                    (org.openhab.binding.vesync.internal.dto.responses.devices.v2.rev1.airhumidifier.StatusResp) humidifierStatus,
                     deviceFamily);
         } else {
             parseV2Ver2Poll((StatusResp) humidifierStatus);
@@ -413,7 +413,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     }
 
     private void parseV2Ver1Poll(
-            final org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airhumidifier.StatusResp humidifierStatus,
+            final org.openhab.binding.vesync.internal.dto.responses.devices.v2.rev1.airhumidifier.StatusResp humidifierStatus,
             final @Nullable String deviceFamily) {
         if (!"0".equals(humidifierStatus.result.getCode())) {
             logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-humidifier"));

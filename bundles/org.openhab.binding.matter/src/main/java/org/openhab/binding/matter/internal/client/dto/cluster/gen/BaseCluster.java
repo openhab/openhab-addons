@@ -44,11 +44,11 @@ public class BaseCluster {
     public static final String ATTRIBUTE_GENERATED_COMMAND_LIST = "generatedCommandList";
 
     // Global cluster attributes (present in all clusters per Matter spec)
-    public List<Integer> acceptedCommandList; // 65529 list
-    public List<Integer> attributeList; // 65531 list
+    public List<Long> acceptedCommandList; // 65529 list
+    public List<Long> attributeList; // 65531 list
     public Integer clusterRevision; // 65533 uint16
     public List<Integer> eventList; // 65530
-    public List<Integer> generatedCommandList; // 65528 list
+    public List<Long> generatedCommandList; // 65528 list
 
     public interface MatterEnum {
         Integer getValue();
@@ -116,10 +116,10 @@ public class BaseCluster {
 
     // Structs
     public static class AtomicAttributeStatusStruct {
-        public Integer attributeId; // attrib-id
-        public Integer statusCode; // status
+        public Long attributeId; // attrib-id
+        public Status statusCode; // status
 
-        public AtomicAttributeStatusStruct(Integer attributeId, Integer statusCode) {
+        public AtomicAttributeStatusStruct(Long attributeId, Status statusCode) {
             this.attributeId = attributeId;
             this.statusCode = statusCode;
         }
@@ -167,6 +167,33 @@ public class BaseCluster {
         }
     }
 
+    public static class PowerThresholdStruct {
+        public BigInteger powerThreshold; // power-mW
+        public BigInteger apparentPowerThreshold; // power-mVA
+        public PowerThresholdSourceEnum powerThresholdSource; // PowerThresholdSourceEnum
+
+        public PowerThresholdStruct(BigInteger powerThreshold, BigInteger apparentPowerThreshold,
+                PowerThresholdSourceEnum powerThresholdSource) {
+            this.powerThreshold = powerThreshold;
+            this.apparentPowerThreshold = apparentPowerThreshold;
+            this.powerThresholdSource = powerThresholdSource;
+        }
+    }
+
+    public static class ViewportStruct {
+        public Integer x1; // uint16
+        public Integer y1; // uint16
+        public Integer x2; // uint16
+        public Integer y2; // uint16
+
+        public ViewportStruct(Integer x1, Integer y1, Integer x2, Integer y2) {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+        }
+    }
+
     public static class Currency {
         public Integer currency; // uint16
         public Integer decimalPoints; // uint8
@@ -201,11 +228,11 @@ public class BaseCluster {
 
     public static class Semtag {
         public Integer mfgCode; // vendor-id
-        public Integer namespaceId; // namespace
+        public Namespace namespaceId; // namespace
         public Integer tag; // tag
         public String label; // string
 
-        public Semtag(Integer mfgCode, Integer namespaceId, Integer tag, String label) {
+        public Semtag(Integer mfgCode, Namespace namespaceId, Integer tag, String label) {
             this.mfgCode = mfgCode;
             this.namespaceId = namespaceId;
             this.tag = tag;
@@ -223,6 +250,30 @@ public class BaseCluster {
         public final String label;
 
         private AtomicRequestTypeEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum CertificationTypeEnum implements MatterEnum {
+        DEVICE_ATTESTATION_PKI(0, "DeviceAttestationPki"),
+        OPERATIONAL_PKI(1, "OperationalPki"),
+        VID_SIGNER_PKI(2, "VidSignerPki");
+
+        public final Integer value;
+        public final String label;
+
+        private CertificationTypeEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -277,6 +328,30 @@ public class BaseCluster {
         }
     }
 
+    public enum PowerThresholdSourceEnum implements MatterEnum {
+        CONTRACT(0, "Contract"),
+        REGULATOR(1, "Regulator"),
+        EQUIPMENT(2, "Equipment");
+
+        public final Integer value;
+        public final String label;
+
+        private PowerThresholdSourceEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
     public enum SoftwareVersionCertificationStatusEnum implements MatterEnum {
         DEV_TEST(0, "DevTest"),
         PROVISIONAL(1, "Provisional"),
@@ -287,6 +362,80 @@ public class BaseCluster {
         public final String label;
 
         private SoftwareVersionCertificationStatusEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum StreamUsageEnum implements MatterEnum {
+        INTERNAL(0, "Internal"),
+        RECORDING(1, "Recording"),
+        ANALYSIS(2, "Analysis"),
+        LIVE_VIEW(3, "LiveView");
+
+        public final Integer value;
+        public final String label;
+
+        private StreamUsageEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum TariffPriceTypeEnum implements MatterEnum {
+        STANDARD(0, "Standard"),
+        CRITICAL(1, "Critical"),
+        VIRTUAL(2, "Virtual"),
+        INCENTIVE(3, "Incentive"),
+        INCENTIVE_SIGNAL(4, "IncentiveSignal");
+
+        public final Integer value;
+        public final String label;
+
+        private TariffPriceTypeEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum TariffUnitEnum implements MatterEnum {
+        K_WH(0, "KWh"),
+        KV_AH(1, "KVAh");
+
+        public final Integer value;
+        public final String label;
+
+        private TariffUnitEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -328,23 +477,34 @@ public class BaseCluster {
     }
 
     public enum Namespace implements MatterEnum {
-        CLOSURE(1, "Closure"),
-        COMPASS_DIRECTION(2, "CompassDirection"),
-        COMPASS_LOCATION(3, "CompassLocation"),
-        DIRECTION(4, "Direction"),
-        LEVEL(5, "Level"),
-        LOCATION(6, "Location"),
-        NUMBER(7, "Number"),
-        POSITION(8, "Position"),
+        COMMON_CLOSURE(1, "CommonClosure"),
+        COMMON_COMPASS_DIRECTION(2, "CommonCompassDirection"),
+        COMMON_COMPASS_LOCATION(3, "CommonCompassLocation"),
+        COMMON_DIRECTION(4, "CommonDirection"),
+        COMMON_LEVEL(5, "CommonLevel"),
+        COMMON_LOCATION(6, "CommonLocation"),
+        COMMON_NUMBER(7, "CommonNumber"),
+        COMMON_POSITION(8, "CommonPosition"),
         ELECTRICAL_MEASUREMENT(10, "ElectricalMeasurement"),
+        COMMODITY_TARIFF_CHRONOLOGY(11, "CommodityTariffChronology"),
+        COMMODITY_TARIFF_COMMODITY(13, "CommodityTariffCommodity"),
         LAUNDRY(14, "Laundry"),
         POWER_SOURCE(15, "PowerSource"),
-        AREA_NAMESPACE(16, "AreaNamespace"),
-        LANDMARK_NAMESPACE(17, "LandmarkNamespace"),
-        RELATIVE_POSITION(18, "RelativePosition"),
+        COMMON_AREA_NAMESPACE(16, "CommonAreaNamespace"),
+        COMMON_LANDMARK_NAMESPACE(17, "CommonLandmarkNamespace"),
+        COMMON_RELATIVE_POSITION(18, "CommonRelativePosition"),
+        COMMODITY_TARIFF_FLOW(19, "CommodityTariffFlow"),
         REFRIGERATOR(65, "Refrigerator"),
         ROOM_AIR_CONDITIONER(66, "RoomAirConditioner"),
-        SWITCHES(67, "Switches");
+        SWITCHES(67, "Switches"),
+        CLOSURE(68, "Closure"),
+        CLOSURE_PANEL(69, "ClosurePanel"),
+        CLOSURE_COVERING(70, "ClosureCovering"),
+        CLOSURE_WINDOW(71, "ClosureWindow"),
+        CLOSURE_CABINET(72, "ClosureCabinet"),
+        IDENTIFIED_OBJECT(73, "IdentifiedObject"),
+        IDENTIFIED_SOUND(74, "IdentifiedSound"),
+        IDENTIFIED_HUMAN_ACTIVITY(75, "IdentifiedHumanActivity");
 
         public final Integer value;
         public final String label;

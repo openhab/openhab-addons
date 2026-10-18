@@ -15,21 +15,22 @@ package org.openhab.binding.twilio.internal.service;
 import static org.openhab.binding.twilio.internal.TwilioBindingConstants.BINDING_ID;
 import static org.openhab.binding.twilio.internal.TwilioBindingConstants.SERVLET_PATH;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.CompletableFuture;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.component.annotations.Activate;
+import org.openhab.core.io.rest.Webhook;
+import org.openhab.core.io.rest.WebhookService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +38,13 @@ import org.slf4j.LoggerFactory;
  * Manages the binding-wide openHAB Cloud webhook registration used for receiving Twilio callbacks.
  * <p>
  * All Twilio phone Things share one cloud webhook mapping at
- * {@link org.openhab.binding.twilio.internal.TwilioBindingConstants#SERVLET_PATH}. The first call
- * to {@link #register()} registers the mapping with the openHAB Cloud {@code WebhookService}
- * and starts a daily refresh task to keep the 30-day TTL from expiring. The mapping is removed
- * when the binding is deactivated.
- * <p>
- * The openHAB Cloud {@code WebhookService} is looked up via reflection so this binding has no
- * compile-time or class-loading dependency on the cloud add-on.
+ * {@link org.openhab.binding.twilio.internal.TwilioBindingConstants#SERVLET_PATH}. Each account
+ * Thing that wants cloud webhooks calls {@link #register(String)}; the first such call contacts
+ * the core {@link WebhookService} and starts a daily refresh task to keep the registration's TTL
+ * from expiring. The webhook is only removed from the cloud when an account explicitly calls
+ * {@link #unregister(String)} (e.g. when the user turns {@code useCloudWebhook} off in the config)
+ * and no other accounts still require it. Bundle stop/restart deliberately does not remove the
+ * webhook, so restarts don't churn the cloud registration.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -54,20 +55,43 @@ public class TwilioCloudWebhookService {
     private final Logger logger = LoggerFactory.getLogger(TwilioCloudWebhookService.class);
 
     private static final long REFRESH_INTERVAL_HOURS = 24;
-    private static final String WEBHOOK_SERVICE_CLASS = "org.openhab.io.openhabcloud.WebhookService";
     private static final int REQUEST_TIMEOUT_SECONDS = 30;
 
-    private final BundleContext bundleContext;
-    private final ScheduledExecutorService scheduler;
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(BINDING_ID + "-cloud-webhook");
     private final Object lock = new Object();
+    private final Set<String> requestors = new HashSet<>();
 
+    private volatile @Nullable WebhookService webhookService;
     private @Nullable String baseUrl;
     private @Nullable ScheduledFuture<?> refreshTask;
 
-    @Activate
-    public TwilioCloudWebhookService(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-        this.scheduler = ThreadPoolManager.getScheduledPool(BINDING_ID + "-cloud-webhook");
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    void setWebhookService(WebhookService service) {
+        boolean retry;
+        synchronized (lock) {
+            this.webhookService = service;
+            retry = !requestors.isEmpty() && baseUrl == null;
+        }
+        if (retry) {
+            logger.debug("WebhookService now available; attempting deferred webhook registration");
+            scheduler.execute(this::doRegister);
+        }
+    }
+
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    void unsetWebhookService(WebhookService service) {
+        synchronized (lock) {
+            if (this.webhookService == service) {
+                this.webhookService = null;
+                baseUrl = null;
+                ScheduledFuture<?> task = refreshTask;
+                if (task != null) {
+                    task.cancel(false);
+                    refreshTask = null;
+                }
+            }
+        }
     }
 
     @Deactivate
@@ -78,38 +102,60 @@ public class TwilioCloudWebhookService {
                 task.cancel(true);
                 refreshTask = null;
             }
-            if (baseUrl != null) {
-                withWebhookService(ws -> {
-                    invokeRemoveWebhook(ws, SERVLET_PATH);
-                    return null;
-                });
-                baseUrl = null;
-            }
+            requestors.clear();
+            baseUrl = null;
         }
     }
 
     /**
-     * Ensures the cloud webhook is registered, returning the base URL. On the first call this
-     * contacts the openHAB Cloud service and starts a daily refresh. Subsequent calls return the
-     * cached URL immediately.
+     * Registers the cloud webhook on behalf of the given requestor (typically a Thing UID). If the
+     * {@link WebhookService} is available, this contacts it synchronously and returns the base URL.
+     * If the service is not yet available, the request is remembered and registration will be
+     * retried automatically once the service binds.
      *
-     * @return the cloud webhook base URL, or {@code null} if the openHAB Cloud service is not
-     *         available
+     * @param requestorId an identifier (typically a Thing UID) so the service can ref-count
+     *            registrations across multiple Things
+     * @return the cloud webhook base URL, or {@code null} if the {@link WebhookService} is not
+     *         (yet) available
      */
-    public @Nullable String register() {
+    public @Nullable String register(String requestorId) {
         synchronized (lock) {
-            String baseUrl = fetchWebhookUrl();
-            if (baseUrl != null) {
-                this.baseUrl = baseUrl;
-                logger.debug("Cloud webhook base URL: {}", baseUrl);
-            } else {
-                logger.debug("Cloud webhook requested but openHAB Cloud WebhookService is not available");
+            requestors.add(requestorId);
+        }
+        return doRegister();
+    }
+
+    /**
+     * Releases this requestor's interest in the cloud webhook. When the last requestor unregisters,
+     * the webhook is removed from the {@link WebhookService}.
+     * 
+     * @param requestorId the same identifier previously passed to {@link #register(String)}
+     */
+    public void unregister(String requestorId) {
+        boolean removeNeeded;
+        WebhookService ws;
+        synchronized (lock) {
+            if (!requestors.remove(requestorId) || !requestors.isEmpty()) {
+                return;
             }
-            if (baseUrl != null && refreshTask == null) {
-                refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, REFRESH_INTERVAL_HOURS,
-                        REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
+            removeNeeded = baseUrl != null;
+            ws = webhookService;
+            baseUrl = null;
+            ScheduledFuture<?> task = refreshTask;
+            if (task != null) {
+                task.cancel(false);
+                refreshTask = null;
             }
-            return baseUrl;
+        }
+        if (removeNeeded && ws != null) {
+            try {
+                ws.removeWebhook(SERVLET_PATH).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                logger.debug("Cloud webhook removed for {}", SERVLET_PATH);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                logger.debug("Failed to remove cloud webhook for {}: {}", SERVLET_PATH, e.getMessage());
+            }
         }
     }
 
@@ -120,6 +166,52 @@ public class TwilioCloudWebhookService {
         return baseUrl;
     }
 
+    private @Nullable String doRegister() {
+        synchronized (lock) {
+            if (baseUrl != null) {
+                return baseUrl;
+            }
+            if (webhookService == null || requestors.isEmpty()) {
+                // will (re-)register when the webhookService is set or a new requestor calls in
+                return null;
+            }
+        }
+        String url = fetchWebhookUrl();
+        if (url == null) {
+            return null;
+        }
+        WebhookService orphanedService = null;
+        synchronized (lock) {
+            if (baseUrl != null) {
+                return baseUrl;
+            }
+            if (requestors.isEmpty()) {
+                // the last requestor unregistered while requestWebhook() was in flight; since
+                // unregister() saw baseUrl == null it didn't remove the just-created hook
+                orphanedService = webhookService;
+            } else {
+                baseUrl = url;
+                logger.debug("Cloud webhook base URL: {}", url);
+                if (refreshTask == null) {
+                    refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, REFRESH_INTERVAL_HOURS,
+                            REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
+                }
+                return url;
+            }
+        }
+        if (orphanedService != null) {
+            try {
+                orphanedService.removeWebhook(SERVLET_PATH).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                logger.debug("Removed orphaned cloud webhook for {} (no requestors after registration)", SERVLET_PATH);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                logger.debug("Failed to remove orphaned cloud webhook for {}: {}", SERVLET_PATH, e.getMessage());
+            }
+        }
+        return null;
+    }
+
     private void refresh() {
         String url = fetchWebhookUrl();
         if (url != null) {
@@ -128,55 +220,20 @@ public class TwilioCloudWebhookService {
         }
     }
 
-    // the following methods are bit complicated to get around not having a direct java dependency on the cloud binding
-
     private @Nullable String fetchWebhookUrl() {
-        return withWebhookService(ws -> invokeRequestWebhook(ws, SERVLET_PATH));
-    }
-
-    private <T> @Nullable T withWebhookService(Function<Object, @Nullable T> action) {
-        try {
-            ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(WEBHOOK_SERVICE_CLASS, null);
-            if (refs == null || refs.length == 0) {
-                return null;
-            }
-            ServiceReference<?> ref = refs[0];
-            Object service = bundleContext.getService(ref);
-            if (service == null) {
-                return null;
-            }
-            try {
-                return action.apply(service);
-            } finally {
-                bundleContext.ungetService(ref);
-            }
-        } catch (Exception e) {
-            logger.debug("Could not look up openHAB Cloud WebhookService: {}", e.getMessage());
+        WebhookService ws = webhookService;
+        if (ws == null) {
             return null;
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private @Nullable String invokeRequestWebhook(Object webhookService, String localPath) {
         try {
-            Method method = webhookService.getClass().getMethod("requestWebhook", String.class);
-            CompletableFuture<String> future = (CompletableFuture<String>) method.invoke(webhookService, localPath);
-            return future != null ? future.get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) : null;
+            Webhook hook = ws.requestWebhook(SERVLET_PATH).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            return hook.url().toString();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return null;
         } catch (Exception e) {
-            logger.debug("Failed to request cloud webhook for {}: {}", localPath, e.getMessage());
+            logger.debug("Failed to request cloud webhook for {}: {}", SERVLET_PATH, e.getMessage());
             return null;
-        }
-    }
-
-    private void invokeRemoveWebhook(Object webhookService, String localPath) {
-        try {
-            Method method = webhookService.getClass().getMethod("removeWebhook", String.class);
-            method.invoke(webhookService, localPath);
-        } catch (Exception e) {
-            logger.debug("Failed to remove cloud webhook for {}: {}", localPath, e.getMessage());
         }
     }
 }

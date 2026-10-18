@@ -54,6 +54,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * Parts of this code are inspired by the TuyAPI project (see notice file)
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Address sub-devices by node id (cid)
  */
 @NonNullByDefault
 public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
@@ -88,24 +89,40 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
         if (msg.content == null || msg.content instanceof Map<?, ?>) {
             Map<String, Object> content = (Map<String, Object>) msg.content;
             Map<String, Object> payload = new HashMap<>();
+            String cid = msg.cid;
             if (msg.commandType == REQ_DEVINFO || msg.commandType == DP_REFRESH) {
                 if (content != null) {
                     payload.putAll(content);
                 }
+            } else if ((protocol == V3_4 || protocol == V3_5) && cid != null
+                    && (msg.commandType == DP_QUERY || msg.commandType == DP_QUERY_NEW)) {
+                // A sub-device query carries nothing but the node id. Wrapping it in the protocol 5 envelope used
+                // for commands makes a gateway answer for itself instead of for the addressed sub-device.
+                payload.put("cid", cid);
             } else if (protocol == V3_4 || protocol == V3_5) {
                 payload.put("protocol", 5);
                 payload.put("t", System.currentTimeMillis() / 1000);
+                if (cid != null) {
+                    // A sub-device is identified at both levels of the envelope
+                    payload.put("cid", cid);
+                }
                 Map<String, Object> data = new HashMap<>();
-                data.put("cid", deviceId);
+                data.put("cid", Objects.requireNonNullElse(cid, deviceId));
                 data.put("ctype", 0);
                 if (content != null) {
                     data.putAll(content);
                 }
                 payload.put("data", data);
             } else {
-                payload.put("devId", deviceId);
-                payload.put("gwId", deviceId);
-                payload.put("uid", deviceId);
+                if (cid != null) {
+                    // Sub-devices are addressed by their node id only. Gateways reject messages that also
+                    // carry the device identification of the gateway itself.
+                    payload.put("cid", cid);
+                } else {
+                    payload.put("devId", deviceId);
+                    payload.put("gwId", deviceId);
+                    payload.put("uid", deviceId);
+                }
                 payload.put("t", System.currentTimeMillis() / 1000);
                 if (content != null) {
                     payload.putAll(content);

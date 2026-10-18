@@ -20,10 +20,11 @@
 			<channel id="irCommand" typeId="irCommand"/>
 			<channel id="kbdCommand" typeId="kbdCommand"/>
 			<channel id="dvrStatus" typeId="dvrStatus"/>
+			<channel id="search" typeId="search"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>host</representation-property>
@@ -210,5 +211,11 @@
 		<label>TiVo Status</label>
 		<description>Action return code / channel information returned by the TiVo. Type: String (read-only)</description>
 		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="search">
+		<item-type>String</item-type>
+		<label>Search</label>
+		<description>Executes a search in the TiVo menu for the given string (write-only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

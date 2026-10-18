@@ -15,12 +15,15 @@ package org.openhab.binding.homematic.internal.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * A very simple pool implementation that handles free port numbers used by the RPC server if multiple bridges are
  * configured.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class SimplePortPool {
     private static int startPort = 9125;
 
@@ -49,6 +52,7 @@ public class SimplePortPool {
 
         PortInfo portInfo = new PortInfo();
         while (isPortInUse(startPort++)) {
+            // search for the next free port number
         }
         portInfo.port = startPort - 1;
         portInfo.free = false;

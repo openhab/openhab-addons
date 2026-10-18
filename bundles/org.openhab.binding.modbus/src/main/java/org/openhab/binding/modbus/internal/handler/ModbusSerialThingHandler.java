@@ -60,7 +60,6 @@ public class ModbusSerialThingHandler
         this.config = config;
 
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
-        this.poolConfiguration = poolConfiguration;
         poolConfiguration.setConnectMaxTries(config.getConnectMaxTries());
         poolConfiguration.setAfterConnectionDelayMillis(config.getAfterConnectionDelayMillis());
         poolConfiguration.setConnectTimeoutMillis(config.getConnectTimeoutMillis());
@@ -69,6 +68,7 @@ public class ModbusSerialThingHandler
         // Never reconnect serial connections "automatically"
         poolConfiguration.setInterConnectDelayMillis(1000);
         poolConfiguration.setReconnectAfterMillis(-1);
+        this.poolConfiguration = poolConfiguration;
 
         endpoint = new ModbusSerialSlaveEndpoint(port, baud, flowControlIn, flowControlOut, config.getDataBits(),
                 stopBits, parity, encoding, config.isEcho(), config.getReceiveTimeoutMillis());

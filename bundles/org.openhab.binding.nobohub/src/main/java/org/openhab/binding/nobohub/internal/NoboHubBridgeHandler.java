@@ -158,8 +158,8 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Done connecting to {} ({})", hostName, serialNumber);
 
                 Duration timeout = RECOMMENDED_KEEPALIVE_INTERVAL;
-                if (config.pollingInterval > 0) {
-                    timeout = Duration.ofSeconds(config.pollingInterval);
+                if (config.keepaliveInterval > 0) {
+                    timeout = Duration.ofSeconds(config.keepaliveInterval);
                 }
 
                 logger.debug("Starting communication thread to {}", hostName);

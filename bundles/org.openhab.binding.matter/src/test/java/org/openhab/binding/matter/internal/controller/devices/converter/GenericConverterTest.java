@@ -35,18 +35,50 @@ import org.openhab.core.library.unit.SIUnits;
 class GenericConverterTest {
 
     @Test
-    void testLevelToPercent() {
-        assertEquals(PercentType.ZERO, ValueUtils.levelToPercent(0));
-        assertEquals(new PercentType(1), ValueUtils.levelToPercent(1));
-        assertEquals(new PercentType(50), ValueUtils.levelToPercent(127));
-        assertEquals(new PercentType(100), ValueUtils.levelToPercent(254));
+    void testLevelToPercentWhenOn() {
+        // the Lighting feature has no level for off, so the minimum level is the dimmest a light can be on
+        assertEquals(new PercentType(1), ValueUtils.levelToPercentWhenOn(1));
+        assertEquals(new PercentType(1), ValueUtils.levelToPercentWhenOn(2));
+        assertEquals(new PercentType(1), ValueUtils.levelToPercentWhenOn(4));
+        assertEquals(new PercentType(50), ValueUtils.levelToPercentWhenOn(128));
+        assertEquals(new PercentType(100), ValueUtils.levelToPercentWhenOn(254));
     }
 
     @Test
     void testPercentToLevel() {
-        assertEquals(0, ValueUtils.percentToLevel(PercentType.ZERO));
-        assertEquals(127, ValueUtils.percentToLevel(new PercentType(50)));
+        assertEquals(1, ValueUtils.percentToLevel(PercentType.ZERO));
+        assertEquals(4, ValueUtils.percentToLevel(new PercentType(1)));
+        assertEquals(128, ValueUtils.percentToLevel(new PercentType(50)));
         assertEquals(254, ValueUtils.percentToLevel(PercentType.HUNDRED));
+    }
+
+    @Test
+    void testLevelPercentRoundTrip() {
+        // a level set from a percentage must read back as the same percentage, or values drift on every hop
+        // between a Matter device and a bridged item
+        for (int percent = 1; percent <= 100; percent++) {
+            PercentType value = new PercentType(percent);
+            assertEquals(value, ValueUtils.levelToPercentWhenOn(ValueUtils.percentToLevel(value)));
+        }
+    }
+
+    @Test
+    void testLevelToPercentWithoutTheLightingFeature() {
+        // level 0 is valid without the Lighting feature, so the range starts there
+        assertEquals(PercentType.ZERO, ValueUtils.levelToPercent(0, 0));
+        assertEquals(new PercentType(50), ValueUtils.levelToPercent(127, 0));
+        assertEquals(new PercentType(100), ValueUtils.levelToPercent(254, 0));
+        assertEquals(0, ValueUtils.percentToLevel(PercentType.ZERO, 0));
+        assertEquals(254, ValueUtils.percentToLevel(PercentType.HUNDRED, 0));
+    }
+
+    @Test
+    void testSaturationRoundTrip() {
+        // every saturation the device reports must convert back to itself, the item is the only place it is kept.
+        // The other direction cannot be exact, since a percentage is finer grained than the 255 saturation steps.
+        for (int saturation = 0; saturation <= 254; saturation++) {
+            assertEquals(saturation, ValueUtils.percentToSaturation(ValueUtils.saturationToPercent(saturation)));
+        }
     }
 
     @Test

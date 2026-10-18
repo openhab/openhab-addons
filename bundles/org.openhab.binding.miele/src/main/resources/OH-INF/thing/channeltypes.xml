@@ -268,10 +268,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="spinningspeed" advanced="true">
-		<item-type>String</item-type>
+	<channel-type id="spinning-speed" advanced="true">
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Spinning Speed</label>
-		<description>Spinning speed in the program running on the appliance</description>
+		<description>Spinning speed of the currently running program on the appliance</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

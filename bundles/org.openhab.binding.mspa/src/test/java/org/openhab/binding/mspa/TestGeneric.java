@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ class TestGeneric {
     void testDeviceProperties() {
         String fileName = "src/test/resources/DevicelistResponse.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
             JSONObject devices = new JSONObject(content);
             if (devices.has("data")) {
                 JSONObject data = devices.getJSONObject("data");

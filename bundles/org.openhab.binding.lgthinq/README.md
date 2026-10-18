@@ -19,7 +19,7 @@ See the table bellow:
 | fridge-101          | Refrigerator    | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
 | heatpump-401HP      | Heat Pump       | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
 
-## `bridge` Thing
+## `cloud-account` Bridge
 
 This binding has a Bridge responsible for discovering and registering LG Things.
 Thus, adding the Bridge (LGThinq GW Bridge) is the first step in configuring this Binding.
@@ -207,7 +207,7 @@ Example of how to configure a Thing.
 ### Example `demo.things`
 
 ```java
-Bridge lgthinq:bridge:MyLGThinqBridge [ username="user@registered.com", password="cleartext-password", language="en", country="US", poolingIntervalSec=600] {
+Bridge lgthinq:cloud-account:MyLGThinqBridge [ username="user@registered.com", password="cleartext-password", language="en-US", country="US", pollingIntervalSec=600] {
    Thing air-conditioner-401 myAC [ modelUrlInfo="<ac-model-url>", deviceId="<device-id>", platformType="<platform-type>", modelId="<model-id>", deviceAlias="<MyAC>" ]
 }
 ```

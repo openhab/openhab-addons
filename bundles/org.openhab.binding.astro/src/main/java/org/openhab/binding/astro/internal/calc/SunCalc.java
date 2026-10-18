@@ -262,7 +262,7 @@ public class SunCalc {
             })));
         }
 
-        sun.setZodiac(ZodiacCalc.calculate(lsun, calendar.toInstant()));
+        sun.setZodiac(ZodiacCalc.calculateSun(lsun, calendar.toInstant()));
 
         Season season = sun.getSeason();
         var year = calendar.get(Calendar.YEAR);

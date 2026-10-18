@@ -77,6 +77,7 @@
 		<channel-groups>
 			<channel-group id="control" typeId="rgbw2ColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBW2"/>
+			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -93,16 +94,28 @@
 		<channel-groups>
 			<channel-group id="control" typeId="rgbw2WhiteControl"/>
 			<channel-group id="channel1" typeId="rgbw2Channel">
-				<label>Channel 1</label>
+				<label>LED Channel 1</label>
 			</channel-group>
 			<channel-group id="channel2" typeId="rgbw2Channel">
-				<label>Channel 2</label>
+				<label>LED Channel 2</label>
 			</channel-group>
 			<channel-group id="channel3" typeId="rgbw2Channel">
-				<label>Channel 3</label>
+				<label>LED Channel 3</label>
 			</channel-group>
 			<channel-group id="channel4" typeId="rgbw2Channel">
-				<label>Channel 4</label>
+				<label>LED Channel 4</label>
+			</channel-group>
+			<channel-group id="light1" typeId="rgbwLight">
+				<label>LED Channel 1</label>
+			</channel-group>
+			<channel-group id="light2" typeId="rgbwLight">
+				<label>LED Channel 2</label>
+			</channel-group>
+			<channel-group id="light3" typeId="rgbwLight">
+				<label>LED Channel 3</label>
+			</channel-group>
+			<channel-group id="light4" typeId="rgbwLight">
+				<label>LED Channel 4</label>
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
@@ -140,7 +153,7 @@
 		<label>Colors</label>
 		<description>Light colors</description>
 		<channels>
-			<channel id="hsb" typeId="system.color"/>
+			<channel id="hsb" typeId="colorMain"/>
 			<channel id="full" typeId="colorFull"/>
 			<channel id="red" typeId="colorRed"/>
 			<channel id="green" typeId="colorGreen"/>
@@ -155,7 +168,7 @@
 		<label>Colors</label>
 		<description>Light colors</description>
 		<channels>
-			<channel id="hsb" typeId="system.color"/>
+			<channel id="hsb" typeId="colorMain"/>
 			<channel id="full" typeId="colorFull"/>
 			<channel id="red" typeId="colorRed"/>
 			<channel id="green" typeId="colorGreen"/>
@@ -173,10 +186,15 @@
 
 	<channel-group-type id="rgbw2Channel">
 		<label>LED Channel</label>
+		<description>[deprecated] Use light1..4 instead. Control LED channel and adjust settings</description>
+	</channel-group-type>
+
+	<channel-group-type id="rgbwLight">
+		<label>LED Channel</label>
 		<description>Control LED channel and adjust settings</description>
 	</channel-group-type>
 
-	<channel-type id="colorMode">
+	<channel-type id="colorMode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Mode (ON=color, OFF=white)</label>
 		<description>ON: Device is in color mode, OFF: Device is in White Mode</description>
@@ -186,7 +204,7 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="colorFull">
+	<channel-type id="colorFull" advanced="true">
 		<item-type>String</item-type>
 		<label>Full Color</label>
 		<description>Setting this channel sets the selected color to 255, all others to 0</description>
@@ -208,57 +226,46 @@
 	<channel-type id="colorRed" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Red</label>
-		<description>Red (0-255), applies only in Color Mode</description>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<description>Red (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorGreen" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Green</label>
-		<description>Green (0-255), applies only in Color Mode</description>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<description>Green (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorBlue" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Blue</label>
-		<description>Blue (0-255), applies only in Color Mode</description>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<description>Blue (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="colorWhite">
+	<channel-type id="colorWhite" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>White</label>
-		<description>White (0-255), applies only in Color Mode</description>
+		<description>White (0-100%), applies only in Color Mode</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="colorGain">
+	<channel-type id="colorGain" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Gain</label>
 		<description>Gain for all channels (0-100%), applies only in Color Mode</description>
 		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="whiteTemp">
-		<item-type>Dimmer</item-type>
-		<label>Light Temperature</label>
-		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K; Duo: 2700K-6500K)</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
-		<state min="3000" max="6500" step="10" readOnly="false"/>
-	</channel-type>
-
 	<channel-type id="whiteBrightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
-		<description>Brightness (0-100%, 0=OFF)</description>
+		<description>Accepts Dimmer Item (0..100%) or Switch Item (ON/OFF)</description>
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
@@ -298,4 +305,35 @@
 			</options>
 		</state>
 	</channel-type>
+
+	<!-- 'power' channel can be migrated to advanced; in which case it takes over all attributes of the original -->
+	<channel-type id="powerAdvanced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+	</channel-type>
+
+	<!-- 'whiteBrightness' channel can be moved to advanced; in which case it takes over all attributes of the original -->
+	<channel-type id="brightnessAdvanced" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+	</channel-type>
+
+
+	<!-- whiteGain was wrongly used in prior versions; so this just keeps a basis for migration -->
+	<channel-type id="whiteGain">
+		<item-type>Dimmer</item-type>
+		<label>Legacy</label>
+	</channel-type>
+
+	<channel-type id="colorMain">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Accepts Color Item (HSB), Dimmer Item (0..100%) or Switch Item (ON/OFF)</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
+	</channel-type>
+
 </thing:thing-descriptions>

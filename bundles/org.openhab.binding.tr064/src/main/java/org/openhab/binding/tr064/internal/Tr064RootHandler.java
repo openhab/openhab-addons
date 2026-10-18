@@ -117,6 +117,11 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
     }
 
     @Override
+    public <T> T getConfigAs(Class<T> configurationClass) {
+        return super.getConfigAs(configurationClass);
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!communicationEstablished) {
             logger.debug("Tried to process command, but thing is not yet ready: {} to {}", channelUID, command);

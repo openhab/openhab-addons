@@ -146,7 +146,6 @@ public class RemoteAPIController {
             throw new AirGradientCommunicationException("Unable to generate request");
         }
 
-        @Nullable
         ContentResponse response = null;
         try {
             response = request.send();

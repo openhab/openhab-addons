@@ -35,15 +35,15 @@
 						},
 						{
 							"value": "brush-cleaner-reset-brush-life",
-							"label": "Brush Cleaner Reset Brush Life"
+							"label": "Main Brush Reset Brush Life"
 						},
 						{
-							"value": "brush-cleaner-reset-brush-life",
-							"label": "Brush Cleaner Reset Brush Life"
+							"value": "brush-cleaner-reset-brush-life1",
+							"label": "Side Brush Reset Brush Life"
 						},
 						{
-							"value": "brush-cleaner-reset-brush-life",
-							"label": "Brush Cleaner Reset Brush Life"
+							"value": "brush-cleaner-reset-brush-life2",
+							"label": "Sensor Reset Usage Time"
 						},
 						{
 							"value": "custom-find-robot",
@@ -241,7 +241,7 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "brush-cleaner-reset-brush-life"
+									"matchValue": "brush-cleaner-reset-brush-life1"
 								}
 							]
 						}
@@ -255,7 +255,7 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "brush-cleaner-reset-brush-life"
+									"matchValue": "brush-cleaner-reset-brush-life2"
 								}
 							]
 						}
@@ -646,7 +646,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Vacuum Start Sweep\",\"vacuum-stop-sweeping\"\u003d\"Vacuum Stop Sweeping\",\"vacuum-start-room-sweep\"\u003d\"Vacuum Start Room Sweep\",\"battery-start-charge\"\u003d\"Battery Start Charge\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"custom-find-robot\"\u003d\"Custom Find Robot\",\"custom-stop-find-charge\"\u003d\"Custom Stop Find Charge\",\"custom-continue-sweep\"\u003d\"Custom Continue Sweep\",\"custom-start-dust\"\u003d\"Custom Start Dust\",\"custom-pause\"\u003d\"Custom Pause\",\"custom-pause-find-charge\"\u003d\"Custom Pause Find Charge\",\"custom-continue-find-charge\"\u003d\"Custom Continue Find Charge\",\"custom-update-audio\"\u003d\"Custom Update Audio\",\"custom-set-voice\"\u003d\"Custom Set Voice\",\"map-request-path\"\u003d\"Map Request Path\",\"map-change-area-name\"\u003d\"Map Change Area Name\",\"map-set-auto-area\"\u003d\"Map Set Auto Area\",\"map-local-map\"\u003d\"Map Local Map\",\"map-area-custom\"\u003d\"Map Area Custom\",\"map-area-order\"\u003d\"Map Area Order\",\"map-set-current-map\"\u003d\"Map Set Current Map\",\"map-change-map-name\"\u003d\"Map Change Map Name\",\"map-delete-map-list\"\u003d\"Map Delete Map List\",\"map-save-map\"\u003d\"Map Save Map\",\"sweep-start-sweep\"\u003d\"Sweep Start Sweep\",\"mop-reset-mop-life\"\u003d\"Mop Reset Mop Life\",\"basestation-start-ota\"\u003d\"Basestation Start Ota\",\"basestation-set-ap-name\"\u003d\"Basestation Set Ap Name\",\"basestation-set-back-clean-freq\"\u003d\"Basestation Set Back Clean Freq\"]`"
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Vacuum Start Sweep\",\"vacuum-stop-sweeping\"\u003d\"Vacuum Stop Sweeping\",\"vacuum-start-room-sweep\"\u003d\"Vacuum Start Room Sweep\",\"battery-start-charge\"\u003d\"Battery Start Charge\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Main Brush Reset Brush Life\",\"brush-cleaner-reset-brush-life1\"\u003d\"Side Brush Reset Brush Life\",\"brush-cleaner-reset-brush-life2\"\u003d\"Sensor Reset Usage Time\",\"custom-find-robot\"\u003d\"Custom Find Robot\",\"custom-stop-find-charge\"\u003d\"Custom Stop Find Charge\",\"custom-continue-sweep\"\u003d\"Custom Continue Sweep\",\"custom-start-dust\"\u003d\"Custom Start Dust\",\"custom-pause\"\u003d\"Custom Pause\",\"custom-pause-find-charge\"\u003d\"Custom Pause Find Charge\",\"custom-continue-find-charge\"\u003d\"Custom Continue Find Charge\",\"custom-update-audio\"\u003d\"Custom Update Audio\",\"custom-set-voice\"\u003d\"Custom Set Voice\",\"map-request-path\"\u003d\"Map Request Path\",\"map-change-area-name\"\u003d\"Map Change Area Name\",\"map-set-auto-area\"\u003d\"Map Set Auto Area\",\"map-local-map\"\u003d\"Map Local Map\",\"map-area-custom\"\u003d\"Map Area Custom\",\"map-area-order\"\u003d\"Map Area Order\",\"map-set-current-map\"\u003d\"Map Set Current Map\",\"map-change-map-name\"\u003d\"Map Change Map Name\",\"map-delete-map-list\"\u003d\"Map Delete Map List\",\"map-save-map\"\u003d\"Map Save Map\",\"sweep-start-sweep\"\u003d\"Sweep Start Sweep\",\"mop-reset-mop-life\"\u003d\"Mop Reset Mop Life\",\"basestation-start-ota\"\u003d\"Basestation Start Ota\",\"basestation-set-ap-name\"\u003d\"Basestation Set Ap Name\",\"basestation-set-back-clean-freq\"\u003d\"Basestation Set Back Clean Freq\"]`"
 			},
 			{
 				"property": "status",

@@ -23,9 +23,11 @@ import org.openhab.binding.ring.internal.config.RingThingConfig;
 import org.openhab.binding.ring.internal.device.RingDevice;
 import org.openhab.binding.ring.internal.errors.IllegalDeviceClassException;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -119,6 +121,15 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                 ringAccount.sendCommand(url + "/" + config.id + command, httpMethod, payload);
             }
         }
+    }
+
+    /**
+     * Receives instant event metadata (motion/dings) pushed down from the Account Bridge
+     */
+    protected void updateInstantEvent(DateTimeType createdAt, String kind, String extendedDescription) {
+        updateState(CHANNEL_EVENT_CREATED_AT, createdAt);
+        updateState(CHANNEL_EVENT_KIND, new StringType(kind));
+        updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(extendedDescription));
     }
 
     /**

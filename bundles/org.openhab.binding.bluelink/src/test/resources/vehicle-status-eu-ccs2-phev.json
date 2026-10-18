@@ -1,0 +1,24 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "state": {
+    "Vehicle": {
+      "Drivetrain": {
+        "FuelSystem": {
+          "DTE": {
+            "Unit": 1,
+            "Total": 600.0,
+            "EV": 47.0
+          }
+        }
+      },
+      "Green": {
+        "BatteryManagement": {
+          "BatteryRemain": {
+            "Ratio": 100.0
+          }
+        }
+      }
+    }
+  }
+}

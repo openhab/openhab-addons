@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -56,11 +55,11 @@ import org.openhab.core.audio.ByteArrayAudioStream;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.voice.AbstractCachedTTSService;
-import org.openhab.core.voice.TTSCache;
-import org.openhab.core.voice.TTSException;
-import org.openhab.core.voice.TTSService;
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.AbstractCachedTTSService;
+import org.openhab.core.voice.tts.TTSCache;
+import org.openhab.core.voice.tts.TTSException;
+import org.openhab.core.voice.tts.TTSService;
+import org.openhab.core.voice.tts.Voice;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -79,6 +78,7 @@ import io.github.jvoiceproject.piperjni.PiperVoice;
  * The {@link PiperTTSService} class is a service implementation to use Piper for Text-to-Speech.
  *
  * @author Miguel Álvarez - Initial contribution
+ * @author Florian Hotze - Add support for raw PCM audio format
  */
 @NonNullByDefault
 @Component(service = TTSService.class, configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "="
@@ -87,7 +87,7 @@ import io.github.jvoiceproject.piperjni.PiperVoice;
         + " Text-to-Speech", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class PiperTTSService extends AbstractCachedTTSService {
     // piper-jni version from pom.xml
-    private static final String PIPER_VERSION = "1.4.1";
+    private static final String PIPER_VERSION = "1.4.2";
     private static final Path PIPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "piper");
     private static final Path LIB_FOLDER = PIPER_FOLDER.resolve("lib-" + PIPER_VERSION);
     private static final Path JAR_FILE = PIPER_FOLDER.resolve("piper-jni-" + PIPER_VERSION + ".jar");
@@ -101,28 +101,26 @@ public class PiperTTSService extends AbstractCachedTTSService {
     private boolean ready = false;
     private @Nullable VoiceModel preloadedModel;
     private @Nullable PiperJNI piper;
-    private @Nullable Future<?> activateTask;
-    static {
-        System.setProperty("io.github.jvoiceproject.piperjni.libdir", LIB_FOLDER.toAbsolutePath().toString());
-    }
+    private final Future<?> activateTask;
 
     @Activate
-    public PiperTTSService(final @Reference TTSCache ttsCache) {
+    public PiperTTSService(final @Reference TTSCache ttsCache, Map<String, Object> config) {
         super(ttsCache);
-    }
 
-    @Activate
-    protected void activate(Map<String, Object> config) {
         tryCreatePiperDirectory();
         activateTask = executor.submit(() -> {
             try {
+                logger.debug("Setting Piper native library path to: {}", LIB_FOLDER);
+                System.setProperty("io.github.jvoiceproject.piperjni.libdir", LIB_FOLDER.toAbsolutePath().toString());
+                logger.debug("Setting up Piper native dependencies...");
                 setupNativeDependencies();
+                logger.debug("Initializing Piper...");
                 PiperJNI piper = this.piper = new PiperJNI();
                 piper.initialize(true);
                 logger.debug("Using Piper version {}", piper.getPiperVersion());
                 ready = true;
-            } catch (IOException e) {
-                logger.warn("Piper registration failed, the add-on will not work: {}", e.getMessage());
+            } catch (Throwable t) {
+                logger.error("Piper registration failed, the add-on will not work: {}", t.getMessage(), t);
             }
         });
         configChange(config);
@@ -131,7 +129,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
     @Deactivate
     private void deactivate() {
         Future<?> activateTask = this.activateTask;
-        if (activateTask != null && !activateTask.isDone()) {
+        if (!activateTask.isDone()) {
             activateTask.cancel(true);
         }
     }
@@ -322,8 +320,11 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Set.of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, null,
-                null));
+        return Set.of(
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, null,
+                        null),
+                new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, null,
+                        null));
     }
 
     @Override
@@ -333,6 +334,9 @@ public class PiperTTSService extends AbstractCachedTTSService {
         }
         if (!(voice instanceof PiperTTSVoice ttsVoice)) {
             throw new TTSException("No piper voice provided");
+        }
+        if (!isSupportedFormat(audioFormat)) {
+            throw new TTSException("The requested AudioFormat is unsupported: " + audioFormat);
         }
         VoiceModel voiceModel = null;
         boolean usingPreloadedModel = false;
@@ -430,35 +434,51 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     private ByteArrayAudioStream getAudioStream(short[] samples, long sampleRate, AudioFormat targetFormat)
             throws IOException {
-        // Convert the i16 samples returned by piper to a byte buffer
-        ByteBuffer byteBuffer;
-        int numSamples = samples.length;
-        byteBuffer = ByteBuffer.allocate(numSamples * 2).order(ByteOrder.LITTLE_ENDIAN);
-        for (var sample : samples) {
-            byteBuffer.putShort(sample);
-        }
-        // Initialize a Java audio stream using the Piper output format with the byte buffer created.
+        // Convert the 16-bit signed PCM samples from Piper JNI to a little-endian byte array
+        ByteBuffer byteBuffer = ByteBuffer.allocate(samples.length * Short.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+        byteBuffer.asShortBuffer().put(samples);
         byte[] bytes = byteBuffer.array();
+
+        // Resolve target audio parameters, falling back to Piper voice model defaults (native rate, 16-bit, mono).
+        Long formatFrequency = targetFormat.getFrequency();
+        long targetFrequency = formatFrequency != null ? formatFrequency : sampleRate;
+        Integer formatBitDepth = targetFormat.getBitDepth();
+        int targetBitDepth = formatBitDepth != null ? formatBitDepth : 16;
+        Integer formatChannels = targetFormat.getChannels();
+        int targetChannels = formatChannels != null ? formatChannels : 1;
+
+        // Piper's native output format
         javax.sound.sampled.AudioFormat jAudioFormat = new javax.sound.sampled.AudioFormat(sampleRate, 16, 1, true,
                 false);
-        long audioLength = (long) Math.ceil(((double) bytes.length) / jAudioFormat.getFrameSize());
-        AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(bytes), jAudioFormat,
-                audioLength);
-        // Move the audio data to another Java audio stream in the target format so the Java AudioSystem encoded it as
-        // needed.
-        javax.sound.sampled.AudioFormat jTargetFormat = new javax.sound.sampled.AudioFormat(
-                Objects.requireNonNull(targetFormat.getFrequency()), Objects.requireNonNull(targetFormat.getBitDepth()),
-                Objects.requireNonNull(targetFormat.getChannels()), true, false);
-        AudioInputStream convertedInputStream = AudioSystem.getAudioInputStream(jTargetFormat, audioInputStreamTemp);
-        // It's required to add the wav header to the byte array stream returned for it to work with all the sink
-        // implementations.
-        // It can not be done with the AudioInputStream returned by AudioSystem::getAudioInputStream because it missed
-        // the length property.
-        // Therefore, the following method creates another AudioInputStream instance and uses the Java AudioSystem to
-        // prepend
-        // the wav header bytes,
-        // and finally initializes an OpenHAB audio stream.
-        return getAudioStreamWithRIFFHeader(convertedInputStream.readAllBytes(), jTargetFormat, targetFormat);
+        // Requested output format
+        javax.sound.sampled.AudioFormat jTargetFormat = new javax.sound.sampled.AudioFormat(targetFrequency,
+                targetBitDepth, targetChannels, true, false);
+
+        // Resample/convert via Java AudioSystem only when the target format differs from Piper's native output
+        byte[] audioBytes;
+        if (jAudioFormat.matches(jTargetFormat)) {
+            audioBytes = bytes;
+        } else {
+            AudioInputStream sourceStream = new AudioInputStream(new ByteArrayInputStream(bytes), jAudioFormat,
+                    samples.length);
+            audioBytes = AudioSystem.getAudioInputStream(jTargetFormat, sourceStream).readAllBytes();
+        }
+
+        AudioFormat streamFormat = new AudioFormat(targetFormat.getContainer(), targetFormat.getCodec(), false,
+                targetBitDepth, targetFormat.getBitRate(), targetFrequency, targetChannels);
+
+        // Prepend a RIFF/WAVE header if requested, otherwise return raw PCM
+        if (AudioFormat.CONTAINER_WAVE.equals(targetFormat.getContainer())) {
+            return getAudioStreamWithRIFFHeader(audioBytes, jTargetFormat, streamFormat);
+        }
+        return new ByteArrayAudioStream(audioBytes, streamFormat);
+    }
+
+    private boolean isSupportedFormat(AudioFormat audioFormat) {
+        return (AudioFormat.CONTAINER_WAVE.equals(audioFormat.getContainer())
+                || AudioFormat.CONTAINER_NONE.equals(audioFormat.getContainer()))
+                && AudioFormat.CODEC_PCM_SIGNED.equals(audioFormat.getCodec())
+                && !Boolean.TRUE.equals(audioFormat.isBigEndian());
     }
 
     private String capitalize(String text) {
@@ -467,10 +487,10 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     private ByteArrayAudioStream getAudioStreamWithRIFFHeader(byte[] audioBytes,
             javax.sound.sampled.AudioFormat jAudioFormat, AudioFormat audioFormat) throws IOException {
-        AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(audioBytes), jAudioFormat,
-                (long) Math.ceil(((double) audioBytes.length) / jAudioFormat.getFrameSize()));
+        AudioInputStream audioInputStream = new AudioInputStream(new ByteArrayInputStream(audioBytes), jAudioFormat,
+                (long) Math.ceil((double) audioBytes.length / jAudioFormat.getFrameSize()));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        AudioSystem.write(audioInputStreamTemp, AudioFileFormat.Type.WAVE, outputStream);
+        AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, outputStream);
         return new ByteArrayAudioStream(outputStream.toByteArray(), audioFormat);
     }
 

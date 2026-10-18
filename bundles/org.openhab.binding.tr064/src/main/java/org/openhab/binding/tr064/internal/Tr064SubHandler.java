@@ -78,6 +78,11 @@ public class Tr064SubHandler extends BaseThingHandler {
     }
 
     @Override
+    public <T> T getConfigAs(Class<T> configurationClass) {
+        return super.getConfigAs(configurationClass);
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         Tr064ChannelConfig channelConfig = channels.get(channelUID);
         if (channelConfig == null) {

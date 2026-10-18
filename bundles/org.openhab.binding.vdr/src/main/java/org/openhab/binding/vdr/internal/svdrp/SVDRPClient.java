@@ -115,6 +115,24 @@ public interface SVDRPClient {
     SVDRPChannel setSVDRPChannel(int number) throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
+     * Change current Audio Track on SVDRP Client
+     *
+     * @param number Track to be set
+     * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
+     * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
+     */
+    void setSVDRPAudio(int number) throws SVDRPConnectionException, SVDRPParseResponseException;
+
+    /**
+     * Retrieve current Audio object from SVDRP Client
+     *
+     * @return SVDRPAudio object
+     * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
+     * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
+     */
+    SVDRPAudio getSVDRPAudio() throws SVDRPConnectionException, SVDRPParseResponseException;
+
+    /**
      * Retrieve from SVDRP Client if a recording is currently active
      *
      * @return is currently a recording active

@@ -158,14 +158,11 @@ public class SenseEnergyWebSocket implements WebSocketListener {
             return;
         }
 
-        logger.debug("onWebSocketText");
-
         try {
             JsonObject jsonResponse = JsonParser.parseString(message).getAsJsonObject();
             String type = jsonResponse.get("type").getAsString();
 
             if ("realtime_update".equals(type)) {
-                logger.trace("realtime_update: {}", jsonResponse);
                 SenseEnergyWebSocketRealtimeUpdate update = gson.fromJson(jsonResponse.getAsJsonObject("payload"),
                         SenseEnergyWebSocketRealtimeUpdate.class);
                 if (update != null) {

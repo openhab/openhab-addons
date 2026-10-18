@@ -15,6 +15,8 @@ package org.openhab.binding.siemensrds.internal;
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -162,7 +164,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
             }
 
             String plantId = plant.getId();
-            String url = String.format(URL_POINTS, plantId);
+            String url = URL_POINTS.formatted(URLEncoder.encode(ARG_PARENT.formatted(plantId), StandardCharsets.UTF_8));
 
             if (logger.isTraceEnabled()) {
                 logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());

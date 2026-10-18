@@ -14,6 +14,7 @@ package org.openhab.binding.energidataservice.internal;
 
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,6 +54,7 @@ import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecords
 import org.openhab.binding.energidataservice.internal.api.serialization.InstantDeserializer;
 import org.openhab.binding.energidataservice.internal.api.serialization.LocalDateTimeDeserializer;
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
+import org.openhab.binding.energidataservice.internal.exception.DataServiceRateLimitException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -198,10 +200,34 @@ public class ApiController {
         updatePropertiesFromResponse(response, properties);
 
         int status = response.getStatus();
+        String responseContent = response.getContentAsString();
+
         if (!HttpStatus.isSuccess(status)) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Request failed with HTTP error {}: {}", status, responseContent);
+                logger.trace("Response headers: {}", response.getHeaders());
+            }
+
+            if (status == HttpStatus.TOO_MANY_REQUESTS_429) {
+                String retryAfter = response.getHeaders().get("Retry-After");
+                if (retryAfter != null) {
+                    try {
+                        int retryAfterSeconds = Integer.parseInt(retryAfter);
+                        if (retryAfterSeconds < 0) {
+                            logger.debug("Invalid Retry-After header value: '{}'", retryAfter);
+                            throw new DataServiceRateLimitException("Rate limit is exceeded");
+                        }
+                        throw new DataServiceRateLimitException(
+                                "Rate limit is exceeded. Retrying after " + retryAfter + " seconds.",
+                                Duration.ofSeconds(retryAfterSeconds));
+                    } catch (NumberFormatException e) {
+                        logger.debug("Invalid Retry-After header value: '{}'", retryAfter);
+                        throw new DataServiceRateLimitException("Rate limit is exceeded", e);
+                    }
+                }
+            }
             throw new DataServiceException("The request failed with HTTP error " + status, status);
         }
-        String responseContent = response.getContentAsString();
         if (responseContent.isEmpty()) {
             throw new DataServiceException("Empty response");
         }

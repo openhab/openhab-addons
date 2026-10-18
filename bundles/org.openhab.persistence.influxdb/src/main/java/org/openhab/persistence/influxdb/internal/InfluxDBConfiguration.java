@@ -82,11 +82,13 @@ public class InfluxDBConfiguration {
             hasCredentials = !user.isBlank() && !password.isBlank();
         } else if (version == InfluxDBVersion.V2) {
             hasCredentials = !token.isBlank() || (!user.isBlank() && !password.isBlank());
+        } else if (version == InfluxDBVersion.V3) {
+            hasCredentials = !token.isBlank();
         }
         boolean hasDatabase = !databaseName.isBlank();
-        boolean hasRetentionPolicy = !retentionPolicy.isBlank();
+        boolean hasValidRetentionPolicy = version == InfluxDBVersion.V3 || !retentionPolicy.isBlank();
 
-        boolean valid = hasVersion && hasCredentials && hasDatabase && hasRetentionPolicy;
+        boolean valid = hasVersion && hasCredentials && hasDatabase && hasValidRetentionPolicy;
         if (valid) {
             return true;
         } else {
@@ -101,7 +103,7 @@ public class InfluxDBConfiguration {
                 if (!hasDatabase) {
                     reason.add("No database name / organization defined");
                 }
-                if (!hasRetentionPolicy) {
+                if (!hasValidRetentionPolicy) {
                     reason.add("No retention policy / bucket defined");
                 }
             }

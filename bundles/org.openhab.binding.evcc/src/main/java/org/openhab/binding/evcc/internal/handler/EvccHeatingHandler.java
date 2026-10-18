@@ -14,19 +14,18 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.evcc.internal.handler.routing.HeatingStateTransformer;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
@@ -39,59 +38,39 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccHeatingHandler.class);
 
-    // SortedMap to have a stable replacement result, the unit test is relying on it
-    private static final SortedMap<String, String> JSON_KEYS = new TreeMap<>(
-            Map.ofEntries(Map.entry("effectiveLimitTemperature", JSON_KEY_EFFECTIVE_LIMIT_SOC),
-                    Map.entry("effectivePlanTemperature", JSON_KEY_EFFECTIVE_PLAN_SOC),
-                    Map.entry("limitTemperature", JSON_KEY_LIMIT_SOC),
-                    Map.entry("vehicleLimitTemperature", JSON_KEY_VEHICLE_LIMIT_SOC),
-                    Map.entry("vehicleTemperature", JSON_KEY_VEHICLE_SOC)));
-
     public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
         type = PROPERTY_TYPE_HEATING;
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
+        // Replace the default LoadpointStateTransformer so that both the "loadpoints" route
+        // (registered by the superclass) and full-state initialization normalize heating fields.
+        stateTransformer = new HeatingStateTransformer();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String key = Utils.getKeyFromChannelUID(channelUID);
-        if (JSON_KEYS.containsKey(key)) {
-            // Replace the temperature key with the original one
-            @Nullable
-            String tmp = JSON_KEYS.get(key);
-            if (null != tmp) {
-                channelUID = new ChannelUID(getThing().getUID(), getThingKey(tmp));
-            } else {
-                logger.debug("Unknown key: {}", key);
-                return;
-            }
+        @Nullable
+        String apiKey = HeatingStateTransformer.toApiKey(key);
+        if (apiKey != null) {
+            // Address the original temperature endpoint instead of the remapped SoC channel key
+            channelUID = new ChannelUID(getThing().getUID(), getThingKey(apiKey));
         }
         super.handleCommand(channelUID, command);
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        updateJSON(state);
-        super.prepareApiResponseForChannelStateUpdate(state);
-    }
-
-    protected void updateJSON(JsonObject state) {
-        JsonObject heatingState = state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
-        renameJsonKeys(heatingState); // rename the JSON keys
-        state.getAsJsonArray(JSON_KEY_LOADPOINTS).set(index, heatingState); // Update the keys in the original JSON
-    }
-
-    private static void renameJsonKeys(JsonObject json) {
-        JSON_KEYS.forEach((newKey, oldKey) -> {
-            if (json.has(oldKey)) {
-                json.add(newKey, json.get(oldKey));
-                json.remove(oldKey);
-            }
-        });
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.trace("Heating handler initializing from state");
+        JsonArray loadpoints = state.getAsJsonArray(JSON_KEY_LOADPOINTS);
+        if (loadpoints == null || index >= loadpoints.size() || !loadpoints.get(index).isJsonObject()) {
+            logger.debug("Heating index {} out of bounds or invalid (size {})", index,
+                    loadpoints != null ? loadpoints.size() : 0);
+            return;
+        }
+        JsonObject normalized = stateTransformer.transform(loadpoints.get(index).getAsJsonObject());
+        loadpoints.set(index, normalized);
+        createChannelsAndSetStatesFromApiResponse(normalized);
+        logger.trace("Heating handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
     }
 }

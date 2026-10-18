@@ -21,6 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Cedric Boon - Added support for detailed inverter stats
  */
 @NonNullByDefault
 public class EnphaseBindingConstants {
@@ -58,6 +59,10 @@ public class EnphaseBindingConstants {
     public static final String INVERTER_CHANNEL_LAST_REPORT_WATTS = "lastReportWatts";
     public static final String INVERTER_CHANNEL_MAX_REPORT_WATTS = "maxReportWatts";
     public static final String INVERTER_CHANNEL_LAST_REPORT_DATE = "lastReportDate";
+    public static final String INVERTER_CHANNEL_WATT_HOURS_TODAY = "wattHoursToday";
+    public static final String INVERTER_CHANNEL_WATT_HOURS_SEVEN_DAYS = "wattHoursSevenDays";
+    public static final String INVERTER_CHANNEL_WATT_HOURS_LIFETIME = "wattHoursLifetime";
+    public static final String INVERTER_CHANNEL_WATTS_NOW = "wattsNow";
 
     // Relay channels
     public static final String RELAY_CHANNEL_RELAY = "relay";

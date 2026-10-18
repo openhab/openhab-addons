@@ -12,7 +12,6 @@
  */
 package org.openhab.automation.pidcontroller.internal.template;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -41,8 +40,7 @@ public class PIDControllerRuleTemplate extends RuleTemplate {
         final List<Trigger> triggers = List.of(ModuleBuilder.createTrigger().withId(triggerId)
                 .withTypeUID(PIDControllerTriggerHandler.MODULE_TYPE_ID).withLabel("PID Controller Trigger").build());
 
-        return new PIDControllerRuleTemplate(Set.of("PID Controller"), triggers, Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList());
+        return new PIDControllerRuleTemplate(Set.of("PID Controller"), triggers, List.of(), List.of(), List.of());
     }
 
     public PIDControllerRuleTemplate(Set<String> tags, List<Trigger> triggers, List<Condition> conditions,

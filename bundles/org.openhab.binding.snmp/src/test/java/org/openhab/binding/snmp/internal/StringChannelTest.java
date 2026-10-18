@@ -95,7 +95,7 @@ public class StringChannelTest extends AbstractSnmpTargetHandlerTest {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, SnmpChannelMode.READ, SnmpDatatype.HEXSTRING);
         PDU responsePDU = new PDU(PDU.RESPONSE,
                 List.of(new VariableBinding(new OID(TEST_OID), OctetString.fromHexStringPairs("aa11bb"))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(new StringType("aa 11 bb")));
         verifyStatus(ThingStatus.ONLINE);

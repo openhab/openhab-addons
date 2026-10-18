@@ -594,7 +594,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
      * @return {@link AtlonaPro3Config}
      */
     private AtlonaPro3Config getAtlonaConfig() {
-        return getThing().getConfiguration().as(AtlonaPro3Config.class);
+        return getConfigAs(AtlonaPro3Config.class);
     }
 
     /**

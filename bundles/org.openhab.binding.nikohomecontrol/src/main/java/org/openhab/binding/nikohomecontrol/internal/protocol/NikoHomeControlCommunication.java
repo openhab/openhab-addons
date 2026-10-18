@@ -236,7 +236,7 @@ public abstract class NikoHomeControlCommunication {
      * @param overruleTemp
      * @param overruleTime
      */
-    public abstract void executeThermostat(String thermostatId, int overruleTemp, int overruleTime);
+    public abstract void executeThermostat(String thermostatId, long overruleTemp, long overruleTime);
 
     /**
      * Query meter for energy, gas consumption or water production/consumption data. The query will update the total
@@ -395,11 +395,10 @@ public abstract class NikoHomeControlCommunication {
      *
      * @param carChargerId the unique identifier of the car charger device
      * @param chargingMode the desired charging mode (SOLAR, NORMAL or SMART)
-     * @param targetDistance the target distance (in kilometers) to be achieved by charging
+     * @param d the target distance (in kilometers) to be achieved by charging
      * @param targetTime the target time (in ISO 8601 format or HH:mm) by which charging should be completed
      */
-    public void executeCarChargerChargingMode(String carChargerId, String chargingMode, float targetDistance,
-            String targetTime) {
+    public void executeCarChargerChargingMode(String carChargerId, String chargingMode, double d, String targetTime) {
     }
 
     /**

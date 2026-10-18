@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.gson.JsonElement;
 
@@ -35,12 +36,12 @@ public final class JsonUtil {
      */
     private static final SimpleModule GSON_MODULE = createGsonModule();
 
-    private static final ObjectMapper COMPACT_MAPPER = new ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL).registerModule(GSON_MODULE);
+    private static final ObjectMapper COMPACT_MAPPER = JsonMapper.builder()
+            .serializationInclusion(JsonInclude.Include.NON_NULL).addModule(GSON_MODULE).build();
 
-    private static final ObjectMapper PRETTY_MAPPER = new ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT)
-            .registerModule(GSON_MODULE);
+    private static final ObjectMapper PRETTY_MAPPER = JsonMapper.builder()
+            .serializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT)
+            .addModule(GSON_MODULE).build();
 
     private JsonUtil() {
         // utility class

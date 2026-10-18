@@ -1,3 +1,9 @@
+---
+children:
+  - ["doc/readme_v1", "Configuration API v1"]
+  - ["doc/readme_v2", "Configuration API v2"]
+---
+
 # Philips Hue Binding
 
 This binding integrates the [Philips Hue Lighting system](https://www.meethue.com).
@@ -43,11 +49,6 @@ discovery.hue:background=false
 
 Once it is added as a Thing, its authentication button (in the middle) needs to be pressed in order to authorize the binding to access it.
 Once the binding is authorized, it automatically reads all devices (and groups) that are set up on the Hue Bridge and puts them into the Inbox.
-
-## Configuration for API v1 and API v2
-
-- [Configuration for API v1](doc/readme_v1.md#philips-hue-binding-api-v1)
-- [Configuration for API v2](doc/readme_v2.md#philips-hue-binding-api-v2)
 
 ## Migration from API v1 to API v2
 
@@ -98,3 +99,8 @@ Bridge hue:bridge-api2:g24 "Philips Hue Hub (api2)" @ "Home" [ipAddress="192.168
     ..
 }
 ```
+
+## Configuration
+
+- [API v1](doc/readme_v1.md#philips-hue-binding-api-v1)
+- [API v2](doc/readme_v2.md#philips-hue-binding-api-v2)

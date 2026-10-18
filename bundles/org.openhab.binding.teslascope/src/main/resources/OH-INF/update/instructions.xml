@@ -38,9 +38,20 @@
 			<add-channel id="located-at-favorite">
 				<type>teslascope:located-at-favorite</type>
 			</add-channel>
-			<update-channel id="charge-limit-soc-std">
-				<type>teslascope:charge-limit-soc-std</type>
+			<update-channel id="charge-limit-soc-standard">
+				<type>teslascope:charge-limit-soc-standard</type>
 			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="self-driving-miles-since-reset">
+				<type>teslascope:self-driving-miles-since-reset</type>
+			</add-channel>
+			<add-channel id="miles-since-reset">
+				<type>teslascope:miles-since-reset</type>
+			</add-channel>
+			<add-channel id="self-driving-percentage">
+				<type>teslascope:self-driving-percentage</type>
+			</add-channel>
 		</instruction-set>
 
 	</thing-type>

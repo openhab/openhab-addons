@@ -26,6 +26,7 @@ public final class AutomowerBridgeConfiguration {
     private @Nullable String appSecret;
 
     private @Nullable Integer pollingInterval;
+    private @Nullable Integer requestTimeout;
 
     /**
      * @return The polling interval for the automower state in s
@@ -36,6 +37,17 @@ public final class AutomowerBridgeConfiguration {
 
     public void setPollingInterval(Integer pollingInterval) {
         this.pollingInterval = pollingInterval;
+    }
+
+    /**
+     * @return The REST request timeout in s
+     */
+    public @Nullable Integer getRequestTimeout() {
+        return requestTimeout;
+    }
+
+    public void setRequestTimeout(Integer requestTimeout) {
+        this.requestTimeout = requestTimeout;
     }
 
     public @Nullable String getAppKey() {

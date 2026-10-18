@@ -231,6 +231,40 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Date/Time Device -->
+	<thing-type id="date">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>Date/Time</label>
+		<description>Sbus device supporting date/time read and write operations</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<channels>
+			<channel id="datetime" typeId="datetime-channel"/>
+		</channels>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the Sbus device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds</description>
+				<default>0</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<!-- Channel Types -->
 	<channel-type id="switch-channel">
 		<item-type>Switch</item-type>
@@ -398,6 +432,18 @@
 				<default>1</default>
 			</parameter>
 		</config-description>
+	</channel-type>
+
+	<channel-type id="datetime-channel">
+		<item-type>DateTime</item-type>
+		<label>Date and Time</label>
+		<description>Current date and time on the device</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 </thing:thing-descriptions>

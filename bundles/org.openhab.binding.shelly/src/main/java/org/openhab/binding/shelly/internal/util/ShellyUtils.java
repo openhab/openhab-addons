@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.shelly.internal.util;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -33,7 +35,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -137,6 +138,14 @@ public class ShellyUtils {
         return group + "#" + channel;
     }
 
+    /**
+     * Channel id matching any group starting with groupPrefix (e.g. meter, meter1, meter2, ...).
+     * Used for channel migration rules that must apply to every indexed meter group of a Thing.
+     */
+    public static String mkWildcardChannelId(String groupPrefix, String channel) {
+        return groupPrefix + "*#" + channel;
+    }
+
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
     }
@@ -196,6 +205,14 @@ public class ShellyUtils {
         return "";
     }
 
+    /**
+     * A deprecated split channel (e.g. brightness$Switch/brightness$Value) carries a $-suffix that
+     * is not part of the real ChannelUID; strip it before passing the id to core APIs like isLinked().
+     */
+    public static String stripDeprecatedSuffix(String channelId) {
+        return channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
+    }
+
     public static String getMessage(Exception e) {
         String message = e.getMessage();
         return message != null ? message : "";
@@ -227,6 +244,11 @@ public class ShellyUtils {
         return new DecimalType((value != null ? value : 0));
     }
 
+    public static DecimalType getDecimal(@Nullable Double value, int digits) {
+        BigDecimal bd = BigDecimal.valueOf(value != null ? value : 0);
+        return new DecimalType(bd.setScale(digits, RoundingMode.HALF_UP));
+    }
+
     public static DecimalType getDecimal(@Nullable Integer value) {
         return new DecimalType((value != null ? value : 0));
     }
@@ -246,6 +268,13 @@ public class ShellyUtils {
             return numberCommand.doubleValue();
         }
         throw new IllegalArgumentException("Invalid Number type for conversion: " + command);
+    }
+
+    public static String getString(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string) {
+            return string.toString();
+        }
+        throw new IllegalArgumentException("Invalid StringType for conversion: " + command);
     }
 
     public static OnOffType getOnOff(@Nullable Boolean value) {
@@ -318,23 +347,6 @@ public class ShellyUtils {
         return time.replace('T', ' ').replace('-', '/');
     }
 
-    public static Integer getLightIdFromGroup(String groupName) {
-        if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
-            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
-        }
-        return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
-    }
-
-    public static String buildControlGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return !profile.isRGBW2 || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
-    }
-
-    public static String buildWhiteGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return profile.isBulb || profile.isDuo ? CHANNEL_GROUP_WHITE_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
-    }
-
     public static DecimalType mapSignalStrength(int dbm) {
         int strength = -1;
         if (dbm > -60) {
@@ -379,5 +391,39 @@ public class ShellyUtils {
             hexString.append(hex);
         }
         return hexString.toString();
+    }
+
+    /**
+     * Adds missing '=' padding to a Base64 string that may have been stripped by Shelly firmware.
+     * Java's Base64.getDecoder() is strict and requires canonical padding.
+     *
+     * @param b64 raw Base64 string, possibly unpadded
+     * @return Base64 string with correct padding appended
+     */
+    public static String fixBase64Padding(String b64) {
+        int rem = b64.length() % 4;
+        if (rem == 2) {
+            return b64 + "==";
+        } else if (rem == 3) {
+            return b64 + "=";
+        }
+        return b64;
+    }
+
+    /**
+     * Decodes a byte array as UTF-8, rejecting malformed or unmappable sequences instead of silently
+     * replacing them (as {@code new String(bytes, UTF_8)} does).
+     *
+     * @param bytes the bytes to decode
+     * @return the decoded string, or null when {@code bytes} is not valid UTF-8
+     */
+    public static @Nullable String decodeUtf8Strict(byte[] bytes) {
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT);
+        try {
+            return decoder.decode(ByteBuffer.wrap(bytes)).toString();
+        } catch (CharacterCodingException e) {
+            return null;
+        }
     }
 }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,7 @@ import org.openhab.binding.doorbird.internal.api.SipStatus;
 import org.openhab.binding.doorbird.internal.audio.DoorbirdAudioSink;
 import org.openhab.binding.doorbird.internal.config.DoorbellConfiguration;
 import org.openhab.binding.doorbird.internal.listener.DoorbirdUdpListener;
+import org.openhab.binding.doorbird.internal.servlet.DoorbirdHTTPServlet;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DateTimeType;
@@ -70,6 +72,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Mark Hilbush - Initial contribution
+ * @author Florian Hotze - Add IP whitelist for webhooks
  */
 @NonNullByDefault
 public class DoorbellHandler extends BaseThingHandler {
@@ -101,11 +104,14 @@ public class DoorbellHandler extends BaseThingHandler {
     private @Nullable ServiceRegistration<AudioSink> audioSinkRegistration;
 
     private final HttpClient httpClient;
+    private final DoorbirdHTTPServlet callbackServlet;
 
-    public DoorbellHandler(Thing thing, HttpClient httpClient, BundleContext bundleContext) {
+    public DoorbellHandler(Thing thing, HttpClient httpClient, BundleContext bundleContext,
+            DoorbirdHTTPServlet callbackServlet) {
         super(thing);
         this.httpClient = httpClient;
         this.bundleContext = bundleContext;
+        this.callbackServlet = callbackServlet;
         udpListener = new DoorbirdUdpListener(this);
     }
 
@@ -133,11 +139,19 @@ public class DoorbellHandler extends BaseThingHandler {
         startImageRefreshJob();
         startUDPListenerJob();
         startAudioSink();
+
+        callbackServlet.registerHandler(thing.getUID(), this);
+        String thingUid = thing.getUID().getAsString();
+        logger.info("Doorbird webhook URLs configured for device {}:", thingUid);
+        logger.info("  Doorbell event: /doorbird/{}/doorbell", thingUid);
+        logger.info("  Motion event:   /doorbird/{}/motion", thingUid);
+
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void dispose() {
+        callbackServlet.unregisterHandler(thing.getUID());
         stopUDPListenerJob();
         stopImageRefreshJob();
         stopDoorbellOffJob();
@@ -159,6 +173,10 @@ public class DoorbellHandler extends BaseThingHandler {
     // Callback used by listener to get Doorbird password
     public @Nullable String getUserPassword() {
         return config.userPassword;
+    }
+
+    public List<String> getWebhookIpWhitelist() {
+        return config.webhookIpWhitelist.stream().map(String::trim).toList();
     }
 
     // Callback used by listener to update doorbell channel

@@ -15,8 +15,6 @@ package org.openhab.binding.astro.internal.discovery;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.config.AstroThingConfig.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -67,7 +65,7 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     public AstroDiscoveryService(final @Reference LocationProvider locationProvider,
             final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider i18nProvider,
             @Nullable Map<String, Object> configProperties) {
-        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVER_TIMEOUT_SECONDS, true);
+        super(Set.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, true);
         this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;

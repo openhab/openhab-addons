@@ -22,6 +22,7 @@ import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.config.TadoMobileDeviceConfig;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.model.MobileDevice;
+import org.openhab.binding.tado.swagger.codegen.api.model.MobileDeviceLocation;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -31,6 +32,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,8 +109,11 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     private void updateState() {
         try {
             MobileDevice device = getMobileDevice();
-            updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME,
-                    OnOffType.from(device.getLocation().isAtHome()));
+            if (device.getLocation() instanceof MobileDeviceLocation location) {
+                updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME, OnOffType.from(location.isAtHome()));
+            } else {
+                updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME, UnDefType.UNDEF);
+            }
         } catch (IOException | ApiException e) {
             logger.debug("Status update of mobile device with id {} failed: {}", configuration.id, e.getMessage());
         }

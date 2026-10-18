@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Antoine Besnard - Initial contribution
  * @author Leroy Foerster - Listening Mode, Playing Listening Mode
+ * @author william - Speaker selection
  */
 public abstract class AbstractAvrHandler extends BaseThingHandler
         implements AvrUpdateListener, AvrDisconnectionListener {
@@ -126,6 +127,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
 
         // Channels which are not bound to any specific zone
         connection.sendMCACCMemoryQuery();
+        connection.sendSpeakerSelectionQuery();
     }
 
     /**
@@ -143,6 +145,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         // Channels which are not bound to any specific zone
         if (zone == 1) {
             updateState(PioneerAvrBindingConstants.MCACC_MEMORY_CHANNEL, UnDefType.UNDEF);
+            updateState(PioneerAvrBindingConstants.SPEAKER_SELECTION_CHANNEL, UnDefType.UNDEF);
         }
     }
 
@@ -212,6 +215,12 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
                 } else {
                     commandSent = connection.sendMCACCMemoryCommand(command);
                 }
+            } else if (channelUID.getId().contains(PioneerAvrBindingConstants.SPEAKER_SELECTION_CHANNEL)) {
+                if (command == RefreshType.REFRESH) {
+                    commandSent = connection.sendSpeakerSelectionQuery();
+                } else {
+                    commandSent = connection.sendSpeakerSelectionCommand(command);
+                }
             } else {
                 unknownCommand = true;
             }
@@ -264,6 +273,10 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
 
                 case MCACC_MEMORY:
                     manageMCACCMemoryUpdate(response);
+                    break;
+
+                case SPEAKER_SELECTION:
+                    manageSpeakerSelectionUpdate(response);
                     break;
 
                 default:
@@ -379,6 +392,15 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      */
     private void manageMCACCMemoryUpdate(AvrResponse response) {
         updateState(PioneerAvrBindingConstants.MCACC_MEMORY_CHANNEL, new StringType(response.getParameterValue()));
+    }
+
+    /**
+     * Notify an AVR speaker selection update to openHAB
+     *
+     * @param response
+     */
+    private void manageSpeakerSelectionUpdate(AvrResponse response) {
+        updateState(PioneerAvrBindingConstants.SPEAKER_SELECTION_CHANNEL, new StringType(response.getParameterValue()));
     }
 
     /**

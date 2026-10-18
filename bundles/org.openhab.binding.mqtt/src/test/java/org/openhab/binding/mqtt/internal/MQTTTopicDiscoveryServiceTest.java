@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -91,7 +92,7 @@ public class MQTTTopicDiscoveryServiceTest {
         subject.createdHandler(handler);
         assertThat(subject.discoveryTopics.get("topic"), hasItem(listenerMock));
         // Simulate receiving
-        final byte[] bytes = "TEST".getBytes();
+        final byte[] bytes = "TEST".getBytes(StandardCharsets.UTF_8);
         connection.getSubscribers().get("topic").messageArrived("topic", bytes, false);
         verify(listenerMock).receivedMessage(eq(thingMock.getUID()), eq(connection), eq("topic"), eq(bytes));
     }
@@ -106,7 +107,7 @@ public class MQTTTopicDiscoveryServiceTest {
         assertThat(subject.discoveryTopics.get("topic"), hasItem(listenerMock));
 
         // Simulate receiving
-        final byte[] bytes = "TEST".getBytes();
+        final byte[] bytes = "TEST".getBytes(StandardCharsets.UTF_8);
         connection.getSubscribers().get("topic").messageArrived("topic", bytes, false);
         verify(listenerMock).receivedMessage(eq(thingMock.getUID()), eq(connection), eq("topic"), eq(bytes));
     }
@@ -122,7 +123,7 @@ public class MQTTTopicDiscoveryServiceTest {
         BrokerHandlerEx.verifyCreateBrokerConnection(handler, 1);
 
         // Simulate receiving
-        final byte[] bytes = "TEST".getBytes();
+        final byte[] bytes = "TEST".getBytes(StandardCharsets.UTF_8);
         connection.getSubscribers().get("topic").messageArrived("topic", bytes, false);
         verify(listenerMock).receivedMessage(eq(thingMock.getUID()), eq(connection), eq("topic"), eq(bytes));
     }
@@ -137,7 +138,7 @@ public class MQTTTopicDiscoveryServiceTest {
         assertThat(subject.discoveryTopics.get("topic"), hasItem(listenerMock));
 
         // Simulate receiving
-        final byte[] bytes = "".getBytes();
+        final byte[] bytes = "".getBytes(StandardCharsets.UTF_8);
         connection.getSubscribers().get("topic").messageArrived("topic", bytes, false);
         verify(listenerMock).topicVanished(eq(thingMock.getUID()), eq(connection), eq("topic"));
     }

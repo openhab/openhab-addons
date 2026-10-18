@@ -40,7 +40,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -93,10 +92,8 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
             final String filename, boolean configAsChannel) {
         ZwaveJSChannelTypeProvider channelTypeProvider = new ZwaveJSChannelTypeInMemmoryProvider();
         ZwaveJSConfigDescriptionProvider configDescriptionProvider = new ZwaveJSConfigDescriptionProviderImpl();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
-        when(thingRegistry.get(any())).thenReturn(thing);
         ZwaveJSTypeGenerator typeGenerator = new ZwaveJSTypeGeneratorImpl(channelTypeProvider,
-                configDescriptionProvider, thingRegistry);
+                configDescriptionProvider);
 
         final ZwaveJSNodeHandlerMock handler = spy(
                 new ZwaveJSNodeHandlerMock(thing, typeGenerator, filename, configAsChannel));
@@ -175,7 +172,7 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
                     ZwaveJSChannelConfiguration config = channel.getConfiguration()
                             .as(ZwaveJSChannelConfiguration.class);
                     config.isUpDownInverted = isUpDownInverted;
-                    when(this.getChannelConfiguration(any())).thenReturn(config);
+                    doReturn(config).when(this).getChannelConfiguration(channel);
                 });
     }
 }

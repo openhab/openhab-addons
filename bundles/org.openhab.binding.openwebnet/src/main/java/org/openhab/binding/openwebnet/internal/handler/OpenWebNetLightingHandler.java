@@ -359,7 +359,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             if (msg.getWhat() != null) {
                 updateBrightnessState(msg);
             } else { // dimension notification
-                if (msg.getDim() == Lighting.DimLighting.DIMMER_LEVEL_100) {
+                if (msg.isDimmerLevel100()) {
                     int newBrightness;
                     try {
                         newBrightness = msg.parseDimmerLevel100();

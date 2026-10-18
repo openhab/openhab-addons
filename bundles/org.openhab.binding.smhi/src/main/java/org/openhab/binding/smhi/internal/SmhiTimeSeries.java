@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smhi.provider.ParameterMetadata;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.UnDefType;
@@ -88,8 +89,12 @@ public class SmhiTimeSeries implements Iterable<Forecast> {
      * @param dayOffset
      * @return
      */
-    public List<Forecast> getDay(int dayOffset) {
+    public List<Forecast> getDay(int dayOffset, boolean useIntervalStartTime) {
         ZonedDateTime day = referenceTime.plusDays(dayOffset).truncatedTo(ChronoUnit.DAYS);
+        if (useIntervalStartTime) {
+            return filter(forecast -> !forecast.getIntervalStartTime().isBefore(day)
+                    && forecast.getIntervalStartTime().isBefore(day.plusDays(1)));
+        }
         return filter(forecast -> !forecast.getTime().isBefore(day) && forecast.getTime().isBefore(day.plusDays(1)));
     }
 
@@ -97,11 +102,11 @@ public class SmhiTimeSeries implements Iterable<Forecast> {
         return forecasts.stream().filter(predicate).toList();
     }
 
-    public TimeSeries getTimeSeries(String parameter) {
+    public TimeSeries getTimeSeries(ParameterMetadata metadata) {
         TimeSeries ts = new TimeSeries(TimeSeries.Policy.REPLACE);
 
         forecasts.forEach(f -> {
-            State state = f.getParameterAsState(parameter);
+            State state = f.getParameterAsState(metadata);
             if (!(state instanceof UnDefType)) {
                 ts.add(f.getTime().toInstant(), state);
             }

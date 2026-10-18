@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.roaming.internal;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiConsumer;
@@ -76,7 +75,7 @@ public class RoamingBluetoothDiscoveryParticipant implements BluetoothDiscoveryP
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.emptySet();
+        return Set.of();
     }
 
     @Override

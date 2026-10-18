@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.ToNumberPolicy;
 
@@ -127,10 +128,8 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     @Override
     public final void onSuccess(Response response) {
         super.onSuccess(response);
-        if (response != null) {
-            communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
-            logger.debug("HTTP response {}", response.getStatus());
-        }
+        communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
+        logger.debug("HTTP response {}", response.getStatus());
     }
 
     /**
@@ -165,7 +164,8 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     @Override
     public void onContent(Response response, ByteBuffer content) {
         super.onContent(response, content);
-        logger.debug("received content, length: {}", getContentAsString().length());
+        String contentAsString = getContentAsString();
+        logger.debug("received content, length: {}", contentAsString != null ? contentAsString.length() : 0);
     }
 
     /**
@@ -192,7 +192,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * @param json
      */
     protected void onCompleteCodeOk(@Nullable String json) {
-        JsonObject jsonObject = transform(json);
+        JsonObject jsonObject = transform(json, JsonObject.class);
         if (jsonObject != null) {
             logger.debug("success");
             handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
@@ -206,7 +206,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * @param json
      */
     protected void onCompleteCodeDefault(@Nullable String json) {
-        JsonObject jsonObject = transform(json);
+        JsonObject jsonObject = transform(json, JsonObject.class);
         if (jsonObject == null) {
             jsonObject = new JsonObject();
         }
@@ -226,12 +226,13 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * error safe json transformer.
      *
      * @param json
+     * @param clazz target type
      * @return
      */
-    protected @Nullable JsonObject transform(@Nullable String json) {
+    protected <T extends JsonElement> @Nullable T transform(@Nullable String json, Class<T> clazz) {
         if (json != null) {
             try {
-                return gson.fromJson(json, JsonObject.class);
+                return gson.fromJson(json, clazz);
             } catch (Exception ex) {
                 logger.debug("JSON could not be parsed: {}\nError: {}", json, ex.getMessage());
             }

@@ -13,6 +13,7 @@
 package org.openhab.binding.daikin.internal.api;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +39,6 @@ import com.google.gson.reflect.TypeToken;
  */
 @NonNullByDefault
 public class DemandControl {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DemandControl.class);
-
     private static final List<String> DAYS = List.of("monday", "tuesday", "wednesday", "thursday", "friday", "saturday",
             "sunday");
     // create a map of "monday" -> "mo", "tuesday" -> "tu", etc.
@@ -75,7 +74,7 @@ public class DemandControl {
     }
 
     public int getScheduledMaxPower() {
-        return getScheduledMaxPower(LocalDateTime.now());
+        return getScheduledMaxPower(LocalDateTime.now(ZoneId.systemDefault()));
     }
 
     // Returns the current max_power setting based on the schedule
@@ -120,7 +119,8 @@ public class DemandControl {
     }
 
     public static DemandControl parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(DemandControl.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

@@ -24,7 +24,7 @@ public class GetNetworkInfo {
 
     public Result result;
 
-    public class Result {
+    public static class Result {
         public String ssid = "";
         public String ip = "";
         public String mac = "";

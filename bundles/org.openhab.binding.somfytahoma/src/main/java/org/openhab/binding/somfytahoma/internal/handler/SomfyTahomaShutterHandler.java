@@ -33,33 +33,38 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaShutterHandler(Thing thing) {
         super(thing);
+        // Map the closure state directly to the existing CONTROL channel
+        stateNames.put(CONTROL, "core:ClosureState");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (!CONTROL.equals(channelUID.getId())) {
+        if (!CONTROL.equals(channelUID.getId()) || command instanceof RefreshType) {
             return;
         }
 
-        if (command instanceof RefreshType) {
-            return;
+        if (command instanceof DecimalType) {
+            // Send percentage values directly
+            sendCommand(COMMAND_SET_CLOSURE, "[" + toInteger(command) + "]");
         } else {
-            if (command instanceof DecimalType) {
-                sendCommand(toInteger(command) == 0 ? COMMAND_OPEN : COMMAND_CLOSE);
-            } else {
-                // Shutter understands "open", "close" and "stop" commands
-                String cmd = getTahomaCommand(command.toString());
-                if (cmd != null) {
-                    sendCommand(cmd);
+            // Handle string commands (UP, DOWN, STOP)
+            String cmd = getTahomaCommand(command.toString());
+            if (COMMAND_STOP.equals(cmd)) {
+                String executionId = getCurrentExecutions();
+                if (executionId != null) {
+                    cancelExecution(executionId);
                 } else {
-                    getLogger().debug("unsupported command: {}", command);
+                    sendCommand(COMMAND_STOP);
                 }
+            } else if (cmd != null) {
+                // Only send if the command is recognized
+                sendCommand(cmd, "[]");
             }
         }
     }
 
-    private @Nullable String getTahomaCommand(String command) {
+    protected @Nullable String getTahomaCommand(String command) {
         switch (command) {
             case "OFF":
             case "DOWN":
@@ -72,6 +77,7 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
             case "STOP":
                 return COMMAND_STOP;
             default:
+                // Return null to ignore unsupported commands like MOVE
                 return null;
         }
     }

@@ -13,6 +13,7 @@
 package org.openhab.automation.jsscripting.internal;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.core.ConfigParser;
@@ -33,20 +34,31 @@ public class GraalJSScriptEngineConfiguration {
     private static final String CFG_SCRIPT_CONDITION_WRAPPER_ENABLED = "scriptConditionWrapperEnabled";
     private static final String CFG_EVENT_CONVERSION_ENABLED = "eventConversionEnabled";
     private static final String CFG_DEPENDENCY_TRACKING_ENABLED = "dependencyTrackingEnabled";
+    private static final String CFG_DEBUGGER_ENABLED = "debuggerEnabled";
+    private static final String CFG_DEBUGGER_PORT = "debuggerPort";
+    private static final String CFG_LOCK_ACQUISITION_TIMEOUT = "lockAcquisitionTimeout";
 
     private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY = 1;
     private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS = 2;
     private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 3;
+
+    private static final int DEBUGGER_PORT_DEFAULT = 9229;
+
+    /** The default lock acquisition timeout in seconds */
+    private static final long LOCK_ACQUISITION_TIMEOUT_DEFAULT = 5L;
 
     private int injectionEnabled = INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     private boolean injectionCachingEnabled = true;
     private boolean scriptConditionWrapperEnabled = false;
     private boolean eventConversionEnabled = true;
     private boolean dependencyTrackingEnabled = true;
+    private boolean debuggerEnabled = false;
+    private int debuggerPort = DEBUGGER_PORT_DEFAULT;
+    private long lockAcquisitionTimeout = TimeUnit.SECONDS.toMillis(LOCK_ACQUISITION_TIMEOUT_DEFAULT);
 
     /**
      * Create a new configuration instance from the given parameters.
-     * 
+     *
      * @param config configuration parameters to apply to JavaScript
      */
     public GraalJSScriptEngineConfiguration(Map<String, ?> config) {
@@ -63,6 +75,9 @@ public class GraalJSScriptEngineConfiguration {
         boolean oldDependencyTrackingEnabled = dependencyTrackingEnabled;
         boolean oldScriptConditionWrapperEnabled = scriptConditionWrapperEnabled;
         boolean oldEventConversionEnabled = eventConversionEnabled;
+        boolean oldDebuggerEnabled = debuggerEnabled;
+        int oldDebuggerPort = debuggerPort;
+        long oldLockAcquisitionTimeout = lockAcquisitionTimeout;
 
         this.update(config);
 
@@ -91,6 +106,17 @@ public class GraalJSScriptEngineConfiguration {
                         "Disabled event conversion for JavaScript Scripting. Please resave your scripts to apply this change.");
             }
         }
+        if (oldDebuggerEnabled != debuggerEnabled) {
+            logger.warn("{} debugger for JavaScript Scripting. Restart openHAB to apply this change.",
+                    debuggerEnabled ? "Enabled" : "Disabled");
+        } else if (oldDebuggerPort != debuggerPort) {
+            logger.warn("Reconfigured debugger for JavaScript Scripting. Restart openHAB to apply this change.");
+        }
+        if (oldLockAcquisitionTimeout != lockAcquisitionTimeout) {
+            logger.warn(
+                    "JavaScript Scripting lock acquisition timeout changed from {} to {} milliseconds. Rules created with JavaScript scripts might need to be reloaded for the changes to apply.",
+                    oldLockAcquisitionTimeout, lockAcquisitionTimeout);
+        }
     }
 
     /**
@@ -111,12 +137,16 @@ public class GraalJSScriptEngineConfiguration {
                 true);
         dependencyTrackingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEPENDENCY_TRACKING_ENABLED),
                 Boolean.class, true);
+        debuggerEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEBUGGER_ENABLED), Boolean.class, false);
+        debuggerPort = ConfigParser.valueAsOrElse(config.get(CFG_DEBUGGER_PORT), Integer.class, DEBUGGER_PORT_DEFAULT);
+        lockAcquisitionTimeout = TimeUnit.SECONDS.toMillis(ConfigParser
+                .valueAsOrElse(config.get(CFG_LOCK_ACQUISITION_TIMEOUT), Long.class, LOCK_ACQUISITION_TIMEOUT_DEFAULT));
     }
 
     /**
      * Whether injection is enabled for script modules, i.e. scripts executed by an implementation of
      * {@link org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler}.
-     * 
+     *
      * @return whether injection is enabled for script modules
      */
     public boolean isInjectionEnabledForScriptModules() {
@@ -126,7 +156,7 @@ public class GraalJSScriptEngineConfiguration {
     /**
      * Whether injection is enabled for transformations, i.e. scripts executed by the
      * {@link org.openhab.core.automation.module.script.ScriptTransformationService}.
-     * 
+     *
      * @return whether injection is enabled for transformations
      */
     public boolean isInjectionEnabledForTransformations() {
@@ -135,7 +165,7 @@ public class GraalJSScriptEngineConfiguration {
 
     /**
      * Whether injection is enabled for all scripts, i.e. script modules, transformations and script files.
-     * 
+     *
      * @return whether injection is enabled for all scripts
      */
     public boolean isInjectionEnabledForAllScripts() {
@@ -149,7 +179,7 @@ public class GraalJSScriptEngineConfiguration {
     /**
      * Whether the wrapper is enabled for script conditions (see
      * {@link org.openhab.core.automation.module.script.internal.handler.ScriptConditionHandler}).
-     * 
+     *
      * @return whether the wrapper is enabled for script conditions
      */
     public boolean isScriptConditionWrapperEnabled() {
@@ -162,5 +192,20 @@ public class GraalJSScriptEngineConfiguration {
 
     public boolean isDependencyTrackingEnabled() {
         return dependencyTrackingEnabled;
+    }
+
+    public boolean isDebuggerEnabled() {
+        return debuggerEnabled;
+    }
+
+    public int getDebuggerPort() {
+        return debuggerPort;
+    }
+
+    /**
+     * @return The log acquisition timeout in milliseconds.
+     */
+    public long getLockAcquisitionTimeout() {
+        return lockAcquisitionTimeout;
     }
 }

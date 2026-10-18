@@ -14,6 +14,7 @@ package org.openhab.binding.tesla.internal.handler;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -28,6 +29,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tesla.internal.protocol.dto.sso.RefreshTokenRequest;
 import org.openhab.binding.tesla.internal.protocol.dto.sso.TokenResponse;
 import org.slf4j.Logger;
@@ -53,8 +55,14 @@ public class TeslaSSOHandler {
         this.httpClient = httpClient;
     }
 
+    /**
+     * Exchanges the refresh token for an access token.
+     *
+     * @return the access token, or {@code null} if the SSO service rejected the refresh token
+     * @throws IOException if the SSO service could not be reached or did not return an access token
+     */
     @Nullable
-    public TokenResponse getAccessToken(String refreshToken) {
+    public TokenResponse getAccessToken(String refreshToken) throws IOException {
         logger.debug("Exchanging SSO refresh token for API access token");
 
         // get a new access token for the owner API token endpoint
@@ -67,8 +75,9 @@ public class TeslaSSOHandler {
         request.method(HttpMethod.POST);
 
         ContentResponse refreshResponse = executeHttpRequest(request);
+        int status = refreshResponse.getStatus();
 
-        if (refreshResponse != null && refreshResponse.getStatus() == 200) {
+        if (status == HttpStatus.OK_200) {
             String refreshTokenResponse = refreshResponse.getContentAsString();
             TokenResponse tokenResponse = gson.fromJson(refreshTokenResponse.trim(), TokenResponse.class);
 
@@ -77,28 +86,27 @@ public class TeslaSSOHandler {
                 logger.debug("Access token expires in {} seconds at {}", tokenResponse.expiresIn, DATE_FORMATTER
                         .format(Instant.ofEpochMilli((tokenResponse.createdAt + tokenResponse.expiresIn) * 1000)));
                 return tokenResponse;
-            } else {
-                logger.debug("An error occurred while exchanging SSO auth token for API access token.");
             }
-        } else {
-            logger.debug("An error occurred during refresh of SSO token: {}",
-                    (refreshResponse != null ? refreshResponse.getStatus() : "no response"));
+            throw new IOException("The SSO service did not return an access token");
+        } else if (status == HttpStatus.BAD_REQUEST_400 || status == HttpStatus.UNAUTHORIZED_401
+                || status == HttpStatus.FORBIDDEN_403) {
+            logger.debug("The SSO service rejected the refresh token: {}", status);
+            return null;
         }
-
-        return null;
+        // e.g. 429 or 5xx, the refresh token itself may still be valid
+        throw new IOException("Unexpected response from the SSO service: " + status);
     }
 
-    @Nullable
-    private ContentResponse executeHttpRequest(org.eclipse.jetty.client.api.Request request) {
+    private ContentResponse executeHttpRequest(org.eclipse.jetty.client.api.Request request) throws IOException {
         request.timeout(10, TimeUnit.SECONDS);
 
-        ContentResponse response;
         try {
-            response = request.send();
-            return response;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("An exception occurred while invoking a HTTP request: '{}'", e.getMessage());
-            return null;
+            return request.send();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Interrupted while requesting an access token", e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new IOException(e.getMessage(), e);
         }
     }
 }

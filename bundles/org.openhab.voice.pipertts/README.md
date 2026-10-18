@@ -6,7 +6,7 @@ This voice service allows you to use [Piper](https://github.com/OHF-Voice/piper1
 ::: tip Note
 This add-on depends on native libraries that cannot be included with the openHAB distribution due to their license.
 The add-on will download these native dependencies automatically on first activation.
-In case your openHAB server has no internet connection, you need to download the [piper-jni JAR file](https://repo1.maven.org/maven2/io/github/jvoice-project/piper-jni/1.4.1/piper-jni-1.4.1.jar) and place it into `<OPENHAB_USERDATA>/piper/`.
+In case your openHAB server has no internet connection, you need to download the [piper-jni JAR file](https://repo1.maven.org/maven2/io/github/jvoice-project/piper-jni/1.4.2/piper-jni-1.4.2.jar) and place it into `<OPENHAB_USERDATA>/piper/`.
 :::
 
 ## Supported platforms

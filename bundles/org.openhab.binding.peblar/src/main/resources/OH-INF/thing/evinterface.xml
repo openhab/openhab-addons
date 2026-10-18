@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="peblar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel group for /api/wlac/v1/evinterface -->
+	<channel-group-type id="ev-interface">
+		<label>EV Interface</label>
+		<description>EV charging interface state and control for the Peblar charger</description>
+		<channels>
+
+			<channel id="cp-state" typeId="cp-state"/>
+			<channel id="lock-state" typeId="lock-state"/>
+			<channel id="charge-current-limit" typeId="charge-current-limit"/>
+			<channel id="charge-current-limit-source" typeId="charge-current-limit-source"/>
+			<channel id="charge-current-limit-actual" typeId="system.electric-current">
+				<label>Actual Charge Current Limit</label>
+				<description>The actual charge current limit applied after all constraints.</description>
+			</channel>
+			<channel id="force1-phase" typeId="force1-phase"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel type definitions -->
+
+	<channel-type id="cp-state">
+		<item-type>String</item-type>
+		<label>Control Pilot State</label>
+		<description>IEC 61851 Control Pilot state (e.g. State A, State B, State C)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="State A">No vehicle connected</option>
+				<option value="State B">Vehicle connected, not charging</option>
+				<option value="State C">Charging</option>
+				<option value="State D">Charging with ventilation</option>
+				<option value="State E">Error</option>
+				<option value="State F">EVSE not available</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lock-state">
+		<item-type>Switch</item-type>
+		<label>Lock State</label>
+		<description>Cable lock state; ON means the cable is locked</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charge-current-limit">
+		<item-type unitHint="mA">Number:ElectricCurrent</item-type>
+		<label>Charge Current Limit</label>
+		<description>
+			Configured charge current limit in milliamperes.
+			Values between 0 and 5999 mA will pause charging per
+			EN-IEC 61851-1.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state min="0" max="32000" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="charge-current-limit-source">
+		<item-type>String</item-type>
+		<label>Charge Current Limit Source</label>
+		<description>Source that is currently limiting the charge current</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="Charging cable">Charging cable</option>
+				<option value="Dynamic load balancing">Dynamic load balancing</option>
+				<option value="External">External</option>
+				<option value="Group load balancing">Group load balancing</option>
+				<option value="Hardware limitation">Hardware limitation</option>
+				<option value="High temperature">High temperature</option>
+				<option value="Local scheduled charging">Local scheduled charging</option>
+				<option value="Overcurrent protection">Overcurrent protection</option>
+				<option value="Power limit">Power limit</option>
+				<option value="Smart charging">Smart charging</option>
+				<option value="User">User</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="force1-phase">
+		<item-type>Switch</item-type>
+		<label>Force Single Phase</label>
+		<description>Force the charger to use a single phase only</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 
 /**
@@ -24,12 +25,13 @@ import org.openhab.binding.homematic.internal.misc.MiscUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class NewDevicesParser extends CommonRpcParser<Object[], List<String>> {
     @Override
     @SuppressWarnings("unchecked")
     public List<String> parse(Object[] message) throws IOException {
         List<String> adresses = new ArrayList<>();
-        if (message != null && message.length > 1) {
+        if (message.length > 1) {
             message = (Object[]) message[1];
             for (int i = 0; i < message.length; i++) {
                 Map<String, ?> data = (Map<String, ?>) message[i];

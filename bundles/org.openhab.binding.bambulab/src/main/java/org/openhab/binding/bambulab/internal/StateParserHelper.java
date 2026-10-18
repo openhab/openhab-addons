@@ -152,7 +152,7 @@ public class StateParserHelper {
     public static Optional<State> parseTrayType(@Nullable String trayType) {
         return Optional.ofNullable(trayType).map(Object::toString)//
                 .flatMap(BambuLabBindingConstants.AmsChannel.TrayType::findTrayType)//
-                .map(Enum::name)//
+                .map(BambuLabBindingConstants.AmsChannel.TrayType::getTypeName)//
                 .flatMap(StateParserHelper::parseStringType);
     }
 

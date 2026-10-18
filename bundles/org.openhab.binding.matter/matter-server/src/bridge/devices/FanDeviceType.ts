@@ -6,7 +6,7 @@ import { BaseDeviceType } from "./BaseDeviceType";
 export class FanDeviceType extends BaseDeviceType {
     override createEndpoint(clusterValues: Record<string, any>) {
         const fanControlServer = CustomFanControlServer.with(
-            ...CustomFanControlServer.features(clusterValues.fanControl),
+            ...CustomFanControlServer.selectFeatures(clusterValues.fanControl),
         );
 
         const endpoint = new Endpoint(

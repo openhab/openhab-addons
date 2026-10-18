@@ -1,4 +1,4 @@
-import { ColorControl, LevelControl } from "@matter/main/clusters";
+import { ColorControl, LevelControl, OnOff } from "@matter/main/clusters";
 import { Endpoint } from "@matter/node";
 import { ExtendedColorLightDevice } from "@matter/node/devices/extended-color-light";
 import { CustomColorControlServer, CustomLevelControlServer, CustomOnOffLocalServer } from "../behaviors";
@@ -38,11 +38,15 @@ export class ColorDeviceType extends BaseDeviceType {
         );
 
         const endpoint = new Endpoint(
+            // Supplying a behavior replaces the one the device type defines, so the features it specializes have to
+            // be repeated here. ExtendedColorLightDevice requires OnOff with Lighting and LevelControl with
+            // Lighting and OnOff; without the latter LevelControlServer.couple() never runs and a
+            // MoveToLevelWithOnOff command sets the level without turning the light on.
             ExtendedColorLightDevice.with(
                 // set OnOff Locally to ensure moveToHueAndSaturationLogic gets triggered when the
                 // device is switched on from openHAB.
-                CustomOnOffLocalServer,
-                CustomLevelControlServer.with(LevelControl.Feature.Lighting),
+                CustomOnOffLocalServer.with(OnOff.Feature.Lighting),
+                CustomLevelControlServer.with(LevelControl.Feature.Lighting, LevelControl.Feature.OnOff),
                 CustomColorControlServer.with(
                     ColorControl.Feature.HueSaturation,
                     ColorControl.Feature.ColorTemperature,

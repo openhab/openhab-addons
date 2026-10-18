@@ -38,7 +38,7 @@ public class MacTTSVoiceTest {
     @Test
     public void testConstructor() throws IOException {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
-        Process process = Runtime.getRuntime().exec("say -v ?");
+        Process process = Runtime.getRuntime().exec(new String[] { "say", "-v", "?" });
         try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String nextLine = bufferedReader.readLine();
@@ -53,7 +53,7 @@ public class MacTTSVoiceTest {
     @Test
     public void getUIDTest() throws IOException {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
-        Process process = Runtime.getRuntime().exec("say -v ?");
+        Process process = Runtime.getRuntime().exec(new String[] { "say", "-v", "?" });
         try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String nextLine = bufferedReader.readLine();
@@ -68,7 +68,7 @@ public class MacTTSVoiceTest {
     @Test
     public void getLabelTest() throws IOException {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
-        Process process = Runtime.getRuntime().exec("say -v ?");
+        Process process = Runtime.getRuntime().exec(new String[] { "say", "-v", "?" });
         try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String nextLine = bufferedReader.readLine();
@@ -83,7 +83,7 @@ public class MacTTSVoiceTest {
     @Test
     public void getLocaleTest() throws IOException {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
-        Process process = Runtime.getRuntime().exec("say -v ?");
+        Process process = Runtime.getRuntime().exec(new String[] { "say", "-v", "?" });
         try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String nextLine = bufferedReader.readLine();

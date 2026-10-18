@@ -14,7 +14,9 @@ package org.openhab.binding.enphase.internal.handler;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -38,6 +40,7 @@ import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
 import org.openhab.binding.enphase.internal.dto.EnvoyErrorDTO;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
+import org.openhab.binding.enphase.internal.dto.PdmDeviceDataDTO;
 import org.openhab.binding.enphase.internal.dto.ProductionJsonDTO;
 import org.openhab.binding.enphase.internal.exception.EnphaseException;
 import org.openhab.binding.enphase.internal.exception.EnvoyConnectionException;
@@ -47,12 +50,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
  * Methods to make API calls to the Envoy gateway.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Cedric Boon - Added support for detailed inverter stats
  */
 @NonNullByDefault
 public class EnvoyConnector {
@@ -65,7 +71,9 @@ public class EnvoyConnector {
     private static final String PRODUCTION_URL = "/api/v1/production";
     private static final String CONSUMPTION_URL = "/api/v1/consumption";
     private static final String INVERTERS_URL = PRODUCTION_URL + "/inverters";
+    private static final String DEVICE_DATA_URL = "/ivp/pdm/device_data";
     private static final String INFO_XML = "/info.xml";
+    private static final String JSON_KEY_SERIAL_NUMBER = "sn";
 
     private static final String INFO_SOFTWARE_BEGIN = "<software>";
     private static final String INFO_SOFTWARE_END = "</software>";
@@ -203,6 +211,36 @@ public class EnvoyConnector {
             }
         }
         return retrieveData(INVERTERS_URL, json -> Arrays.asList(gson.fromJson(json, InverterDTO[].class)));
+    }
+
+    /**
+     * @return Returns the per-device energy data (watt-hours today/7-days, lifetime and current watts) for the
+     *         inverters and other Envoy devices, keyed by serial number.
+     */
+    public Map<String, PdmDeviceDataDTO> getDeviceData() throws EnphaseException {
+        return retrieveData(DEVICE_DATA_URL, this::jsonToDeviceData);
+    }
+
+    private @Nullable Map<String, PdmDeviceDataDTO> jsonToDeviceData(final String json) {
+        final JsonElement parsed = JsonParser.parseString(json);
+
+        if (!parsed.isJsonObject()) {
+            return null;
+        }
+        final Map<String, PdmDeviceDataDTO> result = new HashMap<>();
+
+        for (final Map.Entry<String, JsonElement> entry : parsed.getAsJsonObject().entrySet()) {
+            final JsonElement value = entry.getValue();
+
+            if (value.isJsonObject() && value.getAsJsonObject().has(JSON_KEY_SERIAL_NUMBER)) {
+                final @Nullable PdmDeviceDataDTO dto = gson.fromJson(value, PdmDeviceDataDTO.class);
+
+                if (dto != null) {
+                    result.put(dto.sn, dto);
+                }
+            }
+        }
+        return result;
     }
 
     protected synchronized <T> T retrieveData(final String urlPath, final Function<String, @Nullable T> jsonConverter)

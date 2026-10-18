@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link OndiloBridgeHandler} Handler for the Ondilo Bridge (account-level, manages OAuth2 and device discovery)
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class OndiloBridgeHandler extends BaseBridgeHandler {

@@ -649,7 +649,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 MiIoCommand.UNKNOWN.equals(response.getCommand())
                         ? response.getCommand().toString() + "(" + response.getCommandString() + ")"
                         : response.getCommand(),
-                response.getResult(), response.getResponse());
+                Utils.sanitizeForLog(response.getResult()), Utils.sanitizeForLog(response.getResponse()));
         if (response.isError()) {
             logger.debug("Error received for command '{}': {}.", response.getCommandString(),
                     response.getResponse().get("error"));

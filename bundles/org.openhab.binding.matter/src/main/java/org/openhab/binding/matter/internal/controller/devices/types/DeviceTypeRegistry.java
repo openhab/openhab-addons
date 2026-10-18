@@ -36,6 +36,7 @@ public class DeviceTypeRegistry {
                 DeviceTypes.DIMMABLE_LIGHT, DeviceTypes.DIMMABLE_PLUG_IN_UNIT, DeviceTypes.DIMMER_SWITCH,
                 DeviceTypes.COLOR_DIMMER_SWITCH, DeviceTypes.EXTENDED_COLOR_LIGHT, DeviceTypes.COLOR_TEMPERATURE_LIGHT)
                 .forEach(type -> DeviceTypeRegistry.registerDeviceType(type, LightingType.class));
+        DeviceTypeRegistry.registerDeviceType(DeviceTypes.CONTACT_SENSOR, ContactSensorType.class);
     }
 
     /**

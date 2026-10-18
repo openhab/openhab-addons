@@ -48,6 +48,36 @@
 				<type>kaleidescape:running_time</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="sendcmd" groupIds="ui">
+				<type>kaleidescape:sendcmd</type>
+			</update-channel>
+			<add-channel id="search" groupIds="ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<add-channel id="progress" groupIds="ui">
+				<type>kaleidescape:progress</type>
+			</add-channel>
+			<update-channel id="power" groupIds="ui">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</update-channel>
+			<update-channel id="volume" groupIds="ui">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</update-channel>
+			<update-channel id="mute" groupIds="ui">
+				<type>system:mute</type>
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:cinemaone">
@@ -95,6 +125,82 @@
 				<type>kaleidescape:running_time</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="sendcmd" groupIds="c1-alto_ui">
+				<type>kaleidescape:sendcmd</type>
+			</update-channel>
+			<add-channel id="search" groupIds="c1-alto_ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<!-- remove the channels that were erroneously added above via the wrong group id -->
+			<remove-channel id="sendcmd" groupIds="c1-alto_ui"/>
+			<remove-channel id="endtime" groupIds="c1-alto_ui"/>
+			<remove-channel id="play_mode" groupIds="c1-alto_ui"/>
+			<remove-channel id="title_length" groupIds="c1-alto_ui"/>
+			<remove-channel id="title_loc" groupIds="c1-alto_ui"/>
+			<remove-channel id="chapter_length" groupIds="c1-alto_ui"/>
+			<remove-channel id="chapter_loc" groupIds="c1-alto_ui"/>
+			<remove-channel id="search" groupIds="c1-alto_ui"/>
+
+			<!-- apply the missing updates again with the correct group id -->
+			<update-channel id="play_mode" groupIds="ui">
+				<type>kaleidescape:movie_play_mode</type>
+			</update-channel>
+			<update-channel id="title_length" groupIds="ui">
+				<type>kaleidescape:title_length</type>
+			</update-channel>
+			<update-channel id="title_loc" groupIds="ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+
+			<!-- in case the channels were added by a newly created thing, remove them -->
+			<!-- because the add below will fail if channel already exists -->
+			<remove-channel id="sendcmd" groupIds="ui"/>
+			<remove-channel id="endtime" groupIds="ui"/>
+			<remove-channel id="search" groupIds="ui"/>
+
+			<!-- add the channels with the correct group -->
+			<add-channel id="sendcmd" groupIds="ui">
+				<type>kaleidescape:sendcmd</type>
+			</add-channel>
+			<add-channel id="endtime" groupIds="ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+			<add-channel id="search" groupIds="ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="progress" groupIds="ui">
+				<type>kaleidescape:progress</type>
+			</add-channel>
+			<update-channel id="power" groupIds="ui">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</update-channel>
+			<update-channel id="volume" groupIds="ui">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</update-channel>
+			<update-channel id="mute" groupIds="ui">
+				<type>system:mute</type>
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:alto">
@@ -133,6 +239,85 @@
 				<type>kaleidescape:running_time</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="sendcmd" groupIds="c1-alto_ui">
+				<type>kaleidescape:sendcmd</type>
+			</update-channel>
+			<add-channel id="search" groupIds="c1-alto_ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<!-- remove the channels that were erroneously added above via the wrong group id -->
+			<remove-channel id="sendcmd" groupIds="c1-alto_ui"/>
+			<remove-channel id="endtime" groupIds="c1-alto_ui"/>
+			<remove-channel id="play_mode" groupIds="c1-alto_ui"/>
+			<remove-channel id="title_length" groupIds="c1-alto_ui"/>
+			<remove-channel id="title_loc" groupIds="c1-alto_ui"/>
+			<remove-channel id="chapter_length" groupIds="c1-alto_ui"/>
+			<remove-channel id="chapter_loc" groupIds="c1-alto_ui"/>
+			<remove-channel id="search" groupIds="c1-alto_ui"/>
+
+			<!-- apply the missing updates again with the correct group id -->
+			<update-channel id="play_mode" groupIds="ui">
+				<type>kaleidescape:movie_play_mode</type>
+			</update-channel>
+			<update-channel id="title_length" groupIds="ui">
+				<type>kaleidescape:title_length</type>
+			</update-channel>
+			<update-channel id="title_loc" groupIds="ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+
+			<!-- in case the channels were added by a newly created thing, remove them -->
+			<!-- because the add below will fail if channel already exists -->
+			<remove-channel id="sendcmd" groupIds="ui"/>
+			<remove-channel id="endtime" groupIds="ui"/>
+			<remove-channel id="search" groupIds="ui"/>
+
+			<!-- add the channels with the correct group -->
+			<add-channel id="sendcmd" groupIds="ui">
+				<type>kaleidescape:sendcmd</type>
+			</add-channel>
+			<add-channel id="endtime" groupIds="ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+			<add-channel id="search" groupIds="ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="progress" groupIds="ui">
+				<type>kaleidescape:progress</type>
+			</add-channel>
+			<add-channel id="level" groupIds="parental-control">
+				<type>kaleidescape:parental-control-level</type>
+			</add-channel>
+			<update-channel id="power" groupIds="ui">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</update-channel>
+			<update-channel id="volume" groupIds="ui">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</update-channel>
+			<update-channel id="mute" groupIds="ui">
+				<type>system:mute</type>
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:strato">
@@ -169,6 +354,88 @@
 			</update-channel>
 			<update-channel id="running_time" groupIds="detail">
 				<type>kaleidescape:running_time</type>
+			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="sendcmd" groupIds="strato_ui">
+				<type>kaleidescape:sendcmd</type>
+			</update-channel>
+			<add-channel id="search" groupIds="strato_ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<!-- remove the channels that were erroneously added above via the wrong group id -->
+			<remove-channel id="sendcmd" groupIds="strato_ui"/>
+			<remove-channel id="endtime" groupIds="strato_ui"/>
+			<remove-channel id="play_mode" groupIds="strato_ui"/>
+			<remove-channel id="title_length" groupIds="strato_ui"/>
+			<remove-channel id="title_loc" groupIds="strato_ui"/>
+			<remove-channel id="chapter_length" groupIds="strato_ui"/>
+			<remove-channel id="chapter_loc" groupIds="strato_ui"/>
+			<remove-channel id="search" groupIds="strato_ui"/>
+
+			<!-- apply the missing updates again with the correct group id -->
+			<update-channel id="play_mode" groupIds="ui">
+				<type>kaleidescape:movie_play_mode</type>
+			</update-channel>
+			<update-channel id="title_length" groupIds="ui">
+				<type>kaleidescape:title_length</type>
+			</update-channel>
+			<update-channel id="title_loc" groupIds="ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+
+			<!-- in case the channels were added by a newly created thing, remove them -->
+			<!-- because the add below will fail if channel already exists -->
+			<remove-channel id="sendcmd" groupIds="ui"/>
+			<remove-channel id="endtime" groupIds="ui"/>
+			<remove-channel id="search" groupIds="ui"/>
+
+			<!-- add the channels with the correct group -->
+			<add-channel id="sendcmd" groupIds="ui">
+				<type>kaleidescape:sendcmd</type>
+			</add-channel>
+			<add-channel id="endtime" groupIds="ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+			<add-channel id="search" groupIds="ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="progress" groupIds="ui">
+				<type>kaleidescape:progress</type>
+			</add-channel>
+			<add-channel id="video-mode2" groupIds="ui">
+				<type>kaleidescape:video-mode2</type>
+			</add-channel>
+			<add-channel id="level" groupIds="parental-control">
+				<type>kaleidescape:parental-control-level</type>
+			</add-channel>
+			<update-channel id="power" groupIds="ui">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</update-channel>
+			<update-channel id="volume" groupIds="ui">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</update-channel>
+			<update-channel id="mute" groupIds="ui">
+				<type>system:mute</type>
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
 			</update-channel>
 		</instruction-set>
 	</thing-type>

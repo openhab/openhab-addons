@@ -1,0 +1,189 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.blue"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 6,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "1",
+							"label": "Morning"
+						},
+						{
+							"value": "2",
+							"label": "Noon"
+						},
+						{
+							"value": "3",
+							"label": "Afternoon"
+						},
+						{
+							"value": "4",
+							"label": "Sunset"
+						},
+						{
+							"value": "5",
+							"label": "Evening"
+						},
+						{
+							"value": "6",
+							"label": "Rainy"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Morning\",\"2\"\u003d\"Noon\",\"3\"\u003d\"Afternoon\",\"4\"\u003d\"Sunset\",\"5\"\u003d\"Evening\",\"6\"\u003d\"Rainy\"]`"
+			},
+			{
+				"property": "dvalue",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Delayed Turn-off",
+				"channel": "dv",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 21600,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "wall-scene-en",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Wall Switch Scenes",
+				"channel": "WallSceneEn",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Changes the scene when the lamp is turned on again with the wall switch within 3 seconds after turning it off."
+			},
+			{
+				"property": "wall-scene",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Wall Switch Scene List",
+				"channel": "WallScene",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "The 3 scenes the wall switch cycles through, as a JSON array of 3 scene numbers. The app writes them as `1,2,3`."
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

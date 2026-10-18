@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="peblar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel group for /api/wlac/v1/system -->
+	<channel-group-type id="system">
+		<label>System</label>
+		<description>System information and status of the Peblar charger</description>
+		<channels>
+
+			<channel id="product-pn" typeId="product-pn"/>
+			<channel id="product-sn" typeId="product-sn"/>
+			<channel id="firmware-version" typeId="firmware-version"/>
+			<channel id="wlan-signal-strength" typeId="wlan-signal-strength"/>
+			<channel id="cellular-signal-strength" typeId="cellular-signal-strength"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="phase-count" typeId="phase-count"/>
+
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel type definitions -->
+
+	<channel-type id="product-pn">
+		<item-type>String</item-type>
+		<label>Product Part Number</label>
+		<description>Product part number of the Peblar charger</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="product-sn">
+		<item-type>String</item-type>
+		<label>Product Serial Number</label>
+		<description>Product serial number of the Peblar charger</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="firmware-version">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Currently installed firmware version</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wlan-signal-strength">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>WLAN Signal Strength</label>
+		<description>Wi-Fi signal strength</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cellular-signal-strength">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Cellular Signal Strength</label>
+		<description>Cellular (LTE) signal strength in dBm</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="uptime">
+		<item-type>Number:Time</item-type>
+		<label>Uptime</label>
+		<description>Device uptime in seconds since last reboot</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="phase-count">
+		<item-type>Number</item-type>
+		<label>Phase Count</label>
+		<description>Number of electrical phases the charger is connected to (1 or 3)</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="1">Single phase</option>
+				<option value="3">Three phase</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -13,27 +13,57 @@
 package org.openhab.binding.unifi.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link UniFiException} represents a binding specific {@link Exception}.
+ * Base exception thrown by the shared UniFi parent binding for errors talking to a UniFi console.
+ * <p>
+ * Subclasses (e.g. authentication failure, expired session, communication error) are defined in the internal
+ * implementation and surface through this type so child bindings only need to handle a single exception class.
  *
- * @author Matthew Bowman - Initial contribution
+ * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
 public class UniFiException extends Exception {
 
-    private static final long serialVersionUID = -7422254981644510570L;
+    private static final long serialVersionUID = 1L;
 
-    public UniFiException(final String message) {
+    /**
+     * Classification of authentication-related failures so callers can decide whether to retry.
+     * <ul>
+     * <li>{@link #OK} — not an auth error; retry-worthy (network, 5xx, timeout)</li>
+     * <li>{@link #REJECTED} — credentials definitively rejected (HTTP 401); user must fix config</li>
+     * <li>{@link #THROTTLED} — request forbidden (HTTP 403/429); treat as transient, back off longer</li>
+     * </ul>
+     */
+    public enum AuthState {
+        OK,
+        REJECTED,
+        THROTTLED
+    }
+
+    private final AuthState authState;
+
+    public UniFiException(String message) {
         super(message);
+        this.authState = AuthState.OK;
     }
 
-    public UniFiException(final String message, final Throwable cause) {
+    public UniFiException(String message, Throwable cause) {
         super(message, cause);
+        this.authState = AuthState.OK;
     }
 
-    public UniFiException(final @Nullable Throwable cause) {
+    public UniFiException(Throwable cause) {
         super(cause);
+        this.authState = AuthState.OK;
+    }
+
+    public UniFiException(String message, AuthState authState) {
+        super(message);
+        this.authState = authState;
+    }
+
+    public AuthState getAuthState() {
+        return authState;
     }
 }

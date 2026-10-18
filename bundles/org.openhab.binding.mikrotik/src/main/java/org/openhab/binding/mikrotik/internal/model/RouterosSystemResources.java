@@ -48,16 +48,16 @@ public class RouterosSystemResources extends RouterosBaseData {
         return 100 - Math.round(100F * freeSpace / totalSpace);
     }
 
-    public @Nullable Integer getFreeMem() {
-        return getIntProp("free-memory");
+    public @Nullable Long getFreeMem() {
+        return getLongProp("free-memory");
     }
 
-    public @Nullable Integer getTotalMem() {
-        return getIntProp("total-memory");
+    public @Nullable Long getTotalMem() {
+        return getLongProp("total-memory");
     }
 
     public @Nullable Integer getMemUse() {
-        Integer freeMem = getFreeMem(), totalMem = getTotalMem();
+        Long freeMem = getFreeMem(), totalMem = getTotalMem();
         if (freeMem == null || totalMem == null) {
             return null;
         }

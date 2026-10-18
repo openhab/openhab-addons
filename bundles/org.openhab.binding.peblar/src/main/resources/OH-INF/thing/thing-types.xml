@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="peblar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="charger">
+		<label>Peblar EV Charger</label>
+		<description>
+			Peblar EV Charger accessed via local REST API.
+			Requires firmware 1.6 or newer and the API enabled in the
+			charger web interface.
+		</description>
+		<category>PowerOutlet</category>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="ev-interface" typeId="ev-interface"/>
+			<channel-group id="system" typeId="system"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname / IP Address</label>
+				<description>Hostname or IP address of the Peblar charger on the local network</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="apiToken" type="text" required="true">
+				<label>API Token</label>
+				<description>Authorization token for the local REST API (set in charger web interface)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" min="1" max="3600" unit="s">
+				<label>Refresh Interval</label>
+				<description>How often to poll the charger in seconds (default: 30)</description>
+				<default>30</default>
+				<unitLabel>seconds</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

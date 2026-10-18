@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.ahawastecollection.internal;
 
+import static java.util.Map.entry;
+
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,15 +38,16 @@ public final class AhaCollectionScheduleStub implements AhaCollectionSchedule {
 
     @Override
     public Map<WasteType, CollectionDate> getCollectionDates() throws IOException {
-        final Map<WasteType, CollectionDate> result = new LinkedHashMap<>(4);
-        result.put(WasteType.GENERAL_WASTE,
-                new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(GENERAL_WASTE_DATE)));
-        result.put(WasteType.LIGHT_PACKAGES,
-                new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(LIGHTWEIGHT_PACKAGING_DATE)));
-        result.put(WasteType.BIO_WASTE, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(BIO_WASTE_DATE)));
-        result.put(WasteType.PAPER, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(PAPER_DATE)));
-        result.put(WasteType.CHRISTMAS_TREES,
-                new CollectionDate(WasteType.CHRISTMAS_TREES, Arrays.asList(CHRISTMAS_TREE_DATE)));
-        return result;
+        return Map.ofEntries(
+                entry(WasteType.GENERAL_WASTE,
+                        new CollectionDate(WasteType.GENERAL_WASTE, new ArrayList<>(List.of(GENERAL_WASTE_DATE)))),
+                entry(WasteType.LIGHT_PACKAGES,
+                        new CollectionDate(WasteType.LIGHT_PACKAGES,
+                                new ArrayList<>(List.of(LIGHTWEIGHT_PACKAGING_DATE)))),
+                entry(WasteType.BIO_WASTE,
+                        new CollectionDate(WasteType.BIO_WASTE, new ArrayList<>(List.of(BIO_WASTE_DATE)))),
+                entry(WasteType.PAPER, new CollectionDate(WasteType.PAPER, new ArrayList<>(List.of(PAPER_DATE)))),
+                entry(WasteType.CHRISTMAS_TREES,
+                        new CollectionDate(WasteType.CHRISTMAS_TREES, new ArrayList<>(List.of(CHRISTMAS_TREE_DATE)))));
     }
 }

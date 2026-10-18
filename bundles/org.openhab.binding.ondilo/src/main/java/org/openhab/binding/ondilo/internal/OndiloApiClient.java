@@ -20,7 +20,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Scanner;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,7 +40,7 @@ import com.google.gson.Gson;
  * The {@link OndiloApiClient} for accessing the Ondilo API using OAuth2 authentication.
  * handlers.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class OndiloApiClient {
@@ -87,10 +90,21 @@ public class OndiloApiClient {
             lastRequestTime = System.currentTimeMillis();
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
-                try (InputStream is = conn.getInputStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
-                    String response = scanner.useDelimiter("\\A").next();
-                    // Parse JSON to DTO
-                    return GSON.fromJson(response, type);
+                try (InputStream is = conn.getInputStream()) {
+                    String contentEncoding = conn.getContentEncoding();
+                    InputStream decodedStream = switch (contentEncoding == null ? ""
+                            : contentEncoding.toLowerCase(Locale.ROOT)) {
+                        case "gzip" -> new GZIPInputStream(is);
+                        case "deflate" -> new InflaterInputStream(is);
+                        case "", "identity" -> is;
+                        default -> throw new IOException("Unsupported content encoding: " + contentEncoding);
+                    };
+                    Scanner scanner = new Scanner(decodedStream, "UTF-8");
+                    try (scanner) {
+                        String response = scanner.useDelimiter("\\A").next();
+                        // Parse JSON to DTO
+                        return GSON.fromJson(response, type);
+                    }
                 }
             } else {
                 logger.warn("Ondilo API request failed with code: {}", responseCode);
@@ -114,7 +128,7 @@ public class OndiloApiClient {
                     accessTokenResponse = this.accessTokenResponse;
                     if (accessTokenResponse != null) {
                         this.bearer = accessTokenResponse.getAccessToken();
-                        logger.trace("AccessToken renewed: {}", bearer);
+                        logger.trace("AccessToken renewed");
                     }
                 } catch (InterruptedIOException e) {
                     logger.debug("OAuth token refresh interrupted: {}", e.getMessage());

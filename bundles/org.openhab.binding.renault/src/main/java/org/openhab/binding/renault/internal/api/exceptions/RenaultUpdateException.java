@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Doug Culnane - Initial contribution
  */
 @NonNullByDefault
-public class RenaultUpdateException extends Exception {
+public class RenaultUpdateException extends RenaultException {
 
     private static final long serialVersionUID = 1L;
 

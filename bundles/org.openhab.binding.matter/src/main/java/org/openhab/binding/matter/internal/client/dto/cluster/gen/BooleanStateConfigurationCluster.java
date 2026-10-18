@@ -65,8 +65,8 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
      * this attribute shall be set to the inactive state, by setting the bit to 0, for all supported alarm modes.
      * If an alarm mode is not supported, the bit indicating this alarm mode shall always be 0.
      * A bit shall indicate whether the alarm mode inactive or not:
-     * - 0 &#x3D; Inactive
-     * - 1 &#x3D; Active
+     * - 0 = Inactive
+     * - 1 = Active
      */
     public AlarmModeBitmap alarmsActive; // 3 AlarmModeBitmap R V
     /**
@@ -75,23 +75,23 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
      * alarm modes.
      * If an alarm mode is not supported, the bit indicating this alarm mode shall always be 0.
      * A bit shall indicate whether the alarm mode is suppressed or not:
-     * - 0 &#x3D; Not suppressed
-     * - 1 &#x3D; Suppressed
+     * - 0 = Not suppressed
+     * - 1 = Suppressed
      */
     public AlarmModeBitmap alarmsSuppressed; // 4 AlarmModeBitmap R V
     /**
      * Indicates the alarm modes that will be emitted if the sensor is triggered.
      * If an alarm mode is not supported, the bit indicating this alarm mode shall always be 0.
      * A bit shall indicate whether the alarm mode is enabled or disabled:
-     * - 0 &#x3D; Disabled
-     * - 1 &#x3D; Enabled
+     * - 0 = Disabled
+     * - 1 = Enabled
      */
     public AlarmModeBitmap alarmsEnabled; // 5 AlarmModeBitmap R V
     /**
      * Indicates the alarms supported by the sensor.
      * A bit shall indicate whether the alarm mode is supported:
-     * - 0 &#x3D; Not supported
-     * - 1 &#x3D; Supported
+     * - 0 = Not supported
+     * - 1 = Supported
      */
     public AlarmModeBitmap alarmsSupported; // 6 AlarmModeBitmap R V
     /**
@@ -191,12 +191,20 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
          * Supports ability to set sensor sensitivity
          */
         public boolean sensitivityLevel;
+        /**
+         * 
+         * This feature shall indicate that the device supports reporting sensor faults. When this feature is supported,
+         * there shall be at least one cause of internal failure that will generate the SensorFault.
+         */
+        public boolean faultEvents;
 
-        public FeatureMap(boolean visual, boolean audible, boolean alarmSuppress, boolean sensitivityLevel) {
+        public FeatureMap(boolean visual, boolean audible, boolean alarmSuppress, boolean sensitivityLevel,
+                boolean faultEvents) {
             this.visual = visual;
             this.audible = audible;
             this.alarmSuppress = alarmSuppress;
             this.sensitivityLevel = sensitivityLevel;
+            this.faultEvents = faultEvents;
         }
     }
 
@@ -209,6 +217,9 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
     }
 
     // commands
+    /**
+     * This command will suppress the alarm modes specified.
+     */
     public static ClusterCommand suppressAlarm(AlarmModeBitmap alarmsToSuppress) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (alarmsToSuppress != null) {
@@ -217,6 +228,9 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
         return new ClusterCommand("suppressAlarm", map);
     }
 
+    /**
+     * This command allows setting the enable or disable value for the specified alarm modes.
+     */
     public static ClusterCommand enableDisableAlarm(AlarmModeBitmap alarmsToEnableDisable) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (alarmsToEnableDisable != null) {

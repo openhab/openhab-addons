@@ -119,14 +119,14 @@ public class NodeDiscoveryService extends AbstractThingHandlerDiscoveryService<Z
 
             properties.put(CONFIG_NODE_ID, node.nodeId);
 
-            properties.put(PROPERTY_NODE_IS_LISTENING, node.isListening);
-            properties.put(PROPERTY_NODE_IS_ROUTING, node.isRouting);
-            properties.put(PROPERTY_NODE_IS_SECURE, node.isSecure);
+            properties.put(PROPERTY_NODE_IS_LISTENING, String.valueOf(node.isListening));
+            properties.put(PROPERTY_NODE_IS_ROUTING, String.valueOf(node.isRouting));
+            properties.put(PROPERTY_NODE_IS_SECURE, String.valueOf(node.isSecure));
             properties.put(PROPERTY_VENDOR, manufacturer);
             properties.put(PROPERTY_MODEL_ID, product);
-            properties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen);
-            properties.put(PROPERTY_NODE_FREQ_LISTENING, node.isFrequentListening);
-            properties.put(PROPERTY_FIRMWARE_VERSION, node.firmwareVersion);
+            properties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen != null ? node.lastSeen.toString() : "");
+            properties.put(PROPERTY_NODE_FREQ_LISTENING, String.valueOf(node.isFrequentListening));
+            properties.put(PROPERTY_FIRMWARE_VERSION, node.firmwareVersion != null ? node.firmwareVersion : "");
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                     .withProperties(properties).withBridge(getBridgeUID()).withRepresentationProperty(CONFIG_NODE_ID)

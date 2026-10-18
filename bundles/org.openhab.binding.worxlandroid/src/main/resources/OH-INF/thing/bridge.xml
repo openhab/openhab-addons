@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="worxlandroid"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="bridge">
+		<label>Bridge Worx Landroid API</label>
+		<description>Represents the API and handler for Worx Landroid.</description>
+		<config-description>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Username to access the Landroid WebAPI.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the Landroid WebAPI.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

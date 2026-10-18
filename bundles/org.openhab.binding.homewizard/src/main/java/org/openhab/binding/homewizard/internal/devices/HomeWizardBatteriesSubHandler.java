@@ -35,8 +35,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class HomeWizardBatteriesSubHandler {
 
-    protected final static Logger logger = LoggerFactory.getLogger(HomeWizardBatteriesSubHandler.class);
-    private final static Gson gson = new GsonBuilder()
+    protected static final Logger logger = LoggerFactory.getLogger(HomeWizardBatteriesSubHandler.class);
+    private static final Gson gson = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
     public static void handleCommand(Command command, HomeWizardDeviceHandler handler) {

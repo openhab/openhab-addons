@@ -148,7 +148,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     @Override
     public synchronized void initialize() {
-        configuration = thing.getConfiguration().as(BridgeConfiguration.class);
+        configuration = getConfigAs(BridgeConfiguration.class);
         cancel(startupFuture);
         startupFuture = scheduler.submit(this::delayedInitialize);
     }

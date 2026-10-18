@@ -10,9 +10,13 @@
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
-			<channel id="communicationCommand" typeId="command"/>
+			<channel id="communicationCommand" typeId="bridgeCommand"/>
 			<channel id="communicationState" typeId="communicationState"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="refresh" type="integer" min="1" max="600">
@@ -68,10 +72,18 @@
 		</config-description>
 	</bridge-type>
 
-	<channel-type id="command">
+	<channel-type id="bridgeCommand">
 		<item-type>String</item-type>
 		<label>Communicator Command</label>
 		<description>Send Command</description>
+		<state>
+			<options>
+				<option value="LOGIN">Login</option>
+				<option value="LOGOUT">Logout</option>
+				<option value="RESET">Reset</option>
+				<option value="SYNC_TIME">Sync Panel Time</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="communicationState">
 		<item-type>String</item-type>

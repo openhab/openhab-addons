@@ -64,6 +64,7 @@ public class ThirdGenerationBindingConstants {
     public static final String COMMUNICATION_ERROR_UNSUPPORTED_ENCODING = "The text encoding is not supported by this openHAB installation";
     public static final String COMMUNICATION_ERROR_AES_ERROR = "The java installation does not support AES encryption in GCM mode";
     public static final String COMMUNICATION_ERROR_HTTP = "HTTP communication error: No response from device";
+    public static final String COMMUNICATION_ERROR_HTTP_UNEXPECTED = "HTTP communication error: Unexpected response from device";
     public static final String COMMUNICATION_ERROR_JSON = "HTTP communication error: answer did not match the expected format";
     public static final String COMMUNICATION_ERROR_API_CHANGED = "The API seems to have changed :-( Maybe this implementation has become incompatible with the device";
     public static final String COMMUNICATION_ERROR_INCOMPATIBLE_DEVICE = "The device could not provide the required information. Please check, if you selected the right thing for your device!";

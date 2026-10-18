@@ -36,6 +36,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Gili Tzabari - Initial contribution https://stackoverflow.com/users/14731/gili
  *         https://stackoverflow.com/questions/50318736/how-to-log-httpclient-requests-response-including-body
  * @author Arne Seime - adapted for Millheat binding
+ * @author Petter L. H. Eide - Reformat the body once complete rather than per chunk
  */
 @NonNullByDefault
 public final class RequestLogger {
@@ -49,7 +50,10 @@ public final class RequestLogger {
         this.prefix = prefix;
     }
 
-    private void dump(final Request request) {
+    /** Stands in for any value that must not reach the log. */
+    private static final String REDACTED = "<redacted>";
+
+    private void dump(final Request request, final boolean redactContent) {
         final long idV = nextId.getAndIncrement();
         if (logger.isDebugEnabled()) {
             final String id = prefix + "-" + idV;
@@ -58,16 +62,17 @@ public final class RequestLogger {
                     String.format("Request %s\n%s > %s %s\n", id, id, theRequest.getMethod(), theRequest.getURI())));
             request.onRequestHeaders(theRequest -> {
                 for (final HttpField header : theRequest.getHeaders()) {
-                    group.append(String.format("%s > %s\n", id, header));
+                    group.append(String.format("%s > %s\n", id, redact(header)));
                 }
             });
             final StringBuilder contentBuffer = new StringBuilder();
+            // A chunk is a fragment rather than a JSON document, so accumulate and reformat once.
             request.onRequestContent((theRequest, content) -> contentBuffer
-                    .append(reformatJson(getCharset(theRequest.getHeaders()).decode(content).toString())));
+                    .append(getCharset(theRequest.getHeaders()).decode(content).toString()));
             request.onRequestSuccess(theRequest -> {
                 if (contentBuffer.length() > 0) {
                     group.append("\n");
-                    group.append(contentBuffer);
+                    group.append(redactContent ? REDACTED : reformatJson(contentBuffer.toString()));
                 }
                 String dataToLog = group.toString();
                 logger.debug(dataToLog);
@@ -77,23 +82,21 @@ public final class RequestLogger {
             request.onResponseBegin(theResponse -> {
                 group.append(String.format("Response %s\n%s < %s %s", id, id, theResponse.getVersion(),
                         theResponse.getStatus()));
-                if (theResponse.getReason() != null) {
-                    group.append(" ");
-                    group.append(theResponse.getReason());
-                }
+                group.append(" ");
+                group.append(theResponse.getReason());
                 group.append("\n");
             });
             request.onResponseHeaders(theResponse -> {
                 for (final HttpField header : theResponse.getHeaders()) {
-                    group.append(String.format("%s < %s\n", id, header));
+                    group.append(String.format("%s < %s\n", id, redact(header)));
                 }
             });
             request.onResponseContent((theResponse, content) -> contentBuffer
-                    .append(reformatJson(getCharset(theResponse.getHeaders()).decode(content).toString())));
+                    .append(getCharset(theResponse.getHeaders()).decode(content).toString()));
             request.onResponseSuccess(theResponse -> {
                 if (contentBuffer.length() > 0) {
                     group.append("\n");
-                    group.append(contentBuffer);
+                    group.append(redactContent ? REDACTED : reformatJson(contentBuffer.toString()));
                 }
                 String dataToLog = group.toString();
                 logger.debug(dataToLog);
@@ -116,8 +119,23 @@ public final class RequestLogger {
     }
 
     public Request listenTo(final Request request) {
-        dump(request);
+        return listenTo(request, false);
+    }
+
+    /**
+     * Logs the request and its response.
+     *
+     * @param redactContent when true the request and response bodies are replaced with a
+     *            placeholder. Set this for endpoints whose payloads carry credentials or tokens;
+     *            the {@code Authorization} header is redacted for every request regardless.
+     */
+    public Request listenTo(final Request request, final boolean redactContent) {
+        dump(request, redactContent);
         return request;
+    }
+
+    private static String redact(final HttpField header) {
+        return HttpHeader.AUTHORIZATION.is(header.getName()) ? header.getName() + ": " + REDACTED : header.toString();
     }
 
     private String reformatJson(final String jsonString) {

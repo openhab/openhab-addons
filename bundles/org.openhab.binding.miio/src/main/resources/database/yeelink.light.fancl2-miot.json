@@ -1,0 +1,797 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yeelink.light.fancl2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						},
+						{
+							"value": "fan-toggle",
+							"label": "Fan Toggle"
+						},
+						{
+							"value": "yl-light-brightness-cycle",
+							"label": "Light Brightness Cycle"
+						},
+						{
+							"value": "yl-light-ct-cycle",
+							"label": "Light Color Temperature Cycle"
+						},
+						{
+							"value": "yl-light-fan-gears-cycle",
+							"label": "Fan Level Cycle (Light Service)"
+						},
+						{
+							"value": "yl-light-birghtness-increase",
+							"label": "Light Brightness Increase"
+						},
+						{
+							"value": "yl-light-brightness-decrease",
+							"label": "Light Brightness Decrease"
+						},
+						{
+							"value": "yl-light-ct-increase",
+							"label": "Light Color Temperature Increase"
+						},
+						{
+							"value": "yl-light-ct-decrease",
+							"label": "Light Color Temperature Decrease"
+						},
+						{
+							"value": "yl-light-on-or-bright-cycle",
+							"label": "Light On Or Brightness Cycle"
+						},
+						{
+							"value": "yl-light-on-or-ct-cycle",
+							"label": "Light On Or Color Temperature Cycle"
+						},
+						{
+							"value": "yl-fan-fan-gears-cycle",
+							"label": "Fan Level Cycle"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "fan-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-light-brightness-cycle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-light-ct-cycle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-light-fan-gears-cycle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-light-birghtness-increase"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 6,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-light-brightness-decrease"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 7,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-light-ct-increase"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 8,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-light-ct-decrease"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 9,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-light-on-or-bright-cycle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 10,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-light-on-or-ct-cycle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 5,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yl-fan-fan-gears-cycle"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"fan-toggle\"\u003d\"Fan Toggle\",\"yl-light-brightness-cycle\"\u003d\"Light Brightness Cycle\",\"yl-light-ct-cycle\"\u003d\"Light Color Temperature Cycle\",\"yl-light-fan-gears-cycle\"\u003d\"Fan Level Cycle (Light Service)\",\"yl-light-birghtness-increase\"\u003d\"Light Brightness Increase\",\"yl-light-brightness-decrease\"\u003d\"Light Brightness Decrease\",\"yl-light-ct-increase\"\u003d\"Light Color Temperature Increase\",\"yl-light-ct-decrease\"\u003d\"Light Color Temperature Decrease\",\"yl-light-on-or-bright-cycle\"\u003d\"Light On Or Brightness Cycle\",\"yl-light-on-or-ct-cycle\"\u003d\"Light On Or Color Temperature Cycle\",\"yl-fan-fan-gears-cycle\"\u003d\"Fan Level Cycle\"]`"
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Light - Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Light - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Day"
+						},
+						{
+							"value": "1",
+							"label": "Night"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Day\",\"1\"\u003d\"Night\"]`"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Light - Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Light"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Light - Color Temperature",
+				"channel": "color_temperature",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Setpoint",
+					"ColorTemperature"
+				]
+			},
+			{
+				"property": "flow",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Light - Flow",
+				"channel": "flow",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\"]`"
+			},
+			{
+				"property": "off-delay-time",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Light - Power Off Delay Time",
+				"channel": "off_delay_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "left-time",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Light - Left Time",
+				"channel": "left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time"
+			},
+			{
+				"property": "on1",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Fan - Power",
+				"channel": "on1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "fan-level",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Fan - Level",
+				"channel": "fan_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Level 1"
+						},
+						{
+							"value": "1",
+							"label": "Level 2"
+						},
+						{
+							"value": "2",
+							"label": "Level 3"
+						},
+						{
+							"value": "3",
+							"label": "Level 4"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Level 1\",\"1\"\u003d\"Level 2\",\"2\"\u003d\"Level 3\",\"3\"\u003d\"Level 4\"]`"
+			},
+			{
+				"property": "mode1",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Fan - Mode",
+				"channel": "mode1",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal Wind"
+						},
+						{
+							"value": "1",
+							"label": "Natural Wind"
+						},
+						{
+							"value": "2",
+							"label": "Reverse Wind"
+						},
+						{
+							"value": "3",
+							"label": "Strong Wind"
+						},
+						{
+							"value": "4",
+							"label": "Gentle Wind"
+						},
+						{
+							"value": "5",
+							"label": "Sleep Wind"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal Wind\",\"1\"\u003d\"Natural Wind\",\"2\"\u003d\"Reverse Wind\",\"3\"\u003d\"Strong Wind\",\"4\"\u003d\"Gentle Wind\",\"5\"\u003d\"Sleep Wind\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Fan - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Idle"
+						},
+						{
+							"value": "1",
+							"label": "Busy"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Idle\",\"1\"\u003d\"Busy\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 3,
+				"piid": 9,
+				"friendlyName": "Fan - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\"]`"
+			},
+			{
+				"property": "off-delay-time1",
+				"siid": 3,
+				"piid": 11,
+				"friendlyName": "Fan - Power Off Delay Time",
+				"channel": "off_delay_time1",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 720,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "left-time1",
+				"siid": 3,
+				"piid": 12,
+				"friendlyName": "Fan - Left Time",
+				"channel": "left_time1",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 720,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time"
+			},
+			{
+				"property": "init-power-opt",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Light - Power-On State",
+				"channel": "init_power_opt",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "On"
+						},
+						{
+							"value": "2",
+							"label": "Off"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"On\",\"2\"\u003d\"Off\"]`"
+			},
+			{
+				"property": "smart-switch-en",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Light - Wall Switch Control",
+				"channel": "smart_switch_en",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "miband-sleep-ctrl",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Light - Mi Band Sleep Control",
+				"channel": "miband_sleep_ctrl",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Mi Band Control Off"
+						},
+						{
+							"value": "1",
+							"label": "Turn Off Light When Asleep"
+						},
+						{
+							"value": "2",
+							"label": "Turn Off Fan When Asleep"
+						},
+						{
+							"value": "3",
+							"label": "Turn Off Light And Fan When Asleep"
+						},
+						{
+							"value": "4",
+							"label": "Sleep Wind Mode When Asleep"
+						},
+						{
+							"value": "5",
+							"label": "Turn Off Light And Sleep Wind Mode When Asleep"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Mi Band Control Off\",\"1\"\u003d\"Turn Off Light When Asleep\",\"2\"\u003d\"Turn Off Fan When Asleep\",\"3\"\u003d\"Turn Off Light And Fan When Asleep\",\"4\"\u003d\"Sleep Wind Mode When Asleep\",\"5\"\u003d\"Turn Off Light And Sleep Wind Mode When Asleep\"]`"
+			},
+			{
+				"property": "fan-init-power-opt",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Fan - Power-On State",
+				"channel": "fan_init_power_opt",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "On"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
+			},
+			{
+				"property": "smart-switch-en1",
+				"siid": 5,
+				"piid": 3,
+				"friendlyName": "Fan - Wall Switch Control",
+				"channel": "smart_switch_en1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "fan-speed",
+				"siid": 5,
+				"piid": 4,
+				"friendlyName": "Fan - Speed",
+				"channel": "fan_speed",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "sleep-delay-off",
+				"siid": 5,
+				"piid": 5,
+				"friendlyName": "Fan - Sleep Delay Off",
+				"channel": "sleep_delay_off",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 720,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time"
+			}
+		]
+	}
+}

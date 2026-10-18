@@ -425,7 +425,7 @@
 				"piid": 1,
 				"friendlyName": "Fan Speed %",
 				"channel": "fan-percent",
-				"type": "Number:Dimentionless",
+				"type": "Number:Dimensionless",
 				"unit": "percent",
 				"stateDescription": {
 					"minimum": 1,

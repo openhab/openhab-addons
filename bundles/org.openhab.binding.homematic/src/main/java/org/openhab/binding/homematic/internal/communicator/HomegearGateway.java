@@ -15,6 +15,7 @@ package org.openhab.binding.homematic.internal.communicator;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -26,6 +27,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomegearGateway extends AbstractHomematicGateway {
 
     protected HomegearGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter,

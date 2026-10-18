@@ -249,6 +249,17 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         sendCommand(playlistCommand.toString());
     }
 
+    /**
+     * Requests an immediate one-shot status response for the given player.
+     * The response includes the core player state such as the playlist track
+     * count.
+     *
+     * @param mac player mac address
+     */
+    void requestStatus(String mac) {
+        sendCommand(mac + " status - 1");
+    }
+
     public void setPlayingTime(String mac, int time) {
         sendCommand(mac + " time " + time);
     }

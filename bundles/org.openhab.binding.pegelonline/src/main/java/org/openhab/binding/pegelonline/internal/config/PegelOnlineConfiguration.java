@@ -69,7 +69,8 @@ public class PegelOnlineConfiguration {
      */
     public TreeMap<Integer, Integer> getWarnings() {
         TreeMap<Integer, Integer> warnMap = new TreeMap<>();
-        warnMap.put(0, NO_WARNING);
+        // water levels can be below 0
+        warnMap.put(Integer.MIN_VALUE, NO_WARNING);
         warnMap.put(warningLevel1, WARN_LEVEL_1);
         warnMap.put(warningLevel2, WARN_LEVEL_2);
         warnMap.put(warningLevel3, WARN_LEVEL_3);

@@ -19,5 +19,5 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcus Better - Initial contribution
  */
-public record BatteryStatus(@SerializedName("batSoc") int stateOfCharge) {
+public record BatteryStatus(@SerializedName("batSoc") double stateOfCharge) {
 }

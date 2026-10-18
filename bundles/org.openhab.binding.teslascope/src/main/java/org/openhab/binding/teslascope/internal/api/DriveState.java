@@ -35,6 +35,15 @@ public class DriveState {
 
     public float speed = 0;
 
+    @SerializedName("self_driving_miles_since_reset")
+    public float selfDrivingMilesSinceReset;
+
+    @SerializedName("miles_since_reset")
+    public float milesSinceReset;
+
+    @SerializedName("self_driving_percentage")
+    public float selfDrivingPercentage;
+
     private DriveState() {
     }
 }

@@ -25,7 +25,7 @@ public interface DiscoveryHandler {
     /**
      * Discovery result
      * 
-     * @param discoveryResult AC device
+     * @param discoveryResult Midea device
      */
     public void discovered(DiscoveryResult discoveryResult);
 }

@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -87,5 +89,24 @@ public class CRC16CalculatorTest {
         assertThrows(IllegalArgumentException.class, () -> {
             CRC16Calculator.check(response);
         });
+    }
+
+    @Test
+    void putReproducesCapturedRequestChecksum() {
+        byte[] request = HexUtils.hexToBytes("2707E7F80A035D01210000");
+        CRC16Calculator.put(request, 7);
+        assertThat(HexUtils.bytesToHex(request), is("2707E7F80A035D0121521F"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "0,0", "1,0", "3,0", "10,7", "11,-1", "11,6", "11,8", "263,259", "11,2147483647" })
+    void putRejectsInvalidLengthBeforeWriting(int bufferLength, int length) {
+        byte[] request = new byte[bufferLength];
+        if (bufferLength >= 2) {
+            request[1] = 7;
+        }
+        byte[] original = request.clone();
+        assertThrows(IllegalArgumentException.class, () -> CRC16Calculator.put(request, length));
+        assertThat(request, is(original));
     }
 }

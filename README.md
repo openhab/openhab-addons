@@ -51,7 +51,7 @@ You find the following repository structure:
 |   +-- org.openhab.binding.avmfritz.tests
 |   +-- ...
 |
-+-- src/etc   Auxilary buildsystem files: The license header for automatic checks for example
++-- src/etc   Auxiliary buildsystem files: The license header for automatic checks for example
 +-- tools     Static code analyser instructions
 |
 +-- CODEOWNERS  This file assigns people to directories so that they are informed if a pull-request
@@ -94,7 +94,7 @@ To improve build times you can add the following options to the command:
 | `-Dspotless.check.skip=true`  | Skip the Spotless code style checks                 |
 | `-o`                          | Work offline so Maven does not download any updates |
 | `-T 1C`                       | Build in parallel, using 1 thread per core          |
-| `-pl :<add-on directory>`     | Build a single add-on                               |
+| `-pl :<add-on artifactId>`    | Build a single add-on                               |
 
 For example you can skip checks and tests during development with:
 
@@ -152,6 +152,14 @@ mvn clean install -DwithResolver -DskipChecks
 ```
 
 The build generates a `.jar` file per bundle in the respective bundle `/target` directory.
+
+#### Troubleshooting
+
+When having issues with running the integration tests, try the following steps:
+
+1. Clear the bnd cache: Remove the `~/.bnd` directory.
+1. Rebuild the `bom` index: Execute `mvn clean install` in the [`bom`](bom) directory.
+1. Rebuild the `itests` index: Execute `mvn clean install -N` in the [`itests`](itests) directory.
 
 ### How to develop via an Integrated Development Environment (IDE)
 

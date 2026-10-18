@@ -386,6 +386,21 @@ class TimescaleDBPersistenceServiceTest {
     }
 
     @Test
+    void activatePostgresqlUrlWithoutJdbcPrefixIsAcceptedAndNormalized() throws Exception {
+        var realService = new TimescaleDBPersistenceService(mock(ItemRegistry.class), mock(MetadataRegistry.class),
+                new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
+        // Same as invalid URL test, but without jdbc: prefix to verify normalization path.
+        realService.activate(
+                Map.of("url", "postgresql://localhost:19999/invalid", "password", "x", "connectTimeout", "500"));
+
+        var dsField = TimescaleDBPersistenceService.class.getDeclaredField("dataSource");
+        dsField.setAccessible(true);
+        assertTrue(null == dsField.get(realService),
+                "dataSource must be null when connection fails after URL normalization");
+        realService.deactivate();
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     void deactivateWithscheduledjobCancelsjob() throws Exception {
         ScheduledFuture<Object> mockJob = mock(ScheduledFuture.class);
@@ -444,6 +459,24 @@ class TimescaleDBPersistenceServiceTest {
     @Test
     void parseIntConfigInvalidvalueReturnsdefault() {
         assertEquals(3, TimescaleDBPersistenceService.parseIntConfig(Map.of("k", "notanumber"), "k", 3));
+    }
+
+    @Test
+    void normalizeJdbcUrlAddsJdbcPrefixForPostgresqlUrls() {
+        assertEquals("jdbc:postgresql://localhost:5432/openhab",
+                TimescaleDBPersistenceService.normalizeJdbcUrl("postgresql://localhost:5432/openhab"));
+        assertEquals("jdbc:postgresql://localhost:5432/openhab",
+                TimescaleDBPersistenceService.normalizeJdbcUrl("PostgreSQL://localhost:5432/openhab"));
+    }
+
+    @Test
+    void normalizeJdbcUrlLeavesAlreadyJdbcAndOtherUrlsUnchanged() {
+        assertEquals("jdbc:postgresql://localhost:5432/openhab",
+                TimescaleDBPersistenceService.normalizeJdbcUrl("jdbc:postgresql://localhost:5432/openhab"));
+        assertEquals("jdbc:mysql://localhost:3306/openhab",
+                TimescaleDBPersistenceService.normalizeJdbcUrl("jdbc:mysql://localhost:3306/openhab"));
+        assertEquals("jdbc:postgresql://localhost:5432/openhab",
+                TimescaleDBPersistenceService.normalizeJdbcUrl("  jdbc:postgresql://localhost:5432/openhab  "));
     }
 
     // ------------------------------------------------------------------

@@ -24,11 +24,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.voice.AbstractCachedTTSService;
-import org.openhab.core.voice.TTSCache;
-import org.openhab.core.voice.TTSException;
-import org.openhab.core.voice.TTSService;
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.AbstractCachedTTSService;
+import org.openhab.core.voice.tts.TTSCache;
+import org.openhab.core.voice.tts.TTSException;
+import org.openhab.core.voice.tts.TTSService;
+import org.openhab.core.voice.tts.Voice;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -104,7 +104,7 @@ public class MacTTSService extends AbstractCachedTTSService {
      */
     private final Set<Voice> initVoices() {
         try {
-            Process process = Runtime.getRuntime().exec("say -v ?");
+            Process process = Runtime.getRuntime().exec(new String[] { "say", "-v", "?" });
             try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
                 return bufferedReader.lines().map(MacTTSVoice::new).collect(Collectors.toSet());

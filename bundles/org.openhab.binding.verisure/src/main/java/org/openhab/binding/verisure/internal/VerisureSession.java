@@ -49,6 +49,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Gui;
 import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
@@ -673,6 +674,11 @@ public class VerisureSession {
                     logger.warn("MFA is activated on this user! Not supported by binding!");
                     return false;
                 }
+                String accessToken = vsAccess;
+                if (httpStatusCode != HttpStatus.OK_200 || accessToken == null || accessToken.isEmpty()) {
+                    logger.debug("Failed to login, /auth/login HTTP status code: {}", httpStatusCode);
+                    return false;
+                }
 
                 // Step 3: Add the username cookie (required by j_spring_security_check)
                 try {
@@ -686,13 +692,15 @@ public class VerisureSession {
                     logger.debug("Failed to add username cookie: {}", e.getMessage());
                 }
 
-                // Step 4: Call j_spring_security_check
+                // Step 4: Legacy login, endpoint removed by Verisure (404); non-fatal since the
+                // vs-access token suffices
                 url = LOGON_SUF;
                 logger.debug("Login URL: {}", url);
                 httpStatusCode = postVerisureAPI(url, authstring);
                 if (httpStatusCode != HttpStatus.OK_200) {
-                    logger.debug("Failed to login, HTTP status code: {}", httpStatusCode);
-                    return false;
+                    logger.debug("Legacy login failed with HTTP status code: {}, continuing with token based session",
+                            httpStatusCode);
+                    return true;
                 }
 
                 // Step 5: Verify login by accessing status page
@@ -912,7 +920,8 @@ public class VerisureSession {
             if (climateList != null) {
                 climateList.forEach(climate -> {
                     // If thing is Mouse detection device, then skip it, but fetch temperature from it
-                    String type = climate.getDevice().getGui().getLabel();
+                    Gui gui = climate.getDevice().getGui();
+                    String type = gui != null ? gui.getLabel() : null;
                     if ("MOUSE".equals(type)) {
                         logger.debug("Mouse detection device!");
                         String deviceId = climate.getDevice().getDeviceLabel();

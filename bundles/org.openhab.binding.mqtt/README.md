@@ -64,10 +64,12 @@ Required configuration parameters are:
 Additionally the following parameters can be set:
 
 - **hostnameValidated**: Validate hostname from certificate against server hostname for secure connection. Defaults to true.
-- **protocol**:  The protocol used for communicating with the broker (TCP, WEBSOCKETS). Defaults to TCP.
+- **protocol**: The protocol used for communicating with the broker (TCP, WEBSOCKETS). Defaults to TCP.
+- **webSocketPath**: WebSocket path for the broker, e.g. /mqtt. Defaults to root. This only applies when protocol is WEBSOCKETS.
 - **mqttVersion**: The MQTT version used for communicating with the broker (V3, V5). Defaults to V3.
 - **qos**: Quality of Service. Can be 0, 1 or 2. Please read the MQTT specification for details. Defaults to 0.
 - **clientID**: Use a fixed client ID. Defaults to empty which means a client ID is generated for this connection.
+- **cleanSessionStart**: Clear the old session at connection start. Defaults to true. False only makes sense with a fixed client ID.
 
 Reconnect parameters are:
 
@@ -155,6 +157,7 @@ You can add the following channels:
 - **image**: This channel handles binary images in common java supported formats (bmp,jpg,png).
 - **datetime**: This channel handles date/time values.
 - **rollershutter**: This channel is for rollershutters.
+- **trigger**: This channel emits the received MQTT payload as a channel event without updating an Item state.
 
 ## Channel Configuration
 
@@ -168,7 +171,23 @@ You can add the following channels:
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor.
 - **retained**: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time.
 - **qos**: QoS of this channel. Overrides the connection QoS (defined in broker connection).
-- **trigger**: If `true`, the state topic will not update a state, but trigger a channel instead.
+- **trigger**: If `true`, a received MQTT value that is valid for the selected channel type triggers a channel event instead of updating a state.
+  This typed trigger behavior remains supported, but for untyped trigger events the dedicated `trigger` channel type is preferred.
+  Image channels always remain state channels because their payload is binary.
+  If a `commandTopic` is also configured, the channel retains state-channel metadata so linked Item commands can continue to be published to MQTT.
+
+### Trigger Channels
+
+The trigger channel emits every successfully transformed payload received on `stateTopic` as a channel event.
+It does not validate the payload as one of the state channel types and does not update an Item state.
+
+In a `.things` file, use the MQTT trigger channel type:
+
+```java
+Type trigger : alarm [ stateTopic="sensors/alarm" ]
+```
+
+The generic `Trigger String` and `Trigger Switch` forms do not select an MQTT channel type and are not supported by this binding.
 
 ### Channel Type "string"
 

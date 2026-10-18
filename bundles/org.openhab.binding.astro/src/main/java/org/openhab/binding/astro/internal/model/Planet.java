@@ -13,12 +13,58 @@
 package org.openhab.binding.astro.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Marker interface for all planets.
+ * Base class for planets
  *
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-public interface Planet {
+public abstract class Planet {
+    private @Nullable Zodiac zodiac = null;
+    private Range rise = new Range();
+    private Range set = new Range();
+
+    /**
+     * Returns the zodiac.
+     */
+    public @Nullable Zodiac getZodiac() {
+        return zodiac;
+    }
+
+    /**
+     * Sets the zodiac.
+     */
+    public void setZodiac(Zodiac zodiac) {
+        this.zodiac = zodiac;
+    }
+
+    /**
+     * Returns the rise range.
+     */
+    public Range getRise() {
+        return rise;
+    }
+
+    /**
+     * Sets the rise range.
+     */
+    public void setRise(Range rise) {
+        this.rise = rise;
+    }
+
+    /**
+     * Returns the set range.
+     */
+    public Range getSet() {
+        return set;
+    }
+
+    /**
+     * Sets the set range.
+     */
+    public void setSet(Range set) {
+        this.set = set;
+    }
 }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="peblar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel group for /api/wlac/v1/meter -->
+	<channel-group-type id="meter">
+		<label>Meter</label>
+		<description>Electrical meter data from the Peblar EV charger</description>
+		<channels>
+
+			<channel id="current-p1" typeId="system.electric-current">
+				<label>Current Phase 1</label>
+				<description>Current on phase 1</description>
+			</channel>
+			<channel id="current-p2" typeId="system.electric-current">
+				<label>Current Phase 2</label>
+				<description>Current on phase 2</description>
+			</channel>
+			<channel id="current-p3" typeId="system.electric-current">
+				<label>Current Phase 3</label>
+				<description>Current on phase 3</description>
+			</channel>
+
+			<channel id="voltage-p1" typeId="system.electric-voltage">
+				<label>Voltage Phase 1</label>
+				<description>Voltage on phase 1</description>
+			</channel>
+			<channel id="voltage-p2" typeId="system.electric-voltage">
+				<label>Voltage Phase 2</label>
+				<description>Voltage on phase 2</description>
+			</channel>
+			<channel id="voltage-p3" typeId="system.electric-voltage">
+				<label>Voltage Phase 3</label>
+				<description>Voltage on phase 3</description>
+			</channel>
+
+			<channel id="power-p1" typeId="system.electric-power">
+				<label>Power Phase 1</label>
+				<description>Active power on phase 1</description>
+			</channel>
+			<channel id="power-p2" typeId="system.electric-power">
+				<label>Power Phase 2</label>
+				<description>Active power on phase 2</description>
+			</channel>
+			<channel id="power-p3" typeId="system.electric-power">
+				<label>Power Phase 3</label>
+				<description>Active power on phase 3</description>
+			</channel>
+			<channel id="power-total" typeId="system.electric-power">
+				<label>Total Power</label>
+				<description>Total active power across all phases in watts</description>
+			</channel>
+
+			<channel id="energy-total" typeId="system.electric-energy">
+				<label>Total Energy</label>
+				<description>Total lifetime energy delivered</description>
+			</channel>
+			<channel id="energy-session" typeId="system.electric-energy">
+				<label>Session Energy</label>
+				<description>Energy delivered in the current charging session</description>
+			</channel>
+
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

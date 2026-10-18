@@ -323,7 +323,7 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
      * @return a possible null {@link PrgBridgeConfig}
      */
     private PrgBridgeConfig getPrgBridgeConfig() {
-        final PrgBridgeConfig config = getThing().getConfiguration().as(PrgBridgeConfig.class);
+        final PrgBridgeConfig config = getConfigAs(PrgBridgeConfig.class);
 
         if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");

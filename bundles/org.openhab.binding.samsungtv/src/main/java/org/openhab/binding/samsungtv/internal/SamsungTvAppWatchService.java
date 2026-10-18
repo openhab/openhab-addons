@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerWebSocket;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.service.WatchService;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * @author Nick Waterton - Initial contribution
  * @author Nick Waterton - Refactored to new WatchService
  */
-@Component(service = SamsungTvAppWatchService.class)
 @NonNullByDefault
 public class SamsungTvAppWatchService implements WatchService.WatchEventListener {
     private static final String APPS_PATH = OpenHAB.getConfigFolder() + File.separator + "services";

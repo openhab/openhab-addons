@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -43,7 +44,8 @@ class TestCommands {
 
     JSONObject getRequestBody(String fileName) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get("src/test/resources/" + fileName)));
+            String content = new String(Files.readAllBytes(Paths.get("src/test/resources/" + fileName)),
+                    StandardCharsets.UTF_8);
             JSONObject json = new JSONObject(content);
             return json;
         } catch (IOException e) {

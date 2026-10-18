@@ -214,6 +214,69 @@
 				<type>tibber:event</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="8">
+			<add-channel id="yearly-consumption" groupIds="history">
+				<type>tibber:energy</type>
+				<label>Yearly Consumption</label>
+				<description>Yearly energy consumption</description>
+			</add-channel>
+			<add-channel id="yearly-cost" groupIds="history">
+				<type>tibber:cost</type>
+				<label>Yearly Cost</label>
+				<description>Yearly energy costs</description>
+			</add-channel>
+			<add-channel id="yearly-production" groupIds="history">
+				<type>tibber:energy</type>
+				<label>Yearly Production</label>
+				<description>Yearly energy production</description>
+			</add-channel>
+			<add-channel id="monthly-consumption" groupIds="history">
+				<type>tibber:energy</type>
+				<label>Monthly Consumption</label>
+				<description>Monthly energy consumption</description>
+			</add-channel>
+			<add-channel id="monthly-cost" groupIds="history">
+				<type>tibber:cost</type>
+				<label>Monthly Cost</label>
+				<description>Monthly energy costs</description>
+			</add-channel>
+			<add-channel id="monthly-production" groupIds="history">
+				<type>tibber:energy</type>
+				<label>Monthly Production</label>
+				<description>Monthly energy production</description>
+			</add-channel>
+			<add-channel id="weekly-consumption" groupIds="history">
+				<type>tibber:energy</type>
+				<label>Weekly Consumption</label>
+				<description>Weekly energy consumption</description>
+			</add-channel>
+			<add-channel id="weekly-cost" groupIds="history">
+				<type>tibber:cost</type>
+				<label>Weekly Cost</label>
+				<description>Weekly energy costs</description>
+			</add-channel>
+			<add-channel id="weekly-production" groupIds="history">
+				<type>tibber:energy</type>
+				<label>Weekly Production</label>
+				<description>Weekly energy production</description>
+			</add-channel>
+			<add-channel id="daily-consumption" groupIds="history">
+				<type>tibber:energy</type>
+				<label>Daily Consumption</label>
+				<description>Daily energy consumption</description>
+			</add-channel>
+			<add-channel id="daily-cost" groupIds="history">
+				<type>tibber:cost</type>
+				<label>Daily Cost</label>
+				<description>Daily energy costs</description>
+			</add-channel>
+			<add-channel id="daily-production" groupIds="history">
+				<type>tibber:energy</type>
+				<label>Daily Production</label>
+				<description>Daily energy production</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

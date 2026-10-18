@@ -14,12 +14,9 @@ package org.openhab.binding.alarmdecoder.internal;
 
 import static org.openhab.binding.alarmdecoder.internal.AlarmDecoderBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,9 +54,9 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.alarmdecoder", service = ThingHandlerFactory.class)
 public class AlarmDecoderHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_IPBRIDGE, THING_TYPE_SERIALBRIDGE, THING_TYPE_ZONE, THING_TYPE_RFZONE,
-                    THING_TYPE_VZONE, THING_TYPE_KEYPAD, THING_TYPE_LRR).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_IPBRIDGE,
+            THING_TYPE_SERIALBRIDGE, THING_TYPE_ZONE, THING_TYPE_RFZONE, THING_TYPE_VZONE, THING_TYPE_KEYPAD,
+            THING_TYPE_LRR);
 
     private final Logger logger = LoggerFactory.getLogger(AlarmDecoderHandlerFactory.class);
 

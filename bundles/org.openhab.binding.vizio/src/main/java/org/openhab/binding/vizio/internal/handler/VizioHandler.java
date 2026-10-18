@@ -16,8 +16,10 @@ import static org.openhab.binding.vizio.internal.VizioBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
@@ -93,6 +95,7 @@ public class VizioHandler extends BaseThingHandler {
     private Long currentVolumeHash = 0L;
     private String currentApp = EMPTY;
     private String currentInput = EMPTY;
+    private Map<String, String> inputCnameByName = new HashMap<>();
     private boolean currentMute = false;
     private int currentVolume = -1;
     private boolean powerOn = false;
@@ -347,9 +350,12 @@ public class VizioHandler extends BaseThingHandler {
                 InputList inputList = communicator.getSourceInputList();
 
                 List<StateOption> sourceListOptions = new ArrayList<>();
+                Map<String, String> cnameByName = new HashMap<>();
                 inputList.getItems().forEach(source -> {
                     sourceListOptions.add(new StateOption(source.getName(), source.getValue().getName()));
+                    cnameByName.put(source.getName(), source.getCname());
                 });
+                inputCnameByName = cnameByName;
 
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), SOURCE),
                         sourceListOptions);
@@ -465,8 +471,13 @@ public class VizioHandler extends BaseThingHandler {
                                     currentInputHash = polledInput.getItems().get(0).getHashval();
                                 }
                             }
-                            communicator
-                                    .changeInput(String.format(MODIFY_STRING_SETTING_JSON, command, currentInputHash));
+                            // Newer Vizio firmware requires the input CNAME ("hdmi1"); the display name
+                            // ("HDMI-1") is rejected with RESULT: FAILURE. Older firmware accepts either, so
+                            // the CNAME is safe for both. Fall back to the raw command if the input list has
+                            // not been fetched yet, or the CNAME is missing.
+                            String sourceCname = inputCnameByName.get(command.toString());
+                            communicator.changeInput(String.format(MODIFY_STRING_SETTING_JSON,
+                                    sourceCname != null ? sourceCname : command, currentInputHash));
                             currentInputHash = 0L;
                         } catch (VizioException e) {
                             logger.warn("Unable to set current source on the Vizio TV, source: {}, Exception: {}",

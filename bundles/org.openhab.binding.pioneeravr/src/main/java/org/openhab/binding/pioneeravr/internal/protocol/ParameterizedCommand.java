@@ -31,7 +31,8 @@ public class ParameterizedCommand extends SimpleCommand {
         VOLUME_SET("[0-9]{2,3}", "VL", "ZV", "YV", "HZV"),
         INPUT_CHANNEL_SET("[0-9]{2}", "FN", "ZS", "ZT", "ZEA"),
         LISTENING_MODE_SET("[0-9]{4}", "SR"),
-        MCACC_MEMORY_SET("[1-6]{1}", "MC");
+        MCACC_MEMORY_SET("[1-6]{1}", "MC"),
+        SPEAKER_SELECTION_SET("[0-3]{1}", "SPK");
 
         private String[] zoneCommands;
         private String parameterPattern;

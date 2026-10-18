@@ -16,6 +16,7 @@ import static java.lang.Math.max;
 
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * Internal LED state.
@@ -46,11 +47,12 @@ public class InternalLedState {
     }
 
     public InternalLedState withColor(HSBType color) {
+        PercentType[] rgb = ColorUtil.hsbToRgbPercent(color);
         //@formatter:off
         return new InternalLedState(
-            color.getRed().doubleValue()   / 100,
-            color.getGreen().doubleValue() / 100,
-            color.getBlue().doubleValue()  / 100,
+            rgb[0].doubleValue() / 100,
+            rgb[1].doubleValue() / 100,
+            rgb[2].doubleValue() / 100,
             w,
             w2
         );

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jellyfin"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="server">
+		<label>Jellyfin Server</label>
+		<description><![CDATA[
+			<p>Represents a running Jellyfin server instance.</p>
+			<p>The server bridge connects to the Jellyfin HTTP API and discovers active client sessions. Each discovered session becomes a <em>Jellyfin Client</em> thing.</p>
+		]]></description>
+		<config-description>
+			<parameter-group name="clientDiscoveryFilters">
+				<label>Client Discovery Filters</label>
+				<description><![CDATA[Enable or disable automatic discovery for specific Jellyfin client categories.<br />
+					The category is determined by the client application name as reported to the Jellyfin server.<br />
+					<b>Note:</b> These settings only affect the openHAB Inbox; they do not remove already-discovered things.]]></description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter name="serverName" type="text" required="false">
+				<label>Server Name</label>
+				<description><![CDATA[
+					<p>Human-readable display name for this Jellyfin server.</p>
+					<p>If left empty, the name is automatically retrieved from the server upon connection.</p>
+				]]></description>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname / IP Address</label>
+				<description><![CDATA[Hostname or IP address of the Jellyfin server (e.g. <em>192.168.1.10</em> or <em>jellyfin.local</em>).]]></description>
+				<default>127.0.0.1</default>
+			</parameter>
+			<parameter name="port" type="integer" min="0" max="65535" required="true">
+				<label>Port</label>
+				<description><![CDATA[
+					<p>HTTP or HTTPS port of the Jellyfin server.</p>
+					<p>The default HTTP port is <b>8096</b>. When <em>Use HTTPS</em> is enabled, use the HTTPS port instead (typically <b>8920</b>).</p>
+				]]></description>
+				<default>8096</default>
+			</parameter>
+			<parameter name="ssl" type="boolean" required="true">
+				<label>Use HTTPS (Experimental)</label>
+				<description><![CDATA[
+					<p><b>EXPERIMENTAL</b> — Connect to the Jellyfin server using HTTPS instead of plain HTTP.</p>
+					<p>Enable this when the server is behind a reverse proxy with a valid TLS certificate. Make sure the <em>Port</em> is set to the corresponding HTTPS port.</p>
+					<p>This feature has not been fully tested. Your feedback is welcome!</p>
+				]]></description>
+				<advanced>true</advanced>
+				<default>false</default>
+			</parameter>
+			<parameter name="path" type="text" required="false">
+				<label>Base Path</label>
+				<description><![CDATA[
+					<p>Optional URL path prefix when the Jellyfin server is hosted behind a reverse proxy at a sub-path.</p>
+					<p>Example: <em>/jellyfin</em> if the server is reachable at <em>https://myhost/jellyfin</em>. Leave empty for root-hosted installations.</p>
+				]]></description>
+			</parameter>
+			<parameter name="refreshSeconds" type="integer" min="10" max="300" required="true" unit="s">
+				<label>Refresh Interval</label>
+				<description><![CDATA[
+					<p>How often (in seconds) the binding polls the Jellyfin server for the current playback state of all connected clients.</p>
+					<p>Lower values provide more responsive state updates but increase server load. The default of <b>30 s</b> is suitable for most setups.</p>
+				]]></description>
+				<default>30</default>
+			</parameter>
+			<parameter name="token" type="text">
+				<label>Access Token</label>
+				<description><![CDATA[
+					<p>API access token used to authenticate with the Jellyfin server.</p>
+					<p>Generate a token in the Jellyfin web interface under <em>Dashboard → API Keys</em>. If left empty, the binding operates without authentication (only suitable for servers with public access enabled).</p>
+				]]></description>
+			</parameter>
+			<parameter name="discoverWebClients" type="boolean" groupName="clientDiscoveryFilters">
+				<label>Discover Web Clients</label>
+				<description><![CDATA[Discover Jellyfin Web clients.<br/>
+					Matches clients reporting as: <i>Jellyfin Web</i>]]></description>
+				<default>false</default>
+			</parameter>
+			<parameter name="discoverAndroidClients" type="boolean" groupName="clientDiscoveryFilters">
+				<label>Discover Android Clients</label>
+				<description><![CDATA[Discover Jellyfin Android clients.<br/>
+					Matches clients reporting as: <i>Jellyfin for Android</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverAndroidTvClients" type="boolean" groupName="clientDiscoveryFilters">
+				<label>Discover Android TV Clients</label>
+				<description><![CDATA[Discover Jellyfin Android TV clients.<br/>
+					Matches clients reporting as: <i>Jellyfin for Android TV</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverIosClients" type="boolean" groupName="clientDiscoveryFilters">
+				<label>Discover iOS Clients</label>
+				<description><![CDATA[Discover iOS clients.<br/>
+					Matches clients reporting as: <i>Jellyfin iOS</i>, <i>Swiftfin</i>, <i>Infuse</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverKodiClients" type="boolean" groupName="clientDiscoveryFilters">
+				<label>Discover Kodi Clients</label>
+				<description><![CDATA[Discover Kodi clients.<br/>
+					Matches clients reporting as: <i>JellyCon</i>, <i>Jellyfin for Kodi</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverRokuClients" type="boolean" groupName="clientDiscoveryFilters">
+				<label>Discover Roku Clients</label>
+				<description><![CDATA[Discover Roku clients.<br/>
+					Matches clients reporting as: <i>Jellyfin for Roku</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverOtherClients" type="boolean" groupName="clientDiscoveryFilters">
+				<label>Discover Other Clients</label>
+				<description><![CDATA[Discover third-party clients not matched by any other category above.]]></description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

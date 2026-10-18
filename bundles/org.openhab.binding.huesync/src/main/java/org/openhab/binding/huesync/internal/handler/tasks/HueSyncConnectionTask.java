@@ -23,6 +23,7 @@ import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.handler.HueSyncHandler;
 import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
+import org.openhab.core.config.core.Configuration;
 
 /**
  * @author Patrik Gfeller - Initial contribution, Issue #18376
@@ -45,8 +46,10 @@ public class HueSyncConnectionTask implements Runnable {
     @Override
     public void run() {
         try {
-            var connection = new HueSyncDeviceConnection(this.httpClient,
-                    this.handler.getThing().getConfiguration().as(HueSyncConfiguration.class), this.exceptionHandler);
+            Configuration cfg = this.handler.getThing().getConfiguration();
+
+            var connection = new HueSyncDeviceConnection(this.httpClient, cfg.as(HueSyncConfiguration.class),
+                    this.exceptionHandler);
 
             this.connectedHandler.accept(connection);
         } catch (IOException | URISyntaxException | CertificateException e) {

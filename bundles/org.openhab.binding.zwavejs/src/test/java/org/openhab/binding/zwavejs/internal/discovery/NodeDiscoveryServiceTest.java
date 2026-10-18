@@ -83,14 +83,14 @@ public class NodeDiscoveryServiceTest {
         DiscoveryResult result = captor.getValue();
         Map<String, Object> expectedProperties = new HashMap<>();
         expectedProperties.put("id", node.nodeId);
-        expectedProperties.put(PROPERTY_NODE_IS_LISTENING, node.isListening);
-        expectedProperties.put(PROPERTY_NODE_IS_ROUTING, node.isRouting);
-        expectedProperties.put(PROPERTY_NODE_IS_SECURE, node.isSecure);
+        expectedProperties.put(PROPERTY_NODE_IS_LISTENING, String.valueOf(node.isListening));
+        expectedProperties.put(PROPERTY_NODE_IS_ROUTING, String.valueOf(node.isRouting));
+        expectedProperties.put(PROPERTY_NODE_IS_SECURE, String.valueOf(node.isSecure));
         expectedProperties.put(PROPERTY_VENDOR, node.deviceConfig.manufacturer);
         expectedProperties.put(PROPERTY_MODEL_ID, node.deviceConfig.label);
-        expectedProperties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen);
-        expectedProperties.put(PROPERTY_NODE_FREQ_LISTENING, node.isFrequentListening);
-        expectedProperties.put(PROPERTY_FIRMWARE_VERSION, node.firmwareVersion);
+        expectedProperties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen.toString());
+        expectedProperties.put(PROPERTY_NODE_FREQ_LISTENING, String.valueOf(node.isFrequentListening));
+        expectedProperties.put(PROPERTY_FIRMWARE_VERSION, "");
 
         assertEquals(expectedProperties, result.getProperties());
         assertEquals(bridgeUID, result.getBridgeUID());

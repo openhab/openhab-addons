@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
  * {@link BaseHandler} for all devices
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - add device set handling
  */
 @NonNullByDefault
 public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHandler {
@@ -217,6 +218,16 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
     protected void updateProperties() {
         // fill canSend and canReceive capabilities
         Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
+        addCapabilities(config.id);
+        TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
+        modelProperties.forEach((key, value) -> {
+            handlerProperties.put(key, value.toString());
+        });
+        updateProperties(handlerProperties);
+    }
+
+    protected void addCapabilities(String id) {
+        Map<String, Object> modelProperties = gateway().model().getPropertiesFor(id);
         Object canReceiveCapabilities = modelProperties.get(CAPABILITIES_KEY_CAN_RECEIVE);
         if (canReceiveCapabilities instanceof JSONArray jsonArray) {
             jsonArray.forEach(capability -> {
@@ -233,12 +244,6 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                 }
             });
         }
-
-        TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
-        modelProperties.forEach((key, value) -> {
-            handlerProperties.put(key, value.toString());
-        });
-        updateProperties(handlerProperties);
     }
 
     /**
@@ -338,6 +343,21 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         int status = gateway().api().sendAttributes(config.id, attributes);
         if (customDebug) {
             logger.info("DIRIGERA BASE_HANDLER {} API call: Status {} payload {}", thing.getUID(), status, attributes);
+        }
+        return status;
+    }
+
+    /**
+     * Wrapper function for device sets - routes to /devices/set/{id} endpoint
+     *
+     * @param attributes
+     * @return status
+     */
+    protected int sendSetAttributes(JSONObject attributes) {
+        int status = gateway().api().sendSetAttributes(config.id, attributes);
+        if (customDebug) {
+            logger.info("DIRIGERA BASE_HANDLER {} API set call: Status {} payload {}", thing.getUID(), status,
+                    attributes);
         }
         return status;
     }

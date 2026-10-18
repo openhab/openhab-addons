@@ -25,6 +25,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.jupnp.UpnpService;
 import org.jupnp.model.meta.LocalDevice;
@@ -94,6 +96,18 @@ public class LinkPlayHandlerFactory extends BaseThingHandlerFactory implements R
         this.networkAddressService = networkAddressService;
         upnpService.getRegistry().addListener(this);
         httpClient = httpClientFactory.createHttpClient("linkplay", new SslContextFactory.Client(true));
+        // LinkPlay devices aggressively close idle keep alive connections after a few seconds, so a pooled connection
+        // is frequently already dead when reused and the next request fails with an EOFException before it reaches the
+        // device. HTTP requests are infrequent (user commands plus periodic polling), so disable connection reuse
+        // entirely.
+        httpClient.getRequestListeners().add(new Request.Listener.Adapter() {
+            @Override
+            public void onBegin(@Nullable Request request) {
+                if (request != null) {
+                    request.header(HttpHeader.CONNECTION, "close");
+                }
+            }
+        });
         try {
             httpClient.start();
         } catch (Exception e) {

@@ -15,6 +15,7 @@ package org.openhab.binding.smaenergymeter.internal.packet;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smaenergymeter.internal.SerialNumber;
 import org.openhab.binding.smaenergymeter.internal.handler.EnergyMeter;
 
 /**
@@ -30,12 +31,12 @@ public class FilteringPayloadHandler implements PayloadHandler {
 
     public FilteringPayloadHandler(PayloadHandler delegate, String serialNumber) {
         this.delegate = delegate;
-        this.serialNumber = serialNumber;
+        this.serialNumber = SerialNumber.normalize(serialNumber);
     }
 
     @Override
     public void handle(EnergyMeter energyMeter) throws IOException {
-        if (this.serialNumber.equals(energyMeter.getSerialNumber())) {
+        if (SerialNumber.matches(this.serialNumber, energyMeter.getSerialNumber())) {
             delegate.handle(energyMeter);
         }
     }

@@ -16,6 +16,7 @@ import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +32,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -120,6 +123,38 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
                 } else {
                     logger.warn("Command {} not supported for channel {}", command, channelUID);
                 }
+            } else if (CHANNEL_WORKAREA_NAME.equals(channelUID.getId())) {
+                if (command instanceof StringType cmd) {
+                    mowerHandler.sendAutomowerWorkAreaName(areaId, cmd.toString());
+                } else {
+                    logger.warn("Command {} not supported for channel {}", command, channelUID);
+                }
+            } else if (CHANNEL_WORKAREA_ORIENTATION.equals(channelUID.getId())) {
+                if (command instanceof QuantityType cmd) {
+                    cmd = cmd.toUnit("°");
+                    if (cmd != null) {
+                        mowerHandler.sendAutomowerWorkAreaOrientation(areaId, cmd.intValue());
+                    } else {
+                        logger.warn("Command {} not supported for channel {}", command, channelUID);
+                    }
+                } else if (command instanceof DecimalType cmd) {
+                    mowerHandler.sendAutomowerWorkAreaOrientation(areaId, cmd.intValue());
+                } else {
+                    logger.warn("Command {} not supported for channel {}", command, channelUID);
+                }
+            } else if (CHANNEL_WORKAREA_ORIENTATION_SHIFT.equals(channelUID.getId())) {
+                if (command instanceof QuantityType cmd) {
+                    cmd = cmd.toUnit("°");
+                    if (cmd != null) {
+                        mowerHandler.sendAutomowerWorkAreaOrientationShift(areaId, cmd.intValue());
+                    } else {
+                        logger.warn("Command {} not supported for channel {}", command, channelUID);
+                    }
+                } else if (command instanceof DecimalType cmd) {
+                    mowerHandler.sendAutomowerWorkAreaOrientationShift(areaId, cmd.intValue());
+                } else {
+                    logger.warn("Command {} not supported for channel {}", command, channelUID);
+                }
             } else {
                 logger.warn("Command {} not supported for channel {}", command, channelUID);
             }
@@ -197,6 +232,12 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
             }
         }
 
+        if (mowerHandler.hasValidCuttingHeightCmRange()
+                || thing.getChannel(CHANNEL_WORKAREA_CUTTING_HEIGHT_CM) != null) {
+            AutomowerHandler.createChannel(null, CHANNEL_WORKAREA_CUTTING_HEIGHT_CM,
+                    CHANNEL_TYPE_WORKAREA_CUTTING_HEIGHT_CM, "Number:Length", channelAdd, thing);
+        }
+
         int i;
         for (i = 0; i < calendarTasks.size(); i++) {
             int j = 0;
@@ -227,8 +268,6 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
     public void updateChannels(WorkArea workArea, List<CalendarTask> calendarTasks, AutomowerHandler mowerHandler) {
         updateStatus(ThingStatus.ONLINE);
 
-        updateWorkAreaChannels(workArea, mowerHandler);
-
         // only show the Tasks of the current WorkArea
         List<CalendarTask> calendarTasksFiltered = new ArrayList<>();
         long workAreaId = workArea.getWorkAreaId();
@@ -239,17 +278,40 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         }
 
         addRemoveDynamicChannels(calendarTasksFiltered, mowerHandler);
+        updateWorkAreaChannels(workArea, mowerHandler);
         updateCalendarTaskChannels(calendarTasksFiltered);
     }
 
     private void updateWorkAreaChannels(WorkArea workArea, AutomowerHandler mowerHandler) {
+        updateState(CHANNEL_WORKAREA_ID, new DecimalType(workArea.getWorkAreaId()));
         if (workArea.getWorkAreaId() == 0L && workArea.getName().isBlank()) {
             updateState(CHANNEL_WORKAREA_NAME, new StringType("main area"));
         } else {
             updateState(CHANNEL_WORKAREA_NAME, new StringType(workArea.getName()));
         }
+        updateState(CHANNEL_WORKAREA_TYPE,
+                workArea.getType() != null ? new StringType(workArea.getType()) : UnDefType.NULL);
         updateState(CHANNEL_WORKAREA_CUTTING_HEIGHT, new QuantityType<>(workArea.getCuttingHeight(), Units.PERCENT));
+        Double calculatedWorkAreaCuttingHeightCm = mowerHandler
+                .calculateCuttingHeightCmForWorkArea(workArea.getCuttingHeight());
+        if (calculatedWorkAreaCuttingHeightCm != null) {
+            updateState(CHANNEL_WORKAREA_CUTTING_HEIGHT_CM,
+                    new QuantityType<>(calculatedWorkAreaCuttingHeightCm, MetricPrefix.CENTI(SIUnits.METRE)));
+        } else if (thing.getChannel(CHANNEL_WORKAREA_CUTTING_HEIGHT_CM) != null) {
+            updateState(CHANNEL_WORKAREA_CUTTING_HEIGHT_CM, UnDefType.NULL);
+        }
+
+        Map<String, String> properties = editProperties();
+        Double minCuttingHeightCm = mowerHandler.getMinCuttingHeightCm();
+        Double maxCuttingHeightCm = mowerHandler.getMaxCuttingHeightCm();
+        properties.put(AUTOMOWER_MIN_CUTTING_HEIGHT_CM,
+                minCuttingHeightCm != null ? String.valueOf(minCuttingHeightCm) : "N/A");
+        properties.put(AUTOMOWER_MAX_CUTTING_HEIGHT_CM,
+                maxCuttingHeightCm != null ? String.valueOf(maxCuttingHeightCm) : "N/A");
+        updateProperties(properties);
+        updateState(CHANNEL_WORKAREA_USE_GLOBAL_CUTTING_HEIGHT, OnOffType.from(workArea.isUseGlobalCuttingHeight()));
         updateState(CHANNEL_WORKAREA_ENABLED, OnOffType.from(workArea.isEnabled()));
+        updateState(CHANNEL_WORKAREA_SCHEDULABLE, OnOffType.from(workArea.isSchedulable()));
         if (workArea.getProgress() != null) {
             updateState(CHANNEL_WORKAREA_PROGRESS, new QuantityType<>(workArea.getProgress(), Units.PERCENT));
         } else {
@@ -264,6 +326,30 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
                     .toZonedDateTime(TimeUnit.SECONDS.toMillis(lastTimeCompleted), mowerHandler.getMowerZoneId())));
         } else {
             updateState(CHANNEL_WORKAREA_LAST_TIME_COMPLETED, UnDefType.NULL);
+        }
+
+        // lastTimeAbandoned is in seconds, convert it to milliseconds
+        long lastTimeAbandoned = workArea.getLastTimeAbandoned();
+        // If lastTimeAbandoned is 0 it means the work area has never been abandoned
+        if (lastTimeAbandoned != 0L) {
+            updateState(CHANNEL_WORKAREA_LAST_TIME_ABANDONED, new DateTimeType(mowerHandler
+                    .toZonedDateTime(TimeUnit.SECONDS.toMillis(lastTimeAbandoned), mowerHandler.getMowerZoneId())));
+        } else {
+            updateState(CHANNEL_WORKAREA_LAST_TIME_ABANDONED, UnDefType.NULL);
+        }
+
+        Integer orientation = workArea.getOrientation();
+        if (orientation != null) {
+            updateState(CHANNEL_WORKAREA_ORIENTATION, new QuantityType<>(orientation, Units.DEGREE_ANGLE));
+        } else {
+            updateState(CHANNEL_WORKAREA_ORIENTATION, UnDefType.NULL);
+        }
+
+        Integer orientationShift = workArea.getOrientationShift();
+        if (orientationShift != null) {
+            updateState(CHANNEL_WORKAREA_ORIENTATION_SHIFT, new QuantityType<>(orientationShift, Units.DEGREE_ANGLE));
+        } else {
+            updateState(CHANNEL_WORKAREA_ORIENTATION_SHIFT, UnDefType.NULL);
         }
     }
 

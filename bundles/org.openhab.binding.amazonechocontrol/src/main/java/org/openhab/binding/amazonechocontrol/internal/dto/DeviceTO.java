@@ -28,6 +28,7 @@ public class DeviceTO {
     public String deviceAccountId;
     public String deviceFamily;
     public String deviceType;
+    public String macAddress;
     public String softwareVersion;
     public boolean online;
     public Set<String> capabilities = Set.of();
@@ -36,7 +37,7 @@ public class DeviceTO {
     public @NonNull String toString() {
         return "Device{accountName='" + accountName + "', serialNumber='" + serialNumber + "', deviceOwnerCustomerId='"
                 + deviceOwnerCustomerId + "', deviceAccountId='" + deviceAccountId + "', deviceFamily='" + deviceFamily
-                + "', deviceType='" + deviceType + "', softwareVersion='" + softwareVersion + "', online=" + online
-                + ", capabilities=" + capabilities + "}";
+                + "', deviceType='" + deviceType + "', macAddress='" + macAddress + "', softwareVersion='"
+                + softwareVersion + "', online=" + online + ", capabilities=" + capabilities + "}";
     }
 }

@@ -379,7 +379,7 @@ public class MediaPlaybackCluster extends BaseCluster {
          * 
          * This feature provides access to the time offset location within current playback media and allows for jumping
          * to a specific location using time offsets. This enables clients to implement more advanced media seeking
-         * behavior in their user interface, for instance a &quot;seek bar&quot;.
+         * behavior in their user interface, for instance a "seek bar".
          */
         public boolean advancedSeek;
         /**
@@ -461,8 +461,8 @@ public class MediaPlaybackCluster extends BaseCluster {
 
     /**
      * This command is used to go back to the previous media playback item.
-     * Upon receipt, this shall cause the handler to be invoked for &quot;Previous&quot;. User experience is
-     * context-specific. This will often Go back to the previous media playback item.
+     * Upon receipt, this shall cause the handler to be invoked for "Previous". User experience is context-specific.
+     * This will often Go back to the previous media playback item.
      */
     public static ClusterCommand previous() {
         return new ClusterCommand("previous");
@@ -470,8 +470,8 @@ public class MediaPlaybackCluster extends BaseCluster {
 
     /**
      * This command is used to go to the next media playback item.
-     * Upon receipt, this shall cause the handler to be invoked for &quot;Next&quot;. User experience is
-     * context-specific. This will often Go forward to the next media playback item.
+     * Upon receipt, this shall cause the handler to be invoked for "Next". User experience is context-specific. This
+     * will often Go forward to the next media playback item.
      */
     public static ClusterCommand next() {
         return new ClusterCommand("next");
@@ -482,13 +482,12 @@ public class MediaPlaybackCluster extends BaseCluster {
      * Upon receipt, this shall start playback of the media backward in case the media is currently playing in the
      * forward direction or is not playing. If the playback is already happening in the backwards direction receipt of
      * this command shall increase the speed of the media playback backwards.
-     * Different &quot;rewind&quot; speeds may be reflected on the media playback device based upon the number of
-     * sequential calls to this function and the capability of the device. This is to avoid needing to define every
-     * speed (multiple fast, slow motion, etc). If the PlaybackSpeed attribute is supported it shall be updated to
-     * reflect the new speed of playback. If the playback speed cannot be changed for the media being played(for
-     * example, in live streaming content not supporting seek), the status of NOT_ALLOWED shall be returned. If the
-     * playback speed has reached the maximum supported speed for media playing backwards, the status of
-     * SPEED_OUT_OF_RANGE shall be returned.
+     * Different "rewind" speeds may be reflected on the media playback device based upon the number of sequential calls
+     * to this function and the capability of the device. This is to avoid needing to define every speed (multiple fast,
+     * slow motion, etc). If the PlaybackSpeed attribute is supported it shall be updated to reflect the new speed of
+     * playback. If the playback speed cannot be changed for the media being played(for example, in live streaming
+     * content not supporting seek), the status of NOT_ALLOWED shall be returned. If the playback speed has reached the
+     * maximum supported speed for media playing backwards, the status of SPEED_OUT_OF_RANGE shall be returned.
      */
     public static ClusterCommand rewind(Boolean audioAdvanceUnmuted) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -503,13 +502,12 @@ public class MediaPlaybackCluster extends BaseCluster {
      * Upon receipt, this shall start playback of the media in the forward direction in case the media is currently
      * playing in the backward direction or is not playing. If the playback is already happening in the forward
      * direction receipt of this command shall increase the speed of the media playback.
-     * Different &quot;fast-forward&quot; speeds may be reflected on the media playback device based upon the number of
-     * sequential calls to this function and the capability of the device. This is to avoid needing to define every
-     * speed (multiple fast, slow motion, etc). If the PlaybackSpeed attribute is supported it shall be updated to
-     * reflect the new speed of playback. If the playback speed cannot be changed for the media being played(for
-     * example, in live streaming content not supporting seek), the status of NOT_ALLOWED shall be returned. If the
-     * playback speed has reached the maximum supported speed for media playing forward, the status of
-     * SPEED_OUT_OF_RANGE shall be returned.
+     * Different "fast-forward" speeds may be reflected on the media playback device based upon the number of sequential
+     * calls to this function and the capability of the device. This is to avoid needing to define every speed (multiple
+     * fast, slow motion, etc). If the PlaybackSpeed attribute is supported it shall be updated to reflect the new speed
+     * of playback. If the playback speed cannot be changed for the media being played(for example, in live streaming
+     * content not supporting seek), the status of NOT_ALLOWED shall be returned. If the playback speed has reached the
+     * maximum supported speed for media playing forward, the status of SPEED_OUT_OF_RANGE shall be returned.
      */
     public static ClusterCommand fastForward(Boolean audioAdvanceUnmuted) {
         Map<String, Object> map = new LinkedHashMap<>();

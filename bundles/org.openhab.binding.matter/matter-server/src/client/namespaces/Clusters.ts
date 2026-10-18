@@ -1,5 +1,5 @@
 import { Logger } from "@matter/general";
-import { ClusterId, ValidationError } from "@matter/main/types";
+import { AttributeId, ClusterId, EndpointNumber, ValidationError } from "@matter/main/types";
 import { ClusterModel, MatterModel } from "@matter/model";
 import { SupportedAttributeClient } from "@project-chip/matter.js/cluster";
 import { convertJsonDataWithModel, toJSON } from "../../util/Json";
@@ -162,6 +162,50 @@ export class Clusters {
         }
 
         return await attributeClient.get(true);
+    }
+
+    /**
+     * Reads several attributes of one cluster from a device in a single read interaction. Devices only have to serve a
+     * few concurrent reads, so separate requests can be rejected as busy.
+     * @param nodeId
+     * @param endpointId
+     * @param clusterName
+     * @param attributeNames
+     * @returns the values by attribute name, attributes the device did not report are left out
+     */
+    async readAttributes(nodeId: number, endpointId: number, clusterName: string, attributeNames: string[]) {
+        const node = this.controllerNode.getNode(nodeId);
+        const cluster = this.#clusterForName(clusterName);
+        if (cluster.id === undefined) {
+            throw new Error(`Cluster ID for ${clusterName} not found`);
+        }
+        const clusterId = ClusterId(cluster.id);
+
+        const namesById = new Map<number, string>();
+        for (const attributeName of attributeNames) {
+            const attribute = cluster.attributes.find(a => a.name === capitalize(attributeName));
+            if (attribute?.id === undefined) {
+                throw new Error(`Attribute ${attributeName} not found`);
+            }
+            namesById.set(attribute.id, attributeName);
+        }
+
+        const reports = await node.getInteractionClient().getMultipleAttributes({
+            attributes: [...namesById.keys()].map(attributeId => ({
+                endpointId: EndpointNumber(endpointId),
+                clusterId,
+                attributeId: AttributeId(attributeId),
+            })),
+        });
+
+        const values: Record<string, unknown> = {};
+        for (const report of reports) {
+            const name = namesById.get(report.path.attributeId);
+            if (name !== undefined) {
+                values[name] = report.value;
+            }
+        }
+        return values;
     }
 
     /**

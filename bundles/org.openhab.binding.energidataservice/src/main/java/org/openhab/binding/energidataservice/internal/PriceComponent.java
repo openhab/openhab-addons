@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,8 +34,8 @@ public enum PriceComponent {
     ELECTRICITY_TAX("ElectricityTax", DatahubTariff.ELECTRICITY_TAX),
     REDUCED_ELECTRICITY_TAX("ReducedElectricityTax", DatahubTariff.REDUCED_ELECTRICITY_TAX);
 
-    private static final Map<String, PriceComponent> NAME_MAP = Stream.of(values())
-            .collect(Collectors.toMap(PriceComponent::toLowerCaseString, Function.identity()));
+    private static final Map<String, PriceComponent> NAME_MAP = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(PriceComponent::toLowerCaseString, Function.identity()));
 
     private String name;
     private @Nullable DatahubTariff datahubTariff;
@@ -56,12 +55,12 @@ public enum PriceComponent {
     }
 
     public static PriceComponent fromString(final String name) {
-        PriceComponent myEnum = NAME_MAP.get(name.toLowerCase());
-        if (null == myEnum) {
-            throw new IllegalArgumentException(String.format("'%s' has no corresponding value. Accepted values: %s",
-                    name, Arrays.asList(values())));
+        PriceComponent component = NAME_MAP.get(name.toLowerCase());
+        if (component == null) {
+            throw new IllegalArgumentException(
+                    "'" + name + "' has no corresponding value. Accepted values: " + Arrays.toString(values()));
         }
-        return myEnum;
+        return component;
     }
 
     public @Nullable DatahubTariff getDatahubTariff() {

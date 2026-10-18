@@ -1,0 +1,436 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.modbus.ankersolix.internal;
+
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
+import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
+import org.openhab.core.io.transport.modbus.PollTask;
+import org.openhab.core.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Base handler for all Anker SOLIX device profiles. Provides the shared Modbus
+ * polling, register decoding, write, shadow-state and channel-update
+ * infrastructure. Concrete handlers implement the device-specific poll ranges,
+ * state mapping and command handling.
+ *
+ * @author Thorben Grove - Initial contribution
+ */
+@NonNullByDefault
+public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
+
+    private static final String STATUS_INVALID_POLL_INTERVAL = "@text/status.configuration-error.invalid-poll-interval";
+    private static final String STATUS_INVALID_MAX_TRIES = "@text/status.configuration-error.invalid-max-tries";
+    private static final String STATUS_READ_FAILED = "@text/status.communication-error.read-failed";
+    private static final String STATUS_WRITE_FAILED = "@text/status.communication-error.write-failed";
+
+    protected record PollRange(ModbusReadFunctionCode functionCode, int startAddress, int length, boolean optional) {
+        protected PollRange(ModbusReadFunctionCode functionCode, int startAddress, int length) {
+            this(functionCode, startAddress, length, false);
+        }
+    }
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Map<Integer, Integer> registerCache = new ConcurrentHashMap<>();
+    private final Map<String, State> shadowStates = new ConcurrentHashMap<>();
+    private final Map<String, Instant> shadowStateExpiry = new ConcurrentHashMap<>();
+    private final Map<PollRange, PollTask> activePollTasks = new ConcurrentHashMap<>();
+    // ranges whose regular polling was stopped after the device rejected the register once
+    private final Set<PollRange> backedOffRanges = ConcurrentHashMap.newKeySet();
+    // every currently initialized handler, so a newly added device can prompt siblings to retry a rejected
+    // register - e.g. a parallel-machine capability mask that only starts answering once a unit is paired
+    private static final Set<AbstractAnkerSolixHandler> ACTIVE_HANDLERS = ConcurrentHashMap.newKeySet();
+
+    protected @Nullable AnkerSolixConfiguration config;
+
+    protected AbstractAnkerSolixHandler(Thing thing) {
+        super(thing);
+    }
+
+    /**
+     * Provides the Modbus register ranges to poll for this device profile.
+     */
+    protected abstract List<PollRange> getPollRanges();
+
+    /**
+     * Maps the cached register values to channel states for this device profile.
+     */
+    protected abstract void applyStateFromCache();
+
+    /**
+     * Handles a non-refresh command for a channel of this device profile.
+     */
+    protected abstract void handleDeviceCommand(String channelId, Command command);
+
+    /**
+     * Hook invoked after the thing transitions to {@link ThingStatus#ONLINE} on a
+     * successful read. Subclasses may override to perform one-time setup.
+     */
+    protected void onConnected() {
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            triggerImmediateRefresh();
+            return;
+        }
+        handleDeviceCommand(channelUID.getIdWithoutGroup(), command);
+    }
+
+    @Override
+    public void modbusInitialize() {
+        AnkerSolixConfiguration localConfig = getConfigAs(AnkerSolixConfiguration.class);
+        if (localConfig.pollInterval < 500) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_INVALID_POLL_INTERVAL);
+            return;
+        }
+        if (localConfig.maxTries < 1) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_INVALID_MAX_TRIES);
+            return;
+        }
+
+        config = localConfig;
+        notifyOtherHandlersOfNewDevice();
+
+        updateStatus(ThingStatus.UNKNOWN);
+        for (PollRange range : getPollRanges()) {
+            registerPoll(range, localConfig);
+        }
+    }
+
+    private void notifyOtherHandlersOfNewDevice() {
+        for (AbstractAnkerSolixHandler other : ACTIVE_HANDLERS) {
+            other.resumeAllBackedOffRanges();
+        }
+        ACTIVE_HANDLERS.add(this);
+    }
+
+    private void resumeAllBackedOffRanges() {
+        for (PollRange range : Set.copyOf(backedOffRanges)) {
+            resumePolling(range);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        ACTIVE_HANDLERS.remove(this);
+        super.dispose();
+    }
+
+    private void registerPoll(PollRange range, AnkerSolixConfiguration localConfig) {
+        // optional registers are never worth retrying: a permanently absent register won't start existing on a
+        // retry, so maxTries=1 keeps the one-time log footprint (from openHAB Core) to a single ERROR line
+        int maxTries = range.optional() ? 1 : localConfig.maxTries;
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), range.functionCode,
+                range.startAddress, range.length, maxTries);
+        PollTask task = registerRegularPoll(request, localConfig.pollInterval, 0,
+                result -> handleReadSuccess(range, result), failure -> handleReadFailure(range, failure));
+        activePollTasks.put(range, task);
+    }
+
+    /**
+     * Re-registers regular polling for a range that was previously backed off, e.g. after detecting
+     * that the device firmware changed and might now support a register it rejected before.
+     */
+    protected void resumePolling(PollRange range) {
+        AnkerSolixConfiguration localConfig = config;
+        if (localConfig == null || !backedOffRanges.remove(range)) {
+            return;
+        }
+        registerPoll(range, localConfig);
+    }
+
+    private void triggerImmediateRefresh() {
+        AnkerSolixConfiguration localConfig = config;
+        if (localConfig == null) {
+            return;
+        }
+        for (PollRange range : getPollRanges()) {
+            if (backedOffRanges.contains(range)) {
+                continue;
+            }
+            ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), range.functionCode,
+                    range.startAddress, range.length, localConfig.maxTries);
+            submitOneTimePoll(request, result -> handleReadSuccess(range, result),
+                    failure -> handleReadFailure(range, failure));
+        }
+    }
+
+    private void handleReadSuccess(PollRange range, AsyncModbusReadResult result) {
+        result.getRegisters().ifPresent(registers -> {
+            byte[] bytes = registers.getBytes();
+            for (int index = 0; index < registers.size(); index++) {
+                int value = ModbusBitUtilities.extractUInt16(bytes, index * 2);
+                registerCache.put(range.startAddress + index, value);
+            }
+
+            cleanupExpiredShadows();
+            applyStateFromCache();
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+            onConnected();
+        });
+    }
+
+    private void handleReadFailure(PollRange range, AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+        Exception cause = failure.getCause();
+        logger.debug("Failed to read Anker SOLIX registers: {}", cause.getMessage());
+        if (!range.optional()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_READ_FAILED);
+            return;
+        }
+        // only back off on an explicit "illegal data address" protocol response: the device answered and rejected
+        // this exact register, as opposed to a connection/IO failure where no response was received at all
+        if (!(cause instanceof ModbusSlaveErrorResponseException responseException)
+                || responseException.getExceptionCode() != ModbusSlaveErrorResponseException.ILLEGAL_DATA_ACCESS) {
+            return;
+        }
+        if (backedOffRanges.add(range)) {
+            PollTask task = activePollTasks.remove(range);
+            if (task != null) {
+                unregisterRegularPoll(task);
+            }
+            logger.debug("Register {} not supported by device/firmware, pausing regular polling", range.startAddress());
+        }
+    }
+
+    protected void writeInt16Holding(int registerAddress, int value) {
+        AnkerSolixConfiguration localConfig = config;
+        if (localConfig == null) {
+            return;
+        }
+
+        byte[] payload = new byte[] { (byte) ((value >> 8) & 0xFF), (byte) (value & 0xFF) };
+        ModbusRegisterArray registerArray = new ModbusRegisterArray(payload);
+        ModbusWriteRegisterRequestBlueprint request = new ModbusWriteRegisterRequestBlueprint(getSlaveId(),
+                registerAddress, registerArray, false, localConfig.maxTries);
+
+        submitOneTimeWrite(request, result -> updateStatus(ThingStatus.ONLINE),
+                failure -> handleWriteFailure(failure, "writeInt16"));
+    }
+
+    protected void writeInt32Holding(int registerAddress, int value) {
+        AnkerSolixConfiguration localConfig = config;
+        if (localConfig == null) {
+            return;
+        }
+
+        byte[] payload = new byte[] { (byte) ((value >> 24) & 0xFF), (byte) ((value >> 16) & 0xFF),
+                (byte) ((value >> 8) & 0xFF), (byte) (value & 0xFF) };
+        ModbusRegisterArray registerArray = new ModbusRegisterArray(payload);
+        ModbusWriteRegisterRequestBlueprint request = new ModbusWriteRegisterRequestBlueprint(getSlaveId(),
+                registerAddress, registerArray, true, localConfig.maxTries);
+
+        submitOneTimeWrite(request, result -> updateStatus(ThingStatus.ONLINE),
+                failure -> handleWriteFailure(failure, "writeInt32"));
+    }
+
+    private void handleWriteFailure(AsyncModbusFailure<?> failure, String operation) {
+        String message = String.valueOf(failure.getCause().getMessage());
+        logger.warn("{} failed: {}", operation, message);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_WRITE_FAILED);
+    }
+
+    protected void updateThingProperty(String propertyName, @Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+        String currentValue = getThing().getProperties().get(propertyName);
+        if (!value.equals(currentValue)) {
+            updateProperty(propertyName, value);
+        }
+    }
+
+    protected void updateThingProperty(String propertyName, @Nullable Number value) {
+        if (value != null) {
+            updateThingProperty(propertyName, String.valueOf(value));
+        }
+    }
+
+    protected void setShadowState(String channelId, State state) {
+        AnkerSolixConfiguration localConfig = config;
+        int durationSeconds = localConfig != null ? Math.max(1, localConfig.writeProtectionDurationSeconds) : 5;
+        shadowStates.put(channelId, state);
+        shadowStateExpiry.put(channelId, Instant.now().plusSeconds(durationSeconds));
+    }
+
+    protected @Nullable State getShadowState(String channelId) {
+        Instant expiry = shadowStateExpiry.get(channelId);
+        if (expiry == null) {
+            return null;
+        }
+        if (Instant.now().isAfter(expiry)) {
+            shadowStateExpiry.remove(channelId);
+            shadowStates.remove(channelId);
+            return null;
+        }
+        return shadowStates.get(channelId);
+    }
+
+    private void cleanupExpiredShadows() {
+        Instant now = Instant.now();
+        shadowStateExpiry.entrySet().removeIf(entry -> now.isAfter(entry.getValue()));
+        shadowStates.keySet().removeIf(channel -> !shadowStateExpiry.containsKey(channel));
+    }
+
+    protected @Nullable Integer readUInt16(int registerAddress) {
+        return registerCache.get(registerAddress);
+    }
+
+    protected @Nullable Integer readInt16(int registerAddress) {
+        Integer value = readUInt16(registerAddress);
+        if (value == null) {
+            return null;
+        }
+        return value >= 0x8000 ? value - 0x10000 : value;
+    }
+
+    protected @Nullable Integer readInt32(int registerAddress) {
+        Integer highWord = readUInt16(registerAddress);
+        Integer lowWord = readUInt16(registerAddress + 1);
+        if (highWord == null || lowWord == null) {
+            return null;
+        }
+
+        long unsigned = ((long) (highWord & 0xFFFF) << 16) | (lowWord & 0xFFFFL);
+        if (unsigned >= 0x80000000L) {
+            return (int) (unsigned - 0x1_0000_0000L);
+        }
+        return (int) unsigned;
+    }
+
+    protected @Nullable Long readUInt32(int registerAddress) {
+        Integer highWord = readUInt16(registerAddress);
+        Integer lowWord = readUInt16(registerAddress + 1);
+        if (highWord == null || lowWord == null) {
+            return null;
+        }
+        return ((long) (highWord & 0xFFFF) << 16) | (lowWord & 0xFFFFL);
+    }
+
+    protected @Nullable String readVersion(int registerAddress) {
+        Integer first = readUInt16(registerAddress);
+        Integer second = readUInt16(registerAddress + 1);
+        if (first == null || second == null) {
+            return null;
+        }
+
+        int major = (first >> 8) & 0xFF;
+        int minor = first & 0xFF;
+        int patch = (second >> 8) & 0xFF;
+        int build = second & 0xFF;
+        return major + "." + minor + "." + patch + "." + build;
+    }
+
+    protected @Nullable BigDecimal readScaledInt16(int registerAddress, int gain) {
+        Integer value = readInt16(registerAddress);
+        if (value == null) {
+            return null;
+        }
+        return BigDecimal.valueOf(value).divide(BigDecimal.valueOf(gain));
+    }
+
+    protected @Nullable BigDecimal readScaledUInt16(int registerAddress, int gain) {
+        Integer value = readUInt16(registerAddress);
+        if (value == null) {
+            return null;
+        }
+        return BigDecimal.valueOf(value).divide(BigDecimal.valueOf(gain));
+    }
+
+    protected @Nullable String readString(int registerAddress, int registerCount) {
+        byte[] payload = new byte[registerCount * 2];
+        for (int index = 0; index < registerCount; index++) {
+            Integer value = readUInt16(registerAddress + index);
+            if (value == null) {
+                return null;
+            }
+            payload[index * 2] = (byte) ((value >> 8) & 0xFF);
+            payload[index * 2 + 1] = (byte) (value & 0xFF);
+        }
+
+        String decoded = new String(payload, StandardCharsets.UTF_8).replace("\u0000", "").trim();
+        return decoded.isEmpty() ? null : decoded;
+    }
+
+    protected @Nullable String resolveModelName(@Nullable String rawModel, @Nullable String serialNumber) {
+        String mappedModel = AnkerSolixBindingConstants.resolveModelFromSerial(serialNumber);
+        if (mappedModel != null) {
+            return mappedModel;
+        }
+        return rawModel;
+    }
+
+    protected void updateStringChannel(String channelId, @Nullable String value) {
+        if (value != null) {
+            updateChannelState(channelId, new StringType(value));
+        }
+    }
+
+    protected void updatePowerChannel(String channelId, @Nullable Integer valueInWatt) {
+        if (valueInWatt != null) {
+            updateChannelState(channelId, new QuantityType<>(BigDecimal.valueOf(valueInWatt), Units.WATT));
+        }
+    }
+
+    protected void updateScaledPowerChannel(String channelId, @Nullable BigDecimal valueInWatt) {
+        if (valueInWatt != null) {
+            updateChannelState(channelId, new QuantityType<>(valueInWatt, Units.WATT));
+        }
+    }
+
+    protected void updateCurrentChannel(String channelId, @Nullable BigDecimal valueInAmpere) {
+        if (valueInAmpere != null) {
+            updateChannelState(channelId, new QuantityType<>(valueInAmpere, Units.AMPERE));
+        }
+    }
+
+    protected void updateVoltageChannel(String channelId, @Nullable BigDecimal valueInVolt) {
+        if (valueInVolt != null) {
+            updateChannelState(channelId, new QuantityType<>(valueInVolt, Units.VOLT));
+        }
+    }
+
+    protected void updateChannelState(String channelId, State state) {
+        updateState(new ChannelUID(getThing().getUID(), channelId), state);
+    }
+}

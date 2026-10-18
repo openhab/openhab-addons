@@ -13,11 +13,24 @@
 package org.openhab.binding.matter.internal.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
@@ -26,10 +39,12 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.DescriptorClus
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensingCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster.NeighborTableStruct;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Message;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -105,6 +120,50 @@ class MatterWebsocketClientTest {
         assertEquals("testAttribute", message.path.attributeName);
         assertEquals(1, message.version);
         assertEquals("testValue", message.value);
+    }
+
+    @Test
+    void testDeserializeListAttributeChangedMessageUsesElementType() {
+        String json = """
+                {
+                    "path": {
+                        "clusterId": 53,
+                        "attributeName": "neighborTable"
+                    },
+                    "version": 1,
+                    "value": [
+                        {
+                            "extAddress": "13706561541729176713",
+                            "rloc16": 29696,
+                            "lqi": 3,
+                            "isChild": false
+                        }
+                    ]
+                }
+                """;
+        AttributeChangedMessage message = client.getGson().fromJson(json, AttributeChangedMessage.class);
+        assertNotNull(message);
+        List<?> table = assertInstanceOf(List.class, message.value);
+        NeighborTableStruct neighbor = assertInstanceOf(NeighborTableStruct.class, table.get(0));
+        assertEquals(new BigInteger("13706561541729176713"), neighbor.extAddress);
+        assertEquals(29696, neighbor.rloc16);
+    }
+
+    @Test
+    void testDeserializeUint32AboveIntegerRange() {
+        String json = """
+                {
+                    "path": {
+                        "clusterId": 53,
+                        "attributeName": "partitionId"
+                    },
+                    "version": 1,
+                    "value": 3000000000
+                }
+                """;
+        AttributeChangedMessage message = client.getGson().fromJson(json, AttributeChangedMessage.class);
+        assertNotNull(message);
+        assertEquals(3_000_000_000L, message.value);
     }
 
     @Test
@@ -312,5 +371,48 @@ class MatterWebsocketClientTest {
         OccupancySensingCluster.OccupancyBitmap occupancyBitmap = (OccupancySensingCluster.OccupancyBitmap) message.value;
         assertNotNull(occupancyBitmap);
         assertEquals(true, occupancyBitmap.occupied);
+    }
+
+    /**
+     * When sendMessage is called without an established WebSocket session, the returned future must fail fast with a
+     * {@link MatterRequestException} ("No valid session") instead of hanging until the timeout. This is the path taken
+     * while the node process is (re)starting or after a disconnect.
+     */
+    @Test
+    void testSendMessageWithoutSessionCompletesExceptionally() {
+        // No onWebSocketConnect() called, so there is no active session.
+        CompletableFuture<JsonElement> future = client.sendMessage("nodes", "listNodes", new Object[0], 1);
+        ExecutionException ex = assertThrows(ExecutionException.class, () -> future.get(5, TimeUnit.SECONDS));
+        assertInstanceOf(MatterRequestException.class, ex.getCause());
+        Throwable cause = ex.getCause();
+        assertNotNull(cause);
+        assertTrue(cause.getMessage().contains("No valid session"));
+    }
+
+    /**
+     * A non-positive timeout must fall back to the default request timeout (REQUEST_TIMEOUT_SECONDS), preserving the
+     * previous behaviour. We verify this indirectly: with a 0s timeout the request must stay pending well beyond a
+     * short
+     * wait (here 2s), proving 0 was not used as the actual delay.
+     */
+    @Test
+    void testSendMessageNonPositiveTimeoutFallsBackToDefault() {
+        connectMockSession();
+        // A timeout <= 0 must fall back to the default, so the request stays pending well beyond 2s.
+        CompletableFuture<JsonElement> future = client.sendMessage("nodes", "listNodes", new Object[0], 0);
+        assertThrows(TimeoutException.class, () -> future.get(2, TimeUnit.SECONDS));
+    }
+
+    /**
+     * Installs a mocked WebSocket session on the client so sendMessage reaches the request-scheduling path (instead of
+     * failing early with "No valid session"). The remote endpoint is stubbed so the outgoing message is silently
+     * discarded; no real socket or node process is involved.
+     */
+    private void connectMockSession() {
+        Session session = mock(Session.class);
+        when(session.getPolicy()).thenReturn(WebSocketPolicy.newClientPolicy());
+        RemoteEndpoint remote = mock(RemoteEndpoint.class);
+        when(session.getRemote()).thenReturn(remote);
+        client.onWebSocketConnect(session);
     }
 }

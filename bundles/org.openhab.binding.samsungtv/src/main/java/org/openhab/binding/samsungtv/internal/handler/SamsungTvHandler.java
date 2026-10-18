@@ -291,7 +291,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             case PROTOCOL_SECUREWEBSOCKET:
                 initializeConfig();
                 if (!initialized) {
-                    logger.warn("{}: TV binding is not yet Initialized", host);
+                    logger.debug("{}: TV binding is not yet Initialized", host);
                 }
                 break;
             case PROTOCOL_LEGACY:

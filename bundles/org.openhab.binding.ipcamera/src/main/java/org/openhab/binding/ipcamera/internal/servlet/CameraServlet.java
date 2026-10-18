@@ -15,6 +15,7 @@ package org.openhab.binding.ipcamera.internal.servlet;
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.HLS_STARTUP_DELAY_MS;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Dictionary;
@@ -44,6 +45,7 @@ import org.osgi.service.http.HttpService;
 @NonNullByDefault
 public class CameraServlet extends IpCameraServlet {
     private static final long serialVersionUID = -134658667574L;
+    private static final int MAX_ONVIF_EVENT_SIZE = 1024 * 1024;
     private static final Dictionary<Object, Object> INIT_PARAMETERS = new Hashtable<>(
             Map.of("async-supported", "true"));
 
@@ -79,8 +81,19 @@ public class CameraServlet extends IpCameraServlet {
                 snapshotData.close();
                 break;
             case "/OnvifEvent":
-                ServletInputStream inputStream = req.getInputStream();
-                String xmlData = new String(inputStream.readAllBytes(), "UTF-8");
+                if (!isOnvifEventRequestAllowed(req)) {
+                    resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
+                byte[] eventData;
+                try (ServletInputStream inputStream = req.getInputStream()) {
+                    eventData = inputStream.readNBytes(MAX_ONVIF_EVENT_SIZE + 1);
+                }
+                if (eventData.length > MAX_ONVIF_EVENT_SIZE) {
+                    resp.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+                    return;
+                }
+                String xmlData = new String(eventData, StandardCharsets.UTF_8);
                 handler.onvifCamera.eventReceived(xmlData);
                 break;
             default:
@@ -99,12 +112,8 @@ public class CameraServlet extends IpCameraServlet {
             return;
         }
         logger.debug("GET:{}, received from {}", pathInfo, req.getRemoteHost());
-        if (!"DISABLE".equals(handler.getWhiteList())) {
-            String requestIP = "(" + req.getRemoteHost() + ")";
-            if (!handler.getWhiteList().contains(requestIP)) {
-                logger.warn("The request made from {} was not in the whiteList and will be ignored.", requestIP);
-                return;
-            }
+        if (!isRequestAllowed(req)) {
+            return;
         }
         switch (pathInfo) {
             case "/ipcamera.m3u8":
@@ -270,6 +279,23 @@ public class CameraServlet extends IpCameraServlet {
                 }
                 return;
         }
+    }
+
+    private boolean isRequestAllowed(HttpServletRequest req) {
+        String ipWhitelist = handler.getWhiteList();
+        if ("DISABLE".equals(ipWhitelist)) {
+            return true;
+        }
+        String requestIP = "(" + req.getRemoteAddr() + ")";
+        if (!ipWhitelist.contains(requestIP)) {
+            logger.warn("The request made from {} was not in the whiteList and will be ignored.", requestIP);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isOnvifEventRequestAllowed(HttpServletRequest req) {
+        return handler.cameraConfig.getIp().equals(req.getRemoteAddr()) || isRequestAllowed(req);
     }
 
     @Override

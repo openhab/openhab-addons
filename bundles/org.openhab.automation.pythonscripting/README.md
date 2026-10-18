@@ -117,6 +117,19 @@ If you use the marketplace version of this Add-on, it is necessary to use the co
 # For tips and instructions, please refer to <a href="https://www.graalvm.org/latest/reference-manual/python/Modern-Python-on-JVM">Jython Migration Guide</a>.
 #
 #org.openhab.automation.pythonscripting:jythonEmulation = false
+
+# Enable debugger
+#
+# Enables Chrome Debugger support for Python Scripting. This allows you to attach any debugger compatible with the 
+# <a href="https://chromedevtools.github.io/devtools-protocol/">Chrome DevTools Protocol</a>, such as Chrome's Developer Tools or Visual Studio Code.
+#
+#org.openhab.automation.pythonscripting:debuggerEnabled = false
+
+# Debugger port
+#
+# The port to bind the debugger to.
+#
+#org.openhab.automation.pythonscripting:debuggerPort = 9230
 ```
 
 ### Console
@@ -207,6 +220,18 @@ As a final step, the folders `/openhab/conf/automation/python/libs/` and `/openh
 
 ![Pythonscripting autocompletion](doc/ide_autocompletion.png)
 
+#### Autocompletion on dynamic results with custom type hints
+
+Typings are not working on methods with an dynamic result types like `Registry.getItemState`. To force a specific expected result type, you can annotate the variable like below.
+
+```python
+from org.openhab.core.library.types import DecimalType
+
+item: DecimalType = Registry.getItemState("TestNumberItem")
+```
+
+![Pythonscripting autocompletion](doc/ide_autocompletion_custom.png)
+
 ## Typical log errors
 
 ### Graal python language not initialized. ...
@@ -266,4 +291,10 @@ You should also check your logs for a message related to the helper lib deployme
 
 ## Limitations
 
-- GraalPy can't handle arguments in constructors of Java objects. Means you can't instantiate a Java object in Python with a parameter. <https://github.com/oracle/graalpython/issues/367>
+### Avoid using datetime.strptime
+
+You should avoid using `datetime.strptime` because there is a bug in GraalPy associated with it. Once this function is used, it can change the JVM-wide default time zone for the whole openHAB process until it is reset or openHAB is restarted.
+
+### Constructors of Java objects
+
+GraalPy can't handle arguments in constructors of Java objects. Means you can't instantiate a Java object in Python with a parameter. <https://github.com/oracle/graalpython/issues/367>

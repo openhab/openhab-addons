@@ -11,7 +11,7 @@
 		</instruction-set>
 	</thing-type>
 
-	<thing-type uid="airgradient:airgradient-location">
+	<thing-type uid="airgradient:location">
 		<instruction-set targetVersion="1">
 			<update-channel id="wifi">
 				<type>airgradient:wifi</type>

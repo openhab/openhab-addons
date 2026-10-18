@@ -34,18 +34,18 @@ import org.openhab.binding.vesync.internal.dto.requests.v1.GetDeviceDetails;
 import org.openhab.binding.vesync.internal.dto.requests.v1.SetLevel;
 import org.openhab.binding.vesync.internal.dto.requests.v1.SetMode;
 import org.openhab.binding.vesync.internal.dto.requests.v1.SetStatus;
-import org.openhab.binding.vesync.internal.dto.requests.v2_1.SetNightLight;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.EmptyPayload;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetChildLock;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetLightDetection;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetManualSpeedLevel;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetPower;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetScreenSwitch;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetState;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetSwitch;
-import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetWorkMode;
+import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev1.SetNightLight;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetChildLock;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetLightDetection;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetManualSpeedLevel;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetPower;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetScreenSwitch;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetState;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetSwitch;
+import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetWorkMode;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
-import org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airpurifier.StatusResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2.rev2.airpurifier.StatusResp;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -310,7 +310,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             default:
                                 sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                        new org.openhab.binding.vesync.internal.dto.requests.v2_2.SetMode(
+                                        new org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetMode(
                                                 targetFanMode));
                         }
                         break;
@@ -351,10 +351,11 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             default:
                                 sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                        new org.openhab.binding.vesync.internal.dto.requests.v2_2.SetMode(MODE_MANUAL),
+                                        new org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetMode(
+                                                MODE_MANUAL),
                                         false);
                                 sendV2BypassControlCommand(DEVICE_SET_LEVEL,
-                                        new org.openhab.binding.vesync.internal.dto.requests.v2_2.SetLevel(0,
+                                        new org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetLevel(0,
                                                 DEVICE_LEVEL_TYPE_WIND, requestedLevel));
                         }
                         break;
@@ -467,7 +468,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 purifierStatus = VeSyncConstants.GSON.fromJson(response, StatusResp.class);
             } else {
                 purifierStatus = VeSyncConstants.GSON.fromJson(response,
-                        org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airpurifier.StatusResp.class);
+                        org.openhab.binding.vesync.internal.dto.responses.devices.v2.rev1.airpurifier.StatusResp.class);
             }
 
             if (purifierStatus == null) {
@@ -492,12 +493,12 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
             parseV2Ver2Poll((StatusResp) purifierStatus);
         } else {
             parseV2Ver1Poll(
-                    (org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airpurifier.StatusResp) purifierStatus);
+                    (org.openhab.binding.vesync.internal.dto.responses.devices.v2.rev1.airpurifier.StatusResp) purifierStatus);
         }
     }
 
     private void parseV2Ver1Poll(
-            final org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airpurifier.StatusResp purifierStatus) {
+            final org.openhab.binding.vesync.internal.dto.responses.devices.v2.rev1.airpurifier.StatusResp purifierStatus) {
         if (!"0".equals(purifierStatus.result.getCode())) {
             logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-purifier"));
             return;
