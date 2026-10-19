@@ -69,7 +69,7 @@ class E3DCContainerRequestsTest {
     /** A container that addresses no device takes its parameters alone, without an index. */
     @Test
     void aContainerWithoutADeviceIsRequestedWithItsParametersOnly() {
-        E3DCContainerRequests.Container reserve = container(E3DCBindingConstants.GROUP_RESERVE);
+        E3DCContainerRequests.Container reserve = container(E3DCBindingConstants.GROUP_EMERGENCY);
 
         RscpValue request = reserve.request(0, Set.of());
 
@@ -104,7 +104,10 @@ class E3DCContainerRequestsTest {
 
     @Test
     void everyReserveChannelIsRequested() {
-        assertRequestsEveryChannel(E3DCBindingConstants.GROUP_RESERVE, Map.of(), Set.of());
+        // the state of the emergency power supply is read from the status values of the device, outside of the reserve
+        // container
+        assertRequestsEveryChannel(E3DCBindingConstants.GROUP_EMERGENCY, Map.of(),
+                Set.of(RscpTag.EMS_EMERGENCY_POWER_STATUS, RscpTag.EMS_STATUS));
     }
 
     /**

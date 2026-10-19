@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.e3dc.internal;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -23,6 +26,10 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class E3DCBatteryHandler extends E3DCThingHandler {
+
+    /** The energy channels and the capacity channel each one is calculated from. */
+    private static final Map<String, String> ENERGY_SOURCES = Map.of("design-energy", "design-capacity",
+            "usable-energy", "usable-capacity", "usable-remaining-energy", "usable-remaining-capacity");
 
     private final E3DCChannelRegistry registry = E3DCChannelSpec.battery();
     private final E3DCBatteryConfiguration config;
@@ -40,5 +47,11 @@ public class E3DCBatteryHandler extends E3DCThingHandler {
     @Override
     protected @Nullable Integer getDeviceIndex() {
         return config.batteryIndex;
+    }
+
+    @Override
+    public void onData(RscpValue response) {
+        super.onData(response);
+        updateEnergies(response, E3DCBindingConstants.GROUP_PACK, "voltage", ENERGY_SOURCES);
     }
 }

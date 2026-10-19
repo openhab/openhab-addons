@@ -54,14 +54,16 @@ public final class E3DCBindingConstants {
     public static final String GROUP_INVERTER = "inverter";
     public static final String GROUP_GRID = "grid";
     public static final String GROUP_SYSTEM = "system";
+    /** The battery controls and states: locks, power mode, manual charge, idle periods and the block switches. */
+    public static final String GROUP_BATTERY_CONTROL = "battery-control";
 
     /** The energy counters and shares of the completed day, week, month and year. */
     public static final String GROUP_STATISTICS = "statistics";
 
     public static final String GROUP_HISTORY = "history";
 
-    /** The battery reserve kept for emergency power. */
-    public static final String GROUP_RESERVE = "reserve";
+    /** The emergency power of the battery: the reserve kept for it and the state of the supply. */
+    public static final String GROUP_EMERGENCY = "emergency";
 
     /** The price based charging settings, which live in the E3/DC cloud rather than on the device. */
     public static final String GROUP_AI360 = "ai360";

@@ -50,14 +50,42 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Minimum Charge Current</label>
 		<description>Lowest charging current allowed</description>
-		<state pattern="%.0f %unit%"/>
+		<state min="6" max="16" step="1" pattern="%.0f %unit%">
+			<options>
+				<option value="6">6 A</option>
+				<option value="7">7 A</option>
+				<option value="8">8 A</option>
+				<option value="9">9 A</option>
+				<option value="10">10 A</option>
+				<option value="11">11 A</option>
+				<option value="12">12 A</option>
+				<option value="13">13 A</option>
+				<option value="14">14 A</option>
+				<option value="15">15 A</option>
+				<option value="16">16 A</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="wallbox-max-charge-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Charge Current</label>
 		<description>Highest charging current allowed</description>
-		<state pattern="%.0f %unit%"/>
+		<state min="6" max="16" step="1" pattern="%.0f %unit%">
+			<options>
+				<option value="6">6 A</option>
+				<option value="7">7 A</option>
+				<option value="8">8 A</option>
+				<option value="9">9 A</option>
+				<option value="10">10 A</option>
+				<option value="11">11 A</option>
+				<option value="12">12 A</option>
+				<option value="13">13 A</option>
+				<option value="14">14 A</option>
+				<option value="15">15 A</option>
+				<option value="16">16 A</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="wallbox-number-phases">
@@ -111,6 +139,13 @@
 		<item-type>Switch</item-type>
 		<label>Suspended</label>
 		<description>Charging is currently suspended</description>
+		<state/>
+	</channel-type>
+
+	<channel-type id="wallbox-toggle">
+		<item-type>Switch</item-type>
+		<label>Toggle Charging</label>
+		<description>Suspends a running charging session and resumes a suspended one</description>
 		<state/>
 	</channel-type>
 

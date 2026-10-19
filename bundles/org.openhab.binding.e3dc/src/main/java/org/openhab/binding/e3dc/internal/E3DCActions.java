@@ -32,13 +32,14 @@ import org.osgi.service.component.annotations.ServiceScope;
  * {@code name:days:mode:active:hh:mm-hh:mm}, for example {@code weekend:saturday,sunday:charge:true:08:00-18:00}.
  *
  * <p>
- * {@code fetchHistory} reads the yearly history of earlier years once and publishes it on the
+ * {@code fetchHistory} reads the yearly history of all earlier years once and publishes it on the
  * {@code history#year-*} channels as time series, so the requests beyond the running year are made only
  * when the user asks for them.
  *
  * <p>
  * The device replaces its whole list on every write, so {@code setIdlePeriods} takes the complete list. The
- * switches {@code system#block-charging} and {@code system#block-discharging} manage one period of their own
+ * switches {@code battery-control#block-charging} and {@code battery-control#block-discharging} manage one period of
+ * their own
  * and keep all others.
  *
  * @author Bernd Weymann - Initial contribution
@@ -75,29 +76,14 @@ public class E3DCActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.fetchHistory.label", description = "@text/action.fetchHistory.description")
-    public @ActionOutput(name = "years", type = "java.lang.Integer") int fetchHistory(
-            @ActionInput(name = "fromYear", label = "@text/action.fetchHistory.fromYear.label", //
-                    description = "@text/action.fetchHistory.fromYear.description") int fromYear,
-            @ActionInput(name = "toYear", label = "@text/action.fetchHistory.toYear.label", //
-                    description = "@text/action.fetchHistory.toYear.description") int toYear) {
+    public @ActionOutput(name = "years", type = "java.lang.Integer") int fetchHistory() {
         E3DCPowerPlantHandler current = handler;
-        return current != null ? current.fetchHistory(fromYear, toYear) : -1;
+        return current != null ? current.fetchHistory() : -1;
     }
 
-    @RuleAction(label = "@text/action.fetchAllHistory.label", description = "@text/action.fetchAllHistory.description")
-    public @ActionOutput(name = "years", type = "java.lang.Integer") int fetchAllHistory() {
-        E3DCPowerPlantHandler current = handler;
-        return current != null ? current.fetchAllHistory() : -1;
-    }
-
-    /** Fetches the history from the configured start year to the last completed year. */
-    public static int fetchAllHistory(ThingActions actions) {
-        return ((E3DCActions) actions).fetchAllHistory();
-    }
-
-    /** Fetches the yearly history of earlier years once and returns the number of years that had data. */
-    public static int fetchHistory(ThingActions actions, int fromYear, int toYear) {
-        return ((E3DCActions) actions).fetchHistory(fromYear, toYear);
+    /** Fetches the yearly history of all earlier years once and returns the number of years that had data. */
+    public static int fetchHistory(ThingActions actions) {
+        return ((E3DCActions) actions).fetchHistory();
     }
 
     /** Reads the idle periods, one per line, or {@code null} when the device could not be asked. */

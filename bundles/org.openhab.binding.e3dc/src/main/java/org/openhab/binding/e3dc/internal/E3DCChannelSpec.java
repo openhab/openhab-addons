@@ -231,12 +231,16 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                 entry("battery-count", E3DCChannelSpec.of(RscpTag.BAT_AVAILABLE_BATTERIES)), //
                 entry("mode", E3DCChannelSpec.of(RscpTag.EMS_MODE)), //
                 entry("coupling-mode", E3DCChannelSpec.of(RscpTag.EMS_COUPLING_MODE)), //
-                entry("emergency-power-status", E3DCChannelSpec.of(RscpTag.EMS_EMERGENCY_POWER_STATUS)), //
+                entry("grid-in-limit", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 16)), //
+                entry("powersave",
+                        E3DCChannelSpec.bitIn(RscpTag.EMS_GET_POWER_SETTINGS, RscpTag.EMS_POWERSAVE_ENABLED, 1)), //
+                entry("derate-at-percent", E3DCChannelSpec.of(RscpTag.EMS_DERATE_AT_PERCENT_VALUE)), //
+                entry("derate-at-power", E3DCChannelSpec.of(RscpTag.EMS_DERATE_AT_POWER_VALUE))));
+
+        registry.group(E3DCBindingConstants.GROUP_BATTERY_CONTROL, Map.ofEntries(//
                 entry("charging-lock", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 1)), //
                 entry("discharging-lock", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 2)), //
-                entry("emergency-power-available", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 4)), //
                 entry("charging-throttled", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 8)), //
-                entry("grid-in-limit", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 16)), //
                 entry("charging-time-lock", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 32)), //
                 entry("discharging-time-lock", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 64)), //
                 entry("weather-regulated-charge",
@@ -244,10 +248,6 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                                 RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED, 1)), //
                 entry("power-limits-used",
                         E3DCChannelSpec.bitIn(RscpTag.EMS_GET_POWER_SETTINGS, RscpTag.EMS_POWER_LIMITS_USED, 1)), //
-                entry("powersave",
-                        E3DCChannelSpec.bitIn(RscpTag.EMS_GET_POWER_SETTINGS, RscpTag.EMS_POWERSAVE_ENABLED, 1)), //
-                entry("derate-at-percent", E3DCChannelSpec.of(RscpTag.EMS_DERATE_AT_PERCENT_VALUE)), //
-                entry("derate-at-power", E3DCChannelSpec.of(RscpTag.EMS_DERATE_AT_POWER_VALUE)), //
                 entry("idle-periods-enabled", E3DCChannelSpec.of(RscpTag.EMS_GET_IDLE_PERIODS_ENABLE)), //
                 entry("idle-periods", E3DCChannelSpec.idlePeriods()), //
                 entry("manual-charge-energy", E3DCChannelSpec.scaledIn(RscpTag.EMS_GET_MANUAL_CHARGE,
@@ -255,11 +255,13 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
 
         registry.group(E3DCBindingConstants.GROUP_HISTORY, historyChannels());
 
-        registry.group(E3DCBindingConstants.GROUP_RESERVE, Map.ofEntries(//
+        registry.group(E3DCBindingConstants.GROUP_EMERGENCY, Map.ofEntries(//
                 entry("percent", E3DCChannelSpec.in(RscpTag.SE_EP_RESERVE, RscpTag.SE_PARAM_EP_RESERVE)), //
                 entry("energy", E3DCChannelSpec.in(RscpTag.SE_EP_RESERVE, RscpTag.SE_PARAM_EP_RESERVE_W)), //
                 entry("energy-max", E3DCChannelSpec.in(RscpTag.SE_EP_RESERVE, RscpTag.SE_PARAM_EP_RESERVE_MAX_W)), //
-                entry("last-soc", E3DCChannelSpec.in(RscpTag.SE_EP_RESERVE, RscpTag.SE_PARAM_LAST_SOC))));
+                entry("last-soc", E3DCChannelSpec.in(RscpTag.SE_EP_RESERVE, RscpTag.SE_PARAM_LAST_SOC)), //
+                entry("power-status", E3DCChannelSpec.of(RscpTag.EMS_EMERGENCY_POWER_STATUS)), //
+                entry("power-available", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 4))));
 
         return registry;
     }

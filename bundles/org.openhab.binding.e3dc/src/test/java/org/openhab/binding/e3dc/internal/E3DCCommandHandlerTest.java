@@ -138,7 +138,7 @@ class E3DCCommandHandlerTest {
     @Test
     void switchingThePowerLimitsOffIsSentAsABoolean() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_SYSTEM, "power-limits-used");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "power-limits-used");
 
         RscpValue settings = settingsOf(request(handler, spec, OnOffType.OFF));
 
@@ -151,7 +151,7 @@ class E3DCCommandHandlerTest {
     @Test
     void theWeatherFlagIsSentInsideTheSettingsContainer() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_SYSTEM, "weather-regulated-charge");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "weather-regulated-charge");
 
         RscpValue settings = settingsOf(request(handler, spec, OnOffType.ON));
 
@@ -174,7 +174,7 @@ class E3DCCommandHandlerTest {
     @Test
     void aTextCommandForASwitchChannelIsAcceptedWhenItIsRecognisable() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_SYSTEM, "weather-regulated-charge");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "weather-regulated-charge");
 
         assertNotNull(handler.buildRequest(spec, new StringType("on"), 0));
         assertNotNull(handler.buildRequest(spec, new StringType("false"), 0));
@@ -215,11 +215,11 @@ class E3DCCommandHandlerTest {
         assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power"));
         assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY, "max-discharge-power"));
         assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY, "discharge-start-power"));
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "power-limits-used"));
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "weather-regulated-charge"));
+        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "power-limits-used"));
+        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "weather-regulated-charge"));
         assertNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "mode"),
                 "the mode is read only, see set-power-mode");
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "set-manual-charge"));
+        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "set-manual-charge"));
     }
 
     @Test

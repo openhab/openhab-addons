@@ -17,6 +17,9 @@
 			<channel id="remaining-capacity" typeId="module-remaining-capacity"/>
 			<channel id="full-charge-capacity" typeId="module-full-charge-capacity"/>
 			<channel id="design-capacity" typeId="module-design-capacity"/>
+			<channel id="remaining-energy" typeId="module-remaining-energy"/>
+			<channel id="full-charge-energy" typeId="module-full-charge-energy"/>
+			<channel id="design-energy" typeId="module-design-energy"/>
 			<channel id="design-voltage" typeId="module-design-voltage"/>
 			<channel id="max-charge-voltage" typeId="module-max-charge-voltage"/>
 			<channel id="max-charge-current" typeId="module-max-charge-current"/>

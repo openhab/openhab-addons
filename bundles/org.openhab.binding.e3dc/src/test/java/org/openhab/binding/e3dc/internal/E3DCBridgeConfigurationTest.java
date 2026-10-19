@@ -101,11 +101,6 @@ class E3DCBridgeConfigurationTest {
         assertEquals(300, config.historyIntervalSeconds());
     }
 
-    @Test
-    void theHistoryStartYearIsNotSetByDefault() {
-        assertEquals(0, new E3DCBridgeConfiguration().historyStartYear);
-    }
-
     /**
      * The metadata is what the user interface offers and constrains, so its bounds have to be the bounds the
      * binding applies itself.

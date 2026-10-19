@@ -124,7 +124,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_MODULE, null)), //
             E3DCBindingConstants.THING_TYPE_POWER_PLANT,
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_INVERTER, null),
-                    new GroupRequest(E3DCBindingConstants.GROUP_RESERVE, null)));
+                    new GroupRequest(E3DCBindingConstants.GROUP_EMERGENCY, null)));
 
     /** One channel group of a thing, with the configuration key of the device it addresses. */
     private record GroupRequest(String groupId, @Nullable String indexConfigurationKey) {
@@ -189,6 +189,12 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     private final List<E3DCDataListener> listeners = new CopyOnWriteArrayList<>();
     private final List<Runnable> onlineListeners = new CopyOnWriteArrayList<>();
     private final Set<Integer> droppedTags = new HashSet<>();
+
+    /** The containers whose answer was logged since the connection came up, so debug shows each tree once. */
+    private final Set<Integer> loggedAnswers = new HashSet<>();
+
+    /** The tags whose error answer was logged and that still answer with an error. */
+    private final Set<Integer> loggedErrors = new HashSet<>();
 
     private @Nullable E3DCBridgeConfiguration config;
     private @Nullable RscpClient client;
@@ -342,6 +348,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
         client = newClient;
         droppedTags.clear();
+        loggedAnswers.clear();
+        loggedErrors.clear();
         // a new connection starts with the history, so the channels are filled with the first poll
         lastHistoryPollMillis = 0;
         lastBusyNanos = newClient.getBusyNanos();
@@ -571,6 +579,11 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             return;
         }
         for (E3DCContainerRequests.Container container : E3DCContainerRequests.all()) {
+            // the trees are the same with every poll, so debug shows each one once per connection and
+            // trace shows all of them
+            if (!logger.isTraceEnabled() && !loggedAnswers.add(container.responseTag())) {
+                continue;
+            }
             for (RscpValue answer : response.findAll(container.responseTag())) {
                 logger.debug("Answer of {}: {}", RscpTag.nameOf(container.responseTag()), answer.describeTree());
             }
@@ -749,7 +762,12 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         collectErrors(response, errored);
         for (int tag : errored) {
             RscpError error = findErrorFor(response, tag);
-            logger.debug("{} was answered with {}", RscpTag.nameOf(tag), error);
+            // an error that stays is logged once, the repeats only at trace level
+            if (loggedErrors.add(tag)) {
+                logger.debug("{} was answered with {}", RscpTag.nameOf(tag), error);
+            } else {
+                logger.trace("{} was answered with {}", RscpTag.nameOf(tag), error);
+            }
             if (error == RscpError.UNKNOWN_TAG || error == RscpError.NOT_AVAILABLE || error == RscpError.NOT_HANDLED) {
                 Integer previous = tagFailures.get(tag);
                 int failures = (previous != null ? previous : 0) + 1;
@@ -760,6 +778,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }
+        loggedErrors.retainAll(errored);
         // tags that answered successfully are considered supported again
         for (int tag : new HashSet<>(tagFailures.keySet())) {
             if (!errored.contains(tag)) {
@@ -812,12 +831,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     public int getRefreshIntervalSeconds() {
         E3DCBridgeConfiguration current = config;
         return current != null ? current.refreshIntervalSeconds() : 60;
-    }
-
-    /** The first year of the history fetch as configured, or {@code 0} when it is not set. */
-    public int getHistoryStartYear() {
-        E3DCBridgeConfiguration current = config;
-        return current != null ? current.historyStartYear : 0;
     }
 
     public boolean isConnected() {

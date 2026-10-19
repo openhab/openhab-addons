@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.e3dc.internal.rscp.RscpCodec;
+import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 
@@ -196,19 +198,18 @@ class E3DCIdlePeriodTest {
     }
 
     @Test
-    void onlyAFullWeekAroundTheClockBlocks() {
-        assertFalse(E3DCIdlePeriod.parse("p:monday,tuesday:charge:true:00:00-23:59").blocks(E3DCIdlePeriod.Type.CHARGE),
-                "not all days");
-        assertFalse(E3DCIdlePeriod
-                .parse("p:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:08:00-23:59")
-                .blocks(E3DCIdlePeriod.Type.CHARGE), "not around the clock");
+    void onlyTheActiveEntryOfTheSwitchBlocks() {
+        assertFalse(E3DCIdlePeriod.parse("p:monday,tuesday:charge:true:08:00-12:00").blocks(E3DCIdlePeriod.Type.CHARGE),
+                "an entry of another name is not the one of the switch");
+        assertFalse(E3DCIdlePeriod.parse(
+                "OH_Block_Charge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:false:00:00-23:59")
+                .blocks(E3DCIdlePeriod.Type.CHARGE), "not active");
+        assertTrue(E3DCIdlePeriod.parse(
+                "OH_Block_Charge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:00:00-23:59")
+                .blocks(E3DCIdlePeriod.Type.CHARGE));
         assertFalse(E3DCIdlePeriod
                 .parse("p:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:false:00:00-23:59")
                 .blocks(E3DCIdlePeriod.Type.CHARGE), "not active");
-        // a period of another client blocks just the same
-        assertTrue(E3DCIdlePeriod
-                .parse("portal:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:00:00-23:59")
-                .blocks(E3DCIdlePeriod.Type.CHARGE));
     }
 
     @Test
@@ -260,5 +261,25 @@ class E3DCIdlePeriodTest {
         assertEquals(1, request.size());
         assertEquals(0x0100002F, request.get(0).getTag());
         assertTrue(request.get(0).getChildren().isEmpty());
+    }
+
+    @Test
+    void periodsOfAnAnswerThatTravelledOverTheWireAreRead() throws Exception {
+        // the names arrive as the bytes the device sent, so reading them has to decode the text
+        RscpValue period = RscpValue.container(RscpTag.EMS_IDLE_PERIOD_2,
+                List.of(RscpValue.cstring(RscpTag.EMS_PERIOD_NAME, "OH_Block_Discharge"),
+                        RscpValue.uchar8(RscpTag.EMS_IDLE_PERIOD_TYPE, 1),
+                        RscpValue.uchar8(RscpTag.EMS_PERIOD_WEEKDAYS, 127),
+                        RscpValue.bool(RscpTag.EMS_PERIOD_ACTIVE, true),
+                        RscpValue.of(RscpTag.EMS_PERIOD_START, RscpType.UINT32, 0L),
+                        RscpValue.of(RscpTag.EMS_PERIOD_STOP, RscpType.UINT32, 86340L)));
+        RscpValue answer = RscpValue.container(RscpTag.EMS_GET_IDLE_PERIODS_2, List.of(period));
+
+        RscpValue decoded = RscpCodec.decodeFrame(RscpCodec.encodeFrame(List.of(answer))).get(0);
+        List<E3DCIdlePeriod> periods = E3DCIdlePeriod.fromResponse(decoded);
+
+        assertEquals(1, periods.size());
+        assertEquals(E3DCIdlePeriod.blocker(E3DCIdlePeriod.Type.DISCHARGE), periods.get(0));
+        assertTrue(periods.get(0).blocks(E3DCIdlePeriod.Type.DISCHARGE));
     }
 }

@@ -168,8 +168,13 @@ public class RscpClient implements AutoCloseable {
      * The device answers with exactly one frame that carries all elements, so one frame is read. Reading
      * further frames would consume the answer of the next request, because the device replies about a
      * second later while a follow-up read waits only a fraction of that.
+     *
+     * <p>
+     * Requests are sent one at a time. The poll and a command arrive on different threads but share one
+     * socket and one cipher whose chaining state moves with every frame, so two requests in flight would
+     * read each other's answer, corrupt that state, and both end in a timeout.
      */
-    public RscpValue request(List<RscpValue> requestItems) throws RscpException {
+    public synchronized RscpValue request(List<RscpValue> requestItems) throws RscpException {
         long started = System.nanoTime();
         byte[] frame;
         try {

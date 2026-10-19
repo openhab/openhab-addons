@@ -22,6 +22,9 @@ import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 
 /**
@@ -103,5 +106,37 @@ class E3DCWallboxCommandTest {
             assertNotNull(registry.spec(E3DCBindingConstants.GROUP_WALLBOX, channel),
                     "the channel " + channel + " must be writable");
         }
+    }
+
+    /** An item with a unit sends a quantity, which must be written as the plain number of amperes. */
+    @Test
+    void aCurrentWithAUnitIsWrittenInAmperes() {
+        E3DCCommandHandler handler = new E3DCCommandHandler();
+
+        RscpValue request = command(handler, spec("max-charge-current"), new QuantityType<>(16, Units.AMPERE));
+        Number current = request.findNumber(RscpTag.WB_REQ_SET_MAX_CHARGE_CURRENT);
+        assertNotNull(current);
+        assertEquals(16, current.intValue());
+
+        RscpValue minimum = command(handler, spec("min-charge-current"),
+                new QuantityType<>(6000, MetricPrefix.MILLI(Units.AMPERE)));
+        Number minimumCurrent = minimum.findNumber(RscpTag.WB_REQ_SET_MIN_CHARGE_CURRENT);
+        assertNotNull(minimumCurrent);
+        assertEquals(6, minimumCurrent.intValue());
+    }
+
+    @Test
+    void aQuantityOfAnotherKindIsRejected() {
+        E3DCCommandHandler handler = new E3DCCommandHandler();
+
+        assertNull(handler.buildRequest(spec("max-charge-current"), new QuantityType<>(16, Units.VOLT), WALLBOX_INDEX));
+    }
+
+    @Test
+    void aCurrentThatDoesNotFitIntoOneByteIsRejected() {
+        E3DCCommandHandler handler = new E3DCCommandHandler();
+
+        assertNull(handler.buildRequest(spec("max-charge-current"), new DecimalType(256), WALLBOX_INDEX));
+        assertNull(handler.buildRequest(spec("max-charge-current"), new DecimalType(-1), WALLBOX_INDEX));
     }
 }

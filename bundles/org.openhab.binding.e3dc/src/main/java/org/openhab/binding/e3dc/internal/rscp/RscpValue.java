@@ -163,7 +163,14 @@ public final class RscpValue {
 
     public @Nullable String findString(int searchTag) {
         RscpValue found = find(searchTag);
-        return found != null && found.value instanceof String string ? string : null;
+        if (found == null) {
+            return null;
+        }
+        // a received text is kept as the bytes the device sent, a text built here is a String
+        if (found.value instanceof byte[] bytes && found.type == RscpType.CSTRING) {
+            return new String(bytes, StandardCharsets.UTF_8).replace("\0", "");
+        }
+        return found.value instanceof String string ? string : null;
     }
 
     /** True if this item or any descendant is an error item. */

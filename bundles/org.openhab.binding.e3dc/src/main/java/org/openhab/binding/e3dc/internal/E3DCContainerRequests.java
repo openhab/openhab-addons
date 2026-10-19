@@ -129,7 +129,7 @@ final class E3DCContainerRequests {
      * The reserve kept for emergency power, which addresses no device and therefore carries no index. The
      * device adds the parameters it reports by itself to the answer of a request that names them.
      */
-    private static final Container RESERVE = new Container(E3DCBindingConstants.GROUP_RESERVE,
+    private static final Container RESERVE = new Container(E3DCBindingConstants.GROUP_EMERGENCY,
             RscpTag.SE_REQ_EP_RESERVE, 0, RscpTag.SE_EP_RESERVE, List.of(RscpTag.SE_PARAM_EP_RESERVE,
                     RscpTag.SE_PARAM_LAST_SOC, RscpTag.SE_PARAM_EP_RESERVE_W, RscpTag.SE_PARAM_EP_RESERVE_MAX_W));
 

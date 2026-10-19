@@ -68,7 +68,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="system-set-power-mode">
+	<channel-type id="battery-control-set-power-mode">
 		<item-type>String</item-type>
 		<label>Set Power Mode</label>
 		<description>Forces a power mode: auto, idle:cycles or mode:watts:cycles for charge, discharge and grid_charge</description>
@@ -82,35 +82,35 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-emergency-power-status">
+	<channel-type id="emergency-power-status">
 		<item-type>Number</item-type>
 		<label>Emergency Power Status</label>
 		<description>State of the emergency power supply</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-charging-lock">
+	<channel-type id="battery-control-charging-lock">
 		<item-type>Switch</item-type>
 		<label>Charging Lock</label>
 		<description>Battery charging is currently blocked</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-discharging-lock">
+	<channel-type id="battery-control-discharging-lock">
 		<item-type>Switch</item-type>
 		<label>Discharging Lock</label>
 		<description>Battery discharging is currently blocked</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-emergency-power-available">
+	<channel-type id="emergency-power-available">
 		<item-type>Switch</item-type>
 		<label>Emergency Power Available</label>
 		<description>Emergency power reserve is available</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-charging-throttled">
+	<channel-type id="battery-control-charging-throttled">
 		<item-type>Switch</item-type>
 		<label>Charging Throttled</label>
 		<description>Battery charging is currently limited</description>
@@ -124,28 +124,28 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-charging-time-lock">
+	<channel-type id="battery-control-charging-time-lock">
 		<item-type>Switch</item-type>
 		<label>Charging Time Lock</label>
 		<description>Battery charging is blocked by a time window</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-discharging-time-lock">
+	<channel-type id="battery-control-discharging-time-lock">
 		<item-type>Switch</item-type>
 		<label>Discharging Time Lock</label>
 		<description>Battery discharging is blocked by a time window</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-weather-regulated-charge">
+	<channel-type id="battery-control-weather-regulated-charge">
 		<item-type>Switch</item-type>
 		<label>Weather Regulated Charge</label>
 		<description>Charging follows the weather forecast</description>
 		<state/>
 	</channel-type>
 
-	<channel-type id="system-power-limits-used">
+	<channel-type id="battery-control-power-limits-used">
 		<item-type>Switch</item-type>
 		<label>Power Limits Used</label>
 		<description>Configured power limits are active</description>
@@ -159,22 +159,36 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-set-manual-charge">
+	<channel-type id="battery-control-set-manual-charge">
 		<item-type>Number:Energy</item-type>
 		<label>Set Manual Charge Energy</label>
 		<description>Start a manual battery charge with this energy, sent to the device in Wh</description>
 		<state pattern="%.0f Wh"/>
 	</channel-type>
 
-	<channel-type id="system-idle-periods">
+	<channel-type id="battery-control-idle-periods">
 		<item-type>String</item-type>
 		<label>Idle Periods</label>
 		<description>Periods during which the battery is locked against charging or discharging, one period per line as
 			name:days:mode:active:hh:mm-hh:mm</description>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="system-block-charging">
+	<channel-type id="battery-control-idle-period-set">
+		<item-type>String</item-type>
+		<label>Set Idle Period</label>
+		<description>Adds or replaces the idle period of the same name, as name:days:mode:active:hh:mm-hh:mm</description>
+		<state pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="battery-control-idle-period-delete">
+		<item-type>String</item-type>
+		<label>Delete Idle Period</label>
+		<description>Removes the idle period of this name</description>
+		<state pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="battery-control-block-charging">
 		<item-type>Switch</item-type>
 		<label>Block Charging</label>
 		<description>Blocks charging of the battery on all days around the clock with an idle period of its own and
@@ -183,7 +197,7 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="system-block-discharging">
+	<channel-type id="battery-control-block-discharging">
 		<item-type>Switch</item-type>
 		<label>Block Discharging</label>
 		<description>Blocks discharging of the battery on all days around the clock with an idle period of its own and
@@ -205,14 +219,14 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="system-idle-periods-enabled">
+	<channel-type id="battery-control-idle-periods-enabled">
 		<item-type>Switch</item-type>
 		<label>Idle Periods Enabled</label>
 		<description>Whether the device uses the configured idle periods</description>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="system-manual-charge-energy">
+	<channel-type id="battery-control-manual-charge-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Manual Charge Energy</label>
 		<description>Energy of the manual battery charge started last</description>

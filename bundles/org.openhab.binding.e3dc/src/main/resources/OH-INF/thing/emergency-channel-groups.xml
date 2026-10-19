@@ -4,14 +4,16 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="reserve">
-		<label>Emergency Power Reserve</label>
+	<channel-group-type id="emergency">
+		<label>Emergency Power</label>
 		<description>Reserve of the battery kept available for emergency power</description>
 		<channels>
-			<channel id="percent" typeId="reserve-percent"/>
-			<channel id="energy" typeId="reserve-energy"/>
-			<channel id="energy-max" typeId="reserve-energy-max"/>
-			<channel id="last-soc" typeId="reserve-last-soc"/>
+			<channel id="percent" typeId="emergency-percent"/>
+			<channel id="energy" typeId="emergency-energy"/>
+			<channel id="energy-max" typeId="emergency-energy-max"/>
+			<channel id="last-soc" typeId="emergency-last-soc"/>
+			<channel id="power-status" typeId="emergency-power-status"/>
+			<channel id="power-available" typeId="emergency-power-available"/>
 		</channels>
 	</channel-group-type>
 

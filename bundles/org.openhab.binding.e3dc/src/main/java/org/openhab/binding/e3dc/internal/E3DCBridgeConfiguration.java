@@ -51,13 +51,10 @@ public class E3DCBridgeConfiguration {
     public String rscpPassword = "";
 
     /** Poll interval in seconds. */
-    public int refreshInterval = 60;
+    public int refreshInterval = 5;
 
     /** Interval of the history request in minutes, independent of the poll interval. */
     public int historyInterval = 15;
-
-    /** First year of the history fetch, {@code 0} when it is not set. */
-    public int historyStartYear = 0;
 
     /** Socket timeout in seconds. */
     public int timeout = 10;

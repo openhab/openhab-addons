@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.e3dc.internal;
 
+import java.util.List;
 import java.util.Map;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,7 +24,9 @@ import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 
 /**
@@ -37,6 +42,12 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public record E3DCCommandSpec(int tag, RscpType type, int container, boolean switchValue) {
+
+    /** The largest value an unsigned byte parameter can carry. */
+    private static final int MAX_UCHAR8 = 255;
+
+    /** The units the device expects for the quantities that can be written. */
+    private static final List<Unit<?>> DEVICE_UNITS = List.of(Units.AMPERE, Units.WATT, Units.WATT_HOUR);
 
     /** A boolean parameter in the root container, such as the weather regulated charge flag. */
     public static E3DCCommandSpec flag(int tag) {
@@ -98,7 +109,7 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
         if (number == null) {
             return null;
         }
-        if (number < 0) {
+        if (number < 0 || (type == RscpType.UCHAR8 && number > MAX_UCHAR8)) {
             return null;
         }
         if (type == RscpType.FLOAT32) {
@@ -127,12 +138,26 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
     }
 
     /**
-     * Numeric commands arrive as a plain number for dimensionless channels, but as a quantity for
-     * channels carrying a unit. openHAB hands both to the handler as {@link DecimalType} in the
-     * channel's unit, so the value can be read directly.
+     * Numeric commands arrive as a plain number for channels without a unit, but as a quantity for items
+     * carrying a unit, such as {@code 16 A} or {@code 3 kW}. A quantity is converted into the unit the
+     * device works with, so the user may write in any compatible unit.
      */
     private static @Nullable Double toNumber(Command command) {
-        return command instanceof DecimalType decimal ? decimal.doubleValue() : null;
+        if (command instanceof DecimalType decimal) {
+            return decimal.doubleValue();
+        }
+        if (command instanceof QuantityType<?> quantity) {
+            Unit<?> unit = quantity.getUnit();
+            for (Unit<?> deviceUnit : DEVICE_UNITS) {
+                if (deviceUnit.isCompatible(unit)) {
+                    QuantityType<?> converted = quantity.toUnit(deviceUnit);
+                    return converted == null ? null : converted.doubleValue();
+                }
+            }
+            // a dimensionless quantity such as a percentage is written as the number it shows
+            return Units.ONE.isCompatible(unit) ? Double.valueOf(quantity.doubleValue()) : null;
+        }
+        return null;
     }
 
     /** The parameter tags of the power settings container, in the order the device expects them. */
@@ -166,14 +191,15 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
                         E3DCCommandSpec.uchar8Number(RscpTag.EMS_REQ_SET_WB_DISCHARGE_BAT_UNTIL, 0), //
                         "wallbox-disable-at-mix-mode",
                         E3DCCommandSpec.bool(RscpTag.EMS_REQ_SET_WALLBOX_ENFORCE_POWER_ASSIGNMENT, 0)))//
-                .group(E3DCBindingConstants.GROUP_SYSTEM, Map.of(//
+                .group(E3DCBindingConstants.GROUP_BATTERY_CONTROL, Map.of(//
                         "power-limits-used",
                         E3DCCommandSpec.bool(RscpTag.EMS_POWER_LIMITS_USED, RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
+                        "idle-periods-enabled", E3DCCommandSpec.bool(RscpTag.EMS_REQ_SET_IDLE_PERIODS_ENABLE, 0), //
                         "weather-regulated-charge",
                         E3DCCommandSpec.bool(RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED,
                                 RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
                         "set-manual-charge", E3DCCommandSpec.number(RscpTag.EMS_REQ_START_MANUAL_CHARGE)))//
-                .group(E3DCBindingConstants.GROUP_RESERVE, Map.of(//
+                .group(E3DCBindingConstants.GROUP_EMERGENCY, Map.of(//
                         "percent",
                         E3DCCommandSpec.floatNumber(RscpTag.SE_PARAM_EP_RESERVE, RscpTag.SE_REQ_SET_EP_RESERVE), //
                         "energy",
