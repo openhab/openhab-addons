@@ -52,7 +52,7 @@ public final class AwsCloudBridgeHandler extends AbstractBridgeHandler<AwsCloudB
 
     @Override
     public boolean isReadOnly() {
-        return true;
+        return false;
     }
 
     @Override

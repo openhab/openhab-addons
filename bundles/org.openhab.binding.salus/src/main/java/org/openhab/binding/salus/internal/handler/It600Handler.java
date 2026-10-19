@@ -13,7 +13,6 @@
 package org.openhab.binding.salus.internal.handler;
 
 import static java.math.RoundingMode.HALF_EVEN;
-import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.*;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.*;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
@@ -47,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Martin Grześlowski - Initial contribution
+ * @author Martin Grześlowski - AWS thermostat commands and temperature units
  */
 @NonNullByDefault
 public class It600Handler extends BaseThingHandler {
@@ -165,8 +165,8 @@ public class It600Handler extends BaseThingHandler {
 
         findLongProperty(channelPrefix + ":sIT600TH:LocalTemperature_x100", "LocalTemperature_x100")
                 .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
-                .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN))).map(DecimalType::new)
-                .ifPresent(state -> {
+                .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN)))
+                .map(value -> new QuantityType<>(value, CELSIUS)).ifPresent(state -> {
                     updateState(channelUID, state);
                     updateStatus(ONLINE);
                 });
@@ -177,8 +177,8 @@ public class It600Handler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             findLongProperty(channelPrefix + ":sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
                     .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
-                    .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN))).map(DecimalType::new)
-                    .ifPresent(state -> {
+                    .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN)))
+                    .map(value -> new QuantityType<>(value, CELSIUS)).ifPresent(state -> {
                         updateState(channelUID, state);
                         updateStatus(ONLINE);
                     });
@@ -187,7 +187,10 @@ public class It600Handler extends BaseThingHandler {
 
         BigDecimal rawValue = null;
         if (command instanceof QuantityType<?> commandAsQuantityType) {
-            rawValue = requireNonNull(commandAsQuantityType.toUnit(CELSIUS)).toBigDecimal();
+            var celsius = commandAsQuantityType.toUnit(CELSIUS);
+            if (celsius != null) {
+                rawValue = celsius.toBigDecimal();
+            }
         } else if (command instanceof DecimalType commandAsDecimalType) {
             rawValue = commandAsDecimalType.toBigDecimal();
         }
@@ -201,10 +204,6 @@ public class It600Handler extends BaseThingHandler {
             }
             var wasSet = cloudApi.setValueForProperty(dsn, property.get().getName(), value);
             if (wasSet) {
-                findLongProperty(channelPrefix + ":sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
-                        .ifPresent(prop -> prop.setValue(value));
-                findLongProperty(channelPrefix + ":sIT600TH:HoldType", "HoldType")
-                        .ifPresent(prop -> prop.setValue((long) MANUAL));
                 updateStatus(ONLINE);
             }
             return;
@@ -252,8 +251,9 @@ public class It600Handler extends BaseThingHandler {
             if (property.isEmpty()) {
                 return;
             }
-            cloudApi.setValueForProperty(dsn, property.get().getName(), value);
-            updateStatus(ONLINE);
+            if (cloudApi.setValueForProperty(dsn, property.get().getName(), value)) {
+                updateStatus(ONLINE);
+            }
             return;
         }
 
@@ -286,7 +286,7 @@ public class It600Handler extends BaseThingHandler {
                 .findAny();
         if (property.isEmpty()) {
             property = deviceProperties.stream()//
-                    .filter(p -> p.getName().contains(shortName))//
+                    .filter(p -> p.getName().endsWith(":" + shortName) || p.getName().equals(shortName))//
                     .filter(DeviceProperty.LongDeviceProperty.class::isInstance)//
                     .map(DeviceProperty.LongDeviceProperty.class::cast)//
                     .findAny();

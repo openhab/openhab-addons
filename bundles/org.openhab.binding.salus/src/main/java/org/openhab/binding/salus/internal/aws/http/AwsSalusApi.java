@@ -18,11 +18,8 @@ import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.salus.internal.aws.http.AwsSigner.*;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -35,7 +32,6 @@ import org.openhab.binding.salus.internal.rest.GsonMapper;
 import org.openhab.binding.salus.internal.rest.RestClient;
 import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
-import org.openhab.binding.salus.internal.rest.exceptions.UnsuportedSalusApiException;
 import org.openhab.core.io.net.http.HttpClientFactory;
 
 /**
@@ -44,6 +40,7 @@ import org.openhab.core.io.net.http.HttpClientFactory;
  * information and properties.
  *
  * @author Martin Grześlowski - Initial contribution
+ * @author Martin Grześlowski - AWS device shadow commands
  */
 @NonNullByDefault
 public class AwsSalusApi extends AbstractSalusApi<Authentication> {
@@ -54,9 +51,8 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
     @Nullable
     CogitoCredentials cogitoCredentials;
 
-    private AwsSalusApi(String username, byte[] password, String baseUrl, RestClient restClient, GsonMapper mapper,
-            Clock clock, AuthenticationHelper authenticationHelper, String companyCode, String awsService,
-            String region) {
+    AwsSalusApi(String username, byte[] password, String baseUrl, RestClient restClient, GsonMapper mapper, Clock clock,
+            AuthenticationHelper authenticationHelper, String companyCode, String awsService, String region) {
         super(username, password, baseUrl, restClient, mapper, clock);
         this.authenticationHelper = authenticationHelper;
         this.companyCode = companyCode;
@@ -78,11 +74,8 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
         var result = authenticationHelper.performSrpAuthentication(username, new String(password, UTF_8));
         var localAuth = authentication = new Authentication(result.getAccessToken(), result.getExpiresIn(),
                 result.getTokenType(), result.getRefreshToken(), result.getIdToken());
-        var local = LocalDateTime.now(clock).plusSeconds(localAuth.expiresIn())
-                // this is to account that there is a delay between server setting `expires_in`
-                // and client (OpenHAB) receiving it
-                .minusSeconds(TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS);
-        var localExpireTime = authTokenExpireTime = ZonedDateTime.of(local, UTC);
+        var localExpireTime = authTokenExpireTime = ZonedDateTime.now(clock).withZoneSameInstant(UTC)
+                .plusSeconds(localAuth.expiresIn() - TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS);
 
         var id = authenticationHelper.getId(result);
 
@@ -138,15 +131,8 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
     @Override
     public SortedSet<DeviceProperty<?>> findDeviceProperties(String dsn)
             throws SalusApiException, AuthSalusApiException {
-        var path = "https://%s.iot.%s.amazonaws.com/things/%s/shadow".formatted(awsService, region, dsn);
-        var time = ZonedDateTime.now(clock).withZoneSameInstant(ZoneId.of("UTC"));
-        var signingResult = buildSigningResult("/things/%s/shadow".formatted(dsn), time, null);
-        var headers = signingResult.entrySet()//
-                .stream()//
-                .map(header -> new RestClient.Header(header.getKey(), header.getValue()))//
-                .toList()//
-                .toArray(new RestClient.Header[0]);
-        var response = get(path, headers);
+        var path = shadowPath(dsn);
+        var response = restClient.get("https://" + shadowHost() + path, shadowHeaders("GET", path, null));
         if (response == null) {
             return new TreeSet<>();
         }
@@ -154,14 +140,37 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
         return new TreeSet<>(mapper.parseAwsDeviceProperties(response));
     }
 
-    private Map<String, String> buildSigningResult(String pathAndQuery, ZonedDateTime time, @Nullable String body)
+    private String shadowHost() {
+        return "%s.iot.%s.amazonaws.com".formatted(awsService, region);
+    }
+
+    private String shadowPath(String dsn) throws SalusApiException {
+        if (!dsn.matches("[a-zA-Z0-9:_-]{1,128}")) {
+            throw new SalusApiException("Invalid AWS Thing name");
+        }
+        return "/things/%s/shadow".formatted(dsn);
+    }
+
+    private synchronized RestClient.Header[] shadowHeaders(String method, String path, @Nullable String body)
             throws AuthSalusApiException, SalusApiException {
         refreshAccessToken();
-        return sign(pathAndQuery, time, requireNonNull(cogitoCredentials), region, "iotdevicegateway", body);
+        var time = ZonedDateTime.now(clock).withZoneSameInstant(UTC);
+        var headers = sign(method, shadowHost(), path, time, requireNonNull(cogitoCredentials), region,
+                "iotdevicegateway", body);
+        return headers.entrySet().stream().map(header -> new RestClient.Header(header.getKey(), header.getValue()))
+                .toArray(RestClient.Header[]::new);
     }
 
     @Override
-    public Object setValueForProperty(String dsn, String propertyName, Object value) throws SalusApiException {
-        throw new UnsuportedSalusApiException("Setting value is not supported for AWS bridge");
+    public Object setValueForProperty(String dsn, String propertyName, Object value)
+            throws SalusApiException, AuthSalusApiException {
+        var path = shadowPath(dsn);
+        var body = mapper.awsShadowUpdate(propertyName, value);
+        var response = restClient.post("https://" + shadowHost() + path, new RestClient.Content(body),
+                shadowHeaders("POST", path, body));
+        return mapper.awsDesiredValue(response, propertyName)
+                .filter(accepted -> value instanceof Number requested && accepted.longValue() == requested.longValue())
+                .orElseThrow(
+                        () -> new SalusApiException("AWS shadow update did not acknowledge the requested property"));
     }
 }

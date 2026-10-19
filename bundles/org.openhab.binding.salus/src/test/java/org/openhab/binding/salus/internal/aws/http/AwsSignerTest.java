@@ -13,62 +13,63 @@
 package org.openhab.binding.salus.internal.aws.http;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Objects.requireNonNull;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.ZoneId;
+import java.security.MessageDigest;
 import java.time.ZonedDateTime;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import software.amazon.awssdk.crt.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
+import software.amazon.awssdk.crt.http.HttpHeader;
 import software.amazon.awssdk.crt.http.HttpRequest;
 
 /**
  * @author Martin Grześlowski - Initial contribution
+ * @author Martin Grześlowski - Verify shadow read and write signatures
  */
 @NonNullByDefault
 class AwsSignerTest {
-    @Test
-    @DisplayName("should generate same signature headers as AWS SDK")
-    void shouldGenerateSameSignatureHeadersAsAWSSDK() throws Exception {
-        // given
-        var pathAndQuery = "/things/xyz/shadow";
-        var time = ZonedDateTime.now(ZoneId.of("UTC"));
-        var credentials = new CogitoCredentials("AKIAIOSFODNN7EXAMPLE", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-                "IQoJb3JpZ2luX2VjEAIaDGV1LWNlbnRyYWwtMSJIMEYCIQDE7EzyAzhN1zhbH6cHEyA3pc0V2wDHnUyPxRd57WwDAQIhAK6exf3NjDynJT68N8oQVzm3HAC0hEKLJDFy/Lq0c2XeKt8ECIv//////////wEQAhoMMDU2NzE2MDkxODE0Igzmsy2iRkqAqUqV4LwqswTGsPbNATSsxQ8epT4uD8xEgdQJ3KANDsqRWPi/u2Nr7oBcnFH0KbqChpSO8FEshdBLpKgCju0VEghg/K0N79qFqvD0fRvij4G8k6zyLsS51y4MpW2TSe0i9rMOSB0yN4I7Gp3a4u96GUiZs/8b+S1wN3H9bTjMeCO7zC0VXWj7icWIv9UckgX9IRaCBj0GQ0Q+oHwzgtVKK4onwWxZO/7r0n39WLIBf0SQHsybWfK3YEj/OwVudsISUWxSfwoBK56PvqxUqUfx9ASKroTaS41K45j9/v7HaKFIp/6RKsP9Ls8jc0kTExar/Ch3ZNfCRK3TLP2XjDe/DfSWr5VdihwF4E3vJQ4L05/rN8lieEZPuWJEbz+8i/EiRBjDgtzl+Rt3R2Esa4bzRfK4UywZjVpUMatMpKk/+MooXaOE8SC8yMWK4GgEorVMcQUJGdZ+KH/3sO5IARplVrOiynwksTIgFIJ1NKIDMfmm966U1q7ClaotOCRt0kqsTXU+0cllAXksc67T0d1Pc4tt7Q+yw/HSyKVZlK1bvQ4LLU1NnUDcJiCUe5Q+A61wWSGjEWxAXjggxhro+1W0gRHgXILZnr/GkM8/kT/UczkAnGb0LFTh1haFlXYgqxlA3SzAiXMDVyzWqD7EOq1S/fSYZ9vrxDJPYuiYVBdDsQDlUGGePdHPmxZBfZC7tnHJkzOgRfijYA7TXfVkAftYLxbldAA/I5Wd6Xlw9OjytBn8MOXNifVZjgsURTDUmPayBjqEAq0ZbjC4sf7hQE+2wwSot9oANqJQq6nB/RitNWtENuEss02L1Fk/GmD+tWW3AVY/+a/8xrN8reyQDSUaKb39UesTxaBQ7/MdJQNgGkdIVmSF7rBedOXzjqaqvqLylQR1NnsVl3veAnsmGnE03m0punceAxH2V0S6iAcjYyMwVBeTYpJ3jQbEYvvtQqyoo7koiR2MkdqSD5YND5D8CoaWlWPvI4Oy326srm2eeQVpALyKzEu5XKWL45mnYpLLFDYzAdErjkuMDY6tBZIKnADSoPPj17fbjVFOwL44c1xXKkA7xvaMATCeNl3pkwxHCg1LpXW2vVkzWE/jB2NNYZmHjayb8x1G");
-        var region = "eu-central-1";
+    @ParameterizedTest
+    @ValueSource(strings = { "GET", "POST" })
+    void shouldGenerateSameSignatureHeadersAsAWSSDK(String method) throws Exception {
+        var path = "/things/test-device/shadow";
+        var host = "example-ats.iot.eu-central-1.amazonaws.com";
+        var time = ZonedDateTime.parse("2026-10-19T10:00:00Z");
+        var credentials = new CogitoCredentials("example-access-key", "example-secret-key", "example-session-token");
+        var body = "POST".equals(method)
+                ? "{\"state\":{\"desired\":{\"11\":{\"properties\":{\"ep9:sIT600TH:SetHeatingSetpoint_x100\":2150}}}}}"
+                : null;
 
-        // when
-        var sign = AwsSigner.sign(pathAndQuery, time, credentials, region, "iotdevicegateway", null);
-
-        // then
-        assertThat(sign).isEqualTo(rawAwsSign(pathAndQuery, time, credentials, region));
+        assertThat(AwsSigner.sign(method, host, path, time, credentials, "eu-central-1", "iotdevicegateway", body))
+                .isEqualTo(rawAwsSign(method, host, path, time, credentials, body));
     }
 
-    public static Map<String, String> rawAwsSign(String pathAndQuery, ZonedDateTime time,
-            CogitoCredentials cogitoCredentials, String region) throws Exception {
-        HttpRequest httpRequest = new HttpRequest("GET", pathAndQuery,
-                new software.amazon.awssdk.crt.http.HttpHeader[] {
-                        new software.amazon.awssdk.crt.http.HttpHeader("host", "") },
-                null);
-        var localCredentials = requireNonNull(cogitoCredentials);
-        try (var config = new AwsSigningConfig()) {
-            config.setRegion(region);
+    private static Map<String, String> rawAwsSign(String method, String host, String path, ZonedDateTime time,
+            CogitoCredentials credentials, @Nullable String body) throws Exception {
+        var request = new HttpRequest(method, path, new HttpHeader[] { new HttpHeader("host", host) }, null);
+        try (var provider = new StaticCredentialsProvider.StaticCredentialsProviderBuilder()
+                .withAccessKeyId(credentials.accessKeyId().getBytes(UTF_8))
+                .withSecretAccessKey(credentials.secretKey().getBytes(UTF_8))
+                .withSessionToken(credentials.sessionToken().getBytes(UTF_8)).build();
+                var config = new AwsSigningConfig()) {
+            config.setRegion("eu-central-1");
             config.setService("iotdevicegateway");
-            config.setCredentialsProvider(new StaticCredentialsProvider.StaticCredentialsProviderBuilder()
-                    .withAccessKeyId(localCredentials.accessKeyId().getBytes(UTF_8))
-                    .withSecretAccessKey(localCredentials.secretKey().getBytes(UTF_8))
-                    .withSessionToken(localCredentials.sessionToken().getBytes(UTF_8)).build());
+            config.setCredentialsProvider(provider);
             config.setTime(time.toInstant().toEpochMilli());
-            return software.amazon.awssdk.crt.auth.signing.AwsSigner.sign(httpRequest, config).get().getSignedRequest()
-                    .getHeaders().stream().collect(Collectors.toMap(software.amazon.awssdk.crt.http.HttpHeader::getName,
-                            software.amazon.awssdk.crt.http.HttpHeader::getValue));
+            config.setSignedBodyValue(HexFormat.of().formatHex(
+                    MessageDigest.getInstance("SHA-256").digest((body == null ? "" : body).getBytes(UTF_8))));
+            return software.amazon.awssdk.crt.auth.signing.AwsSigner.sign(request, config).get(10, SECONDS)
+                    .getSignedRequest().getHeaders().stream()
+                    .collect(Collectors.toMap(HttpHeader::getName, HttpHeader::getValue));
         }
     }
 }
