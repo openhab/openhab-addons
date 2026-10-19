@@ -88,6 +88,7 @@ import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
@@ -1548,6 +1549,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         // Update effect channel
         updateSecondaryState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
+
+        // Create the secondary light channel group if not already created
+        if (fullUpdate) {
+            createSecondaryLightChannelGroup();
+        }
     }
 
     /**
@@ -1622,6 +1628,77 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             updateLightPropertiesDone = true;
         }
+    }
+
+    /**
+     * Create the secondary light channel group and add channels to it based on supported channels.
+     * Only creates channels that have been determined to be supported (i.e., have defined state).
+     */
+    private void createSecondaryLightChannelGroup() {
+        if (disposing || supportedSecondaryChannelIdSet.isEmpty()) {
+            return;
+        }
+
+        ChannelGroupUID secondaryGroupUID = new ChannelGroupUID(thing.getUID(), "secondary-light");
+         
+        // Check if the channel group already exists
+        if (thing.getChannel(secondaryGroupUID) != null) {
+            logger.debug("{} -> createSecondaryLightChannelGroup() secondary light channel group already exists",
+                    resourceId);
+            return;
+        }
+
+        synchronized (supportedSecondaryChannelIdSet) {
+            List<Channel> channelsToAdd = new ArrayList<>();
+
+            // Create channels for each supported secondary light channel
+            for (String channelId : supportedSecondaryChannelIdSet) {
+                ChannelUID secondaryChannelUID = new ChannelUID(secondaryGroupUID, channelId);
+                 
+                if (thing.getChannel(secondaryChannelUID) == null) {
+                    ChannelTypeUID channelTypeUID = getChannelTypeForId(channelId);
+                     
+                    if (channelTypeUID != null) {
+                        Channel channel = ChannelBuilder.create(secondaryChannelUID)
+                                .withType(channelTypeUID)
+                                .build();
+                        channelsToAdd.add(channel);
+                        logger.debug("{} -> createSecondaryLightChannelGroup() preparing channel '{}'", resourceId,
+                                secondaryChannelUID);
+                    }
+                }
+            }
+
+            // Apply all channel updates at once
+            if (!channelsToAdd.isEmpty()) {
+                List<Channel> allChannels = new ArrayList<>(thing.getChannels());
+                allChannels.addAll(channelsToAdd);
+                updateThing(editThing().withChannels(allChannels).build());
+                logger.debug("{} -> createSecondaryLightChannelGroup() added {} channels in secondary-light group",
+                        resourceId, channelsToAdd.size());
+            }
+        }
+    }
+
+    /**
+     * Get the channel type UID for a given channel ID.
+     *
+     * @param channelId the channel ID
+     * @return the ChannelTypeUID or null if not found
+     */
+    private @Nullable ChannelTypeUID getChannelTypeForId(String channelId) {
+        return switch (channelId) {
+            case CHANNEL_2_BRIGHTNESS -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_BRIGHTNESS);
+            case CHANNEL_2_COLOR -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_COLOR);
+            case CHANNEL_2_COLOR_TEMP_PERCENT -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_COLOR_TEMP_PERCENT);
+            case CHANNEL_2_COLOR_TEMP_ABSOLUTE -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_COLOR_TEMP_ABSOLUTE);
+            case CHANNEL_2_COLOR_XY_ONLY -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_COLOR_XY_ONLY);
+            case CHANNEL_2_DIMMING_ONLY -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_DIMMING_ONLY);
+            case CHANNEL_2_SWITCH -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_SWITCH);
+            case CHANNEL_2_ON_OFF_ONLY -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_ON_OFF_ONLY);
+            case CHANNEL_2_EFFECT -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_EFFECT);
+            default -> null;
+        };
     }
 
     /**
