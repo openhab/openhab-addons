@@ -107,7 +107,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         if (getConfigAs(It4WifiConfiguration.class).username.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -176,7 +176,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
             reqBuilder = new RequestBuilder(config.macAddress, config.username);
             handShaked();
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-hostname");
         } catch (IOException e) {
             if (localSocket != null) {
                 try {
@@ -186,7 +186,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 }
             }
             sslSocket = Optional.empty();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
             logger.warn("Error in IT4Wifi handshake: {}", e.getMessage());
         }
     }
@@ -200,9 +200,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
         logger.debug("Received : {}", command);
         Event event = xstream.deserialize(command);
         if (event.error != null) {
-            logger.debug("Error code {} received : {}", event.error.code, event.error.info);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error [ \"%d\" ]".formatted(event.error.code));
+            communicationError("Error code %d received: %s".formatted(event.error.code, event.error.info));
         } else {
             if (event instanceof Response responseEvent) {
                 handleResponse(responseEvent);
@@ -228,8 +226,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                             sendCommand(CommandType.CONNECT);
                             return;
                         case wait:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                    "@text/conf-pending-validation");
+                            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "@text/conf-pending-validation");
                             scheduler.schedule(() -> handShaked(), 15, TimeUnit.SECONDS);
                             return;
                     }
@@ -294,14 +291,18 @@ public class It4WifiHandler extends BaseBridgeHandler {
     }
 
     public void communicationError(String message) {
-        // avoid a status update that would generates a WARN while we're already disconnecting
-        if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            dispose();
+        logger.debug("Communication error: {}", message);
+        ThingStatus currentStatus = getThing().getStatus();
+        dispose();
+        if (ThingStatus.UNKNOWN.equals(currentStatus)) {
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
+        } else if (ThingStatus.ONLINE.equals(currentStatus)) {
+            // avoid a status update that would generates a WARN while we're already disconnecting
             if (handshakeAttempts++ <= MAX_HANDSHAKE_ATTEMPTS) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
                 startConnector();
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-limit");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-limit");
             }
         }
     }
