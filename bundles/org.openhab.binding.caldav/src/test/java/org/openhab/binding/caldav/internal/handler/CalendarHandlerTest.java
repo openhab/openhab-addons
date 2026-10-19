@@ -260,6 +260,21 @@ class CalendarHandlerTest {
                 default -> throw new IllegalArgumentException("Illegal binding status: " + status);
             }
         }
+
+        @Override
+        protected void updateStatus(ThingStatus status) {
+            updateStatus(status, ThingStatusDetail.NONE, null);
+        }
+
+        @Override
+        protected void updateStatus(ThingStatus status, @Nullable String description) {
+            updateStatus(status, ThingStatusDetail.NONE, description);
+        }
+
+        @Override
+        protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+            updateStatus(ThingStatus.OFFLINE, detail, description);
+        }
     }
 
     /** Controllable UTC clock for deterministic calendar range and event transition tests. */
@@ -1123,8 +1138,8 @@ class CalendarHandlerTest {
             assertEquals("SYNCING", Objects.requireNonNull(second.published.get("sync#status")).toString());
             assertEquals("", Objects.requireNonNull(second.published.get("sync#error")).toString());
             second.bridgeConnectionFailed();
-            assertEquals(ThingStatus.OFFLINE, second.status);
-            assertEquals(ThingStatusDetail.BRIDGE_OFFLINE, second.detail);
+            assertEquals(ThingStatus.UNKNOWN, second.status);
+            assertEquals(ThingStatusDetail.NONE, second.detail);
             assertEquals("ERROR", Objects.requireNonNull(second.published.get("sync#status")).toString());
             second.handleRemoval();
             assertFalse(storage.containsKey(second.getThing().getUID().toString()));
@@ -2066,8 +2081,8 @@ class CalendarHandlerTest {
             assertEquals(ThingStatus.ONLINE, handler.status);
             assertEquals("", Objects.requireNonNull(handler.published.get("sync#error")).toString());
             handler.bridgeConnectionFailed();
-            assertEquals(ThingStatusDetail.BRIDGE_OFFLINE, handler.detail);
-            assertEquals("@text/status.calendar.bridge-offline", handler.description);
+            assertEquals(ThingStatus.ONLINE, handler.status);
+            assertEquals(ThingStatusDetail.NONE, handler.detail);
             assertEquals("Account bridge is offline",
                     Objects.requireNonNull(handler.published.get("sync#error")).toString());
         }

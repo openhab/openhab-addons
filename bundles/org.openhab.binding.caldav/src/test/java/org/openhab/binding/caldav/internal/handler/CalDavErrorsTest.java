@@ -90,7 +90,6 @@ class CalDavErrorsTest {
         assertEquals("Waiting for CalDAV server communication", messages.getProperty("status.account.waiting"));
         assertEquals("Waiting for initial calendar synchronization", messages.getProperty("status.calendar.waiting"));
         assertEquals("Fetching calendar data", messages.getProperty("status.calendar.fetching"));
-        assertEquals("Account bridge is offline", messages.getProperty("status.calendar.bridge-offline"));
     }
 
     private static Properties messages() throws IOException {

@@ -57,7 +57,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -207,7 +206,7 @@ public class AccountHandler extends BaseBridgeHandler {
             synchronized (lifecycle) {
                 if (contextGeneration == current) {
                     var failure = CalDavErrors.account(e);
-                    updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
+                    updateStatus(failure.detail(), failure.statusDescription());
                 }
             }
             return;
@@ -224,7 +223,7 @@ public class AccountHandler extends BaseBridgeHandler {
         synchronized (lifecycle) {
             if (contextGeneration == current) {
                 session = next;
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.account.waiting");
+                updateStatus(ThingStatus.UNKNOWN, "@text/status.account.waiting");
                 CalDavDiscoveryService service = discoveryService;
                 if (next.identitiesReady && service != null) {
                     service.startScan();
@@ -605,7 +604,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 return;
             }
             current.failures = Math.min(6, current.failures + 1);
-            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
+            updateStatus(failure.detail(), failure.statusDescription());
         }
         if (notifyCalendars) {
             for (var thing : getThing().getThings()) {
