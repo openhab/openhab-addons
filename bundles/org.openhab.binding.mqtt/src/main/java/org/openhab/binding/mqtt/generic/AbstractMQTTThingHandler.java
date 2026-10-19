@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.mqtt.generic;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -40,6 +42,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
+import org.openhab.core.transform.TransformationHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -76,6 +79,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AbstractMQTTThingHandler extends BaseThingHandler
         implements ChannelStateUpdateListener, AvailabilityTracker {
+    // TransformationHelper learns about a new service in its own bind call, which may run after the factory's.
+    private static final int TRANSFORMATION_CHECK_INTERVAL_MILLIS = 500;
+    private static final int TRANSFORMATION_CHECK_ATTEMPTS = 10;
+
     private final Logger logger = LoggerFactory.getLogger(AbstractMQTTThingHandler.class);
     // Timeout for the entire tree parsing and subscription
     private final int subscribeTimeout;
@@ -98,6 +105,24 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
      * @return A channel state. May be null.
      */
     public abstract @Nullable ChannelState getChannelState(ChannelUID channelUID);
+
+    protected Collection<ChannelState> getAllChannelStates() {
+        return availabilityStates.values().stream().filter(Objects::nonNull).map(Objects::requireNonNull).toList();
+    }
+
+    public void transformationServiceAdded(String serviceName) {
+        resubscribeWhenAvailable(serviceName, TRANSFORMATION_CHECK_ATTEMPTS);
+    }
+
+    private void resubscribeWhenAvailable(String serviceName, int attemptsLeft) {
+        scheduler.schedule(() -> {
+            if (TransformationHelper.getTransformationService(serviceName) != null) {
+                getAllChannelStates().forEach(ChannelState::resubscribeIfMessageDiscarded);
+            } else if (attemptsLeft > 1) {
+                resubscribeWhenAvailable(serviceName, attemptsLeft - 1);
+            }
+        }, TRANSFORMATION_CHECK_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
+    }
 
     /**
      * Start the topic discovery and subscribe to all channel state topics on all {@link ChannelState}s.

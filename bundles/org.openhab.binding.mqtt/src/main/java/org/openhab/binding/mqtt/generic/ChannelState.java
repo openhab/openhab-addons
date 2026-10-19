@@ -63,6 +63,8 @@ public class ChannelState implements MqttMessageSubscriber {
     protected final ChannelTransformation outgoingTransformation;
     private @Nullable ChannelStateUpdateListener channelStateUpdateListener;
     protected boolean hasSubscribed = false;
+    private volatile boolean messageDiscarded = false;
+    private volatile boolean stopping = false;
     private @Nullable ScheduledFuture<?> scheduledFuture;
     private CompletableFuture<@Nullable Void> future = CompletableFuture.completedFuture(null);
     private final Object futureLock = new Object();
@@ -145,6 +147,7 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     @Override
     public void processMessage(String topic, byte[] payload) {
+        messageDiscarded = false;
         final ChannelStateUpdateListener channelStateUpdateListener = this.channelStateUpdateListener;
         if (channelStateUpdateListener == null) {
             logger.warn("MQTT message received for topic {}, but MessageSubscriber object hasn't been started!", topic);
@@ -165,6 +168,7 @@ public class ChannelState implements MqttMessageSubscriber {
             if (transformedValue.isEmpty()) {
                 logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue,
                         incomingTransformation);
+                messageDiscarded = true;
                 receivedOrTimeout();
                 return;
             }
@@ -264,6 +268,7 @@ public class ChannelState implements MqttMessageSubscriber {
      *         It completes with false if no connection is established and completes exceptionally otherwise.
      */
     public CompletableFuture<@Nullable Void> stop() {
+        stopping = true;
         final MqttBrokerConnection connection = this.connection;
         if (connection != null && !config.stateTopic.isBlank()) {
             return connection.unsubscribe(config.stateTopic, this).thenRun(this::internalStop);
@@ -278,6 +283,7 @@ public class ChannelState implements MqttMessageSubscriber {
         this.connection = null;
         this.channelStateUpdateListener = null;
         hasSubscribed = false;
+        messageDiscarded = false;
         cachedValue.resetState();
     }
 
@@ -317,8 +323,10 @@ public class ChannelState implements MqttMessageSubscriber {
                 return future;
             }
             hasSubscribed = false;
+            messageDiscarded = false;
 
             this.connection = connection;
+            stopping = false;
 
             if (config.stateTopic.isBlank()) {
                 return CompletableFuture.completedFuture(null);
@@ -336,6 +344,24 @@ public class ChannelState implements MqttMessageSubscriber {
             }
         }).exceptionally(this::subscribeFail);
         return future;
+    }
+
+    public CompletableFuture<Boolean> resubscribeIfMessageDiscarded() {
+        final MqttBrokerConnection connection = this.connection;
+        if (!messageDiscarded || connection == null || config.stateTopic.isBlank()) {
+            return CompletableFuture.completedFuture(false);
+        }
+        messageDiscarded = false;
+        return connection.unsubscribe(config.stateTopic, this).exceptionally(e -> {
+            logger.debug("Unsubscribing channel {} from topic {} failed: {}", channelUID, config.stateTopic,
+                    e.getMessage());
+            return false;
+        }).thenCompose(unsubscribed -> isStartedOn(connection) ? connection.subscribe(config.stateTopic, this)
+                : CompletableFuture.completedFuture(false));
+    }
+
+    private boolean isStartedOn(MqttBrokerConnection connection) {
+        return !stopping && connection.equals(this.connection) && channelStateUpdateListener != null;
     }
 
     /**

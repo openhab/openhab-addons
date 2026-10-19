@@ -13,11 +13,12 @@
 package org.openhab.binding.mqtt.generic.internal.handler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.measure.Unit;
@@ -58,7 +59,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements ChannelStateUpdateListener {
     private final Logger logger = LoggerFactory.getLogger(GenericMQTTThingHandler.class);
-    final Map<ChannelUID, ChannelState> channelStateByChannelUID = new HashMap<>();
+    final Map<ChannelUID, ChannelState> channelStateByChannelUID = new ConcurrentHashMap<>();
     protected final MqttChannelStateDescriptionProvider stateDescProvider;
 
     /**
@@ -77,6 +78,13 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
     @Override
     public @Nullable ChannelState getChannelState(ChannelUID channelUID) {
         return channelStateByChannelUID.get(channelUID);
+    }
+
+    @Override
+    protected Collection<ChannelState> getAllChannelStates() {
+        List<ChannelState> states = new ArrayList<>(super.getAllChannelStates());
+        states.addAll(channelStateByChannelUID.values());
+        return states;
     }
 
     /**

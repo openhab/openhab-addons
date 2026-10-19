@@ -514,6 +514,104 @@ public class ChannelStateTests {
         }
 
         @Test
+        @SuppressWarnings("null")
+        public void channelWithDiscardedMessageSubscribesAgain() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of("MISSING:pattern")).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+            c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+            c.processMessage("state", T1_INPUT.getBytes(StandardCharsets.UTF_8));
+            c.resubscribeIfMessageDiscarded().get(50, TimeUnit.MILLISECONDS);
+            c.resubscribeIfMessageDiscarded().get(50, TimeUnit.MILLISECONDS);
+
+            verify(connectionMock, times(1)).unsubscribe(eq("state"), eq(c));
+            verify(connectionMock, times(2)).subscribe(eq("state"), eq(c));
+        }
+
+        @Test
+        @SuppressWarnings("null")
+        public void failedUnsubscribeStillSubscribesAgain() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of("MISSING:pattern")).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+            doReturn(CompletableFuture.failedFuture(new IllegalStateException("connection lost"))).when(connectionMock)
+                    .unsubscribe(any(), any());
+
+            c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+            c.processMessage("state", T1_INPUT.getBytes(StandardCharsets.UTF_8));
+            c.resubscribeIfMessageDiscarded().get(50, TimeUnit.MILLISECONDS);
+
+            verify(connectionMock, times(2)).subscribe(eq("state"), eq(c));
+        }
+
+        @Test
+        @SuppressWarnings("null")
+        public void channelStoppedDuringResubscribeStaysUnsubscribed() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of("MISSING:pattern")).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+            CompletableFuture<Boolean> unsubscribed = new CompletableFuture<>();
+            doReturn(unsubscribed).doReturn(CompletableFuture.completedFuture(true)).when(connectionMock)
+                    .unsubscribe(any(), any());
+
+            c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+            c.processMessage("state", T1_INPUT.getBytes(StandardCharsets.UTF_8));
+            CompletableFuture<Boolean> resubscribed = c.resubscribeIfMessageDiscarded();
+            c.stop();
+            unsubscribed.complete(true);
+            resubscribed.get(50, TimeUnit.MILLISECONDS);
+
+            verify(connectionMock, times(1)).subscribe(eq("state"), eq(c));
+        }
+
+        @Test
+        @SuppressWarnings("null")
+        public void resubscribeDuringStopStaysUnsubscribed() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of("MISSING:pattern")).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+            doReturn(new CompletableFuture<Boolean>()).doReturn(CompletableFuture.completedFuture(true))
+                    .when(connectionMock).unsubscribe(any(), any());
+
+            c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+            c.processMessage("state", T1_INPUT.getBytes(StandardCharsets.UTF_8));
+            c.stop();
+            c.resubscribeIfMessageDiscarded().get(50, TimeUnit.MILLISECONDS);
+
+            verify(connectionMock, times(1)).subscribe(eq("state"), eq(c));
+        }
+
+        @Test
+        @SuppressWarnings("null")
+        public void channelWithProcessedMessageKeepsItsSubscription() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of(T1_NAME + ":" + T1_PATTERN)).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+            c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+            c.processMessage("state", T1_INPUT.getBytes(StandardCharsets.UTF_8));
+            c.resubscribeIfMessageDiscarded().get(50, TimeUnit.MILLISECONDS);
+
+            verify(connectionMock, never()).unsubscribe(any(), any());
+        }
+
+        @Test
+        @SuppressWarnings("null")
+        public void processedMessageAfterADiscardedOneKeepsTheSubscription() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of(T1_NAME + ":" + T1_PATTERN)).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+            c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+            c.processMessage("state", NULL_INPUT.getBytes(StandardCharsets.UTF_8));
+            c.processMessage("state", T1_INPUT.getBytes(StandardCharsets.UTF_8));
+            c.resubscribeIfMessageDiscarded().get(50, TimeUnit.MILLISECONDS);
+
+            verify(connectionMock, never()).unsubscribe(any(), any());
+        }
+
+        @Test
         public void transformationPatternOutTest() throws Exception {
             ChannelConfig config = ChannelConfigBuilder.create("state", "command")
                     .withTransformationPatternOut(List.of(T1_NAME + ":" + T1_PATTERN)).build();

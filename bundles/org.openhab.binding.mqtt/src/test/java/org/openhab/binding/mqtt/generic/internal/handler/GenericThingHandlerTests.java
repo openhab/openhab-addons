@@ -56,8 +56,12 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.transform.TransformationHelper;
+import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * Tests cases for {@link GenericMQTTThingHandler}.
@@ -73,6 +77,9 @@ public class GenericThingHandlerTests {
     private @Mock @NonNullByDefault({}) Thing thingMock;
     private @Mock @NonNullByDefault({}) AbstractBrokerHandler bridgeHandlerMock;
     private @Mock @NonNullByDefault({}) MqttBrokerConnection connectionMock;
+    private @Mock @NonNullByDefault({}) BundleContext bundleContextMock;
+    private @Mock @NonNullByDefault({}) ServiceReference<TransformationService> serviceRefMock;
+    private @Mock @NonNullByDefault({}) TransformationService transformationServiceMock;
 
     private @NonNullByDefault({}) GenericMQTTThingHandler thingHandler;
 
@@ -294,6 +301,29 @@ public class GenericThingHandlerTests {
 
         thingHandler.handleCommand(TEXT_CHANNEL_UID, RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(eq(TEXT_CHANNEL_UID), argThat(arg -> "DEMOVALUE".equals(arg.toString())));
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void addedTransformationServiceResubscribesOnceItIsAvailable() throws Exception {
+        TransformationHelper transformationHelper = new TransformationHelper(bundleContextMock);
+        when(serviceRefMock.getProperty(any())).thenReturn("ADDED");
+        when(bundleContextMock.getService(serviceRefMock)).thenReturn(transformationServiceMock);
+        ChannelState channelState = spy(
+                new ChannelState(ChannelConfigBuilder.create("stateTopic", "commandTopic").build(), TEXT_CHANNEL_UID,
+                        new TextValue(), thingHandler));
+        doReturn(channelState).when(thingHandler).createChannelState(any(), any(), any());
+        thingHandler.initialize();
+
+        try {
+            thingHandler.transformationServiceAdded("ADDED");
+            verify(channelState, after(1500).never()).resubscribeIfMessageDiscarded();
+
+            transformationHelper.setTransformationService(serviceRefMock);
+            verify(channelState, timeout(2000).atLeastOnce()).resubscribeIfMessageDiscarded();
+        } finally {
+            transformationHelper.deactivate();
+        }
     }
 
     @Test
