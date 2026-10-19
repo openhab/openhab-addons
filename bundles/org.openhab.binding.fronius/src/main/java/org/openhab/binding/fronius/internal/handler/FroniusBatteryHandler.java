@@ -375,7 +375,10 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
             return UnDefType.UNDEF;
         }
         // the time of use schedules are in local time, so evaluate them in the time zone configured in openHAB
-        ZonedDateTime dateTime = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        return effectiveLimit(records, type, ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+    }
+
+    static State effectiveLimit(TimeOfUseRecords records, ScheduleType type, ZonedDateTime dateTime) {
         LocalTime now = dateTime.toLocalTime();
         DayOfWeek today = dateTime.getDayOfWeek();
         // when multiple entries of the same type are active (which the inverter web UI rejects, but its config API
@@ -388,7 +391,9 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
             }
             LocalTime start = LocalTime.parse(record.timeTable().start(), TIME_FORMATTER);
             LocalTime end = LocalTime.parse(record.timeTable().end(), TIME_FORMATTER);
-            if (!now.isBefore(start) && !now.isAfter(end)
+            // the inverter applies an entry up to, but excluding, its end time, even when it ends at 23:59, so an entry
+            // ending at 23:59 is not in effect during the last minute of the day
+            if (!now.isBefore(start) && now.isBefore(end)
                     && (limit == null || (maximumLimit ? record.power() < limit : record.power() > limit))) {
                 limit = record.power();
             }
