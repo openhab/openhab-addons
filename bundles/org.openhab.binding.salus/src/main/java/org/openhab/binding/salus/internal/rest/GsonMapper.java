@@ -43,8 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
@@ -66,7 +64,9 @@ public class GsonMapper {
     };
     private final Gson gson = new Gson();
     private static final Pattern AWS_COMMAND_PROPERTY = Pattern
-            .compile("ep_?\\d+:sIT600TH:Set(?:HeatingSetpoint_x100|CoolingSetpoint_x100|HoldType|LockKey)");
+            .compile("ep_?\\d+:sIT600TH:Set(?:HeatingSetpoint_x100|CoolingSetpoint_x100|HoldType|LockKey"
+                    + "|AllowUnlockFromDevice|TemperatureOffset|FrostSetpoint_x100|MinHeatSetpoint_x100"
+                    + "|MaxHeatSetpoint_x100|ValveProtection|ShutOffDisplay|TemperatureDisplayMode|TimeFormat24Hour|SystemMode)");
 
     public String loginParam(String username, byte[] password) {
         return gson.toJson(Map.of("user", Map.of("email", username, "password", new String(password))));
@@ -474,33 +474,23 @@ public class GsonMapper {
         } catch (NumberFormatException | ArithmeticException e) {
             throw new SalusApiException("AWS thermostat commands require an integer value", e);
         }
-        if (propertyName.endsWith(":SetHoldType") && integer != 0 && integer != 1 && integer != 2 && integer != 7
-                || propertyName.endsWith(":SetLockKey") && integer != 0 && integer != 1) {
-            throw new SalusApiException("Unsupported AWS thermostat mode");
+        boolean valid = switch (propertyName.substring(propertyName.lastIndexOf(':') + 1)) {
+            case "SetHoldType" -> integer == 0 || integer == 1 || integer == 2 || integer == 7;
+            case "SetSystemMode" -> integer == 0 || integer == 3 || integer == 4;
+            case "SetLockKey", "SetAllowUnlockFromDevice", "SetValveProtection", "SetShutOffDisplay",
+                    "SetTemperatureDisplayMode", "SetTimeFormat24Hour" ->
+                integer == 0 || integer == 1;
+            case "SetTemperatureOffset" -> integer >= -300 && integer <= 300 && integer % 50 == 0;
+            case "SetFrostSetpoint_x100" -> integer >= 500 && integer <= 1700 && integer % 50 == 0;
+            case "SetMinHeatSetpoint_x100", "SetMaxHeatSetpoint_x100" ->
+                integer >= 500 && integer <= 3500 && integer % 50 == 0;
+            default -> true;
+        };
+        if (!valid) {
+            throw new SalusApiException("Unsupported value for AWS thermostat property: " + propertyName);
         }
         return gson.toJson(
                 Map.of("state", Map.of("desired", Map.of("11", Map.of("properties", Map.of(propertyName, integer))))));
-    }
-
-    public Optional<Long> awsDesiredValue(@Nullable String json, String propertyName) {
-        if (json == null || json.isBlank()) {
-            return Optional.empty();
-        }
-        try {
-            JsonElement element = JsonParser.parseString(json);
-            for (var key : List.of("state", "desired", "11", "properties", propertyName)) {
-                if (!element.isJsonObject() || !element.getAsJsonObject().has(key)) {
-                    return Optional.empty();
-                }
-                element = element.getAsJsonObject().get(key);
-            }
-            if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) {
-                return Optional.of(element.getAsBigDecimal().longValueExact());
-            }
-        } catch (JsonSyntaxException | ArithmeticException | NumberFormatException e) {
-            logger.debug("Invalid AWS shadow update response");
-        }
-        return Optional.empty();
     }
 
     public String datapointParam(Object value) {

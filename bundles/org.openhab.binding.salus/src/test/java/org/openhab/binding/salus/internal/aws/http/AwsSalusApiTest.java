@@ -50,6 +50,8 @@ class AwsSalusApiTest {
     private static final String PROPERTY = "ep9:sIT600TH:SetHeatingSetpoint_x100";
     private static final String HOST = "example-ats.iot.eu-central-1.amazonaws.com";
     private static final String URL = "https://" + HOST + "/things/device-123/shadow";
+    private static final String PUBLISH_PATH = "/topics/%24aws%2Fthings%2Fdevice-123%2Fshadow%2Fupdate?qos=1";
+    private static final String PUBLISH_URL = "https://" + HOST + PUBLISH_PATH;
     private static final String BODY = """
             {"state":{"desired":{"11":{"properties":{"ep9:sIT600TH:SetHeatingSetpoint_x100":2150}}}}}
             """;
@@ -83,20 +85,20 @@ class AwsSalusApiTest {
     }
 
     @Test
-    void writesOnlyDesiredPropertyWithPostSignature() throws Exception {
-        when(client.post(eq(URL), any(), any(RestClient.Header[].class))).thenReturn(BODY);
+    void publishesOnlyRequestedPropertyToShadowUpdateTopic() throws Exception {
+        when(client.post(eq(PUBLISH_URL), any(), any(RestClient.Header[].class))).thenReturn("");
 
         assertThat(api.setValueForProperty("device-123", PROPERTY, 2150L)).isEqualTo(2150L);
 
         var content = ArgumentCaptor.forClass(RestClient.Content.class);
         var headers = ArgumentCaptor.forClass(RestClient.Header[].class);
-        verify(client).post(eq(URL), content.capture(), headers.capture());
+        verify(client).post(eq(PUBLISH_URL), content.capture(), headers.capture());
         assertThat(JsonParser.parseString(content.getValue().body())).isEqualTo(JsonParser.parseString(BODY));
         assertThat(content.getValue().type()).isEqualTo("application/json");
         Map<String, String> actual = Arrays.stream(headers.getValue())
                 .collect(Collectors.toMap(RestClient.Header::name, h -> h.values().getFirst()));
-        assertThat(actual).isEqualTo(
-                AwsSigner.sign("POST", HOST, "/things/device-123/shadow", ZonedDateTime.ofInstant(NOW, ZoneOffset.UTC),
+        assertThat(actual)
+                .isEqualTo(AwsSigner.sign("POST", HOST, PUBLISH_PATH, ZonedDateTime.ofInstant(NOW, ZoneOffset.UTC),
                         new CogitoCredentials("example-access-key", "example-secret-key", "example-session-token"),
                         "eu-central-1", "iotdevicegateway", content.getValue().body()));
         verify(client, never()).get(anyString(), any(RestClient.Header[].class));
@@ -104,20 +106,29 @@ class AwsSalusApiTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = { "{}", "invalid JSON", "{\"state\":null}",
-            "{\"state\":{\"reported\":{\"11\":{\"properties\":{\"ep9:sIT600TH:SetHeatingSetpoint_x100\":2150}}}}}" })
-    void rejectsMissingOrMalformedAcknowledgement(@org.eclipse.jdt.annotation.Nullable String response)
-            throws Exception {
-        when(client.post(eq(URL), any(), any(RestClient.Header[].class))).thenReturn(response);
-        assertThatThrownBy(() -> api.setValueForProperty("device-123", PROPERTY, 2150L))
-                .isInstanceOf(SalusApiException.class);
+    void acceptsEmptyPublishResponse(@org.eclipse.jdt.annotation.Nullable String response) throws Exception {
+        when(client.post(eq(PUBLISH_URL), any(), any(RestClient.Header[].class))).thenReturn(response);
+        assertThat(api.setValueForProperty("device-123", PROPERTY, 2150L)).isEqualTo(2150L);
     }
 
     @Test
-    void rejectsAcknowledgementOfDifferentValue() throws Exception {
-        when(client.post(eq(URL), any(), any(RestClient.Header[].class))).thenReturn(BODY.replace("2150", "2200"));
-        assertThatThrownBy(() -> api.setValueForProperty("device-123", PROPERTY, 2150L))
+    void publishesModeCommandWithEncodedDeviceName() throws Exception {
+        var url = "https://" + HOST + "/topics/%24aws%2Fthings%2Fdevice%3A123%2Fshadow%2Fupdate?qos=1";
+        assertThat(api.setValueForProperty("device:123", "ep9:sIT600TH:SetHoldType", 0L)).isEqualTo(0L);
+        var content = ArgumentCaptor.forClass(RestClient.Content.class);
+        verify(client).post(eq(url), content.capture(), any(RestClient.Header[].class));
+        assertThat(JsonParser.parseString(content.getValue().body())).isEqualTo(JsonParser.parseString("""
+                {"state":{"desired":{"11":{"properties":{"ep9:sIT600TH:SetHoldType":0}}}}}
+                """));
+    }
+
+    @Test
+    void rejectsUnsupportedCommandsBeforePublishing() {
+        assertThatThrownBy(() -> api.setValueForProperty("device-123", "ep9:sIT600TH:SetFactoryDefaultReset", 1L))
                 .isInstanceOf(SalusApiException.class);
+        assertThatThrownBy(() -> api.setValueForProperty("device-123", PROPERTY, 21.5))
+                .isInstanceOf(SalusApiException.class);
+        verifyNoInteractions(client, authenticationHelper);
     }
 
     @Test
@@ -135,8 +146,8 @@ class AwsSalusApiTest {
 
     @Test
     void propagatesWriteFailureAndAllowsNextCommand() throws Exception {
-        when(client.post(eq(URL), any(), any(RestClient.Header[].class)))
-                .thenThrow(new HttpSalusApiException(403, "Forbidden")).thenReturn(BODY);
+        when(client.post(eq(PUBLISH_URL), any(), any(RestClient.Header[].class)))
+                .thenThrow(new HttpSalusApiException(403, "Forbidden")).thenReturn("");
         assertThatThrownBy(() -> api.setValueForProperty("device-123", PROPERTY, 2150L))
                 .isInstanceOf(HttpSalusApiException.class);
         assertThat(api.setValueForProperty("device-123", PROPERTY, 2150L)).isEqualTo(2150L);
@@ -148,7 +159,7 @@ class AwsSalusApiTest {
         clearInvocations(authenticationHelper);
         when(authenticationHelper.performSrpAuthentication(anyString(), anyString()))
                 .thenThrow(new AuthSalusApiException("Authentication failed")).thenReturn(auth);
-        when(client.post(eq(URL), any(), any(RestClient.Header[].class))).thenReturn(BODY);
+        when(client.post(eq(PUBLISH_URL), any(), any(RestClient.Header[].class))).thenReturn("");
         assertThatThrownBy(() -> api.setValueForProperty("device-123", PROPERTY, 2150L))
                 .isInstanceOf(AuthSalusApiException.class);
         verifyNoInteractions(client);
@@ -159,7 +170,7 @@ class AwsSalusApiTest {
     @ValueSource(strings = { "UTC", "Europe/Warsaw", "America/New_York" })
     void refreshesExpiredAuthenticationBeforeSigning(String zone) throws Exception {
         when(clock.getZone()).thenReturn(ZoneId.of(zone));
-        when(client.post(eq(URL), any(), any(RestClient.Header[].class))).thenReturn(BODY);
+        when(client.post(eq(PUBLISH_URL), any(), any(RestClient.Header[].class))).thenReturn("");
         api.setValueForProperty("device-123", PROPERTY, 2150L);
         when(clock.instant()).thenReturn(NOW.plusSeconds(3601));
         api.setValueForProperty("device-123", PROPERTY, 2150L);

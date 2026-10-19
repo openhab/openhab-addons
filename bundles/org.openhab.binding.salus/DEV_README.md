@@ -129,21 +129,49 @@ For example:
 }
 ```
 
-The binding sends this document through [AWS UpdateThingShadow](https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-rest-api.html#API_UpdateThingShadow) using `POST /things/<dsn>/shadow`.
-AWS documents this as the HTTPS equivalent of a shadow update, authenticated with Signature V4 and the `iotdevicegateway` service.
-The signature includes the actual host, HTTP method, path, session token, and payload hash.
+The binding publishes this document to the same MQTT topic through [AWS IoT Publish](https://docs.aws.amazon.com/iot/latest/apireference/API_iotdata_Publish.html), using `POST /topics/<URL-encoded-topic>?qos=1`.
+The request is authenticated with Signature V4 and the `iotdevicegateway` service.
+The signature includes the actual host, HTTP method, encoded path, query, session token, and payload hash.
 Only the requested desired property is sent; reported state and unrelated desired properties are not overwritten.
-The response must acknowledge the requested desired property; device application is confirmed by subsequent reported-state polling.
-Salus account permissions for HTTPS writes and physical device behavior still require testing with a real account/device.
+Publish returns HTTP 200 with an empty body; device application is confirmed by subsequent reported-state polling.
+
+Live testing on 2026-10-19 showed that `POST /things/<dsn>/shadow` stored the requested values in `state.desired`, but the thermostat did not apply them.
+Publishing the same setpoint to `$aws/things/<dsn>/shadow/update` through the HTTP Publish endpoint changed the reported temperature setpoint.
+The command must therefore be published to the topic rather than only updating the shadow document.
 
 Command properties may be absent from reported state.
-The mapper therefore exposes the four verified IT600 commands alongside their numeric readbacks, preserving endpoint prefixes and existing channel identifiers.
+The mapper therefore exposes the explicitly supported IT600 commands alongside their numeric readbacks, preserving endpoint prefixes and existing channel identifiers.
 It does not infer that every reported property is writable, or treat absence from a transient response as a permanent capability decision.
+
+### Additional Thermostat Settings
+
+The IT600 model constructor `A.cRb` supplies the command names, and the settings handlers publish maps of command names to integer values through the same desired-state path.
+`A.cfX` defines IT600 settings and their units; `A.cRb.prototype.d42` defines the calibration choices.
+The `A.eyi` / `A.fzH` settings callbacks publish the selected signed calibration value without unsigned conversion.
+
+| Property suffix | Wire representation |
+|-----------------|---------------------|
+| `SetTemperatureOffset` | Signed hundredths of a degree Celsius; -300 through 300, step 50 |
+| `SetFrostSetpoint_x100` | Hundredths of a degree Celsius; the IT600 frost selector caps the upper bound at 17 °C |
+| `SetMinHeatSetpoint_x100`, `SetMaxHeatSetpoint_x100` | Hundredths of a degree Celsius; 5 through 35 °C in 0.5 °C steps |
+| `SetAllowUnlockFromDevice`, `SetValveProtection` | 0 = disabled, 1 = enabled |
+| `SetShutOffDisplay` | 0 = display on, 1 = display off |
+| `SetTemperatureDisplayMode` | 0 = Celsius, 1 = Fahrenheit |
+| `SetTimeFormat24Hour` | 0 = 12-hour, 1 = 24-hour |
+| `SetSystemMode` | 0 = off, 3 = cooling, 4 = heating |
+
+The cached device response from the earlier live investigation contains the corresponding readbacks for these settings.
+This establishes their presence on that thermostat, not successful device execution of every new setting.
+Temperature and hold-mode commands have been verified on a real thermostat; additional settings are covered by automated tests and still need device testing.
+
+Diagnostics read `sIT600TH:ErrorNN`, `sIT600I:LastMessageRSSI_d`, and `sIT600I:LastMessageLQI_d`.
+Error codes are retained instead of assigning one model's human-readable messages to every thermostat.
+Missing optional properties produce undefined channel states and do not become required initialization properties.
+Existing Things receive the new channels through Thing type version 2.
 
 ### Further Opportunities
 
-The APK and web client also contain identifiers for frost setpoints, temperature calibration, setpoint limits, heating/cooling system mode, display settings, and valve protection.
-These are candidates for later model-specific support; identifiers alone do not establish valid ranges, prerequisites, or interactions.
+The APK and web client also contain floor-temperature limits, heating/cooling control algorithms, and sensor-configuration workflows.
+These require model-specific support beyond the settings implemented here.
 Schedules use additional upload/URL and schedule-enable workflows and require separate investigation.
 Live AWS MQTT subscriptions could reduce polling latency, but would introduce connection and subscription lifecycle work.
-This change implements heating/cooling setpoints, hold mode, and keypad lock only.

@@ -17,6 +17,7 @@ import static java.time.ZoneOffset.UTC;
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.salus.internal.aws.http.AwsSigner.*;
 
+import java.net.URLEncoder;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -164,13 +165,12 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
     @Override
     public Object setValueForProperty(String dsn, String propertyName, Object value)
             throws SalusApiException, AuthSalusApiException {
-        var path = shadowPath(dsn);
+        var path = "/topics/" + URLEncoder.encode("$aws" + shadowPath(dsn) + "/update", UTF_8) + "?qos=1";
         var body = mapper.awsShadowUpdate(propertyName, value);
-        var response = restClient.post("https://" + shadowHost() + path, new RestClient.Content(body),
+        // Salus consumes the published update command; UpdateThingShadow alone only changes cloud state.
+        restClient.post("https://" + shadowHost() + path, new RestClient.Content(body),
                 shadowHeaders("POST", path, body));
-        return mapper.awsDesiredValue(response, propertyName)
-                .filter(accepted -> value instanceof Number requested && accepted.longValue() == requested.longValue())
-                .orElseThrow(
-                        () -> new SalusApiException("AWS shadow update did not acknowledge the requested property"));
+        // Publish returns an empty body. Reported-state polling confirms device application.
+        return value;
     }
 }

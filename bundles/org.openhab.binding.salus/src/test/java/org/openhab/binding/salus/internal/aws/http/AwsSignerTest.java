@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import software.amazon.awssdk.crt.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
@@ -39,9 +39,9 @@ import software.amazon.awssdk.crt.http.HttpRequest;
 @NonNullByDefault
 class AwsSignerTest {
     @ParameterizedTest
-    @ValueSource(strings = { "GET", "POST" })
-    void shouldGenerateSameSignatureHeadersAsAWSSDK(String method) throws Exception {
-        var path = "/things/test-device/shadow";
+    @CsvSource({ "GET,/things/test-device/shadow", "POST,/topics/%24aws%2Fthings%2Ftest-device%2Fshadow%2Fupdate?qos=1",
+            "POST,/topics/%24aws%2Fthings%2Ftest%3Adevice%2Fshadow%2Fupdate?qos=1" })
+    void shouldGenerateSameSignatureHeadersAsAWSSDK(String method, String path) throws Exception {
         var host = "example-ats.iot.eu-central-1.amazonaws.com";
         var time = ZonedDateTime.parse("2026-10-19T10:00:00Z");
         var credentials = new CogitoCredentials("example-access-key", "example-secret-key", "example-session-token");

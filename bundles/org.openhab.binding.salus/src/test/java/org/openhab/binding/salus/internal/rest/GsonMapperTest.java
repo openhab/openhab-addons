@@ -22,6 +22,8 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openhab.binding.salus.internal.cloud.rest.AuthToken;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 
@@ -166,7 +168,6 @@ public class GsonMapperTest {
         assertThat(JsonParser.parseString(json)).isEqualTo(JsonParser.parseString("""
                 {"state":{"desired":{"11":{"properties":{"ep9:sIT600TH:SetHoldType":2}}}}}
                 """));
-        assertThat(GsonMapper.INSTANCE.awsDesiredValue(json, "ep9:sIT600TH:SetHoldType")).contains(2L);
     }
 
     @Test
@@ -183,6 +184,34 @@ public class GsonMapperTest {
         assertThatThrownBy(() -> mapper.awsShadowUpdate("ep9:sIT600TH:SetHoldType", 3))
                 .isInstanceOf(SalusApiException.class);
         assertThatThrownBy(() -> mapper.awsShadowUpdate("ep9:sIT600TH:SetLockKey", 2))
+                .isInstanceOf(SalusApiException.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "TemperatureOffset,-300", "TemperatureOffset,300", "FrostSetpoint_x100,500", "FrostSetpoint_x100,1700",
+            "MinHeatSetpoint_x100,500", "MaxHeatSetpoint_x100,3500", "AllowUnlockFromDevice,1", "ValveProtection,0",
+            "ShutOffDisplay,1", "TemperatureDisplayMode,1", "TimeFormat24Hour,1", "SystemMode,0", "SystemMode,3",
+            "SystemMode,4" })
+    void exposesAndSerializesAdditionalSettings(String suffix, long value) throws Exception {
+        var property = "ep9:sIT600TH:" + suffix;
+        var setter = "ep9:sIT600TH:Set" + suffix;
+        var properties = GsonMapper.INSTANCE.parseAwsDeviceProperties("""
+                {"state":{"reported":{"11":{"properties":{"%s":%d}}}}}
+                """.formatted(property, value));
+        assertThat(properties.stream().filter(p -> !p.getReadOnly()).map(DeviceProperty::getName))
+                .containsExactly(setter);
+        var json = GsonMapper.INSTANCE.awsShadowUpdate(setter, value);
+        assertThat(JsonParser.parseString(json).getAsJsonObject().getAsJsonObject("state").getAsJsonObject("desired")
+                .getAsJsonObject("11").getAsJsonObject("properties").get(setter).getAsLong()).isEqualTo(value);
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "TemperatureOffset,-350", "TemperatureOffset,350", "TemperatureOffset,125", "FrostSetpoint_x100,499",
+            "FrostSetpoint_x100,1750", "MinHeatSetpoint_x100,450", "MaxHeatSetpoint_x100,3550",
+            "MinHeatSetpoint_x100,525", "AllowUnlockFromDevice,2", "ValveProtection,-1", "ShutOffDisplay,2",
+            "TemperatureDisplayMode,2", "TimeFormat24Hour,24", "SystemMode,1", "SystemMode,7" })
+    void rejectsInvalidAdditionalSettings(String suffix, long value) {
+        assertThatThrownBy(() -> GsonMapper.INSTANCE.awsShadowUpdate("ep9:sIT600TH:Set" + suffix, value))
                 .isInstanceOf(SalusApiException.class);
     }
 }
