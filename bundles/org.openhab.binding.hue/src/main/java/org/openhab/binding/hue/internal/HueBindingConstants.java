@@ -229,5 +229,5 @@ public class HueBindingConstants {
 
     public static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
 
-    public static final String SECOND_LIGHT_GROUP = "secondary";
+    public static final String BACK_LIGHT_GROUP_ID = "back-light";
 }

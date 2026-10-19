@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -210,9 +209,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * 'zigbeeStatus' channels, whereas a complex light may support 'switch', 'brightness', 'color', 'color temperature'
      * and 'zigbeeStatus' channels.
      */
-    private final Set<String> supportedChannelIdSet = new HashSet<>();
-    private final Set<String> supportedSecondLightChannelIdSet = new HashSet<>();
-    private final Object supportedChannelIdSetsLock = new Object();
+    private final Set<String> supportedChannelIds = ConcurrentHashMap.newKeySet();
+    private final Set<String> backLightSupportedChannelIds = ConcurrentHashMap.newKeySet();
 
     /**
      * A map of scene IDs versus scene Resources for the scenes that contribute to and command this thing. It is a map
@@ -251,13 +249,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updateDependenciesDone;
 
     private @Nullable LegacyLightState legacyLightState;
+    private volatile @Nullable String backLightResourceId;
 
     private @Nullable Future<?> alertResetTask;
     private @Nullable Future<?> dynamicsResetTask;
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
-
-    private String secondLightId = null;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -295,14 +292,20 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private void addSupportedChannel(ChannelUID channelUid) {
         if (!disposing && !updateDependenciesDone) {
-            synchronized (supportedChannelIdSetsLock) {
-                String channelId = channelUid.getIdWithoutGroup();
-                if (SECOND_LIGHT_GROUP.equals(channelUid.getGroupId())
-                        && supportedSecondLightChannelIdSet.add(channelId)) {
-                    logger.debug("{} -> addSupportedChannel() '{}' added to secondary channel set", resourceId,
-                            channelId);
-                } else if (supportedChannelIdSet.add(channelId)) {
-                    logger.debug("{} -> addSupportedChannel() '{}' added to supported channel set", resourceId,
+            String channelId = channelUid.getIdWithoutGroup();
+            boolean supported = false;
+
+            if (BACK_LIGHT_GROUP_ID.equals(channelUid.getGroupId())) {
+                if (backLightSupportedChannelIds.add(channelId)) {
+                    logger.debug("{} -> addSupportedChannel() '{}' added to back light supported channel set",
+                            resourceId, channelId);
+                }
+                supported = true;
+            }
+
+            if (!supported) {
+                if (supportedChannelIds.add(channelId)) {
+                    logger.debug("{} -> addSupportedChannel() '{}' added to main supported channel set", resourceId,
                             channelId);
                     switch (channelId) { // set speaker write only channel default values
                         case CHANNEL_2_VOLUME:
@@ -314,9 +317,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         default:
                     }
                 }
-                if (DYNAMIC_CHANNELS.contains(channelId)) {
-                    clearDynamicsChannel();
-                }
+                supported = true;
+            }
+
+            if (DYNAMIC_CHANNELS.contains(channelId)) {
+                // TODO fix dynamics on back light
+                clearDynamicsChannel();
             }
         }
     }
@@ -354,12 +360,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
         dynamicsResetTask = null;
         updateDependenciesTask = null;
         updateServiceContributorsTask = null;
-        secondLightId = null;
+        backLightResourceId = null;
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
         sceneResourceEntries.clear();
-        supportedChannelIdSet.clear();
-        supportedSecondLightChannelIdSet.clear();
+        supportedChannelIds.clear();
+        backLightSupportedChannelIds.clear();
         commandResourceIds.clear();
         serviceContributorsCache.clear();
         controlIds.clear();
@@ -646,8 +652,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
 
         if (putResourceId == null) {
-            if (secondLightId != null && SECOND_LIGHT_GROUP.equals(channelUID.getGroupId())) {
-                putResourceId = secondLightId;
+            if (backLightResourceId != null && BACK_LIGHT_GROUP_ID.equals(channelUID.getGroupId())) {
+                putResourceId = backLightResourceId;
             } else {
                 putResourceId = commandResourceIds.get(putResource.getType());
             }
@@ -1087,60 +1093,57 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void updateChannelList() {
         if (!disposing) {
-            synchronized (supportedChannelIdSetsLock) {
-                logger.debug("{} -> updateChannelList()", resourceId);
+            logger.debug("{} -> updateChannelList()", resourceId);
 
-                addRemoveCorrelatedChannels(supportedChannelIdSet);
-                addRemoveCorrelatedChannels(supportedSecondLightChannelIdSet);
+            addRemoveChannelIds(supportedChannelIds);
+            addRemoveChannelIds(backLightSupportedChannelIds);
 
-                /*
-                 * This binding creates its dynamic list of channels by a 'subtractive' method i.e. the full set of
-                 * channels is initially created from the thing type xml, and then for any channels where UndefType.NULL
-                 * data is returned, the respective channel is removed from the full list. However in seldom cases
-                 * UndefType.NULL may wrongly be returned, so we should log a warning here just in case.
-                 */
+            /*
+             * This binding creates its dynamic list of channels by a 'subtractive' method i.e. the full set of
+             * channels is initially created from the thing type xml, and then for any channels where UndefType.NULL
+             * data is returned, the respective channel is removed from the full list. However in seldom cases
+             * UndefType.NULL may wrongly be returned, so we should log a warning here just in case.
+             */
+            if (logger.isDebugEnabled()) {
+                supportedChannelIds.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
+                        .forEach(channelId -> logger.debug("{} -> updateChannelList() required channel '{}' missing",
+                                resourceId, channelId));
+            } else {
+                supportedChannelIds.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
+                        .forEach(channelId -> logger.warn(
+                                "Thing '{}' is missing required channel '{}'. Please recreate the thing!",
+                                thing.getUID(), channelId));
+            }
+
+            // get main channels from thing xml, and add new back light channels
+            List<Channel> channels = new ArrayList<>(thing.getChannels());
+            channels.addAll(buildBackLightChannels());
+
+            // get list of unused channels
+            List<Channel> unusedChannels = channels.stream().filter(channel -> {
+                ChannelUID uid = channel.getUID();
+                String id = uid.getIdWithoutGroup();
+                if (BACK_LIGHT_GROUP_ID.equals(uid.getGroupId())) {
+                    return !backLightSupportedChannelIds.contains(id);
+                }
+                return !supportedChannelIds.contains(id);
+            }).toList();
+
+            // remove any unused channels
+            if (!unusedChannels.isEmpty()) {
                 if (logger.isDebugEnabled()) {
-                    supportedChannelIdSet.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
-                            .forEach(channelId -> logger.debug(
-                                    "{} -> updateChannelList() required channel '{}' missing", resourceId, channelId));
-                } else {
-                    supportedChannelIdSet.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
-                            .forEach(channelId -> logger.warn(
-                                    "Thing '{}' is missing required channel '{}'. Please recreate the thing!",
-                                    thing.getUID(), channelId));
+                    unusedChannels.stream().map(channel -> channel.getUID().getId()).forEach(channelId -> logger
+                            .debug("{} -> updateChannelList() removing unused channel '{}'", resourceId, channelId));
                 }
-
-                // must precede removal, since the primary channels are the templates
-                createSecondLightChannels();
-
-                // get list of unused channels
-                List<Channel> unusedChannels = thing.getChannels().stream().filter(channel -> {
-                    ChannelUID uid = channel.getUID();
-                    if (SECOND_LIGHT_GROUP.equals(uid.getGroupId())) {
-                        return secondLightId == null
-                                || !supportedSecondLightChannelIdSet.contains(uid.getIdWithoutGroup());
-                    }
-                    return !supportedChannelIdSet.contains(uid.getId());
-                }).toList();
-
-                // remove any unused channels
-                if (!unusedChannels.isEmpty()) {
-                    if (logger.isDebugEnabled()) {
-                        unusedChannels.stream().map(channel -> channel.getUID().getId())
-                                .forEach(channelId -> logger.debug(
-                                        "{} -> updateChannelList() removing unused channel '{}'", resourceId,
-                                        channelId));
-                    }
-                    updateThing(editThing().withoutChannels(unusedChannels).build());
-                }
+                updateThing(editThing().withoutChannels(unusedChannels).build());
             }
         }
     }
 
     /**
-     * Adds/removes correlated channels.
+     * Add correlated channel ID's, and remove forbidden channel ID's.
      */
-    private void addRemoveCorrelatedChannels(Set<String> channelIds) {
+    private void addRemoveChannelIds(Set<String> channelIds) {
         if (channelIds.contains(CHANNEL_2_COLOR)) {
             channelIds.add(CHANNEL_2_COLOR_XY_ONLY);
             channelIds.remove(CHANNEL_2_BRIGHTNESS);
@@ -1158,30 +1161,37 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
     }
 
-    private void createSecondLightChannels() {
-        String secondId = secondLightId;
-        if (disposing || secondId == null) {
-            return;
+    /**
+     * Build a list of the back light channels if they do not already exist. The back light channels are
+     * created based on the main (front) channels but with their channel UID containing a group ID.
+     */
+    private List<Channel> buildBackLightChannels() {
+        String resId = backLightResourceId;
+        if (disposing || resId == null) {
+            return List.of();
         }
-        List<Channel> channels = new ArrayList<>(thing.getChannels());
-        boolean changed = false;
-        for (String channelId : supportedSecondLightChannelIdSet) {
-            Channel first = thing.getChannel(channelId);
-            ChannelUID second = secondUID(channelId);
-            if (first != null && thing.getChannel(second) == null && first.getChannelTypeUID() != null) {
-                channels.add(ChannelBuilder.create(second).withType(first.getChannelTypeUID()).build());
-                changed = true;
-                logger.debug("{} -> createSecondLightChannels() creating channel '{}'", resourceId, second);
+        List<Channel> backLightChannels = new ArrayList<>();
+        for (String channelId : backLightSupportedChannelIds) {
+            Channel front = thing.getChannel(channelId);
+            ChannelUID back = backUID(channelId);
+            if (front != null && thing.getChannel(back) == null) {
+                ChannelTypeUID typeUid = front.getChannelTypeUID();
+                if (typeUid != null) {
+                    ChannelBuilder builder = ChannelBuilder.create(back).withType(typeUid);
+                    String label = front.getLabel();
+                    if (label != null) {
+                        builder.withLabel(label);
+                    }
+                    String description = front.getDescription();
+                    if (description != null) {
+                        builder.withDescription(description);
+                    }
+                    backLightChannels.add(builder.build());
+                    logger.debug("{} -> buildBackLightChannels() adding channel '{}'", resourceId, back);
+                }
             }
         }
-        if (changed) {
-            updateThing(editThing().withChannels(channels).build());
-            // channels did not exist when the state arrived, so push the cached state now
-            Resource cached = serviceContributorsCache.get(secondId);
-            if (cached != null) {
-                updateChannels(cached);
-            }
-        }
+        return backLightChannels;
     }
 
     /**
@@ -1192,7 +1202,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     boolean updateChannels(Resource resource) {
         try {
-            return isSecondLight(resource) ? updateSecondLightChannels(resource) : updateChannelsInner(resource);
+            if (isBackLight(resource)) {
+                return updateBackLightChannels(resource);
+            }
+            if (isUnresolvedLight(resource)) {
+                logger.debug("{} -> updateChannels() ignored not yet resolved light resource {}", resourceId, resource);
+                return false;
+            }
+            return updateMainChannels(resource);
         } catch (CriticalFieldMissingException e) {
             // this should never happen but log it just in case
             logger.warn("{} -> updateChannels() error {}", resourceId, e.getMessage(), e);
@@ -1200,7 +1217,68 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
     }
 
-    private boolean updateChannelsInner(Resource resource) throws CriticalFieldMissingException {
+    /**
+     * Returns true if the resource is a LIGHT that is the back light.
+     */
+    private boolean isBackLight(Resource resource) {
+        return ResourceType.LIGHT == resource.getType() && resource.getId().equals(backLightResourceId);
+    }
+
+    /**
+     * Returns true if the resource is a LIGHT that is neither the back light nor the main light.
+     */
+    private boolean isUnresolvedLight(Resource resource) {
+        if (ResourceType.LIGHT != resource.getType() || backLightResourceId != null) {
+            return false;
+        }
+        String mainLightId = commandResourceIds.get(ResourceType.LIGHT);
+        return mainLightId != null && !mainLightId.equals(resource.getId());
+    }
+
+    /**
+     * Update the state of the back light channels if existing.
+     *
+     * @param resource the Resource containing the new channel state.
+     * @return true if the channel was found and updated.
+     */
+    private boolean updateBackLightChannels(Resource resource) throws CriticalFieldMissingException {
+        logger.debug("{} -> updateBackLightChannels() from resource {}", resourceId, resource);
+        boolean fullUpdate = resource.hasFullState();
+        if (fullUpdate) {
+            updateBackLightCacheRequiredFields(resource);
+            updateEffectChannel(resource, backUID(CHANNEL_2_EFFECT));
+            updateColorTemperatureAbsoluteChannel(resource, backUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE));
+        }
+        updateState(backUID(CHANNEL_2_COLOR), resource.getColorState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_COLOR_XY_ONLY), resource.getColorXyState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_COLOR_TEMP_PERCENT), resource.getColorTemperaturePercentState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource.getColorTemperatureAbsoluteState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_EFFECT), resource.getEffectState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_BRIGHTNESS), resource.getBrightnessState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_DIMMING_ONLY), resource.getDimmingState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_SWITCH), resource.getSwitchState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_ON_OFF_ONLY), resource.getOnOffState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_ALERT), resource.getAlertState(), fullUpdate);
+        return true;
+    }
+
+    /**
+     * Create the back light channel UID for the given channel ID.
+     *
+     * @param channelId the channel ID.
+     * @return the back light channel UID.
+     */
+    private ChannelUID backUID(String channelId) {
+        return new ChannelUID(thing.getUID(), BACK_LIGHT_GROUP_ID, channelId);
+    }
+
+    /**
+     * Update the state of the existing main channels.
+     *
+     * @param resource the Resource containing the new channel state.
+     * @return true if the channel was found and updated.
+     */
+    private boolean updateMainChannels(Resource resource) throws CriticalFieldMissingException {
         logger.debug("{} -> updateChannels() from resource {}", resourceId, resource);
         boolean fullUpdate = resource.hasFullState();
         switch (resource.getType()) {
@@ -1396,30 +1474,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         return true;
     }
 
-    private boolean updateSecondLightChannels(Resource resource) throws CriticalFieldMissingException {
-        logger.debug("{} -> updateSecondLightChannels() from resource {}", resourceId, resource);
-        boolean fullUpdate = resource.hasFullState();
-        if (fullUpdate) {
-            updateSecondLightCacheRequiredFields(resource);
-            updateEffectChannel(resource, secondUID(CHANNEL_2_EFFECT));
-            updateColorTemperatureAbsoluteChannel(resource, secondUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE));
-        }
-        updateState(secondUID(CHANNEL_2_COLOR), resource.getColorState(), fullUpdate);
-        updateState(secondUID(CHANNEL_2_COLOR_XY_ONLY), resource.getColorXyState(), fullUpdate);
-        updateState(secondUID(CHANNEL_2_COLOR_TEMP_PERCENT), resource.getColorTemperaturePercentState(), fullUpdate);
-        updateState(secondUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource.getColorTemperatureAbsoluteState(), fullUpdate);
-        updateState(secondUID(CHANNEL_2_EFFECT), resource.getEffectState(), fullUpdate);
-        updateState(secondUID(CHANNEL_2_BRIGHTNESS), resource.getBrightnessState(), fullUpdate);
-        updateState(secondUID(CHANNEL_2_DIMMING_ONLY), resource.getDimmingState(), fullUpdate);
-        updateState(secondUID(CHANNEL_2_SWITCH), resource.getSwitchState(), fullUpdate);
-        updateState(secondUID(CHANNEL_2_ON_OFF_ONLY), resource.getOnOffState(), fullUpdate);
-        return true;
-    }
-
-    private ChannelUID secondUID(String channelId) {
-        return new ChannelUID(thing.getUID(), SECOND_LIGHT_GROUP, channelId);
-    }
-
     /**
      * Check the Zigbee connectivity and set the thing online status accordingly. If the thing is offline then set all
      * its channel states to undefined, otherwise execute a refresh command to update channels to the latest current
@@ -1444,7 +1498,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         || statusInfo.getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR
                         || !description.equals(statusInfo.getDescription())) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
-                    supportedChannelIdSet.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
+                    supportedChannelIds.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
                 }
                 return;
             }
@@ -1589,13 +1643,50 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
 
-            // a second LIGHT service (e.g. Twilight devices) is the secondary light
-            secondLightId = services.stream().filter(s -> ResourceType.LIGHT == s.getType()).skip(1)
-                    .map(ResourceReference::getId).findFirst().orElse(null);
-            if (secondLightId != null) {
-                logger.debug("{} -> updateLookups() secondary light {}", resourceId, secondLightId);
+            // use the metadata archetype to identify the Twilight front and back lights (if any)
+            String frontId = null;
+            String backId = null;
+            for (ResourceReference service : services) {
+                if (ResourceType.LIGHT != service.getType()) {
+                    continue;
+                }
+                Archetype archetype = getLightArchetype(service);
+                if (archetype == Archetype.TWILIGHT_BACK) {
+                    backId = service.getId();
+                } else if (archetype == Archetype.TWILIGHT_FRONT) {
+                    frontId = service.getId();
+                }
+            }
+            backLightResourceId = backId;
+            if (backId != null) {
+                if (frontId != null) {
+                    // enforce that the primary light is the front light
+                    commandResourceIds.put(ResourceType.LIGHT, frontId);
+                }
+                logger.debug("{} -> updateLookups() front light {}, back light {}", resourceId, frontId, backId);
             }
         }
+    }
+
+    /**
+     * Get the metadata archetype of the light resource referenced by the given service.
+     *
+     * @return the archetype, or {@link Archetype#UNKNOWN_ARCHETYPE} if it could not be determined.
+     */
+    private Archetype getLightArchetype(ResourceReference lightService) {
+        try {
+            for (Resource light : getBridgeHandler().getResources(lightService).getResources()) {
+                MetaData metaData = light.getMetaData();
+                if (metaData != null) {
+                    return metaData.getArchetype();
+                }
+            }
+        } catch (ApiException | AssetNotLoadedException e) {
+            logger.debug("{} -> getLightArchetype() error {}", resourceId, e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return Archetype.UNKNOWN_ARCHETYPE;
     }
 
     /**
@@ -2052,11 +2143,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
         return null;
     }
 
-    private boolean isSecondLight(Resource resource) {
-        return ResourceType.LIGHT == resource.getType() && resource.getId().equals(secondLightId);
-    }
-
-    private void updateSecondLightCacheRequiredFields(Resource resource) {
+    /**
+     * Ensure that the light service resource for the back light in the serviceContributorsCache has a
+     * complete DTO for it to yield valid channel state values. Check if the given (cached) light service
+     * has a {@link MirekSchema} field, and a {@link Gamut} field. If any is missing, use the binding
+     * default values. This ensures that the back light's channels always have a valid color temperature
+     * range and gamut.
+     */
+    private void updateBackLightCacheRequiredFields(Resource resource) {
         if (resource.getColorTemperature() instanceof ColorTemperature ct) {
             MirekSchema mirekSchema = ct.getMirekSchema();
             if (mirekSchema == null || mirekSchema.invalid()) {
