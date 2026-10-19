@@ -174,6 +174,34 @@ public class WindowTriggerHandlerTest {
     }
 
     @Test
+    void failedFireIsRepeatedAndDoesNotStopTheRefresh() {
+        WindowTriggerHandler handler = createHandler(Map.of());
+        at(1);
+        handler.refresh();
+        assertEquals(1, triggered().size());
+
+        // the rule fails when the window starts
+        at(2);
+        doThrow(new IllegalStateException("rule failed")).doNothing().when(callback).triggered(any(Trigger.class),
+                anyMap());
+        assertDoesNotThrow(handler::safeRefresh);
+        assertEquals(2, triggered().size());
+        // the status items are still updated
+        assertEquals(OnOffType.ON, lastState("Active"));
+
+        // the start is fired again on the next refresh
+        clock.instant = DAY.plusHours(2).plusMinutes(1).toInstant();
+        handler.refresh();
+        assertEquals(3, triggered().size());
+        assertEquals(OptimalWindowConstants.EVENT_START, triggered().get(2).get(OptimalWindowConstants.OUTPUT_EVENT));
+
+        // and only once
+        clock.instant = DAY.plusHours(2).plusMinutes(2).toInstant();
+        handler.refresh();
+        assertEquals(3, triggered().size());
+    }
+
+    @Test
     void startedWindowIsKeptWhenForecastChanges() {
         WindowTriggerHandler handler = createHandler(Map.of());
 

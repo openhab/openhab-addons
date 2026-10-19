@@ -120,8 +120,8 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         Instant now = clock.instant();
         long delay = Duration.between(now, now.truncatedTo(ChronoUnit.MINUTES).plus(REFRESH_INTERVAL)).toMillis();
         ScheduledExecutorService scheduler = triggerCallback.getScheduler();
-        initialRefreshJob = scheduler.schedule(this::refresh, 0, TimeUnit.MILLISECONDS);
-        refreshJob = scheduler.scheduleAtFixedRate(this::refresh, delay, REFRESH_INTERVAL.toMillis(),
+        initialRefreshJob = scheduler.schedule(this::safeRefresh, 0, TimeUnit.MILLISECONDS);
+        refreshJob = scheduler.scheduleAtFixedRate(this::safeRefresh, delay, REFRESH_INTERVAL.toMillis(),
                 TimeUnit.MILLISECONDS);
     }
 
@@ -153,30 +153,45 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         try {
             result = tracker.getResult(now);
         } catch (RuntimeException e) {
-            // any exception would stop the scheduled refresh, so it is only logged
+            // no window yet, the status items become UNDEF (a running window is kept by the tracker)
             logger.warn("Cannot calculate optimal window for '{}': {}", tracker.getForecastItem(), e.getMessage());
             result = null;
         }
 
         boolean nowActive = result != null && result.isActive(now.toInstant());
 
+        // the status items show the window even if firing fails
+        updateItems(result, now, nowActive);
+
         // fire once on start, so a device is switched off if the end of a window was missed
         if (nowActive != active || !started) {
+            fire(result, nowActive);
+            // only after firing, so a failed start or end is fired again on the next refresh
             active = nowActive;
             started = true;
-            fire(result);
         }
-        updateItems(result, now);
     }
 
-    private void fire(@Nullable WindowResult result) {
+    /**
+     * The scheduled job. The scheduler stops a job for good after an exception, without logging it, so every
+     * exception is logged here and the next refresh runs as planned.
+     */
+    void safeRefresh() {
+        try {
+            refresh();
+        } catch (RuntimeException e) {
+            logger.warn("Refresh of optimal window for '{}' failed: {}", tracker.getForecastItem(), e.getMessage(), e);
+        }
+    }
+
+    private void fire(@Nullable WindowResult result, boolean nowActive) {
         if (!(callback instanceof TriggerHandlerCallback triggerCallback)) {
             return;
         }
 
         Map<String, Object> outputs = new HashMap<>();
-        outputs.put(OUTPUT_EVENT, active ? EVENT_START : EVENT_END);
-        outputs.put(OUTPUT_COMMAND, OnOffType.from(active));
+        outputs.put(OUTPUT_EVENT, nowActive ? EVENT_START : EVENT_END);
+        outputs.put(OUTPUT_COMMAND, OnOffType.from(nowActive));
         if (result != null) {
             ZoneId zone = zoneSupplier.get();
             outputs.put(OUTPUT_START, result.getStart().atZone(zone));
@@ -186,8 +201,8 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         triggerCallback.triggered(module, outputs);
     }
 
-    private void updateItems(@Nullable WindowResult result, ZonedDateTime now) {
-        updateItem(activeItem, OnOffType.from(active));
+    private void updateItems(@Nullable WindowResult result, ZonedDateTime now, boolean nowActive) {
+        updateItem(activeItem, OnOffType.from(nowActive));
         if (result == null) {
             updateItem(startItem, UnDefType.UNDEF);
             updateItem(endItem, UnDefType.UNDEF);

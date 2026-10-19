@@ -100,13 +100,13 @@ Persist the `activeItem` with the `forecast` strategy to see the planned window 
 
 These values are passed to the rule's conditions and actions, e.g. for scripts:
 
-| Output  | Description                                     |
-| ------- | ----------------------------------------------- |
-| event   | `START` or `END`                                |
-| command | `ON` when the window starts, `OFF` when it ends |
-| start   | Start of the window                             |
-| end     | End of the window                               |
-| average | Average forecast value within the window        |
+| Output      | Description                                     |
+| ----------- | ----------------------------------------------- |
+| windowEvent | `START` or `END`                                |
+| command     | `ON` when the window starts, `OFF` when it ends |
+| start       | Start of the window                             |
+| end         | End of the window                               |
+| average     | Average forecast value within the window        |
 
 ### How a Rule Is Built
 
@@ -120,7 +120,7 @@ The outputs of the trigger reach the other modules of the rule:
 
 - "send a command" (`core.ItemCommandAction`): leave the command empty.
   The action then sends what the trigger reports: `ON` when the window starts and `OFF` when it ends.
-- In script conditions and script actions, the outputs are variables: `command`, `event`, `start`, `end` and `average`.
+- In script conditions and script actions, the outputs are variables: `command`, `windowEvent`, `start`, `end` and `average`.
 
 A rule without an action is fine, too.
 It only updates the status Items, e.g. to show the cheapest time for a device that is started by hand.

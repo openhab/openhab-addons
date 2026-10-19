@@ -46,7 +46,7 @@ public class OptimalWindowConstants {
     public static final String CONFIG_WINDOW_TEXT_ITEM = "windowTextItem";
 
     // trigger outputs
-    public static final String OUTPUT_EVENT = "event";
+    public static final String OUTPUT_EVENT = "windowEvent";
     public static final String OUTPUT_COMMAND = "command";
     public static final String OUTPUT_START = "start";
     public static final String OUTPUT_END = "end";
