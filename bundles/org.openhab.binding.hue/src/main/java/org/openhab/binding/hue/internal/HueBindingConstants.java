@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hue.internal;
 
-import static org.openhab.core.thing.ChannelUID.CHANNEL_GROUP_SEPARATOR;
+import static org.openhab.core.thing.ChannelUID.*;
 
 import java.util.Map;
 import java.util.Set;
@@ -228,4 +228,6 @@ public class HueBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_AUTOMATION = new ChannelTypeUID(BINDING_ID, "automation-enable");
 
     public static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
+
+    public static final String SECOND_LIGHT_GROUP = "secondary";
 }

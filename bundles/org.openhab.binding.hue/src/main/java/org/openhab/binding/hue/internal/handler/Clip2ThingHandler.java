@@ -122,8 +122,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Clip2ThingHandler extends BaseThingHandler {
 
-    private static final String SECONDARY_LIGHT_GROUP = "secondary-light";
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM,
             THING_TYPE_ZONE, THING_TYPE_AREA, THING_TYPE_SERVICE_GROUP);
 
@@ -213,7 +211,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * and 'zigbeeStatus' channels.
      */
     private final Set<String> supportedChannelIdSet = new HashSet<>();
-    private final Set<String> supportedSecondaryChannelIdSet = new HashSet<>();
+    private final Set<String> supportedSecondLightChannelIdSet = new HashSet<>();
+    private final Object supportedChannelIdSetsLock = new Object();
 
     /**
      * A map of scene IDs versus scene Resources for the scenes that contribute to and command this thing. It is a map
@@ -258,21 +257,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
 
-    /**
-     * Map of secondary light resource IDs to their respective light data.
-     * Used for Twilight devices that have multiple lights.
-     */
-    private final Map<String, Resource> secondaryLights = new ConcurrentHashMap<>();
-
-    /**
-     * The primary light resource ID for this device.
-     */
-    private @Nullable String primaryLightResourceId;
-
-    /**
-     * Whether secondary light channel group has been added to the thing.
-     */
-    private volatile boolean secondaryLightChannelGroupAdded = false;
+    private String secondLightId = null;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -305,17 +290,26 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param channelId the channel ID to add.
      */
     private void addSupportedChannel(String channelId) {
+        addSupportedChannel(new ChannelUID(thing.getUID(), channelId));
+    }
+
+    private void addSupportedChannel(ChannelUID channelUid) {
         if (!disposing && !updateDependenciesDone) {
-            synchronized (supportedChannelIdSet) {
-                if (supportedChannelIdSet.add(channelId)) {
+            synchronized (supportedChannelIdSetsLock) {
+                String channelId = channelUid.getIdWithoutGroup();
+                if (SECOND_LIGHT_GROUP.equals(channelUid.getGroupId())
+                        && supportedSecondLightChannelIdSet.add(channelId)) {
+                    logger.debug("{} -> addSupportedChannel() '{}' added to secondary channel set", resourceId,
+                            channelId);
+                } else if (supportedChannelIdSet.add(channelId)) {
                     logger.debug("{} -> addSupportedChannel() '{}' added to supported channel set", resourceId,
                             channelId);
                     switch (channelId) { // set speaker write only channel default values
                         case CHANNEL_2_VOLUME:
-                            updateState(channelId, DEFAULT_SOUND_VOLUME);
+                            updateState(channelUid, DEFAULT_SOUND_VOLUME);
                             break;
                         case CHANNEL_2_DURATION:
-                            updateState(channelId, DEFAULT_ALARM_DURATION);
+                            updateState(channelUid, DEFAULT_ALARM_DURATION);
                             break;
                         default:
                     }
@@ -360,11 +354,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
         dynamicsResetTask = null;
         updateDependenciesTask = null;
         updateServiceContributorsTask = null;
+        secondLightId = null;
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
         sceneResourceEntries.clear();
         supportedChannelIdSet.clear();
-        supportedSecondaryChannelIdSet.clear();
+        supportedSecondLightChannelIdSet.clear();
         commandResourceIds.clear();
         serviceContributorsCache.clear();
         controlIds.clear();
@@ -453,15 +448,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Command command = commandParam;
         String channelId = channelUID.getIdWithoutGroup();
         Resource cache = getCachedResource(lightResourceType);
-        String groupId = channelUID.getGroupId();
-
-        // route to secondary-light channel group for Twilight devices
-        if (SECONDARY_LIGHT_GROUP.equals(groupId) && !secondaryLights.isEmpty()) {
-            String secondaryLightId = secondaryLights.keySet().stream().findFirst().orElse(null);
-            if (secondaryLightId != null) {
-                putResourceId = secondaryLightId;
-            }
-        }
 
         ChimeType chimeType = null;
         QuantityType<?> alarmDuration = null;
@@ -659,7 +645,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return;
         }
 
-        putResourceId = Objects.nonNull(putResourceId) ? putResourceId : commandResourceIds.get(putResource.getType());
+        if (putResourceId == null) {
+            if (secondLightId != null && SECOND_LIGHT_GROUP.equals(channelUID.getGroupId())) {
+                putResourceId = secondLightId;
+            } else {
+                putResourceId = commandResourceIds.get(putResource.getType());
+            }
+        }
+
         if (putResourceId == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug(
@@ -1094,27 +1087,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void updateChannelList() {
         if (!disposing) {
-            synchronized (supportedChannelIdSet) {
+            synchronized (supportedChannelIdSetsLock) {
                 logger.debug("{} -> updateChannelList()", resourceId);
 
-                if (supportedChannelIdSet.contains(CHANNEL_2_COLOR)) {
-                    supportedChannelIdSet.add(CHANNEL_2_COLOR_XY_ONLY);
-                    //
-                    supportedChannelIdSet.remove(CHANNEL_2_BRIGHTNESS);
-                    supportedChannelIdSet.add(CHANNEL_2_DIMMING_ONLY);
-                    //
-                    supportedChannelIdSet.remove(CHANNEL_2_SWITCH);
-                    supportedChannelIdSet.add(CHANNEL_2_ON_OFF_ONLY);
-                }
-                if (supportedChannelIdSet.contains(CHANNEL_2_BRIGHTNESS)) {
-                    supportedChannelIdSet.add(CHANNEL_2_DIMMING_ONLY);
-                    //
-                    supportedChannelIdSet.remove(CHANNEL_2_SWITCH);
-                    supportedChannelIdSet.add(CHANNEL_2_ON_OFF_ONLY);
-                }
-                if (supportedChannelIdSet.contains(CHANNEL_2_SWITCH)) {
-                    supportedChannelIdSet.add(CHANNEL_2_ON_OFF_ONLY);
-                }
+                addRemoveCorrelatedChannels(supportedChannelIdSet);
+                addRemoveCorrelatedChannels(supportedSecondLightChannelIdSet);
 
                 /*
                  * This binding creates its dynamic list of channels by a 'subtractive' method i.e. the full set of
@@ -1133,9 +1110,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
                                     thing.getUID(), channelId));
                 }
 
+                // must precede removal, since the primary channels are the templates
+                createSecondLightChannels();
+
                 // get list of unused channels
-                List<Channel> unusedChannels = thing.getChannels().stream()
-                        .filter(channel -> !supportedChannelIdSet.contains(channel.getUID().getId())).toList();
+                List<Channel> unusedChannels = thing.getChannels().stream().filter(channel -> {
+                    ChannelUID uid = channel.getUID();
+                    if (SECOND_LIGHT_GROUP.equals(uid.getGroupId())) {
+                        return secondLightId == null
+                                || !supportedSecondLightChannelIdSet.contains(uid.getIdWithoutGroup());
+                    }
+                    return !supportedChannelIdSet.contains(uid.getId());
+                }).toList();
 
                 // remove any unused channels
                 if (!unusedChannels.isEmpty()) {
@@ -1152,6 +1138,53 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Adds/removes correlated channels.
+     */
+    private void addRemoveCorrelatedChannels(Set<String> channelIds) {
+        if (channelIds.contains(CHANNEL_2_COLOR)) {
+            channelIds.add(CHANNEL_2_COLOR_XY_ONLY);
+            channelIds.remove(CHANNEL_2_BRIGHTNESS);
+            channelIds.add(CHANNEL_2_DIMMING_ONLY);
+            channelIds.remove(CHANNEL_2_SWITCH);
+            channelIds.add(CHANNEL_2_ON_OFF_ONLY);
+        }
+        if (channelIds.contains(CHANNEL_2_BRIGHTNESS)) {
+            channelIds.add(CHANNEL_2_DIMMING_ONLY);
+            channelIds.remove(CHANNEL_2_SWITCH);
+            channelIds.add(CHANNEL_2_ON_OFF_ONLY);
+        }
+        if (channelIds.contains(CHANNEL_2_SWITCH)) {
+            channelIds.add(CHANNEL_2_ON_OFF_ONLY);
+        }
+    }
+
+    private void createSecondLightChannels() {
+        String secondId = secondLightId;
+        if (disposing || secondId == null) {
+            return;
+        }
+        List<Channel> channels = new ArrayList<>(thing.getChannels());
+        boolean changed = false;
+        for (String channelId : supportedSecondLightChannelIdSet) {
+            Channel first = thing.getChannel(channelId);
+            ChannelUID second = secondUID(channelId);
+            if (first != null && thing.getChannel(second) == null && first.getChannelTypeUID() != null) {
+                channels.add(ChannelBuilder.create(second).withType(first.getChannelTypeUID()).build());
+                changed = true;
+                logger.debug("{} -> createSecondLightChannels() creating channel '{}'", resourceId, second);
+            }
+        }
+        if (changed) {
+            updateThing(editThing().withChannels(channels).build());
+            // channels did not exist when the state arrived, so push the cached state now
+            Resource cached = serviceContributorsCache.get(secondId);
+            if (cached != null) {
+                updateChannels(cached);
+            }
+        }
+    }
+
+    /**
      * Update the state of the existing channels.
      *
      * @param resource the Resource containing the new channel state.
@@ -1159,7 +1192,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     boolean updateChannels(Resource resource) {
         try {
-            return updateChannelsInner(resource);
+            return isSecondLight(resource) ? updateSecondLightChannels(resource) : updateChannelsInner(resource);
         } catch (CriticalFieldMissingException e) {
             // this should never happen but log it just in case
             logger.warn("{} -> updateChannels() error {}", resourceId, e.getMessage(), e);
@@ -1170,9 +1203,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updateChannelsInner(Resource resource) throws CriticalFieldMissingException {
         logger.debug("{} -> updateChannels() from resource {}", resourceId, resource);
         boolean fullUpdate = resource.hasFullState();
-        if (isTwilightDevice() && secondaryLights.containsKey(resource.getId())) {
-            return updateSecondaryLightChannels(resource, fullUpdate);
-        }
         switch (resource.getType()) {
             case BELL_BUTTON:
                 if (fullUpdate) {
@@ -1208,17 +1238,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case LIGHT:
-                // Check if this is a secondary light resource for a Twilight device
-                if (isSecondaryLightResource(resource.getId())) {
-                    updateSecondaryLightChannels(resource);
-                    if (fullUpdate) {
-                        updateSecondaryEffectChannel(resource);
-                        updateSecondaryColorTemperatureAbsoluteChannel(resource);
-                    }
-                    break;
-                }
-
-                // process as primary light
                 ColorXy color = resource.getColorXy();
                 ColorTemperature colorTemp = resource.getColorTemperature();
                 LegacyLightState legacyState = legacyLightState;
@@ -1377,6 +1396,30 @@ public class Clip2ThingHandler extends BaseThingHandler {
         return true;
     }
 
+    private boolean updateSecondLightChannels(Resource resource) throws CriticalFieldMissingException {
+        logger.debug("{} -> updateSecondLightChannels() from resource {}", resourceId, resource);
+        boolean fullUpdate = resource.hasFullState();
+        if (fullUpdate) {
+            updateSecondLightCacheRequiredFields(resource);
+            updateEffectChannel(resource, secondUID(CHANNEL_2_EFFECT));
+            updateColorTemperatureAbsoluteChannel(resource, secondUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE));
+        }
+        updateState(secondUID(CHANNEL_2_COLOR), resource.getColorState(), fullUpdate);
+        updateState(secondUID(CHANNEL_2_COLOR_XY_ONLY), resource.getColorXyState(), fullUpdate);
+        updateState(secondUID(CHANNEL_2_COLOR_TEMP_PERCENT), resource.getColorTemperaturePercentState(), fullUpdate);
+        updateState(secondUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource.getColorTemperatureAbsoluteState(), fullUpdate);
+        updateState(secondUID(CHANNEL_2_EFFECT), resource.getEffectState(), fullUpdate);
+        updateState(secondUID(CHANNEL_2_BRIGHTNESS), resource.getBrightnessState(), fullUpdate);
+        updateState(secondUID(CHANNEL_2_DIMMING_ONLY), resource.getDimmingState(), fullUpdate);
+        updateState(secondUID(CHANNEL_2_SWITCH), resource.getSwitchState(), fullUpdate);
+        updateState(secondUID(CHANNEL_2_ON_OFF_ONLY), resource.getOnOffState(), fullUpdate);
+        return true;
+    }
+
+    private ChannelUID secondUID(String channelId) {
+        return new ChannelUID(thing.getUID(), SECOND_LIGHT_GROUP, channelId);
+    }
+
     /**
      * Check the Zigbee connectivity and set the thing online status accordingly. If the thing is offline then set all
      * its channel states to undefined, otherwise execute a refresh command to update channels to the latest current
@@ -1436,13 +1479,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     return;
                 }
                 updateLookups();
-                if (isTwilightDevice()) {
-                    try {
-                        initializeTwilightDevice();
-                    } catch (CriticalFieldMissingException e) {
-                        logger.warn("{} -> Failed to initialize Twilight device: {}", resourceId, e.getMessage());
-                    }
-                }
                 updateServiceContributors();
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
@@ -1470,6 +1506,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource a Resource possibly containing a fixed and/or timed effects element.
      */
     public void updateEffectChannel(Resource resource) {
+        updateEffectChannel(resource, new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT));
+    }
+
+    public void updateEffectChannel(Resource resource, ChannelUID channelUID) {
         Effects fixedEffects = resource.getFixedEffects();
         TimedEffects timedEffects = resource.getTimedEffects();
         List<StateOption> stateOptions = Stream
@@ -1480,7 +1520,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     return new StateOption(effectName, effectName);
                 }).distinct().toList();
         if (!stateOptions.isEmpty()) {
-            stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT), stateOptions);
+            stateDescriptionProvider.setStateOptions(channelUID, stateOptions);
             logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
         }
     }
@@ -1492,12 +1532,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource a Resource possibly containing a color temperature element and respective Mirek schema element.
      */
     private void updateColorTemperatureAbsoluteChannel(Resource resource) {
+        updateColorTemperatureAbsoluteChannel(resource, new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE));
+    }
+
+    private void updateColorTemperatureAbsoluteChannel(Resource resource, ChannelUID channelUID) {
         ColorTemperature colorTemperature = resource.getColorTemperature();
         if (colorTemperature != null) {
             MirekSchema mirekSchema = colorTemperature.getMirekSchema();
             if (mirekSchema != null) {
-                stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
-                        1000000 / mirekSchema.getMirekMaximum(), 1000000 / mirekSchema.getMirekMinimum());
+                stateDescriptionProvider.setMinMaxKelvin(channelUID, 1000000 / mirekSchema.getMirekMaximum(),
+                        1000000 / mirekSchema.getMirekMinimum());
             }
         }
     }
@@ -1545,27 +1589,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
 
-            // Identify secondary lights for Twilight devices
-            // A Twilight device has multiple LIGHT service references; the first is primary, others are secondary
-            secondaryLights.clear();
-            supportedSecondaryChannelIdSet.clear();
-            boolean foundPrimaryLight = false;
-            for (ResourceReference service : services) {
-                if (ResourceType.LIGHT == service.getType()) {
-                    if (!foundPrimaryLight) {
-                        foundPrimaryLight = true;
-                        // First LIGHT service is the primary light
-                    } else {
-                        // Additional LIGHT services are secondary lights
-                        secondaryLights.put(service.getId(), true);
-                        logger.debug("{} -> updateLookups() identified secondary light: {}", resourceId,
-                                service.getId());
-                    }
-                }
-            }
-            // Create the secondary light channel group if we have secondary lights
-            if (!secondaryLights.isEmpty()) {
-                createSecondaryChannels();
+            // a second LIGHT service (e.g. Twilight devices) is the secondary light
+            secondLightId = services.stream().filter(s -> ResourceType.LIGHT == s.getType()).skip(1)
+                    .map(ResourceReference::getId).findFirst().orElse(null);
+            if (secondLightId != null) {
+                logger.debug("{} -> updateLookups() secondary light {}", resourceId, secondLightId);
             }
         }
     }
@@ -1764,26 +1792,30 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param fullUpdate if true always update the channel, otherwise only update if state is not 'UNDEF'.
      */
     private void updateState(String channelID, State state, boolean fullUpdate) {
+        updateState(new ChannelUID(thing.getUID(), channelID), state, fullUpdate);
+    }
+
+    private void updateState(ChannelUID channelUID, State state, boolean fullUpdate) {
         boolean isDefined = state != UnDefType.NULL;
-        Channel channel = thing.getChannel(channelID);
+        Channel channel = thing.getChannel(channelUID);
 
         if ((fullUpdate || isDefined) && Objects.nonNull(channel)) {
             logger.debug("{} -> updateState() '{}' update with '{}' (fullUpdate:{}, isDefined:{})", resourceId,
-                    channelID, state, fullUpdate, isDefined);
+                    channelUID, state, fullUpdate, isDefined);
 
             switch (channel.getKind()) {
                 case STATE:
-                    updateState(channelID, state);
+                    updateState(channelUID, state);
                     break;
 
                 case TRIGGER:
                     if (state instanceof DecimalType decimalState) {
-                        triggerChannel(channelID, String.valueOf(decimalState.intValue()));
+                        triggerChannel(channelUID, String.valueOf(decimalState.intValue()));
                     }
             }
         }
         if (fullUpdate && isDefined) {
-            addSupportedChannel(channelID);
+            addSupportedChannel(channelUID);
         }
     }
 
@@ -2020,287 +2052,23 @@ public class Clip2ThingHandler extends BaseThingHandler {
         return null;
     }
 
-    /**
-     * Check if this device is a Twilight device (primary + secondary light).
-     *
-     * @return true if this is a Twilight device
-     */
-    private boolean isTwilightDevice() {
-        Archetype archetype = Archetype.of(thisResource.getArchetype());
-        return archetype == Archetype.TWILIGHT || archetype == Archetype.TWILIGHT_FRONT
-                || archetype == Archetype.TWILIGHT_BACK;
+    private boolean isSecondLight(Resource resource) {
+        return ResourceType.LIGHT == resource.getType() && resource.getId().equals(secondLightId);
     }
 
-    /**
-     * Check if a resource ID belongs to a secondary light of a Twilight device.
-     *
-     * @param resourceId the resource ID to check
-     * @return true if this resource ID is a secondary light resource
-     */
-    private boolean isSecondaryLightResource(String resourceId) {
-        return secondaryLights.containsKey(resourceId);
-    }
-
-    private void initializeTwilightDevice() throws CriticalFieldMissingException {
-        if (!isTwilightDevice() || secondaryLightChannelGroupAdded) {
-            return;
-        }
-
-        List<ResourceReference> services = thisResource.getServiceReferences();
-        List<String> lightResourceIds = services.stream().filter(ref -> ResourceType.LIGHT == ref.getType())
-                .map(ResourceReference::getId).collect(Collectors.toList());
-
-        if (lightResourceIds.size() >= 2) {
-            // assume first light is primary, rest are secondary
-            primaryLightResourceId = lightResourceIds.get(0);
-            secondaryLights.clear();
-
-            for (int i = 1; i < lightResourceIds.size(); i++) {
-                secondaryLights.put(lightResourceIds.get(i), new Resource(ResourceType.LIGHT));
-            }
-
-            logger.debug("{} -> Twilight device initialized with primary light '{}' and {} secondary light(s)",
-                    resourceId, primaryLightResourceId, secondaryLights.size());
-        }
-    }
-
-    /**
-     * Add a secondary light channel ID to the supportedSecondaryChannelIdSet.
-     *
-     * @param channelId the channel ID (without group prefix) to add.
-     */
-    private void addSupportedSecondaryChannel(String channelId) {
-        if (!disposing) {
-            synchronized (supportedSecondaryChannelIdSet) {
-                if (supportedSecondaryChannelIdSet.add(channelId)) {
-                    logger.debug("{} -> addSupportedSecondaryChannel() '{}' added to supported secondary channel set",
-                            resourceId, channelId);
-                }
+    private void updateSecondLightCacheRequiredFields(Resource resource) {
+        if (resource.getColorTemperature() instanceof ColorTemperature ct) {
+            MirekSchema mirekSchema = ct.getMirekSchema();
+            if (mirekSchema == null || mirekSchema.invalid()) {
+                ct.setMirekSchema(MirekSchema.DEFAULT_SCHEMA);
             }
         }
-    }
-
-    /**
-     * Create the secondary light channels for a Twilight device based on the supported channel set.
-     * Channels are created only when they have defined state from the resource.
-     */
-    private void createSecondaryChannels() {
-        if (disposing) {
-            return;
+        if (resource.getColorXy() instanceof ColorXy xy && xy.getGamut() == null) {
+            xy.setGamut(ColorUtil.DEFAULT_GAMUT);
         }
-
-        synchronized (supportedSecondaryChannelIdSet) {
-            if (supportedSecondaryChannelIdSet.isEmpty()) {
-                return;
-            }
-
-            Set<Channel> addChannels = new HashSet<>();
-
-            for (String channelId : supportedSecondaryChannelIdSet) {
-                ChannelUID channelUID = new ChannelUID(thing.getUID(), SECONDARY_LIGHT_GROUP, channelId);
-                if (thing.getChannel(channelUID) == null) {
-                    ChannelTypeUID channelTypeUID = getChannelTypeForId(channelId);
-                    if (channelTypeUID != null) {
-                        Channel channel = ChannelBuilder.create(channelUID).withType(channelTypeUID).build();
-                        addChannels.add(channel);
-                        logger.debug("{} -> createSecondaryChannels() creating channel '{}'", resourceId, channelUID);
-                    }
-                }
-            }
-
-            if (!addChannels.isEmpty()) {
-                List<Channel> allChannels = new ArrayList<>(thing.getChannels());
-                allChannels.addAll(addChannels);
-                updateThing(editThing().withChannels(allChannels).build());
-                logger.debug("{} -> createSecondaryChannels() added {} channels", resourceId, addChannels.size());
-            }
-        }
-    }
-
-    /**
-     * Get the channel type UID for a given channel ID.
-     */
-    private @Nullable ChannelTypeUID getChannelTypeForId(String channelId) {
-        return switch (channelId) {
-            case CHANNEL_2_BRIGHTNESS -> new ChannelTypeUID("system", "brightness");
-            case CHANNEL_2_COLOR -> new ChannelTypeUID("system", "color");
-            case CHANNEL_2_COLOR_TEMP_PERCENT -> new ChannelTypeUID("system", "color-temperature");
-            case CHANNEL_2_COLOR_TEMP_ABSOLUTE -> new ChannelTypeUID("system", "color-temperature-abs");
-            case CHANNEL_2_COLOR_XY_ONLY -> new ChannelTypeUID(BINDING_ID, "advanced-color");
-            case CHANNEL_2_DIMMING_ONLY -> new ChannelTypeUID(BINDING_ID, "advanced-brightness");
-            case CHANNEL_2_SWITCH -> new ChannelTypeUID("system", "power");
-            case CHANNEL_2_ON_OFF_ONLY -> new ChannelTypeUID(BINDING_ID, "advanced-power");
-            case CHANNEL_2_EFFECT -> new ChannelTypeUID(BINDING_ID, "effect-v2");
-            default -> null;
-        };
-    }
-
-    private boolean updateSecondaryLightChannels(Resource resource, boolean fullUpdate)
-            throws CriticalFieldMissingException {
-        boolean updated = false;
-        if (!fullUpdate) {
-            // Update brightness
-            State brightnessState = resource.getBrightnessState();
-            if (brightnessState != UnDefType.NULL) {
-                updateSecondaryState(CHANNEL_2_BRIGHTNESS, brightnessState, fullUpdate);
-                updated = true;
-            }
-
-            // Update color
-            State colorState = resource.getColorState();
-            if (colorState != UnDefType.NULL) {
-                updateSecondaryState(CHANNEL_2_COLOR, colorState, fullUpdate);
-                updated = true;
-            }
-
-            // Update color XY
-            State colorXyState = resource.getColorXyState();
-            if (colorXyState != UnDefType.NULL) {
-                updateSecondaryState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
-                updated = true;
-            }
-
-            // Update color temperature percent
-            State colorTempState = resource.getColorTemperaturePercentState();
-            if (colorTempState != UnDefType.NULL) {
-                updateSecondaryState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTempState, fullUpdate);
-                updated = true;
-            }
-
-            // Update color temperature absolute
-            State colorTempAbsState = resource.getColorTemperatureAbsoluteState();
-            if (colorTempAbsState != UnDefType.NULL) {
-                updateSecondaryState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTempAbsState, fullUpdate);
-                updated = true;
-            }
-
-            // Update effect
-            State effectState = resource.getEffectState();
-            if (effectState != UnDefType.NULL) {
-                updateSecondaryState(CHANNEL_2_EFFECT, effectState, fullUpdate);
-                updated = true;
-            }
-
-            // Update switch
-            State switchState = resource.getSwitchState();
-            if (switchState != UnDefType.NULL) {
-                updateSecondaryState(CHANNEL_2_SWITCH, switchState, fullUpdate);
-                updated = true;
-            }
-
-            // Update dimming only
-            State dimmingState = resource.getDimmingState();
-            if (dimmingState != UnDefType.NULL) {
-                updateSecondaryState(CHANNEL_2_DIMMING_ONLY, dimmingState, fullUpdate);
-                updated = true;
-            }
-
-            // Update on/off only
-            State onOffState = resource.getOnOffState();
-            if (onOffState != UnDefType.NULL) {
-                updateSecondaryState(CHANNEL_2_ON_OFF_ONLY, onOffState, fullUpdate);
-                updated = true;
-            }
-        }
-        return updated;
-    }
-
-    /**
-     * Update the state of a secondary light channel, and if appropriate add the channel ID to the set of
-     * supportedSecondaryChannelIds. Only creates/updates the channel if it exists in the thing.
-     *
-     * @param channelId the secondary light channel ID (without group prefix)
-     * @param state the state to update
-     * @param fullUpdate whether this is a full state update
-     */
-    private void updateSecondaryState(String channelId, State state, boolean fullUpdate) {
-        ChannelUID channelUID = new ChannelUID(thing.getUID(), "secondary-light", channelId);
-        Channel channel = thing.getChannel(channelUID);
-
-        boolean isDefined = state != UnDefType.NULL;
-        if ((fullUpdate || isDefined) && Objects.nonNull(channel)) {
-            logger.debug("{} -> updateSecondaryState() '{}' update with '{}' (fullUpdate:{}, isDefined:{})", resourceId,
-                    channelUID, state, fullUpdate, isDefined);
-            switch (channel.getKind()) {
-                case STATE:
-                    updateState(channelUID, state);
-                    break;
-                case TRIGGER:
-                    if (state instanceof DecimalType decimalState) {
-                        triggerChannel(channelUID, String.valueOf(decimalState.intValue()));
-                    }
-            }
-        }
-        if (fullUpdate && isDefined) {
-            addSupportedSecondaryChannel(channelId);
-        }
-    }
-
-    /**
-     * Process the secondary light resource to update channel states based on available fields.
-     * Channels are only updated if they have defined state values.
-     *
-     * @param resource the secondary light resource
-     * @throws CriticalFieldMissingException if critical field is missing
-     */
-    private void updateSecondaryLightChannels(Resource resource) throws CriticalFieldMissingException {
-        boolean fullUpdate = resource.hasFullState();
-        logger.debug("{} -> updateSecondaryLightChannels() from resource {}", resourceId, resource);
-
-        // Update color channels
-        State colorState = resource.getColorState();
-        State colorXyState = resource.getColorXyState();
-        State colorTempState = resource.getColorTemperaturePercentState();
-        State colorTempAbsState = resource.getColorTemperatureAbsoluteState();
-
-        updateSecondaryState(CHANNEL_2_COLOR, colorState, fullUpdate);
-        updateSecondaryState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
-        updateSecondaryState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTempState, fullUpdate);
-        updateSecondaryState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTempAbsState, fullUpdate);
-        updateSecondaryState(CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
-        updateSecondaryState(CHANNEL_2_DIMMING_ONLY, resource.getDimmingState(), fullUpdate);
-        updateSecondaryState(CHANNEL_2_SWITCH, resource.getSwitchState(), fullUpdate);
-        updateSecondaryState(CHANNEL_2_ON_OFF_ONLY, resource.getOnOffState(), fullUpdate);
-        updateSecondaryState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
-    }
-
-    /**
-     * Update the color temperature absolute channel for secondary light based on Mirek schema.
-     *
-     * @param resource the secondary light resource
-     */
-    private void updateSecondaryColorTemperatureAbsoluteChannel(Resource resource) {
-        ColorTemperature colorTemperature = resource.getColorTemperature();
-        if (colorTemperature != null) {
-            MirekSchema mirekSchema = colorTemperature.getMirekSchema();
-            if (mirekSchema != null) {
-                ChannelUID secondaryChannelUID = new ChannelUID(thing.getUID(), "secondary-light",
-                        CHANNEL_2_COLOR_TEMP_ABSOLUTE);
-                stateDescriptionProvider.setMinMaxKelvin(secondaryChannelUID, 1000000 / mirekSchema.getMirekMaximum(),
-                        1000000 / mirekSchema.getMirekMinimum());
-            }
-        }
-    }
-
-    /**
-     * Update the effect channel for secondary light based on available effects.
-     *
-     * @param resource the secondary light resource
-     */
-    private void updateSecondaryEffectChannel(Resource resource) {
-        Effects fixedEffects = resource.getFixedEffects();
-        TimedEffects timedEffects = resource.getTimedEffects();
-        List<StateOption> stateOptions = Stream
-                .concat(Objects.nonNull(fixedEffects) ? fixedEffects.getStatusValues().stream() : Stream.empty(),
-                        Objects.nonNull(timedEffects) ? timedEffects.getStatusValues().stream() : Stream.empty())
-                .map(effect -> {
-                    String effectName = EffectType.of(effect).name();
-                    return new StateOption(effectName, effectName);
-                }).distinct().toList();
-        if (!stateOptions.isEmpty()) {
-            ChannelUID secondaryChannelUID = new ChannelUID(thing.getUID(), "secondary-light", CHANNEL_2_EFFECT);
-            stateDescriptionProvider.setStateOptions(secondaryChannelUID, stateOptions);
-            logger.debug("{} -> updateSecondaryEffectChannel() found {} effects", resourceId, stateOptions.size());
+        Resource cacheEntry = serviceContributorsCache.get(resource.getId());
+        if (cacheEntry != null) {
+            Setters.setResource(cacheEntry, resource);
         }
     }
 }
