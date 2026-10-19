@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.hue.internal;
 
-import static org.openhab.core.thing.ChannelUID.*;
-
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -196,7 +195,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_SECURITY_MOTION = "security-motion";
     public static final String CHANNEL_2_SECURITY_MOTION_LAST_UPDATED = "security-motion-last-updated";
     public static final String CHANNEL_2_UPDATE_READY_TO_INSTALL = //
-            CHANNEL_GROUP_SOFTWARE + CHANNEL_GROUP_SEPARATOR + "update-ready";
+            CHANNEL_GROUP_SOFTWARE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "update-ready";
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
