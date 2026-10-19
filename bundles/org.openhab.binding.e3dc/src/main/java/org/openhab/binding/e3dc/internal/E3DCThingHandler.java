@@ -26,7 +26,9 @@ import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -297,6 +299,50 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         return raw instanceof Number number ? number.intValue() : null;
     }
 
+    /**
+     * Publishes capacities in kWh. The device reports them in Ah, so each is multiplied by the voltage
+     * reported in the same response.
+     *
+     * @param response the poll response
+     * @param groupId the channel group holding the capacity, voltage and energy channels
+     * @param voltageChannel the channel the voltage is read from
+     * @param sources the energy channels, each with the capacity channel it is calculated from
+     */
+    protected void updateEnergies(RscpValue response, String groupId, String voltageChannel,
+            Map<String, String> sources) {
+        Double volts = readValue(response, groupId, voltageChannel);
+        if (volts == null || volts <= 0) {
+            return;
+        }
+        for (Map.Entry<String, String> energy : sources.entrySet()) {
+            Double kilowattHours = energyKwh(readValue(response, groupId, energy.getValue()), volts);
+            if (kilowattHours != null) {
+                updateState(new ChannelUID(getThing().getUID(), groupId + "#" + energy.getKey()),
+                        new QuantityType<>(kilowattHours, Units.KILOWATT_HOUR));
+            }
+        }
+    }
+
+    private @Nullable Double readValue(RscpValue response, String groupId, String channelId) {
+        E3DCChannelSpec spec = getRegistry().spec(groupId, channelId);
+        if (spec == null) {
+            return null;
+        }
+        RscpValue value = findValue(response, spec, getDeviceIndex());
+        return value != null && value.getValue() instanceof Number number ? spec.scale(number.doubleValue()) : null;
+    }
+
+    /**
+     * The energy of a battery capacity at a given voltage.
+     *
+     * @param ampereHours the capacity in Ah, or {@code null} when the device did not report it
+     * @param volts the voltage in V
+     * @return the energy in kWh, or {@code null} when there is no capacity
+     */
+    static @Nullable Double energyKwh(@Nullable Double ampereHours, double volts) {
+        return ampereHours == null ? null : ampereHours * volts / 1000.0;
+    }
+
     protected @Nullable E3DCBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof E3DCBridgeHandler handler) {
@@ -323,7 +369,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         if (commands == null || groupId == null) {
             return;
         }
-        E3DCCommandSpec spec = commands.spec(groupId, channelUID.getId());
+        E3DCCommandSpec spec = findSpec(commands, channelUID);
         if (spec == null) {
             logger.debug("Channel {} is not writable", channelUID);
             return;
@@ -337,7 +383,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         RscpValue value = spec.toValue(command);
         List<RscpValue> request = commandHandler.buildRequest(spec, command, index != null ? index : 0);
         if (value == null || request == null) {
-            logger.debug("Command {} is not valid for channel {}", command, channelUID);
+            logger.warn("Command {} is not valid for channel {} and was not sent", command, channelUID);
             return;
         }
         // the channel state is only updated once the device acknowledged the write
@@ -365,6 +411,18 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
             return number.intValue() != 0 ? OnOffType.ON : OnOffType.OFF;
         }
         return raw instanceof Number number ? new DecimalType(number.doubleValue()) : null;
+    }
+
+    /**
+     * The command specification of a channel, or {@code null} when the channel cannot be written.
+     *
+     * <p>
+     * The registry is keyed by the id of the channel inside its group, while the id of a channel UID
+     * carries the group as well, so the lookup has to use the id without the group.
+     */
+    static @Nullable E3DCCommandSpec findSpec(E3DCCommandRegistry commands, ChannelUID channelUID) {
+        String groupId = channelUID.getGroupId();
+        return groupId != null ? commands.spec(groupId, channelUID.getIdWithoutGroup()) : null;
     }
 
     /** The writable channels of this thing, or {@code null} when it has none. */

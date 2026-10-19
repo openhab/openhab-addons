@@ -19,6 +19,9 @@
 			<channel id="design-capacity" typeId="pack-design-capacity"/>
 			<channel id="usable-capacity" typeId="pack-usable-capacity"/>
 			<channel id="usable-remaining-capacity" typeId="pack-usable-remaining-capacity"/>
+			<channel id="design-energy" typeId="pack-design-energy"/>
+			<channel id="usable-energy" typeId="pack-usable-energy"/>
+			<channel id="usable-remaining-energy" typeId="pack-usable-remaining-energy"/>
 		</channels>
 	</channel-group-type>
 

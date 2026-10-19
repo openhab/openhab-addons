@@ -44,6 +44,10 @@ import org.junit.jupiter.api.Test;
 @NonNullByDefault
 class E3DCChannelTypesTest {
 
+    /** The settable wallbox currents, which offer a list of whole amperes although they carry a unit. */
+    private static final Set<String> SETTABLE_CURRENT_TYPES = Set.of("wallbox-min-charge-current",
+            "wallbox-max-charge-current");
+
     private static final Path THING_DIRECTORY = Path.of("src", "main", "resources", "OH-INF", "thing");
 
     /** The item types whose channel types may name a unit in their state pattern. */
@@ -218,13 +222,16 @@ class E3DCChannelTypesTest {
     /**
      * An option list tells the user which of a few discrete values a channel reports. That only makes
      * sense for a plain number, a dimension less share or a string; a channel carrying a unit reports a
-     * measurement that must not be narrowed to a list.
+     * measurement that must not be narrowed to a list. The only exceptions are the charge currents of the
+     * wallbox: they are settings rather than measurements, and the list offers the whole-ampere steps the
+     * wallbox accepts.
      */
     @Test
     void optionsAreOnlyDeclaredForDiscreteChannels() throws IOException {
         List<String> wrong = new ArrayList<>();
         for (ChannelType type : channelTypes().values()) {
-            if (type.body().contains("<option ") && type.itemType().contains(":")) {
+            if (type.body().contains("<option ") && type.itemType().contains(":")
+                    && !SETTABLE_CURRENT_TYPES.contains(type.id())) {
                 wrong.add(type.id() + " (" + type.itemType() + ") restricts a measurement to options");
             }
         }

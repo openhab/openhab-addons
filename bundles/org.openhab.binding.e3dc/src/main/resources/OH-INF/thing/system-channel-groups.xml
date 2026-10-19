@@ -15,27 +15,11 @@
 			<channel id="inverter-count" typeId="system-inverter-count"/>
 			<channel id="battery-count" typeId="system-battery-count"/>
 			<channel id="mode" typeId="system-mode"/>
-			<channel id="set-power-mode" typeId="system-set-power-mode"/>
 			<channel id="coupling-mode" typeId="system-coupling-mode"/>
-			<channel id="emergency-power-status" typeId="system-emergency-power-status"/>
-			<channel id="charging-lock" typeId="system-charging-lock"/>
-			<channel id="discharging-lock" typeId="system-discharging-lock"/>
-			<channel id="emergency-power-available" typeId="system-emergency-power-available"/>
-			<channel id="charging-throttled" typeId="system-charging-throttled"/>
 			<channel id="grid-in-limit" typeId="system-grid-in-limit"/>
-			<channel id="charging-time-lock" typeId="system-charging-time-lock"/>
-			<channel id="discharging-time-lock" typeId="system-discharging-time-lock"/>
-			<channel id="weather-regulated-charge" typeId="system-weather-regulated-charge"/>
-			<channel id="power-limits-used" typeId="system-power-limits-used"/>
 			<channel id="powersave" typeId="system-powersave"/>
-			<channel id="set-manual-charge" typeId="system-set-manual-charge"/>
 			<channel id="derate-at-percent" typeId="system-derate-at-percent"/>
 			<channel id="derate-at-power" typeId="system-derate-at-power"/>
-			<channel id="idle-periods-enabled" typeId="system-idle-periods-enabled"/>
-			<channel id="idle-periods" typeId="system-idle-periods"/>
-			<channel id="block-charging" typeId="system-block-charging"/>
-			<channel id="block-discharging" typeId="system-block-discharging"/>
-			<channel id="manual-charge-energy" typeId="system-manual-charge-energy"/>
 		</channels>
 	</channel-group-type>
 

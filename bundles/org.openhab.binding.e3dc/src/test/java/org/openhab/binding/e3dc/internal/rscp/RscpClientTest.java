@@ -243,6 +243,57 @@ class RscpClientTest {
     }
 
     @Test
+    void concurrentRequestsAreSentOneAtATime() throws Exception {
+        AtomicReference<@Nullable Boolean> overlapped = new AtomicReference<>();
+        DeviceScript script = new DeviceScript() {
+            @Override
+            void serve(Socket socket) throws Exception {
+                InputStream in = socket.getInputStream();
+                OutputStream out = socket.getOutputStream();
+                RscpCipher cipher = new RscpCipher(RSCP_PASSWORD.getBytes(StandardCharsets.UTF_8));
+
+                readEncryptedFrame(in, cipher);
+                out.write(cipher.encrypt(okResponse()));
+                out.flush();
+
+                for (int i = 0; i < 2; i++) {
+                    readEncryptedFrame(in, cipher);
+                    // the second request would already be on the wire here if the client did not wait for the answer
+                    Thread.sleep(300);
+                    if (in.available() > 0) {
+                        overlapped.set(Boolean.TRUE);
+                    }
+                    out.write(cipher.encrypt(okResponse()));
+                    out.flush();
+                }
+            }
+        };
+        int port = startDevice(script);
+
+        try (RscpClient client = new RscpClient("127.0.0.1", port, USER, PASSWORD, RSCP_PASSWORD, 5000)) {
+            client.connect();
+            AtomicReference<@Nullable Exception> failure = new AtomicReference<>();
+            Runnable ask = () -> {
+                try {
+                    client.requestTag(RscpTag.EMS_REQ_GET_POWER_SETTINGS);
+                } catch (RscpException e) {
+                    failure.set(e);
+                }
+            };
+            Thread first = new Thread(ask, "request-1");
+            Thread second = new Thread(ask, "request-2");
+            first.start();
+            second.start();
+            first.join(10_000);
+            second.join(10_000);
+
+            assertNull(failure.get(), "both requests must be answered");
+        }
+        script.await();
+        assertNull(overlapped.get(), "the second request must wait for the answer of the first");
+    }
+
+    @Test
     void requestingWithoutAConnectionFails() {
         try (RscpClient client = new RscpClient("127.0.0.1", 1, USER, PASSWORD, RSCP_PASSWORD, 1000)) {
             assertFalse(client.isConnected());

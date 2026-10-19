@@ -202,8 +202,8 @@ class E3DCChannelSpecTest {
 
         assertEquals(Set.of(E3DCBindingConstants.GROUP_POWER, E3DCBindingConstants.GROUP_BATTERY,
                 E3DCBindingConstants.GROUP_GRID, E3DCBindingConstants.GROUP_INVERTER,
-                E3DCBindingConstants.GROUP_HISTORY, E3DCBindingConstants.GROUP_RESERVE,
-                E3DCBindingConstants.GROUP_SYSTEM), groups);
+                E3DCBindingConstants.GROUP_HISTORY, E3DCBindingConstants.GROUP_EMERGENCY,
+                E3DCBindingConstants.GROUP_SYSTEM, E3DCBindingConstants.GROUP_BATTERY_CONTROL), groups);
     }
 
     /**
@@ -218,7 +218,7 @@ class E3DCChannelSpecTest {
                 RscpTag.SE_PARAM_EP_RESERVE_W, "energy-max", RscpTag.SE_PARAM_EP_RESERVE_MAX_W, "last-soc",
                 RscpTag.SE_PARAM_LAST_SOC);
         for (Map.Entry<String, Integer> value : values.entrySet()) {
-            E3DCChannelSpec spec = registry.spec(E3DCBindingConstants.GROUP_RESERVE, value.getKey());
+            E3DCChannelSpec spec = registry.spec(E3DCBindingConstants.GROUP_EMERGENCY, value.getKey());
             assertNotNull(spec, value.getKey() + " is missing");
             assertEquals(RscpTag.SE_EP_RESERVE, spec.container(), value.getKey() + " reads the wrong container");
             assertEquals(value.getValue(), spec.tag());
@@ -234,8 +234,8 @@ class E3DCChannelSpecTest {
     @Test
     void theReserveIsWritableAsAShareAndAsEnergy() {
         E3DCCommandRegistry commands = E3DCCommandSpec.powerPlant();
-        E3DCCommandSpec percent = commands.spec(E3DCBindingConstants.GROUP_RESERVE, "percent");
-        E3DCCommandSpec energy = commands.spec(E3DCBindingConstants.GROUP_RESERVE, "energy");
+        E3DCCommandSpec percent = commands.spec(E3DCBindingConstants.GROUP_EMERGENCY, "percent");
+        E3DCCommandSpec energy = commands.spec(E3DCBindingConstants.GROUP_EMERGENCY, "energy");
 
         assertNotNull(percent);
         assertNotNull(energy);
@@ -342,7 +342,7 @@ class E3DCChannelSpecTest {
 
     @Test
     void theManualChargeChannelReadsTheEnergyCounterInsideItsContainer() {
-        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_SYSTEM,
+        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL,
                 "manual-charge-energy");
 
         assertNotNull(spec);

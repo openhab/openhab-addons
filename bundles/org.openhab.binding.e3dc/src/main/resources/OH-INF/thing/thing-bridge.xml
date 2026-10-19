@@ -42,7 +42,7 @@
 			<parameter name="refreshInterval" type="integer" unit="s" min="1" max="300">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in seconds, between 1 and 300.</description>
-				<default>60</default>
+				<default>5</default>
 			</parameter>
 			<parameter name="historyInterval" type="integer" unit="min" min="1" max="1440">
 				<label>History Interval</label>
@@ -50,12 +50,6 @@
 					1440.
 					Never shorter than the refresh interval.</description>
 				<default>15</default>
-			</parameter>
-			<parameter name="historyStartYear" type="integer" min="0" max="2100">
-				<label>History Start Year</label>
-				<description>First year the thing action fetchAllHistory requests. 0 means not set.</description>
-				<default>0</default>
-				<advanced>true</advanced>
 			</parameter>
 			<parameter name="timeout" type="integer" unit="s" min="1">
 				<label>Timeout</label>

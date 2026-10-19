@@ -81,4 +81,28 @@
 		<state pattern="%.1f Ah" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="pack-design-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Design Energy</label>
+		<description>Design capacity of the battery in kWh, calculated from the design capacity and the current battery
+			voltage</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-usable-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Usable Energy</label>
+		<description>Usable capacity of the battery in kWh, calculated from the usable capacity and the current battery
+			voltage</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-usable-remaining-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Usable Remaining Energy</label>
+		<description>Usable energy left in the battery in kWh, calculated from the remaining capacity and the current battery
+			voltage</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

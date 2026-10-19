@@ -18,7 +18,8 @@
 			<channel-group id="grid" typeId="grid"/>
 			<channel-group id="inverter" typeId="inverter"/>
 			<channel-group id="history" typeId="history"/>
-			<channel-group id="reserve" typeId="reserve"/>
+			<channel-group id="emergency" typeId="emergency"/>
+			<channel-group id="battery-control" typeId="battery-control"/>
 			<channel-group id="system" typeId="system"/>
 			<!-- The ai360 group is switched off for now. The code and the group type stay, to switch it on again
 				move the line below out of this comment.

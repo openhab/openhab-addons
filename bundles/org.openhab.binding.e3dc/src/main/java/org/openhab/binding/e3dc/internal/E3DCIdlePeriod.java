@@ -198,15 +198,14 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /**
-     * Whether this period locks the given type on all seven days, around the clock.
+     * Whether this is the active period of the lock switch of the given type.
      *
      * <p>
-     * It does not matter who wrote the period: a period of the portal or of another client blocks just the
-     * same.
+     * The convenience switches belong to the binding, not to the raw periods of the device, so they only look
+     * at their own entry: {@code OH_Block_Charge} or {@code OH_Block_Discharge}, which has to be active.
      */
     public boolean blocks(Type blocked) {
-        return active && type == blocked && (weekdays & ALL_DAYS) == ALL_DAYS && !start.isAfter(DAY_START)
-                && !stop.isBefore(DAY_END);
+        return active && name.equals(blocker(blocked).name());
     }
 
     /** Whether the window ends after it starts, which is what the device and rscp2mqtt require. */
@@ -223,6 +222,35 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
                         RscpValue.bool(RscpTag.EMS_PERIOD_ACTIVE, active),
                         RscpValue.uint32(RscpTag.EMS_PERIOD_START, start.toSecondOfDay()),
                         RscpValue.uint32(RscpTag.EMS_PERIOD_STOP, stop.toSecondOfDay())));
+    }
+
+    /**
+     * The periods with the given one in place of the period of the same name, or added at the end when there is none.
+     */
+    public static List<E3DCIdlePeriod> replaceByName(List<E3DCIdlePeriod> periods, E3DCIdlePeriod period) {
+        List<E3DCIdlePeriod> result = new ArrayList<>();
+        boolean replaced = false;
+        for (E3DCIdlePeriod existing : periods) {
+            if (existing.name().equals(period.name())) {
+                if (!replaced) {
+                    result.add(period);
+                    replaced = true;
+                }
+            } else {
+                result.add(existing);
+            }
+        }
+        if (!replaced) {
+            result.add(period);
+        }
+        return result;
+    }
+
+    /** The periods without the one of the given name. */
+    public static List<E3DCIdlePeriod> removeByName(List<E3DCIdlePeriod> periods, String name) {
+        List<E3DCIdlePeriod> result = new ArrayList<>(periods);
+        result.removeIf(period -> period.name().equals(name));
+        return result;
     }
 
     /** The request that replaces the whole list of periods on the device. */

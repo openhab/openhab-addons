@@ -4,28 +4,28 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="reserve-percent">
+	<channel-type id="emergency-percent">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Reserve</label>
 		<description>Share of the battery kept for emergency power</description>
 		<state pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="reserve-energy">
+	<channel-type id="emergency-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Reserve Energy</label>
 		<description>Energy kept for emergency power</description>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="reserve-energy-max">
+	<channel-type id="emergency-energy-max">
 		<item-type>Number:Energy</item-type>
 		<label>Maximum Reserve Energy</label>
 		<description>Highest reserve the battery can hold for emergency power</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="reserve-last-soc">
+	<channel-type id="emergency-last-soc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Reserve Last State of Charge</label>
 		<description>State of charge the battery was left with for emergency power</description>

@@ -228,4 +228,28 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="module-remaining-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Remaining Energy</label>
+		<description>Remaining energy of the battery cell module in kWh, calculated from the remaining capacity and the module
+			voltage</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-full-charge-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Full Charge Energy</label>
+		<description>Energy at full charge of the battery cell module in kWh, calculated from the full charge capacity and the
+			module voltage</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-design-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Design Energy</label>
+		<description>Design energy of the battery cell module in kWh, calculated from the design capacity and the module
+			voltage</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

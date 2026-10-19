@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.e3dc.internal;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -20,6 +21,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +35,7 @@ import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -68,6 +72,11 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler implements E3DCAi360
     static final String CHANNEL_BLOCK_CHARGING = "block-charging";
     /** The switch that blocks discharging of the battery around the clock. */
     static final String CHANNEL_BLOCK_DISCHARGING = "block-discharging";
+    private static final int VERIFY_ATTEMPTS = 6;
+    private static final int VERIFY_DELAY_SECONDS = 1;
+    static final String CHANNEL_IDLE_PERIODS = "idle-periods";
+    static final String CHANNEL_IDLE_PERIOD_SET = "idle-period-set";
+    static final String CHANNEL_IDLE_PERIOD_DELETE = "idle-period-delete";
 
     /** Switches the cloud optimisation of the battery on and off. */
     static final String CHANNEL_AI360_ENABLED = "enabled";
@@ -145,14 +154,27 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler implements E3DCAi360
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (E3DCBindingConstants.GROUP_SYSTEM.equals(channelUID.getGroupId())
+        if (E3DCBindingConstants.GROUP_BATTERY_CONTROL.equals(channelUID.getGroupId())
                 && CHANNEL_SET_POWER_MODE.equals(channelUID.getIdWithoutGroup())) {
             if (!(command instanceof RefreshType)) {
                 setPowerMode(channelUID, command.toString());
             }
             return;
         }
-        if (E3DCBindingConstants.GROUP_SYSTEM.equals(channelUID.getGroupId())
+        if (E3DCBindingConstants.GROUP_BATTERY_CONTROL.equals(channelUID.getGroupId())
+                && (CHANNEL_IDLE_PERIODS.equals(channelUID.getIdWithoutGroup())
+                        || CHANNEL_IDLE_PERIOD_SET.equals(channelUID.getIdWithoutGroup())
+                        || CHANNEL_IDLE_PERIOD_DELETE.equals(channelUID.getIdWithoutGroup()))) {
+            if (command instanceof RefreshType) {
+                if (CHANNEL_IDLE_PERIODS.equals(channelUID.getIdWithoutGroup())) {
+                    super.handleCommand(channelUID, command);
+                }
+            } else {
+                writeIdleChannel(channelUID.getIdWithoutGroup(), command.toString());
+            }
+            return;
+        }
+        if (E3DCBindingConstants.GROUP_BATTERY_CONTROL.equals(channelUID.getGroupId())
                 && (CHANNEL_BLOCK_CHARGING.equals(channelUID.getIdWithoutGroup())
                         || CHANNEL_BLOCK_DISCHARGING.equals(channelUID.getIdWithoutGroup()))) {
             if (command instanceof RefreshType) {
@@ -359,30 +381,77 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler implements E3DCAi360
         }
     }
 
-    /** The oldest year the history fetch accepts. */
+    /**
+     * Writes what an idle period channel received: the whole list, one period to add or replace, or a name to remove.
+     */
+    private void writeIdleChannel(String channelId, String text) {
+        switch (channelId) {
+            case CHANNEL_IDLE_PERIODS -> setIdlePeriods(text.trim());
+            case CHANNEL_IDLE_PERIOD_SET -> {
+                E3DCIdlePeriod period = E3DCIdlePeriod.parse(text.trim());
+                if (period == null) {
+                    logger.warn("The idle period was not written: it must read name:days:mode:active:hh:mm-hh:mm");
+                    return;
+                }
+                changeIdlePeriods(periods -> E3DCIdlePeriod.replaceByName(periods, period));
+            }
+            default -> {
+                String name = text.trim();
+                boolean[] found = new boolean[1];
+                changeIdlePeriods(periods -> {
+                    List<E3DCIdlePeriod> remaining = E3DCIdlePeriod.removeByName(periods, name);
+                    found[0] = remaining.size() != periods.size();
+                    return remaining;
+                });
+                if (!found[0]) {
+                    logger.warn("No idle period is named {}", name);
+                }
+            }
+        }
+    }
+
+    /** Reads the periods of the device, changes them and writes the list back, as one step. */
+    private boolean changeIdlePeriods(UnaryOperator<List<E3DCIdlePeriod>> change) {
+        synchronized (idleLock) {
+            List<E3DCIdlePeriod> current = readIdlePeriods();
+            if (current == null) {
+                logger.warn("The idle periods were not changed because they could not be read");
+                return false;
+            }
+            List<E3DCIdlePeriod> updated = change.apply(new ArrayList<>(current));
+            String problem = problemOf(updated);
+            if (problem != null) {
+                logger.warn("The idle periods were not written: {}", problem);
+                return false;
+            }
+            if (!writeIdlePeriods(updated)) {
+                logger.warn("The device did not accept the idle periods");
+                return false;
+            }
+            return true;
+        }
+    }
+
+    /** The oldest year the history fetch tries, a safety limit. */
     static final int FIRST_HISTORY_YEAR = 2000;
 
+    /** The number of years in a row without data after which the history fetch stops going back. */
+    static final int MAX_EMPTY_YEARS = 2;
+
     /**
-     * Fetches the yearly history of earlier years once and publishes it on the {@code history#year-*}
+     * Fetches the yearly history of all earlier years once and publishes it on the {@code history#year-*}
      * channels as time series entries, one entry per year stamped with the start of the year.
      *
      * <p>
-     * Only completed years are fetched; the running year is polled anyway. Each year is asked for on its own,
-     * so an answer can only belong to the year it was requested for, and a year the device holds no data for
-     * is skipped. A year already known to persistence is replaced.
+     * The fetch starts at the last completed year and goes back year by year; the running year is polled
+     * anyway. Each year is asked for on its own, so an answer can only belong to the year it was requested
+     * for. It stops after {@value #MAX_EMPTY_YEARS} years in a row without data, which tolerates a single gap
+     * and ends before the installation of the device. A year already known to persistence is replaced.
      *
-     * @param fromYear the first year to fetch
-     * @param toYear the last year to fetch, limited to the year before the running one
-     * @return the number of years the device delivered data for, or {@code -1} when the request is not valid
-     *         or the device is not connected
+     * @return the number of years the device delivered data for, or {@code -1} when the device is not
+     *         connected
      */
-    public int fetchHistory(int fromYear, int toYear) {
-        int lastCompleted = LocalDate.now(ZoneOffset.UTC).getYear() - 1;
-        int last = Math.min(toYear, lastCompleted);
-        if (fromYear < FIRST_HISTORY_YEAR || fromYear > last) {
-            logger.warn("History not fetched: the first year must lie between {} and {}", FIRST_HISTORY_YEAR, last);
-            return -1;
-        }
+    public int fetchHistory() {
         E3DCBridgeHandler bridge = getBridgeHandler();
         if (bridge == null || !bridge.isConnected()) {
             logger.warn("History not fetched: the device is not connected");
@@ -392,15 +461,18 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler implements E3DCAi360
                 Map.of());
         Map<String, TimeSeries> series = new LinkedHashMap<>();
         int delivered = 0;
-        for (int year = fromYear; year <= last; year++) {
+        int emptyInARow = 0;
+        for (int year = LocalDate.now(ZoneOffset.UTC).getYear() - 1; year >= FIRST_HISTORY_YEAR
+                && emptyInARow < MAX_EMPTY_YEARS; year--) {
             RscpValue response;
             try {
                 response = bridge.sendRequest(List.of(E3DCBridgeHandler.yearHistoryRequest(year)));
             } catch (RscpException e) {
                 logger.warn("History of {} not fetched: {}", year, e.getMessage());
+                emptyInARow++;
                 continue;
             }
-            boolean any = false;
+            Map<String, State> states = new LinkedHashMap<>();
             for (Map.Entry<String, E3DCChannelSpec> channel : channels.entrySet()) {
                 E3DCChannelSpec spec = channel.getValue();
                 if (spec.container() != RscpTag.DB_HISTORY_DATA_YEAR) {
@@ -409,15 +481,18 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler implements E3DCAi360
                 RscpValue value = findValue(response, spec, null);
                 State state = value != null ? valueState(value, spec) : null;
                 if (state != null) {
-                    series.computeIfAbsent(channel.getKey(), key -> new TimeSeries(TimeSeries.Policy.REPLACE))
-                            .add(LocalDate.of(year, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant(), state);
-                    any = true;
+                    states.put(channel.getKey(), state);
                 }
             }
-            if (any) {
+            if (states.values().stream().anyMatch(E3DCPowerPlantHandler::isNonZero)) {
+                Instant stamp = LocalDate.of(year, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+                states.forEach((key, state) -> series
+                        .computeIfAbsent(key, k -> new TimeSeries(TimeSeries.Policy.REPLACE)).add(stamp, state));
                 delivered++;
+                emptyInARow = 0;
             } else {
                 logger.debug("The device holds no history for {}", year);
+                emptyInARow++;
             }
         }
         for (Map.Entry<String, TimeSeries> entry : series.entrySet()) {
@@ -425,25 +500,19 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler implements E3DCAi360
                     E3DCBindingConstants.GROUP_HISTORY + "#" + entry.getKey());
             sendTimeSeries(channelUID, entry.getValue());
         }
-        logger.info("History fetched for {} of {} years", delivered, last - fromYear + 1);
+        logger.info("History fetched for {} years", delivered);
         return delivered;
     }
 
-    /**
-     * Fetches the yearly history from the configured start year to the last completed year, see
-     * {@link #fetchHistory(int, int)}.
-     *
-     * @return the number of years the device delivered data for, or {@code -1} when no start year is
-     *         configured, the request is not valid or the device is not connected
-     */
-    public int fetchAllHistory() {
-        E3DCBridgeHandler bridge = getBridgeHandler();
-        int startYear = bridge != null ? bridge.getHistoryStartYear() : 0;
-        if (startYear == 0) {
-            logger.warn("History not fetched: set the history start year in the bridge configuration");
-            return -1;
+    /** Whether the state is a number other than zero; the device may answer a year without data with zeros. */
+    static boolean isNonZero(State state) {
+        if (state instanceof QuantityType<?> quantity) {
+            return quantity.doubleValue() != 0;
         }
-        return fetchHistory(startYear, LocalDate.now(ZoneOffset.UTC).getYear() - 1);
+        if (state instanceof DecimalType decimal) {
+            return decimal.doubleValue() != 0;
+        }
+        return true;
     }
 
     /** What is wrong with a list of periods, or {@code null} when the device can take it. */
@@ -470,30 +539,102 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler implements E3DCAi360
      */
     private void block(ChannelUID channelUID, E3DCIdlePeriod.Type type, boolean on) {
         E3DCIdlePeriod blocker = E3DCIdlePeriod.blocker(type);
-        List<E3DCIdlePeriod> updated;
         synchronized (idleLock) {
             List<E3DCIdlePeriod> current = readIdlePeriods();
             if (current == null) {
                 logger.warn("The lock was not changed because the idle periods could not be read");
                 return;
             }
-            updated = new ArrayList<>(current);
+            List<E3DCIdlePeriod> updated = new ArrayList<>(current);
             updated.removeIf(period -> period.name().equals(blocker.name()));
             if (on) {
                 updated.add(blocker);
             }
             if (!updated.equals(current) && !writeIdlePeriods(updated)) {
+                logger.warn("The lock of {} was not changed because the device did not accept the idle periods",
+                        type.name().toLowerCase());
                 return;
             }
             if (on && !enableIdlePeriods()) {
+                logger.warn("The lock of {} is not active because the device did not confirm switching on the idle"
+                        + " periods", type.name().toLowerCase());
                 return;
             }
         }
-        boolean blocked = updated.stream().anyMatch(period -> period.blocks(type));
-        if (!on && blocked) {
-            logger.info("Another idle period still blocks {}, so the switch stays on", type.name().toLowerCase());
+        // the device takes a moment to report a list it has just accepted, so the check does not run at once
+        scheduler.schedule(() -> verifyBlock(channelUID, type, on, 1), VERIFY_DELAY_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Checks what the device reports after a lock was written and publishes it on the switch.
+     *
+     * <p>
+     * The write is answered at once, but the list the device reports may still be the old one for a moment.
+     * The check therefore repeats until the device reports what was written, and gives up with a warning
+     * that names what the device holds.
+     */
+    private void verifyBlock(ChannelUID channelUID, E3DCIdlePeriod.Type type, boolean on, int attempt) {
+        IdleState state;
+        synchronized (idleLock) {
+            state = readIdleState();
         }
+        boolean blocked = state != null && state.blocks(type);
+        if (state != null && blocked == on) {
+            updateState(channelUID, blocked ? OnOffType.ON : OnOffType.OFF);
+            return;
+        }
+        if (attempt < VERIFY_ATTEMPTS) {
+            scheduler.schedule(() -> verifyBlock(channelUID, type, on, attempt + 1), VERIFY_DELAY_SECONDS,
+                    TimeUnit.SECONDS);
+            return;
+        }
+        if (state == null) {
+            logger.warn("The lock of {} could not be checked because the device did not report its idle periods",
+                    type.name().toLowerCase());
+            return;
+        }
+        logger.warn("The device does not report the lock of {} as {} after {} s, idle periods in use: {}, periods: {}",
+                type.name().toLowerCase(), on ? "active" : "released", VERIFY_ATTEMPTS * VERIFY_DELAY_SECONDS,
+                state.enabled(), E3DCIdlePeriod.toText(state.periods()));
         updateState(channelUID, blocked ? OnOffType.ON : OnOffType.OFF);
+    }
+
+    /**
+     * The periods of the device together with whether it uses them.
+     *
+     * @param periods the periods the device reported
+     * @param enabled whether the device uses idle periods at all
+     */
+    private record IdleState(List<E3DCIdlePeriod> periods, boolean enabled) {
+        /** Whether idle periods are in use and the list holds the active period of the lock switch of the type. */
+        boolean blocks(E3DCIdlePeriod.Type type) {
+            return enabled && periods.stream().anyMatch(period -> period.blocks(type));
+        }
+    }
+
+    /** Reads the periods and the use of idle periods, or returns {@code null} when the device did not report both. */
+    private @Nullable IdleState readIdleState() {
+        E3DCBridgeHandler bridge = getBridgeHandler();
+        if (bridge == null) {
+            return null;
+        }
+        try {
+            RscpValue response = bridge.sendRequest(List.of(RscpValue.none(RscpTag.EMS_REQ_GET_IDLE_PERIODS_2),
+                    RscpValue.none(RscpTag.EMS_REQ_GET_IDLE_PERIODS_ENABLE)));
+            RscpValue enabled = response.find(RscpTag.EMS_GET_IDLE_PERIODS_ENABLE);
+            if (response.find(RscpTag.EMS_GET_IDLE_PERIODS_2) == null || enabled == null
+                    || !(enabled.getValue() instanceof Boolean flag)) {
+                logger.debug("The device did not report its idle periods and their use: {}", response.findError());
+                return null;
+            }
+            IdleState state = new IdleState(E3DCIdlePeriod.fromResponse(response), flag);
+            logger.debug("The device reports idle periods in use: {}, periods: {}", flag,
+                    E3DCIdlePeriod.toText(state.periods()));
+            return state;
+        } catch (RscpException e) {
+            logger.debug("Cannot read the idle state: {}", e.getMessage());
+            return null;
+        }
     }
 
     /** Reads the periods, or returns {@code null} when the device did not answer with a list. */
@@ -543,12 +684,15 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler implements E3DCAi360
         }
         List<E3DCIdlePeriod> periods = E3DCIdlePeriod.fromResponse(response);
         RscpValue enabledValue = response.find(RscpTag.EMS_GET_IDLE_PERIODS_ENABLE);
-        // the periods only act while the device uses them; without a report the periods are taken as in use
-        boolean enabled = enabledValue == null || !(enabledValue.getValue() instanceof Boolean flag) || flag;
+        if (enabledValue == null || !(enabledValue.getValue() instanceof Boolean enabled)) {
+            // without a report of the use of idle periods the switches cannot tell, so they stay as they are
+            return;
+        }
         for (E3DCIdlePeriod.Type type : E3DCIdlePeriod.Type.values()) {
             String channelId = type == E3DCIdlePeriod.Type.CHARGE ? CHANNEL_BLOCK_CHARGING : CHANNEL_BLOCK_DISCHARGING;
             boolean blocked = enabled && periods.stream().anyMatch(period -> period.blocks(type));
-            updateState(new ChannelUID(getThing().getUID(), E3DCBindingConstants.GROUP_SYSTEM + "#" + channelId),
+            updateState(
+                    new ChannelUID(getThing().getUID(), E3DCBindingConstants.GROUP_BATTERY_CONTROL + "#" + channelId),
                     blocked ? OnOffType.ON : OnOffType.OFF);
         }
     }

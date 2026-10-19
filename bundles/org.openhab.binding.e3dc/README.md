@@ -71,9 +71,8 @@ They show how the device answers for an index it does not have.
 | userName        | text    | User name of the E3/DC account, usually the e-mail address.        | N/A     | yes      | no       |
 | password        | text    | Password of the E3/DC account.                                    | N/A     | yes      | no       |
 | rscpPassword    | text    | Encryption key configured on the device.                          | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in seconds, between 1 and 300.      | 60      | no       | no       |
+| refreshInterval | integer | Interval the device is polled in seconds, between 1 and 300.      | 5       | no       | no       |
 | historyInterval | integer | Interval the history counters are requested in minutes, between 1 and 1440. Never shorter than `refreshInterval`. | 15      | no       | no       |
-| historyStartYear | integer | First year `fetchAllHistory` requests, 0 means not set. | 0       | no       | yes      |
 | timeout         | integer | Timeout for a single request in seconds.                          | 10      | no       | yes      |
 | cloudToken      | text    | Token of the E3/DC cloud, needed for the `ai360` channel group.   | N/A     | no       | yes      |
 | installationId  | text    | Installation in the cloud that owns this power plant.             | N/A     | no       | yes      |
@@ -241,21 +240,35 @@ added at runtime appear with the first poll after the thing came online.
 | battery-count             | Number       | Number of batteries in the system                |
 | mode                      | Number       | Operating mode of the energy management system   |
 | coupling-mode             | Number       | How the power plant is coupled to the grid       |
-| emergency-power-status    | Number       | State of the emergency power supply              |
+| grid-in-limit             | Switch       | Grid consumption is currently limited            |
+| powersave                 | Switch       | Power saving mode is active                      |
+| derate-at-percent         | Number:Dimensionless | Share of the installed peak power at which the feed in is reduced |
+| derate-at-power           | Number:Power | Power at which the feed in is reduced            |
+
+### Channel Group `battery-control`
+
+Locks, power mode, manual charge and idle periods of the battery.
+
+> **Warning:** Battery controlling can be handled from different clients and the "mixed use" can cause trouble.
+>
+> - **AI 360** - battery handling in control of the internal E3DC power plant control
+> - **Block charge / discharge switch** - easy handling to enable / disable charging and discharging via rules
+> - **Manual schedules** via the MyE3DC app or rules - your own handling!
+>
+> Decide for one of these ways at a time. They write to the same idle periods and power settings of the device and can overwrite each other.
+| Channel                   | Type         | Description                                     |
+|---------------------------|--------------|-------------------------------------------------|
 | charging-lock             | Switch       | Battery charging is currently blocked            |
 | discharging-lock          | Switch       | Battery discharging is currently blocked         |
-| emergency-power-available | Switch       | Emergency power reserve is available             |
 | charging-throttled        | Switch       | Battery charging is currently limited            |
-| grid-in-limit             | Switch       | Grid consumption is currently limited            |
 | charging-time-lock        | Switch       | Battery charging is blocked by a time window     |
 | discharging-time-lock     | Switch       | Battery discharging is blocked by a time window  |
 | weather-regulated-charge  | Switch       | Charging follows the weather forecast            |
 | power-limits-used         | Switch       | Configured power limits are active               |
-| powersave                 | Switch       | Power saving mode is active                      |
-| derate-at-percent         | Number:Dimensionless | Share of the installed peak power at which the feed in is reduced |
-| derate-at-power           | Number:Power | Power at which the feed in is reduced            |
-| idle-periods-enabled      | Switch       | Whether the device uses the configured idle periods |
-| idle-periods              | String       | The idle periods, one per line                    |
+| idle-periods-enabled      | Switch       | Whether the device uses the configured idle periods, can be switched |
+| idle-periods              | String       | The idle periods, one per line; writing replaces the whole list |
+| idle-period-set           | String       | Adds or replaces one idle period by its name     |
+| idle-period-delete        | String       | Removes one idle period by its name              |
 | block-charging            | Switch       | Blocks battery charging around the clock, see [The block switches](#the-block-switches) |
 | block-discharging         | Switch       | Blocks battery discharging around the clock, see [The block switches](#the-block-switches) |
 | manual-charge-energy      | Number:Energy | Energy of the manual charge started last        |
@@ -268,8 +281,15 @@ weekend:saturday,sunday:charge:true:08:00-18:00
 ```
 
 The days are a comma separated list of `monday` to `sunday`, and the mode is `charge` or `discharge`.
-The channel is read only: the device replaces the whole list on every write, so changing it means
-managing the list rather than setting one value. The list is read and replaced with the
+The device replaces the whole list on every write, so the binding offers three ways to change it:
+
+- Sending text to `idle-periods` replaces the whole list. An empty text removes all periods.
+- Sending one line to `idle-period-set` adds the period, or replaces the period of the same name. The
+  other periods are kept.
+- Sending a name to `idle-period-delete` removes the period of that name.
+
+A period is only written when every line is valid, the names are unique and each period ends after it
+starts. The reason is logged as a warning otherwise. The list is also read and replaced with the
 [thing actions](#thing-actions) `getIdlePeriods` and `setIdlePeriods`.
 
 #### The block switches
@@ -286,9 +306,10 @@ battery on all seven days, from 00:00 to 23:59:
 - `ON` adds the period to the list and switches on the use of idle periods (`idle-periods-enabled`),
   because the period has no effect otherwise.
 - `OFF` removes the period again. The use of idle periods stays switched on.
-- All other periods of the list are kept. The switch is `ON` as soon as an active period of the right mode
-  covers all seven days around the clock and the device uses idle periods, no matter who created it.
-  If another period still blocks, `OFF` removes only the period of the switch and the switch stays `ON`.
+- All other periods of the list are kept. The switch is `ON` as soon as the list holds an active entry of the
+  right mode, no matter who created it or on which days and at which times it applies, and `OFF` when it
+  holds none.
+  If another active entry still exists, `OFF` removes only the period of the switch and the switch stays `ON`.
 - The names differ from the `Charge_Limiter` and `Discharge_Limiter` periods of rscp2mqtt, so both can run
   next to each other.
 - The device counts in minutes and has no 24:00, which is why the period ends at 23:59.
@@ -382,9 +403,9 @@ current date.
 | year-autarky             | Number:Dimensionless | Share of consumption covered by the power plant      |
 | year-consumed-production | Number:Dimensionless | Share of production used on site                    |
 
-### Channel Group `reserve`
+### Channel Group `emergency`
 
-The reserve is the part of the battery the device keeps available for emergency power.
+The group holds the reserve, the part of the battery the device keeps available for emergency power, and the state of the emergency power supply.
 
 | Channel    | Type                 | Description                                              |
 |------------|----------------------|----------------------------------------------------------|
@@ -392,6 +413,8 @@ The reserve is the part of the battery the device keeps available for emergency 
 | energy     | Number:Energy        | Energy kept for emergency power                           |
 | energy-max | Number:Energy        | Highest reserve the battery can hold for emergency power  |
 | last-soc   | Number:Dimensionless | State of charge the battery was left with                 |
+| power-status | Number       | State of the emergency power supply              |
+| power-available | Switch       | Emergency power reserve is available             |
 
 ### Writable Channels
 
@@ -410,19 +433,20 @@ last read from the device.
 | `battery`     | wallbox-charge-before-car    | Switch       | The house battery is charged before the car                                  |
 | `battery`     | wallbox-discharge-until      | Number:Dimensionless | State of charge down to which the battery may discharge into the car |
 | `battery`     | wallbox-disable-at-mix-mode  | Switch       | No battery charging while the wallbox charges in mix mode                    |
-| `system`      | power-limits-used            | Switch       | Whether the configured power limits are active                               |
-| `system`      | weather-regulated-charge     | Switch       | Whether charging follows the weather forecast                                |
-| `system`      | set-power-mode               | String       | Forces a power mode: `auto`, `idle:<cycles>` or `charge`/`discharge`/`grid_charge:<watts>:<cycles>` |
-| `system`      | set-manual-charge            | Number:Energy | Start a manual battery charge with this energy in Wh, an action rather than a value |
-| `system`      | block-charging               | Switch       | Blocks battery charging on all days, see [The block switches](#the-block-switches) |
-| `system`      | block-discharging            | Switch       | Blocks battery discharging on all days, see [The block switches](#the-block-switches) |
-| `reserve`     | percent                      | Number:Dimensionless | Share of the battery to keep for emergency power                    |
-| `reserve`     | energy                       | Number:Energy | Energy to keep for emergency power                                          |
+| `battery-control` | power-limits-used            | Switch       | Whether the configured power limits are active                               |
+| `battery-control` | weather-regulated-charge     | Switch       | Whether charging follows the weather forecast                                |
+| `battery-control` | set-power-mode               | String       | Forces a power mode: `auto`, `idle:<cycles>` or `charge`/`discharge`/`grid_charge:<watts>:<cycles>` |
+| `battery-control` | set-manual-charge            | Number:Energy | Start a manual battery charge with this energy in Wh, an action rather than a value |
+| `battery-control` | block-charging               | Switch       | Blocks battery charging on all days, see [The block switches](#the-block-switches) |
+| `battery-control` | block-discharging            | Switch       | Blocks battery discharging on all days, see [The block switches](#the-block-switches) |
+| `emergency`   | percent                      | Number:Dimensionless | Share of the battery to keep for emergency power                    |
+| `emergency`   | energy                       | Number:Energy | Energy to keep for emergency power                                          |
 | `wallbox`     | sun-mode                     | Switch       | Whether charging uses surplus photovoltaic power                             |
 | `wallbox`     | suspended                    | Switch       | Whether the charging session is suspended                                    |
+| `wallbox`     | toggle                       | Switch       | `ON` suspends a running session and resumes a suspended one, then returns to `OFF` |
 | `wallbox`     | auto-phase-switch            | Switch       | Whether the wallbox changes the number of phases by itself                    |
-| `wallbox`     | min-charge-current           | Number:ElectricCurrent | Lowest charging current allowed, 1 to 32 A                  |
-| `wallbox`     | max-charge-current           | Number:ElectricCurrent | Highest charging current allowed, 1 to 32 A                        |
+| `wallbox`     | min-charge-current           | Number:ElectricCurrent | Lowest charging current allowed, 6 to 16 A                  |
+| `wallbox`     | max-charge-current           | Number:ElectricCurrent | Highest charging current allowed, 6 to 16 A                        |
 | `wallbox`     | number-phases                | Number       | Number of phases used for charging, 1 or 3                                   |
 
 A channel state is only updated after the device acknowledged the write, so a rejected command leaves
@@ -457,6 +481,7 @@ read: every wallbox control is one channel that reports and sets its value. The 
 | locked             | Switch                 | The connector is locked                    |
 | charging           | Switch                 | A charging session is running              |
 | suspended          | Switch                 | Charging is currently suspended            |
+| toggle             | Switch                 | Suspends or resumes the charging, goes back to `OFF` |
 | sun-mode           | Switch                 | Charging uses surplus photovoltaic power   |
 
 ### Channel Group `meter`
@@ -490,6 +515,14 @@ read: every wallbox control is one channel that reports and sets its value. The 
 | design-capacity | Number | Design capacity of the battery |
 | usable-capacity | Number | Usable capacity of the battery |
 | usable-remaining-capacity | Number | Usable capacity left in the battery |
+| design-energy | Number:Energy | Design capacity in kWh, calculated as design capacity (Ah) × battery voltage (V) |
+| usable-energy | Number:Energy | Usable capacity in kWh, calculated as usable capacity (Ah) × battery voltage (V) |
+| usable-remaining-energy | Number:Energy | Usable energy left in kWh, calculated as usable remaining capacity (Ah) × battery voltage (V) |
+
+The three energy channels are not reported by the device. The binding multiplies the capacity in `Ah` by the
+battery `voltage` of the same poll. The voltage is the present terminal voltage and moves with the state of
+charge and the load, so the kWh values vary by a few percent over a day. Use `design-energy` and `usable-energy`
+as rough guides and the ratio `usable-remaining-energy / usable-energy` (or the SOC) for trends.
 
 ### Channel Group `module` (battery module)
 
@@ -508,6 +541,9 @@ coulomb.
 | remaining-capacity    | Number                   | Remaining capacity in Ah                       |
 | full-charge-capacity  | Number                   | Capacity at full charge in Ah                  |
 | design-capacity       | Number                   | Design capacity in Ah                          |
+| remaining-energy      | Number:Energy            | Remaining energy in kWh, remaining capacity (Ah) × module voltage (V) |
+| full-charge-energy    | Number:Energy            | Energy at full charge in kWh, full charge capacity (Ah) × module voltage (V) |
+| design-energy         | Number:Energy            | Design energy in kWh, design capacity (Ah) × module voltage (V) |
 | design-voltage        | Number:ElectricPotential | Design voltage of the module                   |
 | max-charge-voltage    | Number:ElectricPotential | Highest voltage allowed for charging           |
 | max-charge-current    | Number:ElectricCurrent   | Highest current allowed for charging           |
@@ -562,8 +598,7 @@ same list as the `idle-periods` channel and the [block switches](#the-block-swit
 |---------------------------------|-----------|------------------------------------------------------------------|
 | `getIdlePeriods()`              | `String`  | The periods in the device, one per line, or `null` if the device could not be asked |
 | `setIdlePeriods(String periods)` | `boolean` | Replaces the whole list and tells whether the device accepted it |
-| `fetchHistory(int fromYear, int toYear)` | `int` | Fetches the yearly history of earlier years once and returns the number of years that had data, or `-1` if the request was not valid or the device is not connected |
-| `fetchAllHistory()`             | `int`     | Fetches the history from the configured `historyStartYear` to the last completed year, same result as `fetchHistory`; `-1` if no start year is set |
+| `fetchHistory()` | `int` | Fetches the yearly history of all earlier years once and returns the number of years that had data, or `-1` if the device is not connected |
 
 A period is one line `name:days:mode:active:hh:mm-hh:mm`, as in the `idle-periods` channel:
 
@@ -578,7 +613,7 @@ weekend:saturday,sunday:charge:true:08:00-18:00
 - An empty text removes all periods. Nothing is sent when a line is malformed, a name is used twice or a
   period does not end after it starts. The reason is logged as a warning and the action returns `false`.
 - The periods only take effect while the device uses idle periods, see the channel
-  `idle-periods-enabled`. The actions leave this setting alone; only the block switches switch it on.
+  `idle-periods-enabled`. The actions leave this setting alone; the block switches and the channel switch it on.
 
 ### History Fetch
 
@@ -586,19 +621,18 @@ The `history#year-*` channels hold the running year as their state. The earlier 
 you ask for them with `fetchHistory`, so the device is not asked again and again for values that no longer
 change.
 
+- The action takes no parameters. It starts at the last completed year and goes back year by year.
 - Each year is requested on its own and published as one entry of a time series, stamped with the start of
   the year. Persistence stores the years under their date, so the yearly values form one series.
-- Only completed years are fetched. `toYear` is limited to the year before the running one, `fromYear` can
-  not be earlier than 2000. A year the device holds no data for is skipped.
-- Fetching again replaces the entries of the years in the range.
+- It stops after two years in a row without data, which is the case before the device was installed. A single
+  year without data in between is tolerated. A year in which every value is zero counts as without data.
+  The oldest year tried is 2000.
+- Fetching again replaces the entries of the years found.
 - The channels have to be linked to items that a persistence service stores, otherwise the entries are lost.
-
-`fetchAllHistory()` takes no parameters and uses the bridge parameter `historyStartYear` as the first year.
-Without a start year nothing is requested and the action returns `-1`.
 
 ```java
 val actions = getActions("e3dc", "e3dc:power-plant:device:plant")
-val years = actions.fetchHistory(2020, 2025)
+val years = actions.fetchHistory()
 logInfo("e3dc", "History fetched for " + years + " years")
 ```
 
@@ -627,8 +661,8 @@ if (periods !== null) {
 }
 ```
 
-To only block or release the battery, use the switches `system#block-charging` and
-`system#block-discharging` instead, see [The block switches](#the-block-switches).
+To only block or release the battery, use the switches `battery-control#block-charging` and
+`battery-control#block-discharging` instead, see [The block switches](#the-block-switches).
 
 ## Full Example
 
@@ -659,7 +693,7 @@ Number:Energy        E3DC_DayHouse         "House Day [%.1f %unit%]"          { 
 Number:Energy        E3DC_DayGridIn        "Grid Supply Day [%.1f %unit%]"    { channel="e3dc:power-plant:device:plant:history#day-grid-in" }
 Number:Energy        E3DC_DayGridOut       "Grid Feed Day [%.1f %unit%]"      { channel="e3dc:power-plant:device:plant:history#day-grid-out" }
 
-Switch               E3DC_ChargingLock     "Charging Lock [%s]"               { channel="e3dc:power-plant:device:plant:system#charging-lock" }
+Switch               E3DC_ChargingLock     "Charging Lock [%s]"               { channel="e3dc:power-plant:device:plant:battery-control#charging-lock" }
 String               E3DC_SerialNumber     "Serial Number [%s]"               { channel="e3dc:power-plant:device:plant:system#serial-number" }
 
 Switch               E3DC_WallboxPlugged   "Wallbox Plugged [%s]"             { channel="e3dc:wallbox:device:wallbox0:wallbox#plugged" }
@@ -668,8 +702,8 @@ Number:Power         E3DC_WallboxPower     "Wallbox Power [%.0f %unit%]"      { 
 
 Number:Power         E3DC_MaxChargePower   "Max Charge Power [%.0f %unit%]"   { channel="e3dc:power-plant:device:plant:battery#max-charge-power" }
 Number:Power         E3DC_MaxDischargePower "Max Discharge Power [%.0f %unit%]" { channel="e3dc:power-plant:device:plant:battery#max-discharge-power" }
-Switch               E3DC_PowerLimits      "Power Limits [%s]"                { channel="e3dc:power-plant:device:plant:system#power-limits-used" }
-Switch               E3DC_WeatherCharge    "Weather Charge [%s]"              { channel="e3dc:power-plant:device:plant:system#weather-regulated-charge" }
+Switch               E3DC_PowerLimits      "Power Limits [%s]"                { channel="e3dc:power-plant:device:plant:battery-control#power-limits-used" }
+Switch               E3DC_WeatherCharge    "Weather Charge [%s]"              { channel="e3dc:power-plant:device:plant:battery-control#weather-regulated-charge" }
 ```
 
 ### Sitemap Configuration
