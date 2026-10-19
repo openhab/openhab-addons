@@ -110,9 +110,13 @@ public class E3DCCommandHandler {
     /** Sends the request and reports whether the device answered without an error. */
     public boolean send(E3DCBridgeHandler bridge, List<RscpValue> request) {
         try {
-            logger.debug("Sending command: {}", RscpValue.container(0, request).describeTree());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sending command: {}", RscpValue.container(0, request).describeTree());
+            }
             RscpValue response = bridge.sendRequest(request);
-            logger.debug("Command answered with: {}", response.describeTree());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Command answered with: {}", response.describeTree());
+            }
             if (response.containsError()) {
                 logger.debug("The device rejected the command: {}", response.findError());
                 return false;

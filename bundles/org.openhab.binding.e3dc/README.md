@@ -20,6 +20,7 @@ with the devices.
 | Power Plant  | `power-plant` | Power flows, battery, inverter, energy counters and system information.   |
 | Wallbox      | `wallbox`     | Values of one wallbox attached to the power plant.                        |
 | Power Meter  | `power-meter` | Phase values of one power meter attached to the power plant.              |
+| Battery      | `battery`     | Values of one battery, such as its voltage, current and state of health. |
 | Battery Module | `battery-module` | Values of one battery cell module, such as its state of health.     |
 
 A power plant is attached to the bridge, wallboxes and power meters are attached to the bridge as
@@ -27,8 +28,37 @@ well and are distinguished by their index.
 
 ## Discovery
 
-There is no automatic discovery because the RSCP interface does not announce itself on the network.
-The bridge and the things have to be added manually.
+The RSCP interface does not announce itself on the network, so the bridge has to be added manually.
+
+Discovery works on a bridge, so the bridge thing has to exist first.
+It needs the connection to the device: a scan only finds something while the bridge is `ONLINE`.
+A bridge that is still `UNKNOWN` or `OFFLINE` (wrong host, user name or RSCP password, device not reachable) is skipped, and the scan ends without a result.
+
+How to use it:
+
+1. Add the E3/DC bridge manually and enter host, portal user name and password and the RSCP password.
+1. Wait until the bridge is `ONLINE`.
+1. Open the inbox, press `+`, choose the E3/DC binding and start the scan.
+   The things appear in the inbox and can be added from there.
+
+What is proposed:
+
+| Thing           | How it is found                                                                                          |
+|-----------------|----------------------------------------------------------------------------------------------------------|
+| `power-plant`   | Always, one per bridge.                                                                                  |
+| `battery`       | The device is asked which batteries it has. Every battery that answers with values is proposed.          |
+| `battery-module`| The cell modules that the batteries report.                                                              |
+| `power-meter`   | The device reports no count. The indexes 0 to 7 are asked for, and each one that answers with values and at least one active phase is proposed. |
+| `wallbox`       | The device reports no count. The indexes 0 to 7 are asked for, and each one that answers with values is proposed. |
+
+Background discovery is switched off by default.
+When it is switched on in the discovery settings of the binding, a scan runs 5 seconds after the connection to the device came up (also after every reconnect), and after that once an hour.
+Things that are already added or ignored in the inbox are not proposed again.
+
+If a thing is missing, or one is proposed that does not exist, set the log level of the binding to `DEBUG`.
+The scan then logs, for every index it asked for, whether the device answered with values and the complete answer, including the answers for indexes that were not proposed.
+The lines start with "Discovery scan" and "Answer for".
+They show how the device answers for an index it does not have.
 
 ## Thing Configuration
 
@@ -42,7 +72,12 @@ The bridge and the things have to be added manually.
 | password        | text    | Password of the E3/DC account.                                    | N/A     | yes      | no       |
 | rscpPassword    | text    | Encryption key configured on the device.                          | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in seconds, between 1 and 300.      | 60      | no       | no       |
+| historyInterval | integer | Interval the history counters are requested in minutes, between 1 and 1440. Never shorter than `refreshInterval`. | 15      | no       | no       |
+| historyStartYear | integer | First year `fetchAllHistory` requests, 0 means not set. | 0       | no       | yes      |
 | timeout         | integer | Timeout for a single request in seconds.                          | 10      | no       | yes      |
+| cloudToken      | text    | Token of the E3/DC cloud, needed for the `ai360` channel group.   | N/A     | no       | yes      |
+| installationId  | text    | Installation in the cloud that owns this power plant.             | N/A     | no       | yes      |
+| storageId       | text    | Storage in the cloud whose price based charging is controlled.    | N/A     | no       | yes      |
 
 #### The credentials
 
@@ -82,13 +117,14 @@ log:set TRACE org.openhab.binding.e3dc.internal.rscp
 At `DEBUG` the log names the host, the port, the account that is being authenticated and, on failure,
 whether the device stayed silent or closed the connection. Passwords and the RSCP key are never logged.
 
-### `power-plant`, `wallbox`, `power-meter` and `battery-module` Thing Configuration
+### `power-plant`, `wallbox`, `power-meter`, `battery` and `battery-module` Thing Configuration
 
 | Thing Type    | Name         | Type    | Description                                       | Default | Required |
 |---------------|--------------|---------|---------------------------------------------------|---------|----------|
 | `power-plant` | -            | -       | No configuration parameters.                       | -       | -        |
 | `wallbox`     | wallboxIndex | integer | Zero based index of the wallbox on the device.     | 0       | yes      |
 | `power-meter` | meterIndex   | integer | Zero based index of the power meter on the device. | 0       | yes      |
+| `battery`     | batteryIndex | integer | Zero based index of the battery on the device.     | 0       | yes      |
 | `battery-module` | moduleIndex | integer | Zero based index of the cell module in the battery data. | N/A | yes   |
 
 The module index counts the cell modules of all batteries consecutively, as the device reports them.
@@ -106,6 +142,8 @@ The channels are grouped per aspect. Power values are reported in `W`, energy co
 | house-power      | Number:Power         | Power currently consumed by the household        |
 | grid-power       | Number:Power         | Power drawn from or fed into the grid            |
 | additional-power | Number:Power         | Power of an additional producer or consumer      |
+| wallbox-power | Number:Power | Power drawn by all wallboxes |
+| wallbox-solar-power | Number:Power | Part of the wallbox power that comes from solar |
 | autarky          | Number:Dimensionless | Share of consumption covered by the power plant  |
 | self-consumption | Number:Dimensionless | Share of production used on site                 |
 
@@ -120,26 +158,58 @@ The channels are grouped per aspect. Power values are reported in `W`, energy co
 | max-charge-power          | Number:Power         | Configured limit for battery charging            |
 | max-discharge-power       | Number:Power         | Configured limit for battery discharging         |
 | discharge-start-power     | Number:Power         | Power above which the battery is discharged      |
+| charge-limit-battery      | Number:Power         | Charge power limit reported by the battery       |
+| charge-limit-dcdc         | Number:Power         | Charge power limit of the DC/DC converter        |
+| charge-limit-used         | Number:Power         | Charge power limit currently applied             |
+| charge-limit-user         | Number:Power         | Charge power limit set by the user               |
+| discharge-limit-battery   | Number:Power         | Discharge power limit reported by the battery    |
+| discharge-limit-dcdc      | Number:Power         | Discharge power limit of the DC/DC converter     |
+| discharge-limit-used      | Number:Power         | Discharge power limit currently applied          |
+| discharge-limit-user      | Number:Power         | Discharge power limit set by the user            |
+| set-power                 | Number:Power         | Power the energy manager is currently told to hold |
+| wallbox-discharge-to-car  | Switch               | The house battery may discharge into the car     |
+| wallbox-charge-before-car | Switch               | The house battery is charged before the car      |
+| wallbox-discharge-until   | Number:Dimensionless | State of charge down to which the battery may discharge into the car |
+| wallbox-disable-at-mix-mode | Switch             | No battery charging while the wallbox charges in mix mode |
 
 ### Channel Group `grid`
 
 | Channel       | Type   | Description                     |
 |---------------|--------|---------------------------------|
-| active-phases | Number | Number of phases currently in use |
+| active-phases | Number | Number of phases in use (1 to 3) |
 
 ### Channel Group `inverter`
 
 | Channel      | Type                     | Description                                   |
 |--------------|--------------------------|-----------------------------------------------|
-| ac-power     | Number:Power             | Alternating current power of the inverter      |
-| ac-voltage   | Number:ElectricPotential | Alternating current voltage of the inverter    |
-| ac-current   | Number:ElectricCurrent   | Alternating current of the inverter            |
+| ac-power-l1 | Number:Power | Alternating current power of phase L1 |
+| ac-power-l2 | Number:Power | Alternating current power of phase L2 |
+| ac-power-l3 | Number:Power | Alternating current power of phase L3 |
+| ac-voltage-l1 | Number:ElectricPotential | Alternating current voltage of phase L1 |
+| ac-voltage-l2 | Number:ElectricPotential | Alternating current voltage of phase L2 |
+| ac-voltage-l3 | Number:ElectricPotential | Alternating current voltage of phase L3 |
+| ac-current-l1 | Number:ElectricCurrent | Alternating current of phase L1 |
+| ac-current-l2 | Number:ElectricCurrent | Alternating current of phase L2 |
+| ac-current-l3 | Number:ElectricCurrent | Alternating current of phase L3 |
+| apparent-power-l1 | Number:Power | Apparent power of phase L1 |
+| apparent-power-l2 | Number:Power | Apparent power of phase L2 |
+| apparent-power-l3 | Number:Power | Apparent power of phase L3 |
+| reactive-power-l1 | Number:Power | Reactive power of phase L1 |
+| reactive-power-l2 | Number:Power | Reactive power of phase L2 |
+| reactive-power-l3 | Number:Power | Reactive power of phase L3 |
+| energy-total-l1 | Number:Energy | Energy produced on phase L1 since commissioning |
+| energy-total-l2 | Number:Energy | Energy produced on phase L2 since commissioning |
+| energy-total-l3 | Number:Energy | Energy produced on phase L3 since commissioning |
+| energy-day-l1 | Number:Energy | Energy produced on phase L1 today |
+| energy-day-l2 | Number:Energy | Energy produced on phase L2 today |
+| energy-day-l3 | Number:Energy | Energy produced on phase L3 today |
+| temperature-1 | Number:Temperature | Temperature of sensor 1 of the inverter |
+| temperature-2 | Number:Temperature | Temperature of sensor 2 of the inverter |
+| temperature-3 | Number:Temperature | Temperature of sensor 3 of the inverter |
+| temperature-4 | Number:Temperature | Temperature of sensor 4 of the inverter |
 | ac-frequency | Number:Frequency         | Grid frequency measured by the inverter        |
-| temperature  | Number:Temperature       | Temperature of the inverter                    |
 | on-grid      | Switch                   | Whether the inverter is connected to the grid   |
 | string-count | Number                   | Number of photovoltaic strings in use           |
-| energy-total | Number:Energy            | Energy produced since commissioning             |
-| energy-day   | Number:Energy            | Energy produced today                           |
 | tracker-1-power | Number:Power          | Direct current power of the first tracker       |
 | tracker-1-voltage | Number:ElectricPotential | Direct current voltage of the first tracker |
 | tracker-1-current | Number:ElectricCurrent | Direct current of the first tracker           |
@@ -148,8 +218,15 @@ The channels are grouped per aspect. Power values are reported in `W`, energy co
 | tracker-2-current | Number:ElectricCurrent | Direct current of the second tracker          |
 
 The direct current values are reported once per photovoltaic tracker and carry no index of their own, so
-the first two trackers are exposed as separate channels. The `string-count` channel reports how many
+the trackers are told apart by their position in the answer. The `string-count` channel reports how many
 trackers the device actually uses.
+
+The channels of `tracker-1` and `tracker-2` always exist. The number of trackers depends on the installation,
+so the binding adds `tracker-3-power`, `tracker-3-voltage` and `tracker-3-current` and so on (up to eight
+trackers) as soon as the device reports more than two, and removes them again when it reports fewer. The number
+is taken from `string-count`; when the device does not report it, the binding counts the direct current values
+in the answer. With one tracker only the channels of `tracker-1` carry values. Channels of a tracker that was
+added at runtime appear with the first poll after the thing came online.
 
 ### Channel Group `system`
 
@@ -179,6 +256,8 @@ trackers the device actually uses.
 | derate-at-power           | Number:Power | Power at which the feed in is reduced            |
 | idle-periods-enabled      | Switch       | Whether the device uses the configured idle periods |
 | idle-periods              | String       | The idle periods, one per line                    |
+| block-charging            | Switch       | Blocks battery charging around the clock, see [The block switches](#the-block-switches) |
+| block-discharging         | Switch       | Blocks battery discharging around the clock, see [The block switches](#the-block-switches) |
 | manual-charge-energy      | Number:Energy | Energy of the manual charge started last        |
 
 The `idle-periods` channel shows the periods during which the battery is locked against charging or
@@ -189,8 +268,78 @@ weekend:saturday,sunday:charge:true:08:00-18:00
 ```
 
 The days are a comma separated list of `monday` to `sunday`, and the mode is `charge` or `discharge`.
-The channel is read only: the device replaces the whole list on every write, so changing it would mean
-managing the list rather than setting one value.
+The channel is read only: the device replaces the whole list on every write, so changing it means
+managing the list rather than setting one value. The list is read and replaced with the
+[thing actions](#thing-actions) `getIdlePeriods` and `setIdlePeriods`.
+
+#### The block switches
+
+The device has no function that simply blocks charging or discharging of the battery. The switches
+`block-charging` and `block-discharging` provide it with an idle period of their own that locks the
+battery on all seven days, from 00:00 to 23:59:
+
+| Switch              | Idle period it manages                                                |
+|---------------------|-----------------------------------------------------------------------|
+| `block-charging`    | `OH_Block_Charge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:00:00-23:59`       |
+| `block-discharging` | `OH_Block_Discharge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:discharge:true:00:00-23:59` |
+
+- `ON` adds the period to the list and switches on the use of idle periods (`idle-periods-enabled`),
+  because the period has no effect otherwise.
+- `OFF` removes the period again. The use of idle periods stays switched on.
+- All other periods of the list are kept. The switch is `ON` as soon as an active period of the right mode
+  covers all seven days around the clock and the device uses idle periods, no matter who created it.
+  If another period still blocks, `OFF` removes only the period of the switch and the switch stays `ON`.
+- The names differ from the `Charge_Limiter` and `Discharge_Limiter` periods of rscp2mqtt, so both can run
+  next to each other.
+- The device counts in minutes and has no 24:00, which is why the period ends at 23:59.
+
+The same list can be read and replaced as a whole with the [thing actions](#thing-actions), for example to
+add periods for single weekdays next to the block switches.
+
+### Channel Group `ai360`
+
+> **Currently switched off.** The group is commented out in `thing-power-plant.xml`, so the `power-plant` thing
+> has no `ai360` channels at the moment. The code, the group type and the bridge parameters are still there; this
+> section describes the behaviour once the group is switched on again.
+
+The `ai360` group controls price based charging. Unlike every other group it does **not** read from the
+device over RSCP: these settings live in the E3/DC cloud, the device only receives the resulting schedule.
+The binding therefore reads and writes them over HTTPS and finds them in two places, the installation and
+the storage.
+
+| Channel                  | Type                 | Description                                                              |
+|--------------------------|----------------------|--------------------------------------------------------------------------|
+| enabled                  | Switch               | Whether charging follows the prices of a dynamic electricity tariff       |
+| battery-price-charging   | Switch               | Whether the battery is charged from the grid below the price limit        |
+| price-limit              | Number:Dimensionless | Price in ct/kWh below which the battery is charged from the grid          |
+| charge-until-soc         | Number:Dimensionless | State of charge in percent up to which the battery is charged             |
+| active-months            | String               | Twelve characters, one per month from January, where `1` enables charging |
+| sg-ready                 | Switch               | Whether the battery is controlled through an SG Ready signal              |
+| feed-in-tariff-type      | String               | How charging reacts to the feed in tariff                                 |
+
+The group stays without values unless the three cloud parameters of the bridge are filled in. The
+`installationId` and `storageId` are the two numbers in the portal URL when a power plant is open,
+`/overview/installations/<installationId>/<storageId>`.
+
+#### The cloud token
+
+The cloud has no login endpoint; the portal signs the user in through SAML and hands the browser a token
+pair. That token is the starting point for this binding:
+
+1. Log in to the [E3/DC portal](https://my.e3dc.com).
+1. Open the browser console and run
+   `copy(JSON.stringify({authToken: localStorage.authToken, reAuthToken: localStorage.reAuthToken}))`.
+1. Paste the `reAuthToken` of the copied pair into the `cloudToken` parameter.
+
+The binding exchanges the token on its first call and stores the successor in
+`<userdata>/e3dc/cloud-tokens.json`, so the configured value is only needed once. It has to be replaced
+when the chain breaks, which logging out of the portal does, and the binding says so in the log.
+
+These values are not part of the published RSCP interface. The endpoints are the ones the portal uses, so
+a change on the E3/DC side can break the group while the rest of the binding keeps working. The cloud is
+polled at most once a minute, and a command is written by reading the current settings, replacing the
+fields of that channel and writing the whole object back, because the cloud replaces the object rather
+than the single field.
 
 ### Channel Group `history`
 
@@ -257,10 +406,16 @@ last read from the device.
 | `battery`     | max-charge-power             | Number:Power | Configured limit for battery charging                                        |
 | `battery`     | max-discharge-power          | Number:Power | Configured limit for battery discharging                                     |
 | `battery`     | discharge-start-power        | Number:Power | Power above which the battery is discharged                                  |
+| `battery`     | wallbox-discharge-to-car     | Switch       | The house battery may discharge into the car                                 |
+| `battery`     | wallbox-charge-before-car    | Switch       | The house battery is charged before the car                                  |
+| `battery`     | wallbox-discharge-until      | Number:Dimensionless | State of charge down to which the battery may discharge into the car |
+| `battery`     | wallbox-disable-at-mix-mode  | Switch       | No battery charging while the wallbox charges in mix mode                    |
 | `system`      | power-limits-used            | Switch       | Whether the configured power limits are active                               |
 | `system`      | weather-regulated-charge     | Switch       | Whether charging follows the weather forecast                                |
-| `system`      | mode                         | Number       | Operating mode, chosen from automatic, idle, discharge, charge and grid charge |
-| `system`      | set-manual-charge            | Number:Power | Start a manual battery charge, an action rather than a value                 |
+| `system`      | set-power-mode               | String       | Forces a power mode: `auto`, `idle:<cycles>` or `charge`/`discharge`/`grid_charge:<watts>:<cycles>` |
+| `system`      | set-manual-charge            | Number:Energy | Start a manual battery charge with this energy in Wh, an action rather than a value |
+| `system`      | block-charging               | Switch       | Blocks battery charging on all days, see [The block switches](#the-block-switches) |
+| `system`      | block-discharging            | Switch       | Blocks battery discharging on all days, see [The block switches](#the-block-switches) |
 | `reserve`     | percent                      | Number:Dimensionless | Share of the battery to keep for emergency power                    |
 | `reserve`     | energy                       | Number:Energy | Energy to keep for emergency power                                          |
 | `wallbox`     | sun-mode                     | Switch       | Whether charging uses surplus photovoltaic power                             |
@@ -286,6 +441,12 @@ read: every wallbox control is one channel that reports and sets its value. The 
 | power-l3           | Number:Power           | Power on phase L3                         |
 | energy-total       | Number:Energy          | Energy charged through this wallbox        |
 | energy-solar       | Number:Energy          | Energy taken from the photovoltaic system  |
+| phase-l1 | Switch | Whether the wallbox charges on phase L1 |
+| energy-l1 | Number:Energy | Energy drawn on phase L1 |
+| phase-l2 | Switch | Whether the wallbox charges on phase L2 |
+| energy-l2 | Number:Energy | Energy drawn on phase L2 |
+| phase-l3 | Switch | Whether the wallbox charges on phase L3 |
+| energy-l3 | Number:Energy | Energy drawn on phase L3 |
 | soc                | Number:Dimensionless   | State of charge of the connected vehicle   |
 | min-charge-current | Number:ElectricCurrent | Lowest charging current allowed            |
 | max-charge-current | Number:ElectricCurrent | Highest charging current allowed           |
@@ -308,11 +469,27 @@ read: every wallbox control is one channel that reports and sets its value. The 
 | voltage-l1      | Number:ElectricPotential | Voltage on phase L1                 |
 | voltage-l2      | Number:ElectricPotential | Voltage on phase L2                 |
 | voltage-l3      | Number:ElectricPotential | Voltage on phase L3                 |
-| active-phases   | Number                   | Number of phases currently in use   |
+| active-phases   | Number                   | Number of phases in use (1 to 3)   |
 | energy-l1       | Number:Energy            | Energy measured on phase L1         |
 | energy-l2       | Number:Energy            | Energy measured on phase L2         |
 | energy-l3       | Number:Energy            | Energy measured on phase L3         |
 | max-phase-power | Number:Power             | Highest power measured on one phase |
+
+### Channel Group `pack` (battery)
+
+| Channel | Type | Description |
+|---------|------|-------------|
+| voltage | Number:ElectricPotential | Voltage of the battery |
+| current | Number:ElectricCurrent | Current of the battery, negative while discharging |
+| charge-cycles | Number | Number of charge cycles of the battery |
+| soh | Number:Dimensionless | Absolute state of charge of the battery, a measure of its state of health |
+| status-code | Number | Status code of the battery |
+| error-code | Number | Error code of the battery |
+| device-name | String | Name of the battery |
+| training-mode | Number | Training mode of the battery |
+| design-capacity | Number | Design capacity of the battery |
+| usable-capacity | Number | Usable capacity of the battery |
+| usable-remaining-capacity | Number | Usable capacity left in the battery |
 
 ### Channel Group `module` (battery module)
 
@@ -354,6 +531,104 @@ coulomb.
 | manufacture-date      | String                   | Manufacturing date of the module               |
 | serial-number         | String                   | Serial number of the module                    |
 | serial-code           | String                   | Serial code of the module                      |
+
+### Channel Group `statistics` (bridge)
+
+The bridge reports how much it occupies the device. All channels are advanced and read only. They show the
+last poll and, for the loop ratio, the summary of the last 20 polls.
+
+| Channel            | Type                 | Description                                                                 |
+|--------------------|----------------------|-----------------------------------------------------------------------------|
+| loop-ratio         | Number:Dimensionless | Time the device was occupied by the connection during the last poll, in percent of `refreshInterval` |
+| loop-ratio-average | Number:Dimensionless | Average of the loop ratio over the last 20 polls                           |
+| loop-ratio-peak    | Number:Dimensionless | Highest loop ratio of the last 20 polls                                    |
+| poll-duration      | Number:Time          | Time the last request spent on the wire, from sending to the complete answer |
+| device-wait        | Number:Time          | Time the device needed to start its answer                                 |
+| dispatch-time      | Number:Time          | Time openHAB needed to hand the answer to the things                       |
+| answer-size        | Number:DataAmount    | Size of the answer to the last request                                     |
+
+The loop ratio is the time of all requests on the connection (polls, commands and history fetches) divided by
+the refresh interval. A value below 20 % is the working target; above 100 % the interval is shorter than the
+device needs to answer. The values are only published on linked channels. The log output
+(`E3DCBridgeHandler` at DEBUG and TRACE) does not depend on that.
+
+## Thing Actions
+
+The `power-plant` thing provides actions to read and replace the idle periods of the second version, the
+named time windows during which the battery is locked against charging or discharging. They work on the
+same list as the `idle-periods` channel and the [block switches](#the-block-switches).
+
+| Action                          | Returns   | Description                                                      |
+|---------------------------------|-----------|------------------------------------------------------------------|
+| `getIdlePeriods()`              | `String`  | The periods in the device, one per line, or `null` if the device could not be asked |
+| `setIdlePeriods(String periods)` | `boolean` | Replaces the whole list and tells whether the device accepted it |
+| `fetchHistory(int fromYear, int toYear)` | `int` | Fetches the yearly history of earlier years once and returns the number of years that had data, or `-1` if the request was not valid or the device is not connected |
+| `fetchAllHistory()`             | `int`     | Fetches the history from the configured `historyStartYear` to the last completed year, same result as `fetchHistory`; `-1` if no start year is set |
+
+A period is one line `name:days:mode:active:hh:mm-hh:mm`, as in the `idle-periods` channel:
+
+```text
+weekend:saturday,sunday:charge:true:08:00-18:00
+```
+
+- The days are a comma separated list of `monday` to `sunday`, the mode is `charge` or `discharge`.
+- `setIdlePeriods` **replaces** the whole list, because the device does it that way. Read the list first
+  with `getIdlePeriods`, change it and write it back to keep the other periods, including the periods
+  `OH_Block_Charge` and `OH_Block_Discharge` of the [block switches](#the-block-switches).
+- An empty text removes all periods. Nothing is sent when a line is malformed, a name is used twice or a
+  period does not end after it starts. The reason is logged as a warning and the action returns `false`.
+- The periods only take effect while the device uses idle periods, see the channel
+  `idle-periods-enabled`. The actions leave this setting alone; only the block switches switch it on.
+
+### History Fetch
+
+The `history#year-*` channels hold the running year as their state. The earlier years are only requested when
+you ask for them with `fetchHistory`, so the device is not asked again and again for values that no longer
+change.
+
+- Each year is requested on its own and published as one entry of a time series, stamped with the start of
+  the year. Persistence stores the years under their date, so the yearly values form one series.
+- Only completed years are fetched. `toYear` is limited to the year before the running one, `fromYear` can
+  not be earlier than 2000. A year the device holds no data for is skipped.
+- Fetching again replaces the entries of the years in the range.
+- The channels have to be linked to items that a persistence service stores, otherwise the entries are lost.
+
+`fetchAllHistory()` takes no parameters and uses the bridge parameter `historyStartYear` as the first year.
+Without a start year nothing is requested and the action returns `-1`.
+
+```java
+val actions = getActions("e3dc", "e3dc:power-plant:device:plant")
+val years = actions.fetchHistory(2020, 2025)
+logInfo("e3dc", "History fetched for " + years + " years")
+```
+
+### Rules DSL
+
+```java
+val actions = getActions("e3dc", "e3dc:power-plant:device:plant")
+
+// read, add a period and write the list back
+var periods = actions.getIdlePeriods()
+if (periods !== null) {
+    periods = periods + "\nweekend:saturday,sunday:charge:true:08:00-18:00"
+    val accepted = actions.setIdlePeriods(periods.trim())
+    logInfo("e3dc", "Idle periods written: " + accepted)
+}
+```
+
+### JavaScript
+
+```javascript
+const plant = actions.thingActions('e3dc', 'e3dc:power-plant:device:plant');
+let periods = plant.getIdlePeriods();
+if (periods !== null) {
+  const accepted = plant.setIdlePeriods((periods + '\nweekend:saturday,sunday:charge:true:08:00-18:00').trim());
+  console.log('Idle periods written: ' + accepted);
+}
+```
+
+To only block or release the battery, use the switches `system#block-charging` and
+`system#block-discharging` instead, see [The block switches](#the-block-switches).
 
 ## Full Example
 

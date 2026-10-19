@@ -53,4 +53,18 @@
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="power-wallbox-power">
+		<item-type>Number:Power</item-type>
+		<label>Wallbox Power</label>
+		<description>Power drawn by all wallboxes</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-wallbox-solar-power">
+		<item-type>Number:Power</item-type>
+		<label>Wallbox Solar Power</label>
+		<description>Part of the wallbox power that comes from solar</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

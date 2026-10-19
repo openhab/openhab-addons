@@ -14,6 +14,19 @@
 			<channel id="max-charge-power" typeId="battery-max-charge-power"/>
 			<channel id="max-discharge-power" typeId="battery-max-discharge-power"/>
 			<channel id="discharge-start-power" typeId="battery-discharge-start-power"/>
+			<channel id="charge-limit-battery" typeId="battery-charge-limit-battery"/>
+			<channel id="charge-limit-dcdc" typeId="battery-charge-limit-dcdc"/>
+			<channel id="charge-limit-used" typeId="battery-charge-limit-used"/>
+			<channel id="charge-limit-user" typeId="battery-charge-limit-user"/>
+			<channel id="discharge-limit-battery" typeId="battery-discharge-limit-battery"/>
+			<channel id="discharge-limit-dcdc" typeId="battery-discharge-limit-dcdc"/>
+			<channel id="discharge-limit-used" typeId="battery-discharge-limit-used"/>
+			<channel id="discharge-limit-user" typeId="battery-discharge-limit-user"/>
+			<channel id="set-power" typeId="battery-set-power"/>
+			<channel id="wallbox-discharge-to-car" typeId="battery-wallbox-discharge-to-car"/>
+			<channel id="wallbox-charge-before-car" typeId="battery-wallbox-charge-before-car"/>
+			<channel id="wallbox-discharge-until" typeId="battery-wallbox-discharge-until"/>
+			<channel id="wallbox-disable-at-mix-mode" typeId="battery-wallbox-disable-at-mix-mode"/>
 		</channels>
 	</channel-group-type>
 

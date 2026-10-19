@@ -176,6 +176,64 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
         return LocalTime.of(hour, minute);
     }
 
+    /** The weekday bits of all seven days. */
+    public static final int ALL_DAYS = 0x7F;
+
+    /** The name of the period that blocks charging, as written by the switch of the binding. */
+    public static final String BLOCK_CHARGE_NAME = "OH_Block_Charge";
+
+    /** The name of the period that blocks discharging, as written by the switch of the binding. */
+    public static final String BLOCK_DISCHARGE_NAME = "OH_Block_Discharge";
+
+    /** The start of a window that covers the whole day. */
+    public static final LocalTime DAY_START = LocalTime.MIDNIGHT;
+
+    /** The end of a window that covers the whole day; the device counts in minutes and has no 24:00. */
+    public static final LocalTime DAY_END = LocalTime.of(23, 59);
+
+    /** A period that locks the given type on all seven days, around the clock. */
+    public static E3DCIdlePeriod blocker(Type type) {
+        String name = type == Type.CHARGE ? BLOCK_CHARGE_NAME : BLOCK_DISCHARGE_NAME;
+        return new E3DCIdlePeriod(name, ALL_DAYS, type, true, DAY_START, DAY_END);
+    }
+
+    /**
+     * Whether this period locks the given type on all seven days, around the clock.
+     *
+     * <p>
+     * It does not matter who wrote the period: a period of the portal or of another client blocks just the
+     * same.
+     */
+    public boolean blocks(Type blocked) {
+        return active && type == blocked && (weekdays & ALL_DAYS) == ALL_DAYS && !start.isAfter(DAY_START)
+                && !stop.isBefore(DAY_END);
+    }
+
+    /** Whether the window ends after it starts, which is what the device and rscp2mqtt require. */
+    public boolean hasValidWindow() {
+        return start.isBefore(stop);
+    }
+
+    /** The container that carries this period in a write, with the fields as rscp2mqtt writes them. */
+    public RscpValue toValue() {
+        return RscpValue.container(RscpTag.EMS_IDLE_PERIOD_2,
+                List.of(RscpValue.cstring(RscpTag.EMS_PERIOD_NAME, name),
+                        RscpValue.uchar8(RscpTag.EMS_IDLE_PERIOD_TYPE, type.getCode()),
+                        RscpValue.uchar8(RscpTag.EMS_PERIOD_WEEKDAYS, weekdays),
+                        RscpValue.bool(RscpTag.EMS_PERIOD_ACTIVE, active),
+                        RscpValue.uint32(RscpTag.EMS_PERIOD_START, start.toSecondOfDay()),
+                        RscpValue.uint32(RscpTag.EMS_PERIOD_STOP, stop.toSecondOfDay())));
+    }
+
+    /** The request that replaces the whole list of periods on the device. */
+    public static List<RscpValue> toRequest(List<E3DCIdlePeriod> periods) {
+        List<RscpValue> children = new ArrayList<>();
+        for (E3DCIdlePeriod period : periods) {
+            children.add(period.toValue());
+        }
+        return List.of(RscpValue.container(RscpTag.EMS_REQ_SET_IDLE_PERIODS_2, children));
+    }
+
     /** The text form of this period, which parses back to an equal period. */
     public String toText() {
         StringBuilder days = new StringBuilder();
@@ -238,6 +296,14 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
      * empty line.
      */
     public static String toTextFromResponse(RscpValue response) {
+        return toText(fromResponse(response));
+    }
+
+    /**
+     * The periods a device reported, in the order of the response. A container that does not name a period
+     * is skipped.
+     */
+    public static List<E3DCIdlePeriod> fromResponse(RscpValue response) {
         List<E3DCIdlePeriod> periods = new ArrayList<>();
         for (RscpValue container : response.findAll(RscpTag.EMS_IDLE_PERIOD_2)) {
             E3DCIdlePeriod period = fromValue(container);
@@ -245,13 +311,17 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
                 periods.add(period);
             }
         }
-        return toText(periods);
+        return periods;
     }
 
     /** One period as the device reported it, or {@code null} when a field is missing or unreadable. */
     private static @Nullable E3DCIdlePeriod fromValue(RscpValue container) {
         String name = container.findString(RscpTag.EMS_PERIOD_NAME);
         Number typeCode = container.findNumber(RscpTag.EMS_PERIOD_TYPE);
+        if (typeCode == null) {
+            // reference clients read the type under the tag of the request side
+            typeCode = container.findNumber(RscpTag.EMS_IDLE_PERIOD_TYPE);
+        }
         Number weekdayMask = container.findNumber(RscpTag.EMS_PERIOD_WEEKDAYS);
         Number start = container.findNumber(RscpTag.EMS_PERIOD_START);
         Number stop = container.findNumber(RscpTag.EMS_PERIOD_STOP);

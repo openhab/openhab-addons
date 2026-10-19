@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="ai360">
+		<label>AI 360</label>
+		<description>Price based charging settings of the E3/DC cloud, which are not available over RSCP</description>
+		<channels>
+			<channel id="enabled" typeId="ai360-enabled"/>
+			<channel id="battery-price-charging" typeId="ai360-battery-price-charging"/>
+			<channel id="price-limit" typeId="ai360-price-limit"/>
+			<channel id="charge-until-soc" typeId="ai360-charge-until-soc"/>
+			<channel id="active-months" typeId="ai360-active-months"/>
+			<channel id="sg-ready" typeId="ai360-sg-ready"/>
+			<channel id="feed-in-tariff-type" typeId="ai360-feed-in-tariff-type"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

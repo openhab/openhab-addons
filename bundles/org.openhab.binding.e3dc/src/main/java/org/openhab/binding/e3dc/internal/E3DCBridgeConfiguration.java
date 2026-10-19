@@ -28,7 +28,14 @@ public class E3DCBridgeConfiguration {
     /** Longest poll interval the binding accepts, the range the RSCP tooling allows for its own cycle. */
     public static final int MAX_REFRESH_INTERVAL_SECONDS = 300;
 
+    /** Shortest interval of the history request in minutes. */
+    public static final int MIN_HISTORY_INTERVAL_MINUTES = 1;
+
+    /** Longest interval of the history request in minutes, one day. */
+    public static final int MAX_HISTORY_INTERVAL_MINUTES = 1440;
+
     /** Host name or IP address of the device. */
+
     public String host = "";
 
     /** RSCP port. */
@@ -46,8 +53,29 @@ public class E3DCBridgeConfiguration {
     /** Poll interval in seconds. */
     public int refreshInterval = 60;
 
+    /** Interval of the history request in minutes, independent of the poll interval. */
+    public int historyInterval = 15;
+
+    /** First year of the history fetch, {@code 0} when it is not set. */
+    public int historyStartYear = 0;
+
     /** Socket timeout in seconds. */
     public int timeout = 10;
+
+    /**
+     * Token of the E3/DC cloud, taken from the portal.
+     *
+     * <p>
+     * The cloud has no login of its own, so the token the portal hands to the browser is the starting
+     * point. The binding renews it from then on and keeps the successor in the openHAB user data.
+     */
+    public String cloudToken = "";
+
+    /** The installation in the cloud that owns this power plant. */
+    public String installationId = "";
+
+    /** The storage in the cloud whose price based charging is controlled. */
+    public String storageId = "";
 
     /**
      * The configured poll interval limited to the supported range.
@@ -59,5 +87,17 @@ public class E3DCBridgeConfiguration {
      */
     public int refreshIntervalSeconds() {
         return Math.clamp(refreshInterval, MIN_REFRESH_INTERVAL_SECONDS, MAX_REFRESH_INTERVAL_SECONDS);
+    }
+
+    /**
+     * The configured history interval limited to the supported range, in seconds.
+     *
+     * <p>
+     * The history counters change slowly, so they are requested less often than the live values. The
+     * interval can not be shorter than the poll interval, because the history rides along with a poll.
+     */
+    public int historyIntervalSeconds() {
+        int minutes = Math.clamp(historyInterval, MIN_HISTORY_INTERVAL_MINUTES, MAX_HISTORY_INTERVAL_MINUTES);
+        return Math.max(minutes * 60, refreshIntervalSeconds());
     }
 }

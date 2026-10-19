@@ -12,17 +12,23 @@
  */
 package org.openhab.binding.e3dc.internal;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
+import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -31,6 +37,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,13 +180,16 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         if (container == RscpTag.PM_DATA) {
             return RscpTag.PM_INDEX;
         }
+        if (container == RscpTag.BAT_DATA) {
+            return RscpTag.BAT_INDEX;
+        }
         if (container == RscpTag.BAT_DCB_INFO) {
             return RscpTag.BAT_DCB_INDEX;
         }
         return RscpTag.WB_INDEX;
     }
 
-    private void updateChannel(String groupId, String channelId, E3DCChannelSpec spec, RscpValue value) {
+    void updateChannel(String groupId, String channelId, E3DCChannelSpec spec, RscpValue value) {
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), groupId + "#" + channelId);
         if (spec.isBitField()) {
             Integer raw = readInt(value, spec);
@@ -188,10 +198,32 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
             }
             return;
         }
-        State state = valueState(value, spec);
+        Channel channel = getThing().getChannel(channelUID);
+        boolean textChannel = channel != null && "String".equals(channel.getAcceptedItemType());
+        State state = valueState(value, spec, textChannel);
         if (state != null) {
             updateState(channelUID, state);
+            if (spec.container() == RscpTag.DB_HISTORY_DATA_YEAR) {
+                sendYearValue(channelUID, state);
+            }
         }
+    }
+
+    /**
+     * Publishes the value of the current year as one entry of a time series, stamped with the start of the
+     * year.
+     *
+     * <p>
+     * The year channels are a time series of yearly values. The state of the channel is the current year;
+     * the entry makes the same value available to persistence under the year it belongs to, so the
+     * years add up to one series. An entry that already exists for the year is replaced, as the value of
+     * the running year grows.
+     */
+    private void sendYearValue(ChannelUID channelUID, State state) {
+        LocalDate yearStart = LocalDate.now(ZoneOffset.UTC).withDayOfYear(1);
+        TimeSeries series = new TimeSeries(TimeSeries.Policy.REPLACE);
+        series.add(yearStart.atStartOfDay(ZoneId.systemDefault()).toInstant(), state);
+        sendTimeSeries(channelUID, series);
     }
 
     /**
@@ -202,7 +234,29 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
      * a wallbox. Treated by their kind alone they would silently keep the channel at its previous state.
      */
     static @Nullable State valueState(RscpValue value, E3DCChannelSpec spec) {
+        return valueState(value, spec, false);
+    }
+
+    /**
+     * The state of a value for a channel that is either numeric or text.
+     *
+     * <p>
+     * A text channel must receive text even when the device reports a number, such as the version of a battery
+     * module: a number sent to a String item is converted by the framework to a date, which shows as a time
+     * in 1970. Text the device reports arrives as bytes, which are decoded here.
+     *
+     * @param textChannel whether the channel carries a String item
+     */
+    static @Nullable State valueState(RscpValue value, E3DCChannelSpec spec, boolean textChannel) {
         Object raw = value.getValue();
+        if (raw instanceof byte[] bytes && value.getType() == RscpType.CSTRING) {
+            return new StringType(new String(bytes, StandardCharsets.UTF_8).replace("\0", "").trim());
+        }
+        if (raw instanceof Number number && textChannel) {
+            double scaled = spec.scale(number.doubleValue());
+            return new StringType(scaled == Math.rint(scaled) && Math.abs(scaled) < 1e15 ? Long.toString((long) scaled)
+                    : Double.toString(scaled));
+        }
         if (raw instanceof Number number) {
             return new DecimalType(spec.scale(number.doubleValue()));
         }
@@ -236,6 +290,9 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
                 return bytes[spec.byteIndex()] & 0xFF;
             }
             return null;
+        }
+        if (raw instanceof Boolean flag) {
+            return flag ? 1 : 0;
         }
         return raw instanceof Number number ? number.intValue() : null;
     }

@@ -57,7 +57,7 @@
 		<item-type>Number</item-type>
 		<label>Mode</label>
 		<description>Operating mode of the energy management system</description>
-		<state pattern="%s">
+		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="0">Automatic</option>
 				<option value="1">Idle</option>
@@ -66,6 +66,13 @@
 				<option value="4">Grid Charge</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="system-set-power-mode">
+		<item-type>String</item-type>
+		<label>Set Power Mode</label>
+		<description>Forces a power mode: auto, idle:cycles or mode:watts:cycles for charge, discharge and grid_charge</description>
+		<state pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="system-coupling-mode">
@@ -153,10 +160,10 @@
 	</channel-type>
 
 	<channel-type id="system-set-manual-charge">
-		<item-type>Number:Power</item-type>
-		<label>Set Manual Charge Power</label>
-		<description>Start a manual battery charge</description>
-		<state pattern="%.0f %unit%"/>
+		<item-type>Number:Energy</item-type>
+		<label>Set Manual Charge Energy</label>
+		<description>Start a manual battery charge with this energy, sent to the device in Wh</description>
+		<state pattern="%.0f Wh"/>
 	</channel-type>
 
 	<channel-type id="system-idle-periods">
@@ -165,6 +172,23 @@
 		<description>Periods during which the battery is locked against charging or discharging, one period per line as
 			name:days:mode:active:hh:mm-hh:mm</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-block-charging">
+		<item-type>Switch</item-type>
+		<label>Block Charging</label>
+		<description>Blocks charging of the battery on all days around the clock with an idle period of its own and
+			switches on
+			the use of idle periods. See the thing actions getIdlePeriods and setIdlePeriods</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="system-block-discharging">
+		<item-type>Switch</item-type>
+		<label>Block Discharging</label>
+		<description>Blocks discharging of the battery on all days around the clock with an idle period of its own and
+			switches on the use of idle periods. See the thing actions getIdlePeriods and setIdlePeriods</description>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="system-derate-at-percent">

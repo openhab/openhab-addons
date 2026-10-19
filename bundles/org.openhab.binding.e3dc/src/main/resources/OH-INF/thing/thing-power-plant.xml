@@ -20,6 +20,10 @@
 			<channel-group id="history" typeId="history"/>
 			<channel-group id="reserve" typeId="reserve"/>
 			<channel-group id="system" typeId="system"/>
+			<!-- The ai360 group is switched off for now. The code and the group type stay, to switch it on again
+				move the line below out of this comment.
+				<channel-group id="ai360" typeId="ai360"/>
+			-->
 		</channel-groups>
 	</thing-type>
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="pack">
+		<label>Battery</label>
+		<description>Values of one battery</description>
+		<channels>
+			<channel id="voltage" typeId="pack-voltage"/>
+			<channel id="current" typeId="pack-current"/>
+			<channel id="charge-cycles" typeId="pack-charge-cycles"/>
+			<channel id="soh" typeId="pack-soh"/>
+			<channel id="status-code" typeId="pack-status-code"/>
+			<channel id="error-code" typeId="pack-error-code"/>
+			<channel id="device-name" typeId="pack-device-name"/>
+			<channel id="training-mode" typeId="pack-training-mode"/>
+			<channel id="design-capacity" typeId="pack-design-capacity"/>
+			<channel id="usable-capacity" typeId="pack-usable-capacity"/>
+			<channel id="usable-remaining-capacity" typeId="pack-usable-remaining-capacity"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

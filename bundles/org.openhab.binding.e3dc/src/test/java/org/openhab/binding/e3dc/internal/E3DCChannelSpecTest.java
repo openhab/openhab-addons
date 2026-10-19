@@ -291,8 +291,8 @@ class E3DCChannelSpecTest {
             assertEquals(E3DCBindingConstants.BINDING_ID, uid.getBindingId());
             assertTrue(ids.add(uid.getId()), "duplicate thing type " + uid.getId());
         }
-        assertEquals(5, ids.size(),
-                "the binding defines a bridge, power plant, wallbox, power meter and battery module");
+        assertEquals(6, ids.size(),
+                "the binding defines a bridge, power plant, wallbox, power meter, battery and battery module");
     }
 
     @Test
@@ -326,6 +326,20 @@ class E3DCChannelSpecTest {
      * The energy of the manual charge sits inside the container the device answers with; the container itself
      * carries no value, so naming it as the tag would leave the channel without a state.
      */
+    @Test
+    void theEnergyCountersOfTheMeterAndTheWallboxAreScaledFromWhToKWh() {
+        for (String channel : List.of("energy-l1", "energy-l2", "energy-l3")) {
+            E3DCChannelSpec spec = E3DCChannelSpec.powerMeter().spec(E3DCBindingConstants.GROUP_METER, channel);
+            assertNotNull(spec);
+            assertEquals(1000, spec.divisor(), "the device reports " + channel + " in Wh, the channel shows kWh");
+        }
+        for (String channel : List.of("energy-total", "energy-solar")) {
+            E3DCChannelSpec spec = E3DCChannelSpec.wallbox().spec(E3DCBindingConstants.GROUP_WALLBOX, channel);
+            assertNotNull(spec);
+            assertEquals(1000, spec.divisor(), "the device reports " + channel + " in Wh, the channel shows kWh");
+        }
+    }
+
     @Test
     void theManualChargeChannelReadsTheEnergyCounterInsideItsContainer() {
         E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_SYSTEM,
@@ -629,7 +643,7 @@ class E3DCChannelSpecTest {
      */
     @Test
     void aChannelWithoutRepeatedValuesIsNotIndexed() {
-        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_INVERTER, "ac-power");
+        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_INVERTER, "ac-frequency");
 
         assertNotNull(spec);
         assertEquals(E3DCChannelSpec.NO_INDEX, spec.valueIndex());
@@ -648,5 +662,16 @@ class E3DCChannelSpecTest {
         // the module values are response tags inside the container, so they follow the marker rule
         assertEquals(RscpTag.BAT_DCB_SOC & ~RscpTag.RESPONSE_MARKER, RscpTag.requestFor(RscpTag.BAT_DCB_SOC));
         assertEquals(RscpTag.BAT_DCB_INFO & ~RscpTag.RESPONSE_MARKER, RscpTag.requestFor(RscpTag.BAT_DCB_INFO));
+    }
+
+    /** The phases in use arrive as a bit mask, but the channel reports how many phases that is. */
+    @Test
+    void theActivePhasesAreReportedAsTheirCount() {
+        E3DCChannelSpec spec = E3DCChannelSpec.bitCountIn(RscpTag.PM_DATA, RscpTag.PM_ACTIVE_PHASES);
+
+        assertEquals(3, spec.scale(7));
+        assertEquals(2, spec.scale(5));
+        assertEquals(1, spec.scale(4));
+        assertEquals(0, spec.scale(0));
     }
 }

@@ -7,21 +7,40 @@
 	<channel-group-type id="inverter">
 		<label>Inverter</label>
 		<channels>
-			<channel id="ac-power" typeId="inverter-ac-power"/>
-			<channel id="ac-voltage" typeId="inverter-ac-voltage"/>
-			<channel id="ac-current" typeId="inverter-ac-current"/>
 			<channel id="ac-frequency" typeId="inverter-ac-frequency"/>
-			<channel id="temperature" typeId="inverter-temperature"/>
 			<channel id="on-grid" typeId="inverter-on-grid"/>
 			<channel id="string-count" typeId="inverter-string-count"/>
-			<channel id="energy-total" typeId="inverter-energy-total"/>
-			<channel id="energy-day" typeId="inverter-energy-day"/>
 			<channel id="tracker-1-power" typeId="inverter-tracker-1-power"/>
 			<channel id="tracker-1-voltage" typeId="inverter-tracker-1-voltage"/>
 			<channel id="tracker-1-current" typeId="inverter-tracker-1-current"/>
 			<channel id="tracker-2-power" typeId="inverter-tracker-2-power"/>
 			<channel id="tracker-2-voltage" typeId="inverter-tracker-2-voltage"/>
 			<channel id="tracker-2-current" typeId="inverter-tracker-2-current"/>
+			<channel id="ac-power-l1" typeId="inverter-ac-power-l1"/>
+			<channel id="ac-power-l2" typeId="inverter-ac-power-l2"/>
+			<channel id="ac-power-l3" typeId="inverter-ac-power-l3"/>
+			<channel id="ac-voltage-l1" typeId="inverter-ac-voltage-l1"/>
+			<channel id="ac-voltage-l2" typeId="inverter-ac-voltage-l2"/>
+			<channel id="ac-voltage-l3" typeId="inverter-ac-voltage-l3"/>
+			<channel id="ac-current-l1" typeId="inverter-ac-current-l1"/>
+			<channel id="ac-current-l2" typeId="inverter-ac-current-l2"/>
+			<channel id="ac-current-l3" typeId="inverter-ac-current-l3"/>
+			<channel id="apparent-power-l1" typeId="inverter-apparent-power-l1"/>
+			<channel id="apparent-power-l2" typeId="inverter-apparent-power-l2"/>
+			<channel id="apparent-power-l3" typeId="inverter-apparent-power-l3"/>
+			<channel id="reactive-power-l1" typeId="inverter-reactive-power-l1"/>
+			<channel id="reactive-power-l2" typeId="inverter-reactive-power-l2"/>
+			<channel id="reactive-power-l3" typeId="inverter-reactive-power-l3"/>
+			<channel id="energy-total-l1" typeId="inverter-energy-total-l1"/>
+			<channel id="energy-total-l2" typeId="inverter-energy-total-l2"/>
+			<channel id="energy-total-l3" typeId="inverter-energy-total-l3"/>
+			<channel id="energy-day-l1" typeId="inverter-energy-day-l1"/>
+			<channel id="energy-day-l2" typeId="inverter-energy-day-l2"/>
+			<channel id="energy-day-l3" typeId="inverter-energy-day-l3"/>
+			<channel id="temperature-1" typeId="inverter-temperature-1"/>
+			<channel id="temperature-2" typeId="inverter-temperature-2"/>
+			<channel id="temperature-3" typeId="inverter-temperature-3"/>
+			<channel id="temperature-4" typeId="inverter-temperature-4"/>
 		</channels>
 	</channel-group-type>
 
