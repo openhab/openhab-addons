@@ -245,7 +245,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                                     "@text/offline.tls-unsupported-glibc [\"" + getOSName() + "\", \"" + getOSArch()
                                             + "\", \"" + CONSCRYPT_REQUIRED_GLIBC_MIN_VERSION + "\"]");
                         } else {
-                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                     "@text/offline.tls-unsupported [\"" + getOSName() + "\", \"" + getOSArch() + "\"]");
                         }
                         logger.error("Could not initialize {}!", WebSocketTlsConscryptClientService.class.getName(), e);
