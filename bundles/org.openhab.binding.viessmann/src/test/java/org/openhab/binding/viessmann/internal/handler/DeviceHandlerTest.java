@@ -51,6 +51,10 @@ public class DeviceHandlerTest {
                   "uid": null,
                   "profile": null
                 }
+              },
+              "measurements": {
+                "type": "MeasurementEntries",
+                "value": [1, 2]
               }
             }
             """;
@@ -62,6 +66,7 @@ public class DeviceHandlerTest {
 
         AdditionalProperty vin = DeviceHandler.resolveAdditionalProperty(properties, "vin");
         AdditionalProperty materialId = DeviceHandler.resolveAdditionalProperty(properties, "materialId");
+        AdditionalProperty measurements = DeviceHandler.resolveAdditionalProperty(properties, "measurements");
 
         assertNotNull(vin);
         assertEquals("string", vin.type());
@@ -70,5 +75,9 @@ public class DeviceHandlerTest {
         assertNotNull(materialId);
         assertEquals("string", materialId.type());
         assertEquals("{\"uid\":null,\"profile\":null}", materialId.value());
+
+        assertNotNull(measurements);
+        assertEquals("array", measurements.type());
+        assertEquals("[1,2]", measurements.value());
     }
 }
