@@ -31,6 +31,7 @@ import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -85,6 +86,49 @@ class KeContactHandlerTest {
         handler.handleCommand(new ChannelUID(thing.getUID(), "unlockplug"), OnOffType.OFF);
         verify(transceiver, times(1)).send("unlock", handler);
         verify(listener).stateUpdated("unlockplug", OnOffType.OFF);
+    }
+
+    @Test
+    void outputAcceptsSwitchCommandsAndIntegerOutputModes() {
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:output"))
+                .build();
+        KeContactTransceiver transceiver = Objects.requireNonNull(mock(KeContactTransceiver.class));
+        KeContactHandler handler = new KeContactHandler(thing, transceiver);
+        ChannelUID output = new ChannelUID(thing.getUID(), "output");
+
+        handler.handleCommand(output, OnOffType.ON);
+        handler.handleCommand(output, OnOffType.OFF);
+        handler.handleCommand(output, new DecimalType(0));
+        handler.handleCommand(output, new DecimalType(1));
+        handler.handleCommand(output, new DecimalType(10));
+        handler.handleCommand(output, new DecimalType(150));
+        handler.handleCommand(output, new DecimalType(151));
+        for (String value : new String[] { "-1", "2", "9", "10.5", "2147483648" }) {
+            handler.handleCommand(output, new DecimalType(value));
+        }
+        handler.handleCommand(output, new StringType("10"));
+
+        verify(transceiver, times(2)).send("output 0", handler);
+        verify(transceiver, times(2)).send("output 1", handler);
+        verify(transceiver).send("output 10", handler);
+        verify(transceiver).send("output 150", handler);
+        verify(transceiver).send("output 151", handler);
+        verify(transceiver, times(7)).send(any(), eq(handler));
+    }
+
+    @Test
+    void outputReadbackPreservesNumericOutputModes() {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:output-readback")).build();
+        KeContactTransceiver transceiver = Objects.requireNonNull(mock(KeContactTransceiver.class));
+        KeContactProtocolHandler.Listener listener = Objects
+                .requireNonNull(mock(KeContactProtocolHandler.Listener.class));
+        KeContactHandler handler = new KeContactHandler(thing, transceiver, null, listener);
+
+        for (int output : new int[] { 0, 1, 10, 150 }) {
+            handler.onData(response("{\"ID\":2,\"Output\":" + output + "}"));
+            verify(listener).stateUpdated("output", new DecimalType(output));
+        }
     }
 
     @Test

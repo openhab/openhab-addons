@@ -74,147 +74,84 @@ Possible values include `unknown`, `available`, `unavailable`, `disabled` and `u
 Available channels depend on enabled protocols and the detected wallbox model.
 Channels unsupported by the selected protocols or detected model are removed from the Thing.
 
-The first table lists every declared channel; protocol tables list channels unique to that protocol.
+The table lists each channel once; `All` means Modbus TCP, UDP and REST.
+Protocol support remains subject to the model and configured mode; REST requires a successful authenticated connection.
 Shared channels retain one ID and use protocol fallback where supported.
 
 ### All Channels
 
-| Channel ID                | Item Type                  | Read-only | Description                                                                                                                                        |
-|---------------------------|----------------------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `state`                   | `Number`                   | Yes       | Current operational state of the wallbox, read from Modbus register 1000.                                                                          |
-| `enableduser`             | `Switch`                   | No        | Enable or disable charging. Commands use Modbus; availability readback comes from REST or UDP when available.                                      |
-| `wallbox`                 | `Switch`                   | Yes       | Whether the cable is plugged into the wallbox, derived from cable state when Modbus is available.                                                  |
-| `vehicle`                 | `Switch`                   | Yes       | Whether a vehicle is connected, derived from cable state when Modbus is available.                                                                 |
-| `locked`                  | `Switch`                   | Yes       | Whether the charging plug is locked, derived from cable state when Modbus is available.                                                            |
-| `unlockplug`              | `Switch`                   | No        | Send ON to unlock the charging plug through Modbus, UDP, or REST. Charging must be stopped before unlocking.                                       |
-| `errorcode`               | `Number`                   | Yes       | Raw numeric wallbox error code from Modbus register 1006; zero means no error. Its encoding differs from REST error names and UDP error words.     |
-| `I1`                      | `Number:ElectricCurrent`   | Yes       | Actual current drawn by the vehicle on phase 1, in amperes; not a current limit or setpoint.                                                       |
-| `I2`                      | `Number:ElectricCurrent`   | Yes       | Actual current drawn by the vehicle on phase 2, in amperes; not a current limit or setpoint.                                                       |
-| `I3`                      | `Number:ElectricCurrent`   | Yes       | Actual current drawn by the vehicle on phase 3, in amperes; not a current limit or setpoint.                                                       |
-| `maxsystemcurrent`        | `Number:ElectricCurrent`   | Yes       | Maximum current supported by the wallbox hardware, reported by Modbus or UDP. This is not the user setpoint or actual vehicle current.             |
-| `maxpilotcurrent`         | `Number:ElectricCurrent`   | Yes       | Maximum current currently offered to the vehicle, reported by Modbus or UDP. The vehicle may draw less; I1, I2 and I3 report actual current.       |
-| `U1`                      | `Number:ElectricPotential` | Yes       | Measured voltage of phase 1, in volts.                                                                                                             |
-| `U2`                      | `Number:ElectricPotential` | Yes       | Measured voltage of phase 2, in volts.                                                                                                             |
-| `U3`                      | `Number:ElectricPotential` | Yes       | Measured voltage of phase 3, in volts.                                                                                                             |
-| `power`                   | `Number:Power`             | Yes       | Total measured active charging power, in watts.                                                                                                    |
-| `powerfactor`             | `Number:Dimensionless`     | Yes       | Measured charging power factor (cos phi), expressed as a percentage.                                                                               |
-| `totalconsumption`        | `Number:Energy`            | Yes       | Total energy reported by the wallbox meter, in watt-hours, accumulated after completed charging sessions.                                          |
-| `sessionconsumption`      | `Number:Energy`            | Yes       | Energy delivered in the current charging session, in watt-hours.                                                                                   |
-| `sessionrfidtag`          | `String`                   | Yes       | RFID tag for the last charging session, represented by the hexadecimal Modbus RFID register. Available only when RFID is enabled.                  |
-| `setenergylimit`          | `Number:Energy`            | No        | Energy limit for an active or next charging session. Send an energy quantity, for example in watt-hours.                                           |
-| `phaseswitchsource`       | `Number`                   | No        | Communication source allowed to control phase switching: disabled, OCPP, REST, Modbus or UDP.                                                      |
-| `phaseswitchstate`        | `Number`                   | No        | Phase-switch state: 1 for single-phase or 3 for three-phase charging. Writable through Modbus or UDP; REST is read-only.                           |
-| `failsafecurrent`         | `Number:ElectricCurrent`   | No        | Failsafe current in amperes. Modbus reads and writes it; UDP writes combine it with the timeout from report 2.                                     |
-| `failsafetimeout`         | `Number:Time`              | No        | Timeout in seconds before failsafe current applies. Modbus reads and writes it; UDP writes combine it with failsafe current from report 2.         |
-| `failsafepersist`         | `Switch`                   | No        | Send ON to save active failsafe settings permanently on a P30 wallbox through Modbus or UDP.                                                       |
-| `fastchargingstatus`      | `Number`                   | Yes       | P40-only raw fast-charging status from Modbus register 1200. Removed after a P30 model is identified.                                              |
-| `activatefastcharging`    | `Switch`                   | No        | Send ON to activate fast charging on P40. Removed after a P30 model is identified.                                                                 |
-| `enabledsystem`           | `Switch`                   | Yes       | Wallbox activation state imposed by the system, reported by UDP Enable sys. This is not the writable user enable command.                          |
-| `maxpresetcurrent`        | `Number:ElectricCurrent`   | No        | User-requested maximum charging current in amperes. Commands use Modbus when available, otherwise UDP; this is a setpoint, not measured current.   |
-| `maxpresetcurrentrange`   | `Number:Dimensionless`     | No        | Percentage representation of `maxpresetcurrent`, mapped between 6 A and the hardware current limit. Both channels control the same UDP setpoint.   |
-| `currtimer`               | `Number:ElectricCurrent`   | Yes       | Current that replaces the UDP user-current setpoint when `currtimertimeout` expires. This is the delayed `currtime` setting, not measured current. |
-| `currtimertimeout`        | `Number:Time`              | Yes       | Remaining time in seconds before the delayed UDP user-current setpoint becomes active.                                                             |
-| `maxpilotcurrentdutycyle` | `Number:Dimensionless`     | Yes       | Control-pilot PWM duty cycle, expressed as a percentage. It encodes offered current; it is not measured phase current.                             |
-| `authreq`                 | `Switch`                   | Yes       | Whether authentication is required before a charging session can begin.                                                                            |
-| `authenticate`            | `String`                   | No        | Authenticate and start a charging session using an RFID tag and class already accepted by the wallbox.                                             |
-| `udpstop`                 | `String`                   | No        | Send a UDP stop command with the explicitly supplied 16-digit session RFID tag. No RFID report is read to construct the command.                   |
-| `sessionid`               | `Number`                   | Yes       | Identifier of the last charging session from UDP report 100.                                                                                       |
-| `sessionrfidclass`        | `String`                   | Yes       | RFID authorization class used for the last charging session, from UDP report 100.                                                                  |
-| `input`                   | `Switch`                   | Yes       | State of the physical X1 enable input reported by UDP. This is separate from the REST X2 output state.                                             |
-| `output`                  | `Switch`                   | No        | State of the physical X2 switched output. Send ON or OFF through UDP; X1 is the separate enable input.                                             |
-| `display`                 | `String`                   | No        | Transient wallbox display text sent through UDP on supported models. `setDisplay` also supports display-duration limits.                           |
-| `error1`                  | `String`                   | Yes       | Raw UDP Error1 diagnostic value. Interpret with Error2; this is not the Modbus numeric error code.                                                 |
-| `error2`                  | `String`                   | Yes       | Raw UDP Error2 diagnostic value. Interpret together with Error1 using KEBA error documentation.                                                    |
-| `backend`                 | `Switch`                   | Yes       | Whether communication with the charging backend is present.                                                                                        |
-| `uptime`                  | `Number:Time`              | Yes       | System uptime since the wallbox was last reset, in seconds.                                                                                        |
-| `timequality`             | `Number`                   | Yes       | Wallbox clock synchronization quality reported by UDP `timeQ`, from 0 to 3.                                                                        |
-| `bootflag`                | `Number`                   | Yes       | Raw UDP `setBoot` diagnostic value; its semantics are not documented in the UDP Programmer's Guide.                                                |
-| `dipswitch1`              | `String`                   | Yes       | Raw hexadecimal value of DIP-switch block 1, including the UDP enable bit.                                                                         |
-| `dipswitch2`              | `String`                   | Yes       | Raw hexadecimal value of DIP-switch block 2.                                                                                                       |
-| `reststate`               | `String`                   | Yes       | Textual operational state from REST, for example CHARGING or READY_FOR_CHARGING; retained alongside the numeric state.                             |
-| `error`                   | `String`                   | Yes       | Wallbox error-code name from REST, for example TEMPERATURE_DERATING. It is not numerically equivalent to the Modbus error code.                    |
-| `reserved`                | `Switch`                   | Yes       | Whether the wallbox has an active reservation, reported by REST.                                                                                   |
-| `restoutput`              | `Switch`                   | Yes       | Whether X2 is active according to REST. This is separate from UDP X1 input and the UDP output command.                                             |
-| `temperature`             | `Number:Temperature`       | Yes       | Internal wallbox temperature from REST meter data, in degrees Celsius.                                                                             |
-| `externalmeter`           | `Switch`                   | Yes       | Whether REST reports an external meter; this is not an external-meter energy reading.                                                              |
-| `session`                 | `Switch`                   | Yes       | Whether a charging session is active, reported by REST.                                                                                            |
-| `sessionstart`            | `DateTime`                 | Yes       | Start time of the latest charging session returned by the REST session endpoint.                                                                   |
-| `sessionduration`         | `Number:Time`              | Yes       | Duration of the latest charging session, in seconds, from the REST session endpoint.                                                               |
-| `start`                   | `Switch`                   | No        | Send ON to request that REST starts a charging session.                                                                                            |
-| `stop`                    | `Switch`                   | No        | Send ON to request that REST stops the active charging session.                                                                                    |
-| `togglephaseswitch`       | `Switch`                   | No        | Send ON to toggle single- and three-phase charging through REST. OFF is ignored; the channel resets after success.                                 |
-| `authon`                  | `Switch`                   | Yes       | Whether charging authorization is enabled, reported by REST when available.                                                                        |
-| `permanentlylocked`       | `Switch`                   | No        | Enable or disable permanent plug locking through REST. This is a locking policy, not the current physical lock state.                              |
-| `maxphases`               | `Number`                   | Yes       | Maximum number of charging phases supported by the wallbox, reported by REST.                                                                      |
-| `phaseconfiguration`      | `String`                   | Yes       | Configured phase order reported by REST, rather than just the number of active phases.                                                             |
-| `dipswitchsettings`       | `String`                   | Yes       | Raw JSON array of DIP-switch settings reported by REST. Null entries are preserved.                                                                |
-| `dipswitchinterpretation` | `String`                   | Yes       | Named DIP-switch settings returned by the REST interpretation endpoint as a JSON object.                                                           |
-| `reboot`                  | `Switch`                   | No        | Send ON to request a wallbox reboot through REST.                                                                                                  |
+| Channel ID                | Item Type                  | Read-only | Supported Protocols | Description                                                                                                                                        |
+|---------------------------|----------------------------|-----------|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `state`                   | `Number`                   | Yes       | All                 | Current operational state of the wallbox, read from Modbus register 1000.                                                                          |
+| `enableduser`             | `Switch`                   | No        | All                 | Enable or disable charging. Commands use Modbus; availability readback comes from REST or UDP when available.                                      |
+| `wallbox`                 | `Switch`                   | Yes       | Modbus TCP, UDP     | Whether the cable is plugged into the wallbox, derived from cable state when Modbus is available.                                                  |
+| `vehicle`                 | `Switch`                   | Yes       | All                 | Whether a vehicle is connected, derived from cable state when Modbus is available.                                                                 |
+| `locked`                  | `Switch`                   | Yes       | Modbus TCP, UDP     | Whether the charging plug is locked, derived from cable state when Modbus is available.                                                            |
+| `unlockplug`              | `Switch`                   | No        | All                 | Send ON to unlock the charging plug through Modbus, UDP, or REST. Charging must be stopped before unlocking.                                       |
+| `errorcode`               | `Number`                   | Yes       | Modbus TCP          | Raw numeric wallbox error code from Modbus register 1006; zero means no error. Its encoding differs from REST error names and UDP error words.     |
+| `I1`                      | `Number:ElectricCurrent`   | Yes       | All                 | Actual current drawn by the vehicle on phase 1, in amperes; not a current limit or setpoint.                                                       |
+| `I2`                      | `Number:ElectricCurrent`   | Yes       | All                 | Actual current drawn by the vehicle on phase 2, in amperes; not a current limit or setpoint.                                                       |
+| `I3`                      | `Number:ElectricCurrent`   | Yes       | All                 | Actual current drawn by the vehicle on phase 3, in amperes; not a current limit or setpoint.                                                       |
+| `maxsystemcurrent`        | `Number:ElectricCurrent`   | Yes       | All                 | Maximum current supported by the wallbox hardware, reported by Modbus or UDP. This is not the user setpoint or actual vehicle current.             |
+| `maxpilotcurrent`         | `Number:ElectricCurrent`   | Yes       | All                 | Maximum current currently offered to the vehicle, reported by Modbus or UDP. The vehicle may draw less; I1, I2 and I3 report actual current.       |
+| `U1`                      | `Number:ElectricPotential` | Yes       | All                 | Measured voltage of phase 1, in volts.                                                                                                             |
+| `U2`                      | `Number:ElectricPotential` | Yes       | All                 | Measured voltage of phase 2, in volts.                                                                                                             |
+| `U3`                      | `Number:ElectricPotential` | Yes       | All                 | Measured voltage of phase 3, in volts.                                                                                                             |
+| `power`                   | `Number:Power`             | Yes       | All                 | Total measured active charging power, in watts.                                                                                                    |
+| `powerfactor`             | `Number:Dimensionless`     | Yes       | All                 | Measured charging power factor (cos phi), expressed as a percentage.                                                                               |
+| `totalconsumption`        | `Number:Energy`            | Yes       | All                 | Total energy reported by the wallbox meter, in watt-hours, accumulated after completed charging sessions.                                          |
+| `sessionconsumption`      | `Number:Energy`            | Yes       | All                 | Energy delivered in the current charging session, in watt-hours.                                                                                   |
+| `sessionrfidtag`          | `String`                   | Yes       | Modbus TCP, UDP     | RFID tag for the last charging session, represented by the hexadecimal Modbus RFID register. Available only when RFID is enabled.                  |
+| `setenergylimit`          | `Number:Energy`            | No        | Modbus TCP, UDP     | Energy limit for an active or next charging session. Send an energy quantity, for example in watt-hours.                                           |
+| `phaseswitchsource`       | `Number`                   | No        | All                 | Communication source allowed to control phase switching: disabled, OCPP, REST, Modbus or UDP.                                                      |
+| `phaseswitchstate`        | `Number`                   | No        | All                 | Phase-switch state: `1` for single-phase or `3` for three-phase charging. Commands use the selected REST, Modbus or UDP phase-control source.      |
+| `failsafecurrent`         | `Number:ElectricCurrent`   | No        | Modbus TCP, UDP     | Failsafe current in amperes. Modbus reads and writes it; UDP writes combine it with the timeout from report 2.                                     |
+| `failsafetimeout`         | `Number:Time`              | No        | Modbus TCP, UDP     | Timeout in seconds before failsafe current applies. Modbus reads and writes it; UDP writes combine it with failsafe current from report 2.         |
+| `failsafepersist`         | `Switch`                   | No        | Modbus TCP, UDP     | Send `ON` to save active failsafe settings permanently on a P30 wallbox through Modbus or UDP.                                                     |
+| `fastchargingstatus`      | `Number`                   | Yes       | Modbus TCP          | P40-only raw fast-charging status from Modbus register 1200. Removed after a P30 model is identified.                                              |
+| `activatefastcharging`    | `Switch`                   | No        | Modbus TCP          | Send `ON` to activate fast charging on P40. Removed after a P30 model is identified.                                                               |
+| `enabledsystem`           | `Switch`                   | Yes       | UDP                 | Wallbox activation state imposed by the system, reported by UDP Enable sys. This is not the writable user enable command.                          |
+| `maxpresetcurrent`        | `Number:ElectricCurrent`   | No        | Modbus TCP, UDP     | User-requested maximum charging current in amperes. Commands use Modbus when available, otherwise UDP; this is a setpoint, not measured current.   |
+| `maxpresetcurrentrange`   | `Number:Dimensionless`     | No        | UDP                 | Percentage representation of `maxpresetcurrent`, mapped between `6 A` and the hardware current limit. Both channels control the same UDP setpoint. |
+| `currtimer`               | `Number:ElectricCurrent`   | Yes       | UDP                 | Current that replaces the UDP user-current setpoint when `currtimertimeout` expires. This is the delayed `currtime` setting, not measured current. |
+| `currtimertimeout`        | `Number:Time`              | Yes       | UDP                 | Remaining time in seconds before the delayed UDP user-current setpoint becomes active.                                                             |
+| `maxpilotcurrentdutycyle` | `Number:Dimensionless`     | Yes       | UDP                 | Control-pilot PWM duty cycle, expressed as a percentage. It encodes offered current; it is not measured phase current.                             |
+| `authreq`                 | `Switch`                   | Yes       | UDP                 | Whether authentication is required before a charging session can begin.                                                                            |
+| `authenticate`            | `String`                   | No        | UDP                 | Authenticate and start a charging session using an RFID tag and class already accepted by the wallbox.                                             |
+| `udpstop`                 | `String`                   | No        | UDP                 | Send a UDP stop command with the explicitly supplied 16-digit session RFID tag. No RFID report is read to construct the command.                   |
+| `sessionid`               | `Number`                   | Yes       | UDP                 | Identifier of the last charging session from UDP report 100.                                                                                       |
+| `sessionrfidclass`        | `String`                   | Yes       | UDP                 | RFID authorization class used for the last charging session, from UDP report 100.                                                                  |
+| `input`                   | `Switch`                   | Yes       | UDP                 | State of the physical X1 enable input reported by UDP.                                                                                             |
+| `output`                  | `Number`                   | No        | UDP, REST           | X2 output: REST reports `0`/`1`; UDP reads and writes `0`, `1` or pulse settings `>=10`. UDP commands require DSW1.2 OFF.                          |
+| `display`                 | `String`                   | No        | UDP                 | Transient wallbox display text sent through UDP on supported models. `setDisplay` also supports display-duration limits.                           |
+| `error1`                  | `String`                   | Yes       | UDP                 | Raw UDP Error1 diagnostic value. Interpret with Error2; this is not the Modbus numeric error code.                                                 |
+| `error2`                  | `String`                   | Yes       | UDP                 | Raw UDP Error2 diagnostic value. Interpret together with Error1 using KEBA error documentation.                                                    |
+| `backend`                 | `Switch`                   | Yes       | UDP                 | Whether communication with the charging backend is present.                                                                                        |
+| `uptime`                  | `Number:Time`              | Yes       | UDP                 | System uptime since the wallbox was last reset, in seconds.                                                                                        |
+| `timequality`             | `Number`                   | Yes       | UDP                 | Wallbox clock synchronization quality reported by UDP `timeQ`, from `0` to `3`.                                                                    |
+| `bootflag`                | `Number`                   | Yes       | UDP                 | Raw UDP `setBoot` diagnostic value; its semantics are not documented in the UDP Programmer's Guide.                                                |
+| `dipswitch1`              | `String`                   | Yes       | UDP                 | Raw hexadecimal value of DIP-switch block 1, including the UDP enable bit.                                                                         |
+| `dipswitch2`              | `String`                   | Yes       | UDP                 | Raw hexadecimal value of DIP-switch block 2.                                                                                                       |
+| `reststate`               | `String`                   | Yes       | REST                | Textual operational state from REST, for example `CHARGING` or `READY_FOR_CHARGING`; retained alongside the numeric state.                         |
+| `error`                   | `String`                   | Yes       | REST                | Wallbox error-code name from REST, for example `TEMPERATURE_DERATING`. It is not numerically equivalent to the Modbus error code.                  |
+| `reserved`                | `Switch`                   | Yes       | REST                | Whether the wallbox has an active reservation, reported by REST.                                                                                   |
+| `temperature`             | `Number:Temperature`       | Yes       | REST                | Internal wallbox temperature from REST meter data, in degrees Celsius.                                                                             |
+| `externalmeter`           | `Switch`                   | Yes       | REST                | Whether REST reports an external meter; this is not an external-meter energy reading.                                                              |
+| `session`                 | `Switch`                   | Yes       | REST                | Whether a charging session is active, reported by REST.                                                                                            |
+| `sessionstart`            | `DateTime`                 | Yes       | REST                | Start time of the latest charging session returned by the REST session endpoint.                                                                   |
+| `sessionduration`         | `Number:Time`              | Yes       | REST                | Duration of the latest charging session, in seconds, from the REST session endpoint.                                                               |
+| `start`                   | `Switch`                   | No        | REST                | Send `ON` to request that REST starts a charging session.                                                                                          |
+| `stop`                    | `Switch`                   | No        | REST                | Send `ON` to request that REST stops the active charging session.                                                                                  |
+| `togglephaseswitch`       | `Switch`                   | No        | REST                | Send `ON` to toggle single- and three-phase charging through REST. `OFF` is ignored; the channel resets after success.                             |
+| `authon`                  | `Switch`                   | Yes       | UDP, REST           | Whether charging authorization is enabled, reported by REST when available.                                                                        |
+| `permanentlylocked`       | `Switch`                   | No        | REST                | Enable or disable permanent plug locking through REST. This is a locking policy, not the current physical lock state.                              |
+| `maxphases`               | `Number`                   | Yes       | REST                | Maximum number of charging phases supported by the wallbox, reported by REST.                                                                      |
+| `phaseconfiguration`      | `String`                   | Yes       | REST                | Configured phase order reported by REST, rather than just the number of active phases.                                                             |
+| `dipswitchsettings`       | `String`                   | Yes       | REST                | Raw JSON array of DIP-switch settings reported by REST. Null entries are preserved.                                                                |
+| `dipswitchinterpretation` | `String`                   | Yes       | REST                | Named DIP-switch settings returned by the REST interpretation endpoint as a JSON object.                                                           |
+| `reboot`                  | `Switch`                   | No        | REST                | Send `ON` to request a wallbox reboot through REST.                                                                                                |
 
-### UDP-Specific Channels
-
-These channels are unique to UDP; availability still depends on the model and UDP mode.
-
-| Channel ID                | Item Type                | Read-only | Description                                                                                 |
-|---------------------------|--------------------------|-----------|---------------------------------------------------------------------------------------------|
-| `backend`                 | `Switch`                 | Yes       | Whether communication with the charging backend is present.                                 |
-| `timequality`             | `Number`                 | Yes       | Wallbox clock synchronization quality, from 0 to 3.                                         |
-| `bootflag`                | `Number`                 | Yes       | Raw `setBoot` diagnostic value; semantics are not documented in the UDP Programmer's Guide. |
-| `dipswitch1`              | `String`                 | Yes       | Raw hexadecimal value of DIP-switch block 1, including the UDP enable bit.                  |
-| `dipswitch2`              | `String`                 | Yes       | Raw hexadecimal value of DIP-switch block 2.                                                |
-| `enabledsystem`           | `Switch`                 | Yes       | Wallbox activation state imposed by the system.                                             |
-| `maxpresetcurrentrange`   | `Number:Dimensionless`   | No        | User-current setpoint as a percentage between 6 A and the hardware current limit.           |
-| `error1`                  | `String`                 | Yes       | Raw UDP Error1 diagnostic value; interpret with Error2.                                     |
-| `error2`                  | `String`                 | Yes       | Raw UDP Error2 diagnostic value; interpret with Error1 using KEBA error documentation.      |
-| `maxpilotcurrentdutycyle` | `Number:Dimensionless`   | Yes       | Control-pilot PWM duty cycle, expressed as a percentage.                                    |
-| `currtimer`               | `Number:ElectricCurrent` | Yes       | Delayed user-current setpoint that becomes active when `currtimertimeout` expires.          |
-| `currtimertimeout`        | `Number:Time`            | Yes       | Remaining time before the delayed user-current setpoint becomes active, in seconds.         |
-| `input`                   | `Switch`                 | Yes       | State of the physical X1 enable input.                                                      |
-| `output`                  | `Switch`                 | No        | Control the physical X2 switched output by sending ON or OFF.                               |
-| `uptime`                  | `Number:Time`            | Yes       | System uptime since the wallbox was last reset, in seconds.                                 |
-| `authreq`                 | `Switch`                 | Yes       | Whether authentication is required before charging can begin.                               |
-| `sessionrfidclass`        | `String`                 | Yes       | RFID authorization class used for the last session, from UDP report 100.                    |
-| `sessionid`               | `Number`                 | Yes       | Identifier of the last charging session from UDP report 100.                                |
-| `display`                 | `String`                 | No        | Send transient display text through UDP on supported models.                                |
-| `authenticate`            | `String`                 | No        | Authenticate and start a session with an accepted RFID tag and class.                       |
-| `udpstop`                 | `String`                 | No        | Stop a session using the explicitly supplied 16-digit RFID tag.                             |
-
-### Modbus TCP-Specific Channels
-
-These channels are unique to Modbus TCP; the fast-charging channels are available only on P40.
-
-| Channel ID             | Item Type | Read-only | Description                                                                    |
-|------------------------|-----------|-----------|--------------------------------------------------------------------------------|
-| `errorcode`            | `Number`  | Yes       | Raw numeric wallbox error code from Modbus register 1006; zero means no error. |
-| `fastchargingstatus`   | `Number`  | Yes       | P40-only raw fast-charging status from Modbus register 1200.                   |
-| `activatefastcharging` | `Switch`  | No        | Send ON to activate fast charging on P40.                                      |
-
-### REST-Specific Channels
-
-These channels are unique to REST and require a supported model and successful authenticated connection.
-
-| Channel ID                | Item Type            | Read-only | Description                                                                                     |
-|---------------------------|----------------------|-----------|-------------------------------------------------------------------------------------------------|
-| `reststate`               | `String`             | Yes       | Textual REST operational state, for example CHARGING or READY_FOR_CHARGING.                     |
-| `session`                 | `Switch`             | Yes       | Whether a charging session is active.                                                           |
-| `error`                   | `String`             | Yes       | REST error-code name, complementary to but not numerically equivalent to the Modbus error code. |
-| `reserved`                | `Switch`             | Yes       | Whether the wallbox has an active reservation.                                                  |
-| `temperature`             | `Number:Temperature` | Yes       | Internal wallbox temperature in degrees Celsius.                                                |
-| `restoutput`              | `Switch`             | Yes       | Whether X2 is active according to REST.                                                         |
-| `sessionstart`            | `DateTime`           | Yes       | Start time of the latest charging session.                                                      |
-| `sessionduration`         | `Number:Time`        | Yes       | Duration of the latest charging session, in seconds.                                            |
-| `externalmeter`           | `Switch`             | Yes       | Whether REST reports an external meter.                                                         |
-| `maxphases`               | `Number`             | Yes       | Maximum number of charging phases supported by the wallbox.                                     |
-| `phaseconfiguration`      | `String`             | Yes       | Configured phase order reported by REST.                                                        |
-| `dipswitchsettings`       | `String`             | Yes       | Raw JSON array of DIP-switch settings; null entries are preserved.                              |
-| `dipswitchinterpretation` | `String`             | Yes       | Named DIP-switch settings returned as a JSON object.                                            |
-| `permanentlylocked`       | `Switch`             | No        | Enable or disable permanent plug-locking policy.                                                |
-| `start`                   | `Switch`             | No        | Send ON to request that REST starts a charging session.                                         |
-| `stop`                    | `Switch`             | No        | Send ON to request that REST stops the active charging session.                                 |
-| `togglephaseswitch`       | `Switch`             | No        | Send ON to toggle between single- and three-phase charging; resets after success.               |
-| `reboot`                  | `Switch`             | No        | Send ON to request a wallbox reboot through REST.                                               |
-
-#### REST State and Error Values
+### REST State and Error Values
 
 The REST `reststate` channel reports one of these values:
 
@@ -244,9 +181,22 @@ The OpenAPI specification lists these values but does not define their detailed 
 `maxsystemcurrent` is the wallbox hardware limit; `maxpilotcurrent` is the current offered to the vehicle;
 `maxpresetcurrent` is the writable user setpoint.
 
-`phaseswitchstate` accepts 1 or 3 through Modbus or UDP and is read-only through REST.
-Use REST's `togglephaseswitch` to toggle phases; send ON to toggle, and the channel resets after success.
-`udpstop` is a String command that requires the session's 16-digit RFID tag.
+`phaseswitchstate` accepts `1` or `3` through REST, Modbus or UDP.
+Commands follow the reported `phaseswitchsource`: `2` uses REST, `3` uses Modbus and `4` uses UDP, without protocol fallback.
+Commands are ignored while the source is unknown, disabled (`0`), OCPP (`1`), or its selected protocol is unavailable.
+For REST, the binding sends `POST /v2/wallboxes/{serialNumber}/phase-toggle?numberOfPhases=1` or `numberOfPhases=3`.
+The phase count is read back during polling rather than assumed after a command.
+KEBA requires a five-minute cooldown between UDP phase changes.
+
+The UDP `output` command requires DSW1.2 to be OFF on wallboxes with that DIP switch.
+The binding accepts `ON`/`OFF` as aliases for `1`/`0`, and integer values `>=10` configure pulses per kWh.
+KEBA recommends pulse settings up to `150`; pulse configuration is stored in EEPROM, so avoid repeated writes.
+The `output` channel uses a Number Item; replace existing Switch Items linked to it with Number Items.
+REST `x2active` supplies the preferred readback: `false` becomes `0` and `true` becomes `1`.
+When REST is unavailable, the channel falls back to the numeric UDP `Output` readback.
+REST reports only the X2 switch status, not the pulse setting or phase count; commands always use UDP.
+With REST alone, `output` provides readback only.
+The separate `restoutput` channel has been removed; relink its Items to `output` using Number Items.
 
 ## Rule Actions
 
@@ -265,17 +215,17 @@ The other actions require full-data UDP and are unavailable in display-only mode
 
 ### `setChargingCurrent` Parameters
 
-| Parameter      | Description                                                                                                            |
-|----------------|------------------------------------------------------------------------------------------------------------------------|
-| `current`      | Charging-current setpoint in milliamps: `0` to stop charging, or 6.000 mA up to the wallbox limit (maximum 63.000 mA). |
-| `delaySeconds` | Non-negative activation delay in seconds before applying the current setpoint; this is not a duration.                 |
+| Parameter      | Description                                                                                                              |
+|----------------|--------------------------------------------------------------------------------------------------------------------------|
+| `current`      | Charging-current setpoint in milliamps: `0` to stop charging, or `6000 mA` up to the wallbox limit (maximum `63000 mA`). |
+| `delaySeconds` | Non-negative activation delay in seconds before applying the current setpoint; this is not a duration.                   |
 
 ### `setFailsafe` Parameters
 
 | Parameter                | Description                                                                                                          |
 |--------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `current`                | Failsafe current in milliamps: `0`, or 6.000–63.000 mA.                                                              |
-| `timeoutSeconds`         | Timeout in seconds: `0` or 5–600.                                                                                    |
+| `current`                | Failsafe current in milliamps: `0`, or `6000`–`63000 mA`.                                                            |
+| `timeoutSeconds`         | Timeout in seconds: `0` or `5`–`600 s`.                                                                              |
 | `persist`                | `true` saves the supplied failsafe current and timeout permanently; `false` applies them without saving permanently. |
 
 ## Example
@@ -328,7 +278,7 @@ Number:Power              KebaPower             "Charging power [%.1f W]"       
 Number:Energy             KebaSessionEnergy                                               {channel="keba:kecontact:combined:sessionconsumption"}
 Number:Energy             KebaTotalEnergy       "Energy during all sessions [%.1f Wh]"    {channel="keba:kecontact:combined:totalconsumption"}
 Switch                    KebaInputSwitch                                                 {channel="keba:kecontact:combined:input"}
-Switch                    KebaOutputSwitch                                                {channel="keba:kecontact:combined:output"}
+Number                    KebaOutput                                                      {channel="keba:kecontact:combined:output"}
 Number:Energy             KebaSetEnergyLimit    "Set charge energy limit [%.1f Wh]"       {channel="keba:kecontact:combined:setenergylimit"}
 ```
 

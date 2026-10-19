@@ -310,7 +310,8 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         updateOptionalState("session", wallbox, "sessionActive", value -> OnOffType.from(Boolean.parseBoolean(value)));
         updateOptionalState("error", wallbox, "errorCode", StringType::new);
         updateOptionalState("reserved", wallbox, "reserved", value -> OnOffType.from(Boolean.parseBoolean(value)));
-        updateOptionalState("restoutput", wallbox, "x2active", value -> OnOffType.from(Boolean.parseBoolean(value)));
+        updateOptionalState("output", wallbox, "x2active",
+                value -> new DecimalType(Boolean.parseBoolean(value) ? 1 : 0));
         updateOptionalState("authon", wallbox, "authorizationEnabled",
                 value -> OnOffType.from(Boolean.parseBoolean(value)));
         updateOptionalState("externalmeter", wallbox, "hasExternalMeter",
@@ -516,6 +517,20 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             scheduler.execute(this::poll);
+            return;
+        }
+        if ("phaseswitchstate".equals(channelUID.getId())) {
+            if (command instanceof DecimalType decimalCommand) {
+                try {
+                    int phases = decimalCommand.toBigDecimal().intValueExact();
+                    if (phases == 1 || phases == 3) {
+                        request("/wallboxes/" + serialNumber() + "/phase-toggle?numberOfPhases=" + phases, "POST", "{}",
+                                true);
+                    }
+                } catch (Exception e) {
+                    logger.debug("REST phase switching command failed: {}", e.getMessage());
+                }
+            }
             return;
         }
         if (command instanceof DecimalType decimalCommand && "phaseswitchsource".equals(channelUID.getId())) {

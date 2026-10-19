@@ -92,8 +92,9 @@
 				<description>Communication source allowed to control phase switching: disabled, OCPP, REST, Modbus or UDP.</description>
 			</channel>
 			<channel id="phaseswitchstate" typeId="phase-switch-state">
-				<description>Phase-switch state, 1 for single-phase or 3 for three-phase charging. Writable through Modbus or UDP;
-					read-only through REST. Use togglephaseswitch for a REST phase toggle.</description>
+				<description>Phase-switch state, 1 for single-phase or 3 for three-phase charging. Commands use the selected
+					phase
+					switching source: 2 for REST, 3 for Modbus or 4 for UDP, without protocol fallback.</description>
 			</channel>
 			<channel id="failsafecurrent" typeId="failsafe-current-setting">
 				<label>Failsafe Current Setting</label>
@@ -172,8 +173,10 @@
 			</channel>
 			<channel id="output" typeId="x2">
 				<label>X2 Switched Output</label>
-				<description>State of the physical X2 switched output. Send ON or OFF to control it through the UDP output command;
-					X1 is the separate enable input.</description>
+				<description>X2 output: REST reports 0 or 1, with UDP readback as fallback. UDP commands accept 0 to open,
+					1 to
+					close, or values of at least 10 for pulses per kWh; ON/OFF are also accepted. Commands require
+					DSW1.2 OFF.</description>
 			</channel>
 			<channel id="display" typeId="display">
 				<description>Transient wallbox display text sent through UDP on supported P30 models. The setDisplay rule action
@@ -221,12 +224,6 @@
 			<channel id="reserved" typeId="status">
 				<label>Reserved</label>
 				<description>Whether the wallbox has an active reservation, reported by the REST reserved field.</description>
-			</channel>
-			<channel id="restoutput" typeId="status">
-				<label>REST X2 Output Active</label>
-				<description>Whether the X2 output is active, reported by the REST x2active flag. This is separate from the UDP
-					X1
-					input and the UDP output command channel.</description>
 			</channel>
 			<channel id="temperature" typeId="temperature">
 				<description>Internal wallbox temperature from the REST meter data, in degrees Celsius.</description>
@@ -468,9 +465,11 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="x2" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>X2</label>
-		<description>State of the X2 output</description>
+		<description>X2 output setting: 0 opens, 1 closes, and values of at least 10 configure pulses per kWh. Requires
+			DSW1.2
+			OFF.</description>
 		<tags>
 			<tag>Control</tag>
 		</tags>

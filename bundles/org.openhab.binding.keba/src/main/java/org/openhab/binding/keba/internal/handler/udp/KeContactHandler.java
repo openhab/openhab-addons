@@ -502,16 +502,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
                     }
                     case "Output": {
                         int state = entry.getValue().getAsInt();
-                        switch (state) {
-                            case 1: {
-                                updateState(CHANNEL_OUTPUT, OnOffType.ON);
-                                break;
-                            }
-                            default: {
-                                updateState(CHANNEL_OUTPUT, OnOffType.OFF);
-                                break;
-                            }
-                        }
+                        updateState(CHANNEL_OUTPUT, new DecimalType(state));
                         break;
                     }
                     case "Input": {
@@ -693,13 +684,16 @@ public class KeContactHandler extends KeContactProtocolHandler {
                     break;
                 }
                 case CHANNEL_OUTPUT: {
-                    if (command instanceof OnOffType) {
-                        if (command == OnOffType.ON) {
-                            transceiver.send("output 1", this);
-                        } else if (command == OnOffType.OFF) {
-                            transceiver.send("output 0", this);
-                        } else {
-                            return;
+                    if (command instanceof OnOffType switchCommand) {
+                        transceiver.send("output " + (switchCommand == OnOffType.ON ? 1 : 0), this);
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        try {
+                            int output = decimalCommand.toBigDecimal().intValueExact();
+                            if (output == 0 || output == 1 || output >= 10) {
+                                transceiver.send("output " + output, this);
+                            }
+                        } catch (ArithmeticException e) {
+                            logger.debug("Invalid UDP output setting: {}", command);
                         }
                     }
                     break;

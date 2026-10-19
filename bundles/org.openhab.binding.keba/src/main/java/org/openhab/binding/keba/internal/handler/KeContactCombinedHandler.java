@@ -79,15 +79,16 @@ public class KeContactCombinedHandler extends BaseThingHandler {
 
     private static final Set<String> UDP_REPORT_1 = Objects
             .requireNonNull(Set.of("backend", "timequality", "bootflag", "dipswitch1", "dipswitch2"));
-    private static final Set<String> UDP_REPORT_2 = Objects.requireNonNull(Set.of("enabledsystem", "enableduser",
-            "maxpresetcurrent", "maxpresetcurrentrange", "error1", "error2", "maxpilotcurrent",
-            "maxpilotcurrentdutycyle", "maxsystemcurrent", "failsafecurrent", "failsafetimeout", "currtimer",
-            "currtimertimeout", "output", "input", "uptime", "authreq", "authon"));
+    private static final Set<String> UDP_REPORT_2 = Objects
+            .requireNonNull(Set.of("enabledsystem", "enableduser", "maxpresetcurrent", "maxpresetcurrentrange",
+                    "error1", "error2", "maxpilotcurrent", "maxpilotcurrentdutycyle", "maxsystemcurrent",
+                    "failsafecurrent", "failsafetimeout", "currtimer", "currtimertimeout", "output", "input", "uptime",
+                    "authreq", "authon", "phaseswitchsource", "phaseswitchstate"));
     private static final Set<String> UDP_REPORT_100 = Objects.requireNonNull(Set.of("sessionrfidclass", "sessionid"));
-    private static final Set<String> REST_ONLY = Objects.requireNonNull(Set.of("reststate", "session", "error",
-            "reserved", "temperature", "restoutput", "sessionstart", "sessionduration", "externalmeter", "maxphases",
-            "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop",
-            "reboot", "unlockplug", "togglephaseswitch"));
+    private static final Set<String> REST_ONLY = Objects.requireNonNull(
+            Set.of("reststate", "session", "error", "reserved", "temperature", "sessionstart", "sessionduration",
+                    "externalmeter", "maxphases", "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation",
+                    "permanentlylocked", "start", "stop", "reboot", "unlockplug", "togglephaseswitch"));
     private static final Set<String> UDP_COMMANDS = Objects.requireNonNull(
             Set.of("display", "output", "authenticate", CHANNEL_UDP_STOP, "maxpresetcurrent", "maxpresetcurrentrange"));
     private static final Set<String> REST_SHARED = Objects.requireNonNull(Set.of("state", "I1", "I2", "I3", "U1", "U2",
@@ -107,7 +108,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             "authenticate", CHANNEL_UDP_STOP, "setenergylimit", "phaseswitchsource", "phaseswitchstate", "unlockplug",
             "failsafepersist"));
     private static final Set<String> REST_CHANNELS = Objects.requireNonNull(Set.of("reststate", "session", "error",
-            "reserved", "temperature", "restoutput", "sessionstart", "sessionduration", "externalmeter", "maxphases",
+            "reserved", "temperature", "output", "sessionstart", "sessionduration", "externalmeter", "maxphases",
             "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop",
             "reboot", "unlockplug", "authon", "enableduser", "vehicle", "state", "I1", "I2", "I3", "U1", "U2", "U3",
             "power", "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent",
@@ -130,6 +131,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         volatile boolean udpPending;
         volatile boolean udpIdentified;
         volatile boolean udpCommands;
+        volatile @Nullable Integer phaseSwitchSource;
         volatile String product = "";
         volatile String modelHint = "";
         volatile boolean productIdentified;
@@ -349,10 +351,6 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                     continue;
                 }
                 ChannelTypeUID typeUID = definition.getChannelTypeUID();
-                if (CHANNEL_PHASE_SWITCH_STATE.equals(id) && !protocolSupported(Protocol.MODBUS, localSession)
-                        && (!protocolSupported(Protocol.UDP, localSession) || localSession.config.udpDisplayOnly)) {
-                    typeUID = new ChannelTypeUID(BINDING_ID, "phase-switch-state-readonly");
-                }
                 @Nullable
                 Channel channel = existing.get(id);
                 ChannelUID channelUID = new ChannelUID(getThing().getUID(), id);
@@ -529,6 +527,10 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 if (protocol == Protocol.REST && "phaseswitchsource".equals(channel) && localSession.modbusOnline) {
                     return false;
                 }
+                if (CHANNEL_PHASE_SWITCH_SOURCE.equals(channel)
+                        && KeContactCombinedHandler.this.isLinked(CHANNEL_PHASE_SWITCH_STATE)) {
+                    return true;
+                }
                 return KeContactCombinedHandler.this.isLinked(protocol == Protocol.MODBUS ? switch (channel) {
                     case CHANNEL_MAX_CHARGING_CURRENT -> CHANNEL_PILOT_CURRENT;
                     case CHANNEL_MAX_SUPPORTED_CURRENT -> CHANNEL_MAX_SYSTEM_CURRENT;
@@ -554,7 +556,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             return modbusOnline ? Protocol.MODBUS
                     : restOnline && "vehicle".equals(channel) ? Protocol.REST : Protocol.UDP;
         }
-        if ("authon".equals(channel) || "enableduser".equals(channel)) {
+        if ("authon".equals(channel) || "enableduser".equals(channel) || "output".equals(channel)) {
             return restOnline ? Protocol.REST : Protocol.UDP;
         }
         String modbusChannel = switch (channel) {
@@ -619,7 +621,6 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 case "energy" -> CHANNEL_TOTAL_CONSUMPTION;
                 case "current" -> CHANNEL_PILOT_CURRENT;
                 case "maxsupportedcurrent" -> CHANNEL_MAX_SYSTEM_CURRENT;
-                case "input" -> "restoutput";
                 default -> originalChannel;
             };
             case MODBUS -> switch (originalChannel) {
@@ -638,6 +639,11 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 && (CHANNEL_FAILSAFE_PERSIST.equals(channel) || CHANNEL_ACTIVATE_FAST_CHARGING.equals(channel));
         if (!modbusTriggerReset && sourceFor(channel, localSession.modbusOnline, localSession.restOnline) != protocol) {
             return;
+        }
+        if (CHANNEL_PHASE_SWITCH_SOURCE.equals(channel)) {
+            localSession.phaseSwitchSource = state instanceof DecimalType value && isValidPhaseSwitchSource(value)
+                    ? value.intValue()
+                    : null;
         }
         if (protocol == Protocol.MODBUS && CHANNEL_CABLE_STATE.equals(channel) && state instanceof DecimalType cable) {
             int value = cable.intValue();
@@ -670,6 +676,11 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     private boolean needsReport(Session localSession, Set<String> channels) {
         if (channels.equals(UDP_REPORT_2) && !localSession.restOnline && getThing().getChannel("input") != null
                 && isLinked("input")) {
+            return true;
+        }
+        if (channels.equals(UDP_REPORT_2) && isLinked(CHANNEL_PHASE_SWITCH_STATE)
+                && sourceFor(CHANNEL_PHASE_SWITCH_SOURCE, localSession.modbusOnline,
+                        localSession.restOnline) == Protocol.UDP) {
             return true;
         }
         return channels.stream().anyMatch(channel -> isLinked(channel)
@@ -874,6 +885,24 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             KeContactModbusHandler modbus = localSession.modbus;
             KeContactRestHandler rest = localSession.rest;
             KeContactHandler udp = localSession.udp;
+            if (CHANNEL_PHASE_SWITCH_STATE.equals(channel)) {
+                Integer source = localSession.phaseSwitchSource;
+                if (Integer.valueOf(2).equals(source) && localSession.restOnline && rest != null) {
+                    rest.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
+                } else if (Integer.valueOf(3).equals(source) && localSession.modbusOnline && modbus != null) {
+                    modbus.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
+                } else if (Integer.valueOf(4).equals(source) && udp != null && !localSession.config.udpDisplayOnly) {
+                    synchronized (localSession.udpLock) {
+                        if (current(localSession) && ensureUdpCommands(localSession, udp)) {
+                            udp.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
+                        }
+                    }
+                }
+                return;
+            }
+            if (CHANNEL_PHASE_SWITCH_SOURCE.equals(channel)) {
+                localSession.phaseSwitchSource = null;
+            }
             String modbusChannel = switch (channel) {
                 case "maxpresetcurrent" -> CHANNEL_SET_CHARGING_CURRENT;
                 case CHANNEL_FAILSAFE_CURRENT -> CHANNEL_FAILSAFE_CURRENT_SETTING;
