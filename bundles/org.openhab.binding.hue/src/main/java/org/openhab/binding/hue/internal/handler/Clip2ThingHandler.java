@@ -1681,22 +1681,23 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Get the channel type UID for a given channel ID.
+     * Get the channel type UID for a given channel ID, using the same types as the primary channels in
+     * Clip2Thing.xml.
      *
      * @param channelId the channel ID
      * @return the ChannelTypeUID or null if not found
      */
     private @Nullable ChannelTypeUID getChannelTypeForId(String channelId) {
         return switch (channelId) {
-            case CHANNEL_2_BRIGHTNESS -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_BRIGHTNESS);
-            case CHANNEL_2_COLOR -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_COLOR);
-            case CHANNEL_2_COLOR_TEMP_PERCENT -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_COLOR_TEMP_PERCENT);
-            case CHANNEL_2_COLOR_TEMP_ABSOLUTE -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_COLOR_TEMP_ABSOLUTE);
-            case CHANNEL_2_COLOR_XY_ONLY -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_COLOR_XY_ONLY);
-            case CHANNEL_2_DIMMING_ONLY -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_DIMMING_ONLY);
-            case CHANNEL_2_SWITCH -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_SWITCH);
-            case CHANNEL_2_ON_OFF_ONLY -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_ON_OFF_ONLY);
-            case CHANNEL_2_EFFECT -> new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_EFFECT);
+            case CHANNEL_2_BRIGHTNESS -> new ChannelTypeUID("system", "brightness");
+            case CHANNEL_2_COLOR -> new ChannelTypeUID("system", "color");
+            case CHANNEL_2_COLOR_TEMP_PERCENT -> new ChannelTypeUID("system", "color-temperature");
+            case CHANNEL_2_COLOR_TEMP_ABSOLUTE -> new ChannelTypeUID("system", "color-temperature-abs");
+            case CHANNEL_2_COLOR_XY_ONLY -> new ChannelTypeUID(BINDING_ID, "advanced-color");
+            case CHANNEL_2_DIMMING_ONLY -> new ChannelTypeUID(BINDING_ID, "advanced-brightness");
+            case CHANNEL_2_SWITCH -> new ChannelTypeUID("system", "power");
+            case CHANNEL_2_ON_OFF_ONLY -> new ChannelTypeUID(BINDING_ID, "advanced-power");
+            case CHANNEL_2_EFFECT -> new ChannelTypeUID(BINDING_ID, "effect-v2");
             default -> null;
         };
     }
