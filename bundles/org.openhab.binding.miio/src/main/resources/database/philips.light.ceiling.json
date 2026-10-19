@@ -84,7 +84,29 @@
 				"tags": [
 					"Control",
 					"Mode"
-				]
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Bright"
+						},
+						{
+							"value": "2",
+							"label": "TV"
+						},
+						{
+							"value": "3",
+							"label": "Warm"
+						},
+						{
+							"value": "4",
+							"label": "Midnight"
+						}
+					]
+				},
+				"category": "light",
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Bright\",\"2\"\u003d\"TV\",\"3\"\u003d\"Warm\",\"4\"\u003d\"Midnight\"]`"
 			},
 			{
 				"property": "dv",
@@ -107,7 +129,7 @@
 			},
 			{
 				"property": "bl",
-				"friendlyName": "Night Light",
+				"friendlyName": "Smart Midnight Light",
 				"channel": "bl",
 				"type": "Switch",
 				"refresh": true,
@@ -120,12 +142,13 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "ms",
-				"friendlyName": "MiBand Notifications",
+				"friendlyName": "Auto Power Off when Asleep (Mi Band)",
 				"channel": "ms",
 				"type": "Switch",
 				"refresh": true,
@@ -138,12 +161,13 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "ac",
-				"friendlyName": "Auto Ambiance",
+				"friendlyName": "Auto Color Temperature",
 				"channel": "ac",
 				"type": "Switch",
 				"refresh": true,
@@ -156,12 +180,13 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "mb",
-				"friendlyName": "MiBand",
+				"friendlyName": "Auto On/Off when Mi Band is Nearby",
 				"channel": "mb",
 				"type": "Switch",
 				"refresh": true,
@@ -174,12 +199,13 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "",
-				"friendlyName": "Wall Switch Enabled",
+				"friendlyName": "Wall Switch Scenes",
 				"channel": "switch_en",
 				"type": "Switch",
 				"refresh": false,
@@ -192,7 +218,8 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				],
 				"readmeComment": "Enables switching between scenes with the wall switch"
 			},
@@ -222,37 +249,8 @@
 					"Duration"
 				],
 				"readmeComment": "Turns the light off after the set time, 0 cancels the timer"
-			},
-			{
-				"property": "",
-				"friendlyName": "Switch Scene",
-				"channel": "switchscene",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "switch_the_scene",
-						"parameterType": "EMPTY"
-					}
-				],
-				"category": "switch"
-			},
-			{
-				"property": "",
-				"friendlyName": "Toggle",
-				"channel": "toggle",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "toggle",
-						"parameterType": "EMPTY"
-					}
-				],
-				"category": "switch"
 			}
-		]
+		],
+		"experimental": false
 	}
 }

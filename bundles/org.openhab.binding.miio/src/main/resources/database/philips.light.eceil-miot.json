@@ -1,0 +1,678 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.eceil",
+			"philips.light.ecl01"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Color Temperature",
+				"channel": "cct",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"category": "colorlight"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 4,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Manual"
+						},
+						{
+							"value": "1",
+							"label": "TV"
+						},
+						{
+							"value": "2",
+							"label": "Leisure"
+						},
+						{
+							"value": "3",
+							"label": "Reading"
+						},
+						{
+							"value": "4",
+							"label": "Energetic"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Manual\",\"1\"\u003d\"TV\",\"2\"\u003d\"Leisure\",\"3\"\u003d\"Reading\",\"4\"\u003d\"Energetic\"]`"
+			},
+			{
+				"property": "flex-switch",
+				"siid": 2,
+				"piid": 14,
+				"friendlyName": "Momentary Contact Switch",
+				"channel": "flexSwitch",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Enable only when the light is used with a momentary contact wall switch."
+			},
+			{
+				"property": "detection-sensitivity",
+				"siid": 4,
+				"piid": 25,
+				"friendlyName": "Fall Detection Sensitivity",
+				"channel": "detectionSensitivity",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "High"
+						}
+					]
+				},
+				"category": "motion",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"High\"]`"
+			},
+			{
+				"property": "fall-condition",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "Fall Status",
+				"channel": "fallCondition",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Fall"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "While a fall is reported the app blocks light control; reset it with the `elderly-care-stop-alert` action. Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Fall\"]`"
+			},
+			{
+				"property": "delay-call",
+				"siid": 5,
+				"piid": 3,
+				"friendlyName": "Fall Alert Delay",
+				"channel": "delayCall",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "No alert is raised when the person gets up within this time."
+			},
+			{
+				"property": "alarm-en",
+				"siid": 5,
+				"piid": 5,
+				"friendlyName": "Fall Alert",
+				"channel": "fallAlert",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Calls the emergency contact set in the Mi Home app when a fall is detected."
+			},
+			{
+				"property": "tof-status",
+				"siid": 6,
+				"piid": 3,
+				"friendlyName": "Sensor Status",
+				"channel": "sensorStatus",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Polluted or Blocked"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "alarm",
+				"tags": [
+					"Status",
+					"Info"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Polluted or Blocked\"]`"
+			},
+			{
+				"property": "wall-switch-en",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Wall Switch Scenes",
+				"channel": "WallSceneEn",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "wall-switch-first",
+				"siid": 8,
+				"piid": 2,
+				"friendlyName": "Wall Switch Scene 1",
+				"channel": "wallScene1",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature."
+			},
+			{
+				"property": "wall-switch-sec",
+				"siid": 8,
+				"piid": 3,
+				"friendlyName": "Wall Switch Scene 2",
+				"channel": "wallScene2",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature."
+			},
+			{
+				"property": "wall-switch-th",
+				"siid": 8,
+				"piid": 4,
+				"friendlyName": "Wall Switch Scene 3",
+				"channel": "wallScene3",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature."
+			},
+			{
+				"property": "wall-switch-fourth",
+				"siid": 8,
+				"piid": 5,
+				"friendlyName": "Wall Switch Scene 4",
+				"channel": "wallScene4",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature."
+			},
+			{
+				"property": "night-mode",
+				"siid": 10,
+				"piid": 1,
+				"friendlyName": "Smart Night Light Mode",
+				"channel": "nightMode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Constant Off"
+						},
+						{
+							"value": "1",
+							"label": "Constant On"
+						},
+						{
+							"value": "2",
+							"label": "Auto"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "In Auto mode the night light turns on in the dark when a person is detected. Value mapping `[\"0\"\u003d\"Constant Off\",\"1\"\u003d\"Constant On\",\"2\"\u003d\"Auto\"]`"
+			},
+			{
+				"property": "night-bri",
+				"siid": 10,
+				"piid": 3,
+				"friendlyName": "Night Light Brightness",
+				"channel": "nightBrightness",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Brightness"
+				],
+				"readmeComment": "The app uses 20, 40, 60, 80 and 100."
+			},
+			{
+				"property": "night-on",
+				"siid": 10,
+				"piid": 4,
+				"friendlyName": "Night Light",
+				"channel": "nightOn",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "light",
+				"tags": [
+					"Status",
+					"Light"
+				]
+			},
+			{
+				"property": "change-speed-enable",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Gradual Brightness Adjustment",
+				"channel": "changeSpeedEnable",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "change-speed",
+				"siid": 12,
+				"piid": 2,
+				"friendlyName": "Gradual Brightness Adjustment Speed",
+				"channel": "changeSpeed",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Slow"
+						},
+						{
+							"value": "1",
+							"label": "Medium"
+						},
+						{
+							"value": "2",
+							"label": "Fast"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Speed"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Slow\",\"1\"\u003d\"Medium\",\"2\"\u003d\"Fast\"]`"
+			},
+			{
+				"property": "enable",
+				"siid": 16,
+				"piid": 1,
+				"friendlyName": "Bedtime Monitoring",
+				"channel": "bedMonitoring",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Raises an alert when a person stays in bed too long during the monitoring period."
+			},
+			{
+				"property": "effect-time",
+				"siid": 16,
+				"piid": 2,
+				"friendlyName": "Bedtime Monitoring Period",
+				"channel": "bedMonitoringPeriod",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Format `HH:MM-HH:MM`, e.g. `22:00-07:00`."
+			},
+			{
+				"property": "alert-enable",
+				"siid": 16,
+				"piid": 3,
+				"friendlyName": "Abnormal Behavior Alert",
+				"channel": "bedMonitoringAlert",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Sends a Mi Home push notification on abnormal behavior."
+			},
+			{
+				"property": "detection-time",
+				"siid": 16,
+				"piid": 6,
+				"friendlyName": "Bedtime Duration",
+				"channel": "bedDuration",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						},
+						{
+							"value": "elderly-care-stop-alert",
+							"label": "Reset Fall Alert"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 5,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "elderly-care-stop-alert"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"elderly-care-stop-alert\"\u003d\"Reset Fall Alert\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

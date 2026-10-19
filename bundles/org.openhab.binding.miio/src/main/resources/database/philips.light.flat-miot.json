@@ -1,0 +1,384 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.flat"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 4,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Bright"
+						},
+						{
+							"value": "2",
+							"label": "Warm"
+						},
+						{
+							"value": "3",
+							"label": "Night Light"
+						},
+						{
+							"value": "4",
+							"label": "Custom"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Bright\",\"2\"\u003d\"Warm\",\"3\"\u003d\"Night Light\",\"4\"\u003d\"Custom\"]`"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "rc-scene",
+				"siid": 3,
+				"piid": 18,
+				"friendlyName": "Custom Scene Brightness",
+				"channel": "customBrightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Brightness"
+				],
+				"readmeComment": "Brightness of the custom scene, setting it activates the custom scene."
+			},
+			{
+				"property": "night-en",
+				"siid": 3,
+				"piid": 15,
+				"friendlyName": "Night Light Period",
+				"channel": "nightLight",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The light turns on in night light mode within the set time."
+			},
+			{
+				"property": "night-start-time",
+				"siid": 3,
+				"piid": 16,
+				"friendlyName": "Night Light Start",
+				"channel": "nightStart",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Minutes after midnight."
+			},
+			{
+				"property": "night-end-time",
+				"siid": 3,
+				"piid": 17,
+				"friendlyName": "Night Light End",
+				"channel": "nightEnd",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Minutes after midnight."
+			},
+			{
+				"property": "guard-status",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Room Status",
+				"channel": "guardStatus",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 4,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Room Free"
+						},
+						{
+							"value": "1",
+							"label": "Room Occupied"
+						},
+						{
+							"value": "2",
+							"label": "Prolonged Stay"
+						},
+						{
+							"value": "3",
+							"label": "Someone Falls"
+						},
+						{
+							"value": "4",
+							"label": "Device Error"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "alarm",
+				"tags": [
+					"Status",
+					"Presence"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Room Free\",\"1\"\u003d\"Room Occupied\",\"2\"\u003d\"Prolonged Stay\",\"3\"\u003d\"Someone Falls\",\"4\"\u003d\"Device Error\"]`"
+			},
+			{
+				"property": "active-event",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Last Event",
+				"channel": "activeEvent",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 7,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Enter"
+						},
+						{
+							"value": "1",
+							"label": "Left"
+						},
+						{
+							"value": "2",
+							"label": "Someone Falls"
+						},
+						{
+							"value": "3",
+							"label": "Stand Up"
+						},
+						{
+							"value": "4",
+							"label": "Device Error"
+						},
+						{
+							"value": "5",
+							"label": "Device Back to Normal"
+						},
+						{
+							"value": "6",
+							"label": "Prolonged Stay"
+						},
+						{
+							"value": "7",
+							"label": "Prolonged Stay Cleared"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "alarm",
+				"tags": [
+					"Status",
+					"Presence"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Enter\",\"1\"\u003d\"Left\",\"2\"\u003d\"Someone Falls\",\"3\"\u003d\"Stand Up\",\"4\"\u003d\"Device Error\",\"5\"\u003d\"Device Back to Normal\",\"6\"\u003d\"Prolonged Stay\",\"7\"\u003d\"Prolonged Stay Cleared\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						},
+						{
+							"value": "brightness-up",
+							"label": "Brightness Up"
+						},
+						{
+							"value": "brightness-down",
+							"label": "Brightness Down"
+						},
+						{
+							"value": "reset-guard-status",
+							"label": "Clear the Alert"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-down"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "reset-guard-status"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"brightness-up\"\u003d\"Brightness Up\",\"brightness-down\"\u003d\"Brightness Down\",\"reset-guard-status\"\u003d\"Clear the Alert\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

@@ -1,0 +1,810 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.airp.mb3a"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "button-toggle",
+							"label": "Toggle Power"
+						},
+						{
+							"value": "button-toggle-mode",
+							"label": "Toggle Mode"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "button-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "button-toggle-mode"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"readmeComment": "Value mapping `[\"button-toggle\"\u003d\"Toggle Power\",\"button-toggle-mode\"\u003d\"Toggle Mode\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Motor Run Error"
+						},
+						{
+							"value": "2",
+							"label": "Motor Stuck"
+						},
+						{
+							"value": "3",
+							"label": "No Sensor"
+						},
+						{
+							"value": "4",
+							"label": "Humidity Sensor Error"
+						},
+						{
+							"value": "5",
+							"label": "Temperature Sensor Error"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Motor Run Error\",\"2\"\u003d\"Motor Stuck\",\"3\"\u003d\"No Sensor\",\"4\"\u003d\"Humidity Sensor Error\",\"5\"\u003d\"Temperature Sensor Error\"]`"
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "fan-level",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Fan Level",
+				"channel": "fan_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Level1"
+						},
+						{
+							"value": "2",
+							"label": "Level2"
+						},
+						{
+							"value": "3",
+							"label": "Level3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Sleep"
+						},
+						{
+							"value": "2",
+							"label": "Favorite"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]`"
+			},
+			{
+				"property": "pm2.5-density",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "PM2.5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 600,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -40,
+					"maximum": 125,
+					"step": 0.1,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "filter-used-time",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Filter Used Time",
+				"channel": "filter_used_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "filter-max-time",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Filter Maximum Life",
+				"channel": "filter_max_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 2000,
+					"maximum": 6000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Notification Sound",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "LED Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Bright"
+						},
+						{
+							"value": "1",
+							"label": "Dim"
+						},
+						{
+							"value": "2",
+							"label": "Off"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "screen",
+				"tags": [
+					"Control",
+					"Brightness"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Off\"]`"
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "motor-speed",
+				"siid": 10,
+				"piid": 8,
+				"friendlyName": "Motor Speed",
+				"channel": "motor_speed_rpm",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 3000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
+			},
+			{
+				"property": "motor-set-speed",
+				"siid": 10,
+				"piid": 9,
+				"friendlyName": "Motor Target Speed",
+				"channel": "motor_set_speed",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 3000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
+			},
+			{
+				"property": "motor-favorite",
+				"siid": 10,
+				"piid": 7,
+				"friendlyName": "Favorite Mode Motor Speed",
+				"channel": "favorite_speed",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2200,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
+				]
+			},
+			{
+				"property": "favorite-fan-level",
+				"siid": 10,
+				"piid": 10,
+				"friendlyName": "Favorite Mode Level",
+				"channel": "favorite_level",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 14,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Favorite mode speed level 0-14"
+			},
+			{
+				"property": "use-time",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Device Use Time",
+				"channel": "use_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483600,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "purify-volume",
+				"siid": 13,
+				"piid": 1,
+				"friendlyName": "Purify Volume",
+				"channel": "purify_volume",
+				"type": "Number:Volume",
+				"unit": "cubic_meter",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483600,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "average-aqi",
+				"siid": 13,
+				"piid": 2,
+				"friendlyName": "Average AQI",
+				"channel": "average_aqi",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 600,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"AQI"
+				]
+			},
+			{
+				"property": "aqi-state",
+				"siid": 13,
+				"piid": 8,
+				"friendlyName": "AQI State",
+				"channel": "aqi_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Best"
+						},
+						{
+							"value": "1",
+							"label": "Good"
+						},
+						{
+							"value": "2",
+							"label": "Normal"
+						},
+						{
+							"value": "3",
+							"label": "Bad"
+						},
+						{
+							"value": "4",
+							"label": "Worse"
+						},
+						{
+							"value": "5",
+							"label": "Unhealthy"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Best\",\"1\"\u003d\"Good\",\"2\"\u003d\"Normal\",\"3\"\u003d\"Bad\",\"4\"\u003d\"Worse\",\"5\"\u003d\"Unhealthy\"]`"
+			},
+			{
+				"property": "buttom-door",
+				"siid": 15,
+				"piid": 5,
+				"friendlyName": "Bottom Door",
+				"channel": "bottom_door",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "door",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "reboot-cause",
+				"siid": 15,
+				"piid": 6,
+				"friendlyName": "Reboot Cause",
+				"channel": "reboot_cause",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Hardware Boot"
+						},
+						{
+							"value": "1",
+							"label": "User Reboot"
+						},
+						{
+							"value": "2",
+							"label": "Update"
+						},
+						{
+							"value": "3",
+							"label": "Watchdog Timer"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Hardware Boot\",\"1\"\u003d\"User Reboot\",\"2\"\u003d\"Update\",\"3\"\u003d\"Watchdog Timer\"]`"
+			},
+			{
+				"property": "iic-error-count",
+				"siid": 15,
+				"piid": 9,
+				"friendlyName": "I2C Error Count",
+				"channel": "iic_error_count",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 66535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "manual-level",
+				"siid": 15,
+				"piid": 10,
+				"friendlyName": "Manual Mode Level",
+				"channel": "manual_level",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Level 1"
+						},
+						{
+							"value": "2",
+							"label": "Level 2"
+						},
+						{
+							"value": "3",
+							"label": "Level 3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
+			},
+			{
+				"property": "country-code",
+				"siid": 15,
+				"piid": 11,
+				"friendlyName": "Country Code",
+				"channel": "country_code",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "91",
+							"label": "IN"
+						},
+						{
+							"value": "44",
+							"label": "EU"
+						},
+						{
+							"value": "852",
+							"label": "HK"
+						},
+						{
+							"value": "886",
+							"label": "TW"
+						},
+						{
+							"value": "82",
+							"label": "KR"
+						},
+						{
+							"value": "1",
+							"label": "US"
+						},
+						{
+							"value": "81",
+							"label": "JP"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "settings",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"91\"\u003d\"IN\",\"44\"\u003d\"EU\",\"852\"\u003d\"HK\",\"886\"\u003d\"TW\",\"82\"\u003d\"KR\",\"1\"\u003d\"US\",\"81\"\u003d\"JP\"]`"
+			},
+			{
+				"property": "temperature-unit",
+				"siid": 15,
+				"piid": 12,
+				"friendlyName": "Temperature Display Unit",
+				"channel": "temperature_display_unit",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Celsius"
+						},
+						{
+							"value": "1",
+							"label": "Fahrenheit"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Celsius\",\"1\"\u003d\"Fahrenheit\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

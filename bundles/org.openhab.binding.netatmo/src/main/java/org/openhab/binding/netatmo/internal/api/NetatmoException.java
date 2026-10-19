@@ -58,6 +58,11 @@ public class NetatmoException extends IOException {
         this.rawErrorCode = rawErrorCode;
     }
 
+    /** A 5xx answer that Netatmo did not classify, such as the busy error code 27. */
+    public boolean isServerError() {
+        return httpStatus >= 500;
+    }
+
     public ServiceError getStatusCode() {
         return statusCode;
     }

@@ -30,6 +30,8 @@ import org.openhab.binding.astro.internal.model.ZodiacSign;
 
 /**
  * Tests for lunar-range behaviour in {@link ZodiacCalc}.
+ *
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class MoonZodiacCalcTest {

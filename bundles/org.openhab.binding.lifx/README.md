@@ -16,18 +16,25 @@ The following table lists the Thing types of the supported LIFX devices:
 | Color 1000                   | colorlight    |
 | Color 1000 BR30              | colorlight    |
 | LIFX A19                     | colorlight    |
+| LIFX A21 1000lm              | colorlight    |
 | LIFX A21 1600lm              | colorlight    |
 | LIFX BR30                    | colorlight    |
 | LIFX Candle                  | colorlight    |
+| LIFX Carbon Prototype        | colorlight    |
+| LIFX Ceiling 13"             | colorlight    |
 | LIFX Ceiling 13x26"          | colorlight    |
 | LIFX Ceiling 15"             | colorlight    |
 | LIFX Downlight               | colorlight    |
+| LIFX Everyday A19            | colorlight    |
 | LIFX GU10                    | colorlight    |
+| LIFX Luna                    | colorlight    |
 | LIFX Mini Color              | colorlight    |
+| LIFX Mirror                  | colorlight    |
 | LIFX PAR38                   | colorlight    |
 | LIFX Round Spot              | colorlight    |
 | LIFX Round Path              | colorlight    |
 | LIFX Square Path             | colorlight    |
+| LIFX Sunshine                | colorlight    |
 |                              |               |
 | LIFX Clean                   | colorhevlight |
 |                              |               |
@@ -35,6 +42,8 @@ The following table lists the Thing types of the supported LIFX devices:
 | LIFX+ BR30                   | colorirlight  |
 |                              |               |
 | LIFX Beam                    | colormzlight  |
+| LIFX Everyday Lightstrip     | colormzlight  |
+| LIFX Everyday Outdoor Permanent | colormzlight  |
 | LIFX Neon                    | colormzlight  |
 | LIFX Outdoor Neon            | colormzlight  |
 | LIFX Outdoor Permanent       | colormzlight  |
@@ -48,8 +57,10 @@ The following table lists the Thing types of the supported LIFX devices:
 | White 900 BR30 (Low Voltage) | whitelight    |
 | LIFX Candle Warm to White    | whitelight    |
 | LIFX Filament                | whitelight    |
+| LIFX GU10 White              | whitelight    |
 | LIFX Mini Day and Dusk       | whitelight    |
 | LIFX Mini White              | whitelight    |
+| LIFX White OEM A19           | whitelight    |
 
 The Thing type determines the capability of a device and with that the possible ways of interacting with it.
 The following matrix lists the capabilities (channels) for each type:

@@ -1,0 +1,880 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.keba.internal.handler.udp;
+
+import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
+
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.math.BigDecimal;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
+import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
+import org.openhab.binding.keba.internal.handler.KeContactCombinedConfiguration;
+import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
+import org.openhab.core.cache.ExpiringCacheMap;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+
+/**
+ * The {@link KeContactHandler} is responsible for handling commands, which
+ * are sent to one of the channels.
+ *
+ * @author Karel Goderis - Initial contribution
+ * @author Michael Weger - Combined Thing UDP integration
+ */
+@NonNullByDefault
+public class KeContactHandler extends KeContactProtocolHandler {
+
+    public static final int REPORT_INTERVAL = 3000;
+    public static final int BUFFER_SIZE = 1024;
+    public static final int REMOTE_PORT_NUMBER = 7090;
+    private static final String CACHE_REPORT_1 = "REPORT_1";
+    private static final String CACHE_REPORT_2 = "REPORT_2";
+    private static final String CACHE_REPORT_3 = "REPORT_3";
+    private static final String CACHE_REPORT_100 = "REPORT_100";
+    public static final int SOCKET_TIME_OUT_MS = 3000;
+    public static final int SOCKET_CHECK_PORT_NUMBER = 80;
+
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactHandler.class));
+
+    private final KeContactTransceiver transceiver;
+
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ExpiringCacheMap<String, ByteBuffer> cache;
+
+    private int maxPresetCurrent = 0;
+    private int maxSystemCurrent = 63000;
+    private int failsafeCurrent;
+    private long failsafeTimeout;
+    private boolean hasFailsafeCurrent;
+    private boolean hasFailsafeTimeout;
+    private @Nullable KebaType type;
+    private @Nullable KebaSeries series;
+    private int lastState = -1; // trigger a report100 at startup
+    private boolean isReport100needed = true;
+    private String ipAddress = "";
+    private int refreshInterval;
+
+    public KeContactHandler(Thing thing, KeContactTransceiver transceiver) {
+        this(thing, transceiver, null, null);
+    }
+
+    public KeContactHandler(Thing thing, KeContactTransceiver transceiver, @Nullable Configuration configuration,
+            @Nullable Listener listener) {
+        super(thing, configuration, listener);
+        this.transceiver = transceiver;
+    }
+
+    public void initializeCommands(String host) {
+        ipAddress = host;
+        refreshInterval = 0;
+        transceiver.registerHandler(this);
+    }
+
+    public boolean readReport(int report) {
+        ByteBuffer response = transceiver.send("report " + report, this);
+        if (response == null) {
+            logger.debug("No UDP response for report {} from {}", report, ipAddress);
+            return false;
+        }
+        try {
+            JsonObject data = JsonParser
+                    .parseString(new String(response.array(), 0, response.limit(), StandardCharsets.US_ASCII).trim())
+                    .getAsJsonObject();
+            if (!data.has("ID") || data.get("ID").getAsInt() != report || report == 1 && !data.has("Product")
+                    || report == 2 && !data.has("State")) {
+                logger.debug("Unexpected UDP response for report {} from {}", report, ipAddress);
+                return false;
+            }
+            onData(response);
+            return true;
+        } catch (JsonParseException | IllegalStateException | NumberFormatException e) {
+            logger.debug("Invalid UDP response for report {} from {}", report, ipAddress);
+            return false;
+        }
+    }
+
+    @Override
+    public void initialize() {
+        KeContactCombinedConfiguration configuration = getConfigAs(KeContactCombinedConfiguration.class);
+        ipAddress = configuration.ipAddress;
+        refreshInterval = configuration.refreshIntervalSlow;
+        try {
+            if (isKebaReachable()) {
+                transceiver.registerHandler(this);
+                if (refreshInterval > 0) {
+                    ExpiringCacheMap<String, ByteBuffer> localCache = new ExpiringCacheMap<>(
+                            Math.max(refreshInterval - 5, 1) * 1000);
+                    cache = localCache;
+                    localCache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
+                    localCache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
+                    localCache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
+                    localCache.put(CACHE_REPORT_100, () -> transceiver.send("report 100", getHandler()));
+
+                    ScheduledFuture<?> localPollingJob = pollingJob;
+                    if (localPollingJob == null || localPollingJob.isCancelled()) {
+                        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0, refreshInterval,
+                                TimeUnit.SECONDS);
+                    }
+                } else {
+                    ByteBuffer response = transceiver.send("report 1", this);
+                    if (response == null) {
+                        logger.debug("Missing response from Keba station for one-time identification");
+                    } else {
+                        onData(response);
+                    }
+                }
+            } else {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-address-port");
+            }
+        } catch (IOException e) {
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-init [\"" + String.valueOf(e.getMessage()) + "\"]");
+        }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        Collection<Class<? extends ThingHandlerService>> services = new ArrayList<>();
+        services.add(KeContactActions.class);
+        return services;
+    }
+
+    private boolean isKebaReachable() throws IOException {
+        boolean isReachable = false;
+        SocketAddress sockAddr = new InetSocketAddress(getIPAddress(), SOCKET_CHECK_PORT_NUMBER);
+        try (Socket socket = new Socket()) {
+            socket.connect(sockAddr, SOCKET_TIME_OUT_MS);
+            isReachable = true;
+        }
+        logger.debug("isKebaReachable() returns {}", isReachable);
+        return isReachable;
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> localPollingJob = pollingJob;
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+            if (localPollingJob.equals(pollingJob)) {
+                pollingJob = null;
+            }
+        }
+
+        transceiver.unRegisterHandler(this);
+        super.dispose();
+    }
+
+    public String getIPAddress() {
+        return ipAddress;
+    }
+
+    public int getRefreshInterval() {
+        return refreshInterval;
+    }
+
+    private KeContactHandler getHandler() {
+        return this;
+    }
+
+    private void pollingRunnable() {
+        try {
+            logger.debug("Running pollingRunnable to connect Keba wallbox");
+            long stamp = System.currentTimeMillis();
+            if (!isKebaReachable()) {
+                logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-timeout");
+            } else {
+                ExpiringCacheMap<String, ByteBuffer> localCache = cache;
+                if (localCache == null) {
+                    return;
+                }
+                ByteBuffer response = localCache.get(CACHE_REPORT_1);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 1'");
+                } else {
+                    onData(response);
+                }
+
+                Thread.sleep(REPORT_INTERVAL);
+
+                response = localCache.get(CACHE_REPORT_2);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 2'");
+                } else {
+                    onData(response);
+                }
+
+                Thread.sleep(REPORT_INTERVAL);
+
+                response = localCache.get(CACHE_REPORT_3);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 3'");
+                } else {
+                    onData(response);
+                }
+
+                if (isReport100needed) {
+                    Thread.sleep(REPORT_INTERVAL);
+
+                    response = localCache.get(CACHE_REPORT_100);
+                    if (response == null) {
+                        logger.debug("Missing response from Keba station for 'report 100'");
+                    } else {
+                        onData(response);
+                    }
+                    isReport100needed = false;
+                }
+            }
+        } catch (InterruptedIOException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
+        } catch (IOException e) {
+            logger.debug("An error occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
+                    e.getMessage(), e);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-polling");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
+        }
+    }
+
+    protected void onData(ByteBuffer byteBuffer) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+
+        String response = new String(byteBuffer.array(), 0, byteBuffer.limit(), StandardCharsets.US_ASCII);
+        response = Objects.requireNonNull(StringUtils.chomp(response));
+
+        if (response.contains("TCH-OK")) {
+            // ignore confirmation messages which are not JSON
+            return;
+        }
+
+        try {
+            JsonObject readObject = JsonParser.parseString(response).getAsJsonObject();
+
+            for (var entry : readObject.entrySet()) {
+                switch (entry.getKey()) {
+                    case "Product": {
+                        Map<String, String> properties = editProperties();
+                        String product = Objects.requireNonNull(entry.getValue().getAsString().trim());
+                        properties.put(PROPERTY_MODEL, product);
+                        updateProperties(properties);
+                        if (product.contains("P20")) {
+                            type = KebaType.P20;
+                        } else if (product.contains("P30")) {
+                            type = KebaType.P30;
+                        }
+                        if (product.length() > 13) {
+                            try {
+                                series = KebaSeries.getSeries(product.charAt(13));
+                            } catch (IllegalArgumentException e) {
+                                logger.debug("Unknown KEBA product series in product '{}'.", product);
+                            }
+                        } else {
+                            logger.debug("KEBA product value is too short to determine its series: '{}'.", product);
+                        }
+                        break;
+                    }
+                    case "Serial": {
+                        Map<String, String> properties = editProperties();
+                        properties.put(PROPERTY_SERIAL, Objects.requireNonNull(entry.getValue().getAsString()));
+                        updateProperties(properties);
+                        break;
+                    }
+                    case "Firmware": {
+                        Map<String, String> properties = editProperties();
+                        properties.put(PROPERTY_FIRMWARE, Objects.requireNonNull(entry.getValue().getAsString()));
+                        updateProperties(properties);
+                        break;
+                    }
+                    case "COM-module": {
+                        Map<String, String> properties = editProperties();
+                        properties.put("communicationModulePresent",
+                                Objects.requireNonNull(Boolean.toString(entry.getValue().getAsInt() == 1)));
+                        updateProperties(properties);
+                        break;
+                    }
+                    case "Backend": {
+                        updateState(CHANNEL_BACKEND, OnOffType.from(entry.getValue().getAsInt() == 1));
+                        break;
+                    }
+                    case "timeQ": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_TIME_QUALITY, newState);
+                        break;
+                    }
+                    case "setBoot": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_BOOT_FLAG, newState);
+                        break;
+                    }
+                    case "DIP-Sw1": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_DIP_SWITCH_1, newState);
+                        break;
+                    }
+                    case "DIP-Sw2": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_DIP_SWITCH_2, newState);
+                        break;
+                    }
+                    case "Error1": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_ERROR_1, newState);
+                        break;
+                    }
+                    case "Error2": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_ERROR_2, newState);
+                        break;
+                    }
+                    case "Plug": {
+                        int state = entry.getValue().getAsInt();
+                        switch (state) {
+                            case 0: {
+                                updateState(CHANNEL_WALLBOX, OnOffType.OFF);
+                                updateState(CHANNEL_VEHICLE, OnOffType.OFF);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.OFF);
+                                break;
+                            }
+                            case 1: {
+                                updateState(CHANNEL_WALLBOX, OnOffType.ON);
+                                updateState(CHANNEL_VEHICLE, OnOffType.OFF);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.OFF);
+                                break;
+                            }
+                            case 3: {
+                                updateState(CHANNEL_WALLBOX, OnOffType.ON);
+                                updateState(CHANNEL_VEHICLE, OnOffType.OFF);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.ON);
+                                break;
+                            }
+                            case 5: {
+                                updateState(CHANNEL_WALLBOX, OnOffType.ON);
+                                updateState(CHANNEL_VEHICLE, OnOffType.ON);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.OFF);
+                                break;
+                            }
+                            case 7: {
+                                updateState(CHANNEL_WALLBOX, OnOffType.ON);
+                                updateState(CHANNEL_VEHICLE, OnOffType.ON);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.ON);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "State": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
+                        updateState(CHANNEL_STATE, newState);
+                        if (lastState != state) {
+                            // the state is different from the last one, so we will trigger a report100
+                            isReport100needed = true;
+                            lastState = state;
+                        }
+                        break;
+                    }
+                    case "Enable sys": {
+                        updateState(CHANNEL_ENABLED_SYSTEM, OnOffType.from(entry.getValue().getAsInt() == 1));
+                        break;
+                    }
+                    case "Enable user": {
+                        updateState(CHANNEL_ENABLED_USER, OnOffType.from(entry.getValue().getAsInt() == 1));
+                        break;
+                    }
+                    case "Curr HW": {
+                        int state = entry.getValue().getAsInt();
+                        maxSystemCurrent = state;
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_MAX_SYSTEM_CURRENT, newState);
+                        if (maxSystemCurrent != 0) {
+                            if (!isCombined() && maxSystemCurrent < maxPresetCurrent) {
+                                transceiver.send("curr " + maxSystemCurrent, this);
+                                updateState(CHANNEL_MAX_PRESET_CURRENT,
+                                        new QuantityType<>(maxSystemCurrent / 1000.0, Units.AMPERE));
+                                updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<>(
+                                        (maxSystemCurrent - 6000) * 100 / (maxSystemCurrent - 6000), Units.PERCENT));
+                            }
+                        } else {
+                            logger.debug("maxSystemCurrent is 0. Ignoring.");
+                        }
+                        break;
+                    }
+                    case "Curr user": {
+                        int state = entry.getValue().getAsInt();
+                        maxPresetCurrent = state;
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_MAX_PRESET_CURRENT, newState);
+                        if (maxSystemCurrent > 6000) {
+                            updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<>(
+                                    Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000)), Units.PERCENT));
+                        }
+                        break;
+                    }
+                    case "Curr FS": {
+                        int state = entry.getValue().getAsInt();
+                        failsafeCurrent = state;
+                        hasFailsafeCurrent = true;
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_FAILSAFE_CURRENT, newState);
+                        break;
+                    }
+                    case "Tmo FS": {
+                        long state = entry.getValue().getAsLong();
+                        failsafeTimeout = state;
+                        hasFailsafeTimeout = true;
+                        State newState = new QuantityType<>(state, Units.SECOND);
+                        updateState(CHANNEL_FAILSAFE_TIMEOUT, newState);
+                        break;
+                    }
+                    case "Curr timer": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_CURR_TIMER, newState);
+                        break;
+                    }
+                    case "Tmo CT": {
+                        long state = entry.getValue().getAsLong();
+                        State newState = new QuantityType<>(state, Units.SECOND);
+                        updateState(CHANNEL_CURR_TIMER_TIMEOUT, newState);
+                        break;
+                    }
+                    case "Max curr": {
+                        int state = entry.getValue().getAsInt();
+                        maxPresetCurrent = state;
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_PILOT_CURRENT, newState);
+                        break;
+                    }
+                    case "Max curr %": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state / 10.0, Units.PERCENT);
+                        updateState(CHANNEL_PILOT_PWM, newState);
+                        break;
+                    }
+                    case "Output": {
+                        int state = entry.getValue().getAsInt();
+                        switch (state) {
+                            case 1: {
+                                updateState(CHANNEL_OUTPUT, OnOffType.ON);
+                                break;
+                            }
+                            default: {
+                                updateState(CHANNEL_OUTPUT, OnOffType.OFF);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "Input": {
+                        int state = entry.getValue().getAsInt();
+                        switch (state) {
+                            case 1: {
+                                updateState(CHANNEL_INPUT, OnOffType.ON);
+                                break;
+                            }
+                            default: {
+                                updateState(CHANNEL_INPUT, OnOffType.OFF);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "Sec": {
+                        long state = entry.getValue().getAsLong();
+                        State newState = new QuantityType<>(state, Units.SECOND);
+                        updateState(CHANNEL_UPTIME, newState);
+                        break;
+                    }
+                    case "X2 phaseSwitch source": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_PHASE_SWITCH_SOURCE, newState);
+                        break;
+                    }
+                    case "X2 phaseSwitch": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_PHASE_SWITCH_STATE, newState);
+                        break;
+                    }
+                    case "U1": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state, Units.VOLT);
+                        updateState(CHANNEL_U1, newState);
+                        break;
+                    }
+                    case "U2": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state, Units.VOLT);
+                        updateState(CHANNEL_U2, newState);
+                        break;
+                    }
+                    case "U3": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state, Units.VOLT);
+                        updateState(CHANNEL_U3, newState);
+                        break;
+                    }
+                    case "I1": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_I1, newState);
+                        break;
+                    }
+                    case "I2": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_I2, newState);
+                        break;
+                    }
+                    case "I3": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_I3, newState);
+                        break;
+                    }
+                    case "P": {
+                        long state = entry.getValue().getAsLong();
+                        State newState = new QuantityType<>(state / 1000.0, Units.WATT);
+                        updateState(CHANNEL_POWER, newState);
+                        break;
+                    }
+                    case "PF": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state / 10.0, Units.PERCENT);
+                        updateState(CHANNEL_POWER_FACTOR, newState);
+                        break;
+                    }
+                    case "E pres": {
+                        long state = entry.getValue().getAsLong();
+                        State newState = new QuantityType<>(state / 10.0, Units.WATT_HOUR);
+                        updateState(CHANNEL_SESSION_CONSUMPTION, newState);
+                        break;
+                    }
+                    case "E total": {
+                        long state = entry.getValue().getAsLong();
+                        State newState = new QuantityType<>(state / 10.0, Units.WATT_HOUR);
+                        updateState(CHANNEL_TOTAL_CONSUMPTION, newState);
+                        break;
+                    }
+                    case "AuthON": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
+                        updateState(CHANNEL_AUTHON, newState);
+                        break;
+                    }
+                    case "Authreq": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
+                        updateState(CHANNEL_AUTHREQ, newState);
+                        break;
+                    }
+                    case "RFID tag": {
+                        String state = Objects.requireNonNull(entry.getValue().getAsString().trim());
+                        State newState = new StringType(state);
+                        updateState(CHANNEL_SESSION_RFID_TAG, newState);
+                        break;
+                    }
+                    case "RFID class": {
+                        String state = Objects.requireNonNull(entry.getValue().getAsString().trim());
+                        State newState = new StringType(state);
+                        updateState(CHANNEL_SESSION_RFID_CLASS, newState);
+                        break;
+                    }
+                    case "Session ID": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
+                        updateState(CHANNEL_SESSION_SESSION_ID, newState);
+                        break;
+                    }
+                    case "Setenergy": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state / 10.0, Units.WATT_HOUR);
+                        updateState(CHANNEL_SETENERGY, newState);
+                        break;
+                    }
+                }
+            }
+        } catch (JsonParseException e) {
+            logger.debug("Invalid JSON data will be ignored: '{}'", response);
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (!(command instanceof RefreshType)) {
+            switch (channelUID.getId()) {
+                case CHANNEL_MAX_PRESET_CURRENT: {
+                    if (command instanceof QuantityType<?> quantityCommand) {
+                        QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit("mA"));
+                        setChargingCurrent(Math.min(Math.max(6000, value.intValue()), maxSystemCurrent), 1);
+                    }
+                    break;
+                }
+                case CHANNEL_MAX_PRESET_CURRENT_RANGE: {
+                    if (command instanceof OnOffType || command instanceof IncreaseDecreaseType
+                            || command instanceof QuantityType<?>) {
+                        long newValue = 6000;
+                        if (command == IncreaseDecreaseType.INCREASE) {
+                            newValue = Math.min(Math.max(6000, maxPresetCurrent + 1), maxSystemCurrent);
+                        } else if (command == IncreaseDecreaseType.DECREASE) {
+                            newValue = Math.min(Math.max(6000, maxPresetCurrent - 1), maxSystemCurrent);
+                        } else if (command == OnOffType.ON) {
+                            newValue = maxSystemCurrent;
+                        } else if (command == OnOffType.OFF) {
+                            newValue = 6000;
+                        } else if (command instanceof QuantityType<?> quantityCommand) {
+                            QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit("%"));
+                            newValue = Math.round(6000 + (maxSystemCurrent - 6000) * value.doubleValue() / 100.0);
+                        } else {
+                            return;
+                        }
+                        setChargingCurrent((int) newValue, 1);
+                    }
+                    break;
+                }
+                case CHANNEL_ENABLED_USER: {
+                    if (command instanceof OnOffType) {
+                        if (command == OnOffType.ON) {
+                            transceiver.send("ena 1", this);
+                        } else if (command == OnOffType.OFF) {
+                            transceiver.send("ena 0", this);
+                        } else {
+                            return;
+                        }
+                    }
+                    break;
+                }
+                case CHANNEL_OUTPUT: {
+                    if (command instanceof OnOffType) {
+                        if (command == OnOffType.ON) {
+                            transceiver.send("output 1", this);
+                        } else if (command == OnOffType.OFF) {
+                            transceiver.send("output 0", this);
+                        } else {
+                            return;
+                        }
+                    }
+                    break;
+                }
+                case CHANNEL_UNLOCK_PLUG: {
+                    if (command == OnOffType.ON) {
+                        ByteBuffer response = transceiver.send("unlock", this);
+                        if (isCommandAcknowledged(response)) {
+                            updateState(CHANNEL_UNLOCK_PLUG, OnOffType.OFF);
+                        }
+                    }
+                    break;
+                }
+                case CHANNEL_UDP_STOP: {
+                    if (command instanceof StringType stringCommand) {
+                        // Use the active session's RFID supplied by the caller.
+                        String rfidTag = stringCommand.toString().trim();
+                        if (isUsableRfidTag(rfidTag)) {
+                            transceiver.send("stop " + rfidTag, this);
+                        }
+                    }
+                    break;
+                }
+                case CHANNEL_FAILSAFE_CURRENT: {
+                    Integer current = failsafeCurrentValue(command);
+                    if (current != null) {
+                        sendFailsafe(null, current, 0);
+                    }
+                    break;
+                }
+                case CHANNEL_FAILSAFE_TIMEOUT: {
+                    Long timeout = failsafeTimeoutValue(command);
+                    if (timeout != null) {
+                        sendFailsafe(timeout, null, 0);
+                    }
+                    break;
+                }
+                case CHANNEL_FAILSAFE_PERSIST: {
+                    if (command == OnOffType.ON) {
+                        sendFailsafe(null, null, 1);
+                    }
+                    break;
+                }
+                case CHANNEL_DISPLAY: {
+                    if (command instanceof StringType) {
+                        setDisplay(command.toString(), -1, -1);
+                    }
+                    break;
+                }
+                case CHANNEL_SETENERGY: {
+                    if (command instanceof QuantityType<?> quantityCommand) {
+                        QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit(Units.WATT_HOUR));
+                        transceiver.send(
+                                "setenergy " + Math.min(Math.max(0, Math.round(value.doubleValue() * 10.0)), 999999999),
+                                this);
+                    }
+                    break;
+                }
+                case CHANNEL_AUTHENTICATE: {
+                    if (command instanceof StringType) {
+                        String cmd = command.toString();
+                        // cmd must contain ID + CLASS (works only if the RFID TAG is in the whitelist of the Keba
+                        // station)
+                        transceiver.send("start " + cmd, this);
+                    }
+                    break;
+                }
+                case CHANNEL_PHASE_SWITCH_SOURCE: {
+                    if (command instanceof DecimalType decimalCommand) {
+                        transceiver.send("x2src " + decimalCommand.intValue(), this);
+                    }
+                    break;
+                }
+                case CHANNEL_PHASE_SWITCH_STATE: {
+                    if (command instanceof DecimalType decimalCommand
+                            && (decimalCommand.toBigDecimal().compareTo(BigDecimal.ONE) == 0
+                                    || decimalCommand.toBigDecimal().compareTo(BigDecimal.valueOf(3)) == 0)) {
+                        // the wallbox reports/expects phase counts (1 or 3), but the "x2" command takes 0 or 1
+                        transceiver.send("x2 " + (decimalCommand.intValue() >= 3 ? 1 : 0), this);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    private static boolean isUsableRfidTag(String tag) {
+        return tag.matches("(?i)(?!0{16})[0-9a-f]{16}");
+    }
+
+    private static boolean isCommandAcknowledged(@Nullable ByteBuffer response) {
+        return response != null
+                && new String(response.array(), 0, response.limit(), StandardCharsets.US_ASCII).contains("TCH-OK");
+    }
+
+    private @Nullable Integer failsafeCurrentValue(Command command) {
+        long milliAmperes;
+        if (command instanceof QuantityType<?> quantity) {
+            milliAmperes = Math.round(Objects.requireNonNull(quantity.toUnit(Units.AMPERE)).doubleValue() * 1000);
+        } else if (command instanceof DecimalType decimal) {
+            milliAmperes = decimal.longValue();
+        } else {
+            return null;
+        }
+        return milliAmperes == 0 || milliAmperes >= 6000 && milliAmperes <= 63000 ? (int) milliAmperes : null;
+    }
+
+    private @Nullable Long failsafeTimeoutValue(Command command) {
+        long seconds;
+        if (command instanceof QuantityType<?> quantity) {
+            seconds = Math.round(Objects.requireNonNull(quantity.toUnit(Units.SECOND)).doubleValue());
+        } else if (command instanceof DecimalType decimal) {
+            seconds = decimal.longValue();
+        } else {
+            return null;
+        }
+        return seconds == 0 || seconds >= 5 && seconds <= 600 ? seconds : null;
+    }
+
+    public void setChargingCurrent(int currentMilliAmps, int delaySeconds) {
+        if (delaySeconds >= 0 && (currentMilliAmps == 0
+                || currentMilliAmps >= 6000 && currentMilliAmps <= Math.min(maxSystemCurrent, 63000))) {
+            transceiver.send("currtime " + currentMilliAmps + " " + delaySeconds, this);
+        }
+    }
+
+    public void setFailsafe(int currentMilliAmps, int timeoutSeconds, boolean persist) {
+        if (isValidFailsafeCurrent(currentMilliAmps) && isValidFailsafeTimeout(timeoutSeconds)) {
+            sendFailsafe((long) timeoutSeconds, currentMilliAmps, persist ? 1 : 0);
+        }
+    }
+
+    private static boolean isValidFailsafeCurrent(int milliAmperes) {
+        return milliAmperes == 0 || milliAmperes >= 6000 && milliAmperes <= 63000;
+    }
+
+    private static boolean isValidFailsafeTimeout(long seconds) {
+        return seconds == 0 || seconds >= 5 && seconds <= 600;
+    }
+
+    private void sendFailsafe(@Nullable Long timeoutOverride, @Nullable Integer currentOverride, int saved) {
+        if ((timeoutOverride == null && !hasFailsafeTimeout) || (currentOverride == null && !hasFailsafeCurrent)) {
+            readReport(2);
+        }
+        long timeout = timeoutOverride != null ? timeoutOverride : failsafeTimeout;
+        int current = currentOverride != null ? currentOverride : failsafeCurrent;
+        if ((hasFailsafeCurrent || currentOverride != null) && (hasFailsafeTimeout || timeoutOverride != null)
+                && isValidFailsafeTimeout(timeout) && isValidFailsafeCurrent(current)) {
+            ByteBuffer response = transceiver.send("failsafe " + timeout + " " + current + " " + saved, this);
+            if (isCommandAcknowledged(response)) {
+                failsafeTimeout = timeout;
+                failsafeCurrent = current;
+                hasFailsafeTimeout = true;
+                hasFailsafeCurrent = true;
+                if (saved == 1) {
+                    updateState(CHANNEL_FAILSAFE_PERSIST, OnOffType.OFF);
+                }
+            }
+        }
+    }
+
+    public void setDisplay(@Nullable String text, int durationMin, int durationMax) {
+        String displayText = text != null ? text : "";
+        if (type == KebaType.P30 && (series == KebaSeries.C || series == KebaSeries.X)) {
+            int maxLength = (displayText.length() < 23) ? displayText.length() : 23;
+            int a = 1;
+            if (durationMin < 0 || durationMax < 0) {
+                a = 0;
+                durationMin = 0;
+                durationMax = 0;
+            }
+            transceiver.send("display " + a + " " + durationMin + " " + durationMax + " 0 "
+                    + displayText.substring(0, maxLength), this);
+        } else {
+            logger.warn("'Display' is not supported on a KEBA KeContact {}:{}", type, series);
+        }
+    }
+}

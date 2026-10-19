@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -91,8 +92,24 @@ class ItemRegistrySourceProviderTest {
         assertEquals("Switch", map.get("type"));
         assertEquals("Living Room Light", map.get("label"));
         assertEquals("Light", map.get("category"));
+        assertNull(map.get("members"));
 
         assertThrows(UnsupportedOperationException.class, () -> map.put("newKey", "value"));
+    }
+
+    @Test
+    void includesDirectMembersForGroupItems() {
+        GroupItem group = mock(GroupItem.class);
+        when(group.getName()).thenReturn("gLivingRoom");
+        when(group.getType()).thenReturn("Group");
+
+        Item member = mock(Item.class);
+        when(member.getName()).thenReturn("LivingRoom_Light");
+        when(group.getMembers()).thenReturn(Set.of(member));
+
+        Map<String, @Nullable Object> map = provider.adaptToMap(group);
+
+        assertEquals(List.of("LivingRoom_Light"), map.get("members"));
     }
 
     @Test

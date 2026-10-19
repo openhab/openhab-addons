@@ -29,7 +29,9 @@ public class LoginRejectedException extends BluelinkApiException {
         BLOCKED("blocked"),
         CONSENT_REQUIRED("consent-required"),
         INVALID_CREDENTIALS("invalid-credentials"),
-        REJECTED("rejected");
+        REJECTED("rejected"),
+        SIGNATURE_REJECTED("signature-rejected"),
+        TIMESTAMP_REJECTED("timestamp-rejected");
 
         private final String key;
 

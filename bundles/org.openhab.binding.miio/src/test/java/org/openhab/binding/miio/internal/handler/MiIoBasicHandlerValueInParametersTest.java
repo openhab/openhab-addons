@@ -36,6 +36,8 @@ import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.binding.miio.internal.miot.MiotParseException;
+import org.openhab.binding.miio.internal.miot.MiotParser;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -95,6 +97,10 @@ public class MiIoBasicHandlerValueInParametersTest {
             MiIoBasicChannel channel = new Gson().fromJson(channelJson, MiIoBasicChannel.class);
             assertNotNull(channel);
             actions.put(channelUID, channel);
+        }
+
+        void loadChannel(MiIoBasicChannel channel) {
+            actions.put(new ChannelUID(thingUID, channel.getChannel()), channel);
         }
 
         void loadDatabase(String fileName) throws IOException {
@@ -298,6 +304,46 @@ public class MiIoBasicHandlerValueInParametersTest {
 
         handler.loadChannel("\"type\": \"Switch\"", "[{\"command\": \"set_*\", \"parameterType\": \"ONOFFPARA\"}]");
         assertEquals(List.of("set_on[]"), handler.send(OnOffType.ON));
+    }
+
+    @Test
+    public void generatedActionInputChannelsAreSent() throws MiotParseException {
+        String spec = """
+                {
+                  "type": "urn:miot-spec-v2:device:vacuum:0000A006:test-model:1",
+                  "description": "Robot Cleaner",
+                  "services": [
+                    {
+                      "iid": 4,
+                      "type": "urn:miot-spec-v2:service:custom:00007801:test-model:1",
+                      "description": "Custom",
+                      "properties": [
+                        { "iid": 1, "type": "urn:miot-spec-v2:property:room-id:00000001:test-model:1",
+                          "description": "Room Id", "format": "uint8", "access": ["read", "write"] },
+                        { "iid": 2, "type": "urn:miot-spec-v2:property:room-name:00000002:test-model:1",
+                          "description": "Room Name", "format": "string", "access": ["read", "write"] }
+                      ],
+                      "actions": [
+                        { "iid": 1, "type": "urn:miot-spec-v2:action:set-room:00002801:test-model:1",
+                          "description": "Set Room", "in": [1], "out": [] },
+                        { "iid": 2, "type": "urn:miot-spec-v2:action:rename-room:00002802:test-model:1",
+                          "description": "Rename Room", "in": [2], "out": [] }
+                      ]
+                    }
+                  ]
+                }
+                """;
+        MiotParser parser = new MiotParser("test.model");
+        for (MiIoBasicChannel channel : parser.getDevice(JsonParser.parseString(spec)).getDevice().getChannels()) {
+            handler.loadChannel(channel);
+        }
+
+        assertEquals(
+                List.of("action{\"did\":\"custom_set_room\",\"siid\":4,\"aiid\":1,\"in\":[{\"piid\":1,\"value\":3}]}"),
+                handler.send("custom_set_room", new DecimalType(3)));
+        assertEquals(List.of(
+                "action{\"did\":\"custom_rename_room\",\"siid\":4,\"aiid\":2,\"in\":[{\"piid\":2,\"value\":\"Living Room\"}]}"),
+                handler.send("custom_rename_room", new StringType("Living Room")));
     }
 
     @Test
