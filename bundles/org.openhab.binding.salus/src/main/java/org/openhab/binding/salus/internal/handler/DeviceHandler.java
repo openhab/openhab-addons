@@ -207,9 +207,6 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command != REFRESH && cloudApi.isReadOnly()) {
-            return;
-        }
         try {
             if (command instanceof RefreshType) {
                 handleRefreshCommand(channelUID);

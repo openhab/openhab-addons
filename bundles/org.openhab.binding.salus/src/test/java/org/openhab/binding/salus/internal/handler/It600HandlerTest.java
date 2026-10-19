@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.salus.internal.handler;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -33,7 +32,6 @@ import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.GsonMapper;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -96,14 +94,20 @@ class It600HandlerTest {
         handler.handleCommand(channel("expected-temperature"), command);
         verify(bridgeHandler).setValueForProperty("device-123", "ep9:sIT600TH:SetHeatingSetpoint_x100", expected);
         handler.handleCommand(channel("work-type"), RefreshType.REFRESH);
-        verify(callback).stateUpdated(channel("work-type"), new StringType("AUTO"));
+        verify(callback).stateUpdated(channel("work-type"), new StringType("AUTOMATIC"));
     }
 
     @ParameterizedTest
-    @CsvSource({ "AUTO,0", "TEMPORARY_MANUAL,1", "MANUAL,2", "OFF,7" })
-    void setsOperatingMode(String mode, long expected) throws Exception {
+    @CsvSource({ "AUTOMATIC,0,AUTOMATIC", "AUTO,0,AUTOMATIC", "TEMPORARY_MANUAL,1,TEMPORARY_MANUAL", "MANUAL,2,MANUAL",
+            "OFF,7,OFF" })
+    void setsAndRefreshesOperatingMode(String mode, long expected, String reportedMode) throws Exception {
         handler.handleCommand(channel("work-type"), new StringType(mode));
         verify(bridgeHandler).setValueForProperty("device-123", "ep9:sIT600TH:SetHoldType", expected);
+        when(bridgeHandler.findPropertiesForDevice("device-123"))
+                .thenReturn(new TreeSet<>(GsonMapper.INSTANCE.parseAwsDeviceProperties(
+                        PROPERTIES.replace("\"ep9:sIT600TH:HoldType\":0", "\"ep9:sIT600TH:HoldType\":" + expected))));
+        handler.handleCommand(channel("work-type"), RefreshType.REFRESH);
+        verify(callback).stateUpdated(channel("work-type"), new StringType(reportedMode));
     }
 
     @Test
@@ -152,12 +156,6 @@ class It600HandlerTest {
         verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
         handler.handleCommand(channel("expected-temperature"), new DecimalType("21.5"));
         verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
-    }
-
-    @Test
-    void awsBridgeAllowsCommands() {
-        var bridge = new AwsCloudBridgeHandler(mock(Bridge.class), mock(HttpClientFactory.class));
-        assertThat(bridge.isReadOnly()).isFalse();
     }
 
     private ChannelUID channel(String id) {

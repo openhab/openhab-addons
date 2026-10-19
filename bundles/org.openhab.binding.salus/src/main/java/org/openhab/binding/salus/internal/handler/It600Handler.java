@@ -20,7 +20,6 @@ import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
-import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -129,9 +128,6 @@ public class It600Handler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command != REFRESH && cloudApi.isReadOnly()) {
-            return;
-        }
         try {
             var id = channelUID.getId();
             switch (id) {
@@ -218,13 +214,13 @@ public class It600Handler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             findLongProperty(channelPrefix + ":sIT600TH:HoldType", "HoldType")
                     .map(DeviceProperty.LongDeviceProperty::getValue).map(value -> switch (value.intValue()) {
-                        case AUTO -> "AUTO";
+                        case AUTO -> "AUTOMATIC";
                         case MANUAL -> "MANUAL";
                         case TEMPORARY_MANUAL -> "TEMPORARY_MANUAL";
                         case OFF -> "OFF";
                         default -> {
                             logger.warn("Unknown value {} for property HoldType!", value);
-                            yield "AUTO";
+                            yield "AUTOMATIC";
                         }
                     }).map(StringType::new).ifPresent(state -> {
                         updateState(channelUID, state);
@@ -235,7 +231,7 @@ public class It600Handler extends BaseThingHandler {
 
         if (command instanceof StringType typedCommand) {
             long value;
-            if ("AUTO".equals(typedCommand.toString())) {
+            if ("AUTOMATIC".equals(typedCommand.toString()) || "AUTO".equals(typedCommand.toString())) {
                 value = AUTO;
             } else if ("MANUAL".equals(typedCommand.toString())) {
                 value = MANUAL;

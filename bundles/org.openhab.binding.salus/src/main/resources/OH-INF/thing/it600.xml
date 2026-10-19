@@ -82,7 +82,7 @@
 			<options>
 				<option value="OFF">OFF</option>
 				<option value="MANUAL">Manual</option>
-				<option value="AUTO">Automatic</option>
+				<option value="AUTOMATIC">Automatic</option>
 				<option value="TEMPORARY_MANUAL">Temporary Manual</option>
 			</options>
 		</state>

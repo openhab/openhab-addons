@@ -8,8 +8,8 @@ extensive experience, we accurately identify user needs and introduce products t
 
 ## Supported Things
 
-- **`salus-cloud-bridge`**: This deprecated bridge connects to the legacy Salus Cloud. Multiple bridges are supported for those with multiple accounts.
-- **`salus-aws-bridge`**: This bridge connects to the current SALUS Premium Lite cloud. Multiple bridges are supported for those with multiple accounts.
+- **`salus-cloud-bridge`**
+- **`salus-aws-bridge`**
 - **`salus-device`**: A generic Salus device that exposes all properties (as channels) from the Cloud without any modifications.
 - **`salus-it600-device`**: A temperature controller with extended capabilities.
 
@@ -77,7 +77,7 @@ removed.
 |----------------------------|--------------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | temperature                | Number:Temperature | RO         | Current temperature in the room.                                                                                                                                                                                                                                                                |
 | expected-temperature       | Number:Temperature | RW         | Sets the desired temperature in the room.                                                                                                                                                                                                                                                       |
-| work-type                  | String             | RW         | Sets the work type for the device. OFF - device is turned off MANUAL - schedules are turned off, following a manual temperature set, AUTO - schedules are turned on, following schedule, TEMPORARY_MANUAL - schedules are turned on, following manual temperature until the next schedule. |
+| work-type                  | String             | RW         | Sets the work type for the device. OFF - device is turned off MANUAL - schedules are turned off, following a manual temperature set, AUTOMATIC - schedules are turned on, following schedule, TEMPORARY_MANUAL - schedules are turned on, following manual temperature until the next schedule. |
 | running-state              | Switch             | RO         | Is the device running.                                                                                                                                                                                                                                                                          |
 
 ### AWS Thermostat Control
@@ -85,7 +85,8 @@ removed.
 With `salus-aws-bridge`, an IT600 thermostat supports commands on `expected-temperature` and `work-type`.
 Send a temperature such as `21.5 °C` or `68 °F` to `expected-temperature`; a number without a unit is interpreted as Celsius.
 The binding converts the temperature to the device's hundredths-of-a-degree Celsius representation.
-Use `AUTO`, `MANUAL`, `TEMPORARY_MANUAL`, or `OFF` on `work-type`.
+Use `AUTOMATIC`, `MANUAL`, `TEMPORARY_MANUAL`, or `OFF` on `work-type`.
+The legacy `AUTO` command is also accepted, but the reported state is `AUTOMATIC`.
 A temperature command only sets the setpoint; send a separate mode command when you also want to change the operating mode.
 Actual temperatures and modes are read back during refresh, so a successful command can take until the next refresh to appear.
 
@@ -1002,7 +1003,7 @@ channels:
     label: Work Type
     description: Sets the work type for the device. OFF - device is turned off
       MANUAL - schedules are turned off, following a manual temperature set,
-      AUTO - schedules are turned on, following schedule, TEMPORARY_MANUAL
+      AUTOMATIC - schedules are turned on, following schedule, TEMPORARY_MANUAL
       - schedules are turned on, following manual temperature until next
       schedule.
     configuration: { }
