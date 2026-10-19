@@ -23,6 +23,12 @@
 			<channel id="charging" typeId="wallbox-charging"/>
 			<channel id="suspended" typeId="wallbox-suspended"/>
 			<channel id="sun-mode" typeId="wallbox-sun-mode"/>
+			<channel id="phase-l1" typeId="wallbox-phase-l1"/>
+			<channel id="energy-l1" typeId="wallbox-energy-l1"/>
+			<channel id="phase-l2" typeId="wallbox-phase-l2"/>
+			<channel id="energy-l2" typeId="wallbox-energy-l2"/>
+			<channel id="phase-l3" typeId="wallbox-phase-l3"/>
+			<channel id="energy-l3" typeId="wallbox-energy-l3"/>
 		</channels>
 	</channel-group-type>
 

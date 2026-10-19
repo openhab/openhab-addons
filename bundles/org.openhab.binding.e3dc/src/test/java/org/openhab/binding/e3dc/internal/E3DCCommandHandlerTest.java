@@ -161,16 +161,6 @@ class E3DCCommandHandlerTest {
         assertEquals(Boolean.TRUE, flag.getValue());
     }
 
-    @Test
-    void aPowerModeIsSentAsANumberInTheRootContainer() {
-        E3DCCommandHandler handler = new E3DCCommandHandler();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_SYSTEM, "mode");
-
-        RscpValue built = request(handler, spec, new DecimalType(3));
-
-        assertEquals(3, numberAt(built, RscpTag.EMS_REQ_SET_POWER_MODE), "3 selects manual charging");
-    }
-
     // ------------------------------------------------------------------ rejected commands
 
     @Test
@@ -227,7 +217,8 @@ class E3DCCommandHandlerTest {
         assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY, "discharge-start-power"));
         assertNotNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "power-limits-used"));
         assertNotNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "weather-regulated-charge"));
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "mode"));
+        assertNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "mode"),
+                "the mode is read only, see set-power-mode");
         assertNotNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "set-manual-charge"));
     }
 

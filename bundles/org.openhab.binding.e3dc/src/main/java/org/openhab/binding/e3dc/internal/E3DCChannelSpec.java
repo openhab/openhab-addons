@@ -35,19 +35,20 @@ import org.openhab.binding.e3dc.internal.rscp.RscpTag;
  * @param valueIndex when non negative, the tag occurs several times in the response and this occurrence
  *            is read, as the photovoltaic trackers report one value per tracker
  * @param list whether the channel renders a list of containers as text rather than one value
+ * @param countBits whether the value is a bit mask whose set bits are counted, such as the phases in use
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public record E3DCChannelSpec(int tag, int container, double divisor, int bitMask, int byteIndex, int nestedTag,
-        int valueIndex, boolean list) {
+        int valueIndex, boolean list, boolean countBits) {
 
     /** Marks a spec that reads the first occurrence of its tag. */
     public static final int NO_INDEX = -1;
 
     /** A plain value in the root container. */
     public static E3DCChannelSpec of(int tag) {
-        return new E3DCChannelSpec(tag, 0, 1, 0, -1, 0, NO_INDEX, false);
+        return new E3DCChannelSpec(tag, 0, 1, 0, -1, 0, NO_INDEX, false, false);
     }
 
     /**
@@ -58,7 +59,7 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
      * generic value extraction.
      */
     public static E3DCChannelSpec idlePeriods() {
-        return new E3DCChannelSpec(RscpTag.EMS_GET_IDLE_PERIODS_2, 0, 1, 0, -1, 0, NO_INDEX, true);
+        return new E3DCChannelSpec(RscpTag.EMS_GET_IDLE_PERIODS_2, 0, 1, 0, -1, 0, NO_INDEX, true, false);
     }
 
     /** Whether this channel renders a list of containers instead of one value. */
@@ -68,7 +69,7 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
 
     /** A value nested in a container, as used by the power settings and the wallbox data. */
     public static E3DCChannelSpec in(int container, int tag) {
-        return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, NO_INDEX, false);
+        return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, NO_INDEX, false, false);
     }
 
     /**
@@ -76,7 +77,7 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
      * inverter.
      */
     public static E3DCChannelSpec scaledIn(int container, int tag, double divisor) {
-        return new E3DCChannelSpec(tag, container, divisor, 0, -1, 0, NO_INDEX, false);
+        return new E3DCChannelSpec(tag, container, divisor, 0, -1, 0, NO_INDEX, false, false);
     }
 
     /**
@@ -85,7 +86,7 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
      * index of their own.
      */
     public static E3DCChannelSpec indexedIn(int container, int tag, int valueIndex) {
-        return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, valueIndex, false);
+        return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, valueIndex, false, false);
     }
 
     /**
@@ -93,12 +94,12 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
      * response of the history request carries the values in a sum container.
      */
     public static E3DCChannelSpec nested(int container, int nestedContainer, int tag) {
-        return new E3DCChannelSpec(tag, container, 1, 0, -1, nestedContainer, NO_INDEX, false);
+        return new E3DCChannelSpec(tag, container, 1, 0, -1, nestedContainer, NO_INDEX, false, false);
     }
 
     /** A nested history value that needs scaling, for example Wh to kWh. */
     public static E3DCChannelSpec scaledNested(int container, int nestedContainer, int tag, double divisor) {
-        return new E3DCChannelSpec(tag, container, divisor, 0, -1, nestedContainer, NO_INDEX, false);
+        return new E3DCChannelSpec(tag, container, divisor, 0, -1, nestedContainer, NO_INDEX, false, false);
     }
 
     /**
@@ -107,22 +108,32 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
      * value's container, because the containers carry no index of their own.
      */
     public static E3DCChannelSpec indexedNested(int container, int nestedContainer, int tag, int valueIndex) {
-        return new E3DCChannelSpec(tag, container, 1, 0, -1, nestedContainer, valueIndex, false);
+        return new E3DCChannelSpec(tag, container, 1, 0, -1, nestedContainer, valueIndex, false, false);
+    }
+
+    /** A bit mask reported as the number of its set bits, such as the phases in use. */
+    public static E3DCChannelSpec bitCount(int tag) {
+        return new E3DCChannelSpec(tag, 0, 1, 0, -1, 0, NO_INDEX, false, true);
+    }
+
+    /** A bit mask inside a container, reported as the number of its set bits. */
+    public static E3DCChannelSpec bitCountIn(int container, int tag) {
+        return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, NO_INDEX, false, true);
     }
 
     /** One bit of a numeric bit field, reported as a switch. */
     public static E3DCChannelSpec bit(int tag, int bitMask) {
-        return new E3DCChannelSpec(tag, 0, 1, bitMask, -1, 0, NO_INDEX, false);
+        return new E3DCChannelSpec(tag, 0, 1, bitMask, -1, 0, NO_INDEX, false, false);
     }
 
     /** One bit inside a container. */
     public static E3DCChannelSpec bitIn(int container, int tag, int bitMask) {
-        return new E3DCChannelSpec(tag, container, 1, bitMask, -1, 0, NO_INDEX, false);
+        return new E3DCChannelSpec(tag, container, 1, bitMask, -1, 0, NO_INDEX, false, false);
     }
 
     /** One bit of a byte inside a byte array value, as used by the wallbox status byte. */
     public static E3DCChannelSpec bitAt(int tag, int byteIndex, int bitMask) {
-        return new E3DCChannelSpec(tag, 0, 1, bitMask, byteIndex, 0, NO_INDEX, false);
+        return new E3DCChannelSpec(tag, 0, 1, bitMask, byteIndex, 0, NO_INDEX, false, false);
     }
 
     public boolean isBitField() {
@@ -147,6 +158,9 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
 
     /** Applies the divisor and returns the value as it should be published. */
     public double scale(double raw) {
+        if (countBits) {
+            return Long.bitCount((long) raw);
+        }
         return divisor == 1 ? raw : raw / divisor;
     }
 
@@ -167,6 +181,8 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                 entry("house-power", E3DCChannelSpec.of(RscpTag.EMS_POWER_HOME)), //
                 entry("grid-power", E3DCChannelSpec.of(RscpTag.EMS_POWER_GRID)), //
                 entry("additional-power", E3DCChannelSpec.of(RscpTag.EMS_POWER_ADD)), //
+                entry("wallbox-power", E3DCChannelSpec.of(RscpTag.EMS_POWER_WB_ALL)), //
+                entry("wallbox-solar-power", E3DCChannelSpec.of(RscpTag.EMS_POWER_WB_SOLAR)), //
                 entry("autarky",
                         E3DCChannelSpec.nested(RscpTag.DB_HISTORY_DATA_DAY, RscpTag.DB_SUM_CONTAINER,
                                 RscpTag.DB_AUTARKY)), //
@@ -184,10 +200,24 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                 entry("max-discharge-power",
                         E3DCChannelSpec.in(RscpTag.EMS_GET_POWER_SETTINGS, RscpTag.EMS_MAX_DISCHARGE_POWER)), //
                 entry("discharge-start-power",
-                        E3DCChannelSpec.in(RscpTag.EMS_GET_POWER_SETTINGS, RscpTag.EMS_DISCHARGE_START_POWER))));
+                        E3DCChannelSpec.in(RscpTag.EMS_GET_POWER_SETTINGS, RscpTag.EMS_DISCHARGE_START_POWER)), //
+                entry("charge-limit-battery", E3DCChannelSpec.of(RscpTag.EMS_BAT_CHARGE_LIMIT)), //
+                entry("charge-limit-dcdc", E3DCChannelSpec.of(RscpTag.EMS_DCDC_CHARGE_LIMIT)), //
+                entry("charge-limit-used", E3DCChannelSpec.of(RscpTag.EMS_USED_CHARGE_LIMIT)), //
+                entry("charge-limit-user", E3DCChannelSpec.of(RscpTag.EMS_USER_CHARGE_LIMIT)), //
+                entry("discharge-limit-battery", E3DCChannelSpec.of(RscpTag.EMS_BAT_DISCHARGE_LIMIT)), //
+                entry("discharge-limit-dcdc", E3DCChannelSpec.of(RscpTag.EMS_DCDC_DISCHARGE_LIMIT)), //
+                entry("discharge-limit-used", E3DCChannelSpec.of(RscpTag.EMS_USED_DISCHARGE_LIMIT)), //
+                entry("discharge-limit-user", E3DCChannelSpec.of(RscpTag.EMS_USER_DISCHARGE_LIMIT)), //
+                entry("set-power", E3DCChannelSpec.of(RscpTag.EMS_SET_POWER)), //
+                entry("wallbox-discharge-to-car", E3DCChannelSpec.bit(RscpTag.EMS_BATTERY_TO_CAR_MODE, 1)), //
+                entry("wallbox-charge-before-car", E3DCChannelSpec.bit(RscpTag.EMS_BATTERY_BEFORE_CAR_MODE, 1)), //
+                entry("wallbox-discharge-until", E3DCChannelSpec.of(RscpTag.EMS_GET_WB_DISCHARGE_BAT_UNTIL)), //
+                entry("wallbox-disable-at-mix-mode",
+                        E3DCChannelSpec.bit(RscpTag.EMS_GET_WALLBOX_ENFORCE_POWER_ASSIGNMENT, 1))));
 
         registry.group(E3DCBindingConstants.GROUP_GRID,
-                Map.ofEntries(entry("active-phases", E3DCChannelSpec.of(RscpTag.EMS_BALANCED_PHASES))));
+                Map.ofEntries(entry("active-phases", E3DCChannelSpec.bitCount(RscpTag.EMS_BALANCED_PHASES))));
 
         registry.group(E3DCBindingConstants.GROUP_INVERTER, inverterChannels());
 
@@ -282,8 +312,14 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                 entry("power-l1", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_PM_POWER_L1)), //
                 entry("power-l2", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_PM_POWER_L2)), //
                 entry("power-l3", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_PM_POWER_L3)), //
-                entry("energy-total", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_ENERGY_ALL)), //
-                entry("energy-solar", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_ENERGY_SOLAR)), //
+                entry("energy-total", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_ENERGY_ALL, 1000)), //
+                entry("phase-l1", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_PM_ACTIVE_PHASES, 1)), //
+                entry("energy-l1", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_PM_ENERGY_L1, 1000)), //
+                entry("phase-l2", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_PM_ACTIVE_PHASES, 2)), //
+                entry("energy-l2", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_PM_ENERGY_L2, 1000)), //
+                entry("phase-l3", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_PM_ACTIVE_PHASES, 4)), //
+                entry("energy-l3", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_PM_ENERGY_L3, 1000)), //
+                entry("energy-solar", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_ENERGY_SOLAR, 1000)), //
                 entry("soc", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_SOC)), //
                 entry("min-charge-current", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_MIN_CHARGE_CURRENT)), //
                 entry("max-charge-current", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_MAX_CHARGE_CURRENT)), //
@@ -306,10 +342,10 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                 entry("voltage-l1", E3DCChannelSpec.in(RscpTag.PM_DATA, RscpTag.PM_VOLTAGE_L1)), //
                 entry("voltage-l2", E3DCChannelSpec.in(RscpTag.PM_DATA, RscpTag.PM_VOLTAGE_L2)), //
                 entry("voltage-l3", E3DCChannelSpec.in(RscpTag.PM_DATA, RscpTag.PM_VOLTAGE_L3)), //
-                entry("active-phases", E3DCChannelSpec.in(RscpTag.PM_DATA, RscpTag.PM_ACTIVE_PHASES)), //
-                entry("energy-l1", E3DCChannelSpec.in(RscpTag.PM_DATA, RscpTag.PM_ENERGY_L1)), //
-                entry("energy-l2", E3DCChannelSpec.in(RscpTag.PM_DATA, RscpTag.PM_ENERGY_L2)), //
-                entry("energy-l3", E3DCChannelSpec.in(RscpTag.PM_DATA, RscpTag.PM_ENERGY_L3)), //
+                entry("active-phases", E3DCChannelSpec.bitCountIn(RscpTag.PM_DATA, RscpTag.PM_ACTIVE_PHASES)), //
+                entry("energy-l1", E3DCChannelSpec.scaledIn(RscpTag.PM_DATA, RscpTag.PM_ENERGY_L1, 1000)), //
+                entry("energy-l2", E3DCChannelSpec.scaledIn(RscpTag.PM_DATA, RscpTag.PM_ENERGY_L2, 1000)), //
+                entry("energy-l3", E3DCChannelSpec.scaledIn(RscpTag.PM_DATA, RscpTag.PM_ENERGY_L3, 1000)), //
                 entry("max-phase-power", E3DCChannelSpec.in(RscpTag.PM_DATA, RscpTag.PM_MAX_PHASE_POWER))));
     }
 
@@ -324,26 +360,47 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
      */
     private static Map<String, E3DCChannelSpec> inverterChannels() {
         Map<String, E3DCChannelSpec> channels = new LinkedHashMap<>();
-        channels.put("ac-power", parameter(RscpTag.PVI_AC_POWER));
-        channels.put("ac-voltage", parameter(RscpTag.PVI_AC_VOLTAGE));
-        channels.put("ac-current", parameter(RscpTag.PVI_AC_CURRENT));
+        for (int phase = 0; phase < 3; phase++) {
+            String suffix = "-l" + (phase + 1);
+            channels.put("ac-power" + suffix, phase(RscpTag.PVI_AC_POWER, phase, 1));
+            channels.put("ac-voltage" + suffix, phase(RscpTag.PVI_AC_VOLTAGE, phase, 1));
+            channels.put("ac-current" + suffix, phase(RscpTag.PVI_AC_CURRENT, phase, 1));
+            channels.put("apparent-power" + suffix, phase(RscpTag.PVI_AC_APPARENT_POWER, phase, 1));
+            channels.put("reactive-power" + suffix, phase(RscpTag.PVI_AC_REACTIVE_POWER, phase, 1));
+            channels.put("energy-total" + suffix, phase(RscpTag.PVI_AC_ENERGY_ALL, phase, 1000));
+            channels.put("energy-day" + suffix, phase(RscpTag.PVI_AC_ENERGY_DAY, phase, 1000));
+        }
         channels.put("ac-frequency", parameter(RscpTag.PVI_AC_FREQUENCY));
-        channels.put("temperature", parameter(RscpTag.PVI_TEMPERATURE));
+        for (int sensor = 0; sensor < 4; sensor++) {
+            channels.put("temperature-" + (sensor + 1), E3DCChannelSpec.indexedNested(RscpTag.PVI_DATA,
+                    RscpTag.PVI_TEMPERATURE, RscpTag.PVI_VALUE, sensor));
+        }
         // these two are answered as plain values rather than in a container of their own
         channels.put("on-grid", E3DCChannelSpec.in(RscpTag.PVI_DATA, RscpTag.PVI_ON_GRID));
         channels.put("string-count", E3DCChannelSpec.in(RscpTag.PVI_DATA, RscpTag.PVI_USED_STRING_COUNT));
-        channels.put("energy-total",
-                E3DCChannelSpec.scaledNested(RscpTag.PVI_DATA, RscpTag.PVI_AC_ENERGY_ALL, RscpTag.PVI_VALUE, 1000));
-        channels.put("energy-day",
-                E3DCChannelSpec.scaledNested(RscpTag.PVI_DATA, RscpTag.PVI_AC_ENERGY_DAY, RscpTag.PVI_VALUE, 1000));
         tracker(channels, "tracker-1", 0);
         tracker(channels, "tracker-2", 1);
         return channels;
     }
 
+    /** One phase of a value the inverter reports once per phase, addressed by the position of its container. */
+    private static E3DCChannelSpec phase(int tag, int phase, double divisor) {
+        return new E3DCChannelSpec(RscpTag.PVI_VALUE, RscpTag.PVI_DATA, divisor, 0, -1, tag, phase, false, false);
+    }
+
     /** One value the inverter reports as a parameter carrying its value in a container of its own. */
     private static E3DCChannelSpec parameter(int tag) {
         return E3DCChannelSpec.nested(RscpTag.PVI_DATA, tag, RscpTag.PVI_VALUE);
+    }
+
+    /**
+     * The channels of one photovoltaic tracker, counted from 1. The trackers beyond the first two are not
+     * part of the registry; they are created at runtime once the device has reported how many it has.
+     */
+    static Map<String, E3DCChannelSpec> trackerChannels(int number) {
+        Map<String, E3DCChannelSpec> channels = new LinkedHashMap<>();
+        tracker(channels, "tracker-" + number, number - 1);
+        return channels;
     }
 
     /** The direct current values of one tracker, addressed by the position of the value's container. */
@@ -354,6 +411,24 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                 E3DCChannelSpec.indexedNested(RscpTag.PVI_DATA, RscpTag.PVI_DC_VOLTAGE, RscpTag.PVI_VALUE, index));
         channels.put(prefix + "-current",
                 E3DCChannelSpec.indexedNested(RscpTag.PVI_DATA, RscpTag.PVI_DC_CURRENT, RscpTag.PVI_VALUE, index));
+    }
+
+    /** The channels of one battery, which the device reports inside the battery container. */
+    public static E3DCChannelRegistry battery() {
+        Map<String, E3DCChannelSpec> channels = new LinkedHashMap<>();
+        channels.put("voltage", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_MODULE_VOLTAGE));
+        channels.put("current", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_CURRENT));
+        channels.put("charge-cycles", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_CHARGE_CYCLES));
+        channels.put("soh", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_ASOC));
+        channels.put("status-code", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_STATUS_CODE));
+        channels.put("error-code", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_ERROR_CODE));
+        channels.put("device-name", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_DEVICE_NAME));
+        channels.put("training-mode", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_TRAINING_MODE));
+        channels.put("design-capacity", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_DESIGN_CAPACITY));
+        channels.put("usable-capacity", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_USABLE_CAPACITY));
+        channels.put("usable-remaining-capacity",
+                E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_USABLE_REMAINING_CAPACITY));
+        return new E3DCChannelRegistry().group(E3DCBindingConstants.GROUP_PACK, channels);
     }
 
     /**

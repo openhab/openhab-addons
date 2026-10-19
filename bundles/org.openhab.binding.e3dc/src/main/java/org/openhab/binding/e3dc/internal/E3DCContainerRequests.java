@@ -77,9 +77,11 @@ final class E3DCContainerRequests {
             RscpTag.WB_INDEX, RscpTag.WB_DATA,
             List.of(RscpTag.WB_REQ_ENERGY_ALL, RscpTag.WB_REQ_ENERGY_SOLAR, RscpTag.WB_REQ_SOC,
                     RscpTag.WB_REQ_PM_POWER_L1, RscpTag.WB_REQ_PM_POWER_L2, RscpTag.WB_REQ_PM_POWER_L3,
-                    RscpTag.WB_REQ_NUMBER_PHASES, RscpTag.WB_REQ_MAX_CHARGE_CURRENT, RscpTag.WB_REQ_MIN_CHARGE_CURRENT,
-                    RscpTag.WB_REQ_KEY_STATE, RscpTag.WB_REQ_SUN_MODE_ACTIVE, RscpTag.WB_REQ_ABORT_CHARGING,
-                    RscpTag.WB_REQ_AUTO_PHASE_SWITCH_ENABLED, RscpTag.WB_REQ_EXTERN_DATA_ALL));
+                    RscpTag.WB_REQ_PM_ACTIVE_PHASES, RscpTag.WB_REQ_PM_ENERGY_L1, RscpTag.WB_REQ_PM_ENERGY_L2,
+                    RscpTag.WB_REQ_PM_ENERGY_L3, RscpTag.WB_REQ_NUMBER_PHASES, RscpTag.WB_REQ_MAX_CHARGE_CURRENT,
+                    RscpTag.WB_REQ_MIN_CHARGE_CURRENT, RscpTag.WB_REQ_KEY_STATE, RscpTag.WB_REQ_SUN_MODE_ACTIVE,
+                    RscpTag.WB_REQ_ABORT_CHARGING, RscpTag.WB_REQ_AUTO_PHASE_SWITCH_ENABLED,
+                    RscpTag.WB_REQ_EXTERN_DATA_ALL));
 
     private static final Container METER = new Container(E3DCBindingConstants.GROUP_METER, RscpTag.PM_REQ_DATA,
             RscpTag.PM_INDEX, RscpTag.PM_DATA,
@@ -92,17 +94,36 @@ final class E3DCContainerRequests {
      * The battery of the cell modules, asked for with the index of the battery rather than of a module: the
      * answer holds the container of every module, which is what the module channels read.
      */
+    /**
+     * The request of a battery: the answer holds the values of the battery itself and the container of every
+     * cell module. The battery and its modules share this request, so it is sent once when both are present.
+     */
+    private static final List<Integer> BATTERY_PARAMETERS = List.of(RscpTag.BAT_REQ_RSOC, RscpTag.BAT_REQ_DCB_INFO,
+            RscpTag.BAT_REQ_DCB_COUNT, RscpTag.requestFor(RscpTag.BAT_MODULE_VOLTAGE),
+            RscpTag.requestFor(RscpTag.BAT_CURRENT), RscpTag.requestFor(RscpTag.BAT_CHARGE_CYCLES),
+            RscpTag.requestFor(RscpTag.BAT_STATUS_CODE), RscpTag.requestFor(RscpTag.BAT_ERROR_CODE),
+            RscpTag.requestFor(RscpTag.BAT_DEVICE_NAME), RscpTag.requestFor(RscpTag.BAT_ASOC),
+            RscpTag.requestFor(RscpTag.BAT_TRAINING_MODE), RscpTag.requestFor(RscpTag.BAT_USABLE_CAPACITY),
+            RscpTag.requestFor(RscpTag.BAT_USABLE_REMAINING_CAPACITY), RscpTag.requestFor(RscpTag.BAT_DESIGN_CAPACITY));
+
+    private static final Container BATTERY = new Container(E3DCBindingConstants.GROUP_PACK, RscpTag.BAT_REQ_DATA,
+            RscpTag.BAT_INDEX, RscpTag.BAT_DATA, BATTERY_PARAMETERS);
+
+    /**
+     * The battery of the cell modules, asked for with the index of the battery rather than of a module: the
+     * answer holds the container of every module, which is what the module channels read.
+     */
     private static final Container BATTERY_MODULE = new Container(E3DCBindingConstants.GROUP_MODULE,
-            RscpTag.BAT_REQ_DATA, RscpTag.BAT_INDEX, RscpTag.BAT_DCB_INFO,
-            List.of(RscpTag.BAT_REQ_RSOC, RscpTag.BAT_REQ_DCB_INFO, RscpTag.BAT_REQ_DCB_COUNT));
+            RscpTag.BAT_REQ_DATA, RscpTag.BAT_INDEX, RscpTag.BAT_DCB_INFO, BATTERY_PARAMETERS);
 
     /** The inverter, whose tracker values the answer reports once per tracker. */
     private static final Container INVERTER = new Container(E3DCBindingConstants.GROUP_INVERTER, RscpTag.PVI_REQ_DATA,
             RscpTag.PVI_INDEX, RscpTag.PVI_DATA,
             List.of(RscpTag.PVI_REQ_AC_POWER, RscpTag.PVI_REQ_AC_VOLTAGE, RscpTag.PVI_REQ_AC_CURRENT,
-                    RscpTag.PVI_REQ_AC_FREQUENCY, RscpTag.PVI_REQ_AC_ENERGY_ALL, RscpTag.PVI_REQ_AC_ENERGY_DAY,
-                    RscpTag.PVI_REQ_DC_POWER, RscpTag.PVI_REQ_DC_VOLTAGE, RscpTag.PVI_REQ_DC_CURRENT,
-                    RscpTag.PVI_REQ_TEMPERATURE, RscpTag.PVI_REQ_ON_GRID, RscpTag.PVI_REQ_USED_STRING_COUNT));
+                    RscpTag.PVI_REQ_AC_APPARENT_POWER, RscpTag.PVI_REQ_AC_REACTIVE_POWER, RscpTag.PVI_REQ_AC_FREQUENCY,
+                    RscpTag.PVI_REQ_AC_ENERGY_ALL, RscpTag.PVI_REQ_AC_ENERGY_DAY, RscpTag.PVI_REQ_DC_POWER,
+                    RscpTag.PVI_REQ_DC_VOLTAGE, RscpTag.PVI_REQ_DC_CURRENT, RscpTag.PVI_REQ_TEMPERATURE,
+                    RscpTag.PVI_REQ_ON_GRID, RscpTag.PVI_REQ_USED_STRING_COUNT));
 
     /**
      * The reserve kept for emergency power, which addresses no device and therefore carries no index. The
@@ -112,7 +133,8 @@ final class E3DCContainerRequests {
             RscpTag.SE_REQ_EP_RESERVE, 0, RscpTag.SE_EP_RESERVE, List.of(RscpTag.SE_PARAM_EP_RESERVE,
                     RscpTag.SE_PARAM_LAST_SOC, RscpTag.SE_PARAM_EP_RESERVE_W, RscpTag.SE_PARAM_EP_RESERVE_MAX_W));
 
-    private static final List<Container> CONTAINERS = List.of(WALLBOX, METER, BATTERY_MODULE, INVERTER, RESERVE);
+    private static final List<Container> CONTAINERS = List.of(WALLBOX, METER, BATTERY, BATTERY_MODULE, INVERTER,
+            RESERVE);
 
     /** The container of one channel group, or {@code null} when the group is requested as a bare container. */
     static @Nullable Container forGroup(String groupId) {

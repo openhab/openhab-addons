@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,6 +58,15 @@ public class RscpClient implements AutoCloseable {
     private final String password;
     private final byte[] key;
     private final int timeoutMillis;
+
+    /** Time spent on the wire by all requests of this connection, from sending to the complete answer. */
+    private final AtomicLong busyNanos = new AtomicLong();
+
+    private volatile long lastWireNanos;
+    private volatile int lastAnswerBytes;
+
+    /** Time the device needed to start its answer, measured for the trace of the last request. */
+    private volatile long lastDeviceWaitNanos;
 
     private @Nullable Socket socket;
     private @Nullable InputStream input;
@@ -160,21 +170,74 @@ public class RscpClient implements AutoCloseable {
      * second later while a follow-up read waits only a fraction of that.
      */
     public RscpValue request(List<RscpValue> requestItems) throws RscpException {
+        long started = System.nanoTime();
         byte[] frame;
         try {
             frame = RscpCodec.encodeFrame(requestItems);
         } catch (IOException e) {
             throw new RscpException("Cannot encode the request: " + e.getMessage(), e);
         }
+        long encoded = System.nanoTime();
         send(frame);
-        List<RscpValue> received = RscpCodec.decodeFrame(receive());
+        long sent = System.nanoTime();
+        byte[] plainResponse = receive();
+        long received0 = System.nanoTime();
+        busyNanos.addAndGet(received0 - encoded);
+        lastWireNanos = received0 - encoded;
+        lastAnswerBytes = plainResponse.length;
+        List<RscpValue> received = RscpCodec.decodeFrame(plainResponse);
+        long decoded = System.nanoTime();
+        if (logger.isTraceEnabled()) {
+            // the device wait is the time until the first block of the answer arrives; it is what the device
+            // needs to collect the data, the transfer afterwards depends on the size of the answer
+            logger.trace(
+                    "Timing of one request: encode {} ms, send {} ms, device wait {} ms, "
+                            + "transfer and decrypt {} ms, decode {} ms, total {} ms; "
+                            + "{} elements sent as {} bytes, answer of {} bytes",
+                    millis(encoded - started), millis(sent - encoded), millis(lastDeviceWaitNanos),
+                    millis(received0 - sent - lastDeviceWaitNanos), millis(decoded - received0),
+                    millis(decoded - started), requestItems.size(), frame.length, plainResponse.length);
+        }
         if (received.isEmpty()) {
             throw new RscpException("The device sent an empty response");
         }
         logger.debug("Request of {} elements answered with {} elements", requestItems.size(), received.size());
         RscpValue answer = received.size() == 1 ? received.get(0) : RscpValue.container(0, received);
-        logger.trace("Answer: {}", answer.describeTree());
+        // the tree is a text of several hundred lines, so it is only built when it is logged
+        if (logger.isTraceEnabled()) {
+            logger.trace("Answer: {}", answer.describeTree());
+        }
         return answer;
+    }
+
+    /**
+     * The time all requests of this connection spent on the wire so far, in nanoseconds.
+     *
+     * <p>
+     * Each request counts from sending to the complete answer, which is the time the device is occupied by
+     * this client. Polls, commands and fetches all go through the same connection, so they are all included.
+     */
+    public long getBusyNanos() {
+        return busyNanos.get();
+    }
+
+    /** Time the last request spent on the wire, from sending to the complete answer, in nanoseconds. */
+    public long getLastWireNanos() {
+        return lastWireNanos;
+    }
+
+    /** Time the device needed to start the answer to the last request, in nanoseconds. */
+    public long getLastDeviceWaitNanos() {
+        return lastDeviceWaitNanos;
+    }
+
+    /** Size of the answer to the last request in bytes, as plain frame. */
+    public int getLastAnswerBytes() {
+        return lastAnswerBytes;
+    }
+
+    private static String millis(long nanos) {
+        return String.format("%.1f", nanos / 1_000_000.0);
     }
 
     /** Requests one tag, which is a top level element of the frame. */
@@ -216,10 +279,16 @@ public class RscpClient implements AutoCloseable {
             int needed = Rijndael256.BLOCK;
             int totalPlain = -1;
             ByteArrayOutputStream raw = new ByteArrayOutputStream();
+            long waitStarted = System.nanoTime();
+            boolean firstBlock = true;
             while (true) {
                 if (raw.size() < needed) {
                     byte[] chunk = RscpCodec.readFully(currentInput, needed - raw.size());
                     raw.write(chunk, 0, chunk.length);
+                    if (firstBlock) {
+                        lastDeviceWaitNanos = System.nanoTime() - waitStarted;
+                        firstBlock = false;
+                    }
                 }
                 byte[] encrypted = raw.toByteArray();
                 if (totalPlain < 0) {

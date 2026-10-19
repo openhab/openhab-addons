@@ -39,11 +39,14 @@ public final class E3DCBindingConstants {
     /** One power meter attached to the power plant. */
     public static final ThingTypeUID THING_TYPE_POWER_METER = new ThingTypeUID(BINDING_ID, "power-meter");
 
+    /** One battery of the power plant, addressed by its index. */
+    public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
+
     /** One battery cell module of the power plant. */
     public static final ThingTypeUID THING_TYPE_BATTERY_MODULE = new ThingTypeUID(BINDING_ID, "battery-module");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_POWER_PLANT,
-            THING_TYPE_WALLBOX, THING_TYPE_POWER_METER, THING_TYPE_BATTERY_MODULE);
+            THING_TYPE_WALLBOX, THING_TYPE_POWER_METER, THING_TYPE_BATTERY, THING_TYPE_BATTERY_MODULE);
 
     /** Channel group ids of the power plant thing. */
     public static final String GROUP_POWER = "power";
@@ -53,16 +56,24 @@ public final class E3DCBindingConstants {
     public static final String GROUP_SYSTEM = "system";
 
     /** The energy counters and shares of the completed day, week, month and year. */
+    public static final String GROUP_STATISTICS = "statistics";
+
     public static final String GROUP_HISTORY = "history";
 
     /** The battery reserve kept for emergency power. */
     public static final String GROUP_RESERVE = "reserve";
+
+    /** The price based charging settings, which live in the E3/DC cloud rather than on the device. */
+    public static final String GROUP_AI360 = "ai360";
 
     /** Channel group ids of the wallbox thing. */
     public static final String GROUP_WALLBOX = "wallbox";
 
     /** Channel group ids of the power meter thing. */
     public static final String GROUP_METER = "meter";
+
+    /** Channel group id of the battery thing. */
+    public static final String GROUP_PACK = "pack";
 
     /** Channel group ids of the battery module thing. */
     public static final String GROUP_MODULE = "module";

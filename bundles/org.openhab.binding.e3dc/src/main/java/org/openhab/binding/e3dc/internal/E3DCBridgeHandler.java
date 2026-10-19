@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.e3dc.internal;
 
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -30,12 +32,20 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.e3dc.internal.cloud.E3DCAi360Listener;
+import org.openhab.binding.e3dc.internal.cloud.E3DCAi360Payloads;
+import org.openhab.binding.e3dc.internal.cloud.E3DCAi360State;
+import org.openhab.binding.e3dc.internal.cloud.E3DCCloudClient;
 import org.openhab.binding.e3dc.internal.rscp.RscpClient;
 import org.openhab.binding.e3dc.internal.rscp.RscpError;
 import org.openhab.binding.e3dc.internal.rscp.RscpException;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
+import org.openhab.core.OpenHAB;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -43,9 +53,12 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * Represents the connection to one E3/DC device.
@@ -105,6 +118,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_WALLBOX, "wallboxIndex")), //
             E3DCBindingConstants.THING_TYPE_POWER_METER,
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_METER, "meterIndex")), //
+            E3DCBindingConstants.THING_TYPE_BATTERY,
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_PACK, "batteryIndex")), //
             E3DCBindingConstants.THING_TYPE_BATTERY_MODULE,
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_MODULE, null)), //
             E3DCBindingConstants.THING_TYPE_POWER_PLANT,
@@ -142,6 +157,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         specs.addAll(E3DCChannelSpec.powerPlant().all());
         specs.addAll(E3DCChannelSpec.wallbox().all());
         specs.addAll(E3DCChannelSpec.powerMeter().all());
+        specs.addAll(E3DCChannelSpec.battery().all());
         specs.addAll(E3DCChannelSpec.batteryModule().all());
         return specs;
     }
@@ -149,16 +165,47 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     /** Consecutive poll failures per tag; a tag is dropped once it reaches the threshold. */
     private final Map<Integer, Integer> tagFailures = new HashMap<>();
 
+    /** Time of the last poll that carried the history containers, {@code 0} when none has been made yet. */
+    private long lastHistoryPollMillis;
+
+    /** The day, in UTC, the history was last requested for; a new day makes the history due at once. */
+    private @Nullable LocalDate lastHistoryDay;
+
+    /** Share of the poll interval the device may be occupied by this client, a working assumption. */
+    private static final double LOOP_RATIO_TARGET = 0.2;
+
+    /** Number of polls the loop ratio is summarised over. */
+    private static final int LOOP_RATIO_WINDOW = 20;
+
+    /** Busy time of the connection at the last poll, so the next poll can take the difference. */
+    private long lastBusyNanos;
+
+    private int windowPolls;
+    private double windowRatioSum;
+    private double windowRatioMax;
+    private int windowAboveTarget;
+
     private final Logger logger = LoggerFactory.getLogger(E3DCBridgeHandler.class);
     private final List<E3DCDataListener> listeners = new CopyOnWriteArrayList<>();
+    private final List<Runnable> onlineListeners = new CopyOnWriteArrayList<>();
     private final Set<Integer> droppedTags = new HashSet<>();
 
     private @Nullable E3DCBridgeConfiguration config;
     private @Nullable RscpClient client;
     private @Nullable ScheduledFuture<?> pollJob;
 
+    /** Reads the AI 360 settings from the cloud; {@code null} while the cloud is not configured. */
+    private @Nullable ScheduledFuture<?> cloudJob;
+    private @Nullable E3DCCloudClient cloudClient;
+    private final List<E3DCAi360Listener> ai360Listeners = new CopyOnWriteArrayList<>();
+
     public E3DCBridgeHandler(Bridge bridge) {
         super(bridge);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(E3DCDiscoveryService.class);
     }
 
     @Override
@@ -180,6 +227,99 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(this::connectAndPoll);
+        startCloud(current);
+    }
+
+    /**
+     * Starts reading the AI 360 settings, which live in the cloud rather than on the device.
+     *
+     * <p>
+     * The group stays without values when the cloud is not configured: RSCP carries none of it, so there is
+     * nothing to fall back to. That is not an error, the power plant works without it.
+     */
+    private void startCloud(E3DCBridgeConfiguration current) {
+        String token = current.cloudToken.trim();
+        String installationId = current.installationId.trim();
+        String storageId = current.storageId.trim();
+        if (token.isBlank() || installationId.isBlank() || storageId.isBlank()) {
+            logger.debug("AI 360 channels stay without a value until cloud token, installation and storage are set");
+            return;
+        }
+        cloudClient = new E3DCCloudClient(cloudTokenFile(), installationId, storageId, token);
+        scheduleCloud(0);
+    }
+
+    private Path cloudTokenFile() {
+        return Path.of(OpenHAB.getUserDataFolder(), "e3dc", "cloud-tokens.json");
+    }
+
+    private void scheduleCloud(long delaySeconds) {
+        if (!isActive()) {
+            return;
+        }
+        cancelCloudJob();
+        cloudJob = scheduler.schedule(this::pollCloud, delaySeconds, TimeUnit.SECONDS);
+    }
+
+    private void cancelCloudJob() {
+        ScheduledFuture<?> job = cloudJob;
+        cloudJob = null;
+        if (job != null) {
+            job.cancel(false);
+        }
+    }
+
+    /**
+     * Reads the AI 360 settings and hands them to the listeners.
+     *
+     * <p>
+     * The cloud is polled at a slower pace than the device: its values are a schedule rather than a
+     * measurement, and every call counts against the same account the app uses.
+     */
+    private void pollCloud() {
+        if (!isActive()) {
+            return;
+        }
+        E3DCCloudClient currentClient = cloudClient;
+        if (currentClient == null) {
+            return;
+        }
+        try {
+            JsonObject ems = currentClient.readEms();
+            JsonObject prices = currentClient.readPrices();
+            if (ems != null || prices != null) {
+                E3DCAi360State state = E3DCAi360Payloads.state(ems, prices);
+                for (E3DCAi360Listener listener : ai360Listeners) {
+                    listener.onAi360(state);
+                }
+            }
+        } finally {
+            E3DCBridgeConfiguration current = config;
+            long interval = Math.max(E3DCCloudClient.MIN_POLL_INTERVAL_SECONDS,
+                    current != null ? current.refreshIntervalSeconds() : E3DCCloudClient.MIN_POLL_INTERVAL_SECONDS);
+            scheduleCloud(interval);
+        }
+    }
+
+    /** The cloud client, or {@code null} when the AI 360 channels are not configured. */
+    public @Nullable E3DCCloudClient getCloudClient() {
+        return cloudClient;
+    }
+
+    public void registerAi360Listener(E3DCAi360Listener listener) {
+        ai360Listeners.add(listener);
+    }
+
+    public void unregisterAi360Listener(E3DCAi360Listener listener) {
+        ai360Listeners.remove(listener);
+    }
+
+    /** Asks for an AI 360 poll after a write, so the channels follow the value the cloud accepted. */
+    public void requestAi360Refresh() {
+        if (!isActive()) {
+            return;
+        }
+        scheduleCloud(1);
     }
 
     private void connectAndPoll() {
@@ -202,8 +342,14 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
         client = newClient;
         droppedTags.clear();
+        // a new connection starts with the history, so the channels are filled with the first poll
+        lastHistoryPollMillis = 0;
+        lastBusyNanos = newClient.getBusyNanos();
         updateStatus(ThingStatus.ONLINE);
         logger.info("Connected to E3/DC device at {}:{}", current.host, current.port);
+        for (Runnable listener : onlineListeners) {
+            listener.run();
+        }
 
         pollOnce();
         scheduleNextPoll();
@@ -280,7 +426,14 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             return;
         }
         try {
-            RscpValue response = current.request(buildRequest());
+            long pollStarted = System.nanoTime();
+            boolean withHistory = isHistoryDue();
+            RscpValue response = current.request(buildRequest(withHistory));
+            long answered = System.nanoTime();
+            if (withHistory) {
+                lastHistoryPollMillis = System.currentTimeMillis();
+                lastHistoryDay = LocalDate.now(ZoneOffset.UTC);
+            }
             reportTagSupport(response);
             logContainerAnswers(response);
             for (E3DCDataListener listener : listeners) {
@@ -290,10 +443,119 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
                     logger.warn("A thing handler failed to process poll data", e);
                 }
             }
+            long dispatched = System.nanoTime();
+            recordLoopRatio(current, withHistory, dispatched - answered);
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "Poll: history {}, answer {} ms, dispatch to {} listeners {} ms, "
+                                + "weight of the answer by element: {}",
+                        withHistory ? "included" : "skipped", (answered - pollStarted) / 1_000_000, listeners.size(),
+                        (dispatched - answered) / 1_000_000, answerWeight(response));
+            }
         } catch (RscpException e) {
             logger.debug("Poll failed: {}", e.getMessage());
             handleCommunicationFailure(e);
         }
+    }
+
+    /**
+     * Records the loop ratio of the cycle: the time the device was occupied by this client divided by the
+     * poll interval.
+     *
+     * <p>
+     * The time covers everything that went over the connection since the last poll, so commands and history
+     * fetches are included. The dispatch to the thing handlers is not, because it loads openHAB and not the
+     * device. A ratio of 1 means the client keeps the device busy for the whole interval. The target is a
+     * working assumption until the measurements show where the device starts to suffer.
+     */
+    private void recordLoopRatio(RscpClient current, boolean withHistory, long dispatchNanos) {
+        E3DCBridgeConfiguration currentConfig = config;
+        if (currentConfig == null) {
+            return;
+        }
+        long busy = current.getBusyNanos();
+        long busyDelta = busy - lastBusyNanos;
+        lastBusyNanos = busy;
+        long intervalNanos = currentConfig.refreshIntervalSeconds() * 1_000_000_000L;
+        double ratio = (double) busyDelta / intervalNanos;
+        if (logger.isTraceEnabled()) {
+            logger.trace("Loop ratio {} % (busy {} ms of {} ms interval, history {})",
+                    String.format("%.1f", ratio * 100), busyDelta / 1_000_000, intervalNanos / 1_000_000,
+                    withHistory ? "included" : "skipped");
+        }
+        updateStatistics(current, ratio, dispatchNanos);
+        windowPolls++;
+        windowRatioSum += ratio;
+        windowRatioMax = Math.max(windowRatioMax, ratio);
+        if (ratio > LOOP_RATIO_TARGET) {
+            windowAboveTarget++;
+        }
+        if (windowPolls >= LOOP_RATIO_WINDOW) {
+            updateWindowStatistics(windowRatioSum / windowPolls, windowRatioMax);
+            logger.debug(
+                    "Loop ratio over the last {} polls: average {} %, peak {} %, "
+                            + "{} polls above the target of {} %",
+                    windowPolls, String.format("%.1f", windowRatioSum / windowPolls * 100),
+                    String.format("%.1f", windowRatioMax * 100), windowAboveTarget,
+                    String.format("%.0f", LOOP_RATIO_TARGET * 100));
+            windowPolls = 0;
+            windowRatioSum = 0;
+            windowRatioMax = 0;
+            windowAboveTarget = 0;
+        }
+    }
+
+    /** Publishes the figures of the last poll on the channels of the statistics group. */
+    private void updateStatistics(RscpClient current, double ratio, long dispatchNanos) {
+        publishStatistic("loop-ratio", new QuantityType<>(ratio * 100, Units.PERCENT));
+        publishStatistic("poll-duration", milliseconds(current.getLastWireNanos()));
+        publishStatistic("device-wait", milliseconds(current.getLastDeviceWaitNanos()));
+        publishStatistic("dispatch-time", milliseconds(dispatchNanos));
+        publishStatistic("answer-size", new QuantityType<>(current.getLastAnswerBytes(), Units.BYTE));
+    }
+
+    /** Publishes the summary of the last window of polls. */
+    private void updateWindowStatistics(double average, double peak) {
+        publishStatistic("loop-ratio-average", new QuantityType<>(average * 100, Units.PERCENT));
+        publishStatistic("loop-ratio-peak", new QuantityType<>(peak * 100, Units.PERCENT));
+    }
+
+    private static QuantityType<?> milliseconds(long nanos) {
+        return new QuantityType<>(nanos / 1_000_000.0, MetricPrefix.MILLI(Units.SECOND));
+    }
+
+    private void publishStatistic(String channelId, QuantityType<?> value) {
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), E3DCBindingConstants.GROUP_STATISTICS, channelId);
+        if (isLinked(channelUID)) {
+            updateState(channelUID, value);
+        }
+    }
+
+    /**
+     * The size of the answer per top level element, as the number of values it holds.
+     *
+     * <p>
+     * Only used for the trace: it shows which parts of the answer are large, which is where the device spends
+     * its time and the connection its bytes.
+     */
+    private static String answerWeight(RscpValue response) {
+        List<RscpValue> elements = response.getTag() == 0 ? response.getChildren() : List.of(response);
+        StringBuilder text = new StringBuilder();
+        for (RscpValue element : elements) {
+            if (text.length() > 0) {
+                text.append(", ");
+            }
+            text.append(RscpTag.nameOf(element.getTag())).append('=').append(countValues(element));
+        }
+        return text.toString();
+    }
+
+    private static int countValues(RscpValue value) {
+        int count = 1;
+        for (RscpValue child : value.getChildren()) {
+            count += countValues(child);
+        }
+        return count;
     }
 
     /**
@@ -304,6 +566,10 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
      * channels of the thing stay empty.
      */
     private void logContainerAnswers(RscpValue response) {
+        // the trees are long texts, so nothing is searched or built while debug logging is off
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
         for (E3DCContainerRequests.Container container : E3DCContainerRequests.all()) {
             for (RscpValue answer : response.findAll(container.responseTag())) {
                 logger.debug("Answer of {}: {}", RscpTag.nameOf(container.responseTag()), answer.describeTree());
@@ -324,7 +590,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
      * The elements are top level items of the frame, not children of a common container: an RSCP frame
      * has no root element other than the list itself.
      */
-    private List<RscpValue> buildRequest() {
+    private List<RscpValue> buildRequest(boolean withHistory) {
         List<RscpValue> items = new ArrayList<>();
         for (int responseTag : POLL_TAGS) {
             if (!droppedTags.contains(responseTag)) {
@@ -341,12 +607,39 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             items.add(RscpValue.container(requestTag, List.of(RscpValue.none(requestTag))));
         }
         for (int container : WINDOWED_CONTAINERS) {
-            if (POLL_CONTAINERS.contains(container)) {
+            if (withHistory && POLL_CONTAINERS.contains(container)) {
                 items.add(historyRequest(container));
             }
         }
         items.addAll(containerRequests());
+        if (logger.isTraceEnabled()) {
+            StringBuilder names = new StringBuilder();
+            for (RscpValue item : items) {
+                names.append(names.length() > 0 ? ", " : "").append(RscpTag.nameOf(item.getTag())).append('(')
+                        .append(item.getChildren().size()).append(')');
+            }
+            logger.trace("Request of {} elements, name(children): {}", items.size(), names);
+        }
         return items;
+    }
+
+    /**
+     * Whether this poll has to carry the history containers.
+     *
+     * <p>
+     * The history counters change slowly, so they are requested at the history interval and not with every
+     * poll. They are also due on the first poll after a connect and when the day has changed, so the
+     * periods of a request never lag behind the date.
+     */
+    private boolean isHistoryDue() {
+        E3DCBridgeConfiguration current = config;
+        if (current == null || lastHistoryPollMillis == 0) {
+            return true;
+        }
+        if (!LocalDate.now(ZoneOffset.UTC).equals(lastHistoryDay)) {
+            return true;
+        }
+        return System.currentTimeMillis() - lastHistoryPollMillis >= current.historyIntervalSeconds() * 1000L;
     }
 
     /**
@@ -428,6 +721,26 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * The request for the history of one whole calendar year, used by the history fetch of the thing action.
+     *
+     * <p>
+     * It carries the same parameters as the request of the running year, only with the boundaries of the
+     * given year, so the answer belongs to exactly this year.
+     *
+     * @param year the calendar year
+     * @return the request for the year container
+     */
+    public static RscpValue yearHistoryRequest(int year) {
+        LocalDate start = LocalDate.of(year, 1, 1);
+        long startSeconds = start.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+        long seconds = Duration.ofDays(start.lengthOfYear()).toSeconds();
+        return RscpValue.container(RscpTag.pollTagFor(RscpTag.DB_HISTORY_DATA_YEAR),
+                List.of(RscpValue.of(RscpTag.DB_REQ_HISTORY_TIME_START, RscpType.UINT64, startSeconds),
+                        RscpValue.of(RscpTag.DB_REQ_HISTORY_TIME_INTERVAL, RscpType.UINT64, seconds),
+                        RscpValue.of(RscpTag.DB_REQ_HISTORY_TIME_SPAN, RscpType.UINT64, seconds)));
+    }
+
+    /**
      * Counts error responses per tag and stops requesting tags the device does not implement, so a
      * system with fewer features keeps polling without repeatedly asking for the same missing value.
      */
@@ -495,9 +808,30 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         return current.request(items);
     }
 
+    /** The interval between two poll cycles in seconds. */
+    public int getRefreshIntervalSeconds() {
+        E3DCBridgeConfiguration current = config;
+        return current != null ? current.refreshIntervalSeconds() : 60;
+    }
+
+    /** The first year of the history fetch as configured, or {@code 0} when it is not set. */
+    public int getHistoryStartYear() {
+        E3DCBridgeConfiguration current = config;
+        return current != null ? current.historyStartYear : 0;
+    }
+
     public boolean isConnected() {
         RscpClient current = client;
         return current != null && current.isConnected();
+    }
+
+    /** Registers something to run each time the connection to the device has come up, as the discovery does. */
+    void addOnlineListener(Runnable listener) {
+        onlineListeners.add(listener);
+    }
+
+    void removeOnlineListener(Runnable listener) {
+        onlineListeners.remove(listener);
     }
 
     public void registerDataListener(E3DCDataListener listener) {
@@ -510,14 +844,18 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // the bridge itself exposes no channels
+        // the channels of the bridge are read only statistics
     }
 
     @Override
     public void dispose() {
         cancelPollJob();
+        cancelCloudJob();
+        cloudClient = null;
+        ai360Listeners.clear();
         closeClient();
         listeners.clear();
+        onlineListeners.clear();
         super.dispose();
     }
 

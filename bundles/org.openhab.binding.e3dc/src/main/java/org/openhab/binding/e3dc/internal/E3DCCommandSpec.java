@@ -157,14 +157,21 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
                         "max-discharge-power",
                         E3DCCommandSpec.number(RscpTag.EMS_MAX_DISCHARGE_POWER, RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
                         "discharge-start-power",
-                        E3DCCommandSpec.number(RscpTag.EMS_DISCHARGE_START_POWER, RscpTag.EMS_REQ_SET_POWER_SETTINGS)))//
+                        E3DCCommandSpec.number(RscpTag.EMS_DISCHARGE_START_POWER, RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
+                        "wallbox-discharge-to-car",
+                        E3DCCommandSpec.uchar8Flag(RscpTag.EMS_REQ_SET_BATTERY_TO_CAR_MODE, 0), //
+                        "wallbox-charge-before-car",
+                        E3DCCommandSpec.uchar8Flag(RscpTag.EMS_REQ_SET_BATTERY_BEFORE_CAR_MODE, 0), //
+                        "wallbox-discharge-until",
+                        E3DCCommandSpec.uchar8Number(RscpTag.EMS_REQ_SET_WB_DISCHARGE_BAT_UNTIL, 0), //
+                        "wallbox-disable-at-mix-mode",
+                        E3DCCommandSpec.bool(RscpTag.EMS_REQ_SET_WALLBOX_ENFORCE_POWER_ASSIGNMENT, 0)))//
                 .group(E3DCBindingConstants.GROUP_SYSTEM, Map.of(//
                         "power-limits-used",
                         E3DCCommandSpec.bool(RscpTag.EMS_POWER_LIMITS_USED, RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
                         "weather-regulated-charge",
                         E3DCCommandSpec.bool(RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED,
                                 RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
-                        "mode", E3DCCommandSpec.number(RscpTag.EMS_REQ_SET_POWER_MODE), //
                         "set-manual-charge", E3DCCommandSpec.number(RscpTag.EMS_REQ_START_MANUAL_CHARGE)))//
                 .group(E3DCBindingConstants.GROUP_RESERVE, Map.of(//
                         "percent",

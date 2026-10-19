@@ -51,6 +51,9 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
         if (E3DCBindingConstants.THING_TYPE_POWER_METER.equals(thingTypeUID)) {
             return new E3DCPowerMeterHandler(thing);
         }
+        if (E3DCBindingConstants.THING_TYPE_BATTERY.equals(thingTypeUID)) {
+            return new E3DCBatteryHandler(thing);
+        }
         if (E3DCBindingConstants.THING_TYPE_BATTERY_MODULE.equals(thingTypeUID)) {
             return new E3DCBatteryModuleHandler(thing);
         }

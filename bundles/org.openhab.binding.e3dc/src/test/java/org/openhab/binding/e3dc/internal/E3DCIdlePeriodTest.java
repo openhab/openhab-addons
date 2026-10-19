@@ -165,4 +165,100 @@ class E3DCIdlePeriodTest {
         RscpValue incomplete = RscpValue.container(0x0140027A, List.of(RscpValue.cstring(0x01800302, "incomplete")));
         assertEquals("", E3DCIdlePeriod.toTextFromResponse(RscpValue.container(0x01800033, List.of(incomplete))));
     }
+
+    /** The type may arrive under the tag of the request side, which reference clients read it from. */
+    @Test
+    void theTypeIsAlsoReadFromTheTagOfTheRequestSide() {
+        RscpValue period = RscpValue.container(0x0140027A,
+                List.of(RscpValue.cstring(0x01800302, "night"), RscpValue.uchar8(0x01000083, 1),
+                        RscpValue.uchar8(0x01800303, 0x7F), RscpValue.of(0x01800301, RscpType.BOOL, Boolean.TRUE),
+                        RscpValue.uint32(0x01800304, 22 * 3600), RscpValue.uint32(0x01800305, 23 * 3600)));
+        List<E3DCIdlePeriod> periods = E3DCIdlePeriod.fromResponse(RscpValue.container(0x01800033, List.of(period)));
+
+        assertEquals(1, periods.size());
+        assertEquals(E3DCIdlePeriod.Type.DISCHARGE, periods.get(0).type());
+    }
+
+    @Test
+    void theBlockerCoversAllDaysAroundTheClock() {
+        E3DCIdlePeriod charge = E3DCIdlePeriod.blocker(E3DCIdlePeriod.Type.CHARGE);
+        E3DCIdlePeriod discharge = E3DCIdlePeriod.blocker(E3DCIdlePeriod.Type.DISCHARGE);
+
+        assertEquals("OH_Block_Charge", charge.name());
+        assertEquals("OH_Block_Discharge", discharge.name());
+        assertEquals("OH_Block_Charge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:00:00-23:59",
+                charge.toText());
+        assertTrue(charge.blocks(E3DCIdlePeriod.Type.CHARGE));
+        assertFalse(charge.blocks(E3DCIdlePeriod.Type.DISCHARGE), "a lock of charging does not lock discharging");
+        assertTrue(discharge.blocks(E3DCIdlePeriod.Type.DISCHARGE));
+        // the text of the blocker parses back to the same period
+        assertEquals(charge, E3DCIdlePeriod.parse(charge.toText()));
+    }
+
+    @Test
+    void onlyAFullWeekAroundTheClockBlocks() {
+        assertFalse(E3DCIdlePeriod.parse("p:monday,tuesday:charge:true:00:00-23:59").blocks(E3DCIdlePeriod.Type.CHARGE),
+                "not all days");
+        assertFalse(E3DCIdlePeriod
+                .parse("p:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:08:00-23:59")
+                .blocks(E3DCIdlePeriod.Type.CHARGE), "not around the clock");
+        assertFalse(E3DCIdlePeriod
+                .parse("p:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:false:00:00-23:59")
+                .blocks(E3DCIdlePeriod.Type.CHARGE), "not active");
+        // a period of another client blocks just the same
+        assertTrue(E3DCIdlePeriod
+                .parse("portal:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:00:00-23:59")
+                .blocks(E3DCIdlePeriod.Type.CHARGE));
+    }
+
+    @Test
+    void aWindowMustEndAfterItStarts() {
+        assertTrue(E3DCIdlePeriod.parse("a:monday:charge:true:08:00-18:00").hasValidWindow());
+        assertFalse(E3DCIdlePeriod.parse("a:monday:charge:true:18:00-08:00").hasValidWindow());
+        assertFalse(E3DCIdlePeriod.parse("a:monday:charge:true:08:00-08:00").hasValidWindow());
+    }
+
+    /**
+     * The write carries the fields as rscp2mqtt writes them: name as text, type and weekdays as one byte,
+     * the flag as a boolean, and start and stop in seconds since midnight.
+     */
+    @Test
+    void theRequestCarriesTheFieldsAsTheDeviceExpectsThem() {
+        E3DCIdlePeriod period = E3DCIdlePeriod.parse("weekend:saturday,sunday:discharge:true:08:30-18:00");
+        assertNotNull(period);
+        List<RscpValue> request = E3DCIdlePeriod.toRequest(List.of(period));
+
+        assertEquals(1, request.size());
+        RscpValue list = request.get(0);
+        assertEquals(0x0100002F, list.getTag());
+        assertEquals(1, list.getChildren().size());
+        RscpValue container = list.getChildren().get(0);
+        assertEquals(0x0140027A, container.getTag());
+        RscpValue type = container.find(0x01000083);
+        RscpValue active = container.find(0x01800301);
+        RscpValue start = container.find(0x01800304);
+        RscpValue stop = container.find(0x01800305);
+        assertNotNull(type);
+        assertNotNull(active);
+        assertNotNull(start);
+        assertNotNull(stop);
+        assertEquals("weekend", container.findString(0x01800302));
+        assertEquals(RscpType.UCHAR8, type.getType());
+        assertEquals(1, type.asNumber().intValue());
+        assertEquals((1 << 5) | (1 << 6), container.findNumber(0x01800303).intValue());
+        assertEquals(RscpType.BOOL, active.getType());
+        assertEquals(Boolean.TRUE, active.getValue());
+        assertEquals(RscpType.UINT32, start.getType());
+        assertEquals(8 * 3600 + 30 * 60, start.asNumber().intValue());
+        assertEquals(18 * 3600, stop.asNumber().intValue());
+    }
+
+    @Test
+    void anEmptyListIsAnEmptyContainer() {
+        List<RscpValue> request = E3DCIdlePeriod.toRequest(List.of());
+
+        assertEquals(1, request.size());
+        assertEquals(0x0100002F, request.get(0).getTag());
+        assertTrue(request.get(0).getChildren().isEmpty());
+    }
 }

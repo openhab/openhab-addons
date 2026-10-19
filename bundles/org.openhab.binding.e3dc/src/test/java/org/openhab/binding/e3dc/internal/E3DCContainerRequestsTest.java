@@ -125,11 +125,25 @@ class E3DCContainerRequestsTest {
     }
 
     @Test
+    void theBatteryAndItsModulesShareOneRequest() {
+        E3DCContainerRequests.Container pack = container(E3DCBindingConstants.GROUP_PACK);
+        E3DCContainerRequests.Container module = container(E3DCBindingConstants.GROUP_MODULE);
+
+        assertEquals(RscpTag.BAT_DATA, pack.responseTag(), "the battery channels read the battery container");
+        assertEquals(module.request(0, java.util.Set.of()).describeTree(),
+                pack.request(0, java.util.Set.of()).describeTree(),
+                "both ask the same, so the request is sent once for a battery index");
+        assertTrue(pack.parameters().contains(RscpTag.requestFor(RscpTag.BAT_MODULE_VOLTAGE)));
+    }
+
+    @Test
     void everyContainerIsFoundByItsTags() {
         for (E3DCContainerRequests.Container container : E3DCContainerRequests.all()) {
             assertSame(container, E3DCContainerRequests.forGroup(container.groupId()));
             assertSame(container, E3DCContainerRequests.forResponseTag(container.responseTag()));
-            assertSame(container, E3DCContainerRequests.forContainerTag(container.containerTag()));
+            // the battery and its modules are asked for with the same request
+            E3DCContainerRequests.Container byTag = E3DCContainerRequests.forContainerTag(container.containerTag());
+            assertEquals(container.containerTag(), byTag == null ? 0 : byTag.containerTag());
         }
         assertNull(E3DCContainerRequests.forResponseTag(RscpTag.EMS_GET_POWER_SETTINGS),
                 "a container that answers everything it has is not part of this set");

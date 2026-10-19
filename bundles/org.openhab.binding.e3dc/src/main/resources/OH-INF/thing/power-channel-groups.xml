@@ -14,6 +14,8 @@
 			<channel id="additional-power" typeId="power-additional-power"/>
 			<channel id="autarky" typeId="power-autarky"/>
 			<channel id="self-consumption" typeId="power-self-consumption"/>
+			<channel id="wallbox-power" typeId="power-wallbox-power"/>
+			<channel id="wallbox-solar-power" typeId="power-wallbox-solar-power"/>
 		</channels>
 	</channel-group-type>
 

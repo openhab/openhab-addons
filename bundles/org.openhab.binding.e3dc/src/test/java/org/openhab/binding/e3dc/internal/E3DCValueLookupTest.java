@@ -70,7 +70,8 @@ class E3DCValueLookupTest {
     private static E3DCChannelSpec spec(String group, String channel) {
         E3DCChannelSpec spec = E3DCBindingConstants.GROUP_WALLBOX.equals(group)
                 ? E3DCChannelSpec.wallbox().spec(group, channel)
-                : E3DCChannelSpec.powerPlant().spec(group, channel);
+                : E3DCBindingConstants.GROUP_MODULE.equals(group) ? E3DCChannelSpec.batteryModule().spec(group, channel)
+                        : E3DCChannelSpec.powerPlant().spec(group, channel);
         assertNotNull(spec, "the channel " + group + "#" + channel + " must exist");
         return spec;
     }
@@ -84,7 +85,7 @@ class E3DCValueLookupTest {
     @Test
     void theValueOfAnInverterChannelIsReadFromItsOwnContainer() {
         RscpValue value = E3DCThingHandler.findValue(inverterResponse(1),
-                spec(E3DCBindingConstants.GROUP_INVERTER, "ac-voltage"), null);
+                spec(E3DCBindingConstants.GROUP_INVERTER, "ac-voltage-l1"), null);
 
         assertNotNull(value, "the value sits in the container the parameter is answered with");
         assertEquals(237.2, numberOf(value), 0.001);
@@ -146,12 +147,25 @@ class E3DCValueLookupTest {
     @Test
     void aNumberIsScaledAndTextIsPublishedAsText() {
         RscpValue number = RscpValue.of(RscpTag.PVI_AC_VOLTAGE, RscpType.FLOAT32, 237.2f);
-        State voltage = E3DCThingHandler.valueState(number, spec(E3DCBindingConstants.GROUP_INVERTER, "ac-voltage"));
+        State voltage = E3DCThingHandler.valueState(number, spec(E3DCBindingConstants.GROUP_INVERTER, "ac-voltage-l1"));
         assertTrue(voltage instanceof DecimalType, "a measurement is published as a number");
         assertEquals(237.2, ((DecimalType) voltage).doubleValue(), 0.001);
 
         RscpValue text = RscpValue.of(RscpTag.INFO_SW_RELEASE, RscpType.CSTRING, "S10_2026_027");
         assertEquals(new StringType("S10_2026_027"),
                 E3DCThingHandler.valueState(text, spec(E3DCBindingConstants.GROUP_SYSTEM, "software-version")));
+    }
+
+    @Test
+    void textTheDeviceSendsAsBytesIsDecodedAndNumbersOnTextChannelsStayText() {
+        E3DCChannelSpec name = spec(E3DCBindingConstants.GROUP_MODULE, "device-name");
+        RscpValue bytes = RscpValue.of(RscpTag.BAT_DCB_DEVICE_NAME, RscpType.CSTRING,
+                "BAT_2\0".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        assertEquals(new StringType("BAT_2"), E3DCThingHandler.valueState(bytes, name, true));
+
+        E3DCChannelSpec firmware = spec(E3DCBindingConstants.GROUP_MODULE, "firmware-version");
+        RscpValue version = RscpValue.of(RscpTag.BAT_DCB_FW_VERSION, RscpType.UINT32, 260L);
+        assertEquals(new StringType("260"), E3DCThingHandler.valueState(version, firmware, true));
+        assertTrue(E3DCThingHandler.valueState(version, firmware, false) instanceof DecimalType);
     }
 }

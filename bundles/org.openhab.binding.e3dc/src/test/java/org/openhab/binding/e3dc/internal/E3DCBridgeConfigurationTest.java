@@ -75,6 +75,37 @@ class E3DCBridgeConfigurationTest {
         assertEquals(60, config.refreshIntervalSeconds(), "the documented default is 60 seconds");
     }
 
+    @Test
+    void theDefaultHistoryIntervalIsFifteenMinutes() {
+        E3DCBridgeConfiguration config = new E3DCBridgeConfiguration();
+
+        assertEquals(15 * 60, config.historyIntervalSeconds());
+    }
+
+    @Test
+    void theHistoryIntervalIsLimitedToItsRange() {
+        E3DCBridgeConfiguration config = new E3DCBridgeConfiguration();
+
+        config.historyInterval = 0;
+        assertEquals(60, config.historyIntervalSeconds());
+        config.historyInterval = 100000;
+        assertEquals(1440 * 60, config.historyIntervalSeconds());
+    }
+
+    @Test
+    void theHistoryIsNeverRequestedMoreOftenThanTheDeviceIsPolled() {
+        E3DCBridgeConfiguration config = new E3DCBridgeConfiguration();
+
+        config.historyInterval = 1;
+        config.refreshInterval = 300;
+        assertEquals(300, config.historyIntervalSeconds());
+    }
+
+    @Test
+    void theHistoryStartYearIsNotSetByDefault() {
+        assertEquals(0, new E3DCBridgeConfiguration().historyStartYear);
+    }
+
     /**
      * The metadata is what the user interface offers and constrains, so its bounds have to be the bounds the
      * binding applies itself.

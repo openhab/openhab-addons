@@ -121,4 +121,46 @@
 		<state/>
 	</channel-type>
 
+	<channel-type id="wallbox-phase-l1">
+		<item-type>Switch</item-type>
+		<label>Phase L1 Active</label>
+		<description>Whether the wallbox charges on phase L1</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-energy-l1">
+		<item-type>Number:Energy</item-type>
+		<label>Energy L1</label>
+		<description>Energy drawn on phase L1</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-phase-l2">
+		<item-type>Switch</item-type>
+		<label>Phase L2 Active</label>
+		<description>Whether the wallbox charges on phase L2</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-energy-l2">
+		<item-type>Number:Energy</item-type>
+		<label>Energy L2</label>
+		<description>Energy drawn on phase L2</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-phase-l3">
+		<item-type>Switch</item-type>
+		<label>Phase L3 Active</label>
+		<description>Whether the wallbox charges on phase L3</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wallbox-energy-l3">
+		<item-type>Number:Energy</item-type>
+		<label>Energy L3</label>
+		<description>Energy drawn on phase L3</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

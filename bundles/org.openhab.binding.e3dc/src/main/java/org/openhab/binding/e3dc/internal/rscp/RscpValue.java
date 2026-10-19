@@ -68,6 +68,14 @@ public final class RscpValue {
         return new RscpValue(tag, RscpType.UCHAR8, value, List.of());
     }
 
+    public static RscpValue bool(int tag, boolean value) {
+        return new RscpValue(tag, RscpType.BOOL, value, List.of());
+    }
+
+    public static RscpValue uint32(int tag, long value) {
+        return new RscpValue(tag, RscpType.UINT32, value, List.of());
+    }
+
     public static RscpValue int32(int tag, int value) {
         return new RscpValue(tag, RscpType.INT32, value, List.of());
     }
