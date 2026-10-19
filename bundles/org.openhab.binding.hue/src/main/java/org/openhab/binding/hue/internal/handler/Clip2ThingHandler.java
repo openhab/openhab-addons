@@ -207,6 +207,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final Map<String, Integer> controlIds = new ConcurrentHashMap<>();
 
     /**
+     * For Twilight devices with multiple lights, this map tracks which LIGHT resource IDs are secondary lights.
+     * The key is the resource ID of a secondary LIGHT resource.
+     */
+    private final Map<String, Boolean> secondaryLights = new ConcurrentHashMap<>();
+
+    /**
      * The set of channel IDs that are supported by this thing. e.g. an on/off light may support 'switch' and
      * 'zigbeeStatus' channels, whereas a complex light may support 'switch', 'brightness', 'color', 'color temperature'
      * and 'zigbeeStatus' channels.
@@ -1549,11 +1555,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         // Update effect channel
         updateSecondaryState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
-
-        // Create the secondary light channel group if not already created
-        if (fullUpdate) {
-            createSecondaryLightChannelGroup();
-        }
     }
 
     /**
@@ -1720,6 +1721,29 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.clear();
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
+
+            // Identify secondary lights for Twilight devices
+            // A Twilight device has multiple LIGHT service references; the first is primary, others are secondary
+            secondaryLights.clear();
+            supportedSecondaryChannelIdSet.clear();
+            boolean foundPrimaryLight = false;
+            for (ResourceReference service : services) {
+                if (ResourceType.LIGHT == service.getType()) {
+                    if (!foundPrimaryLight) {
+                        foundPrimaryLight = true;
+                        // First LIGHT service is the primary light
+                    } else {
+                        // Additional LIGHT services are secondary lights
+                        secondaryLights.put(service.getId(), true);
+                        logger.debug("{} -> updateLookups() identified secondary light: {}", resourceId, service.getId());
+                    }
+                }
+            }
+
+            // Create the secondary light channel group if we have secondary lights
+            if (!secondaryLights.isEmpty()) {
+                createSecondaryLightChannelGroup();
+            }
         }
     }
 
