@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -177,7 +178,7 @@ public class Ffmpeg {
                     terminateProcess(localProcess);
                 }
                 synchronized (lifecycleLock) {
-                    if (process == localProcess) {
+                    if (Objects.equals(process, localProcess)) {
                         process = null;
                     }
                     if (failed && !disposed) {
@@ -314,7 +315,7 @@ public class Ffmpeg {
             logger.debug("Stopping FFmpeg conversion for {}.", format);
             terminateProcess(localProcess);
         }
-        if (localThread != Thread.currentThread()) {
+        if (!Objects.equals(localThread, Thread.currentThread())) {
             try {
                 localThread.join(TimeUnit.SECONDS.toMillis(2));
             } catch (InterruptedException e) {
@@ -322,7 +323,7 @@ public class Ffmpeg {
             }
         }
         synchronized (lifecycleLock) {
-            if (process == localProcess) {
+            if (Objects.equals(process, localProcess)) {
                 process = null;
             }
         }
