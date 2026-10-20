@@ -111,6 +111,7 @@ public enum MiIoDevices {
     IJAI_VACUUM_V1("ijai.vacuum.v1", "Mi Robot Vacuum-Mop Pro", THING_TYPE_BASIC),
     IJAI_VACUUM_V2("ijai.vacuum.v2", "Mi Robot Vacuum-Mop 2", THING_TYPE_BASIC),
     IJAI_VACUUM_V3("ijai.vacuum.v3", "Mi Robot Vacuum-Mop 2 Pro", THING_TYPE_BASIC),
+    IJAI_VACUUM_V10("ijai.vacuum.v10", "Mi Robot Vacuum-Mop 2 Lite", THING_TYPE_BASIC),
     IJAI_VACUUM_V13("ijai.vacuum.v13", "Mijia Robot Vacuum-Mop 2Pro", THING_TYPE_BASIC),
     IJAI_VACUUM_V14("ijai.vacuum.v14", "Mijia Self-Cleaning Robot Vacuum-Mop", THING_TYPE_BASIC),
     IJAI_VACUUM_V17("ijai.vacuum.v17", "Xiaomi Robot Vacuum S10", THING_TYPE_BASIC),
