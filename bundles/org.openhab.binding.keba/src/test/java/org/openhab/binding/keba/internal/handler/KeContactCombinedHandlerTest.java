@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +61,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -979,6 +981,77 @@ class KeContactCombinedHandlerTest {
 
     @Test
     @Timeout(20)
+    void udpOnlyThingPollsReport100ForSharedSessionChannels() throws Exception {
+        for (String linkedChannel : List.of("sessionduration", "sessionconsumption")) {
+            ThingUID uid = new ThingUID("keba:kecontact:udp-session");
+            var channels = List
+                    .of("session", "sessionstart", "sessionduration", "sessionid",
+                            "sessionconsumption")
+                    .stream().map(
+                            channel -> ChannelBuilder
+                                    .create(new ChannelUID(uid, channel),
+                                            "session".equals(channel) ? "Switch"
+                                                    : "sessionstart".equals(channel) ? "DateTime" : "Number")
+                                    .build())
+                    .toList();
+            Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                    .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "modbusEnabled", false,
+                            "restEnabled", false, "refreshInterval", 3600, "refreshIntervalSlow", 3600)))
+                    .withChannels(channels).build();
+            KeContactTransceiver transceiver = new KeContactTransceiver() {
+                @Override
+                public void registerHandler(KeContactHandler handler) {
+                }
+
+                @Override
+                protected @Nullable ByteBuffer send(String message, KeContactHandler handler) {
+                    String reply = switch (message) {
+                        case "report 1" -> "{\"ID\":1,\"Product\":\"P30\"}";
+                        case "report 2" -> "{\"ID\":2,\"State\":3}";
+                        case "report 100" -> """
+                                {"ID":100,"Session ID":4294967295,"started":"2026-10-20 10:00:00.000",
+                                 "started[s]":100,"ended[s]":0,"reason":0,"Sec":160}
+                                """;
+                        default -> null;
+                    };
+                    return reply == null ? null : ByteBuffer.wrap(reply.getBytes(StandardCharsets.US_ASCII));
+                }
+            };
+            ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+            ChannelUID duration = new ChannelUID(uid, "sessionduration");
+            when(callback.isChannelLinked(new ChannelUID(uid, linkedChannel))).thenReturn(true);
+            CountDownLatch received = new CountDownLatch(1);
+            doAnswer(invocation -> {
+                received.countDown();
+                return null;
+            }).when(callback).stateUpdated(eq(duration), any());
+            KeContactCombinedHandler handler = new KeContactCombinedHandler(thing,
+                    Objects.requireNonNull(mock(ModbusManager.class)), transceiver);
+            handler.setCallback(callback);
+            try {
+                handler.initialize();
+                assertTrue(received.await(5, TimeUnit.SECONDS));
+                for (var channel : channels) {
+                    assertNotNull(handler.getThing().getChannel(channel.getUID()));
+                    assertEquals(
+                            "sessionconsumption".equals(channel.getUID().getId()) ? Protocol.MODBUS : Protocol.REST,
+                            KeContactCombinedHandler.sourceFor(channel.getUID().getId(), true, true));
+                    assertEquals("sessionconsumption".equals(channel.getUID().getId()) ? Protocol.MODBUS : Protocol.UDP,
+                            KeContactCombinedHandler.sourceFor(channel.getUID().getId(), true, false));
+                }
+                verify(callback).stateUpdated(new ChannelUID(uid, "session"), OnOffType.ON);
+                verify(callback).stateUpdated(new ChannelUID(uid, "sessionstart"),
+                        new DateTimeType(Instant.parse("2026-10-20T10:00:00Z")));
+                verify(callback).stateUpdated(duration, new QuantityType<>(60, Units.SECOND));
+                verify(callback).stateUpdated(new ChannelUID(uid, "sessionid"), new DecimalType(4294967295L));
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @Test
+    @Timeout(20)
     void sharedOutputUsesRestReadbackAndUdpCommandsWithUdpFallback() throws Exception {
         ThingUID uid = new ThingUID("keba:kecontact:shared-output");
         ChannelUID output = new ChannelUID(uid, "output");
@@ -1418,8 +1491,9 @@ class KeContactCombinedHandlerTest {
     @Timeout(40)
     void supplementalRestSkipsDuplicateAndUnlinkedEndpoints() throws Exception {
         for (Set<String> linked : List.of(Set.<String> of(), Set.of("sessionstart", "dipswitchinterpretation"),
-                Set.of("sessionconsumption"))) {
-            boolean sessionsExpected = linked.contains("sessionstart") || linked.contains("sessionconsumption");
+                Set.of("sessionconsumption"), Set.of("sessionid"))) {
+            boolean sessionsExpected = linked.contains("sessionstart") || linked.contains("sessionconsumption")
+                    || linked.contains("sessionid");
             BlockingQueue<String> requests = new LinkedBlockingQueue<>();
             Map<String, String> restProperties = new ConcurrentHashMap<>();
             Map<String, State> restStates = new ConcurrentHashMap<>();
@@ -1431,6 +1505,9 @@ class KeContactCombinedHandlerTest {
                 @Override
                 public void stateUpdated(String channel, State state) {
                     restStates.put(channel, state);
+                    if ("sessionconsumption".equals(channel)) {
+                        completed.countDown();
+                    }
                 }
 
                 @Override
@@ -1458,7 +1535,9 @@ class KeContactCombinedHandlerTest {
                 protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated) {
                     requests.add(path);
                     if (path.startsWith("/sessions?")) {
-                        completed.countDown();
+                        return JsonParser.parseString("""
+                                {"sessions":[{"id":4294967295,"startDate":1000,"duration":90000,"energyConsumed":1000}]}
+                                """).getAsJsonObject();
                     }
                     if ("/jwt/login".equals(path)) {
                         return JsonParser.parseString("{\"accessToken\":\"test-token\"}").getAsJsonObject();
@@ -1484,6 +1563,11 @@ class KeContactCombinedHandlerTest {
                 assertEquals(linked.contains("dipswitchinterpretation"),
                         requests.contains("/wallboxes/dipswitch/12345"));
                 assertEquals(sessionsExpected, requests.stream().anyMatch(path -> path.startsWith("/sessions?")));
+                if (sessionsExpected) {
+                    assertEquals(new DecimalType(4294967295L), restStates.get("sessionid"));
+                    assertEquals(new DateTimeType(Instant.ofEpochMilli(1000)), restStates.get("sessionstart"));
+                    assertEquals(new QuantityType<>(90, Units.SECOND), restStates.get("sessionduration"));
+                }
             } finally {
                 rest.dispose();
             }

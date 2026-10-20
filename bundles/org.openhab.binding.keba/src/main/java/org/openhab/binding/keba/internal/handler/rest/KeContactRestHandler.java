@@ -279,7 +279,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                 updatePhaseSwitchSource();
             }
             if (supplementalDue && (!supplemental || isLinked("sessionstart") || isLinked("sessionduration")
-                    || isLinked("sessionconsumption"))) {
+                    || isLinked("sessionconsumption") || isLinked("sessionid"))) {
                 try {
                     updateSession();
                 } catch (Exception e) {
@@ -386,6 +386,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         if (session == null) {
             return;
         }
+        updateOptionalState("sessionid", session, "id", DecimalType::new);
         if (session.has("startDate")) {
             updateState("sessionstart", new DateTimeType(
                     Objects.requireNonNull(Instant.ofEpochMilli(session.get("startDate").getAsLong()))));

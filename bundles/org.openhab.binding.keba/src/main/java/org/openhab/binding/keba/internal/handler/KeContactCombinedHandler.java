@@ -84,11 +84,12 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                     "error1", "error2", "maxpilotcurrent", "maxpilotcurrentdutycyle", "maxsystemcurrent",
                     "failsafecurrent", "failsafetimeout", "currtimer", "currtimertimeout", "output", "input", "uptime",
                     "authreq", "authon", "phaseswitchsource", "phaseswitchstate"));
-    private static final Set<String> UDP_REPORT_100 = Objects.requireNonNull(Set.of("sessionrfidclass", "sessionid"));
-    private static final Set<String> REST_ONLY = Objects.requireNonNull(
-            Set.of("reststate", "session", "error", "reserved", "temperature", "sessionstart", "sessionduration",
-                    "externalmeter", "maxphases", "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation",
-                    "permanentlylocked", "start", "stop", "reboot", "unlockplug", "togglephaseswitch"));
+    private static final Set<String> UDP_REPORT_100 = Objects.requireNonNull(Set.of("sessionrfidclass", "sessionid",
+            "session", "sessionstart", "sessionduration", "sessionconsumption"));
+    private static final Set<String> REST_ONLY = Objects
+            .requireNonNull(Set.of("reststate", "error", "reserved", "temperature", "externalmeter", "maxphases",
+                    "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start",
+                    "stop", "reboot", "unlockplug", "togglephaseswitch"));
     private static final Set<String> UDP_COMMANDS = Objects.requireNonNull(
             Set.of("display", "output", "authenticate", CHANNEL_UDP_STOP, "maxpresetcurrent", "maxpresetcurrentrange"));
     private static final Set<String> REST_SHARED = Objects.requireNonNull(Set.of("state", "I1", "I2", "I3", "U1", "U2",
@@ -106,13 +107,13 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             "input", "uptime", "authreq", "authon", "I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
             "totalconsumption", "sessionconsumption", "sessionrfidtag", "sessionrfidclass", "sessionid", "display",
             "authenticate", CHANNEL_UDP_STOP, "setenergylimit", "phaseswitchsource", "phaseswitchstate", "unlockplug",
-            "failsafepersist"));
+            "failsafepersist", "session", "sessionstart", "sessionduration"));
     private static final Set<String> REST_CHANNELS = Objects.requireNonNull(Set.of("reststate", "session", "error",
             "reserved", "temperature", "output", "sessionstart", "sessionduration", "externalmeter", "maxphases",
             "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop",
             "reboot", "unlockplug", "authon", "enableduser", "vehicle", "state", "I1", "I2", "I3", "U1", "U2", "U3",
             "power", "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent",
-            "phaseswitchstate", "phaseswitchsource", "togglephaseswitch"));
+            "phaseswitchstate", "phaseswitchsource", "togglephaseswitch", "sessionid"));
 
     private final ModbusManager modbusManager;
     private final KeContactTransceiver transceiver;
@@ -556,7 +557,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             return modbusOnline ? Protocol.MODBUS
                     : restOnline && "vehicle".equals(channel) ? Protocol.REST : Protocol.UDP;
         }
-        if ("authon".equals(channel) || "enableduser".equals(channel) || "output".equals(channel)) {
+        if ("authon".equals(channel) || "enableduser".equals(channel) || "output".equals(channel)
+                || "session".equals(channel) || "sessionstart".equals(channel) || "sessionduration".equals(channel)
+                || "sessionid".equals(channel)) {
             return restOnline ? Protocol.REST : Protocol.UDP;
         }
         String modbusChannel = switch (channel) {

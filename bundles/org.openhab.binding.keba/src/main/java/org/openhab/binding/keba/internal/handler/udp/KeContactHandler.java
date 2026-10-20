@@ -22,6 +22,11 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -37,6 +42,7 @@ import org.openhab.binding.keba.internal.handler.KeContactCombinedConfiguration;
 import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -51,10 +57,12 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -76,6 +84,8 @@ public class KeContactHandler extends KeContactProtocolHandler {
     private static final String CACHE_REPORT_2 = "REPORT_2";
     private static final String CACHE_REPORT_3 = "REPORT_3";
     private static final String CACHE_REPORT_100 = "REPORT_100";
+    private static final DateTimeFormatter SESSION_TIMESTAMP = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SSS")
+            .withResolverStyle(ResolverStyle.STRICT);
     public static final int SOCKET_TIME_OUT_MS = 3000;
     public static final int SOCKET_CHECK_PORT_NUMBER = 80;
 
@@ -92,6 +102,8 @@ public class KeContactHandler extends KeContactProtocolHandler {
     private long failsafeTimeout;
     private boolean hasFailsafeCurrent;
     private boolean hasFailsafeTimeout;
+    private @Nullable Long lastSessionId;
+    private boolean sessionEnded;
     private @Nullable KebaType type;
     private @Nullable KebaSeries series;
     private int lastState = -1; // trigger a report100 at startup
@@ -131,6 +143,9 @@ public class KeContactHandler extends KeContactProtocolHandler {
                 return false;
             }
             onData(response);
+            if (report == 100 && Long.valueOf(0).equals(unsignedValue(data, "Session ID"))) {
+                readReport(101);
+            }
             return true;
         } catch (JsonParseException | IllegalStateException | NumberFormatException e) {
             logger.debug("Invalid UDP response for report {} from {}", report, ipAddress);
@@ -298,8 +313,22 @@ public class KeContactHandler extends KeContactProtocolHandler {
 
         try {
             JsonObject readObject = JsonParser.parseString(response).getAsJsonObject();
+            Long reportId = unsignedValue(readObject, "ID");
+            boolean sessionReport = reportId != null && (reportId == 100 || reportId == 101);
+            if (sessionReport && Long.valueOf(0).equals(unsignedValue(readObject, "Session ID"))) {
+                if (reportId == 100) {
+                    sessionEnded = true;
+                    updateState("session", OnOffType.OFF);
+                }
+                return;
+            }
 
             for (var entry : readObject.entrySet()) {
+                if (Long.valueOf(101).equals(reportId) && !"Session ID".equals(entry.getKey())
+                        && !"E pres".equals(entry.getKey()) && !"RFID tag".equals(entry.getKey())
+                        && !"RFID class".equals(entry.getKey())) {
+                    continue;
+                }
                 switch (entry.getKey()) {
                     case "Product": {
                         Map<String, String> properties = editProperties();
@@ -584,6 +613,9 @@ public class KeContactHandler extends KeContactProtocolHandler {
                         break;
                     }
                     case "E pres": {
+                        if (sessionEnded && !sessionReport) {
+                            break;
+                        }
                         long state = entry.getValue().getAsLong();
                         State newState = new QuantityType<>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_SESSION_CONSUMPTION, newState);
@@ -620,7 +652,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
                         break;
                     }
                     case "Session ID": {
-                        int state = entry.getValue().getAsInt();
+                        long state = entry.getValue().getAsLong();
                         State newState = new DecimalType(state);
                         updateState(CHANNEL_SESSION_SESSION_ID, newState);
                         break;
@@ -633,8 +665,64 @@ public class KeContactHandler extends KeContactProtocolHandler {
                     }
                 }
             }
+            if (sessionReport) {
+                updateSession(readObject);
+            }
         } catch (JsonParseException e) {
             logger.debug("Invalid JSON data will be ignored: '{}'", response);
+        }
+    }
+
+    private void updateSession(JsonObject report) {
+        Long sessionId = unsignedValue(report, "Session ID");
+        if (sessionId == null) {
+            return;
+        }
+        boolean sameSession = sessionId.equals(lastSessionId);
+        lastSessionId = sessionId;
+        Long reason = unsignedValue(report, "reason");
+        Long ended = unsignedValue(report, "ended[s]");
+        boolean historical = Long.valueOf(101).equals(unsignedValue(report, "ID"));
+        boolean active = !historical && (reason != null ? reason == 0 : ended != null && ended == 0);
+        if (historical || reason != null || ended != null) {
+            sessionEnded = !active;
+            updateState("session", OnOffType.from(active));
+        } else if (!sameSession) {
+            sessionEnded = false;
+            updateState("session", UnDefType.UNDEF);
+        }
+        State start = UnDefType.UNDEF;
+        JsonElement started = report.get("started");
+        if (started != null && started.isJsonPrimitive()) {
+            try {
+                start = new DateTimeType(
+                        LocalDateTime.parse(started.getAsString(), SESSION_TIMESTAMP).toInstant(ZoneOffset.UTC));
+            } catch (DateTimeParseException e) {
+                logger.debug("UDP session has no usable UTC start timestamp: {}", started);
+            }
+        }
+        if (start != UnDefType.UNDEF || !sameSession) {
+            updateState("sessionstart", start);
+        }
+        Long startSeconds = unsignedValue(report, "started[s]");
+        Long endSeconds = active ? unsignedValue(report, "Sec") : ended;
+        if (startSeconds != null && endSeconds != null && endSeconds >= startSeconds && (active || endSeconds > 0)) {
+            updateState("sessionduration", new QuantityType<>(endSeconds - startSeconds, Units.SECOND));
+        } else if (!sameSession) {
+            updateState("sessionduration", UnDefType.UNDEF);
+        }
+    }
+
+    private static @Nullable Long unsignedValue(JsonObject report, String field) {
+        JsonElement value = report.get(field);
+        if (value == null || !value.isJsonPrimitive()) {
+            return null;
+        }
+        try {
+            long number = value.getAsBigDecimal().longValueExact();
+            return number >= 0 && number <= 0xFFFFFFFFL ? number : null;
+        } catch (NumberFormatException | ArithmeticException e) {
+            return null;
         }
     }
 
