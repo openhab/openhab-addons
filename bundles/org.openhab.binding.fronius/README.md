@@ -136,6 +136,7 @@ Commands sent to the writable channels are applied to the inverter immediately.
 
 The charge/discharge power limit channels (`min-charge-power`, `max-charge-power`, `min-discharge-power` and `max-discharge-power`) reflect the limit currently in effect: of the active time of use entries of the channel's schedule type whose weekday and time range match the current time (in the time zone configured in openHAB), the most restrictive one determines the value, as the inverter applies it; without a matching entry the channel is `UNDEF`.
 Writing such a channel sets a single all-time entry of its schedule type, entries of the other schedule types are preserved.
+The inverter applies an entry up to, but excluding, its end time; as 23:59 is the latest possible end time (also in the inverter web UI), an entry ending at 23:59, such as this all-time entry, is not in effect during the last minute of the day.
 The write is refused while other entries of that schedule type exist, e.g. schedules added through the [Actions](#actions) or the inverter web UI, so that they are not destroyed.
 
 ### `meter` Thing Channels
