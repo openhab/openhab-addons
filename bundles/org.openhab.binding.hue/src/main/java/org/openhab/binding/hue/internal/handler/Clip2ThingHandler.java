@@ -1038,19 +1038,24 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Process the incoming Resource to initialize the alert channel.
-     *
+     * 
+     * @param channelUID the channel UID of the alert channel.
      * @param resource a Resource possibly with an Alerts element.
      */
-    private void updateAlertChannel(Resource resource) {
+    private void updateAlertChannel(ChannelUID channelUID, Resource resource) {
         Alerts alerts = resource.getAlerts();
         if (Objects.nonNull(alerts)) {
             List<StateOption> stateOptions = alerts.getActionValues().stream().map(action -> action.name())
                     .map(actionId -> new StateOption(actionId, actionId)).toList();
             if (!stateOptions.isEmpty()) {
-                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_ALERT), stateOptions);
+                stateDescriptionProvider.setStateOptions(channelUID, stateOptions);
                 logger.debug("{} -> updateAlerts() found {} associated alerts", resourceId, stateOptions.size());
             }
         }
+    }
+
+    private void updateAlertChannel(String channelID, Resource resource) {
+        updateAlertChannel(mainUID(channelID), resource);
     }
 
     /**
@@ -1271,6 +1276,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             updateBackLightCacheRequiredFields(resource);
             updateEffectChannel(backUID(CHANNEL_2_EFFECT), resource);
             updateColorTemperatureAbsoluteChannel(backUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource);
+            updateAlertChannel(backUID(CHANNEL_2_ALERT), resource);
         }
         updateState(backUID(CHANNEL_2_COLOR), resource.getColorState(), fullUpdate);
         updateState(backUID(CHANNEL_2_COLOR_XY_ONLY), resource.getColorXyState(), fullUpdate);
@@ -1395,7 +1401,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case GROUPED_LIGHT:
                 if (fullUpdate) {
-                    updateAlertChannel(resource);
+                    updateAlertChannel(CHANNEL_2_ALERT, resource);
                     updateLightCacheRequiredFields(resource);
                 }
                 updateState(CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
@@ -1662,24 +1668,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Initialize the lookup maps of resources that contribute to the thing state.
+     * 
+     * @throws InterruptedException
+     * @throws AssetNotLoadedException
+     * @throws ApiException
      */
-    private void updateLookups() {
+    private void updateLookups() throws ApiException, AssetNotLoadedException, InterruptedException {
         if (!disposing) {
             logger.debug("{} -> updateLookups()", resourceId);
             // get supported services
             List<ResourceReference> services = thisResource.getServiceReferences();
 
-            // add supported services to contributorsCache
-            serviceContributorsCache.clear();
-            serviceContributorsCache.putAll(services.stream()
-                    .collect(Collectors.toMap(ResourceReference::getId, r -> new Resource(r.getType()))));
-
-            // add supported services to commandResourceIds
-            commandResourceIds.clear();
-            commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
-                    .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
-
-            // use the metadata archetype to identify the Twilight front and back lights (if any)
+            // resolve the Twilight front and back lights first; any lookup failure propagates before state changes
             String frontId = null;
             String backId = null;
             for (ResourceReference service : services) {
@@ -1693,6 +1693,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     frontId = service.getId();
                 }
             }
+
+            // add supported services to contributorsCache
+            serviceContributorsCache.clear();
+            serviceContributorsCache.putAll(services.stream()
+                    .collect(Collectors.toMap(ResourceReference::getId, r -> new Resource(r.getType()))));
+
+            // add supported services to commandResourceIds
+            commandResourceIds.clear();
+            commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
+                    .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
+
             backLightResourceId = backId;
             if (backId != null) {
                 dynamicsDurations.put(backUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
@@ -1709,20 +1720,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Get the metadata archetype of the light resource referenced by the given service.
      *
-     * @return the archetype, or {@link Archetype#UNKNOWN_ARCHETYPE} if it could not be determined.
+     * @return the archetype, or {@link Archetype#UNKNOWN_ARCHETYPE} if the light has no metadata.
+     * @throws ApiException if a communication error occurred.
+     * @throws AssetNotLoadedException if one of the assets is not loaded.
+     * @throws InterruptedException
      */
-    private Archetype getLightArchetype(ResourceReference lightService) {
-        try {
-            for (Resource light : getBridgeHandler().getResources(lightService).getResources()) {
-                MetaData metaData = light.getMetaData();
-                if (metaData != null) {
-                    return metaData.getArchetype();
-                }
+    private Archetype getLightArchetype(ResourceReference lightService)
+            throws ApiException, AssetNotLoadedException, InterruptedException {
+        for (Resource light : getBridgeHandler().getResources(lightService).getResources()) {
+            MetaData metaData = light.getMetaData();
+            if (metaData != null) {
+                return metaData.getArchetype();
             }
-        } catch (ApiException | AssetNotLoadedException e) {
-            logger.debug("{} -> getLightArchetype() error {}", resourceId, e.getMessage());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
         return Archetype.UNKNOWN_ARCHETYPE;
     }
