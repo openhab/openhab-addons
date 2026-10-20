@@ -86,6 +86,7 @@ import org.openhab.core.types.UnDefType;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Dynamic channel and duration tests
  * @author Nico Brüttner - Command response and delayed refresh tests
+ * @author Nico Brüttner - Weather location, condition and timestamp tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -640,6 +641,119 @@ public class RobonectHandlerTest {
         assertEquals(OnOffType.ON, stateCaptorStarted.getValue());
         assertEquals(1, ((DecimalType) stateCaptorWlan.getValue()).intValue());
         assertEquals(-88, ((DecimalType) stateCaptorWlanStrength.getValue()).intValue());
+    }
+
+    @Test
+    public void shouldRefreshWeatherLocationConditionsAndUnixTimes() {
+        when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser().parse("""
+                {"successful":true,"service":{"location":{"cityid":3208628}},
+                "weather":{"sunrise":1792482616,"sunset":1792519939,
+                "icon":"https://openweathermap.org/img/w/%s.png",
+                "condition":{"toorainy":false,"toocold":true,"toowarm":false,"toodry":false,
+                "toowet":false,"day":false,"night":true},
+                "timestamp":{"date":"ignored","time":"ignored","unix":1792536282}}}
+                """, WeatherInfo.class));
+
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-timestamp"), RefreshType.REFRESH);
+
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid"),
+                new DecimalType(3208628));
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-icon"),
+                new StringType("https://openweathermap.org/img/w/%s.png"));
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-sunrise"),
+                new DateTimeType(ZonedDateTime.of(2026, 10, 20, 7, 50, 16, 0, TIME_ZONE)));
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-sunset"),
+                new DateTimeType(ZonedDateTime.of(2026, 10, 20, 18, 12, 19, 0, TIME_ZONE)));
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-timestamp"),
+                new DateTimeType(ZonedDateTime.of(2026, 10, 20, 22, 44, 42, 0, TIME_ZONE)));
+        for (String condition : new String[] { "too-rainy", "too-warm", "too-dry", "too-wet", "day" }) {
+            verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-condition-" + condition),
+                    OnOffType.OFF);
+        }
+        for (String condition : new String[] { "too-cold", "night" }) {
+            verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-condition-" + condition),
+                    OnOffType.ON);
+        }
+        verify(callbackMock, never()).stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), "weather-location-zip")),
+                any());
+        verify(callbackMock, never())
+                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), "weather-location-country")), any());
+    }
+
+    @Test
+    public void shouldWriteCityIdAndApplyReturnedLocationBeforeDelayedRead() {
+        WeatherInfo result = new ModelParser().parse("""
+                {"successful":true,"service":{"location":{"cityid":3208628}}}
+                """, WeatherInfo.class);
+        when(robonectClientMock.updateWeather("cityid", "3208628")).thenReturn(result);
+        when(robonectClientMock.getWeatherInfo()).thenReturn(result);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid"),
+                new DecimalType(3208628));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid"),
+                new DecimalType(3208628));
+        verify(robonectClientMock, never()).getWeatherInfo();
+        runScheduledRefresh();
+        verify(robonectClientMock).getWeatherInfo();
+    }
+
+    @Test
+    public void shouldWriteZipWithoutLosingLeadingZeroAndApplyReturnedCountry() {
+        WeatherInfo result = new ModelParser().parse("""
+                {"successful":true,"service":{"location":{"zip":"01234","country":"de"}}}
+                """, WeatherInfo.class);
+        when(robonectClientMock.updateWeather("zip", "01234")).thenReturn(result);
+        when(robonectClientMock.getWeatherInfo()).thenReturn(result);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-location-zip"), new StringType("01234"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-location-zip"),
+                new StringType("01234"));
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-location-country"),
+                new StringType("de"));
+        verify(callbackMock, never()).stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid")),
+                any());
+        verify(robonectClientMock, never()).getWeatherInfo();
+        runScheduledRefresh();
+        verify(robonectClientMock).getWeatherInfo();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "-1", "1.5", "2147483648" })
+    public void shouldRejectInvalidWeatherCityIds(String value) {
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid"), new DecimalType(value));
+        verifyNoInteractions(robonectClientMock, commandScheduler);
+    }
+
+    @Test
+    public void shouldNotWriteReadOnlyWeatherChannels() {
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-location-country"), new StringType("de"));
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-condition-too-cold"), OnOffType.ON);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-icon"), new StringType("icon"));
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-sunrise"),
+                new DateTimeType(ZonedDateTime.of(2026, 10, 20, 7, 50, 16, 0, TIME_ZONE)));
+        verifyNoInteractions(robonectClientMock, commandScheduler);
+    }
+
+    @Test
+    public void shouldIgnoreMissingWeatherFieldsAndDateTimeWithoutUnix() {
+        when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser().parse("""
+                {"successful":true,"service":{"location":{}},"weather":{"condition":{},
+                "timestamp":{"date":"2026-10-20","time":"22:44:42"}}}
+                """, WeatherInfo.class));
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-timestamp"), RefreshType.REFRESH);
+        verify(callbackMock, never()).stateUpdated(any(), any());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "invalid", "9223372036854775807" })
+    public void shouldMarkInvalidWeatherTimestampUndefinedAndStillApplyOtherFields(String unix) {
+        when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser().parse("""
+                {"successful":true,"weather":{"timestamp":{"unix":"%s"},"condition":{"toocold":true}}}
+                """.formatted(unix), WeatherInfo.class));
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-timestamp"), RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-timestamp"), UnDefType.UNDEF);
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-condition-too-cold"),
+                OnOffType.ON);
     }
 
     @Test

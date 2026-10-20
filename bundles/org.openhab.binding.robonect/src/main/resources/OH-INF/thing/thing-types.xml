@@ -143,6 +143,62 @@
 			<channel id="weather-humidity" typeId="weatherHumidityType"/>
 			<channel id="weather-day" typeId="weatherSwitchType"/>
 			<channel id="weather-city" typeId="weatherCityType"/>
+			<channel id="weather-location-cityid" typeId="weatherLocationCityIdType">
+				<label>Weather City ID</label>
+				<description>City ID used by the weather service.</description>
+			</channel>
+			<channel id="weather-location-zip" typeId="weatherLocationZipType">
+				<label>Weather ZIP Code</label>
+				<description>ZIP or postal code used by the weather service.</description>
+			</channel>
+			<channel id="weather-location-country" typeId="weatherLocationCountryType">
+				<label>Weather Country</label>
+				<description>Country returned by the weather service.</description>
+			</channel>
+			<channel id="weather-sunrise" typeId="weatherDateTimeType">
+				<label>Weather Sunrise</label>
+				<description>Sunrise time returned by the weather service.</description>
+			</channel>
+			<channel id="weather-sunset" typeId="weatherDateTimeType">
+				<label>Weather Sunset</label>
+				<description>Sunset time returned by the weather service.</description>
+			</channel>
+			<channel id="weather-icon" typeId="weatherIconType">
+				<label>Weather Icon</label>
+				<description>Icon URL or URL template returned by the weather service.</description>
+			</channel>
+			<channel id="weather-timestamp" typeId="weatherDateTimeType">
+				<label>Weather Timestamp</label>
+				<description>Time of the weather data, derived only from timestamp.unix.</description>
+			</channel>
+			<channel id="weather-condition-too-rainy" typeId="weatherSwitchType">
+				<label>Weather Condition Too Rainy</label>
+				<description>Mowing restriction reported by weather.condition.toorainy.</description>
+			</channel>
+			<channel id="weather-condition-too-cold" typeId="weatherSwitchType">
+				<label>Weather Condition Too Cold</label>
+				<description>Mowing restriction reported by weather.condition.toocold.</description>
+			</channel>
+			<channel id="weather-condition-too-warm" typeId="weatherSwitchType">
+				<label>Weather Condition Too Warm</label>
+				<description>Mowing restriction reported by weather.condition.toowarm.</description>
+			</channel>
+			<channel id="weather-condition-too-dry" typeId="weatherSwitchType">
+				<label>Weather Condition Too Dry</label>
+				<description>Mowing restriction reported by weather.condition.toodry.</description>
+			</channel>
+			<channel id="weather-condition-too-wet" typeId="weatherSwitchType">
+				<label>Weather Condition Too Wet</label>
+				<description>Mowing restriction reported by weather.condition.toowet.</description>
+			</channel>
+			<channel id="weather-condition-day" typeId="weatherSwitchType">
+				<label>Weather Condition Day</label>
+				<description>Mowing restriction reported by weather.condition.day.</description>
+			</channel>
+			<channel id="weather-condition-night" typeId="weatherSwitchType">
+				<label>Weather Condition Night</label>
+				<description>Mowing restriction reported by weather.condition.night.</description>
+			</channel>
 			<channel id="weather-remaining" typeId="weatherRemainingType"/>
 			<channel id="weather-enabled" typeId="weatherConfigSwitchType"/>
 			<channel id="weather-interval" typeId="weatherIntervalType"/>
@@ -502,6 +558,31 @@
 	<channel-type id="weatherCityType">
 		<item-type>String</item-type>
 		<label>Weather City</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="weatherLocationCityIdType">
+		<item-type>Number</item-type>
+		<label>Weather City ID</label>
+		<state readOnly="false" pattern="%d"/>
+	</channel-type>
+	<channel-type id="weatherLocationZipType">
+		<item-type>String</item-type>
+		<label>Weather ZIP Code</label>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="weatherLocationCountryType">
+		<item-type>String</item-type>
+		<label>Weather Country</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="weatherDateTimeType">
+		<item-type>DateTime</item-type>
+		<label>Weather Time</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="weatherIconType">
+		<item-type>String</item-type>
+		<label>Weather Icon</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="weatherRemainingType">

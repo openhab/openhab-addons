@@ -14,6 +14,7 @@ public class WeatherService {
     private @Nullable Boolean enable;
     private @Nullable Integer interval;
     private @Nullable WeatherConfig config;
+    private @Nullable WeatherLocation location;
 
     public @Nullable Boolean getEnable() {
         return enable;
@@ -25,5 +26,9 @@ public class WeatherService {
 
     public @Nullable WeatherConfig getConfig() {
         return config;
+    }
+
+    public @Nullable WeatherLocation getLocation() {
+        return location;
     }
 }

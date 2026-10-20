@@ -14,6 +14,7 @@ import com.google.gson.annotations.SerializedName;
  * Weather measurements returned by the Robonect API.
  *
  * @author Nico Brüttner - Initial contribution
+ * @author Nico Brüttner - Weather conditions and timestamps
  */
 @NonNullByDefault
 public class Weather {
@@ -25,6 +26,11 @@ public class Weather {
     private @Nullable Boolean day;
     private @Nullable String city;
     private @Nullable Integer remaining;
+    private @Nullable String sunrise;
+    private @Nullable String sunset;
+    private @Nullable String icon;
+    private @Nullable WeatherCondition condition;
+    private @Nullable Clock timestamp;
 
     public @Nullable Boolean getWeatherBreak() {
         return weatherBreak;
@@ -52,5 +58,25 @@ public class Weather {
 
     public @Nullable Integer getRemaining() {
         return remaining;
+    }
+
+    public @Nullable String getSunrise() {
+        return sunrise;
+    }
+
+    public @Nullable String getSunset() {
+        return sunset;
+    }
+
+    public @Nullable String getIcon() {
+        return icon;
+    }
+
+    public @Nullable WeatherCondition getCondition() {
+        return condition;
+    }
+
+    public @Nullable Clock getTimestamp() {
+        return timestamp;
     }
 }

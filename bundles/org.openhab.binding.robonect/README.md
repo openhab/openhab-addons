@@ -119,6 +119,31 @@ status immediately after the write returns instead of waiting five seconds.
 Timer and job start/end times use the binding's configured `timezone` (default: `Europe/Berlin`). Timer DateTime
 commands are converted back to the mower's local time in the same zone.
 
+The weather endpoint also exposes the following location, condition, and time channels:
+
+| Channel ID                  | Item type | Access     | Response field              |
+|-----------------------------|-----------|------------|-----------------------------|
+| weather-location-cityid     | Number    | Read/write | service.location.cityid     |
+| weather-location-zip        | String    | Read/write | service.location.zip        |
+| weather-location-country    | String    | Read-only  | service.location.country    |
+| weather-sunrise             | DateTime  | Read-only  | weather.sunrise             |
+| weather-sunset              | DateTime  | Read-only  | weather.sunset              |
+| weather-icon                | String    | Read-only  | weather.icon                |
+| weather-timestamp           | DateTime  | Read-only  | weather.timestamp.unix      |
+| weather-condition-too-rainy | Switch    | Read-only  | weather.condition.toorainy  |
+| weather-condition-too-cold  | Switch    | Read-only  | weather.condition.toocold   |
+| weather-condition-too-warm  | Switch    | Read-only  | weather.condition.toowarm   |
+| weather-condition-too-dry   | Switch    | Read-only  | weather.condition.toodry    |
+| weather-condition-too-wet   | Switch    | Read-only  | weather.condition.toowet    |
+| weather-condition-day       | Switch    | Read-only  | weather.condition.day       |
+| weather-condition-night     | Switch    | Read-only  | weather.condition.night     |
+
+Locations can be returned as either a city ID or a ZIP code and country. ZIP codes are strings to preserve leading
+zeroes. City ID and ZIP commands use `cmd=weather&cityid=<value>` and `cmd=weather&zip=<value>`, respectively.
+Weather DateTime channels use the binding's configured time zone. The timestamp channel uses only `timestamp.unix`;
+`timestamp.date` and `timestamp.time` are ignored. The icon channel contains the returned URL template unchanged,
+including any `%s` placeholder.
+
 The `statistics-seek` and `statistics-mowing` String channels contain comma-separated recent durations in minutes.
 Each also has `-min`, `-max`, and `-average` `Number:Time` channels with a minute unit hint.
 

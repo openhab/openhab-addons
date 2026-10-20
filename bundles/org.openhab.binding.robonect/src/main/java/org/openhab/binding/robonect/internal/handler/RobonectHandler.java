@@ -53,6 +53,7 @@ import org.openhab.binding.robonect.internal.model.Battery;
 import org.openhab.binding.robonect.internal.model.BatteryCapacity;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.BladeMotor;
+import org.openhab.binding.robonect.internal.model.Clock;
 import org.openhab.binding.robonect.internal.model.Door;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
 import org.openhab.binding.robonect.internal.model.DoorState;
@@ -85,8 +86,10 @@ import org.openhab.binding.robonect.internal.model.TimerInfo;
 import org.openhab.binding.robonect.internal.model.TimersInfo;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.Weather;
+import org.openhab.binding.robonect.internal.model.WeatherCondition;
 import org.openhab.binding.robonect.internal.model.WeatherConfig;
 import org.openhab.binding.robonect.internal.model.WeatherInfo;
+import org.openhab.binding.robonect.internal.model.WeatherLocation;
 import org.openhab.binding.robonect.internal.model.WeatherService;
 import org.openhab.binding.robonect.internal.model.Weekdays;
 import org.openhab.binding.robonect.internal.model.WifiStation;
@@ -136,6 +139,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Nico Brüttner - Dynamic telemetry and push trigger channels
  * @author Nico Brüttner - Command responses and delayed state refresh
  * @author Nico Brüttner - Write-only push password channel
+ * @author Nico Brüttner - Weather location and condition channels
  */
 public class RobonectHandler extends BaseThingHandler {
 
@@ -275,6 +279,8 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_WEATHER_MAX_HUMIDITY:
             case CHANNEL_WEATHER_SKIP_DAY:
             case CHANNEL_WEATHER_SKIP_NIGHT:
+            case CHANNEL_WEATHER_LOCATION_CITY_ID:
+            case CHANNEL_WEATHER_LOCATION_ZIP:
                 updateWeather(channelUID.getId(), command);
                 break;
             case CHANNEL_PUSH_URL:
@@ -667,9 +673,38 @@ public class RobonectHandler extends BaseThingHandler {
             Integer remaining = weather.getRemaining();
             if (remaining != null)
                 updateState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(remaining, Units.SECOND));
+            updateWeatherDateTime(CHANNEL_WEATHER_SUNRISE, weather.getSunrise());
+            updateWeatherDateTime(CHANNEL_WEATHER_SUNSET, weather.getSunset());
+            if (weather.getIcon() != null) {
+                updateState(CHANNEL_WEATHER_ICON, new StringType(weather.getIcon()));
+            }
+            Clock timestamp = weather.getTimestamp();
+            if (timestamp != null) {
+                updateWeatherDateTime(CHANNEL_WEATHER_TIMESTAMP, timestamp.getUnix());
+            }
+            WeatherCondition condition = weather.getCondition();
+            if (condition != null) {
+                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_RAINY, condition.getTooRainy());
+                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_COLD, condition.getTooCold());
+                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_WARM, condition.getTooWarm());
+                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_DRY, condition.getTooDry());
+                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_WET, condition.getTooWet());
+                updateSwitch(CHANNEL_WEATHER_CONDITION_DAY, condition.getDay());
+                updateSwitch(CHANNEL_WEATHER_CONDITION_NIGHT, condition.getNight());
+            }
         }
         WeatherService service = info.getService();
         if (service != null) {
+            WeatherLocation location = service.getLocation();
+            if (location != null) {
+                updateWeatherNumber(CHANNEL_WEATHER_LOCATION_CITY_ID, location.getCityId());
+                if (location.getZip() != null) {
+                    updateState(CHANNEL_WEATHER_LOCATION_ZIP, new StringType(location.getZip()));
+                }
+                if (location.getCountry() != null) {
+                    updateState(CHANNEL_WEATHER_LOCATION_COUNTRY, new StringType(location.getCountry()));
+                }
+            }
             updateSwitch(CHANNEL_WEATHER_ENABLED, service.getEnable());
             Integer interval = service.getInterval();
             if (interval != null)
@@ -691,7 +726,23 @@ public class RobonectHandler extends BaseThingHandler {
     private void updateWeather(String channelId, Command command) {
         String parameter;
         String value;
-        if (command instanceof OnOffType onOff) {
+        if (channelId.equals(CHANNEL_WEATHER_LOCATION_ZIP) && command instanceof StringType string) {
+            parameter = "zip";
+            value = string.toFullString();
+        } else if (channelId.equals(CHANNEL_WEATHER_LOCATION_CITY_ID) && command instanceof DecimalType decimal) {
+            int cityId;
+            try {
+                cityId = decimal.toBigDecimal().intValueExact();
+            } catch (ArithmeticException e) {
+                logger.debug("Ignoring non-integer or out-of-range weather city ID");
+                return;
+            }
+            if (cityId < 0) {
+                return;
+            }
+            parameter = "cityid";
+            value = Integer.toString(cityId);
+        } else if (command instanceof OnOffType onOff) {
             parameter = switch (channelId) {
                 case CHANNEL_WEATHER_ENABLED -> "service";
                 case CHANNEL_WEATHER_SKIP_DAY -> "day";
@@ -738,7 +789,7 @@ public class RobonectHandler extends BaseThingHandler {
                 return;
             }
 
-            value = String.valueOf(num.intValue());
+            value = String.valueOf(num);
         } else {
             return;
         }
@@ -756,6 +807,18 @@ public class RobonectHandler extends BaseThingHandler {
     private void updateWeatherTemperature(String channel, @Nullable Integer value) {
         if (value != null)
             updateState(channel, new QuantityType<>(value, SIUnits.CELSIUS));
+    }
+
+    private void updateWeatherDateTime(String channel, @Nullable String unix) {
+        if (unix == null) {
+            return;
+        }
+        try {
+            updateState(channel, convertUnixToDateTimeType(unix));
+        } catch (NumberFormatException | DateTimeException e) {
+            logger.debug("Ignoring invalid weather timestamp for {}", channel);
+            updateState(channel, UnDefType.UNDEF);
+        }
     }
 
     /** Updates non-sensitive WLAN and access-point state. */
@@ -1073,6 +1136,10 @@ public class RobonectHandler extends BaseThingHandler {
 
     private void refreshChannels(ChannelUID channelUID) {
         String channelId = channelUID.getId();
+        if (channelId.startsWith("weather-")) {
+            refreshWeatherInfo();
+            return;
+        }
         if (channelId.equals(CHANNEL_PUSH_PASSWORD)) {
             updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
             return;
@@ -1735,11 +1802,11 @@ public class RobonectHandler extends BaseThingHandler {
         // the value in unixTimeSec represents the time on the robot in its configured timezone. However, it does not
         // provide which zone this is. Thus we have to add the zone information from the Thing configuration in order to
         // provide correct results.
-        Instant rawInstant = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
+        Instant rawInstant = Instant.ofEpochSecond(Long.parseLong(unixTimeSec));
 
         ZoneOffset offsetToConfiguredZone = timeZone.getRules().getOffset(rawInstant);
         long adjustedTime = rawInstant.getEpochSecond() - offsetToConfiguredZone.getTotalSeconds();
-        Instant adjustedInstant = Instant.ofEpochMilli(adjustedTime * 1000);
+        Instant adjustedInstant = Instant.ofEpochSecond(adjustedTime);
 
         return new DateTimeType(adjustedInstant);
     }
