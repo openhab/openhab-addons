@@ -311,7 +311,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
             }
             if (DYNAMIC_CHANNELS.contains(channelId)) {
-                clearDynamicsChannel(channelUID);
+                clearDynamicsChannel(isBackLightChannel ? backUID(CHANNEL_2_DYNAMICS) : mainUID(CHANNEL_2_DYNAMICS));
             }
         }
     }
@@ -870,10 +870,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         dynamicsDurations.put(mainUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
-        dynamicsDurations.put(backUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
-
         dynamicsExpireTimes.put(mainUID(CHANNEL_2_DYNAMICS), Instant.MIN);
-        dynamicsExpireTimes.put(backUID(CHANNEL_2_DYNAMICS), Instant.MIN);
 
         disposing = false;
         hasConnectivityIssue = false;
@@ -1698,6 +1695,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
             backLightResourceId = backId;
             if (backId != null) {
+                dynamicsDurations.put(backUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
+                dynamicsExpireTimes.put(backUID(CHANNEL_2_DYNAMICS), Instant.MIN);
                 if (frontId != null) {
                     // enforce that the primary light is the front light
                     commandResourceIds.put(ResourceType.LIGHT, frontId);
