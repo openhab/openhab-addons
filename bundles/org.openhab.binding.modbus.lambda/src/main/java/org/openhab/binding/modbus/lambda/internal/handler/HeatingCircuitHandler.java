@@ -86,7 +86,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
          * Register poll task This is where we set up our regular poller
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
-            logger.debug("Setting up regular polling Address: {}", address);
+            // logger.debug("Setting up regular polling Address: {}", address);
 
             ModbusCommunicationInterface mycomms = HeatingCircuitHandler.this.comms;
             HeatingCircuitConfiguration myconfig = Objects.requireNonNull(HeatingCircuitHandler.this.config);
@@ -261,9 +261,6 @@ public class HeatingCircuitHandler extends BaseThingHandler {
                             break;
                         case CHANNEL_HEATING_CIRCUIT_OPERATING_MODE:
                             writeInt16(baseadress + 6, getInt16Value(command));
-                            break;
-                        case CHANNEL_HEATING_CIRCUIT_TARGET_TEMPERATURE_FLOW_LINE:
-                            writeInt16(baseadress + 7, getScaledInt16Value(command));
                             break;
 
                     }
