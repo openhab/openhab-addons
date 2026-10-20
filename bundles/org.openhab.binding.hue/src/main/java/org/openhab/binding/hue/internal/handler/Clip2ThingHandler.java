@@ -1233,10 +1233,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     boolean updateChannels(Resource resource) {
         try {
-            if (isBackLight(resource)) {
+            if (isBackLightResource(resource)) {
                 return updateBackLightChannels(resource);
             }
-            if (isUnresolvedLight(resource)) {
+            if (isUnresolvedLightResource(resource)) {
                 logger.debug("{} -> updateChannels() ignored not yet resolved light resource {}", resourceId, resource);
                 return false;
             }
@@ -1251,19 +1251,21 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Returns true if the resource is a LIGHT that is the back light.
      */
-    private boolean isBackLight(Resource resource) {
+    private boolean isBackLightResource(Resource resource) {
         return ResourceType.LIGHT == resource.getType() && resource.getId().equals(backLightResourceId);
     }
 
     /**
-     * Returns true if the resource is a LIGHT that is neither the back light nor the main light.
+     * Returns true if the resource is a LIGHT that cannot yet be attributed to this thing's lights, i.e. it is
+     * neither the back light nor the main light. This includes the period before updateLookups() has succeeded,
+     * when neither the main light ID nor the back light ID is known.
      */
-    private boolean isUnresolvedLight(Resource resource) {
+    private boolean isUnresolvedLightResource(Resource resource) {
         if (ResourceType.LIGHT != resource.getType() || backLightResourceId != null) {
             return false;
         }
         String mainLightId = commandResourceIds.get(ResourceType.LIGHT);
-        return mainLightId != null && !mainLightId.equals(resource.getId());
+        return mainLightId == null || !mainLightId.equals(resource.getId());
     }
 
     /**
@@ -1291,6 +1293,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateState(backUID(CHANNEL_2_ON_OFF_ONLY), resource.getOnOffState(), fullUpdate);
         updateState(backUID(CHANNEL_2_EFFECT), resource.getEffectState(), fullUpdate);
         updateState(backUID(CHANNEL_2_ALERT), resource.getAlertState(), fullUpdate);
+        if (thisResource.getType() == ResourceType.DEVICE) {
+            updateState(CHANNEL_2_LAST_UPDATED, new DateTimeType(), fullUpdate);
+        }
         return true;
     }
 

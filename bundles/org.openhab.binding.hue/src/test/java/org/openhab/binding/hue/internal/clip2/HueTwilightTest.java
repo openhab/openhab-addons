@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +32,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
 import org.openhab.binding.hue.internal.handler.Clip2StateDescriptionProvider;
 import org.openhab.binding.hue.internal.handler.Clip2ThingHandler;
@@ -57,6 +60,8 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+
+import com.google.gson.Gson;
 
 /**
  * Tests for the back light handling of {@link Clip2ThingHandler}, as used by Hue Twilight devices.
@@ -449,5 +454,158 @@ class HueTwilightTest {
         // the dynamics command comes first, then the target command, both on the back light channels
         assertEquals(List.of(Map.entry(backUID(CHANNEL_2_DYNAMICS), (Command) duration),
                 Map.entry(backUID(CHANNEL_2_BRIGHTNESS), (Command) target)), f.handler.commands);
+    }
+
+    private static final Gson GSON = new Gson();
+
+    /**
+     * Creates a device Resource whose services reference the given light IDs, in the given order.
+     */
+    private static Resource deviceWithLights(String... lightIds) {
+        StringBuilder services = new StringBuilder();
+        for (String id : lightIds) {
+            if (services.length() > 0) {
+                services.append(',');
+            }
+            services.append("{\"rid\":\"").append(id).append("\",\"rtype\":\"light\"}");
+        }
+        return Objects
+                .requireNonNull(GSON.fromJson("{\"type\":\"device\",\"services\":[" + services + "]}", Resource.class));
+    }
+
+    /**
+     * Creates a light Resource carrying the given archetype metadata.
+     */
+    private static Resource lightWithArchetype(String id, String archetype) {
+        Resource resource = new Resource(ResourceType.LIGHT).setId(id);
+        resource.setMetadata(
+                Objects.requireNonNull(GSON.fromJson("{\"archetype\":\"" + archetype + "\"}", MetaData.class)));
+        return resource;
+    }
+
+    /**
+     * Stubs the bridge handler to return the given light resources by their ID.
+     */
+    private static void stubLights(Fixture f, Map<String, Resource> lights) throws Exception {
+        when(f.bridgeHandler.getResources(any(ResourceReference.class))).thenAnswer(i -> {
+            ResourceReference ref = i.getArgument(0);
+            Resources resources = new Resources();
+            Resource light = lights.get(ref.getId());
+            if (light != null) {
+                resources.getResources().add(light);
+            }
+            return resources;
+        });
+    }
+
+    /**
+     * A Fixture whose front/back light IDs are NOT pre-injected, so they must be discovered by updateLookups().
+     */
+    private static Fixture unresolvedFixture(Resource device) throws Exception {
+        Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH), List.of());
+        f.setBackLightId(null);
+        f.commandIds().clear();
+        f.contributors().clear();
+        setField(Clip2ThingHandler.class, f.handler, "thisResource", device);
+        return f;
+    }
+
+    /**
+     * Invokes the private updateLookups() method; unwraps and rethrows the underlying exception.
+     */
+    private static void updateLookups(Fixture f) throws Exception {
+        var method = Clip2ThingHandler.class.getDeclaredMethod("updateLookups");
+        method.setAccessible(true);
+        try {
+            method.invoke(f.handler);
+        } catch (InvocationTargetException e) {
+            throw e.getCause() instanceof Exception cause ? cause : e;
+        }
+    }
+
+    private static @Nullable Object backLightId(Fixture f) throws Exception {
+        Field field = Clip2ThingHandler.class.getDeclaredField("backLightResourceId");
+        field.setAccessible(true);
+        return field.get(f.handler);
+    }
+
+    /**
+     * Asserts discovery results, then channel creation and command routing based on the discovered IDs.
+     */
+    private static void assertFrontBackResolvedAndRouted(Fixture f) throws Exception {
+        // lookups
+        assertEquals(BACK_ID, backLightId(f));
+        assertEquals(FRONT_ID, f.commandIds().get(ResourceType.LIGHT));
+        assertTrue(f.contributors().containsKey(FRONT_ID));
+        assertTrue(f.contributors().containsKey(BACK_ID));
+
+        // channel creation: back channels are built from the main channel template
+        f.mainSupported().add(CHANNEL_2_SWITCH);
+        f.backSupported().add(CHANNEL_2_SWITCH);
+        f.updateChannelList();
+        assertEquals(1, f.handler.updatedThings.size());
+        List<ChannelUID> uids = f.handler.updatedThings.get(0).getChannels().stream().map(Channel::getUID).toList();
+        assertTrue(uids.contains(mainUID(CHANNEL_2_SWITCH)));
+        assertTrue(uids.contains(backUID(CHANNEL_2_SWITCH)));
+
+        // command routing
+        assertEquals(BACK_ID, f.putCapture(backUID(CHANNEL_2_SWITCH), OnOffType.ON).getId());
+        assertEquals(FRONT_ID, f.putCapture(mainUID(CHANNEL_2_SWITCH), OnOffType.ON).getId());
+    }
+
+    @Test
+    void lookupsFrontThenBackServiceOrder() throws Exception {
+        Fixture f = unresolvedFixture(deviceWithLights(FRONT_ID, BACK_ID));
+        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "twilight_front"), BACK_ID,
+                lightWithArchetype(BACK_ID, "twilight_back")));
+
+        updateLookups(f);
+
+        assertFrontBackResolvedAndRouted(f);
+    }
+
+    @Test
+    void lookupsBackThenFrontServiceOrder() throws Exception {
+        Fixture f = unresolvedFixture(deviceWithLights(BACK_ID, FRONT_ID));
+        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "twilight_front"), BACK_ID,
+                lightWithArchetype(BACK_ID, "twilight_back")));
+
+        updateLookups(f);
+
+        // the front light must be the primary light even though the back light is listed first
+        assertFrontBackResolvedAndRouted(f);
+    }
+
+    @Test
+    void lookupsWithoutTwilightArchetypesHaveNoBackLight() throws Exception {
+        Fixture f = unresolvedFixture(deviceWithLights(FRONT_ID));
+        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "classic_bulb")));
+
+        updateLookups(f);
+
+        assertNull(backLightId(f));
+        assertEquals(FRONT_ID, f.commandIds().get(ResourceType.LIGHT));
+        assertEquals(FRONT_ID, f.putCapture(mainUID(CHANNEL_2_SWITCH), OnOffType.ON).getId());
+    }
+
+    @Test
+    void lookupFailureLeavesStateUntouchedAndRecovers() throws Exception {
+        Fixture f = unresolvedFixture(deviceWithLights(FRONT_ID, BACK_ID));
+
+        // first attempt: the bridge fails
+        when(f.bridgeHandler.getResources(any(ResourceReference.class))).thenThrow(new ApiException("fail"));
+        assertThrows(ApiException.class, () -> updateLookups(f));
+
+        // nothing was half-applied
+        assertNull(backLightId(f));
+        assertTrue(f.commandIds().isEmpty());
+        assertTrue(f.contributors().isEmpty());
+
+        // second attempt: the bridge recovers
+        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "twilight_front"), BACK_ID,
+                lightWithArchetype(BACK_ID, "twilight_back")));
+        updateLookups(f);
+
+        assertFrontBackResolvedAndRouted(f);
     }
 }
