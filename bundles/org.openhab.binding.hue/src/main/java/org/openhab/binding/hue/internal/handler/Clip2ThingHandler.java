@@ -1200,7 +1200,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
             ChannelUID backChannelUID = backUID(channelId);
             ChannelTypeUID mainChannelTypeUID = mainChannel.getChannelTypeUID();
             if (thing.getChannel(backChannelUID) == null && mainChannelTypeUID != null) {
-                ChannelBuilder builder = ChannelBuilder.create(backChannelUID).withType(mainChannelTypeUID)
+                ChannelBuilder builder = ChannelBuilder.create(backChannelUID, mainChannel.getAcceptedItemType())
+                        .withType(mainChannelTypeUID).withKind(mainChannel.getKind())
+                        .withDefaultTags(mainChannel.getDefaultTags()).withProperties(mainChannel.getProperties())
+                        .withAutoUpdatePolicy(mainChannel.getAutoUpdatePolicy())
                         .withConfiguration(mainChannel.getConfiguration());
                 String label = mainChannel.getLabel(); // at this time this should already be localized
                 if (label != null) {
