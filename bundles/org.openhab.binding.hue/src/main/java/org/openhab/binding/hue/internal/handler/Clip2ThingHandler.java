@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,7 +73,6 @@ import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -237,8 +237,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private String resourceId = "?";
     private Resource thisResource;
-    private Duration dynamicsDuration = Duration.ZERO;
-    private Instant dynamicsExpireTime = Instant.MIN;
+
+    private final Map<ChannelUID, Duration> dynamicsDurations = new ConcurrentHashMap<>();
+    private final Map<ChannelUID, Instant> dynamicsExpireTimes = new ConcurrentHashMap<>();
     private Instant buttonGroupLastUpdated = Instant.MIN;
 
     private boolean disposing;
@@ -252,8 +253,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable LegacyLightState legacyLightState;
     private volatile @Nullable String backLightResourceId;
 
-    private @Nullable Future<?> alertResetTask;
-    private @Nullable Future<?> dynamicsResetTask;
+    private final Map<ChannelUID, Future<?>> alertResetTasks = new ConcurrentHashMap<>();
+    private final Map<ChannelUID, Future<?>> dynamicsResetTasks = new ConcurrentHashMap<>();
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
 
@@ -285,16 +286,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Add a channel ID to the supportedChannelIdSet set. If the channel supports dynamics (timed transitions) then add
      * the respective channel as well.
      *
-     * @param channelId the channel ID to add.
+     * @param channelUID the channel UID to add.
      */
-    private void addSupportedChannel(String channelId) {
-        addSupportedChannel(new ChannelUID(thing.getUID(), channelId));
-    }
-
-    private void addSupportedChannel(ChannelUID channelUid) {
+    private void addSupportedChannel(ChannelUID channelUID) {
         if (!disposing && !updateDependenciesDone) {
-            String channelId = channelUid.getIdWithoutGroup();
-            if (BACK_LIGHT_GROUP_ID.equals(channelUid.getGroupId())) {
+            String channelId = channelUID.getIdWithoutGroup();
+            boolean isBackLightChannel = BACK_LIGHT_GROUP_ID.equals(channelUID.getGroupId());
+            if (isBackLightChannel) {
                 if (backLightSupportedChannelIds.add(channelId)) {
                     logger.debug("{} -> addSupportedChannel() '{}' added to back light supported channel set",
                             resourceId, channelId);
@@ -304,19 +302,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         channelId);
                 switch (channelId) { // set speaker write only channel default values
                     case CHANNEL_2_VOLUME:
-                        updateState(channelUid, DEFAULT_SOUND_VOLUME);
+                        updateState(channelUID, DEFAULT_SOUND_VOLUME);
                         break;
                     case CHANNEL_2_DURATION:
-                        updateState(channelUid, DEFAULT_ALARM_DURATION);
+                        updateState(channelUID, DEFAULT_ALARM_DURATION);
                         break;
                     default:
                 }
             }
             if (DYNAMIC_CHANNELS.contains(channelId)) {
-                // TODO fix dynamics on back light
-                clearDynamicsChannel();
+                clearDynamicsChannel(channelUID);
             }
         }
+    }
+
+    private void addSupportedChannel(String channelID) {
+        addSupportedChannel(mainUID(channelID));
     }
 
     /**
@@ -333,23 +334,25 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Clear the dynamics channel parameters.
+     * 
+     * @param channelUID the channel UID to clear
      */
-    private void clearDynamicsChannel() {
-        dynamicsExpireTime = Instant.MIN;
-        dynamicsDuration = Duration.ZERO;
-        updateState(CHANNEL_2_DYNAMICS, new QuantityType<>(0, MetricPrefix.MILLI(Units.SECOND)), true);
+    private void clearDynamicsChannel(ChannelUID channelUID) {
+        dynamicsExpireTimes.put(channelUID, Instant.MIN);
+        dynamicsDurations.put(channelUID, Duration.ZERO);
+        updateState(channelUID, new QuantityType<>(0, MetricPrefix.MILLI(Units.SECOND)), true);
     }
 
     @Override
     public void dispose() {
         logger.debug("{} -> dispose()", resourceId);
         disposing = true;
-        cancelTask(alertResetTask, true);
-        cancelTask(dynamicsResetTask, true);
+        alertResetTasks.values().forEach(task -> cancelTask(task, true));
+        dynamicsResetTasks.values().forEach(task -> cancelTask(task, true));
         cancelTask(updateDependenciesTask, true);
         cancelTask(updateServiceContributorsTask, true);
-        alertResetTask = null;
-        dynamicsResetTask = null;
+        alertResetTasks.clear();
+        dynamicsResetTasks.clear();
         updateDependenciesTask = null;
         updateServiceContributorsTask = null;
         backLightResourceId = null;
@@ -445,9 +448,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
         String putResourceId = null;
         Command command = commandParam;
         String channelId = channelUID.getIdWithoutGroup();
-        boolean isBackLightCommand = backLightResourceId != null && BACK_LIGHT_GROUP_ID.equals(channelUID.getGroupId());
-        Resource cache = isBackLightCommand ? serviceContributorsCache.get(backLightResourceId)
-                : getCachedResource(lightResourceType);
+        String backLightId = backLightResourceId;
+        boolean isBackLight = backLightId != null && BACK_LIGHT_GROUP_ID.equals(channelUID.getGroupId());
+        Resource cache = isBackLight ? serviceContributorsCache.get(backLightId) : getCachedResource(lightResourceType);
 
         ChimeType chimeType = null;
         QuantityType<?> alarmDuration = null;
@@ -455,10 +458,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
         switch (channelId) {
             case CHANNEL_2_ALERT:
                 putResource = Setters.setAlert(new Resource(lightResourceType), command, cache);
-                cancelTask(alertResetTask, false);
-                alertResetTask = scheduler.schedule(
-                        () -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 10,
-                        TimeUnit.SECONDS);
+                Optional.ofNullable(alertResetTasks.get(channelUID)).ifPresent(t -> cancelTask(t, false));
+                alertResetTasks.put(channelUID,
+                        scheduler.schedule(() -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())),
+                                10, TimeUnit.SECONDS));
                 break;
 
             case CHANNEL_2_EFFECT:
@@ -510,8 +513,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 putResource.setOnOff(command);
-                applyOffTransitionWorkAround(command, putResource);
-                applyColorTemperatureWorkAround(command, putResource);
+                applyOffTransitionWorkAround(isBackLight, command, putResource);
+                applyColorTemperatureWorkAround(isBackLight, command, putResource);
                 break;
 
             case CHANNEL_2_COLOR_XY_ONLY:
@@ -524,7 +527,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_ON_OFF_ONLY:
                 putResource = new Resource(lightResourceType).setOnOff(command);
-                applyOffTransitionWorkAround(command, putResource);
+                applyOffTransitionWorkAround(isBackLight, command, putResource);
                 break;
 
             case CHANNEL_2_TEMPERATURE_ENABLED:
@@ -614,16 +617,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     QuantityType<?> durationMs = quantityCommand.toUnit(MetricPrefix.MILLI(Units.SECOND));
                     if (Objects.nonNull(durationMs) && durationMs.longValue() > 0) {
                         Duration duration = Duration.ofMillis(durationMs.longValue());
-                        dynamicsDuration = duration;
-                        dynamicsExpireTime = Instant.now().plus(DYNAMICS_ACTIVE_WINDOW);
+                        dynamicsDurations.put(channelUID, duration);
+                        dynamicsExpireTimes.put(channelUID, Instant.now().plus(DYNAMICS_ACTIVE_WINDOW));
                         clearAfter = DYNAMICS_ACTIVE_WINDOW;
                         logger.debug("{} -> handleCommand() dynamics setting {} valid for {}", resourceId, duration,
                                 clearAfter);
                     }
                 }
-                cancelTask(dynamicsResetTask, false);
-                dynamicsResetTask = scheduler.schedule(() -> clearDynamicsChannel(), clearAfter.toMillis(),
-                        TimeUnit.MILLISECONDS);
+                Optional.ofNullable(dynamicsResetTasks.get(channelUID)).ifPresent(t -> cancelTask(t, false));
+                dynamicsResetTasks.put(channelUID, scheduler.schedule(() -> clearDynamicsChannel(channelUID),
+                        clearAfter.toMillis(), TimeUnit.MILLISECONDS));
                 return;
 
             default:
@@ -646,11 +649,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
 
         if (putResourceId == null) {
-            if (isBackLightCommand) {
-                putResourceId = backLightResourceId;
-            } else {
-                putResourceId = commandResourceIds.get(putResource.getType());
-            }
+            putResourceId = isBackLight ? backLightId : commandResourceIds.get(putResource.getType());
         }
 
         if (putResourceId == null) {
@@ -666,6 +665,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
 
         if (DYNAMIC_CHANNELS.contains(channelId)) {
+            Duration dynamicsDuration = dynamicsDurations.getOrDefault(isBackLight, Duration.ZERO);
+            Instant dynamicsExpireTime = dynamicsExpireTimes.getOrDefault(isBackLight, Instant.MIN);
             if (Instant.now().isBefore(dynamicsExpireTime) && !dynamicsDuration.isZero()
                     && !dynamicsDuration.isNegative()) {
                 if (ResourceType.SCENE == putResource.getType()) {
@@ -773,13 +774,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Apply the off transition work-around for the given command to the given resource.
-     *
+     * 
+     * @param isBackLight if true, the command is for the back light channel, and no workaround is applied.
      * @param command the handled command.
      * @param putResource the resource that will be adjusted if needed.
      */
-    private void applyOffTransitionWorkAround(Command command, Resource putResource) {
+    private void applyOffTransitionWorkAround(boolean isBackLight, Command command, Resource putResource) {
+        if (isBackLight) {
+            return;
+        }
         try {
             if (command == OnOffType.OFF && getBridgeHandler().requiresOffTransitionWorkAround(resourceId)) {
+                Duration dynamicsDuration = dynamicsDurations.getOrDefault(false, Duration.ZERO);
                 putResource.setDynamicsDuration(dynamicsDuration);
                 logger.debug("{} -> applyOffTransitionWorkAround() command={} dynamics.duration={}", resourceId,
                         command, dynamicsDuration);
@@ -792,11 +798,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Some legacy lights have a bi-stable operating mode which makes them forget color temperature
      * commands when they are in soft-off state. This method re-applies the lost color temperature.
-     *
+     * 
+     * @param isBackLight if true, the command is for the back light channel, and no workaround is applied.
      * @param command the handled command.
      * @param putResource the resource that will be adjusted if needed.
      */
-    private void applyColorTemperatureWorkAround(Command command, Resource putResource) {
+    private void applyColorTemperatureWorkAround(boolean isBackLight, Command command, Resource putResource) {
+        if (isBackLight) {
+            return;
+        }
         LegacyLightState legacyState = legacyLightState;
         if (legacyState == null || legacyState.getMode() != LegacyLightState.Mode.COLOR_TEMP) {
             return;
@@ -814,19 +824,24 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Handle a 'dynamics' command for the given channel ID for the given dynamics duration.
      *
-     * @param channelId the ID of the target channel.
+     * @param channelId the ID of the target channel; either 'some-channel' or 'back-light#some-channel'.
      * @param command the new target state.
      * @param duration the transition duration.
      */
     public synchronized void handleDynamicsCommand(String channelId, Command command, QuantityType<?> duration) {
-        if (DYNAMIC_CHANNELS.contains(channelId)) {
-            Channel dynamicsChannel = thing.getChannel(CHANNEL_2_DYNAMICS);
-            Channel targetChannel = thing.getChannel(channelId);
+        String[] parts = channelId.split(ChannelUID.CHANNEL_GROUP_SEPARATOR);
+        String normalizedChannelId = parts.length == 2 ? parts[1] : parts[0];
+        if (DYNAMIC_CHANNELS.contains(normalizedChannelId)) {
+            boolean isBackLight = parts.length == 2 && BACK_LIGHT_GROUP_ID.equals(parts[0]);
+            ChannelUID dynamicsUID = isBackLight ? backUID(CHANNEL_2_DYNAMICS) : mainUID(CHANNEL_2_DYNAMICS);
+            ChannelUID targetUID = isBackLight ? backUID(normalizedChannelId) : mainUID(normalizedChannelId);
+            Channel dynamicsChannel = thing.getChannel(dynamicsUID);
+            Channel targetChannel = thing.getChannel(targetUID);
             if (Objects.nonNull(dynamicsChannel) && Objects.nonNull(targetChannel)) {
                 logger.debug("{} - handleDynamicsCommand() channelId:{}, command:{}, duration:{}", resourceId,
                         channelId, command, duration);
-                handleCommand(dynamicsChannel.getUID(), duration);
-                handleCommand(targetChannel.getUID(), command);
+                handleCommand(dynamicsUID, duration);
+                handleCommand(targetUID, command);
                 return;
             }
         }
@@ -851,8 +866,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateThingFromLegacy();
         updateStatus(ThingStatus.UNKNOWN);
 
-        dynamicsDuration = Duration.ZERO;
-        dynamicsExpireTime = Instant.MIN;
+        dynamicsDurations.put(mainUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
+        dynamicsDurations.put(backUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
+
+        dynamicsExpireTimes.put(mainUID(CHANNEL_2_DYNAMICS), Instant.MIN);
+        dynamicsExpireTimes.put(backUID(CHANNEL_2_DYNAMICS), Instant.MIN);
 
         disposing = false;
         hasConnectivityIssue = false;
@@ -1124,9 +1142,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             if (!newBackChannels.isEmpty() || keptChannels.size() != thing.getChannels().size()) {
                 if (logger.isDebugEnabled()) {
-                    thing.getChannels().stream().filter(channel -> !keptChannels.contains(channel))
-                            .forEach(channel -> logger.debug("{} -> updateChannelList() removing unused channel '{}'",
-                                    resourceId, channel.getUID().getId()));
+                    Set<ChannelUID> keptUids = keptChannels.stream().map(Channel::getUID).collect(Collectors.toSet());
+                    thing.getChannels().stream().map(Channel::getUID).filter(uid -> !keptUids.contains(uid))
+                            .forEach(uid -> logger.debug("{} -> updateChannelList() removing unused channel '{}'",
+                                    resourceId, uid.getId()));
                 }
                 updateThing(editThing().withChannels(keptChannels).build());
 
@@ -1182,7 +1201,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (thing.getChannel(back) == null) {
                 ChannelTypeUID typeUid = front.getChannelTypeUID();
                 if (typeUid != null) {
-                    ChannelBuilder builder = ChannelBuilder.create(back).withType(typeUid);
+                    ChannelBuilder builder = ChannelBuilder.create(back).withType(typeUid)
+                            .withConfiguration(front.getConfiguration());
                     String label = front.getLabel();
                     if (label != null) {
                         builder.withLabel(label);
@@ -1190,10 +1210,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     String description = front.getDescription();
                     if (description != null) {
                         builder.withDescription(description);
-                    }
-                    Configuration configuration = front.getConfiguration();
-                    if (configuration != null) {
-                        builder.withConfiguration(configuration);
                     }
                     backLightChannels.add(builder.build());
                     logger.debug("{} -> buildBackLightChannels() adding channel '{}'", resourceId, back);
@@ -1255,20 +1271,30 @@ public class Clip2ThingHandler extends BaseThingHandler {
         boolean fullUpdate = resource.hasFullState();
         if (fullUpdate) {
             updateBackLightCacheRequiredFields(resource);
-            updateEffectChannel(resource, backUID(CHANNEL_2_EFFECT));
-            updateColorTemperatureAbsoluteChannel(resource, backUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE));
+            updateEffectChannel(backUID(CHANNEL_2_EFFECT), resource);
+            updateColorTemperatureAbsoluteChannel(backUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource);
         }
         updateState(backUID(CHANNEL_2_COLOR), resource.getColorState(), fullUpdate);
         updateState(backUID(CHANNEL_2_COLOR_XY_ONLY), resource.getColorXyState(), fullUpdate);
         updateState(backUID(CHANNEL_2_COLOR_TEMP_PERCENT), resource.getColorTemperaturePercentState(), fullUpdate);
         updateState(backUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource.getColorTemperatureAbsoluteState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_EFFECT), resource.getEffectState(), fullUpdate);
         updateState(backUID(CHANNEL_2_BRIGHTNESS), resource.getBrightnessState(), fullUpdate);
         updateState(backUID(CHANNEL_2_DIMMING_ONLY), resource.getDimmingState(), fullUpdate);
         updateState(backUID(CHANNEL_2_SWITCH), resource.getSwitchState(), fullUpdate);
         updateState(backUID(CHANNEL_2_ON_OFF_ONLY), resource.getOnOffState(), fullUpdate);
+        updateState(backUID(CHANNEL_2_EFFECT), resource.getEffectState(), fullUpdate);
         updateState(backUID(CHANNEL_2_ALERT), resource.getAlertState(), fullUpdate);
         return true;
+    }
+
+    /**
+     * Create the main channel UID for the given channel ID.
+     *
+     * @param channelId the channel ID.
+     * @return the main channel UID.
+     */
+    private ChannelUID mainUID(String channelId) {
+        return new ChannelUID(thing.getUID(), channelId);
     }
 
     /**
@@ -1333,8 +1359,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (fullUpdate) {
                     updateLightProperties(resource);
                     updateLightCacheRequiredFields(resource);
-                    updateEffectChannel(resource);
-                    updateColorTemperatureAbsoluteChannel(resource);
+                    updateEffectChannel(CHANNEL_2_EFFECT, resource);
+                    updateColorTemperatureAbsoluteChannel(CHANNEL_2_EFFECT, resource);
                     if (legacyState != null && legacyColor != null && colorTemp != null) {
                         legacyState.setParameters(legacyColor, colorTemp.getMirek());
                         logger.debug("{} -> updateChannels() initialised operating mode work-around legacy state {}",
@@ -1567,13 +1593,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Process the incoming Resource to initialize the fixed resp. timed effects channel.
      *
+     * @param channelUID the channel UID of the effects channel.
      * @param resource a Resource possibly containing a fixed and/or timed effects element.
      */
-    public void updateEffectChannel(Resource resource) {
-        updateEffectChannel(resource, new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT));
-    }
-
-    public void updateEffectChannel(Resource resource, ChannelUID channelUID) {
+    public void updateEffectChannel(ChannelUID channelUID, Resource resource) {
         Effects fixedEffects = resource.getFixedEffects();
         TimedEffects timedEffects = resource.getTimedEffects();
         List<StateOption> stateOptions = Stream
@@ -1589,17 +1612,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
     }
 
+    public void updateEffectChannel(String channelID, Resource resource) {
+        updateEffectChannel(mainUID(channelID), resource);
+    }
+
     /**
      * Process the incoming Resource to initialize the colour temperature absolute channel's state description based on
      * the minimum and maximum values supported by the lamp's Mirek schema.
-     *
+     * 
+     * @param channelUID the channel UID of the color temperature absolute channel.
      * @param resource a Resource possibly containing a color temperature element and respective Mirek schema element.
      */
-    private void updateColorTemperatureAbsoluteChannel(Resource resource) {
-        updateColorTemperatureAbsoluteChannel(resource, new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE));
-    }
-
-    private void updateColorTemperatureAbsoluteChannel(Resource resource, ChannelUID channelUID) {
+    private void updateColorTemperatureAbsoluteChannel(ChannelUID channelUID, Resource resource) {
         ColorTemperature colorTemperature = resource.getColorTemperature();
         if (colorTemperature != null) {
             MirekSchema mirekSchema = colorTemperature.getMirekSchema();
@@ -1608,6 +1632,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         1000000 / mirekSchema.getMirekMinimum());
             }
         }
+    }
+
+    private void updateColorTemperatureAbsoluteChannel(String channelID, Resource resource) {
+        updateColorTemperatureAbsoluteChannel(mainUID(channelID), resource);
     }
 
     /**
@@ -1888,14 +1916,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Note: the particular 'UnDefType.UNDEF' value of the state argument is used to specially indicate the undefined
      * state, but yet that its channel shall nevertheless continue to be present in the thing.
      *
-     * @param channelID the id of the channel.
+     * @param channelUID the UID of the channel.
      * @param state the new state of the channel.
      * @param fullUpdate if true always update the channel, otherwise only update if state is not 'UNDEF'.
      */
-    private void updateState(String channelID, State state, boolean fullUpdate) {
-        updateState(new ChannelUID(thing.getUID(), channelID), state, fullUpdate);
-    }
-
     private void updateState(ChannelUID channelUID, State state, boolean fullUpdate) {
         boolean isDefined = state != UnDefType.NULL;
         Channel channel = thing.getChannel(channelUID);
@@ -1918,6 +1942,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (fullUpdate && isDefined) {
             addSupportedChannel(channelUID);
         }
+    }
+
+    private void updateState(String channelID, State state, boolean fullUpdate) {
+        updateState(mainUID(channelID), state, fullUpdate);
     }
 
     /**
