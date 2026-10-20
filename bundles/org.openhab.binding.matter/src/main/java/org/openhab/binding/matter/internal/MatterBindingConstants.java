@@ -467,6 +467,8 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_DESC_NODE_GENERATE_NEW_PAIRING_CODE = "@text/thing-action.node.generateNewPairingCode.description";
     public static final String THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_MANUAL_PAIRING_CODE = "@text/thing-action.node.generateNewPairingCode.manual-pairing-code.label";
     public static final String THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_QR_PAIRING_CODE = "@text/thing-action.node.generateNewPairingCode.qr-pairing-code.label";
+    public static final String THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_VALID_UNTIL = "@text/thing-action.node.generateNewPairingCode.valid-until.label";
+    public static final String THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_RESULT = "@text/thing-action.node.generateNewPairingCode.result.label";
     public static final String THING_ACTION_LABEL_NODE_DECOMMISSION = "@text/thing-action.node.decommission.label";
     public static final String THING_ACTION_DESC_NODE_DECOMMISSION = "@text/thing-action.node.decommission.description";
     public static final String THING_ACTION_LABEL_NODE_DECOMMISSION_RESULT = "@text/thing-action.node.decommission.result.label";
@@ -502,6 +504,7 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_STARTED = "@text/thing-action.result.firmware-update-started";
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_CANCELLED = "@text/thing-action.result.firmware-update-cancelled";
     public static final String THING_ACTION_RESULT_ICD_STAY_ACTIVE = "@text/thing-action.result.icd-stay-active";
+    public static final String THING_ACTION_RESULT_PAIRING_CODE_VALID_UNTIL = "@text/thing-action.result.pairing-code-valid-until";
 
     // Matter OTBR Actions
     public static final String THING_ACTION_LABEL_OTBR_LOAD_EXTERNAL_DATASET = "@text/thing-action.otbr.loadExternalDataset.label";

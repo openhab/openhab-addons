@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.matter.internal.actions;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +40,7 @@ import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.ActionOutputs;
 import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -61,10 +65,13 @@ public class MatterNodeActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     protected @Nullable NodeHandler handler;
     private final TranslationService translationService;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public MatterNodeActions(@Reference TranslationService translationService) {
+    public MatterNodeActions(@Reference TranslationService translationService,
+            @Reference TimeZoneProvider timeZoneProvider) {
         this.translationService = translationService;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -82,7 +89,9 @@ public class MatterNodeActions implements ThingActions {
     @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_GENERATE_NEW_PAIRING_CODE)
     public @ActionOutputs({
             @ActionOutput(name = "manualPairingCode", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_MANUAL_PAIRING_CODE, type = "java.lang.String"),
-            @ActionOutput(name = "qrPairingCode", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_QR_PAIRING_CODE, type = "qrCode") }) Map<String, Object> generateNewPairingCode() {
+            @ActionOutput(name = "qrPairingCode", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_QR_PAIRING_CODE, type = "qrCode"),
+            @ActionOutput(name = "validUntil", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_VALID_UNTIL, type = "java.lang.String"),
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_RESULT, type = "java.lang.String") }) Map<String, Object> generateNewPairingCode() {
         NodeHandler handler = this.handler;
         if (handler != null) {
             MatterControllerClient client = handler.getClient();
@@ -90,18 +99,26 @@ public class MatterNodeActions implements ThingActions {
                 try {
                     PairingCodes code = client.enhancedCommissioningWindow(handler.getNodeId()).get(30,
                             TimeUnit.SECONDS);
-                    return Map.of("manualPairingCode", code.manualPairingCode, "qrPairingCode", code.qrPairingCode);
+                    ZonedDateTime closes = ZonedDateTime.now(timeZoneProvider.getTimeZone())
+                            .plusSeconds(code.commissioningTimeout);
+                    String validUntil = translationService.getTranslation(
+                            MatterBindingConstants.THING_ACTION_RESULT_PAIRING_CODE_VALID_UNTIL,
+                            closes.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+                                    .withLocale(translationService.getLocaleProvider().getLocale())),
+                            code.commissioningTimeout / 60);
+                    return Map.of("manualPairingCode", code.manualPairingCode, "qrPairingCode", code.qrPairingCode,
+                            "validUntil", validUntil);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.debug("Failed to generate new pairing code for device {}", handler.getNodeId(), e);
+                    return Map.of("result", errorText(e));
                 } catch (ExecutionException | TimeoutException | JsonParseException e) {
                     logger.debug("Failed to generate new pairing code for device {}", handler.getNodeId(), e);
+                    return Map.of("result", errorText(e));
                 }
             }
         }
-        return Map.of("manualPairingCode",
-                translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER),
-                "qrPairingCode",
+        return Map.of("result",
                 translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER));
     }
 
@@ -118,16 +135,10 @@ public class MatterNodeActions implements ThingActions {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.debug("Failed to decommission device {}", handler.getNodeId(), e);
-                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                    return errorText(e);
                 } catch (ExecutionException | TimeoutException e) {
                     logger.debug("Failed to decommission device {}", handler.getNodeId(), e);
-                    if (e.getCause() instanceof MatterRequestException requestException) {
-                        MatterErrorCode errorCode = requestException.getErrorCode();
-                        if (errorCode != null) {
-                            return translationService.getTranslation(errorCode.getTranslationKey());
-                        }
-                    }
-                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                    return errorText(e);
                 }
             }
         }
@@ -282,5 +293,15 @@ public class MatterNodeActions implements ThingActions {
             }
         }
         return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    private String errorText(Exception e) {
+        if (e.getCause() instanceof MatterRequestException requestException) {
+            MatterErrorCode errorCode = requestException.getErrorCode();
+            if (errorCode != null) {
+                return translationService.getTranslation(errorCode.getTranslationKey());
+            }
+        }
+        return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
     }
 }

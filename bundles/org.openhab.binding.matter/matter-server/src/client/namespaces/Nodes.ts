@@ -295,13 +295,15 @@ export class Nodes {
      */
     async enhancedCommissioningWindow(nodeId: number | string, timeout = 900) {
         const node = this.controllerNode.getNode(nodeId);
-        const { qrPairingCode, manualPairingCode } = await node.openEnhancedCommissioningWindow(Seconds(timeout));
+        const { qrPairingCode, manualPairingCode, commissioningTimeout } = await node.openEnhancedCommissioningWindow(
+            Seconds(timeout),
+        );
 
         logger.info(`Enhanced Commissioning Window for node ${nodeId} opened`);
         logger.debug(QrCode.get(qrPairingCode));
         logger.debug(`QR Code URL: https://project-chip.github.io/connectedhomeip/qrcode.html?data=${qrPairingCode}`);
         logger.info(`Manual pairing code: ${manualPairingCode}`);
-        return { qrPairingCode, manualPairingCode };
+        return { qrPairingCode, manualPairingCode, commissioningTimeout: Seconds.of(commissioningTimeout) };
     }
 
     /**

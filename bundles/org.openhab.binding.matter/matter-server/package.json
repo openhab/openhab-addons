@@ -33,9 +33,9 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
-        "@matter/dcl-data": "2026.10.10",
-        "@matter/main": "0.18.0-alpha.0-20261008-6066b7499",
-        "@matter/node": "0.18.0-alpha.0-20261008-6066b7499",
+        "@matter/dcl-data": "2026.10.18",
+        "@matter/main": "0.18.0-alpha.0-20261019-cd4d8de3f",
+        "@matter/node": "0.18.0-alpha.0-20261019-cd4d8de3f",
         "ws": "^8.18.0",
         "yargs": "^17.7.2"
     },

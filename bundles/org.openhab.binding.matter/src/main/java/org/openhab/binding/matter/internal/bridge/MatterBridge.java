@@ -66,6 +66,10 @@ import org.openhab.core.items.ItemRegistryChangeListener;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.service.ReadyMarker;
+import org.openhab.core.service.ReadyMarkerFilter;
+import org.openhab.core.service.ReadyService;
+import org.openhab.core.service.StartLevelService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.events.ThingStatusInfoChangedEvent;
@@ -95,7 +99,7 @@ import com.google.gson.JsonParseException;
         EventSubscriber.class }, configurationPid = MatterBridge.CONFIG_PID, property = Constants.SERVICE_PID + "="
                 + MatterBridge.CONFIG_PID)
 @ConfigurableService(category = "io", label = "Matter Bridge", description_uri = MatterBridge.CONFIG_URI)
-public class MatterBridge implements MatterClientListener, EventSubscriber {
+public class MatterBridge implements MatterClientListener, EventSubscriber, ReadyService.ReadyTracker {
     private final Logger logger = LoggerFactory.getLogger(MatterBridge.class);
     protected static final String CONFIG_PID = "org.openhab.matter";
     protected static final String CONFIG_URI = "io:matter";
@@ -120,7 +124,12 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
     private ItemChannelLinkRegistry itemChannelLinkRegistry;
     private MatterWebsocketService websocketService;
     private ConfigurationAdmin configAdmin;
+    private ReadyService readyService;
     private MatterBridgeSettings settings;
+    // The bridge waits until openHAB has loaded items, metadata and links. Paired apps delete devices missing from the
+    // bridge, so starting with a partial item list loses their room setup.
+    private volatile boolean startLevelReached = false;
+    private volatile boolean settingsApplied = false;
 
     private final ItemRegistryChangeListener itemRegistryChangeListener;
     private final RegistryChangeListener<Metadata> metadataRegistryChangeListener;
@@ -138,19 +147,21 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
     @Activate
     public MatterBridge(final @Reference ItemRegistry itemRegistry, final @Reference MetadataRegistry metadataRegistry,
             final @Reference MatterWebsocketService websocketService, final @Reference ConfigurationAdmin configAdmin,
-            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        this(itemRegistry, metadataRegistry, websocketService, configAdmin, itemChannelLinkRegistry,
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
+            final @Reference ReadyService readyService) {
+        this(itemRegistry, metadataRegistry, websocketService, configAdmin, itemChannelLinkRegistry, readyService,
                 new MatterBridgeClient());
     }
 
     MatterBridge(ItemRegistry itemRegistry, MetadataRegistry metadataRegistry, MatterWebsocketService websocketService,
-            ConfigurationAdmin configAdmin, ItemChannelLinkRegistry itemChannelLinkRegistry,
+            ConfigurationAdmin configAdmin, ItemChannelLinkRegistry itemChannelLinkRegistry, ReadyService readyService,
             MatterBridgeClient client) {
         this.itemRegistry = itemRegistry;
         this.metadataRegistry = metadataRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.websocketService = websocketService;
         this.configAdmin = configAdmin;
+        this.readyService = readyService;
         this.client = client;
         this.settings = new MatterBridgeSettings();
 
@@ -234,15 +245,19 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
         // if this returns true, we will wait for @Modified to be called after the config is persisted
         if (!parseInitialConfig(properties)) {
             this.settings = (new Configuration(properties)).as(MatterBridgeSettings.class);
+            settingsApplied = true;
             if (this.settings.enableBridge) {
                 scheduleConnect();
             }
         }
+        readyService.registerTracker(this, new ReadyMarkerFilter().withType(StartLevelService.STARTLEVEL_MARKER_TYPE)
+                .withIdentifier(Integer.toString(StartLevelService.STARTLEVEL_MODEL)));
     }
 
     @Deactivate
     public void deactivate() {
         logger.debug("Deactivating Matter Bridge");
+        readyService.unregisterTracker(this);
         itemRegistry.removeRegistryChangeListener(itemRegistryChangeListener);
         metadataRegistry.removeRegistryChangeListener(metadataRegistryChangeListener);
         itemChannelLinkRegistry.removeRegistryChangeListener(itemChannelLinkRegistryChangeListener);
@@ -276,6 +291,7 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
         }
 
         this.settings = settings;
+        settingsApplied = true;
 
         if (!settings.enableBridge) {
             stopClient();
@@ -295,6 +311,19 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
         if (this.settings.enableBridge) {
             scheduleConnect();
         }
+    }
+
+    @Override
+    public void onReadyMarkerAdded(ReadyMarker readyMarker) {
+        startLevelReached = true;
+        if (settingsApplied && settings.enableBridge) {
+            scheduleConnect();
+        }
+    }
+
+    @Override
+    public void onReadyMarkerRemoved(ReadyMarker readyMarker) {
+        startLevelReached = false;
     }
 
     @Override
@@ -402,6 +431,10 @@ public class MatterBridge implements MatterClientListener, EventSubscriber {
     }
 
     private synchronized void connectClient() {
+        if (!startLevelReached) {
+            logger.debug("Waiting for openHAB to load items before starting the Matter Bridge");
+            return;
+        }
         if (client.isConnected()) {
             logger.debug("Already Connected, returning");
             return;

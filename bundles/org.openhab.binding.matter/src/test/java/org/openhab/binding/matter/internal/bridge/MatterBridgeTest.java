@@ -48,6 +48,9 @@ import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.service.ReadyMarker;
+import org.openhab.core.service.ReadyService;
+import org.openhab.core.service.StartLevelService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
@@ -96,7 +99,7 @@ class MatterBridgeTest {
         when(configAdmin.getConfiguration(anyString())).thenReturn(mock(Configuration.class));
 
         bridge = new MatterBridge(itemRegistry, metadataRegistry, mock(MatterWebsocketService.class), configAdmin,
-                linkRegistry, client);
+                linkRegistry, mock(ReadyService.class), client);
     }
 
     @BeforeEach
@@ -128,6 +131,19 @@ class MatterBridgeTest {
 
     private static CompletableFuture<String> itemError() {
         return CompletableFuture.failedFuture(new MatterRequestException("Behaviors have errors", null, true));
+    }
+
+    @Test
+    void testConnectWaitsForStartLevel() {
+        when(client.isConnected()).thenReturn(false);
+
+        bridge.restart();
+        verify(client, never()).connectWhenReady(any(), any());
+
+        bridge.onReadyMarkerAdded(new ReadyMarker(StartLevelService.STARTLEVEL_MARKER_TYPE,
+                Integer.toString(StartLevelService.STARTLEVEL_MODEL)));
+        bridge.restart();
+        verify(client).connectWhenReady(any(), any());
     }
 
     @Test
