@@ -109,6 +109,8 @@ public enum MiIoDevices {
     HUNMI_COOKER_NORMAL3("hunmi.cooker.normal3", "MiJia Rice Cooker", THING_TYPE_UNSUPPORTED),
     IDELAN_AIRCONDITION_V1("idelan.aircondition.v1", "Jinxing Smart Air Conditioner", THING_TYPE_UNSUPPORTED),
     IJAI_VACUUM_V3("ijai.vacuum.v3", "Mi Robot Vacuum-Mop 2 Pro", THING_TYPE_BASIC),
+    IJAI_VACUUM_V17("ijai.vacuum.v17", "Xiaomi Robot Vacuum S10", THING_TYPE_BASIC),
+    IJAI_VACUUM_V18("ijai.vacuum.v18", "Mijia Robot Vacuum-Mop 3C", THING_TYPE_BASIC),
     IJAI_VACUUM_V19("ijai.vacuum.v19", "Xiaomi Robot Vacuum-Mop 2S", THING_TYPE_BASIC),
     IKEA_LIGHT_LED1545G12("ikea.light.led1545g12", "IKEA E27 white spectrum opal", THING_TYPE_LUMI),
     IKEA_LIGHT_LED1546G12("ikea.light.led1546g12", "IKEA E27 white spectrum clear", THING_TYPE_LUMI),
