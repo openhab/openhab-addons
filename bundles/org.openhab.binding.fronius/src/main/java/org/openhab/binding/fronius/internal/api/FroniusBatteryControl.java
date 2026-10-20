@@ -381,10 +381,14 @@ public class FroniusBatteryControl {
         if (!sharedWeekday) {
             return false;
         }
-        LocalTime aStart = LocalTime.parse(a.timeTable().start(), TIME_FORMATTER);
-        LocalTime aEnd = LocalTime.parse(a.timeTable().end(), TIME_FORMATTER);
-        LocalTime bStart = LocalTime.parse(b.timeTable().start(), TIME_FORMATTER);
-        LocalTime bEnd = LocalTime.parse(b.timeTable().end(), TIME_FORMATTER);
+        LocalTime aStart = a.timeTable().startTime();
+        LocalTime aEnd = a.timeTable().endTime();
+        LocalTime bStart = b.timeTable().startTime();
+        LocalTime bEnd = b.timeTable().endTime();
+        if (aStart == null || aEnd == null || bStart == null || bEnd == null) {
+            // the inverter does not apply entries with an invalid time, so they cannot conflict
+            return false;
+        }
         // schedules that only touch (one ends exactly when the other starts) are valid in the inverter web UI
         return aEnd.isAfter(bStart) && bEnd.isAfter(aStart);
     }

@@ -69,4 +69,17 @@ class FroniusBatteryHandlerTest {
         assertEquals(UnDefType.UNDEF, FroniusBatteryHandler.effectiveLimit(timeOfUse("00:00", "23:59"),
                 ScheduleType.CHARGE_MAX, at(23, 59, 30)));
     }
+
+    @Test
+    void entriesWithAnInvalidTimeAreIgnored() {
+        // the inverter web UI saves "NaN:NaN" as end time when 24:00 is entered, and the inverter ignores such entries
+        TimeOfUseRecords records = new TimeOfUseRecords(new TimeOfUseRecord[] {
+                new TimeOfUseRecord(true, 500, ScheduleType.CHARGE_MAX, new TimeTableRecord("00:00", "NaN:NaN"),
+                        ALL_WEEK),
+                new TimeOfUseRecord(true, 1000, ScheduleType.CHARGE_MAX, new TimeTableRecord("10:00", "12:00"),
+                        ALL_WEEK) });
+
+        assertEquals(new QuantityType<>(1000, Units.WATT),
+                FroniusBatteryHandler.effectiveLimit(records, ScheduleType.CHARGE_MAX, at(11, 0, 0)));
+    }
 }

@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -47,18 +48,20 @@ import org.openhab.core.thing.firmware.types.SemverVersion;
 class FroniusBatteryControlTest {
 
     /**
-     * Simulates the time of use settings of an inverter. The first read returns its snapshot only after another
-     * write or a timeout, so that a concurrent modification gets the chance to interleave with the reader's
+     * Simulates the time of use settings of an inverter. Optionally, the first read returns its snapshot only after
+     * another write or a timeout, so that a concurrent modification gets the chance to interleave with the reader's
      * read-modify-write sequence.
      */
     private static class FakeInverter extends FroniusConfigApiClient {
         private final CountDownLatch firstReadStarted = new CountDownLatch(1);
         private final CountDownLatch written = new CountDownLatch(1);
-        private final AtomicBoolean firstRead = new AtomicBoolean(true);
-        private volatile String timeOfUse = "{\"timeofuse\":[]}";
+        private final AtomicBoolean firstRead;
+        private volatile String timeOfUse;
 
-        FakeInverter() {
+        FakeInverter(String timeOfUse, boolean interleaveFirstRead) {
             super(new FroniusHttpUtil(), new HttpClient());
+            this.timeOfUse = timeOfUse;
+            this.firstRead = new AtomicBoolean(interleaveFirstRead);
         }
 
         @Override
@@ -85,7 +88,7 @@ class FroniusBatteryControlTest {
 
     @Test
     void concurrentModificationsOfTheChannelAndActionPathsDoNotUndoEachOther() throws Exception {
-        FakeInverter inverter = new FakeInverter();
+        FakeInverter inverter = new FakeInverter("{\"timeofuse\":[]}", true);
         SemverVersion firmwareVersion = SemverVersion.fromString("1.41.10");
         // the battery thing (channels) and the deprecated powerinverter actions use separate instances
         FroniusBatteryControl channelControl = new FroniusBatteryControl(inverter, firmwareVersion, "http", "fronius",
@@ -122,5 +125,23 @@ class FroniusBatteryControlTest {
         Set<ScheduleType> scheduleTypes = Arrays.stream(channelControl.getTimeOfUse().records())
                 .map(TimeOfUseRecord::scheduleType).collect(Collectors.toSet());
         assertEquals(Set.of(ScheduleType.CHARGE_MAX, ScheduleType.DISCHARGE_MAX), scheduleTypes);
+    }
+
+    @Test
+    void entriesWithAnInvalidTimeDoNotBreakAddingSchedules() throws Exception {
+        // the inverter web UI saves "NaN:NaN" as end time when 24:00 is entered
+        FakeInverter inverter = new FakeInverter("""
+                {"timeofuse":[{"Active":true,"Power":500,"ScheduleType":"DISCHARGE_MIN",
+                "TimeTable":{"Start":"00:00","End":"NaN:NaN"},
+                "Weekdays":{"Mon":true,"Tue":true,"Wed":true,"Thu":true,"Fri":true,"Sat":true,"Sun":true}}]}
+                """, false);
+        FroniusBatteryControl control = new FroniusBatteryControl(inverter, SemverVersion.fromString("1.41.10"), "http",
+                "fronius", "customer", "secret");
+
+        control.addSchedule(LocalTime.of(22, 0), LocalTime.of(23, 59), ScheduleType.DISCHARGE_MAX,
+                new QuantityType<>(1000, Units.WATT));
+
+        assertEquals(List.of("NaN:NaN", "23:59"),
+                Arrays.stream(control.getTimeOfUse().records()).map(record -> record.timeTable().end()).toList());
     }
 }

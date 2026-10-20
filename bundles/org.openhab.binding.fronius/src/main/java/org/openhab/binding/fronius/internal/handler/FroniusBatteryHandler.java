@@ -16,7 +16,6 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -78,8 +77,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class FroniusBatteryHandler extends FroniusBaseThingHandler {
-
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBatteryHandler.class);
     private final TimeZoneProvider timeZoneProvider;
@@ -389,8 +386,12 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
             if (!record.active() || record.scheduleType() != type || !isActiveOn(record.weekdays(), today)) {
                 continue;
             }
-            LocalTime start = LocalTime.parse(record.timeTable().start(), TIME_FORMATTER);
-            LocalTime end = LocalTime.parse(record.timeTable().end(), TIME_FORMATTER);
+            LocalTime start = record.timeTable().startTime();
+            LocalTime end = record.timeTable().endTime();
+            if (start == null || end == null) {
+                // the inverter does not apply entries with an invalid time
+                continue;
+            }
             // the inverter applies an entry up to, but excluding, its end time, even when it ends at 23:59, so an entry
             // ending at 23:59 is not in effect during the last minute of the day
             if (!now.isBefore(start) && now.isBefore(end)

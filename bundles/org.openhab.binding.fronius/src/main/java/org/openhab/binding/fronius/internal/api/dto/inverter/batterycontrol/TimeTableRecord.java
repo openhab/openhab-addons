@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -23,4 +28,31 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public record TimeTableRecord(@SerializedName("Start") String start, @SerializedName("End") String end) {
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+    /**
+     * @return the start time, or null if it is not a valid time
+     */
+    public @Nullable LocalTime startTime() {
+        return parse(start);
+    }
+
+    /**
+     * @return the end time, or null if it is not a valid time, e.g. "NaN:NaN" as saved by the inverter web UI when
+     *         24:00 is entered
+     */
+    public @Nullable LocalTime endTime() {
+        return parse(end);
+    }
+
+    private static @Nullable LocalTime parse(@Nullable String time) {
+        if (time == null) {
+            return null;
+        }
+        try {
+            return LocalTime.parse(time, TIME_FORMATTER);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
 }
