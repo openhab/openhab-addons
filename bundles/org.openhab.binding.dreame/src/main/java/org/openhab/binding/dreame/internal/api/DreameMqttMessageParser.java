@@ -61,7 +61,7 @@ final class DreameMqttMessageParser {
                 }
             }
             return status;
-        } catch (JsonParseException | IllegalStateException e) {
+        } catch (JsonParseException | IllegalStateException | NumberFormatException | UnsupportedOperationException e) {
             throw new DreameCloudException("Dreame MQTT payload is invalid", e);
         }
     }

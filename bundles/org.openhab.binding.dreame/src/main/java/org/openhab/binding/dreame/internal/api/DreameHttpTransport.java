@@ -88,6 +88,8 @@ final class DreameHttpTransport {
                         response.getContentAsString().length());
             } else if (path.endsWith("/iotfile/getDownloadUrl")) {
                 logger.trace("{} map download URL response received (content omitted)", service);
+            } else if (path.endsWith("/device/sendCommand")) {
+                logger.trace("{} command response received (content omitted)", service);
             } else {
                 logger.trace("{} response for {}: {}", service, path,
                         DreameDiagnostics.sanitize(response.getContentAsString()));

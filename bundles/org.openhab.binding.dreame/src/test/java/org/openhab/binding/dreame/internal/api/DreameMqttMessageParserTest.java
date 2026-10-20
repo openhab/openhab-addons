@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -73,6 +74,24 @@ class DreameMqttMessageParserTest {
         assertNull(status.value(DreameProperty.STATE));
         assertEquals(76, status.integer(DreameProperty.BATTERY_LEVEL, -1));
         assertFalse(status.mapChanged());
+    }
+
+    @Test
+    void mqttParserRejectsMalformedPropertyIdentifiers() {
+        DreameMqttMessageParser parser = new DreameMqttMessageParser();
+        String nonNumericService = """
+                {"data":{"method":"properties_changed","params":[
+                  {"siid":"invalid","piid":1,"value":1}
+                ]}}
+                """;
+        String nullProperty = """
+                {"data":{"method":"properties_changed","params":[
+                  {"siid":3,"piid":null,"value":1}
+                ]}}
+                """;
+
+        assertThrows(DreameCloudException.class, () -> parser.parse(nonNumericService, List.of()));
+        assertThrows(DreameCloudException.class, () -> parser.parse(nullProperty, List.of()));
     }
 
     @Test

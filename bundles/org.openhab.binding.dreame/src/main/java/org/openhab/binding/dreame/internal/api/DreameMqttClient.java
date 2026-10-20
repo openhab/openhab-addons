@@ -58,9 +58,15 @@ public class DreameMqttClient implements MqttCallbackExtended {
 
     public DreameMqttClient(DreameMqttConfiguration configuration, List<DreameProperty> properties,
             Consumer<DreameStatus> listener) {
+        this(configuration, properties, listener, null);
+    }
+
+    DreameMqttClient(DreameMqttConfiguration configuration, List<DreameProperty> properties,
+            Consumer<DreameStatus> listener, @Nullable MqttClient client) {
         this.configuration = configuration;
         this.properties = properties;
         this.listener = listener;
+        this.client = client;
     }
 
     public void connect() throws MqttException {
@@ -158,12 +164,15 @@ public class DreameMqttClient implements MqttCallbackExtended {
         client = null;
         if (mqttClient != null) {
             try {
-                if (mqttClient.isConnected()) {
-                    mqttClient.disconnect();
+                mqttClient.disconnectForcibly(0, 1000, false);
+            } catch (MqttException ignored) {
+                // Also close clients whose connection attempt failed or is still pending.
+            } finally {
+                try {
+                    mqttClient.close(true);
+                } catch (MqttException ignored) {
+                    // No exception text: the MQTT library may include credentials or routing metadata.
                 }
-                mqttClient.close();
-            } catch (MqttException e) {
-                logger.debug("Error while closing Dreame MQTT client: {}", e.getMessage());
             }
         }
     }
