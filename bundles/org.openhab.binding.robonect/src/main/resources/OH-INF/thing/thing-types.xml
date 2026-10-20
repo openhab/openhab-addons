@@ -146,11 +146,11 @@
 			<channel id="weather-remaining" typeId="weatherRemainingType"/>
 			<channel id="weather-enabled" typeId="weatherConfigSwitchType"/>
 			<channel id="weather-interval" typeId="weatherIntervalType"/>
-			<channel id="weather-max-rain" typeId="weatherNumberType"/>
+			<channel id="weather-max-rain" typeId="weatherHumidityType"/>
 			<channel id="weather-min-temperature" typeId="weatherTemperatureType"/>
 			<channel id="weather-max-temperature" typeId="weatherTemperatureType"/>
-			<channel id="weather-min-humidity" typeId="weatherNumberType"/>
-			<channel id="weather-max-humidity" typeId="weatherNumberType"/>
+			<channel id="weather-min-humidity" typeId="weatherHumidityType"/>
+			<channel id="weather-max-humidity" typeId="weatherHumidityType"/>
 			<channel id="weather-skip-day" typeId="weatherConfigSwitchType"/>
 			<channel id="weather-skip-night" typeId="weatherConfigSwitchType"/>
 			<channel id="extension-gpio-1-flash" typeId="extensionSwitchType"/>

@@ -14,7 +14,6 @@ package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -241,8 +240,8 @@ public class RobonectHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_JOB:
-                if (command instanceof OnOffType) {
-                    handleJobCommand(channelUID, command);
+                if (command instanceof OnOffType onOffCommand) {
+                    handleJobCommand(channelUID, onOffCommand);
                 } else {
                     logger.debug("Got job update of type {} but OnOffType is expected.", command.getClass().getName());
                 }
@@ -320,19 +319,19 @@ public class RobonectHandler extends BaseThingHandler {
                 logger.warn("Remote start {} name exceeds 16 characters; truncating it", remoteStart);
                 name = name.substring(0, 16);
             }
-        } else if ((setting.equals("distance") || setting.equals("proportion"))
-                && (command instanceof QuantityType<?> || command instanceof DecimalType)) {
+        } else if ((setting.equals("distance") || setting.equals("proportion")) && (command instanceof Number num)) {
             try {
-                BigDecimal numericValue = command instanceof QuantityType<?> quantity ? quantity.toBigDecimal()
-                        : ((DecimalType) command).toBigDecimal();
-                int value = numericValue.intValueExact();
                 if (setting.equals("distance")) {
+                    int value = num instanceof QuantityType<?> quantity ? quantity.toUnit(SIUnits.METRE).intValue()
+                            : num.intValue();
                     if (value < 0 || value > 300) {
                         logger.warn("Ignoring invalid remote start distance {}", value);
                         return;
                     }
                     distance = value;
                 } else {
+                    int value = num instanceof QuantityType<?> quantity ? quantity.toUnit(Units.PERCENT).intValue()
+                            : num.intValue();
                     if (value < 0 || value > 100) {
                         logger.warn("Ignoring invalid remote start proportion {}", value);
                         return;
@@ -448,14 +447,6 @@ public class RobonectHandler extends BaseThingHandler {
                 LocalTime time = dateTime.getZonedDateTime(timeZone).toLocalTime();
                 parameter = setting;
                 value = time.format(DateTimeFormatter.ofPattern("HH:mm"));
-            } else if (command instanceof DecimalType decimal && (setting.equals("start") || setting.equals("end"))) {
-                int minutes = decimal.intValue();
-                if (minutes < 0 || minutes >= 24 * 60) {
-                    logger.debug("Ignoring invalid timer value {}", minutes);
-                    return;
-                }
-                parameter = setting;
-                value = "%02d:%02d".formatted(minutes / 60, minutes % 60);
             } else {
                 return;
             }
@@ -708,17 +699,46 @@ public class RobonectHandler extends BaseThingHandler {
                 default -> null;
             };
             value = onOff == OnOffType.ON ? "1" : "0";
-        } else if (command instanceof QuantityType<?> quantity) {
+        } else if (command instanceof Number num) {
             parameter = switch (channelId) {
-                case CHANNEL_WEATHER_INTERVAL -> "interval";
-                case CHANNEL_WEATHER_MAX_RAIN -> "rain";
-                case CHANNEL_WEATHER_MIN_TEMPERATURE -> "mintemp";
-                case CHANNEL_WEATHER_MAX_TEMPERATURE -> "maxtemp";
-                case CHANNEL_WEATHER_MIN_HUMIDITY -> "minhum";
-                case CHANNEL_WEATHER_MAX_HUMIDITY -> "maxhum";
+                case CHANNEL_WEATHER_INTERVAL -> {
+                    if (command instanceof QuantityType<?> quantity)
+                        num = quantity.toUnit(Units.MINUTE);
+                    yield "interval";
+                }
+                case CHANNEL_WEATHER_MAX_RAIN -> {
+                    if (command instanceof QuantityType<?> quantity)
+                        num = quantity.toUnit(Units.PERCENT);
+                    yield "rain";
+                }
+                case CHANNEL_WEATHER_MIN_TEMPERATURE -> {
+                    if (command instanceof QuantityType<?> quantity)
+                        num = quantity.toUnit(SIUnits.CELSIUS);
+                    yield "mintemp";
+                }
+                case CHANNEL_WEATHER_MAX_TEMPERATURE -> {
+                    if (command instanceof QuantityType<?> quantity)
+                        num = quantity.toUnit(SIUnits.CELSIUS);
+                    yield "maxtemp";
+                }
+                case CHANNEL_WEATHER_MIN_HUMIDITY -> {
+                    if (command instanceof QuantityType<?> quantity)
+                        num = quantity.toUnit(Units.PERCENT);
+                    yield "minhum";
+                }
+                case CHANNEL_WEATHER_MAX_HUMIDITY -> {
+                    if (command instanceof QuantityType<?> quantity)
+                        num = quantity.toUnit(Units.PERCENT);
+                    yield "maxhum";
+                }
                 default -> null;
             };
-            value = quantity.toBigDecimal().toPlainString();
+
+            if (num == null) {
+                return;
+            }
+
+            value = String.valueOf(num.intValue());
         } else {
             return;
         }
@@ -960,9 +980,11 @@ public class RobonectHandler extends BaseThingHandler {
                 default -> null;
             };
             value = string.toFullString();
-        } else if (command instanceof QuantityType<?> quantity && channelId.equals(CHANNEL_PUSH_INTERVAL)) {
+        } else if (command instanceof Number num && channelId.equals(CHANNEL_PUSH_INTERVAL)) {
             parameter = "interval";
-            value = quantity.toBigDecimal().toPlainString();
+            value = String
+                    .valueOf(command instanceof QuantityType<?> quantity ? quantity.toUnit(Units.SECOND).intValue()
+                            : num.intValue());
         } else {
             return;
         }
@@ -1031,7 +1053,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    private void handleJobCommand(ChannelUID channelUID, Command command) {
+    private void handleJobCommand(ChannelUID channelUID, OnOffType command) {
         cancelCommandRefresh("status");
         JobChannelConfig jobConfig = getThing().getChannel(channelUID.getId()).getConfiguration()
                 .as(JobChannelConfig.class);
