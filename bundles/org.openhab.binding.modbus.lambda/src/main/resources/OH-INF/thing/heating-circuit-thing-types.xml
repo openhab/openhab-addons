@@ -157,7 +157,7 @@
 	<channel-type id="heating-circuit-target-temperature-flow-line-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature Flow Line</label>
-		<state readOnly="false" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 
