@@ -345,4 +345,9 @@
 
 	</thing-type>
 
+	<channel-group-type id="back-light">
+		<label>Back Light</label>
+		<description>Channels of the back light of dual-light devices such as the Hue Twilight</description>
+	</channel-group-type>
+
 </thing:thing-descriptions>

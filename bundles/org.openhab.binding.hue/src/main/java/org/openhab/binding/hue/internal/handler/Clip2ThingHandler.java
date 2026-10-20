@@ -365,6 +365,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         serviceContributorsCache.clear();
         controlIds.clear();
         extendedResourceTypes.clear();
+        dynamicsDurations.clear();
+        dynamicsExpireTimes.clear();
     }
 
     /**
@@ -665,8 +667,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
 
         if (DYNAMIC_CHANNELS.contains(channelId)) {
-            Duration dynamicsDuration = dynamicsDurations.getOrDefault(isBackLight, Duration.ZERO);
-            Instant dynamicsExpireTime = dynamicsExpireTimes.getOrDefault(isBackLight, Instant.MIN);
+            ChannelUID dynamicsUID = isBackLight ? backUID(CHANNEL_2_DYNAMICS) : mainUID(CHANNEL_2_DYNAMICS);
+            Duration dynamicsDuration = dynamicsDurations.getOrDefault(dynamicsUID, Duration.ZERO);
+            Instant dynamicsExpireTime = dynamicsExpireTimes.getOrDefault(dynamicsUID, Instant.MIN);
             if (Instant.now().isBefore(dynamicsExpireTime) && !dynamicsDuration.isZero()
                     && !dynamicsDuration.isNegative()) {
                 if (ResourceType.SCENE == putResource.getType()) {
@@ -785,7 +788,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
         try {
             if (command == OnOffType.OFF && getBridgeHandler().requiresOffTransitionWorkAround(resourceId)) {
-                Duration dynamicsDuration = dynamicsDurations.getOrDefault(false, Duration.ZERO);
+                Duration dynamicsDuration = dynamicsDurations.getOrDefault(mainUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
                 putResource.setDynamicsDuration(dynamicsDuration);
                 logger.debug("{} -> applyOffTransitionWorkAround() command={} dynamics.duration={}", resourceId,
                         command, dynamicsDuration);
@@ -1191,29 +1194,27 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
         List<Channel> backLightChannels = new ArrayList<>();
         for (String channelId : backLightSupportedChannelIds) {
-            Channel front = thing.getChannel(channelId);
-            if (front == null) {
-                logger.debug("{} -> buildBackLightChannels() no front channel '{}' to use as template", resourceId,
+            Channel mainChannel = thing.getChannel(channelId);
+            if (mainChannel == null) {
+                logger.debug("{} -> buildBackLightChannels() no main channel '{}' to use as template", resourceId,
                         channelId);
                 continue;
             }
-            ChannelUID back = backUID(channelId);
-            if (thing.getChannel(back) == null) {
-                ChannelTypeUID typeUid = front.getChannelTypeUID();
-                if (typeUid != null) {
-                    ChannelBuilder builder = ChannelBuilder.create(back).withType(typeUid)
-                            .withConfiguration(front.getConfiguration());
-                    String label = front.getLabel();
-                    if (label != null) {
-                        builder.withLabel(label);
-                    }
-                    String description = front.getDescription();
-                    if (description != null) {
-                        builder.withDescription(description);
-                    }
-                    backLightChannels.add(builder.build());
-                    logger.debug("{} -> buildBackLightChannels() adding channel '{}'", resourceId, back);
+            ChannelUID backChannelUID = backUID(channelId);
+            ChannelTypeUID mainChannelTypeUID = mainChannel.getChannelTypeUID();
+            if (thing.getChannel(backChannelUID) == null && mainChannelTypeUID != null) {
+                ChannelBuilder builder = ChannelBuilder.create(backChannelUID).withType(mainChannelTypeUID)
+                        .withConfiguration(mainChannel.getConfiguration());
+                String label = mainChannel.getLabel(); // at this time this should already be localized
+                if (label != null) {
+                    builder.withLabel(label);
                 }
+                String description = mainChannel.getDescription(); // at this time this should already be localized
+                if (description != null) {
+                    builder.withDescription(description);
+                }
+                backLightChannels.add(builder.build());
+                logger.debug("{} -> buildBackLightChannels() adding channel '{}'", resourceId, backChannelUID);
             }
         }
         return backLightChannels;
@@ -1360,7 +1361,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateLightProperties(resource);
                     updateLightCacheRequiredFields(resource);
                     updateEffectChannel(CHANNEL_2_EFFECT, resource);
-                    updateColorTemperatureAbsoluteChannel(CHANNEL_2_EFFECT, resource);
+                    updateColorTemperatureAbsoluteChannel(CHANNEL_2_COLOR_TEMP_ABSOLUTE, resource);
                     if (legacyState != null && legacyColor != null && colorTemp != null) {
                         legacyState.setParameters(legacyColor, colorTemp.getMirek());
                         logger.debug("{} -> updateChannels() initialised operating mode work-around legacy state {}",

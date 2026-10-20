@@ -74,6 +74,16 @@ Bridge Things support the following channels:
 The Bridge dynamically creates `automation` channels corresponding to the automations in the Hue App;
 the '11111111-2222-3333-4444-555555555555' is the unique id of the respective automation.
 
+### Devices with Two Lights (Hue Twilight)
+
+Some devices, such as the Hue Twilight, contain two independent lights: a front light and a back light.
+The binding detects these devices automatically from the `twilight front` and `twilight back` archetypes reported by the bridge.
+The front light uses the normal channels of the thing, e.g. `color`, `brightness` and `switch` as shown below.
+The back light is exposed in an additional channel group called `back-light`, which provides the same set of channels as the front light, e.g. `back-light#color`, `back-light#brightness` and `back-light#switch`.
+The back light channels are created dynamically, so only the channels that the back light actually supports are shown.
+Commands sent to a `back-light` channel control only the back light, and commands sent to the normal channels control only the front light.
+The `dynamics` channel is also available per light: use `dynamics` for the front light and `back-light#dynamics` for the back light.
+
 ### Channels for Devices
 
 Device things support some of the following channels:
