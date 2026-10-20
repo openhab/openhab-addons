@@ -21,8 +21,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +65,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 @SuppressWarnings("null")
-class Clip2ThingHandlerBackLightTest {
+class HueTwilightTest {
 
     /**
      * Invokes the private updateChannels() method of the handler.
@@ -80,6 +80,7 @@ class Clip2ThingHandlerBackLightTest {
      * A {@link Clip2ThingHandler} subclass that exposes the bridge and records updated things and commands.
      */
     private static class TestHandler extends Clip2ThingHandler {
+
         @Nullable
         Bridge bridge;
         final List<Thing> updatedThings = new ArrayList<>();
@@ -156,9 +157,9 @@ class Clip2ThingHandlerBackLightTest {
             handler.bridge = bridge;
 
             // the handler's scheduler is a protected field of BaseThingHandler
-            setField(handler.getClass().getSuperclass().getSuperclass(), handler, "scheduler", scheduler);
+            setInheritedField(handler, "scheduler", scheduler);
             when(scheduler.schedule(any(Runnable.class), anyLong(), any(TimeUnit.class)))
-                    .thenAnswer(i -> mock(Future.class));
+                    .thenAnswer(i -> mock(ScheduledFuture.class));
 
             setField(Clip2ThingHandler.class, handler, "resourceId", "device-id");
             setField(Clip2ThingHandler.class, handler, "thisResource", new Resource(ResourceType.DEVICE));
@@ -167,6 +168,21 @@ class Clip2ThingHandlerBackLightTest {
 
             when(scheduler.schedule(any(Runnable.class), anyLong(), any(TimeUnit.class)))
                     .thenAnswer(i -> mock(ScheduledFuture.class));
+        }
+
+        private static void setInheritedField(Object target, String name, @Nullable Object value) throws Exception {
+            Class<?> type = target.getClass();
+            while (type != null) {
+                try {
+                    Field field = type.getDeclaredField(name);
+                    field.setAccessible(true);
+                    field.set(target, value);
+                    return;
+                } catch (NoSuchFieldException e) {
+                    type = type.getSuperclass();
+                }
+            }
+            throw new NoSuchFieldException(name);
         }
 
         Channel channel(ChannelUID uid) {
@@ -205,7 +221,7 @@ class Clip2ThingHandlerBackLightTest {
         Object getField(String name) throws Exception {
             Field field = Clip2ThingHandler.class.getDeclaredField(name);
             field.setAccessible(true);
-            return field.get(handler);
+            return Objects.requireNonNull(field.get(handler));
         }
 
         /**
@@ -273,7 +289,7 @@ class Clip2ThingHandlerBackLightTest {
             ResourceReference ref = i.getArgument(0);
             int percent = BACK_ID.equals(ref.getId()) ? 20 : 80;
             Resources resources = new Resources();
-            resources.getResources().add(lightWithBrightness(ref.getId(), percent));
+            resources.getResources().add(lightWithBrightness(Objects.requireNonNull(ref.getId()), percent));
             return resources;
         });
 
