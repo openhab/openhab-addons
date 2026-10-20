@@ -4,49 +4,49 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="wallbox-power-l1">
+	<channel-type id="power-l1">
 		<item-type>Number:Power</item-type>
-		<label>Power L1</label>
-		<description>Power on phase L1</description>
+		<label>Session Power L1</label>
+		<description>Power on phase L1 in the charging session</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-power-l2">
+	<channel-type id="power-l2">
 		<item-type>Number:Power</item-type>
-		<label>Power L2</label>
-		<description>Power on phase L2</description>
+		<label>Session Power L2</label>
+		<description>Power on phase L2 in the charging session</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-power-l3">
+	<channel-type id="power-l3">
 		<item-type>Number:Power</item-type>
-		<label>Power L3</label>
-		<description>Power on phase L3</description>
+		<label>Session Power L3</label>
+		<description>Power on phase L3 in the charging session</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-energy-total">
+	<channel-type id="counters-total">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
 		<description>Energy produced since commissioning</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-energy-solar">
+	<channel-type id="counters-solar">
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy</label>
 		<description>Energy taken from the photovoltaic system</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-soc">
+	<channel-type id="status-soc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Charge</label>
 		<description>Battery state of charge</description>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-min-charge-current">
+	<channel-type id="settings-min-charge-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Minimum Charge Current</label>
 		<description>Lowest charging current allowed</description>
@@ -67,7 +67,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="wallbox-max-charge-current">
+	<channel-type id="settings-max-charge-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Charge Current</label>
 		<description>Highest charging current allowed</description>
@@ -88,7 +88,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="wallbox-number-phases">
+	<channel-type id="settings-number-phases">
 		<item-type>Number</item-type>
 		<label>Number of Phases</label>
 		<description>Number of phases used for charging</description>
@@ -100,101 +100,101 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="wallbox-auto-phase-switch">
+	<channel-type id="settings-auto-phase-switch">
 		<item-type>Switch</item-type>
 		<label>Automatic Phase Switch</label>
 		<description>Whether the wallbox changes the number of phases by itself</description>
 		<state/>
 	</channel-type>
 
-	<channel-type id="wallbox-key-state">
+	<channel-type id="status-key-state">
 		<item-type>Switch</item-type>
 		<label>Key State</label>
 		<description>State of the wallbox key switch</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-plugged">
+	<channel-type id="status-plugged">
 		<item-type>Switch</item-type>
 		<label>Plugged</label>
 		<description>A vehicle is connected</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-locked">
+	<channel-type id="status-locked">
 		<item-type>Switch</item-type>
 		<label>Locked</label>
 		<description>The connector is locked</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-charging">
+	<channel-type id="status-charging">
 		<item-type>Switch</item-type>
 		<label>Charging</label>
 		<description>A charging session is running</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-suspended">
+	<channel-type id="control-suspended">
 		<item-type>Switch</item-type>
 		<label>Suspended</label>
 		<description>Charging is currently suspended</description>
 		<state/>
 	</channel-type>
 
-	<channel-type id="wallbox-toggle">
+	<channel-type id="control-toggle">
 		<item-type>Switch</item-type>
 		<label>Toggle Charging</label>
 		<description>Suspends a running charging session and resumes a suspended one</description>
 		<state/>
 	</channel-type>
 
-	<channel-type id="wallbox-sun-mode">
+	<channel-type id="control-sun-mode">
 		<item-type>Switch</item-type>
 		<label>Sun Mode</label>
 		<description>Charging uses surplus photovoltaic power</description>
 		<state/>
 	</channel-type>
 
-	<channel-type id="wallbox-phase-l1">
+	<channel-type id="last-charge-phase-l1">
 		<item-type>Switch</item-type>
-		<label>Phase L1 Active</label>
-		<description>Whether the wallbox charges on phase L1</description>
+		<label>Session Phase L1</label>
+		<description>Whether the wallbox charged on phase L1 in the last charging session</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-energy-l1">
+	<channel-type id="last-charge-energy-l1">
 		<item-type>Number:Energy</item-type>
-		<label>Energy L1</label>
-		<description>Energy drawn on phase L1</description>
+		<label>Session Energy L1</label>
+		<description>Energy drawn on phase L1 in the last charging session</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-phase-l2">
+	<channel-type id="last-charge-phase-l2">
 		<item-type>Switch</item-type>
-		<label>Phase L2 Active</label>
-		<description>Whether the wallbox charges on phase L2</description>
+		<label>Session Phase L2</label>
+		<description>Whether the wallbox charged on phase L2 in the last charging session</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-energy-l2">
+	<channel-type id="last-charge-energy-l2">
 		<item-type>Number:Energy</item-type>
-		<label>Energy L2</label>
-		<description>Energy drawn on phase L2</description>
+		<label>Session Energy L2</label>
+		<description>Energy drawn on phase L2 in the last charging session</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-phase-l3">
+	<channel-type id="last-charge-phase-l3">
 		<item-type>Switch</item-type>
-		<label>Phase L3 Active</label>
-		<description>Whether the wallbox charges on phase L3</description>
+		<label>Session Phase L3</label>
+		<description>Whether the wallbox charged on phase L3 in the last charging session</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wallbox-energy-l3">
+	<channel-type id="last-charge-energy-l3">
 		<item-type>Number:Energy</item-type>
-		<label>Energy L3</label>
-		<description>Energy drawn on phase L3</description>
+		<label>Session Energy L3</label>
+		<description>Energy drawn on phase L3 in the last charging session</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 

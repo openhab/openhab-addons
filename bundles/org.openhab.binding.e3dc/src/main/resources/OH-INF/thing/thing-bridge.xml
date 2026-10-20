@@ -57,24 +57,6 @@
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="cloudToken" type="text" required="false">
-				<context>password</context>
-				<label>Cloud Token</label>
-				<description>Token of the E3/DC cloud, needed for the AI 360 channels. Copy it from the browser
-					storage of
-					https://my.e3dc.com as described in the binding documentation.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="installationId" type="text" required="false">
-				<label>Installation ID</label>
-				<description>Installation in the E3/DC cloud that owns this power plant.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="storageId" type="text" required="false">
-				<label>Storage ID</label>
-				<description>Storage in the E3/DC cloud whose price based charging is controlled.</description>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</bridge-type>
 

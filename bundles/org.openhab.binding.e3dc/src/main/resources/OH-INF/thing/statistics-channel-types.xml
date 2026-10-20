@@ -29,21 +29,21 @@
 		<item-type>Number:Time</item-type>
 		<label>Poll Duration</label>
 		<description>Time the last request spent on the wire, from sending to the complete answer</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.1f ms" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="statistics-device-wait" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Device Wait</label>
 		<description>Time the device needed to start its answer to the last request</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.1f ms" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="statistics-dispatch-time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Dispatch Time</label>
 		<description>Time openHAB needed to hand the answer of the last poll to the things</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.1f ms" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="statistics-answer-size" advanced="true">

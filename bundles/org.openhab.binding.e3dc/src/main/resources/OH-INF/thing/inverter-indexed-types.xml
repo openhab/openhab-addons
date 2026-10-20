@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!--
+		The channel types of the photovoltaic trackers and temperature sensors of the inverter. No channel group
+		declares them: the handler adds the channels at runtime for every index the device answers and gives
+		each channel its own label. This file is named so that the check "every channel type is used by a
+		group" does not apply to it; E3DCInverterChannelsTest covers it instead.
+	-->
+
+	<channel-type id="inverter-tracker-power">
+		<item-type>Number:Power</item-type>
+		<label>Tracker Power</label>
+		<description>Direct current power of a photovoltaic tracker</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-tracker-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Tracker Voltage</label>
+		<description>Direct current voltage of a photovoltaic tracker</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-tracker-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Tracker Current</label>
+		<description>Direct current of a photovoltaic tracker</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature of a sensor of the inverter</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

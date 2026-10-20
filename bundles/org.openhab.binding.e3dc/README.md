@@ -74,9 +74,6 @@ They show how the device answers for an index it does not have.
 | refreshInterval | integer | Interval the device is polled in seconds, between 1 and 300.      | 5       | no       | no       |
 | historyInterval | integer | Interval the history counters are requested in minutes, between 1 and 1440. Never shorter than `refreshInterval`. | 15      | no       | no       |
 | timeout         | integer | Timeout for a single request in seconds.                          | 10      | no       | yes      |
-| cloudToken      | text    | Token of the E3/DC cloud, needed for the `ai360` channel group.   | N/A     | no       | yes      |
-| installationId  | text    | Installation in the cloud that owns this power plant.             | N/A     | no       | yes      |
-| storageId       | text    | Storage in the cloud whose price based charging is controlled.    | N/A     | no       | yes      |
 
 #### The credentials
 
@@ -120,7 +117,6 @@ whether the device stayed silent or closed the connection. Passwords and the RSC
 
 | Thing Type    | Name         | Type    | Description                                       | Default | Required |
 |---------------|--------------|---------|---------------------------------------------------|---------|----------|
-| `power-plant` | -            | -       | No configuration parameters.                       | -       | -        |
 | `wallbox`     | wallboxIndex | integer | Zero based index of the wallbox on the device.     | 0       | yes      |
 | `power-meter` | meterIndex   | integer | Zero based index of the power meter on the device. | 0       | yes      |
 | `battery`     | batteryIndex | integer | Zero based index of the battery on the device.     | 0       | yes      |
@@ -165,7 +161,6 @@ The channels are grouped per aspect. Power values are reported in `W`, energy co
 | discharge-limit-dcdc      | Number:Power         | Discharge power limit of the DC/DC converter     |
 | discharge-limit-used      | Number:Power         | Discharge power limit currently applied          |
 | discharge-limit-user      | Number:Power         | Discharge power limit set by the user            |
-| set-power                 | Number:Power         | Power the energy manager is currently told to hold |
 | wallbox-discharge-to-car  | Switch               | The house battery may discharge into the car     |
 | wallbox-charge-before-car | Switch               | The house battery is charged before the car      |
 | wallbox-discharge-until   | Number:Dimensionless | State of charge down to which the battery may discharge into the car |
@@ -202,30 +197,36 @@ The channels are grouped per aspect. Power values are reported in `W`, energy co
 | energy-day-l1 | Number:Energy | Energy produced on phase L1 today |
 | energy-day-l2 | Number:Energy | Energy produced on phase L2 today |
 | energy-day-l3 | Number:Energy | Energy produced on phase L3 today |
-| temperature-1 | Number:Temperature | Temperature of sensor 1 of the inverter |
-| temperature-2 | Number:Temperature | Temperature of sensor 2 of the inverter |
-| temperature-3 | Number:Temperature | Temperature of sensor 3 of the inverter |
-| temperature-4 | Number:Temperature | Temperature of sensor 4 of the inverter |
 | ac-frequency | Number:Frequency         | Grid frequency measured by the inverter        |
 | on-grid      | Switch                   | Whether the inverter is connected to the grid   |
 | string-count | Number                   | Number of photovoltaic strings in use           |
-| tracker-1-power | Number:Power          | Direct current power of the first tracker       |
-| tracker-1-voltage | Number:ElectricPotential | Direct current voltage of the first tracker |
-| tracker-1-current | Number:ElectricCurrent | Direct current of the first tracker           |
-| tracker-2-power | Number:Power          | Direct current power of the second tracker      |
-| tracker-2-voltage | Number:ElectricPotential | Direct current voltage of the second tracker |
-| tracker-2-current | Number:ElectricCurrent | Direct current of the second tracker          |
 
-The direct current values are reported once per photovoltaic tracker and carry no index of their own, so
-the trackers are told apart by their position in the answer. The `string-count` channel reports how many
-trackers the device actually uses.
+#### Trackers and temperature sensors
 
-The channels of `tracker-1` and `tracker-2` always exist. The number of trackers depends on the installation,
-so the binding adds `tracker-3-power`, `tracker-3-voltage` and `tracker-3-current` and so on (up to eight
-trackers) as soon as the device reports more than two, and removes them again when it reports fewer. The number
-is taken from `string-count`; when the device does not report it, the binding counts the direct current values
-in the answer. With one tracker only the channels of `tracker-1` carry values. Channels of a tracker that was
-added at runtime appear with the first poll after the thing came online.
+The number of PV trackers and temperature sensors depends on the installation, and the device reports the number
+of used strings wrongly (an S10 with two connected strings reports one). The binding therefore does not rely on
+that number. On every poll it asks the inverter for the indexes 0 to 5 of the trackers and of the temperature
+sensors, each one with its own request. An index the inverter does not have is answered with an error, which
+does not stop the others.
+
+For every index that answers with a value the binding creates channels at runtime, numbered from 1:
+
+| Channel                | Type                     | Description                                           |
+|------------------------|--------------------------|-------------------------------------------------------|
+| tracker-N-power        | Number:Power             | Direct current power of tracker N                      |
+| tracker-N-voltage      | Number:ElectricPotential | Direct current voltage of tracker N                    |
+| tracker-N-current      | Number:ElectricCurrent   | Direct current of tracker N                            |
+| temperature-N          | Number:Temperature       | Temperature of sensor N of the inverter                |
+
+- The channels appear with the first poll after the thing came online. A tracker that is connected later
+  gets its channels as soon as the inverter answers for it.
+- Channels are only added, never removed, so the link of an item survives a poll the device fails to answer.
+  Delete a channel of a tracker that is gone for good by hand.
+- A tracker that is installed but not connected may answer with zeros, in which case it gets channels too.
+- Earlier versions declared `tracker-1`, `tracker-2` and `temperature-1` to `temperature-4` in the thing
+  description. Their channels keep their ids and are converted to the generic channel types, so existing links
+  stay.
+- The `string-count` channel reports the number of strings the device says it uses.
 
 ### Channel Group `system`
 
@@ -250,10 +251,7 @@ added at runtime appear with the first poll after the thing came online.
 Locks, power mode, manual charge and idle periods of the battery.
 
 > **Warning:** Battery controlling can be handled from different clients and the "mixed use" can cause trouble.
->
-> - **AI 360** - battery handling in control of the internal E3DC power plant control
-> - **Block charge / discharge switch** - easy handling to enable / disable charging and discharging via rules
-> - **Manual schedules** via the MyE3DC app or rules - your own handling!
+> The ways are the **AI 360** (battery handling in control of the internal E3DC power plant control), the **block charge / discharge switch** (easy handling to enable / disable charging and discharging via rules) and **manual schedules** via the MyE3DC app or rules (your own handling!).
 >
 > Decide for one of these ways at a time. They write to the same idle periods and power settings of the device and can overwrite each other.
 | Channel                   | Type         | Description                                     |
@@ -267,8 +265,6 @@ Locks, power mode, manual charge and idle periods of the battery.
 | power-limits-used         | Switch       | Configured power limits are active               |
 | idle-periods-enabled      | Switch       | Whether the device uses the configured idle periods, can be switched |
 | idle-periods              | String       | The idle periods, one per line; writing replaces the whole list |
-| idle-period-set           | String       | Adds or replaces one idle period by its name     |
-| idle-period-delete        | String       | Removes one idle period by its name              |
 | block-charging            | Switch       | Blocks battery charging around the clock, see [The block switches](#the-block-switches) |
 | block-discharging         | Switch       | Blocks battery discharging around the clock, see [The block switches](#the-block-switches) |
 | manual-charge-energy      | Number:Energy | Energy of the manual charge started last        |
@@ -281,16 +277,37 @@ weekend:saturday,sunday:charge:true:08:00-18:00
 ```
 
 The days are a comma separated list of `monday` to `sunday`, and the mode is `charge` or `discharge`.
-The device replaces the whole list on every write, so the binding offers three ways to change it:
+The device replaces the whole list on every write, so the binding offers one channel and the thing actions to change it:
 
 - Sending text to `idle-periods` replaces the whole list. An empty text removes all periods.
-- Sending one line to `idle-period-set` adds the period, or replaces the period of the same name. The
-  other periods are kept.
-- Sending a name to `idle-period-delete` removes the period of that name.
 
 A period is only written when every line is valid, the names are unique and each period ends after it
 starts. The reason is logged as a warning otherwise. The list is also read and replaced with the
-[thing actions](#thing-actions) `getIdlePeriods` and `setIdlePeriods`.
+[thing actions](#thing-actions) `getIdlePeriods` and `setIdlePeriods`. A single period is removed with
+the action `deleteIdlePeriod`. To add or change one period, read the list with `getIdlePeriods` and write
+it back with `setIdlePeriods`.
+
+#### Power mode
+
+`battery-control#set-power-mode` forces the battery into a mode, the same way as the `set/power_mode` topic of
+rscp2mqtt. It is a command channel: it carries no state and offers a few presets as command options. The text is one of:
+
+| Text | Effect |
+|------|--------|
+| `auto` | The energy manager decides again. Ends a forced mode. |
+| `idle:<cycles>` | The battery neither charges nor discharges. |
+| `charge:<watts>:<cycles>` | The battery charges with the given power. |
+| `discharge:<watts>:<cycles>` | The battery discharges with the given power. |
+| `grid_charge:<watts>:<cycles>` | The battery charges with the given power from the grid. |
+
+The device keeps a forced mode only for a short time. The binding therefore sends the mode again with every poll
+cycle, as many times as `<cycles>` says. With the refresh interval of the bridge, `<cycles>` times the interval is
+the duration, for example `charge:2000:10` charges with 2000 W for ten poll cycles. After that the device returns
+to automatic. A new text replaces the one before, and `auto` ends it at once. The presets use 60 cycles; how long
+that lasts depends on the refresh interval of the bridge.
+
+The same is available as the thing action `setPowerMode(mode, watts, cycles)` with `mode` being `auto`, `idle`,
+`charge`, `discharge` or `grid_charge`.
 
 #### The block switches
 
@@ -317,56 +334,17 @@ battery on all seven days, from 00:00 to 23:59:
 The same list can be read and replaced as a whole with the [thing actions](#thing-actions), for example to
 add periods for single weekdays next to the block switches.
 
-### Channel Group `ai360`
-
-> **Currently switched off.** The group is commented out in `thing-power-plant.xml`, so the `power-plant` thing
-> has no `ai360` channels at the moment. The code, the group type and the bridge parameters are still there; this
-> section describes the behaviour once the group is switched on again.
-
-The `ai360` group controls price based charging. Unlike every other group it does **not** read from the
-device over RSCP: these settings live in the E3/DC cloud, the device only receives the resulting schedule.
-The binding therefore reads and writes them over HTTPS and finds them in two places, the installation and
-the storage.
-
-| Channel                  | Type                 | Description                                                              |
-|--------------------------|----------------------|--------------------------------------------------------------------------|
-| enabled                  | Switch               | Whether charging follows the prices of a dynamic electricity tariff       |
-| battery-price-charging   | Switch               | Whether the battery is charged from the grid below the price limit        |
-| price-limit              | Number:Dimensionless | Price in ct/kWh below which the battery is charged from the grid          |
-| charge-until-soc         | Number:Dimensionless | State of charge in percent up to which the battery is charged             |
-| active-months            | String               | Twelve characters, one per month from January, where `1` enables charging |
-| sg-ready                 | Switch               | Whether the battery is controlled through an SG Ready signal              |
-| feed-in-tariff-type      | String               | How charging reacts to the feed in tariff                                 |
-
-The group stays without values unless the three cloud parameters of the bridge are filled in. The
-`installationId` and `storageId` are the two numbers in the portal URL when a power plant is open,
-`/overview/installations/<installationId>/<storageId>`.
-
-#### The cloud token
-
-The cloud has no login endpoint; the portal signs the user in through SAML and hands the browser a token
-pair. That token is the starting point for this binding:
-
-1. Log in to the [E3/DC portal](https://my.e3dc.com).
-1. Open the browser console and run
-   `copy(JSON.stringify({authToken: localStorage.authToken, reAuthToken: localStorage.reAuthToken}))`.
-1. Paste the `reAuthToken` of the copied pair into the `cloudToken` parameter.
-
-The binding exchanges the token on its first call and stores the successor in
-`<userdata>/e3dc/cloud-tokens.json`, so the configured value is only needed once. It has to be replaced
-when the chain breaks, which logging out of the portal does, and the binding says so in the log.
-
-These values are not part of the published RSCP interface. The endpoints are the ones the portal uses, so
-a change on the E3/DC side can break the group while the rest of the binding keeps working. The cloud is
-polled at most once a minute, and a command is written by reading the current settings, replacing the
-fields of that channel and writing the whole object back, because the cloud replaces the object rather
-than the single field.
-
 ### Channel Group `history`
 
 The history group reports the energy counters and the two shares of a whole period. The device answers
 the history containers only when the request states the period, which the binding derives from the
 current date.
+
+> **Persistence:** The binding publishes the earlier periods as time series entries with a date in the past,
+> see [History Fetch](#history-fetch). Only a persistence service with a real time series database, for example
+> InfluxDB or a SQL database (JDBC), can store them. **rrd4j cannot:** it only records values at the time they
+> arrive, ignores the timestamp of a time series entry and aggregates old values away. Do not use rrd4j for the
+> `history` items.
 
 | Channel                  | Type                 | Description                                        |
 |--------------------------|----------------------|----------------------------------------------------|
@@ -435,19 +413,19 @@ last read from the device.
 | `battery`     | wallbox-disable-at-mix-mode  | Switch       | No battery charging while the wallbox charges in mix mode                    |
 | `battery-control` | power-limits-used            | Switch       | Whether the configured power limits are active                               |
 | `battery-control` | weather-regulated-charge     | Switch       | Whether charging follows the weather forecast                                |
-| `battery-control` | set-power-mode               | String       | Forces a power mode: `auto`, `idle:<cycles>` or `charge`/`discharge`/`grid_charge:<watts>:<cycles>` |
-| `battery-control` | set-manual-charge            | Number:Energy | Start a manual battery charge with this energy in Wh, an action rather than a value |
+| `battery-control` | set-power-mode               | String       | Command only: forces a power mode, `auto`, `idle:<cycles>` or `charge`/`discharge`/`grid_charge:<watts>:<cycles>` |
+| `battery-control` | set-manual-charge            | Number:Energy | Command only: starts a manual battery charge with this energy, offered as 500 Wh to 3000 Wh in steps of 500 Wh |
 | `battery-control` | block-charging               | Switch       | Blocks battery charging on all days, see [The block switches](#the-block-switches) |
 | `battery-control` | block-discharging            | Switch       | Blocks battery discharging on all days, see [The block switches](#the-block-switches) |
 | `emergency`   | percent                      | Number:Dimensionless | Share of the battery to keep for emergency power                    |
 | `emergency`   | energy                       | Number:Energy | Energy to keep for emergency power                                          |
-| `wallbox`     | sun-mode                     | Switch       | Whether charging uses surplus photovoltaic power                             |
-| `wallbox`     | suspended                    | Switch       | Whether the charging session is suspended                                    |
-| `wallbox`     | toggle                       | Switch       | `ON` suspends a running session and resumes a suspended one, then returns to `OFF` |
-| `wallbox`     | auto-phase-switch            | Switch       | Whether the wallbox changes the number of phases by itself                    |
-| `wallbox`     | min-charge-current           | Number:ElectricCurrent | Lowest charging current allowed, 6 to 16 A                  |
-| `wallbox`     | max-charge-current           | Number:ElectricCurrent | Highest charging current allowed, 6 to 16 A                        |
-| `wallbox`     | number-phases                | Number       | Number of phases used for charging, 1 or 3                                   |
+| `control`     | sun-mode                     | Switch       | Whether charging uses surplus photovoltaic power                             |
+| `control`     | suspended                    | Switch       | Whether the charging session is suspended                                    |
+| `control`     | toggle                       | Switch       | `ON` suspends a running session and resumes a suspended one, then returns to `OFF` |
+| `settings`    | auto-phase-switch            | Switch       | Whether the wallbox changes the number of phases by itself                    |
+| `settings`    | min-charge-current           | Number:ElectricCurrent | Lowest charging current allowed, 6 to 16 A                  |
+| `settings`    | max-charge-current           | Number:ElectricCurrent | Highest charging current allowed, 6 to 16 A                        |
+| `settings`    | number-phases                | Number       | Number of phases used for charging, 1 or 3                                   |
 
 A channel state is only updated after the device acknowledged the write, so a rejected command leaves
 the channel untouched.
@@ -456,33 +434,52 @@ A wallbox value is written as the parameter of the request that names it, which 
 read: every wallbox control is one channel that reports and sets its value. The `plugged`, `locked` and
 `charging` channels report states the device decides, so they are read only.
 
-### Channel Group `wallbox`
+### Channel Groups of the `wallbox` Thing
 
-| Channel            | Type                   | Description                               |
-|--------------------|------------------------|-------------------------------------------|
-| power-l1           | Number:Power           | Power on phase L1                         |
-| power-l2           | Number:Power           | Power on phase L2                         |
-| power-l3           | Number:Power           | Power on phase L3                         |
-| energy-total       | Number:Energy          | Energy charged through this wallbox        |
-| energy-solar       | Number:Energy          | Energy taken from the photovoltaic system  |
-| phase-l1 | Switch | Whether the wallbox charges on phase L1 |
-| energy-l1 | Number:Energy | Energy drawn on phase L1 |
-| phase-l2 | Switch | Whether the wallbox charges on phase L2 |
-| energy-l2 | Number:Energy | Energy drawn on phase L2 |
-| phase-l3 | Switch | Whether the wallbox charges on phase L3 |
-| energy-l3 | Number:Energy | Energy drawn on phase L3 |
-| soc                | Number:Dimensionless   | State of charge of the connected vehicle   |
-| min-charge-current | Number:ElectricCurrent | Lowest charging current allowed            |
-| max-charge-current | Number:ElectricCurrent | Highest charging current allowed           |
-| number-phases      | Number                 | Number of phases used for charging         |
-| auto-phase-switch  | Switch                 | Wallbox changes the number of phases by itself |
-| key-state          | Switch                 | State of the wallbox key switch            |
-| plugged            | Switch                 | A vehicle is connected                     |
-| locked             | Switch                 | The connector is locked                    |
-| charging           | Switch                 | A charging session is running              |
-| suspended          | Switch                 | Charging is currently suspended            |
+The channels of a wallbox are spread over three groups.
+All of them are read from the same request, so the grouping costs nothing at the device.
+
+#### Group `status-control`
+
+| Channel            | Type                   | Description                                          |
+|--------------------|------------------------|------------------------------------------------------|
+| plugged            | Switch                 | A vehicle is connected                               |
+| locked             | Switch                 | The connector is locked                              |
+| charging           | Switch                 | A charging session is running                        |
+| key-state          | Switch                 | State of the wallbox key switch                      |
+| soc                | Number:Dimensionless   | State of charge of the connected vehicle             |
+| sun-mode           | Switch                 | Charging uses surplus photovoltaic power             |
+| suspended          | Switch                 | Charging is currently suspended                      |
 | toggle             | Switch                 | Suspends or resumes the charging, goes back to `OFF` |
-| sun-mode           | Switch                 | Charging uses surplus photovoltaic power   |
+| min-charge-current | Number:ElectricCurrent | Lowest charging current allowed                      |
+| max-charge-current | Number:ElectricCurrent | Highest charging current allowed                     |
+| number-phases      | Number                 | Number of phases used for charging                   |
+| auto-phase-switch  | Switch                 | Wallbox changes the number of phases by itself       |
+
+#### Group `session`
+
+The wallbox reports the phase and energy values for the last charging session.
+They are not live values and not daily or lifetime counters.
+The power values are live.
+
+| Channel   | Type          | Description                                                          |
+|-----------|---------------|----------------------------------------------------------------------|
+| power-l1  | Number:Power  | Power on phase L1                                                    |
+| power-l2  | Number:Power  | Power on phase L2                                                    |
+| power-l3  | Number:Power  | Power on phase L3                                                    |
+| phase-l1  | Switch        | Whether the wallbox charged on phase L1 in the last charging session |
+| phase-l2  | Switch        | Whether the wallbox charged on phase L2 in the last charging session |
+| phase-l3  | Switch        | Whether the wallbox charged on phase L3 in the last charging session |
+| energy-l1 | Number:Energy | Energy drawn on phase L1 in the last charging session                |
+| energy-l2 | Number:Energy | Energy drawn on phase L2 in the last charging session                |
+| energy-l3 | Number:Energy | Energy drawn on phase L3 in the last charging session                |
+
+#### Group `counters`
+
+| Channel | Type          | Description                               |
+|---------|---------------|-------------------------------------------|
+| total   | Number:Energy | Energy charged through this wallbox       |
+| solar   | Number:Energy | Energy taken from the photovoltaic system |
 
 ### Channel Group `meter`
 
@@ -507,6 +504,7 @@ read: every wallbox control is one channel that reports and sets its value. The 
 | voltage | Number:ElectricPotential | Voltage of the battery |
 | current | Number:ElectricCurrent | Current of the battery, negative while discharging |
 | charge-cycles | Number | Number of charge cycles of the battery |
+| module-count | Number | Number of battery modules |
 | soh | Number:Dimensionless | Absolute state of charge of the battery, a measure of its state of health |
 | status-code | Number | Status code of the battery |
 | error-code | Number | Error code of the battery |
@@ -598,6 +596,9 @@ same list as the `idle-periods` channel and the [block switches](#the-block-swit
 |---------------------------------|-----------|------------------------------------------------------------------|
 | `getIdlePeriods()`              | `String`  | The periods in the device, one per line, or `null` if the device could not be asked |
 | `setIdlePeriods(String periods)` | `boolean` | Replaces the whole list and tells whether the device accepted it |
+| `setPowerMode(String mode, int watts, int cycles)` | `boolean` | Forces a power mode, see [Power mode](#power-mode), and tells whether the device accepted it |
+| `deleteIdlePeriod(String name)` | `boolean` | Removes the period of that name, keeps the others and tells whether the device accepted it |
+| `fetchPeriodHistory(String period, int count)` | `int` | Fetches the finished `day`, `week`, `month` or `year` periods, see [History Fetch](#history-fetch), and returns the number of periods that had data, or `-1` if the arguments are not valid or the device is not connected |
 | `fetchHistory()` | `int` | Fetches the yearly history of all earlier years once and returns the number of years that had data, or `-1` if the device is not connected |
 
 A period is one line `name:days:mode:active:hh:mm-hh:mm`, as in the `idle-periods` channel:
@@ -629,11 +630,26 @@ change.
   The oldest year tried is 2000.
 - Fetching again replaces the entries of the years found.
 - The channels have to be linked to items that a persistence service stores, otherwise the entries are lost.
+  The service has to be a time series database such as InfluxDB or a SQL database (JDBC). **rrd4j is not
+  suitable:** it cannot store values with a date in the past, so the fetched entries would be lost.
 
 ```java
 val actions = getActions("e3dc", "e3dc:power-plant:device:plant")
 val years = actions.fetchHistory()
 logInfo("e3dc", "History fetched for " + years + " years")
+```
+
+`fetchPeriodHistory(period, count)` does the same for the `history#day-*`, `history#week-*` and `history#month-*` channels
+(and for `year`):
+
+- It goes back from the last finished period, at most `count` periods (1 to 400). A week runs from Monday to
+  Sunday, a month is a calendar month. Each entry is stamped with the first day of its period.
+- It stops after three periods in a row without data.
+- Every period is a request to the device, so a large `count` takes a while. The call returns when it is done.
+- The week channels hold the last seven days as their state, so the calendar weeks of the fetch are separate entries.
+
+```java
+val days = actions.fetchPeriodHistory("day", 90)
 ```
 
 ### Rules DSL
@@ -666,44 +682,121 @@ To only block or release the battery, use the switches `battery-control#block-ch
 
 ## Full Example
 
+The example sets up every thing type and uses at least one channel of every channel group.
+Adapt the host, the credentials and the indexes to your installation. The thing ids `device`, `plant`,
+`wallbox0`, `meter0`, `battery0` and `module0` are free to choose; they appear in the channel ids of the items.
+
 ### Thing Configuration
 
 ```java
-Bridge e3dc:bridge:device "E3/DC Device" [ host="192.168.1.50", userName="owner", password="secret", rscpPassword="rscpSecret", refreshInterval=30 ] {
-    Thing power-plant plant "E3/DC Power Plant"
-    Thing wallbox wallbox0 "E3/DC Wallbox" [ wallboxIndex=0 ]
-    Thing power-meter meter0 "E3/DC Power Meter" [ meterIndex=0 ]
+Bridge e3dc:bridge:device "E3/DC Device" [ host="192.168.1.50", userName="owner@example.com", password="secret", rscpPassword="rscpSecret", refreshInterval=5, historyInterval=15 ] {
+    Thing power-plant    plant    "E3/DC Power Plant"
+    Thing wallbox        wallbox0 "E3/DC Wallbox"        [ wallboxIndex=0 ]
+    Thing power-meter    meter0   "E3/DC Power Meter"    [ meterIndex=0 ]
+    Thing battery        battery0 "E3/DC Battery"        [ batteryIndex=0 ]
+    Thing battery-module module0  "E3/DC Battery Module" [ moduleIndex=0 ]
 }
 ```
+
+The `power-plant` thing is the one to start with. Add the other things only for the parts your installation has.
+The channels `tracker-N-*` and `temperature-N` of the inverter are created at runtime, see
+[Trackers and temperature sensors](#trackers-and-temperature-sensors). Link them from the UI or add them to the
+items file once they exist.
 
 ### Item Configuration
 
 ```java
-Number:Power         E3DC_SolarPower       "Solar Power [%.0f %unit%]"        { channel="e3dc:power-plant:device:plant:power#solar-power" }
-Number:Power         E3DC_BatteryPower     "Battery Power [%.0f %unit%]"      { channel="e3dc:power-plant:device:plant:power#battery-power" }
-Number:Power         E3DC_HousePower       "House Power [%.0f %unit%]"        { channel="e3dc:power-plant:device:plant:power#house-power" }
-Number:Power         E3DC_GridPower        "Grid Power [%.0f %unit%]"         { channel="e3dc:power-plant:device:plant:power#grid-power" }
-Number:Dimensionless E3DC_Autarky          "Autarky [%.0f %%]"                { channel="e3dc:power-plant:device:plant:power#autarky" }
-Number:Dimensionless E3DC_SelfConsumption  "Self Consumption [%.0f %%]"       { channel="e3dc:power-plant:device:plant:power#self-consumption" }
+// power - the current power flows
+Number:Power         E3DC_SolarPower         "Solar Power [%.0f %unit%]"            { channel="e3dc:power-plant:device:plant:power#solar-power" }
+Number:Power         E3DC_BatteryPower       "Battery Power [%.0f %unit%]"          { channel="e3dc:power-plant:device:plant:power#battery-power" }
+Number:Power         E3DC_HousePower         "House Power [%.0f %unit%]"            { channel="e3dc:power-plant:device:plant:power#house-power" }
+Number:Power         E3DC_GridPower          "Grid Power [%.0f %unit%]"             { channel="e3dc:power-plant:device:plant:power#grid-power" }
+Number:Power         E3DC_AdditionalPower    "Additional Power [%.0f %unit%]"       { channel="e3dc:power-plant:device:plant:power#additional-power" }
+Number:Power         E3DC_WallboxPower       "Wallbox Power [%.0f %unit%]"          { channel="e3dc:power-plant:device:plant:power#wallbox-power" }
+Number:Power         E3DC_WallboxSolarPower  "Wallbox Solar Power [%.0f %unit%]"    { channel="e3dc:power-plant:device:plant:power#wallbox-solar-power" }
+Number:Dimensionless E3DC_Autarky            "Autarky [%.0f %%]"                    { channel="e3dc:power-plant:device:plant:power#autarky" }
+Number:Dimensionless E3DC_SelfConsumption    "Self Consumption [%.0f %%]"           { channel="e3dc:power-plant:device:plant:power#self-consumption" }
 
-Number:Dimensionless E3DC_BatterySoc       "Battery SOC [%.0f %%]"            { channel="e3dc:power-plant:device:plant:battery#soc" }
+// battery - state and the limits that can be changed
+Number:Dimensionless E3DC_BatterySoc         "Battery SOC [%.0f %%]"                { channel="e3dc:power-plant:device:plant:battery#soc" }
+Number:Dimensionless E3DC_BatteryRsoc        "Battery Real SOC [%.0f %%]"           { channel="e3dc:power-plant:device:plant:battery#rsoc" }
+Number:Power         E3DC_RemainingCharge    "Remaining Charge Power [%.0f %unit%]" { channel="e3dc:power-plant:device:plant:battery#remaining-charge-power" }
+Number:Power         E3DC_MaxChargePower     "Max Charge Power [%.0f %unit%]"       { channel="e3dc:power-plant:device:plant:battery#max-charge-power" }
+Number:Power         E3DC_MaxDischargePower  "Max Discharge Power [%.0f %unit%]"    { channel="e3dc:power-plant:device:plant:battery#max-discharge-power" }
+Number:Power         E3DC_DischargeStart     "Discharge Start Power [%.0f %unit%]"  { channel="e3dc:power-plant:device:plant:battery#discharge-start-power" }
+Switch               E3DC_DischargeToCar     "Discharge Into Car [%s]"              { channel="e3dc:power-plant:device:plant:battery#wallbox-discharge-to-car" }
+Number:Dimensionless E3DC_DischargeUntil     "Discharge Into Car Until [%.0f %%]"   { channel="e3dc:power-plant:device:plant:battery#wallbox-discharge-until" }
 
-Number:Energy        E3DC_DaySolar         "Solar Day [%.1f %unit%]"          { channel="e3dc:power-plant:device:plant:history#day-solar" }
-Number:Energy        E3DC_DayHouse         "House Day [%.1f %unit%]"          { channel="e3dc:power-plant:device:plant:history#day-house" }
-Number:Energy        E3DC_DayGridIn        "Grid Supply Day [%.1f %unit%]"    { channel="e3dc:power-plant:device:plant:history#day-grid-in" }
-Number:Energy        E3DC_DayGridOut       "Grid Feed Day [%.1f %unit%]"      { channel="e3dc:power-plant:device:plant:history#day-grid-out" }
+// grid, inverter, system
+Number               E3DC_GridPhases         "Grid Phases [%d]"                     { channel="e3dc:power-plant:device:plant:grid#active-phases" }
+Switch               E3DC_OnGrid             "On Grid [%s]"                         { channel="e3dc:power-plant:device:plant:inverter#on-grid" }
+Number:Frequency     E3DC_AcFrequency        "AC Frequency [%.2f %unit%]"           { channel="e3dc:power-plant:device:plant:inverter#ac-frequency" }
+Number:Power         E3DC_AcPowerL1          "AC Power L1 [%.0f %unit%]"            { channel="e3dc:power-plant:device:plant:inverter#ac-power-l1" }
+Number:Energy        E3DC_EnergyTotalL1      "Energy Total L1 [%.1f %unit%]"        { channel="e3dc:power-plant:device:plant:inverter#energy-total-l1" }
+Number:Power         E3DC_Tracker1Power      "Tracker 1 Power [%.0f %unit%]"        { channel="e3dc:power-plant:device:plant:inverter#tracker-1-power" }
+Number:Temperature   E3DC_Temperature1       "Inverter Temperature [%.1f %unit%]"   { channel="e3dc:power-plant:device:plant:inverter#temperature-1" }
+String               E3DC_SerialNumber       "Serial Number [%s]"                   { channel="e3dc:power-plant:device:plant:system#serial-number" }
+String               E3DC_SoftwareVersion    "Software Version [%s]"                { channel="e3dc:power-plant:device:plant:system#software-version" }
+Number:Power         E3DC_InstalledPeak      "Installed Peak Power [%.0f %unit%]"   { channel="e3dc:power-plant:device:plant:system#installed-peak-power" }
 
-Switch               E3DC_ChargingLock     "Charging Lock [%s]"               { channel="e3dc:power-plant:device:plant:battery-control#charging-lock" }
-String               E3DC_SerialNumber     "Serial Number [%s]"               { channel="e3dc:power-plant:device:plant:system#serial-number" }
+// history - counters of the day, the week, the month and the year
+Number:Energy        E3DC_DaySolar           "Solar Day [%.1f %unit%]"              { channel="e3dc:power-plant:device:plant:history#day-solar" }
+Number:Energy        E3DC_DayHouse           "House Day [%.1f %unit%]"              { channel="e3dc:power-plant:device:plant:history#day-house" }
+Number:Energy        E3DC_DayGridIn          "Grid Supply Day [%.1f %unit%]"        { channel="e3dc:power-plant:device:plant:history#day-grid-in" }
+Number:Energy        E3DC_DayGridOut         "Grid Feed Day [%.1f %unit%]"          { channel="e3dc:power-plant:device:plant:history#day-grid-out" }
+Number:Dimensionless E3DC_DayAutarky         "Autarky Day [%.0f %%]"                { channel="e3dc:power-plant:device:plant:history#day-autarky" }
+Number:Energy        E3DC_WeekSolar          "Solar Week [%.1f %unit%]"             { channel="e3dc:power-plant:device:plant:history#week-solar" }
+Number:Energy        E3DC_MonthSolar         "Solar Month [%.1f %unit%]"            { channel="e3dc:power-plant:device:plant:history#month-solar" }
+Number:Energy        E3DC_YearSolar          "Solar Year [%.0f %unit%]"             { channel="e3dc:power-plant:device:plant:history#year-solar" }
 
-Switch               E3DC_WallboxPlugged   "Wallbox Plugged [%s]"             { channel="e3dc:wallbox:device:wallbox0:wallbox#plugged" }
-Switch               E3DC_WallboxCharging  "Wallbox Charging [%s]"            { channel="e3dc:wallbox:device:wallbox0:wallbox#charging" }
-Number:Power         E3DC_WallboxPower     "Wallbox Power [%.0f %unit%]"      { channel="e3dc:wallbox:device:wallbox0:wallbox#power-l1" }
+// emergency power
+Number:Dimensionless E3DC_EmergencyPercent   "Emergency Reserve [%.0f %%]"          { channel="e3dc:power-plant:device:plant:emergency#percent" }
+Number:Energy        E3DC_EmergencyEnergy    "Emergency Reserve [%.1f %unit%]"      { channel="e3dc:power-plant:device:plant:emergency#energy" }
+Switch               E3DC_EmergencyAvailable "Emergency Power Available [%s]"       { channel="e3dc:power-plant:device:plant:emergency#power-available" }
 
-Number:Power         E3DC_MaxChargePower   "Max Charge Power [%.0f %unit%]"   { channel="e3dc:power-plant:device:plant:battery#max-charge-power" }
-Number:Power         E3DC_MaxDischargePower "Max Discharge Power [%.0f %unit%]" { channel="e3dc:power-plant:device:plant:battery#max-discharge-power" }
-Switch               E3DC_PowerLimits      "Power Limits [%s]"                { channel="e3dc:power-plant:device:plant:battery-control#power-limits-used" }
-Switch               E3DC_WeatherCharge    "Weather Charge [%s]"              { channel="e3dc:power-plant:device:plant:battery-control#weather-regulated-charge" }
+// battery-control - locks, power mode, manual charge and idle periods
+Switch               E3DC_ChargingLock       "Charging Lock [%s]"                   { channel="e3dc:power-plant:device:plant:battery-control#charging-lock" }
+Switch               E3DC_DischargingLock    "Discharging Lock [%s]"                { channel="e3dc:power-plant:device:plant:battery-control#discharging-lock" }
+Switch               E3DC_WeatherRegulated   "Weather Regulated Charge [%s]"        { channel="e3dc:power-plant:device:plant:battery-control#weather-regulated-charge" }
+Switch               E3DC_PowerLimitsUsed    "Power Limits Used [%s]"               { channel="e3dc:power-plant:device:plant:battery-control#power-limits-used" }
+Switch               E3DC_BlockCharging      "Block Charging [%s]"                  { channel="e3dc:power-plant:device:plant:battery-control#block-charging" }
+Switch               E3DC_BlockDischarging   "Block Discharging [%s]"               { channel="e3dc:power-plant:device:plant:battery-control#block-discharging" }
+Switch               E3DC_IdlePeriodsOn      "Idle Periods Enabled [%s]"            { channel="e3dc:power-plant:device:plant:battery-control#idle-periods-enabled" }
+String               E3DC_IdlePeriods        "Idle Periods [%s]"                    { channel="e3dc:power-plant:device:plant:battery-control#idle-periods" }
+String               E3DC_SetPowerMode       "Power Mode"                           { channel="e3dc:power-plant:device:plant:battery-control#set-power-mode" }
+Number:Energy        E3DC_SetManualCharge    "Manual Charge"                        { channel="e3dc:power-plant:device:plant:battery-control#set-manual-charge" }
+Number:Energy        E3DC_ManualChargeEnergy "Manual Charge Energy [%.0f %unit%]"   { channel="e3dc:power-plant:device:plant:battery-control#manual-charge-energy" }
+
+// wallbox
+Switch               E3DC_WallboxPlugged     "Wallbox Plugged [%s]"                 { channel="e3dc:wallbox:device:wallbox0:status-control#plugged" }
+Switch               E3DC_WallboxLocked      "Wallbox Locked [%s]"                  { channel="e3dc:wallbox:device:wallbox0:status-control#locked" }
+Switch               E3DC_WallboxCharging    "Wallbox Charging [%s]"                { channel="e3dc:wallbox:device:wallbox0:status-control#charging" }
+Switch               E3DC_WallboxSunMode     "Wallbox Sun Mode [%s]"                { channel="e3dc:wallbox:device:wallbox0:status-control#sun-mode" }
+Switch               E3DC_WallboxToggle      "Wallbox Suspend / Resume"             { channel="e3dc:wallbox:device:wallbox0:status-control#toggle" }
+Number:ElectricCurrent E3DC_WallboxMaxCurrent "Wallbox Max Current [%.0f %unit%]"   { channel="e3dc:wallbox:device:wallbox0:status-control#max-charge-current" }
+Number               E3DC_WallboxPhases      "Wallbox Phases [%d]"                  { channel="e3dc:wallbox:device:wallbox0:status-control#number-phases" }
+Number:Power         E3DC_WallboxPowerL1     "Wallbox Power L1 [%.0f %unit%]"       { channel="e3dc:wallbox:device:wallbox0:session#power-l1" }
+Number:Energy        E3DC_WallboxEnergyL1    "Wallbox Energy L1 [%.2f %unit%]"      { channel="e3dc:wallbox:device:wallbox0:session#energy-l1" }
+Number:Energy        E3DC_WallboxTotal       "Wallbox Total [%.1f %unit%]"          { channel="e3dc:wallbox:device:wallbox0:counters#total" }
+Number:Energy        E3DC_WallboxSolar       "Wallbox Solar Total [%.1f %unit%]"    { channel="e3dc:wallbox:device:wallbox0:counters#solar" }
+
+// power meter
+Number:Power         E3DC_MeterPowerL1       "Meter Power L1 [%.0f %unit%]"         { channel="e3dc:power-meter:device:meter0:meter#power-l1" }
+Number:ElectricPotential E3DC_MeterVoltageL1 "Meter Voltage L1 [%.1f %unit%]"       { channel="e3dc:power-meter:device:meter0:meter#voltage-l1" }
+Number:Energy        E3DC_MeterEnergyL1      "Meter Energy L1 [%.1f %unit%]"        { channel="e3dc:power-meter:device:meter0:meter#energy-l1" }
+
+// battery pack and battery module
+Number:ElectricPotential E3DC_PackVoltage    "Battery Voltage [%.1f %unit%]"        { channel="e3dc:battery:device:battery0:pack#voltage" }
+Number:ElectricCurrent E3DC_PackCurrent      "Battery Current [%.1f %unit%]"        { channel="e3dc:battery:device:battery0:pack#current" }
+Number               E3DC_PackCycles         "Battery Charge Cycles [%d]"           { channel="e3dc:battery:device:battery0:pack#charge-cycles" }
+Number:Dimensionless E3DC_PackSoh            "Battery SOH [%.0f %%]"                { channel="e3dc:battery:device:battery0:pack#soh" }
+Number:Dimensionless E3DC_ModuleSoc          "Module SOC [%.0f %%]"                 { channel="e3dc:battery-module:device:module0:module#soc" }
+Number:ElectricPotential E3DC_ModuleVoltage  "Module Voltage [%.1f %unit%]"         { channel="e3dc:battery-module:device:module0:module#voltage" }
+Number:Temperature   E3DC_ModuleChargeHigh   "Module Max Charge Temperature [%.0f %unit%]" { channel="e3dc:battery-module:device:module0:module#charge-high-temperature" }
+
+// load the bridge puts on the device
+Number:Dimensionless E3DC_LoopRatio          "Loop Ratio [%.0f %%]"                 { channel="e3dc:bridge:device:statistics#loop-ratio" }
+Number:Time          E3DC_PollDuration       "Poll Duration [%.2f %unit%]"          { channel="e3dc:bridge:device:statistics#poll-duration" }
 ```
 
 ### Sitemap Configuration
@@ -720,20 +813,91 @@ sitemap e3dc label="E3/DC" {
     }
     Frame label="Battery" {
         Text item=E3DC_BatterySoc       label="SOC [%.0f %%]"
-        Switch item=E3DC_ChargingLock   label="Charging Lock [%s]"
+        Setpoint item=E3DC_MaxChargePower    label="Max Charge Power [%.0f %unit%]"    minValue=0 maxValue=6000 step=100
+        Setpoint item=E3DC_MaxDischargePower label="Max Discharge Power [%.0f %unit%]" minValue=0 maxValue=6000 step=100
+        Switch item=E3DC_DischargeToCar label="Discharge Into Car"
+        Text item=E3DC_ChargingLock     label="Charging Lock [%s]"
+        Text item=E3DC_DischargingLock  label="Discharging Lock [%s]"
+    }
+    Frame label="Battery Control" {
+        Switch item=E3DC_BlockCharging    label="Block Charging"
+        Switch item=E3DC_BlockDischarging label="Block Discharging"
+        Switch item=E3DC_SetPowerMode     label="Power Mode" mappings=[ "auto"="Auto", "idle:60"="Idle", "charge:2000:60"="Charge 2 kW", "discharge:2000:60"="Discharge 2 kW" ]
+        Switch item=E3DC_SetManualCharge  label="Manual Charge" mappings=[ "500 Wh"="0.5 kWh", "1000 Wh"="1 kWh", "2000 Wh"="2 kWh", "3000 Wh"="3 kWh" ]
+        Text item=E3DC_IdlePeriods        label="Idle Periods"
+    }
+    Frame label="Emergency Power" {
+        Setpoint item=E3DC_EmergencyPercent label="Reserve [%.0f %%]" minValue=0 maxValue=100 step=5
+        Text item=E3DC_EmergencyAvailable   label="Available [%s]"
     }
     Frame label="Energy Day" {
         Text item=E3DC_DaySolar         label="Solar [%.1f %unit%]"
         Text item=E3DC_DayHouse         label="House [%.1f %unit%]"
         Text item=E3DC_DayGridIn        label="Grid Supply [%.1f %unit%]"
         Text item=E3DC_DayGridOut       label="Grid Feed [%.1f %unit%]"
+        Text item=E3DC_DayAutarky       label="Autarky [%.0f %%]"
     }
     Frame label="Wallbox" {
-        Switch item=E3DC_WallboxPlugged  label="Plugged [%s]"
-        Switch item=E3DC_WallboxCharging label="Charging [%s]"
+        Text item=E3DC_WallboxPlugged   label="Plugged [%s]"
+        Text item=E3DC_WallboxCharging  label="Charging [%s]"
+        Switch item=E3DC_WallboxSunMode label="Sun Mode"
+        Switch item=E3DC_WallboxToggle  label="Suspend / Resume" mappings=[ ON="Toggle" ]
+        Setpoint item=E3DC_WallboxMaxCurrent label="Max Current [%.0f %unit%]" minValue=6 maxValue=16 step=1
+        Text item=E3DC_WallboxPowerL1   label="Power L1 [%.0f %unit%]"
+        Text item=E3DC_WallboxTotal     label="Total [%.1f %unit%]"
+    }
+    Frame label="Power Meter" {
+        Text item=E3DC_MeterPowerL1     label="Power L1 [%.0f %unit%]"
+        Text item=E3DC_MeterVoltageL1   label="Voltage L1 [%.1f %unit%]"
+    }
+    Frame label="Battery Pack" {
+        Text item=E3DC_PackVoltage      label="Voltage [%.1f %unit%]"
+        Text item=E3DC_PackSoh          label="SOH [%.0f %%]"
+        Text item=E3DC_ModuleSoc        label="Module SOC [%.0f %%]"
     }
 }
 ```
+
+### Rules
+
+The writable command channels need no thing action. A rule sends the command to the item:
+
+```java
+// force the battery to charge with 2000 W for 60 poll cycles, then return to automatic
+E3DC_SetPowerMode.sendCommand("charge:2000:60")
+
+// end a forced mode at once
+E3DC_SetPowerMode.sendCommand("auto")
+
+// start a manual charge with 1500 Wh
+E3DC_SetManualCharge.sendCommand("1500 Wh")
+
+// block battery charging around the clock, for example while the electricity price is high
+E3DC_BlockCharging.sendCommand(ON)
+
+// release it again
+E3DC_BlockCharging.sendCommand(OFF)
+
+// keep 30 % of the battery for emergency power
+E3DC_EmergencyPercent.sendCommand(30)
+
+// replace all idle periods
+E3DC_IdlePeriods.sendCommand("weekend:saturday,sunday:charge:true:08:00-18:00")
+```
+
+A rule that charges the battery from the grid for one hour at night:
+
+```java
+rule "E3DC night charge"
+when
+    Time cron "0 0 2 * * ?"
+then
+    E3DC_SetPowerMode.sendCommand("grid_charge:3000:720")
+end
+```
+
+With a refresh interval of 5 seconds, 720 cycles last one hour; after that the device returns to automatic. The idle periods can also be read and replaced with the
+[thing actions](#thing-actions), see the examples there.
 
 ## Notes on Device Support
 

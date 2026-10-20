@@ -71,8 +71,23 @@
 	<channel-type id="battery-control-set-power-mode">
 		<item-type>String</item-type>
 		<label>Set Power Mode</label>
-		<description>Forces a power mode: auto, idle:cycles or mode:watts:cycles for charge, discharge and grid_charge</description>
-		<state pattern="%s"/>
+		<description>Forces a battery mode for a number of poll cycles: auto, idle:cycles or charge, discharge,
+			grid_charge:watts:cycles</description>
+		<command>
+			<options>
+				<option value="auto">Automatic</option>
+				<option value="idle:60">Idle</option>
+				<option value="charge:1000:60">Charge 1000 W</option>
+				<option value="charge:2000:60">Charge 2000 W</option>
+				<option value="charge:3000:60">Charge 3000 W</option>
+				<option value="discharge:1000:60">Discharge 1000 W</option>
+				<option value="discharge:2000:60">Discharge 2000 W</option>
+				<option value="discharge:3000:60">Discharge 3000 W</option>
+				<option value="grid_charge:1000:60">Grid Charge 1000 W</option>
+				<option value="grid_charge:2000:60">Grid Charge 2000 W</option>
+				<option value="grid_charge:3000:60">Grid Charge 3000 W</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="system-coupling-mode">
@@ -163,7 +178,16 @@
 		<item-type>Number:Energy</item-type>
 		<label>Set Manual Charge Energy</label>
 		<description>Start a manual battery charge with this energy, sent to the device in Wh</description>
-		<state pattern="%.0f Wh"/>
+		<command>
+			<options>
+				<option value="500 Wh">500 Wh</option>
+				<option value="1000 Wh">1000 Wh</option>
+				<option value="1500 Wh">1500 Wh</option>
+				<option value="2000 Wh">2000 Wh</option>
+				<option value="2500 Wh">2500 Wh</option>
+				<option value="3000 Wh">3000 Wh</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="battery-control-idle-periods">
@@ -172,20 +196,6 @@
 		<description>Periods during which the battery is locked against charging or discharging, one period per line as
 			name:days:mode:active:hh:mm-hh:mm</description>
 		<state readOnly="false"/>
-	</channel-type>
-
-	<channel-type id="battery-control-idle-period-set">
-		<item-type>String</item-type>
-		<label>Set Idle Period</label>
-		<description>Adds or replaces the idle period of the same name, as name:days:mode:active:hh:mm-hh:mm</description>
-		<state pattern="%s"/>
-	</channel-type>
-
-	<channel-type id="battery-control-idle-period-delete">
-		<item-type>String</item-type>
-		<label>Delete Idle Period</label>
-		<description>Removes the idle period of this name</description>
-		<state pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="battery-control-block-charging">

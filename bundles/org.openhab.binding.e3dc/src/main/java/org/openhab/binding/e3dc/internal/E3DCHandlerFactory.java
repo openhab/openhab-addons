@@ -14,6 +14,12 @@ package org.openhab.binding.e3dc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.e3dc.internal.handler.E3DCBatteryHandler;
+import org.openhab.binding.e3dc.internal.handler.E3DCBatteryModuleHandler;
+import org.openhab.binding.e3dc.internal.handler.E3DCBridgeHandler;
+import org.openhab.binding.e3dc.internal.handler.E3DCPowerMeterHandler;
+import org.openhab.binding.e3dc.internal.handler.E3DCPowerPlantHandler;
+import org.openhab.binding.e3dc.internal.handler.E3DCWallboxHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;

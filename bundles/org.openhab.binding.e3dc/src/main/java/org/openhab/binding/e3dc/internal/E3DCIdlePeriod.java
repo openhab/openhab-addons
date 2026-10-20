@@ -224,28 +224,6 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
                         RscpValue.uint32(RscpTag.EMS_PERIOD_STOP, stop.toSecondOfDay())));
     }
 
-    /**
-     * The periods with the given one in place of the period of the same name, or added at the end when there is none.
-     */
-    public static List<E3DCIdlePeriod> replaceByName(List<E3DCIdlePeriod> periods, E3DCIdlePeriod period) {
-        List<E3DCIdlePeriod> result = new ArrayList<>();
-        boolean replaced = false;
-        for (E3DCIdlePeriod existing : periods) {
-            if (existing.name().equals(period.name())) {
-                if (!replaced) {
-                    result.add(period);
-                    replaced = true;
-                }
-            } else {
-                result.add(existing);
-            }
-        }
-        if (!replaced) {
-            result.add(period);
-        }
-        return result;
-    }
-
     /** The periods without the one of the given name. */
     public static List<E3DCIdlePeriod> removeByName(List<E3DCIdlePeriod> periods, String name) {
         List<E3DCIdlePeriod> result = new ArrayList<>(periods);

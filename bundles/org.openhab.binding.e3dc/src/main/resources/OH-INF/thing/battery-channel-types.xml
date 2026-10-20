@@ -8,14 +8,14 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Charge</label>
 		<description>Battery state of charge</description>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="battery-rsoc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Real State of Charge</label>
 		<description>State of charge the battery reports itself</description>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="battery-remaining-charge-power">
@@ -106,13 +106,6 @@
 		<item-type>Number:Power</item-type>
 		<label>User Discharge Limit</label>
 		<description>Discharge power limit set by the user</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="battery-set-power">
-		<item-type>Number:Power</item-type>
-		<label>Set Power</label>
-		<description>Power the energy manager is currently told to hold</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 

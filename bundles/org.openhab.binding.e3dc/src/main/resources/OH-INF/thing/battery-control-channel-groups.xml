@@ -22,8 +22,6 @@
 			<channel id="set-manual-charge" typeId="battery-control-set-manual-charge"/>
 			<channel id="idle-periods-enabled" typeId="battery-control-idle-periods-enabled"/>
 			<channel id="idle-periods" typeId="battery-control-idle-periods"/>
-			<channel id="idle-period-set" typeId="battery-control-idle-period-set"/>
-			<channel id="idle-period-delete" typeId="battery-control-idle-period-delete"/>
 			<channel id="block-charging" typeId="battery-control-block-charging"/>
 			<channel id="block-discharging" typeId="battery-control-block-discharging"/>
 			<channel id="manual-charge-energy" typeId="battery-control-manual-charge-energy"/>

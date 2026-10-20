@@ -13,7 +13,9 @@
 		<description>Values of a wallbox connected to the E3/DC home power plant.</description>
 
 		<channel-groups>
-			<channel-group id="wallbox" typeId="wallbox"/>
+			<channel-group id="status-control" typeId="wallbox-status-control"/>
+			<channel-group id="session" typeId="wallbox-session"/>
+			<channel-group id="counters" typeId="wallbox-counters"/>
 		</channel-groups>
 
 		<config-description>

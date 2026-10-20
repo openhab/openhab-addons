@@ -104,8 +104,8 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
 
     /**
      * One occurrence of a value that a container reports as several containers of its own, as the inverter
-     * reports its direct current values once per tracker. The occurrence is selected by the position of the
-     * value's container, because the containers carry no index of their own.
+     * reports its values once per phase, tracker or temperature sensor. The occurrence is selected by the index
+     * the value's container carries, or by its position when the containers carry none.
      */
     public static E3DCChannelSpec indexedNested(int container, int nestedContainer, int tag, int valueIndex) {
         return new E3DCChannelSpec(tag, container, 1, 0, -1, nestedContainer, valueIndex, false, false);
@@ -209,7 +209,6 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                 entry("discharge-limit-dcdc", E3DCChannelSpec.of(RscpTag.EMS_DCDC_DISCHARGE_LIMIT)), //
                 entry("discharge-limit-used", E3DCChannelSpec.of(RscpTag.EMS_USED_DISCHARGE_LIMIT)), //
                 entry("discharge-limit-user", E3DCChannelSpec.of(RscpTag.EMS_USER_DISCHARGE_LIMIT)), //
-                entry("set-power", E3DCChannelSpec.of(RscpTag.EMS_SET_POWER)), //
                 entry("wallbox-discharge-to-car", E3DCChannelSpec.bit(RscpTag.EMS_BATTERY_TO_CAR_MODE, 1)), //
                 entry("wallbox-charge-before-car", E3DCChannelSpec.bit(RscpTag.EMS_BATTERY_BEFORE_CAR_MODE, 1)), //
                 entry("wallbox-discharge-until", E3DCChannelSpec.of(RscpTag.EMS_GET_WB_DISCHARGE_BAT_UNTIL)), //
@@ -310,29 +309,31 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
      * byte inside the {@code WB_EXTERN_DATA} byte array.
      */
     public static E3DCChannelRegistry wallbox() {
-        return new E3DCChannelRegistry().group(E3DCBindingConstants.GROUP_WALLBOX, Map.ofEntries(//
-                entry("power-l1", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_PM_POWER_L1)), //
-                entry("power-l2", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_PM_POWER_L2)), //
-                entry("power-l3", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_PM_POWER_L3)), //
-                entry("energy-total", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_ENERGY_ALL, 1000)), //
-                entry("phase-l1", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_PM_ACTIVE_PHASES, 1)), //
-                entry("energy-l1", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_PM_ENERGY_L1, 1000)), //
-                entry("phase-l2", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_PM_ACTIVE_PHASES, 2)), //
-                entry("energy-l2", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_PM_ENERGY_L2, 1000)), //
-                entry("phase-l3", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_PM_ACTIVE_PHASES, 4)), //
-                entry("energy-l3", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_PM_ENERGY_L3, 1000)), //
-                entry("energy-solar", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_ENERGY_SOLAR, 1000)), //
-                entry("soc", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_SOC)), //
-                entry("min-charge-current", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_MIN_CHARGE_CURRENT)), //
-                entry("max-charge-current", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_MAX_CHARGE_CURRENT)), //
-                entry("number-phases", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_NUMBER_PHASES)), //
-                entry("auto-phase-switch", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_AUTO_PHASE_SWITCH_ENABLED)), //
-                entry("key-state", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_KEY_STATE, 1)), //
+        return new E3DCChannelRegistry().group(E3DCBindingConstants.GROUP_WALLBOX_STATUS_CONTROL, Map.ofEntries(//
                 entry("plugged", E3DCChannelSpec.bitAt(RscpTag.WB_EXTERN_DATA, 2, 8)), //
                 entry("locked", E3DCChannelSpec.bitAt(RscpTag.WB_EXTERN_DATA, 2, 16)), //
                 entry("charging", E3DCChannelSpec.bitAt(RscpTag.WB_EXTERN_DATA, 2, 32)), //
+                entry("key-state", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_KEY_STATE, 1)), //
+                entry("soc", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_SOC)), //
+                entry("sun-mode", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_SUN_MODE_ACTIVE)), //
                 entry("suspended", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_ABORT_CHARGING)), //
-                entry("sun-mode", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_SUN_MODE_ACTIVE))));
+                entry("min-charge-current", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_MIN_CHARGE_CURRENT)), //
+                entry("max-charge-current", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_MAX_CHARGE_CURRENT)), //
+                entry("number-phases", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_NUMBER_PHASES)), //
+                entry("auto-phase-switch", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_AUTO_PHASE_SWITCH_ENABLED))))
+                .group(E3DCBindingConstants.GROUP_WALLBOX_SESSION, Map.ofEntries(//
+                        entry("power-l1", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_PM_POWER_L1)), //
+                        entry("power-l2", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_PM_POWER_L2)), //
+                        entry("power-l3", E3DCChannelSpec.in(RscpTag.WB_DATA, RscpTag.WB_PM_POWER_L3)), //
+                        entry("phase-l1", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_PM_ACTIVE_PHASES, 1)), //
+                        entry("phase-l2", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_PM_ACTIVE_PHASES, 2)), //
+                        entry("phase-l3", E3DCChannelSpec.bitIn(RscpTag.WB_DATA, RscpTag.WB_PM_ACTIVE_PHASES, 4)), //
+                        entry("energy-l1", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_PM_ENERGY_L1, 1000)), //
+                        entry("energy-l2", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_PM_ENERGY_L2, 1000)), //
+                        entry("energy-l3", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_PM_ENERGY_L3, 1000))))
+                .group(E3DCBindingConstants.GROUP_WALLBOX_COUNTERS, Map.ofEntries(//
+                        entry("total", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_ENERGY_ALL, 1000)), //
+                        entry("solar", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_ENERGY_SOLAR, 1000))));
     }
 
     /** The power meter channels. */
@@ -356,9 +357,9 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
      *
      * <p>
      * Every value the inverter reports arrives as a container of its own, which carries the value under
-     * {@code PVI_VALUE} next to the inverter index. The direct current values are reported once per
-     * photovoltaic tracker, so the first two trackers are exposed as their own channels; the device reports
-     * its tracker count as {@code string-count}, which tells whether the second one is in use.
+     * {@code PVI_VALUE} next to the index the request asked for. The trackers and temperature sensors are not
+     * part of this registry: their channels are created at runtime for the indexes the device answers, see
+     * {@link E3DCInverterChannels}.
      */
     private static Map<String, E3DCChannelSpec> inverterChannels() {
         Map<String, E3DCChannelSpec> channels = new LinkedHashMap<>();
@@ -373,15 +374,9 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
             channels.put("energy-day" + suffix, phase(RscpTag.PVI_AC_ENERGY_DAY, phase, 1000));
         }
         channels.put("ac-frequency", parameter(RscpTag.PVI_AC_FREQUENCY));
-        for (int sensor = 0; sensor < 4; sensor++) {
-            channels.put("temperature-" + (sensor + 1), E3DCChannelSpec.indexedNested(RscpTag.PVI_DATA,
-                    RscpTag.PVI_TEMPERATURE, RscpTag.PVI_VALUE, sensor));
-        }
         // these two are answered as plain values rather than in a container of their own
         channels.put("on-grid", E3DCChannelSpec.in(RscpTag.PVI_DATA, RscpTag.PVI_ON_GRID));
         channels.put("string-count", E3DCChannelSpec.in(RscpTag.PVI_DATA, RscpTag.PVI_USED_STRING_COUNT));
-        tracker(channels, "tracker-1", 0);
-        tracker(channels, "tracker-2", 1);
         return channels;
     }
 
@@ -395,32 +390,13 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
         return E3DCChannelSpec.nested(RscpTag.PVI_DATA, tag, RscpTag.PVI_VALUE);
     }
 
-    /**
-     * The channels of one photovoltaic tracker, counted from 1. The trackers beyond the first two are not
-     * part of the registry; they are created at runtime once the device has reported how many it has.
-     */
-    static Map<String, E3DCChannelSpec> trackerChannels(int number) {
-        Map<String, E3DCChannelSpec> channels = new LinkedHashMap<>();
-        tracker(channels, "tracker-" + number, number - 1);
-        return channels;
-    }
-
-    /** The direct current values of one tracker, addressed by the position of the value's container. */
-    private static void tracker(Map<String, E3DCChannelSpec> channels, String prefix, int index) {
-        channels.put(prefix + "-power",
-                E3DCChannelSpec.indexedNested(RscpTag.PVI_DATA, RscpTag.PVI_DC_POWER, RscpTag.PVI_VALUE, index));
-        channels.put(prefix + "-voltage",
-                E3DCChannelSpec.indexedNested(RscpTag.PVI_DATA, RscpTag.PVI_DC_VOLTAGE, RscpTag.PVI_VALUE, index));
-        channels.put(prefix + "-current",
-                E3DCChannelSpec.indexedNested(RscpTag.PVI_DATA, RscpTag.PVI_DC_CURRENT, RscpTag.PVI_VALUE, index));
-    }
-
     /** The channels of one battery, which the device reports inside the battery container. */
     public static E3DCChannelRegistry battery() {
         Map<String, E3DCChannelSpec> channels = new LinkedHashMap<>();
         channels.put("voltage", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_MODULE_VOLTAGE));
         channels.put("current", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_CURRENT));
         channels.put("charge-cycles", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_CHARGE_CYCLES));
+        channels.put("module-count", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_DCB_COUNT));
         channels.put("soh", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_ASOC));
         channels.put("status-code", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_STATUS_CODE));
         channels.put("error-code", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_ERROR_CODE));
