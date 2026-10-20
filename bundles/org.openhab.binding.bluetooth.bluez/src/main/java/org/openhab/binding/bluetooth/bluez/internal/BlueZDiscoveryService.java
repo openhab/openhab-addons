@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -89,8 +90,8 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
         // the first time the device manager is not null we can cancel background discovery
         stopBackgroundDiscovery();
         deviceManager.scanForBluetoothAdapters().stream()//
-                .filter(this::hasAddress)//
                 .map(this::createDiscoveryResult)//
+                .filter(Objects::nonNull)//
                 .forEach(this::thingDiscovered);
     }
 
@@ -99,25 +100,17 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
      * there as well, e.g. /org/bluez/test registered by the SAP plugin dummy driver. Reading the address of such an
      * object returns null. As the address is a required configuration parameter and the representation property, these
      * objects must not be reported.
-     *
-     * @param adapter the adapter as reported by the bluez-dbus library
-     * @return true if the adapter has an address
      */
-    private boolean hasAddress(BluetoothAdapter adapter) {
-        @Nullable
+    private @Nullable DiscoveryResult createDiscoveryResult(BluetoothAdapter adapter) {
         String address = adapter.getAddress();
         if (address == null) {
             logger.debug("Ignoring D-Bus object '{}', it is not a Bluetooth adapter or its address cannot be read",
                     adapter.getDbusPath());
-            return false;
+            return null;
         }
-        return true;
-    }
-
-    private DiscoveryResult createDiscoveryResult(BluetoothAdapter adapter) {
         return DiscoveryResultBuilder.create(new ThingUID(BlueZAdapterConstants.THING_TYPE_BLUEZ, getId(adapter)))
                 .withLabel("Bluetooth Interface " + adapter.getName())
-                .withProperty(BlueZAdapterConstants.PROPERTY_ADDRESS, adapter.getAddress())
+                .withProperty(BlueZAdapterConstants.PROPERTY_ADDRESS, address)
                 .withRepresentationProperty(BlueZAdapterConstants.PROPERTY_ADDRESS).build();
     }
 
