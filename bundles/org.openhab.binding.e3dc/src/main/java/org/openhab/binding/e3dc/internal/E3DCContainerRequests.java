@@ -13,6 +13,7 @@
 package org.openhab.binding.e3dc.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ import org.openhab.binding.e3dc.internal.rscp.RscpValue;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-final class E3DCContainerRequests {
+public final class E3DCContainerRequests {
 
     /**
      * One container that is requested per device, with the group whose channels it serves.
@@ -50,7 +51,7 @@ final class E3DCContainerRequests {
      *            with
      * @param parameters the data points to read, each one a parameter of the request
      */
-    record Container(String groupId, int containerTag, int indexTag, int responseTag, List<Integer> parameters) {
+    public record Container(String groupId, int containerTag, int indexTag, int responseTag, List<Integer> parameters) {
 
         /**
          * The request for one device: the index first when the container addresses a device, then the data
@@ -59,19 +60,95 @@ final class E3DCContainerRequests {
          * @param index the device the container addresses
          * @param unsupported data points the device has already reported as unsupported, which are left out
          */
-        RscpValue request(int index, Set<Integer> unsupported) {
-            List<RscpValue> items = new ArrayList<>(parameters.size() + 1);
+        public RscpValue request(int index, Set<Integer> unsupported) {
+            return request(index, unsupported, List.of());
+        }
+
+        /**
+         * The request for one device, including the cell modules to read.
+         *
+         * <p>
+         * {@code BAT_REQ_DCB_INFO} is only answered for the module whose index it carries as value. Sent without
+         * a value the device reports a single module, so it is left out of the plain parameters and added once
+         * per requested module instead. The values of the inverter that exist once per phase, tracker or
+         * temperature sensor are requested once per index, see {@link E3DCContainerRequests#INDEX_PROBES}.
+         *
+         * @param index the device the container addresses
+         * @param unsupported data points the device has already reported as unsupported, which are left out
+         * @param moduleIndexes the indexes of the cell modules to read, in ascending order
+         */
+        public RscpValue request(int index, Set<Integer> unsupported, Collection<Integer> moduleIndexes) {
+            if (containerTag == RscpTag.SE_REQ_EP_RESERVE) {
+                // the reserve is asked for by its bare tag without a value; the device answers with all its values
+                return RscpValue.none(containerTag);
+            }
+            List<RscpValue> items = new ArrayList<>(parameters.size() + moduleIndexes.size() + 1);
             if (indexTag != 0) {
                 items.add(RscpValue.uchar8(indexTag, index));
             }
             for (int parameter : parameters) {
-                if (!unsupported.contains(parameter)) {
+                if (parameter == RscpTag.BAT_REQ_DCB_INFO || unsupported.contains(parameter)) {
+                    continue;
+                }
+                int repeats = containerTag == RscpTag.PVI_REQ_DATA ? indexedRequests(parameter) : 0;
+                if (repeats > 0) {
+                    // sent without a value the device answers the first phase, tracker or sensor only
+                    for (int position = 0; position < repeats; position++) {
+                        items.add(RscpValue.uchar8(parameter, position));
+                    }
+                } else {
                     items.add(RscpValue.none(parameter));
+                }
+            }
+            if (containerTag == RscpTag.BAT_REQ_DATA && !unsupported.contains(RscpTag.BAT_REQ_DCB_INFO)) {
+                for (int module : moduleIndexes) {
+                    items.add(RscpValue.uchar8(RscpTag.BAT_REQ_DCB_INFO, module));
                 }
             }
             return RscpValue.container(containerTag, items);
         }
     }
+
+    /**
+     * How many indexes of the trackers and temperature sensors of the inverter are asked for, counted from 0.
+     *
+     * <p>
+     * The device reports the number of strings it uses wrongly, so every poll asks for the indexes 0 to 5. An
+     * index the inverter does not have is answered with an error, which does not matter for the others. The
+     * channels are created for the indexes that deliver a value.
+     */
+    public static final int INDEX_PROBES = 6;
+
+    /** The number of phases of the inverter, each one asked for with its own request. */
+    private static final int PHASES = 3;
+
+    /** The values of the inverter that exist once per tracker or temperature sensor. */
+    private static final Set<Integer> PROBED_PARAMETERS = Set.of(RscpTag.PVI_REQ_DC_POWER, RscpTag.PVI_REQ_DC_VOLTAGE,
+            RscpTag.PVI_REQ_DC_CURRENT, RscpTag.PVI_REQ_TEMPERATURE);
+
+    /** How often a parameter of the inverter is requested with its own index, or 0 when it is requested once. */
+    private static int indexedRequests(int parameter) {
+        if (PHASE_PARAMETERS.contains(parameter)) {
+            return PHASES;
+        }
+        return PROBED_PARAMETERS.contains(parameter) ? INDEX_PROBES : 0;
+    }
+
+    /**
+     * Whether the parameter is requested for indexes the inverter may not have. An error for such a parameter
+     * says nothing about the parameter itself, so it must not be taken as a reason to stop requesting it.
+     */
+    public static boolean isProbed(int requestTag) {
+        return PROBED_PARAMETERS.contains(requestTag);
+    }
+
+    /**
+     * The values of the inverter that exist once per phase. Like {@code BAT_REQ_DCB_INFO}, they are only
+     * answered for the phase whose index they carry as value, so every phase is requested on its own.
+     */
+    private static final Set<Integer> PHASE_PARAMETERS = Set.of(RscpTag.PVI_REQ_AC_POWER, RscpTag.PVI_REQ_AC_VOLTAGE,
+            RscpTag.PVI_REQ_AC_CURRENT, RscpTag.PVI_REQ_AC_APPARENT_POWER, RscpTag.PVI_REQ_AC_REACTIVE_POWER,
+            RscpTag.PVI_REQ_AC_ENERGY_ALL, RscpTag.PVI_REQ_AC_ENERGY_DAY);
 
     private static final Container WALLBOX = new Container(E3DCBindingConstants.GROUP_WALLBOX, RscpTag.WB_REQ_DATA,
             RscpTag.WB_INDEX, RscpTag.WB_DATA,
@@ -137,7 +214,7 @@ final class E3DCContainerRequests {
             RESERVE);
 
     /** The container of one channel group, or {@code null} when the group is requested as a bare container. */
-    static @Nullable Container forGroup(String groupId) {
+    public static @Nullable Container forGroup(String groupId) {
         for (Container container : CONTAINERS) {
             if (container.groupId().equals(groupId)) {
                 return container;
@@ -147,7 +224,7 @@ final class E3DCContainerRequests {
     }
 
     /** The container whose values arrive in the given response container, or {@code null}. */
-    static @Nullable Container forResponseTag(int responseTag) {
+    public static @Nullable Container forResponseTag(int responseTag) {
         for (Container container : CONTAINERS) {
             if (container.responseTag() == responseTag) {
                 return container;
@@ -157,7 +234,7 @@ final class E3DCContainerRequests {
     }
 
     /** The container a request tag belongs to, or {@code null} when the tag addresses no such container. */
-    static @Nullable Container forContainerTag(int containerTag) {
+    public static @Nullable Container forContainerTag(int containerTag) {
         for (Container container : CONTAINERS) {
             if (container.containerTag() == containerTag) {
                 return container;
@@ -170,7 +247,7 @@ final class E3DCContainerRequests {
      * Whether the tag is a parameter of one of these containers, so the value it stands for arrives with the
      * request of that container and is not asked for on its own.
      */
-    static boolean isParameter(int requestTag) {
+    public static boolean isParameter(int requestTag) {
         for (Container container : CONTAINERS) {
             if (container.parameters().contains(requestTag)) {
                 return true;
@@ -179,7 +256,7 @@ final class E3DCContainerRequests {
         return false;
     }
 
-    static List<Container> all() {
+    public static List<Container> all() {
         return CONTAINERS;
     }
 

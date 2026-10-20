@@ -65,11 +65,13 @@ public final class E3DCBindingConstants {
     /** The emergency power of the battery: the reserve kept for it and the state of the supply. */
     public static final String GROUP_EMERGENCY = "emergency";
 
-    /** The price based charging settings, which live in the E3/DC cloud rather than on the device. */
-    public static final String GROUP_AI360 = "ai360";
+    /** The request of the wallbox data, whose values the channel groups below share. */
+    public static final String GROUP_WALLBOX = "wallbox";
 
     /** Channel group ids of the wallbox thing. */
-    public static final String GROUP_WALLBOX = "wallbox";
+    public static final String GROUP_WALLBOX_STATUS_CONTROL = "status-control";
+    public static final String GROUP_WALLBOX_SESSION = "session";
+    public static final String GROUP_WALLBOX_COUNTERS = "counters";
 
     /** Channel group ids of the power meter thing. */
     public static final String GROUP_METER = "meter";

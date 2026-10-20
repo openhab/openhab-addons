@@ -8,7 +8,7 @@
 		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency</label>
 		<description>Grid frequency measured by the inverter</description>
-		<state pattern="%.2f %unit%" readOnly="true"/>
+		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="inverter-on-grid">
@@ -23,48 +23,6 @@
 		<label>String Count</label>
 		<description>Number of photovoltaic strings in use</description>
 		<state pattern="%d" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-tracker-1-power">
-		<item-type>Number:Power</item-type>
-		<label>Tracker 1 Power</label>
-		<description>Direct current power of the first photovoltaic tracker</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-tracker-1-voltage">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Tracker 1 Voltage</label>
-		<description>Direct current voltage of the first photovoltaic tracker</description>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-tracker-1-current">
-		<item-type>Number:ElectricCurrent</item-type>
-		<label>Tracker 1 Current</label>
-		<description>Direct current of the first photovoltaic tracker</description>
-		<state pattern="%.2f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-tracker-2-power">
-		<item-type>Number:Power</item-type>
-		<label>Tracker 2 Power</label>
-		<description>Direct current power of the second photovoltaic tracker</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-tracker-2-voltage">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Tracker 2 Voltage</label>
-		<description>Direct current voltage of the second photovoltaic tracker</description>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-tracker-2-current">
-		<item-type>Number:ElectricCurrent</item-type>
-		<label>Tracker 2 Current</label>
-		<description>Direct current of the second photovoltaic tracker</description>
-		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="inverter-ac-power-l1">
@@ -211,34 +169,6 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Today L3</label>
 		<description>Energy produced on phase L3 today</description>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-temperature-1">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature 1</label>
-		<description>Temperature of sensor 1 of the inverter</description>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-temperature-2">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature 2</label>
-		<description>Temperature of sensor 2 of the inverter</description>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-temperature-3">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature 3</label>
-		<description>Temperature of sensor 3 of the inverter</description>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="inverter-temperature-4">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature 4</label>
-		<description>Temperature of sensor 4 of the inverter</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 

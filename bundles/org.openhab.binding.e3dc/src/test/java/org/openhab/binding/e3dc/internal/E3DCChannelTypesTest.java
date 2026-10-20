@@ -45,8 +45,8 @@ import org.junit.jupiter.api.Test;
 class E3DCChannelTypesTest {
 
     /** The settable wallbox currents, which offer a list of whole amperes although they carry a unit. */
-    private static final Set<String> SETTABLE_CURRENT_TYPES = Set.of("wallbox-min-charge-current",
-            "wallbox-max-charge-current");
+    private static final Set<String> SETTABLE_CURRENT_TYPES = Set.of("settings-min-charge-current",
+            "settings-max-charge-current");
 
     private static final Path THING_DIRECTORY = Path.of("src", "main", "resources", "OH-INF", "thing");
 
@@ -87,12 +87,34 @@ class E3DCChannelTypesTest {
         return List.of(E3DCChannelSpec.powerPlant(), E3DCChannelSpec.wallbox(), E3DCChannelSpec.powerMeter());
     }
 
+    private static final Pattern CHANNEL_GROUP_TYPE = Pattern
+            .compile("<channel-group-type id=\"([^\"]+)\">(.*?)</channel-group-type>", Pattern.DOTALL);
+    private static final Pattern GROUP_CHANNEL = Pattern.compile("<channel id=\"([^\"]+)\" typeId=\"([^\"]+)\"");
+
     /**
-     * The channel id in the XML is the group id followed by the channel id, which is how the framework
-     * resolves a channel type for a channel.
+     * The channel type a channel of a group declares in the channel group XML, keyed by group type id and channel
+     * id. The wallbox groups carry the prefix {@code wallbox-} in their group type id, so a registry group is looked
+     * up under both names.
      */
-    private static String expectedTypeId(String groupId, String channelId) {
-        return groupId + "-" + channelId;
+    private static String expectedTypeId(String groupId, String channelId) throws IOException {
+        Map<String, String> declared = new HashMap<>();
+        try (Stream<Path> files = Files.list(THING_DIRECTORY)) {
+            for (Path file : files.filter(path -> path.getFileName().toString().endsWith("channel-groups.xml"))
+                    .toList()) {
+                Matcher group = CHANNEL_GROUP_TYPE.matcher(Files.readString(file));
+                while (group.find()) {
+                    Matcher channel = GROUP_CHANNEL.matcher(group.group(2));
+                    while (channel.find()) {
+                        declared.put(group.group(1) + "#" + channel.group(1), channel.group(2));
+                    }
+                }
+            }
+        }
+        String typeId = declared.get(groupId + "#" + channelId);
+        if (typeId == null) {
+            typeId = declared.get("wallbox-" + groupId + "#" + channelId);
+        }
+        return typeId != null ? typeId : groupId + "-" + channelId;
     }
 
     @Test
@@ -159,6 +181,10 @@ class E3DCChannelTypesTest {
         Map<String, ChannelType> types = channelTypes();
         List<String> wrong = new ArrayList<>();
         for (ChannelType type : types.values()) {
+            if (type.body().contains("<command")) {
+                // a command only channel carries no state, so there is nothing to display
+                continue;
+            }
             boolean hasState = type.body().contains("<state");
             assertTrue(hasState, type.id() + " has no state element, so it renders without a unit");
             String state = type.body().substring(type.body().indexOf("<state"));
@@ -193,7 +219,7 @@ class E3DCChannelTypesTest {
      */
     @Test
     void channelsWithAFixedValueSetDeclareOptions() throws IOException {
-        List<String> expected = List.of("system-mode", "wallbox-number-phases");
+        List<String> expected = List.of("system-mode", "settings-number-phases");
         Pattern option = Pattern.compile("<option value=\"([^\"]+)\">([^<]+)</option>");
         for (String id : expected) {
             ChannelType type = channelTypes().get(id);
@@ -230,7 +256,7 @@ class E3DCChannelTypesTest {
     void optionsAreOnlyDeclaredForDiscreteChannels() throws IOException {
         List<String> wrong = new ArrayList<>();
         for (ChannelType type : channelTypes().values()) {
-            if (type.body().contains("<option ") && type.itemType().contains(":")
+            if (type.body().contains("<option ") && type.itemType().contains(":") && !type.body().contains("<command")
                     && !SETTABLE_CURRENT_TYPES.contains(type.id())) {
                 wrong.add(type.id() + " (" + type.itemType() + ") restricts a measurement to options");
             }

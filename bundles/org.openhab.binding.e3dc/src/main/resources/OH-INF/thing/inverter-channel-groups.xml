@@ -10,12 +10,6 @@
 			<channel id="ac-frequency" typeId="inverter-ac-frequency"/>
 			<channel id="on-grid" typeId="inverter-on-grid"/>
 			<channel id="string-count" typeId="inverter-string-count"/>
-			<channel id="tracker-1-power" typeId="inverter-tracker-1-power"/>
-			<channel id="tracker-1-voltage" typeId="inverter-tracker-1-voltage"/>
-			<channel id="tracker-1-current" typeId="inverter-tracker-1-current"/>
-			<channel id="tracker-2-power" typeId="inverter-tracker-2-power"/>
-			<channel id="tracker-2-voltage" typeId="inverter-tracker-2-voltage"/>
-			<channel id="tracker-2-current" typeId="inverter-tracker-2-current"/>
 			<channel id="ac-power-l1" typeId="inverter-ac-power-l1"/>
 			<channel id="ac-power-l2" typeId="inverter-ac-power-l2"/>
 			<channel id="ac-power-l3" typeId="inverter-ac-power-l3"/>
@@ -37,10 +31,6 @@
 			<channel id="energy-day-l1" typeId="inverter-energy-day-l1"/>
 			<channel id="energy-day-l2" typeId="inverter-energy-day-l2"/>
 			<channel id="energy-day-l3" typeId="inverter-energy-day-l3"/>
-			<channel id="temperature-1" typeId="inverter-temperature-1"/>
-			<channel id="temperature-2" typeId="inverter-temperature-2"/>
-			<channel id="temperature-3" typeId="inverter-temperature-3"/>
-			<channel id="temperature-4" typeId="inverter-temperature-4"/>
 		</channels>
 	</channel-group-type>
 

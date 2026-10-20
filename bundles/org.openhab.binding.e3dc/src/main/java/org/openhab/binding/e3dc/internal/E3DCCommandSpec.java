@@ -215,7 +215,7 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
      * therefore reports and sets it, without a second channel for the same value.
      */
     public static E3DCCommandRegistry wallbox() {
-        return new E3DCCommandRegistry().group(E3DCBindingConstants.GROUP_WALLBOX, Map.of(//
+        return new E3DCCommandRegistry().group(E3DCBindingConstants.GROUP_WALLBOX_STATUS_CONTROL, Map.of(//
                 "sun-mode", E3DCCommandSpec.uchar8Flag(RscpTag.WB_REQ_SET_SUN_MODE_ACTIVE, RscpTag.WB_REQ_DATA), //
                 "suspended", E3DCCommandSpec.uchar8Flag(RscpTag.WB_REQ_SET_ABORT_CHARGING, RscpTag.WB_REQ_DATA), //
                 "auto-phase-switch",

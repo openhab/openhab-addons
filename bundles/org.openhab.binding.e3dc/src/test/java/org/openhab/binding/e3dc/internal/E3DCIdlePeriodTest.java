@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.e3dc.internal;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalTime;
@@ -199,24 +200,23 @@ class E3DCIdlePeriodTest {
 
     @Test
     void onlyTheActiveEntryOfTheSwitchBlocks() {
-        assertFalse(E3DCIdlePeriod.parse("p:monday,tuesday:charge:true:08:00-12:00").blocks(E3DCIdlePeriod.Type.CHARGE),
+        assertFalse(parsed("p:monday,tuesday:charge:true:08:00-12:00").blocks(E3DCIdlePeriod.Type.CHARGE),
                 "an entry of another name is not the one of the switch");
-        assertFalse(E3DCIdlePeriod.parse(
+        assertFalse(parsed(
                 "OH_Block_Charge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:false:00:00-23:59")
                 .blocks(E3DCIdlePeriod.Type.CHARGE), "not active");
-        assertTrue(E3DCIdlePeriod.parse(
+        assertTrue(parsed(
                 "OH_Block_Charge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:00:00-23:59")
                 .blocks(E3DCIdlePeriod.Type.CHARGE));
-        assertFalse(E3DCIdlePeriod
-                .parse("p:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:false:00:00-23:59")
+        assertFalse(parsed("p:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:false:00:00-23:59")
                 .blocks(E3DCIdlePeriod.Type.CHARGE), "not active");
     }
 
     @Test
     void aWindowMustEndAfterItStarts() {
-        assertTrue(E3DCIdlePeriod.parse("a:monday:charge:true:08:00-18:00").hasValidWindow());
-        assertFalse(E3DCIdlePeriod.parse("a:monday:charge:true:18:00-08:00").hasValidWindow());
-        assertFalse(E3DCIdlePeriod.parse("a:monday:charge:true:08:00-08:00").hasValidWindow());
+        assertTrue(parsed("a:monday:charge:true:08:00-18:00").hasValidWindow());
+        assertFalse(parsed("a:monday:charge:true:18:00-08:00").hasValidWindow());
+        assertFalse(parsed("a:monday:charge:true:08:00-08:00").hasValidWindow());
     }
 
     /**
@@ -245,13 +245,13 @@ class E3DCIdlePeriodTest {
         assertNotNull(stop);
         assertEquals("weekend", container.findString(0x01800302));
         assertEquals(RscpType.UCHAR8, type.getType());
-        assertEquals(1, type.asNumber().intValue());
-        assertEquals((1 << 5) | (1 << 6), container.findNumber(0x01800303).intValue());
+        assertEquals(1, requireNonNull(type.asNumber()).intValue());
+        assertEquals((1 << 5) | (1 << 6), requireNonNull(container.findNumber(0x01800303)).intValue());
         assertEquals(RscpType.BOOL, active.getType());
         assertEquals(Boolean.TRUE, active.getValue());
         assertEquals(RscpType.UINT32, start.getType());
-        assertEquals(8 * 3600 + 30 * 60, start.asNumber().intValue());
-        assertEquals(18 * 3600, stop.asNumber().intValue());
+        assertEquals(8 * 3600 + 30 * 60, requireNonNull(start.asNumber()).intValue());
+        assertEquals(18 * 3600, requireNonNull(stop.asNumber()).intValue());
     }
 
     @Test
@@ -281,5 +281,9 @@ class E3DCIdlePeriodTest {
         assertEquals(1, periods.size());
         assertEquals(E3DCIdlePeriod.blocker(E3DCIdlePeriod.Type.DISCHARGE), periods.get(0));
         assertTrue(periods.get(0).blocks(E3DCIdlePeriod.Type.DISCHARGE));
+    }
+
+    private static E3DCIdlePeriod parsed(String text) {
+        return requireNonNull(E3DCIdlePeriod.parse(text));
     }
 }

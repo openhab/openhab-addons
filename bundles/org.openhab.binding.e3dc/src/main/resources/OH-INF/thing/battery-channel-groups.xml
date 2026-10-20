@@ -22,7 +22,6 @@
 			<channel id="discharge-limit-dcdc" typeId="battery-discharge-limit-dcdc"/>
 			<channel id="discharge-limit-used" typeId="battery-discharge-limit-used"/>
 			<channel id="discharge-limit-user" typeId="battery-discharge-limit-user"/>
-			<channel id="set-power" typeId="battery-set-power"/>
 			<channel id="wallbox-discharge-to-car" typeId="battery-wallbox-discharge-to-car"/>
 			<channel id="wallbox-charge-before-car" typeId="battery-wallbox-charge-before-car"/>
 			<channel id="wallbox-discharge-until" typeId="battery-wallbox-discharge-until"/>

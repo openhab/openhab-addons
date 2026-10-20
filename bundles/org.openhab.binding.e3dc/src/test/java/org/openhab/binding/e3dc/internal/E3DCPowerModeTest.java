@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.e3dc.internal;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
@@ -33,7 +34,7 @@ class E3DCPowerModeTest {
     @Test
     void autoNeedsNoPowerAndNoCycles() {
         assertEquals(new E3DCPowerMode(0, 0, 0), E3DCPowerMode.parse("auto"));
-        assertFalse(E3DCPowerMode.parse("auto").isHeld());
+        assertFalse(parsed("auto").isHeld());
     }
 
     @Test
@@ -46,7 +47,7 @@ class E3DCPowerModeTest {
         assertEquals(new E3DCPowerMode(2, 2000, 60), E3DCPowerMode.parse("discharge:2000:60"));
         assertEquals(new E3DCPowerMode(3, 2000, 60), E3DCPowerMode.parse("charge:2000:60"));
         assertEquals(new E3DCPowerMode(4, 2000, 60), E3DCPowerMode.parse(" grid_charge:2000:60 "));
-        assertTrue(E3DCPowerMode.parse("charge:2000:60").isHeld());
+        assertTrue(parsed("charge:2000:60").isHeld());
     }
 
     @Test
@@ -70,7 +71,11 @@ class E3DCPowerModeTest {
         assertNotNull(value);
         assertEquals(RscpType.UCHAR8, mode.getType());
         assertEquals(RscpType.INT32, value.getType());
-        assertEquals(3, ((Number) mode.getValue()).intValue());
-        assertEquals(2500, ((Number) value.getValue()).intValue());
+        assertEquals(3, ((Number) requireNonNull(mode.getValue())).intValue());
+        assertEquals(2500, ((Number) requireNonNull(value.getValue())).intValue());
+    }
+
+    private static E3DCPowerMode parsed(String text) {
+        return requireNonNull(E3DCPowerMode.parse(text));
     }
 }

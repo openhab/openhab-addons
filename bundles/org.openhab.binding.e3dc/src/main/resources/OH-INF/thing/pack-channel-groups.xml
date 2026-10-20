@@ -11,6 +11,7 @@
 			<channel id="voltage" typeId="pack-voltage"/>
 			<channel id="current" typeId="pack-current"/>
 			<channel id="charge-cycles" typeId="pack-charge-cycles"/>
+			<channel id="module-count" typeId="pack-module-count"/>
 			<channel id="soh" typeId="pack-soh"/>
 			<channel id="status-code" typeId="pack-status-code"/>
 			<channel id="error-code" typeId="pack-error-code"/>

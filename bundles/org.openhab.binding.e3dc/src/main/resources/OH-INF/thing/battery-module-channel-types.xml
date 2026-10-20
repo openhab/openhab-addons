@@ -8,14 +8,14 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Charge</label>
 		<description>State of Charge of the battery cell module</description>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="module-soh">
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Health</label>
 		<description>State of Health of the battery cell module</description>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="module-voltage">

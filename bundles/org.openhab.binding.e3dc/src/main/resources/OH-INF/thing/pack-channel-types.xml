@@ -25,11 +25,18 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="pack-module-count">
+		<item-type>Number</item-type>
+		<label>Module Count</label>
+		<description>Number of battery modules</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="pack-soh">
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Health</label>
 		<description>Absolute state of charge of the battery, a measure of its state of health</description>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pack-status-code">

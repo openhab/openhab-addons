@@ -14,9 +14,11 @@ package org.openhab.binding.e3dc.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -172,7 +174,8 @@ class E3DCChannelSpecTest {
      */
     @Test
     void theSunModeChannelReadsTheValueTheWallboxReports() {
-        E3DCChannelSpec spec = E3DCChannelSpec.wallbox().spec(E3DCBindingConstants.GROUP_WALLBOX, "sun-mode");
+        E3DCChannelSpec spec = E3DCChannelSpec.wallbox().spec(E3DCBindingConstants.GROUP_WALLBOX_STATUS_CONTROL,
+                "sun-mode");
 
         assertNotNull(spec);
         assertEquals(RscpTag.WB_DATA, spec.container());
@@ -333,10 +336,15 @@ class E3DCChannelSpecTest {
             assertNotNull(spec);
             assertEquals(1000, spec.divisor(), "the device reports " + channel + " in Wh, the channel shows kWh");
         }
-        for (String channel : List.of("energy-total", "energy-solar")) {
-            E3DCChannelSpec spec = E3DCChannelSpec.wallbox().spec(E3DCBindingConstants.GROUP_WALLBOX, channel);
+        for (String channel : List.of("total", "solar")) {
+            E3DCChannelSpec spec = E3DCChannelSpec.wallbox().spec(E3DCBindingConstants.GROUP_WALLBOX_COUNTERS, channel);
             assertNotNull(spec);
             assertEquals(1000, spec.divisor(), "the device reports " + channel + " in Wh, the channel shows kWh");
+        }
+        for (String channel : List.of("energy-l1", "energy-l2", "energy-l3")) {
+            E3DCChannelSpec spec = E3DCChannelSpec.wallbox().spec(E3DCBindingConstants.GROUP_WALLBOX_SESSION, channel);
+            assertNotNull(spec);
+            assertEquals(1000, spec.divisor(), "the device reports the last charge " + channel + " in Wh");
         }
     }
 
@@ -444,18 +452,23 @@ class E3DCChannelSpecTest {
                 "these channels are polled with an id the interface does not declare: " + fabricated);
     }
 
-    /** The ids of the extracted RSCP tag table the tools keep as the interface reference. */
+    /** The ids of the extracted RSCP tag table kept in the test resources as the interface reference. */
     private static Set<Integer> declaredTagIds() throws IOException {
-        Path table = Path.of("tools", "rscp", "rscp_tags.tsv");
         Set<Integer> ids = new HashSet<>();
-        for (String line : Files.readAllLines(table)) {
-            String[] columns = line.split("\t");
-            if (columns.length == 2 && columns[0].startsWith("TAG_")) {
-                String hex = columns[1].trim();
-                ids.add((int) Long.parseLong(hex.startsWith("0x") ? hex.substring(2) : hex, 16));
+        try (InputStream in = E3DCChannelSpecTest.class.getResourceAsStream("/rscp_tags.tsv")) {
+            assertNotNull(in, "test resource rscp_tags.tsv not found");
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] columns = line.split("\t");
+                    if (columns.length == 2 && columns[0].startsWith("TAG_")) {
+                        String hex = columns[1].trim();
+                        ids.add((int) Long.parseLong(hex.startsWith("0x") ? hex.substring(2) : hex, 16));
+                    }
+                }
             }
         }
-        assertFalse(ids.isEmpty(), "no tags were read from " + table.toAbsolutePath());
+        assertFalse(ids.isEmpty(), "no tags were read from rscp_tags.tsv");
         return ids;
     }
 
@@ -613,28 +626,15 @@ class E3DCChannelSpecTest {
     }
 
     /**
-     * The photovoltaic trackers report their direct current values once per tracker, and the values carry
-     * no index of their own. Each tracker channel therefore selects one occurrence by position.
+     * The photovoltaic trackers and temperature sensors are created at runtime, so the registry of the thing
+     * description holds none of them; E3DCInverterChannelsTest covers the channels that are added.
      */
     @Test
-    void theTrackerChannelsSelectTheirOccurrenceOfTheValue() {
+    void theTrackerChannelsAreNotPartOfTheRegistry() {
         E3DCChannelRegistry registry = E3DCChannelSpec.powerPlant();
-        Map<String, Integer> expected = Map.of("tracker-1-power", 0, "tracker-1-voltage", 0, "tracker-1-current", 0,
-                "tracker-2-power", 1, "tracker-2-voltage", 1, "tracker-2-current", 1);
-        for (Map.Entry<String, Integer> channel : expected.entrySet()) {
-            E3DCChannelSpec spec = registry.spec(E3DCBindingConstants.GROUP_INVERTER, channel.getKey());
-            assertNotNull(spec, channel.getKey() + " is missing");
-            assertEquals(RscpTag.PVI_DATA, spec.container());
-            assertEquals(channel.getValue().intValue(), spec.valueIndex(),
-                    channel.getKey() + " reads the wrong occurrence");
-        }
-        // the values of both trackers are the same tags, only the occurrence differs
-        E3DCChannelSpec first = registry.spec(E3DCBindingConstants.GROUP_INVERTER, "tracker-1-power");
-        E3DCChannelSpec second = registry.spec(E3DCBindingConstants.GROUP_INVERTER, "tracker-2-power");
-        assertNotNull(first);
-        assertNotNull(second);
-        assertEquals(first.tag(), second.tag());
-        assertNotEquals(first.valueIndex(), second.valueIndex());
+
+        assertNull(registry.spec(E3DCBindingConstants.GROUP_INVERTER, "tracker-1-power"));
+        assertNull(registry.spec(E3DCBindingConstants.GROUP_INVERTER, "temperature-1"));
     }
 
     /**
