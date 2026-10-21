@@ -196,11 +196,11 @@ public class It4WifiHandler extends BaseBridgeHandler {
         keepAliveJob = Optional.empty();
     }
 
-    public void received(String command) {
+    public void received(It4WifiConnector source, String command) {
         logger.debug("Received : {}", command);
         Event event = xstream.deserialize(command);
         if (event.error != null) {
-            communicationError("Error code %d received: %s".formatted(event.error.code, event.error.info));
+            communicationError(source, "Error code %d received: %s".formatted(event.error.code, event.error.info));
         } else {
             if (event instanceof Response responseEvent) {
                 handleResponse(responseEvent);
@@ -290,7 +290,11 @@ public class It4WifiHandler extends BaseBridgeHandler {
         sendCommand(reqBuilder.buildMessage(id, t4));
     }
 
-    public void communicationError(String message) {
+    public void communicationError(It4WifiConnector source, String message) {
+        if (connector.orElse(null) != source) {
+            return;
+        }
+
         logger.debug("Communication error: {}", message);
         ThingStatus currentStatus = getThing().getStatus();
         dispose();
