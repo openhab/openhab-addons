@@ -1,0 +1,19 @@
+{
+  "data": {
+    "vin": "YV1TESTVIN0000001",
+    "modelYear": 2024,
+    "gearbox": "AUTOMATIC",
+    "fuelType": "ELECTRIC",
+    "externalColour": "Sage Green",
+    "batteryCapacityKWH": 78.0,
+    "images": {
+      "exteriorImageUrl": "https://example.org/exterior.png",
+      "internalImageUrl": "https://example.org/interior.jpg"
+    },
+    "descriptions": {
+      "model": "XC40",
+      "upholstery": "null",
+      "steering": "LEFT"
+    }
+  }
+}

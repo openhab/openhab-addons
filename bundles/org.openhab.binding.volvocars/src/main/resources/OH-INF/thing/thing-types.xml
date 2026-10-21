@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="volvocars"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Volvo Cars Account</label>
+		<description>Volvo ID account accessed through an application registered on the Volvo Cars developer portal</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="clientId" type="text" required="true">
+				<label>Client ID</label>
+				<description>Client ID of the application registered on the Volvo Cars developer portal.</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<context>password</context>
+				<label>Client Secret</label>
+				<description>Client secret of the application registered on the Volvo Cars developer portal.</description>
+			</parameter>
+			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>VCC API key of the application, sent as vcc-api-key header with every request.</description>
+			</parameter>
+			<parameter name="redirectUri" type="text" required="true">
+				<context>url</context>
+				<label>Redirect URI</label>
+				<description>Redirect URI exactly as registered for the application, e.g.
+					http://openhab:8080/volvocars.</description>
+			</parameter>
+			<parameter name="scopes" type="text">
+				<label>Scopes</label>
+				<description>Space separated list of OAuth scopes to request. Leave empty to request all scopes supported by the
+					binding. Only request scopes that are enabled for the application.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Volvo Vehicle</label>
+		<description>A vehicle connected to the Volvo ID account</description>
+		<semantic-equipment-tag>Car</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="fuel" typeId="fuel"/>
+			<channel-group id="battery" typeId="battery"/>
+			<channel-group id="trip" typeId="trip"/>
+			<channel-group id="location" typeId="location"/>
+			<channel-group id="maintenance" typeId="maintenance"/>
+			<channel-group id="control" typeId="control"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">Volvo Cars</property>
+		</properties>
+		<representation-property>vin</representation-property>
+
+		<config-description>
+			<parameter name="vin" type="text" required="true">
+				<label>VIN</label>
+				<description>Vehicle Identification Number of the vehicle.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="1" unit="min">
+				<label>Refresh Interval</label>
+				<description>Interval in minutes to refresh doors, windows, engine, fuel, battery, trip and location data.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="slowRefreshInterval" type="integer" min="1" unit="min">
+				<label>Maintenance Refresh Interval</label>
+				<description>Interval in minutes to refresh rarely changing maintenance data like service and warning
+					information. Must not be shorter than the refresh interval.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="engineRunTime" type="integer" min="1" max="15" unit="min">
+				<label>Engine Run Time</label>
+				<description>Duration in minutes the engine keeps running after a remote start.</description>
+				<default>15</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

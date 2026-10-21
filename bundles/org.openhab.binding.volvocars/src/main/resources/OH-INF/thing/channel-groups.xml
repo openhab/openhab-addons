@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="volvocars"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="doors">
+		<label>Doors</label>
+		<channels>
+			<channel id="lock" typeId="lock"/>
+			<channel id="front-left" typeId="door">
+				<label>Front Left Door</label>
+			</channel>
+			<channel id="front-right" typeId="door">
+				<label>Front Right Door</label>
+			</channel>
+			<channel id="rear-left" typeId="door">
+				<label>Rear Left Door</label>
+			</channel>
+			<channel id="rear-right" typeId="door">
+				<label>Rear Right Door</label>
+			</channel>
+			<channel id="hood" typeId="door">
+				<label>Hood</label>
+			</channel>
+			<channel id="tailgate" typeId="door">
+				<label>Tailgate</label>
+			</channel>
+			<channel id="tank-lid" typeId="door">
+				<label>Tank Lid</label>
+				<description>Fuel tank lid or charging port lid.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="windows">
+		<label>Windows</label>
+		<channels>
+			<channel id="front-left" typeId="window">
+				<label>Front Left Window</label>
+			</channel>
+			<channel id="front-right" typeId="window">
+				<label>Front Right Window</label>
+			</channel>
+			<channel id="rear-left" typeId="window">
+				<label>Rear Left Window</label>
+			</channel>
+			<channel id="rear-right" typeId="window">
+				<label>Rear Right Window</label>
+			</channel>
+			<channel id="sunroof" typeId="window">
+				<label>Sunroof</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status">
+		<label>Status</label>
+		<channels>
+			<channel id="engine-running" typeId="engine-running"/>
+			<channel id="odometer" typeId="distance">
+				<label>Odometer</label>
+				<description>Total distance driven.</description>
+			</channel>
+			<channel id="availability" typeId="availability"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fuel">
+		<label>Fuel</label>
+		<channels>
+			<channel id="fuel-amount" typeId="fuel-amount"/>
+			<channel id="distance-to-empty-tank" typeId="range">
+				<label>Fuel Range</label>
+				<description>Remaining distance until the fuel tank is empty.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="battery">
+		<label>Battery</label>
+		<channels>
+			<channel id="battery-level" typeId="battery-level"/>
+			<channel id="electric-range" typeId="range">
+				<label>Electric Range</label>
+				<description>Remaining electric range as reported by the Energy API.</description>
+			</channel>
+			<channel id="distance-to-empty-battery" typeId="range">
+				<label>Distance to Empty Battery</label>
+				<description>Remaining distance until the battery is empty as reported by the trip statistics.</description>
+			</channel>
+			<channel id="charger-connection-status" typeId="charger-connection-status"/>
+			<channel id="charging-status" typeId="charging-status"/>
+			<channel id="charging-type" typeId="charging-type"/>
+			<channel id="charger-power-status" typeId="charger-power-status"/>
+			<channel id="estimated-charging-time" typeId="estimated-charging-time"/>
+			<channel id="target-battery-level" typeId="battery-level">
+				<label>Target Battery Level</label>
+				<description>Battery level the vehicle charges to.</description>
+			</channel>
+			<channel id="charging-current-limit" typeId="charging-current-limit"/>
+			<channel id="charging-power" typeId="charging-power"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="trip">
+		<label>Trip Statistics</label>
+		<channels>
+			<channel id="average-speed" typeId="average-speed">
+				<label>Average Speed</label>
+				<description>Average speed since the manual trip meter was reset.</description>
+			</channel>
+			<channel id="average-speed-automatic" typeId="average-speed">
+				<label>Average Speed Automatic</label>
+				<description>Average speed since the automatic trip meter was reset.</description>
+			</channel>
+			<channel id="trip-meter-manual" typeId="distance">
+				<label>Trip Meter Manual</label>
+				<description>Distance since the manual trip meter was reset.</description>
+			</channel>
+			<channel id="trip-meter-automatic" typeId="distance">
+				<label>Trip Meter Automatic</label>
+				<description>Distance since the automatic trip meter was reset, which happens after the vehicle was parked
+					for some hours.</description>
+			</channel>
+			<channel id="average-fuel-consumption" typeId="average-fuel-consumption"/>
+			<channel id="average-energy-consumption" typeId="average-energy-consumption"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="location">
+		<label>Location</label>
+		<channels>
+			<channel id="position" typeId="system.location"/>
+			<channel id="heading" typeId="heading"/>
+			<channel id="timestamp" typeId="location-timestamp"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="maintenance">
+		<label>Maintenance</label>
+		<channels>
+			<channel id="service-warning" typeId="service-warning"/>
+			<channel id="distance-to-service" typeId="distance">
+				<label>Distance to Service</label>
+				<description>Remaining distance until the next service.</description>
+			</channel>
+			<channel id="time-to-service" typeId="time-to-service"/>
+			<channel id="engine-hours-to-service" typeId="engine-hours-to-service"/>
+			<channel id="washer-fluid-warning" typeId="level-warning">
+				<label>Washer Fluid Warning</label>
+			</channel>
+			<channel id="brake-fluid-warning" typeId="level-warning">
+				<label>Brake Fluid Warning</label>
+			</channel>
+			<channel id="oil-level-warning" typeId="oil-level-warning"/>
+			<channel id="coolant-level-warning" typeId="level-warning">
+				<label>Coolant Level Warning</label>
+			</channel>
+			<channel id="tyre-front-left" typeId="tyre-warning">
+				<label>Front Left Tyre</label>
+			</channel>
+			<channel id="tyre-front-right" typeId="tyre-warning">
+				<label>Front Right Tyre</label>
+			</channel>
+			<channel id="tyre-rear-left" typeId="tyre-warning">
+				<label>Rear Left Tyre</label>
+			</channel>
+			<channel id="tyre-rear-right" typeId="tyre-warning">
+				<label>Rear Right Tyre</label>
+			</channel>
+			<channel id="light-failure" typeId="light-failure"/>
+			<channel id="light-failures" typeId="light-failures"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="control">
+		<label>Remote Control</label>
+		<channels>
+			<channel id="climatization" typeId="climatization"/>
+			<channel id="engine-remote-start" typeId="engine-remote-start"/>
+			<channel id="honk-flash" typeId="honk-flash"/>
+			<channel id="lock-reduced-guard" typeId="lock-reduced-guard"/>
+			<channel id="last-command-status" typeId="last-command-status"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

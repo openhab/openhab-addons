@@ -1,0 +1,6 @@
+{
+  "batteryChargeLevel": { "status": "OK", "value": 53, "unit": "percentage", "updatedAt": "2026-01-01T10:00:00Z" },
+  "electricRange": { "status": "OK", "value": 250, "unit": "km", "updatedAt": "2026-01-01T10:00:00Z" },
+  "chargingStatus": { "status": "OK", "value": "CHARGING", "updatedAt": "2026-01-01T10:00:00Z" },
+  "chargingPower": { "status": "ERROR", "code": "NOT_SUPPORTED" }
+}
