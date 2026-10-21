@@ -58,9 +58,24 @@ class E3DCHistoryFetchTest {
     }
 
     @Test
-    void theFetchTriesTwoYearsInARowBeforeItStops() {
-        assertEquals(2, E3DCPowerPlantHandler.MAX_EMPTY_YEARS);
-        assertEquals(2000, E3DCPowerPlantHandler.FIRST_HISTORY_YEAR);
+    void twoEmptyPeriodsInARowStopTheFetch() {
+        E3DCPowerPlantHandler.EmptyPeriods periods = new E3DCPowerPlantHandler.EmptyPeriods(2);
+        assertFalse(periods.exhausted(), "the fetch starts with an unused run");
+        periods.record(false);
+        assertFalse(periods.exhausted(), "a single period without data is tolerated");
+        periods.record(false);
+        assertTrue(periods.exhausted(), "two periods in a row without data end the fetch");
+    }
+
+    @Test
+    void dataEndsTheRunOfEmptyPeriods() {
+        E3DCPowerPlantHandler.EmptyPeriods periods = new E3DCPowerPlantHandler.EmptyPeriods(2);
+        periods.record(false);
+        periods.record(true);
+        periods.record(false);
+        assertFalse(periods.exhausted(), "data in between starts a new run of empty periods");
+        periods.record(false);
+        assertTrue(periods.exhausted());
     }
 
     @Test

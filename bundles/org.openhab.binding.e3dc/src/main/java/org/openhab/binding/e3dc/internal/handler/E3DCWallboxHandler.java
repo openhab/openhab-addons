@@ -45,11 +45,18 @@ public class E3DCWallboxHandler extends E3DCThingHandler {
 
     private final E3DCChannelRegistry registry = E3DCChannelSpec.wallbox();
     private final E3DCCommandRegistry commandRegistry = E3DCCommandSpec.wallbox();
-    private final E3DCWallboxConfiguration config;
+    private E3DCWallboxConfiguration config = new E3DCWallboxConfiguration();
 
     public E3DCWallboxHandler(Thing thing) {
         super(thing);
-        this.config = thing.getConfiguration().as(E3DCWallboxConfiguration.class);
+    }
+
+    @Override
+    public void initialize() {
+        // read here rather than in the constructor: an updated index reaches an already created handler only
+        // through initialize(), which the framework calls again after a configuration change
+        config = getConfigAs(E3DCWallboxConfiguration.class);
+        super.initialize();
     }
 
     @Override

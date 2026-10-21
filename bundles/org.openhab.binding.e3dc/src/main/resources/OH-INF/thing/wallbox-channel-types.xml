@@ -62,7 +62,7 @@
 	<channel-type id="status-soc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Charge</label>
-		<description>Battery state of charge</description>
+		<description>State of charge of the connected vehicle</description>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 

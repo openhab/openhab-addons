@@ -41,8 +41,10 @@ import org.slf4j.LoggerFactory;
  * Authentication happens inside the encrypted channel with the credentials of the E3/DC cloud account.
  *
  * <p>
- * This class is not thread safe. Callers must serialize access, because request and response are not
- * correlated by an identifier.
+ * Requests are serialized inside {@link #request(List)}: request and response are not correlated by an
+ * identifier, so two requests in flight would read each other's answer and corrupt the chaining state of
+ * the cipher. The timing figures are written by the requesting thread and read by the poll, so they are
+ * {@code volatile}.
  *
  * @author Bernd Weymann - Initial contribution
  */

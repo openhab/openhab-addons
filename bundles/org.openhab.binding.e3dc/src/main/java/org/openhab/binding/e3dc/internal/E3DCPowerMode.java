@@ -13,6 +13,7 @@
 package org.openhab.binding.e3dc.internal;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,7 +67,7 @@ public record E3DCPowerMode(int mode, int watts, int cycles) {
         }
         Matcher power = POWER_PATTERN.matcher(value);
         if (power.matches()) {
-            int mode = switch (power.group(1).toLowerCase()) {
+            int mode = switch (power.group(1).toLowerCase(Locale.ROOT)) {
                 case "discharge" -> DISCHARGE;
                 case "charge" -> CHARGE;
                 default -> GRID_CHARGE;

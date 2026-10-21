@@ -51,9 +51,9 @@
 					Never shorter than the refresh interval.</description>
 				<default>15</default>
 			</parameter>
-			<parameter name="timeout" type="integer" unit="s" min="1">
+			<parameter name="timeout" type="integer" unit="s" min="1" max="60">
 				<label>Timeout</label>
-				<description>Timeout for a single request in seconds.</description>
+				<description>Timeout for a single request in seconds, between 1 and 60.</description>
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>

@@ -29,6 +29,7 @@ import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -82,6 +83,9 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
     /** Wait before establishing a lost connection again. */
     private static final int RECONNECT_DELAY_SECONDS = 30;
+
+    /** Shortest distance between two polls that refresh commands asked for, so a burst becomes one poll. */
+    private static final long REFRESH_MIN_INTERVAL_MILLIS = 1000;
 
     /**
      * The tags requested on every poll, which are the root values of the channels of all thing types. A
@@ -199,6 +203,9 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     private @Nullable RscpClient client;
     private @Nullable ScheduledFuture<?> pollJob;
 
+    /** Time the last refresh command started a poll, so a burst of refreshes becomes one poll. */
+    private final AtomicLong lastRefreshMillis = new AtomicLong();
+
     public E3DCBridgeHandler(Bridge bridge) {
         super(bridge);
     }
@@ -236,7 +243,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
 
         RscpClient newClient = new RscpClient(current.host, current.port, current.userName, current.password,
-                current.rscpPassword, current.timeout * 1000);
+                current.rscpPassword, current.timeoutSeconds() * 1000);
         try {
             newClient.connect();
         } catch (RscpException e) {
@@ -246,6 +253,9 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             }
             logger.debug("Cannot connect to {}:{}: {}", current.host, current.port, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            // a device that is unreachable while the thing is initialized has to be tried again: without a
+            // scheduled retry the bridge would stay offline until the thing is disabled and enabled again
+            scheduleReconnect();
             return;
         }
         client = newClient;
@@ -262,7 +272,10 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
 
         pollOnce();
-        scheduleNextPoll();
+        // a first poll that lost the connection has already scheduled the next attempt
+        if (isConnected()) {
+            scheduleNextPoll();
+        }
     }
 
     private void scheduleNextPoll() {
@@ -297,10 +310,18 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
      *
      * <p>
      * The work is queued on the scheduler rather than run here: a refresh arrives on a framework thread
-     * and the poll performs blocking socket I/O.
+     * and the poll performs blocking socket I/O. A burst of refreshes is collapsed into one poll, because
+     * the framework sends a refresh for every link when a thing comes up, and the device is slow enough
+     * that a poll per link would occupy it for minutes. A refresh that is dropped is covered by the next
+     * poll of the interval.
      */
     public void requestRefresh() {
-        if (!isActive()) {
+        if (!isActive() || !isConnected()) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        long previous = lastRefreshMillis.get();
+        if (now - previous < REFRESH_MIN_INTERVAL_MILLIS || !lastRefreshMillis.compareAndSet(previous, now)) {
             return;
         }
         scheduler.execute(() -> {
@@ -321,13 +342,18 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
         try {
             pollOnce();
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
+            // a poll that lost the connection reports offline and schedules the reconnect, so the status is
+            // only restored while the connection is actually up
+            if (isConnected() && getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (RuntimeException e) {
             logger.debug("Unexpected problem during the poll cycle", e);
         }
-        scheduleNextPoll();
+        if (isConnected()) {
+            scheduleNextPoll();
+        }
+        // otherwise the reconnect that the failed poll scheduled continues the cycle
     }
 
     private void pollOnce() {

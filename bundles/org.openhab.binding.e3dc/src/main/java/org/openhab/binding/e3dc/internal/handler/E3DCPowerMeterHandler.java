@@ -28,11 +28,18 @@ import org.openhab.core.thing.Thing;
 public class E3DCPowerMeterHandler extends E3DCThingHandler {
 
     private final E3DCChannelRegistry registry = E3DCChannelSpec.powerMeter();
-    private final E3DCPowerMeterConfiguration config;
+    private E3DCPowerMeterConfiguration config = new E3DCPowerMeterConfiguration();
 
     public E3DCPowerMeterHandler(Thing thing) {
         super(thing);
-        this.config = thing.getConfiguration().as(E3DCPowerMeterConfiguration.class);
+    }
+
+    @Override
+    public void initialize() {
+        // read here rather than in the constructor: an updated index reaches an already created handler only
+        // through initialize(), which the framework calls again after a configuration change
+        config = getConfigAs(E3DCPowerMeterConfiguration.class);
+        super.initialize();
     }
 
     @Override

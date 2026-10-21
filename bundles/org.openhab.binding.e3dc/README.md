@@ -68,7 +68,7 @@ They show how the device answers for an index it does not have.
 | rscpPassword    | text    | Encryption key configured on the device.                          | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in seconds, between 1 and 300.      | 5       | no       | no       |
 | historyInterval | integer | Interval the history counters are requested in minutes, between 1 and 1440. Never shorter than `refreshInterval`. | 15      | no       | no       |
-| timeout         | integer | Timeout for a single request in seconds.                          | 10      | no       | yes      |
+| timeout         | integer | Timeout for a single request in seconds, between 1 and 60.        | 10      | no       | yes      |
 
 #### The credentials
 
@@ -404,13 +404,13 @@ The charge and discharge limits are written as one container because switching t
 | `battery-control` | block-discharging            | Switch       | Blocks battery discharging on all days, see [The block switches](#the-block-switches) |
 | `emergency`   | percent                      | Number:Dimensionless | Share of the battery to keep for emergency power                    |
 | `emergency`   | energy                       | Number:Energy | Energy to keep for emergency power                                          |
-| `control`     | sun-mode                     | Switch       | Whether charging uses surplus photovoltaic power                             |
-| `control`     | suspended                    | Switch       | Whether the charging session is suspended                                    |
-| `control`     | toggle                       | Switch       | `ON` suspends a running session and resumes a suspended one, then returns to `OFF` |
-| `settings`    | auto-phase-switch            | Switch       | Whether the wallbox changes the number of phases by itself                    |
-| `settings`    | min-charge-current           | Number:ElectricCurrent | Lowest charging current allowed, 6 to 16 A                  |
-| `settings`    | max-charge-current           | Number:ElectricCurrent | Highest charging current allowed, 6 to 16 A                        |
-| `settings`    | number-phases                | Number       | Number of phases used for charging, 1 or 3                                   |
+| `status-control` | sun-mode                  | Switch       | Whether charging uses surplus photovoltaic power                             |
+| `status-control` | suspended                 | Switch       | Whether the charging session is suspended                                    |
+| `status-control` | toggle                    | Switch       | `ON` suspends a running session and resumes a suspended one, then returns to `OFF` |
+| `status-control` | auto-phase-switch         | Switch       | Whether the wallbox changes the number of phases by itself                    |
+| `status-control` | min-charge-current        | Number:ElectricCurrent | Lowest charging current allowed, 6 to 16 A                  |
+| `status-control` | max-charge-current        | Number:ElectricCurrent | Highest charging current allowed, 6 to 16 A                        |
+| `status-control` | number-phases             | Number       | Number of phases used for charging, 1 or 3                                   |
 
 A channel state is only updated after the device acknowledged the write, so a rejected command leaves the channel untouched.
 
