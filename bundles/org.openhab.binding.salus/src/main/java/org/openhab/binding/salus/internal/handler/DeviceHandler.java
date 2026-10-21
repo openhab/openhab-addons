@@ -277,6 +277,7 @@ public class DeviceHandler extends BaseThingHandler {
             return;
         }
         updateState(channelUID, state);
+        updateStatus(ONLINE);
     }
 
     private SortedSet<DeviceProperty<?>> findDeviceProperties() throws SalusApiException, AuthSalusApiException {
@@ -293,7 +294,9 @@ public class DeviceHandler extends BaseThingHandler {
             logger.warn("Channel {} not found in channelUidMap!", id);
             return;
         }
-        cloudApi.setValueForProperty(dsn, salusId, command);
+        if (cloudApi.setValueForProperty(dsn, salusId, command)) {
+            updateStatus(ONLINE);
+        }
         handleCommand(channelUID, REFRESH);
     }
 
@@ -304,18 +307,27 @@ public class DeviceHandler extends BaseThingHandler {
         }
         var id = channelUID.getId();
         String salusId;
-        long value;
+        var decimalValue = command.toBigDecimal();
         if (channelUidMap.containsKey(id)) {
             salusId = requireNonNull(channelUidMap.get(id));
-            value = command.toBigDecimal().longValue();
         } else if (channelX100UidMap.containsKey(id)) {
             salusId = requireNonNull(channelX100UidMap.get(id));
-            value = command.toBigDecimal().multiply(ONE_HUNDRED).longValue();
+            decimalValue = decimalValue.multiply(ONE_HUNDRED);
         } else {
             logger.warn("Channel {} not found in channelUidMap and channelX100UidMap!", id);
             return;
         }
-        cloudApi.setValueForProperty(dsn, salusId, value);
+        long value;
+        try {
+            value = decimalValue.longValueExact();
+        } catch (ArithmeticException e) {
+            logger.debug("Ignoring command {} on channel {}: scaled value must be a 64-bit integer", command,
+                    channelUID);
+            return;
+        }
+        if (cloudApi.setValueForProperty(dsn, salusId, value)) {
+            updateStatus(ONLINE);
+        }
         handleCommand(channelUID, REFRESH);
     }
 
@@ -330,7 +342,9 @@ public class DeviceHandler extends BaseThingHandler {
             return;
         }
         var value = command.toFullString();
-        cloudApi.setValueForProperty(dsn, salusId, value);
+        if (cloudApi.setValueForProperty(dsn, salusId, value)) {
+            updateStatus(ONLINE);
+        }
         handleCommand(channelUID, REFRESH);
     }
 }
