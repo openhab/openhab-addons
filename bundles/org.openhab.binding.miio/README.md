@@ -273,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 500 different models.
+Currently the miio binding supports more than 510 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -1279,44 +1279,44 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| airFreshMode               | String               | Mode                                     | Value mapping `["auto"="Auto","sleep"="Sleep","favourite"="Favorite"]` |
-| airFreshPTCPower           | Switch               | PTC                                      |            |
-| airFreshPTCStatus          | Switch               | PTC Status                               |            |
-| airFreshDisplay            | Switch               | Display                                  |            |
-| airFreshChildLock          | Switch               | Child Lock                               |            |
-| airFreshSound              | Switch               | Sound                                    |            |
-| airFreshPM25               | Number               | PM2.5                                    |            |
-| airFreshCO2                | Number               | CO2                                      |            |
-| airFreshCurrentSpeed       | Number               | Current Speed                            |            |
-| airFreshFavoriteSpeed      | Number               | Favorite Speed                           |            |
-| airFreshTemperature        | Number               | Temperature Outside                      |            |
-| airFreshFilterPercents     | Number               | Filter Percents Remaining                |            |
-| airFreshFilterDays         | Number               | Filter Days Remaining                    |            |
-| airFreshResetFilterA1      | String               | Reset Filter                             |            |
+| mode                       | String               | Mode                                     | Value mapping `["auto"="Auto","sleep"="Sleep","favourite"="Favorite"]` |
+| heater                     | Switch               | Heater                                   |            |
+| ptc_status                 | Switch               | PTC Status                               |            |
+| display                    | Switch               | Display                                  |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| pm25                       | Number:Density       | PM2.5                                    |            |
+| co2                        | Number:Dimensionless | CO2                                      |            |
+| control_speed              | Number               | Current Speed                            |            |
+| favourite_speed            | Number               | Favorite Speed                           |            |
+| temperature_outside        | Number:Temperature   | Temperature Outside                      |            |
+| filter_percents            | Number:Dimensionless | Filter Remaining                         |            |
+| filter_days                | Number:Time          | Filter Days Remaining                    |            |
+| reset_filter               | String               | Reset Filter                             | Value mapping `["reset"="Reset Filter"]` |
 
 ### Mi Fresh Air Ventilator (<a name="dmaker-airfresh-t2017">dmaker.airfresh.t2017</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| airFreshMode               | String               | Mode                                     | Value mapping `["auto"="Auto","sleep"="Sleep","favourite"="Favorite"]` |
-| airFreshPTCPower           | Switch               | PTC                                      |            |
-| airFreshPtcLevel           | String               | PTC Level                                | Value mapping `["low"="Low","medium"="Medium","high"="High"]` |
-| airFreshPTCStatus          | Switch               | PTC Status                               |            |
-| airFreshDisplayDirection   | String               | Screen direction                         | Value mapping `["forward"="Normal","left"="Left","right"="Right"]` |
-| airFreshDisplay            | Switch               | Display                                  |            |
-| airFreshChildLock          | Switch               | Child Lock                               |            |
-| airFreshSound              | Switch               | Sound                                    |            |
-| airFreshPM25               | Number               | PM2.5                                    |            |
-| airFreshCO2                | Number               | CO2                                      |            |
-| airFreshCurrentSpeed       | Number               | Current Speed                            |            |
-| airFreshFavoriteSpeed      | Number               | Favorite Speed                           |            |
-| airFreshTemperature        | Number               | Temperature Outside                      |            |
-| airFreshFilterPercents     | Number               | Filter Percents Remaining                |            |
-| airFreshFilterDays         | Number               | Filter Days Remaining                    |            |
-| airFreshFilterProPercents  | Number               | Filter Pro Percents Remaining            |            |
-| airFreshFilterProDays      | Number               | Filter Pro Days Remaining                |            |
-| airFreshResetFilter        | String               | Reset Filter                             |            |
+| mode                       | String               | Mode                                     | Value mapping `["auto"="Auto","sleep"="Sleep","favourite"="Favorite"]` |
+| heater                     | Switch               | Heater                                   |            |
+| ptc_level                  | String               | PTC Level                                | Value mapping `["low"="Low","medium"="Medium","high"="High"]` |
+| ptc_status                 | Switch               | PTC Status                               |            |
+| screen_direction           | String               | Screen Direction                         | Value mapping `["forward"="Normal","left"="Left","right"="Right"]` |
+| display                    | Switch               | Display                                  |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| pm25                       | Number:Density       | PM2.5                                    |            |
+| co2                        | Number:Dimensionless | CO2                                      |            |
+| control_speed              | Number               | Current Speed                            |            |
+| favourite_speed            | Number               | Favorite Speed                           |            |
+| temperature_outside        | Number:Temperature   | Temperature Outside                      |            |
+| filter_percents            | Number:Dimensionless | Filter Remaining                         |            |
+| filter_days                | Number:Time          | Filter Days Remaining                    |            |
+| filter_pro_percents        | Number:Dimensionless | Filter Pro Remaining                     |            |
+| filter_pro_days            | Number:Time          | Filter Pro Days Remaining                |            |
+| reset_filter               | String               | Reset Filter                             | Value mapping `["intermediate"="Filter","efficient"="Filter Pro"]` |
 
 ### Mi Smart Standing Fan 2 Lite (<a name="dmaker-fan-1c">dmaker.fan.1c</a>) Channels
 
@@ -10098,18 +10098,17 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| heater                     | Switch               | Heater                                   |            |
-| mode                       | String               | Mode                                     | Value mapping `["interval"="Interval","silent"="Night","low"="1","middle"="2","strong"="3","auto"="Auto"]` |
+| mode                       | String               | Mode                                     | Value mapping `["interval"="Interval","silent"="Night","low"="Level 1","middle"="Level 2","strong"="Level 3","auto"="Auto"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | co2                        | Number:Dimensionless | CO2                                      |            |
-| childLock                  | Switch               | Child Lock                               |            |
-| buzzer                     | Switch               | Buzzer                                   |            |
-| aqi                        | Number               | Air Quality Index                        |            |
-| averageaqi                 | Number               | Average Air Quality Index                |            |
-| filterhours                | Number:Time          | Filter Hours used                        |            |
-| usedhours                  | Number:Time          | Run Time                                 |            |
-| motorspeed                 | Number               | Motor Speed                              |            |
-| led_level                  | Number               | Led - Brightness                         | Value mapping `["0"="High","1"="Low","2"="Idle"]` |
+| child_lock                 | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| aqi                        | Number:Density       | PM2.5                                    |            |
+| average_aqi                | Number:Density       | Average PM2.5                            |            |
+| filter_hours               | Number:Time          | Filter Hours Used                        |            |
+| used_hours                 | Number:Time          | Run Time                                 |            |
+| motor_speed                | Number               | Motor Speed                              |            |
+| led_level                  | Number               | Indicator Light Brightness               | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
 | temperature                | Number:Temperature   | Temperature                              |            |
 
 ### Smartmi Fresh Air System (Heating) (<a name="zhimi-airfresh-va4">zhimi.airfresh.va4</a>) Channels
@@ -10118,36 +10117,36 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | heater                     | Switch               | Heater                                   |            |
-| mode                       | String               | Mode                                     | Value mapping `["interval"="Interval","silent"="Night","low"="1","middle"="2","strong"="3","auto"="Auto"]` |
+| mode                       | String               | Mode                                     | Value mapping `["interval"="Interval","silent"="Night","low"="Level 1","middle"="Level 2","strong"="Level 3","auto"="Auto"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | co2                        | Number:Dimensionless | CO2                                      |            |
-| childLock                  | Switch               | Child Lock                               |            |
-| buzzer                     | Switch               | Buzzer                                   |            |
-| aqi                        | Number               | Air Quality Index                        |            |
-| averageaqi                 | Number               | Average Air Quality Index                |            |
-| filterhours                | Number:Time          | Filter Hours used                        |            |
-| usedhours                  | Number:Time          | Run Time                                 |            |
-| motorspeed                 | Number               | Motor Speed                              |            |
-| led_level                  | Number               | Led - Brightness                         | Value mapping `["0"="High","1"="Low","2"="Idle"]` |
+| child_lock                 | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| aqi                        | Number:Density       | PM2.5                                    |            |
+| average_aqi                | Number:Density       | Average PM2.5                            |            |
+| filter_hours               | Number:Time          | Filter Hours Used                        |            |
+| used_hours                 | Number:Time          | Run Time                                 |            |
+| motor_speed                | Number               | Motor Speed                              |            |
+| led_level                  | Number               | Indicator Light Brightness               | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
 | temperature                | Number:Temperature   | Temperature                              |            |
 
 ### Mi Fresh Air Ventilator C1-80 (<a name="zhimi-airfresh-ua1">zhimi.airfresh.ua1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["filter-reset-filter-life"="Filter Reset Filter Life"]` |
-| on                         | Switch               | Air Fresh - Switch Status                |            |
-| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults"]` |
-| fan_level                  | Number               | Air Fresh - Fan Level                    | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| actions                    | String               | Actions                                  | Value mapping `["filter-reset-filter-life"="Reset Filter Life"]` |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults"]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
 | heater                     | Switch               | Heater                                   |            |
-| filter_used_time           | Number:Time          | Filter - Filter Used Time                |            |
-| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| brightness                 | Dimmer               | Indicator Light - Brightness             |            |
-| motor_a_speed_rpm          | Number               | Custom Service - Motor A Speed Rpm       |            |
-| motor_b_speed_rpm          | Number               | Custom Service - Motor B Speed Rpm       |            |
-| temperature                | Number:Temperature   | Custom Service - Temperature             |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
+| filter_life_level          | Number:Dimensionless | Filter Life Level                        |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Dimmer               | Indicator Light Brightness               |            |
+| motor_a_speed_rpm          | Number               | Motor A Speed                            |            |
+| motor_b_speed_rpm          | Number               | Motor B Speed                            |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
 
 ### Mi PM2.5 Air Quality Monitor (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels
 
@@ -11881,20 +11880,20 @@ note: Autogenerated example. Replace the id (airfresh) in the channel with your 
 ```java
 Group G_airfresh "Mi Fresh Air Ventilator A1-150" <status>
 Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
-String airFreshMode "Mode" (G_airfresh) {channel="miio:basic:airfresh:airFreshMode"}
-Switch airFreshPTCPower "PTC" (G_airfresh) {channel="miio:basic:airfresh:airFreshPTCPower"}
-Switch airFreshPTCStatus "PTC Status" (G_airfresh) {channel="miio:basic:airfresh:airFreshPTCStatus"}
-Switch airFreshDisplay "Display" (G_airfresh) {channel="miio:basic:airfresh:airFreshDisplay"}
-Switch airFreshChildLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:airFreshChildLock"}
-Switch airFreshSound "Sound" (G_airfresh) {channel="miio:basic:airfresh:airFreshSound"}
-Number airFreshPM25 "PM2.5" (G_airfresh) {channel="miio:basic:airfresh:airFreshPM25"}
-Number airFreshCO2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:airFreshCO2"}
-Number airFreshCurrentSpeed "Current Speed" (G_airfresh) {channel="miio:basic:airfresh:airFreshCurrentSpeed"}
-Number airFreshFavoriteSpeed "Favorite Speed" (G_airfresh) {channel="miio:basic:airfresh:airFreshFavoriteSpeed"}
-Number airFreshTemperature "Temperature Outside" (G_airfresh) {channel="miio:basic:airfresh:airFreshTemperature"}
-Number airFreshFilterPercents "Filter Percents Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterPercents"}
-Number airFreshFilterDays "Filter Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterDays"}
-String airFreshResetFilterA1 "Reset Filter" (G_airfresh) {channel="miio:basic:airfresh:airFreshResetFilterA1"}
+String mode "Mode" (G_airfresh) {channel="miio:basic:airfresh:mode"}
+Switch heater "Heater" (G_airfresh) {channel="miio:basic:airfresh:heater"}
+Switch ptc_status "PTC Status" (G_airfresh) {channel="miio:basic:airfresh:ptc_status"}
+Switch display "Display" (G_airfresh) {channel="miio:basic:airfresh:display"}
+Switch child_lock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:child_lock"}
+Switch alarm "Notification Sound" (G_airfresh) {channel="miio:basic:airfresh:alarm"}
+Number:Density pm25 "PM2.5" (G_airfresh) {channel="miio:basic:airfresh:pm25"}
+Number:Dimensionless co2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:co2"}
+Number control_speed "Current Speed" (G_airfresh) {channel="miio:basic:airfresh:control_speed"}
+Number favourite_speed "Favorite Speed" (G_airfresh) {channel="miio:basic:airfresh:favourite_speed"}
+Number:Temperature temperature_outside "Temperature Outside" (G_airfresh) {channel="miio:basic:airfresh:temperature_outside"}
+Number:Dimensionless filter_percents "Filter Remaining" (G_airfresh) {channel="miio:basic:airfresh:filter_percents"}
+Number:Time filter_days "Filter Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:filter_days"}
+String reset_filter "Reset Filter" (G_airfresh) {channel="miio:basic:airfresh:reset_filter"}
 ```
 
 ### Mi Fresh Air Ventilator (dmaker.airfresh.t2017) item file lines
@@ -11904,24 +11903,24 @@ note: Autogenerated example. Replace the id (airfresh) in the channel with your 
 ```java
 Group G_airfresh "Mi Fresh Air Ventilator" <status>
 Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
-String airFreshMode "Mode" (G_airfresh) {channel="miio:basic:airfresh:airFreshMode"}
-Switch airFreshPTCPower "PTC" (G_airfresh) {channel="miio:basic:airfresh:airFreshPTCPower"}
-String airFreshPtcLevel "PTC Level" (G_airfresh) {channel="miio:basic:airfresh:airFreshPtcLevel"}
-Switch airFreshPTCStatus "PTC Status" (G_airfresh) {channel="miio:basic:airfresh:airFreshPTCStatus"}
-String airFreshDisplayDirection "Screen direction" (G_airfresh) {channel="miio:basic:airfresh:airFreshDisplayDirection"}
-Switch airFreshDisplay "Display" (G_airfresh) {channel="miio:basic:airfresh:airFreshDisplay"}
-Switch airFreshChildLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:airFreshChildLock"}
-Switch airFreshSound "Sound" (G_airfresh) {channel="miio:basic:airfresh:airFreshSound"}
-Number airFreshPM25 "PM2.5" (G_airfresh) {channel="miio:basic:airfresh:airFreshPM25"}
-Number airFreshCO2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:airFreshCO2"}
-Number airFreshCurrentSpeed "Current Speed" (G_airfresh) {channel="miio:basic:airfresh:airFreshCurrentSpeed"}
-Number airFreshFavoriteSpeed "Favorite Speed" (G_airfresh) {channel="miio:basic:airfresh:airFreshFavoriteSpeed"}
-Number airFreshTemperature "Temperature Outside" (G_airfresh) {channel="miio:basic:airfresh:airFreshTemperature"}
-Number airFreshFilterPercents "Filter Percents Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterPercents"}
-Number airFreshFilterDays "Filter Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterDays"}
-Number airFreshFilterProPercents "Filter Pro Percents Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterProPercents"}
-Number airFreshFilterProDays "Filter Pro Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterProDays"}
-String airFreshResetFilter "Reset Filter" (G_airfresh) {channel="miio:basic:airfresh:airFreshResetFilter"}
+String mode "Mode" (G_airfresh) {channel="miio:basic:airfresh:mode"}
+Switch heater "Heater" (G_airfresh) {channel="miio:basic:airfresh:heater"}
+String ptc_level "PTC Level" (G_airfresh) {channel="miio:basic:airfresh:ptc_level"}
+Switch ptc_status "PTC Status" (G_airfresh) {channel="miio:basic:airfresh:ptc_status"}
+String screen_direction "Screen Direction" (G_airfresh) {channel="miio:basic:airfresh:screen_direction"}
+Switch display "Display" (G_airfresh) {channel="miio:basic:airfresh:display"}
+Switch child_lock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:child_lock"}
+Switch alarm "Notification Sound" (G_airfresh) {channel="miio:basic:airfresh:alarm"}
+Number:Density pm25 "PM2.5" (G_airfresh) {channel="miio:basic:airfresh:pm25"}
+Number:Dimensionless co2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:co2"}
+Number control_speed "Current Speed" (G_airfresh) {channel="miio:basic:airfresh:control_speed"}
+Number favourite_speed "Favorite Speed" (G_airfresh) {channel="miio:basic:airfresh:favourite_speed"}
+Number:Temperature temperature_outside "Temperature Outside" (G_airfresh) {channel="miio:basic:airfresh:temperature_outside"}
+Number:Dimensionless filter_percents "Filter Remaining" (G_airfresh) {channel="miio:basic:airfresh:filter_percents"}
+Number:Time filter_days "Filter Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:filter_days"}
+Number:Dimensionless filter_pro_percents "Filter Pro Remaining" (G_airfresh) {channel="miio:basic:airfresh:filter_pro_percents"}
+Number:Time filter_pro_days "Filter Pro Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:filter_pro_days"}
+String reset_filter "Reset Filter" (G_airfresh) {channel="miio:basic:airfresh:reset_filter"}
 ```
 
 ### Mi Smart Standing Fan 2 Lite (dmaker.fan.1c) item file lines
@@ -21801,18 +21800,17 @@ note: Autogenerated example. Replace the id (airfresh) in the channel with your 
 ```java
 Group G_airfresh "Smartmi Ventilation System" <status>
 Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
-Switch heater "Heater" (G_airfresh) {channel="miio:basic:airfresh:heater"}
 String mode "Mode" (G_airfresh) {channel="miio:basic:airfresh:mode"}
 Number:Dimensionless humidity "Humidity" (G_airfresh) {channel="miio:basic:airfresh:humidity"}
 Number:Dimensionless co2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:co2"}
-Switch childLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:childLock"}
-Switch buzzer "Buzzer" (G_airfresh) {channel="miio:basic:airfresh:buzzer"}
-Number aqi "Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:aqi"}
-Number averageaqi "Average Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:averageaqi"}
-Number:Time filterhours "Filter Hours used" (G_airfresh) {channel="miio:basic:airfresh:filterhours"}
-Number:Time usedhours "Run Time" (G_airfresh) {channel="miio:basic:airfresh:usedhours"}
-Number motorspeed "Motor Speed" (G_airfresh) {channel="miio:basic:airfresh:motorspeed"}
-Number led_level "Led - Brightness" (G_airfresh) {channel="miio:basic:airfresh:led_level"}
+Switch child_lock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:child_lock"}
+Switch alarm "Notification Sound" (G_airfresh) {channel="miio:basic:airfresh:alarm"}
+Number:Density aqi "PM2.5" (G_airfresh) {channel="miio:basic:airfresh:aqi"}
+Number:Density average_aqi "Average PM2.5" (G_airfresh) {channel="miio:basic:airfresh:average_aqi"}
+Number:Time filter_hours "Filter Hours Used" (G_airfresh) {channel="miio:basic:airfresh:filter_hours"}
+Number:Time used_hours "Run Time" (G_airfresh) {channel="miio:basic:airfresh:used_hours"}
+Number motor_speed "Motor Speed" (G_airfresh) {channel="miio:basic:airfresh:motor_speed"}
+Number led_level "Indicator Light Brightness" (G_airfresh) {channel="miio:basic:airfresh:led_level"}
 Number:Temperature temperature "Temperature" (G_airfresh) {channel="miio:basic:airfresh:temperature"}
 ```
 
@@ -21827,14 +21825,14 @@ Switch heater "Heater" (G_airfresh) {channel="miio:basic:airfresh:heater"}
 String mode "Mode" (G_airfresh) {channel="miio:basic:airfresh:mode"}
 Number:Dimensionless humidity "Humidity" (G_airfresh) {channel="miio:basic:airfresh:humidity"}
 Number:Dimensionless co2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:co2"}
-Switch childLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:childLock"}
-Switch buzzer "Buzzer" (G_airfresh) {channel="miio:basic:airfresh:buzzer"}
-Number aqi "Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:aqi"}
-Number averageaqi "Average Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:averageaqi"}
-Number:Time filterhours "Filter Hours used" (G_airfresh) {channel="miio:basic:airfresh:filterhours"}
-Number:Time usedhours "Run Time" (G_airfresh) {channel="miio:basic:airfresh:usedhours"}
-Number motorspeed "Motor Speed" (G_airfresh) {channel="miio:basic:airfresh:motorspeed"}
-Number led_level "Led - Brightness" (G_airfresh) {channel="miio:basic:airfresh:led_level"}
+Switch child_lock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:child_lock"}
+Switch alarm "Notification Sound" (G_airfresh) {channel="miio:basic:airfresh:alarm"}
+Number:Density aqi "PM2.5" (G_airfresh) {channel="miio:basic:airfresh:aqi"}
+Number:Density average_aqi "Average PM2.5" (G_airfresh) {channel="miio:basic:airfresh:average_aqi"}
+Number:Time filter_hours "Filter Hours Used" (G_airfresh) {channel="miio:basic:airfresh:filter_hours"}
+Number:Time used_hours "Run Time" (G_airfresh) {channel="miio:basic:airfresh:used_hours"}
+Number motor_speed "Motor Speed" (G_airfresh) {channel="miio:basic:airfresh:motor_speed"}
+Number led_level "Indicator Light Brightness" (G_airfresh) {channel="miio:basic:airfresh:led_level"}
 Number:Temperature temperature "Temperature" (G_airfresh) {channel="miio:basic:airfresh:temperature"}
 ```
 
@@ -21845,18 +21843,18 @@ note: Autogenerated example. Replace the id (airfresh) in the channel with your 
 ```java
 Group G_airfresh "Mi Fresh Air Ventilator C1-80" <status>
 String actions "Actions" (G_airfresh) {channel="miio:basic:airfresh:actions"}
-Switch on "Air Fresh - Switch Status" (G_airfresh) {channel="miio:basic:airfresh:on"}
-Number fault "Device Fault" (G_airfresh) {channel="miio:basic:airfresh:fault"}
-Number fan_level "Air Fresh - Fan Level" (G_airfresh) {channel="miio:basic:airfresh:fan_level"}
+Switch on "Power" (G_airfresh) {channel="miio:basic:airfresh:on"}
+Number fault "Fault" (G_airfresh) {channel="miio:basic:airfresh:fault"}
+Number fan_level "Fan Level" (G_airfresh) {channel="miio:basic:airfresh:fan_level"}
 Switch heater "Heater" (G_airfresh) {channel="miio:basic:airfresh:heater"}
-Number:Time filter_used_time "Filter - Filter Used Time" (G_airfresh) {channel="miio:basic:airfresh:filter_used_time"}
-Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airfresh) {channel="miio:basic:airfresh:filter_life_level"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airfresh) {channel="miio:basic:airfresh:physical_controls_locked"}
-Switch alarm "Alarm - Alarm" (G_airfresh) {channel="miio:basic:airfresh:alarm"}
-Dimmer brightness "Indicator Light - Brightness" (G_airfresh) {channel="miio:basic:airfresh:brightness"}
-Number motor_a_speed_rpm "Custom Service - Motor A Speed Rpm" (G_airfresh) {channel="miio:basic:airfresh:motor_a_speed_rpm"}
-Number motor_b_speed_rpm "Custom Service - Motor B Speed Rpm" (G_airfresh) {channel="miio:basic:airfresh:motor_b_speed_rpm"}
-Number:Temperature temperature "Custom Service - Temperature" (G_airfresh) {channel="miio:basic:airfresh:temperature"}
+Number:Time filter_used_time "Filter Used Time" (G_airfresh) {channel="miio:basic:airfresh:filter_used_time"}
+Number:Dimensionless filter_life_level "Filter Life Level" (G_airfresh) {channel="miio:basic:airfresh:filter_life_level"}
+Switch physical_controls_locked "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_airfresh) {channel="miio:basic:airfresh:alarm"}
+Dimmer brightness "Indicator Light Brightness" (G_airfresh) {channel="miio:basic:airfresh:brightness"}
+Number motor_a_speed_rpm "Motor A Speed" (G_airfresh) {channel="miio:basic:airfresh:motor_a_speed_rpm"}
+Number motor_b_speed_rpm "Motor B Speed" (G_airfresh) {channel="miio:basic:airfresh:motor_b_speed_rpm"}
+Number:Temperature temperature "Temperature" (G_airfresh) {channel="miio:basic:airfresh:temperature"}
 ```
 
 ### Mi PM2.5 Air Quality Monitor (zhimi.airmonitor.v1) item file lines
