@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -69,6 +70,7 @@ import com.google.gson.Gson;
 @WebSocket(maxIdleTime = 7 * 60 * 1000)
 public class Shelly2RpcSocket implements WriteCallback {
     private static final long PING_TASK_FREQUENCY_MIN = 2; // = 3 ping before timeout
+    private static final AtomicLong CONNECTION_IDS = new AtomicLong();
     private final Logger logger = LoggerFactory.getLogger(Shelly2RpcSocket.class);
     private final Gson gson = new Gson();
 
@@ -88,6 +90,9 @@ public class Shelly2RpcSocket implements WriteCallback {
 
     // All access must be guarded by "this"
     private boolean disposed = false;
+
+    // All access must be guarded by "this"; unique across sockets, so a replaced socket's id never matches
+    private long connectionId = CONNECTION_IDS.incrementAndGet();
 
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
@@ -175,6 +180,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                 throw new ShellyApiException(thingName + ": WebSocket was disposed, connect rejected");
             }
             disconnect(); // for safety
+            connectionId = CONNECTION_IDS.incrementAndGet();
 
             try {
                 // Connect async
@@ -479,6 +485,7 @@ public class Shelly2RpcSocket implements WriteCallback {
         }
 
         Shelly2RpctInterface handler;
+        long closedConnectionId;
         synchronized (this) {
             if (isStaleSession(session)) {
                 logger.trace("{}: Ignore close of a replaced WebSocket session", thingName);
@@ -486,6 +493,7 @@ public class Shelly2RpcSocket implements WriteCallback {
             }
             stopPing();
             handler = this.websocketHandler;
+            closedConnectionId = connectionId;
 
             // set session=null, clear send queue
             // this also prevents another socket closed issued by thingOffline()->api-close()->close()
@@ -493,7 +501,7 @@ public class Shelly2RpcSocket implements WriteCallback {
         }
 
         if (handler != null) {
-            handler.onClose(inbound, statusCode, reason);
+            handler.onClose(closedConnectionId, inbound, statusCode, reason);
         }
     }
 
@@ -505,6 +513,7 @@ public class Shelly2RpcSocket implements WriteCallback {
     @OnWebSocketError
     public void onError(@Nullable Session session, Throwable cause) {
         Shelly2RpctInterface websocketHandler;
+        long failedConnectionId;
         synchronized (this) {
             if (isStaleSession(session)) {
                 logger.trace("{}: Ignore error of a replaced WebSocket session: {}", thingName, cause.getMessage());
@@ -512,6 +521,7 @@ public class Shelly2RpcSocket implements WriteCallback {
             }
             stopPing();
             websocketHandler = this.websocketHandler;
+            failedConnectionId = connectionId;
 
             // set session=null, clear send queue
             // this also prevents another socket closed issued by thingOffline()->api-close()->close()
@@ -523,7 +533,7 @@ public class Shelly2RpcSocket implements WriteCallback {
             return;
         }
         if (websocketHandler != null) {
-            websocketHandler.onError(cause);
+            websocketHandler.onError(failedConnectionId, cause);
         }
     }
 
@@ -532,6 +542,14 @@ public class Shelly2RpcSocket implements WriteCallback {
      * or installed a new one; tearing down for it would drop the requests queued for, or the connection of, the new
      * session.
      */
+    /**
+     * A reconnect started after a close/error was reported assigns a new id, so the late callback can be recognized
+     * and must not tear down the replacement connection.
+     */
+    public synchronized boolean isCurrentConnection(long connectionId) {
+        return this.connectionId == connectionId;
+    }
+
     private boolean isStaleSession(@Nullable Session callbackSession) {
         return callbackSession != null && !callbackSession.equals(this.session);
     }

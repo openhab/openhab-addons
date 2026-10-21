@@ -30,6 +30,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -77,7 +78,7 @@ class Shelly2RpcSocketTest {
 
         socket.onClose(null, StatusCode.ABNORMAL, "Device rebooted");
 
-        verify(handler, never()).onClose(anyBoolean(), anyInt(), anyString());
+        verify(handler, never()).onClose(anyLong(), anyBoolean(), anyInt(), anyString());
     }
 
     @Test
@@ -87,7 +88,7 @@ class Shelly2RpcSocketTest {
 
         socket.onError(null, new EOFException("connection reset"));
 
-        verify(handler, never()).onError(any());
+        verify(handler, never()).onError(anyLong(), any());
     }
 
     @Test
@@ -96,7 +97,33 @@ class Shelly2RpcSocketTest {
 
         socket.onClose(null, StatusCode.ABNORMAL, "Device rebooted");
 
-        verify(handler).onClose(anyBoolean(), eq(StatusCode.ABNORMAL), anyString());
+        verify(handler).onClose(anyLong(), anyBoolean(), eq(StatusCode.ABNORMAL), anyString());
+    }
+
+    @Test
+    void reconnectAfterAnErrorInvalidatesTheFailedConnection() throws Exception {
+        socket.addMessageHandler(handler);
+        socket.onError(null, new EOFException("connection reset"));
+        ArgumentCaptor<Long> failedConnectionId = ArgumentCaptor.forClass(Long.class);
+        verify(handler).onError(failedConnectionId.capture(), any());
+        assertTrue(socket.isCurrentConnection(failedConnectionId.getValue()));
+
+        socket.connect();
+
+        assertFalse(socket.isCurrentConnection(failedConnectionId.getValue()));
+    }
+
+    @Test
+    void connectionIdsAreUniqueAcrossSockets() {
+        socket.addMessageHandler(handler);
+        socket.onError(null, new EOFException("connection reset"));
+        ArgumentCaptor<Long> failedConnectionId = ArgumentCaptor.forClass(Long.class);
+        verify(handler).onError(failedConnectionId.capture(), any());
+
+        Shelly2RpcSocket replacement = new Shelly2RpcSocket("shellyplus1-test", thingTable, DEVICE_ADDRESS,
+                webSocketClient, scheduler);
+
+        assertFalse(replacement.isCurrentConnection(failedConnectionId.getValue()));
     }
 
     @Test
@@ -160,8 +187,8 @@ class Shelly2RpcSocketTest {
         socket.onError(oldSession, new EOFException("late error"));
 
         assertTrue(socket.isConnected());
-        verify(handler, never()).onClose(anyBoolean(), anyInt(), anyString());
-        verify(handler, never()).onError(any());
+        verify(handler, never()).onClose(anyLong(), anyBoolean(), anyInt(), anyString());
+        verify(handler, never()).onError(anyLong(), any());
     }
 
     @Test
@@ -176,7 +203,7 @@ class Shelly2RpcSocketTest {
         socket.onConnect(newSession);
 
         verify(newSession.getRemote()).sendString(eq("request"), any());
-        verify(handler, never()).onClose(anyBoolean(), anyInt(), anyString());
+        verify(handler, never()).onClose(anyLong(), anyBoolean(), anyInt(), anyString());
     }
 
     @Test
@@ -187,7 +214,7 @@ class Shelly2RpcSocketTest {
         socket.onClose(session, StatusCode.ABNORMAL, "Device rebooted");
 
         assertFalse(socket.isConnected());
-        verify(handler).onClose(anyBoolean(), eq(StatusCode.ABNORMAL), anyString());
+        verify(handler).onClose(anyLong(), anyBoolean(), eq(StatusCode.ABNORMAL), anyString());
     }
 
     @Test

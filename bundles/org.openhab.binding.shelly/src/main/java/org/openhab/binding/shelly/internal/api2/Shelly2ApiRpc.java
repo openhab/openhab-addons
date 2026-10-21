@@ -775,7 +775,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onClose(boolean inbound, int statusCode, String description) {
+    public void onClose(long connectionId, boolean inbound, int statusCode, String description) {
         try {
             String reason = getString(description);
             logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
@@ -784,7 +784,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             } else if (statusCode == StatusCode.ABNORMAL && alwaysOn) {
                 // e.g. device rebooted
                 if (getThing().getThingStatusDetail() != ThingStatusDetail.DUTY_CYCLE) {
-                    thingOffline("WebSocket connection closed abnormally");
+                    thingOffline(connectionId, "WebSocket connection closed abnormally");
                 }
             }
         } catch (ShellyApiException e) {
@@ -794,7 +794,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onError(Throwable cause) {
+    public void onError(long connectionId, Throwable cause) {
         if (logger.isDebugEnabled()) {
             if (cause instanceof EofException || cause instanceof EOFException) {
                 logger.debug("{}: WebSocket was closed ungracefully", thingName);
@@ -804,11 +804,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
         ShellyThingInterface thing = this.thing;
         if (thing != null && alwaysOn) {
-            thingOffline("WebSocket error");
+            thingOffline(connectionId, "WebSocket error");
         }
     }
 
-    private void thingOffline(String reason) {
+    // synchronized like reconnect()/initialize(), so no replacement connection can be started between check and close
+    private synchronized void thingOffline(long connectionId, String reason) {
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        if (rpcSocket == null || !rpcSocket.isCurrentConnection(connectionId)) {
+            logger.debug("{}: Ignore {} of a replaced WebSocket connection", thingName, reason);
+            return;
+        }
         ShellyThingInterface thing = this.thing;
         if (thing != null && !thing.isStopping()) { // do not reinit of battery powered devices with sleep mode
             thing.setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
