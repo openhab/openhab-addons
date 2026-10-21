@@ -1194,6 +1194,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (disposing || resId == null) {
             return List.of();
         }
+        String prefix;
+        try {
+            prefix = getBridgeHandler().getLocalizedText("back-light.channel.label.prefix");
+        } catch (AssetNotLoadedException e) {
+            logger.debug("{} -> buildBackLightChannels() bridge not initialized", resourceId);
+            return List.of();
+        }
         List<Channel> backLightChannels = new ArrayList<>();
         for (String channelId : backLightSupportedChannelIds) {
             Channel mainChannel = thing.getChannel(channelId);
@@ -1212,7 +1219,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         .withConfiguration(mainChannel.getConfiguration());
                 String label = mainChannel.getLabel(); // at this time this should already be localized
                 if (label != null) {
-                    builder.withLabel(label);
+                    builder.withLabel("%s %s".formatted(prefix, label));
                 }
                 String description = mainChannel.getDescription(); // at this time this should already be localized
                 if (description != null) {
