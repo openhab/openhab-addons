@@ -201,7 +201,7 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     private GetUpdates getGetUpdatesRequest(int longPollingTime) {
-        return new GetUpdates().timeout(longPollingTime * 1000);
+        return new GetUpdates().timeout(longPollingTime);
     }
 
     private void handleExceptions(@Nullable TelegramException exception) {
