@@ -13,12 +13,18 @@ Four of them needed a decision because the checklist leaves room or the earlier 
 
 - **Connection failure logging:** A failed connection attempt of the bridge is logged at `debug`.
   The thing status already carries the message, and the framework logs status changes.
-  The `info` message about a successful connection and the `warn` messages for rejected commands and failed history fetches are unchanged, because they report events the user triggered or needs to see.
+  The same applies to the expected device failures "command rejected", "command not sent" and "history period not fetched", and to the two routine `info` messages.
+  `warn` stays for input the user has to correct, such as invalid idle periods.
 - **Interruption:** `RscpClient` sets the interrupt flag again when an `InterruptedIOException` that is not a `SocketTimeoutException` ends a connect, send or receive.
   A read timeout stays an expected communication failure.
   The bridge handler neither updates the status nor schedules a reconnect on an interrupted thread.
 - **Semantic tags:** Read-only channel types with a clear quantity (power, energy, voltage, current, temperature, frequency) get the tags `Measurement` and the matching property.
-  Writable channels, switches, strings and dimensionless values stay untagged until a mapping is agreed.
+  Writable power, energy and current limits get `Setpoint` and the matching property.
+  Switches, strings and dimensionless values stay untagged until a mapping is agreed.
+- **Handshake diagnosis:** The failure is told apart by the exception type only.
+  The text of the exception message is no longer used for control flow.
+- **Tests:** The two fixed pauses in `RscpClientTest` stay because a request that must not arrive can only be shown by waiting.
+  They are documented and the class-wide timeout bounds them.
 - **Labels:** Channel labels are at most 25 characters.
   The history labels `Self Consumption This ...` became `Self Consumed This ...`, and `Battery Discharge This ...` became `Discharge This ...`, so the `This Week`, `This Month` and `This Year` suffixes of the other history channels stay.
 

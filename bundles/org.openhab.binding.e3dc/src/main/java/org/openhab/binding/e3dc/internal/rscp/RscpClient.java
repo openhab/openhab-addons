@@ -146,7 +146,7 @@ public class RscpClient implements AutoCloseable {
                     + " the TCP level but the RSCP interface stayed silent; check the port and whether another"
                     + " client still holds the connection. (" + detail + ")";
         }
-        if (root instanceof EOFException || detail.contains("closed after 0 of")) {
+        if (root instanceof EOFException) {
             return "The device closed the connection without sending a single byte. It most likely could not"
                     + " decrypt the request, so the RSCP password probably does not match the one set on the"
                     + " device. (" + detail + ")";

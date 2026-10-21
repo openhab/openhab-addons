@@ -1,7 +1,0 @@
-# Keep local analysis scratch out of commits.
-#
-# .scratch/ holds the jadx output of the decompiled "My E3/DC" APK (~136 MB,
-# 16k files) and the Hermes bytecode string-table scripts that back
-# APP_VS_RSCP2MQTT.md. It is kept on disk for follow-up work.
-.scratch/
-tools/

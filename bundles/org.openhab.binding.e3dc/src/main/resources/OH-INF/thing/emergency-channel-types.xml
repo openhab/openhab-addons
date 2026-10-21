@@ -15,6 +15,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Reserve Energy</label>
 		<description>Energy kept for emergency power</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 

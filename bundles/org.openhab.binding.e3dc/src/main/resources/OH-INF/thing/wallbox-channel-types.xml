@@ -70,6 +70,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Minimum Charge Current</label>
 		<description>Lowest charging current allowed</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
 		<state min="6" max="16" step="1" pattern="%.0f %unit%">
 			<options>
 				<option value="6">6 A</option>
@@ -91,6 +95,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Charge Current</label>
 		<description>Highest charging current allowed</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
 		<state min="6" max="16" step="1" pattern="%.0f %unit%">
 			<options>
 				<option value="6">6 A</option>

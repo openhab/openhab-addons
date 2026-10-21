@@ -182,6 +182,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Set Manual Charge Energy</label>
 		<description>Start a manual battery charge with this energy, sent to the device in Wh</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="500 Wh">500 Wh</option>

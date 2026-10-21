@@ -215,7 +215,9 @@ class RscpClientTest {
                 byte[] encrypted = cipher.encrypt(response);
                 out.write(encrypted, 0, Rijndael256.BLOCK);
                 out.flush();
-                Thread.sleep(20);
+                // a pause between the chunks makes it likely that they arrive separately; the result does not depend on
+                // it
+                Thread.sleep(100);
                 out.write(encrypted, Rijndael256.BLOCK, encrypted.length - Rijndael256.BLOCK);
                 out.flush();
             }
@@ -258,8 +260,10 @@ class RscpClientTest {
 
                 for (int i = 0; i < 2; i++) {
                     readEncryptedFrame(in, cipher);
-                    // the second request would already be on the wire here if the client did not wait for the answer
-                    Thread.sleep(300);
+                    // the second request would already be on the wire here if the client did not wait for the answer;
+                    // a request that must not arrive can only be shown by waiting, so the pause is generous for slow
+                    // runners
+                    Thread.sleep(500);
                     if (in.available() > 0) {
                         overlapped.set(Boolean.TRUE);
                     }
