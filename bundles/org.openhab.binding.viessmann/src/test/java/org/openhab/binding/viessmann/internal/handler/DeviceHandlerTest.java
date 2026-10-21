@@ -14,6 +14,7 @@ package org.openhab.binding.viessmann.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Objects;
 
@@ -60,7 +61,7 @@ public class DeviceHandlerTest {
             """;
 
     @Test
-    public void testStructuredAdditionalPropertiesUseStringChannelType() {
+    public void testUnsupportedSerialPropertiesAreSkipped() {
         FeatureProperties properties = Objects
                 .requireNonNull(new Gson().fromJson(DEVICE_SERIAL_PROPERTIES, FeatureProperties.class));
 
@@ -68,16 +69,11 @@ public class DeviceHandlerTest {
         AdditionalProperty materialId = DeviceHandler.resolveAdditionalProperty(properties, "materialId");
         AdditionalProperty measurements = DeviceHandler.resolveAdditionalProperty(properties, "measurements");
 
-        assertNotNull(vin);
-        assertEquals("string", vin.type());
-        assertEquals("{\"uid\":null,\"profile\":null}", vin.value());
-
-        assertNotNull(materialId);
-        assertEquals("string", materialId.type());
-        assertEquals("{\"uid\":null,\"profile\":null}", materialId.value());
+        assertNull(vin);
+        assertNull(materialId);
 
         assertNotNull(measurements);
-        assertEquals("array", measurements.type());
+        assertEquals("MeasurementEntries", measurements.type());
         assertEquals("[1,2]", measurements.value());
     }
 }
