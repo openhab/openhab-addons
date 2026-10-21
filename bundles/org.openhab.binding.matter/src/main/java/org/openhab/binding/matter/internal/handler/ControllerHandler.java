@@ -37,6 +37,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterFirmwareProvider;
 import org.openhab.binding.matter.internal.actions.MatterControllerActions;
 import org.openhab.binding.matter.internal.client.MatterClientListener;
+import org.openhab.binding.matter.internal.client.MatterRequestException;
 import org.openhab.binding.matter.internal.client.MatterWebsocketService;
 import org.openhab.binding.matter.internal.client.dto.Node;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
@@ -239,8 +240,8 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
      */
     public CompletableFuture<List<String>> pairDevice(String code) {
         if (!client.isConnected()) {
-            logger.debug("not connected");
-            return CompletableFuture.completedFuture(List.of());
+            return CompletableFuture
+                    .failedFuture(new MatterRequestException("The controller is not connected", null, false));
         }
         return client.pairNode(code).thenCompose(result -> updateNode(result.nodeId).thenApply(v -> result.warnings));
     }

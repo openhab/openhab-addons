@@ -14,7 +14,10 @@ package org.openhab.binding.matter.internal.actions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
@@ -107,5 +110,12 @@ public class MatterNodeActionsTest {
         Map<String, Object> result = actions.generateNewPairingCode();
 
         assertEquals(Map.of("result", MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER), result);
+    }
+
+    @Test
+    public void icdStayActiveRejectsMissingDuration() {
+        assertEquals(MatterBindingConstants.THING_ACTION_RESULT_INVALID_DURATION, actions.icdStayActive(null));
+        assertEquals(MatterBindingConstants.THING_ACTION_RESULT_INVALID_DURATION, actions.icdStayActive(0));
+        verify(handler, never()).icdStayActive(anyLong());
     }
 }

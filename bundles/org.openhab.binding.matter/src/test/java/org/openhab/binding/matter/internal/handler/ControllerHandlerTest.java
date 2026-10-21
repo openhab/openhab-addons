@@ -14,6 +14,7 @@ package org.openhab.binding.matter.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -41,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.matter.internal.MatterFirmwareProvider;
+import org.openhab.binding.matter.internal.client.MatterRequestException;
 import org.openhab.binding.matter.internal.client.MatterWebsocketService;
 import org.openhab.binding.matter.internal.client.dto.PairingResult;
 import org.openhab.binding.matter.internal.client.dto.ws.IcdStateMessage;
@@ -264,6 +267,16 @@ public class ControllerHandlerTest {
 
         assertEquals(List.of("test certificate"), handler.pairDevice("12345678901").get(5, TimeUnit.SECONDS));
         verify(client).initializeNode(eq(NODE_ID), any());
+    }
+
+    @Test
+    public void pairDeviceFailsWhenNotConnected() {
+        when(client.isConnected()).thenReturn(false);
+
+        ExecutionException e = assertThrows(ExecutionException.class,
+                () -> handler.pairDevice("12345678901").get(5, TimeUnit.SECONDS));
+        assertTrue(e.getCause() instanceof MatterRequestException);
+        verify(client, never()).pairNode(any());
     }
 
     /**

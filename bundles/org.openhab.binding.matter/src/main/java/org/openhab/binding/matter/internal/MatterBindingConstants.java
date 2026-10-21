@@ -504,6 +504,7 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_STARTED = "@text/thing-action.result.firmware-update-started";
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_CANCELLED = "@text/thing-action.result.firmware-update-cancelled";
     public static final String THING_ACTION_RESULT_ICD_STAY_ACTIVE = "@text/thing-action.result.icd-stay-active";
+    public static final String THING_ACTION_RESULT_INVALID_DURATION = "@text/thing-action.result.invalid-duration";
     public static final String THING_ACTION_RESULT_PAIRING_CODE_VALID_UNTIL = "@text/thing-action.result.pairing-code-valid-until";
 
     // Matter OTBR Actions

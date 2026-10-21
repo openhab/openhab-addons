@@ -188,6 +188,17 @@ class MatterBridgeTest {
     }
 
     @Test
+    void testChangedOptionsThatCannotBuildAnEndpointRemoveIt() {
+        startWithLight();
+        metadata.put("light1",
+                new Metadata(new MetadataKey("matter", "light1"), "OnOffLight", Map.of("not.a.cluster", "1")));
+        bridge.registerItems();
+        verify(client, never()).updateEndpoint(any());
+        verify(client).removeEndpoint("light1");
+        verify(client, times(1)).initializeBridge(anyBoolean());
+    }
+
+    @Test
     void testChangedLabelRenamesInPlace() {
         startWithLight();
         metadata.put("light1",

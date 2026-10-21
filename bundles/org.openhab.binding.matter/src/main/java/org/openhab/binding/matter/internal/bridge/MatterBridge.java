@@ -793,15 +793,19 @@ public class MatterBridge implements MatterClientListener, EventSubscriber, Read
             if (existing == null) {
                 logger.debug("Adding endpoint {}", name);
                 devicesChanged = true;
-                if (!sendEndpoint(device, client::addEndpoint)) {
+                BridgedEndpoint endpoint = activate(device);
+                if (endpoint != null && !sendEndpoint(device, endpoint, client::addEndpoint)) {
                     return false;
                 }
             } else if (existing.structureChanged()) {
                 logger.debug("Replacing endpoint {}", name);
                 devicesChanged = true;
+                BridgedEndpoint endpoint = activate(device);
                 devices.remove(name);
                 existing.deactivate();
-                if (!sendEndpoint(device, client::updateEndpoint)) {
+                if (endpoint == null) {
+                    awaitEndpointChange(name, client.removeEndpoint(name));
+                } else if (!sendEndpoint(device, endpoint, client::updateEndpoint)) {
                     return false;
                 }
             } else if (!existing.usesSameItems(device)) {
@@ -831,16 +835,12 @@ public class MatterBridge implements MatterClientListener, EventSubscriber, Read
     }
 
     /**
-     * Activates a device and sends its endpoint to the bridge.
+     * Sends the endpoint of an activated device to the bridge.
      *
      * @return false if the bridge failed to add the endpoint
      */
-    private boolean sendEndpoint(BaseDevice device, Function<BridgedEndpoint, CompletableFuture<String>> send)
-            throws InterruptedException {
-        BridgedEndpoint endpoint = activate(device);
-        if (endpoint == null) {
-            return true;
-        }
+    private boolean sendEndpoint(BaseDevice device, BridgedEndpoint endpoint,
+            Function<BridgedEndpoint, CompletableFuture<String>> send) throws InterruptedException {
         try {
             send.apply(endpoint).get();
             keepDevice(device);

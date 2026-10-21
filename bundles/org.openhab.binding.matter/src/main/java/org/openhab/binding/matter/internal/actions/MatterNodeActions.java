@@ -276,7 +276,10 @@ public class MatterNodeActions implements ThingActions {
     @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_ICD_STAY_ACTIVE)
     public @ActionOutputs({
             @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE_RESULT, type = "java.lang.String") }) String icdStayActive(
-                    @ActionInput(name = "duration", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE_DURATION, description = MatterBindingConstants.THING_ACTION_DESC_NODE_ICD_STAY_ACTIVE_DURATION) Integer duration) {
+                    @ActionInput(name = "duration", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE_DURATION, description = MatterBindingConstants.THING_ACTION_DESC_NODE_ICD_STAY_ACTIVE_DURATION, required = true) @Nullable Integer duration) {
+        if (duration == null || duration <= 0) {
+            return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_INVALID_DURATION);
+        }
         NodeHandler handler = this.handler;
         if (handler != null) {
             try {
