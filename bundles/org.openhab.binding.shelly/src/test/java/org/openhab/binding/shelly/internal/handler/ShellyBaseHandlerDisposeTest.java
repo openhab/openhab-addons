@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1PM;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -93,6 +96,40 @@ class ShellyBaseHandlerDisposeTest {
         handler.refreshStatus();
 
         verify(handler, never()).setThingOfflineAndDisconnect(any(), any(), any());
+    }
+
+    @Test
+    void initializerWaitingForTheInitLockDuringDisposeDoesNotInitialize() throws Exception {
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        Object initLock = new Object();
+        setField(handler, "api", api);
+        setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
+        setField(handler, "initLock", initLock);
+
+        CompletableFuture<Boolean> initialized;
+        Thread initializer;
+        synchronized (initLock) {
+            CompletableFuture<Thread> started = new CompletableFuture<>();
+            initialized = CompletableFuture.supplyAsync(() -> {
+                started.complete(Thread.currentThread());
+                try {
+                    return handler.initializeThing();
+                } catch (ShellyApiException e) {
+                    throw new AssertionError(e);
+                }
+            });
+            initializer = started.get(5, TimeUnit.SECONDS);
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+            while (initializer.getState() != Thread.State.BLOCKED && System.nanoTime() < deadline) {
+                Thread.onSpinWait();
+            }
+            assertEquals(Thread.State.BLOCKED, initializer.getState());
+            setField(handler, "stopping", true);
+        }
+
+        assertFalse(initialized.get(5, TimeUnit.SECONDS));
+        verify(api, never()).initialize();
     }
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {

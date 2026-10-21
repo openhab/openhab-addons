@@ -350,6 +350,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public boolean initializeThing() throws ShellyApiException {
         // init job, command and status threads may all trigger it; dedicated lock as it does blocking I/O
         synchronized (initLock) {
+            if (stopping) {
+                return false;
+            }
             return initializeThingSerialized();
         }
     }
