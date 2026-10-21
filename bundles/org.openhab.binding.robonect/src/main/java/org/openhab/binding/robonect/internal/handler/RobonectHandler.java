@@ -1987,6 +1987,7 @@ public class RobonectHandler extends BaseThingHandler {
                     loadVersionInfo = false;
                 }
                 refreshMowerInfo();
+                refreshWlanInfo();
                 boolean refreshDetailed = detailedInfoPollCount++ % detailedInfoInterval == 0;
                 if (useUnofficialApi && refreshDetailed) {
                     refreshPushMode();
