@@ -26,7 +26,9 @@ import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Tests that commands become the requests the device interface expects.
@@ -45,7 +47,14 @@ class E3DCCommandHandlerTest {
     /** Builds a settings response the way the device reports it after a poll. */
     private static RscpValue settingsResponse(int powerLimits, int maxCharge, int maxDischarge, int startPower,
             int weather) {
-        return RscpValue.container(0, List.of(RscpValue.container(RscpTag.EMS_GET_POWER_SETTINGS,
+        return settingsResponse(RscpTag.EMS_GET_POWER_SETTINGS, powerLimits, maxCharge, maxDischarge, startPower,
+                weather);
+    }
+
+    /** Builds a settings response with the given container, which the device uses for a poll and for a write. */
+    private static RscpValue settingsResponse(int container, int powerLimits, int maxCharge, int maxDischarge,
+            int startPower, int weather) {
+        return RscpValue.container(0, List.of(RscpValue.container(container,
                 List.of(RscpValue.of(RscpTag.EMS_POWER_LIMITS_USED, RscpType.UCHAR8, powerLimits),
                         RscpValue.of(RscpTag.EMS_MAX_CHARGE_POWER, RscpType.UINT32, maxCharge),
                         RscpValue.of(RscpTag.EMS_MAX_DISCHARGE_POWER, RscpType.UINT32, maxDischarge),
@@ -91,6 +100,13 @@ class E3DCCommandHandlerTest {
         Number number = tree.findNumber(tag);
         assertNotNull(number, "no numeric value for " + RscpTag.nameOf(tag));
         return number.intValue();
+    }
+
+    /** Reads a number that must be present, without narrowing it to an int. */
+    private static long longAt(RscpValue tree, int tag) {
+        Number number = tree.findNumber(tag);
+        assertNotNull(number, "no numeric value for " + RscpTag.nameOf(tag));
+        return number.longValue();
     }
 
     // ------------------------------------------------------------------ request shapes
@@ -199,6 +215,85 @@ class E3DCCommandHandlerTest {
 
         RscpValue settings = settingsOf(request(handler, spec, new DecimalType(4999.6)));
         assertEquals(5000, numberAt(settings, RscpTag.EMS_MAX_DISCHARGE_POWER));
+    }
+
+    @Test
+    void aValueBeyondTheUnsignedRangeIsRejected() {
+        E3DCCommandHandler handler = handlerWithSettings();
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power");
+
+        assertNull(handler.buildRequest(spec, new DecimalType(4294967296L), 0),
+                "four bytes cannot carry a larger value, so it must not be sent as a truncated one");
+        RscpValue settings = settingsOf(request(handler, spec, new DecimalType(4294967295L)));
+        assertEquals(4294967295L, longAt(settings, RscpTag.EMS_MAX_CHARGE_POWER));
+    }
+
+    /**
+     * The share channels are written in percent, and a dimensionless quantity carries the same share as a
+     * percentage: 0.5 of one is 50 %.
+     */
+    @Test
+    void aDimensionlessQuantityIsWrittenInPercent() {
+        E3DCCommandHandler handler = handlerWithSettings();
+        E3DCCommandSpec percentage = spec(E3DCBindingConstants.GROUP_EMERGENCY, "percent");
+
+        assertEquals(50, numberAt(request(handler, percentage, new QuantityType<>(0.5, Units.ONE)),
+                RscpTag.SE_PARAM_EP_RESERVE));
+        assertEquals(50, numberAt(request(handler, percentage, new QuantityType<>(50, Units.PERCENT)),
+                RscpTag.SE_PARAM_EP_RESERVE));
+        assertEquals(50,
+                numberAt(request(handler, spec(E3DCBindingConstants.GROUP_BATTERY, "wallbox-discharge-until"),
+                        new QuantityType<>(0.5, Units.ONE)), RscpTag.EMS_REQ_SET_WB_DISCHARGE_BAT_UNTIL),
+                "the byte channel rounds the same share to the whole percent");
+    }
+
+    // ------------------------------------------------------------------ acknowledged writes
+
+    /** The device answers a write with its own settings container, which holds the acknowledged values. */
+    @Test
+    void theSettingsOfAWriteAcknowledgementAreTakenOver() {
+        E3DCCommandHandler handler = handlerWithSettings();
+        handler.updateFromResponse(settingsResponse(RscpTag.EMS_SET_POWER_SETTINGS, 1, 5000, 6000, 100, 1));
+
+        RscpValue settings = settingsOf(request(handler,
+                spec(E3DCBindingConstants.GROUP_BATTERY, "discharge-start-power"), new DecimalType(250)));
+
+        assertEquals(5000, numberAt(settings, RscpTag.EMS_MAX_CHARGE_POWER),
+                "a following write must not send the limit that the acknowledged write replaced");
+        assertEquals(6000, numberAt(settings, RscpTag.EMS_MAX_DISCHARGE_POWER));
+    }
+
+    /** An answer that carries no settings container must not leave the snapshot of the write behind. */
+    @Test
+    void anAcknowledgedWriteIsKeptForTheNextCommand() {
+        E3DCCommandHandler handler = handlerWithSettings();
+        List<RscpValue> written = handler.buildRequest(spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power"),
+                new DecimalType(5000), 0);
+        assertNotNull(written);
+        handler.rememberAcknowledged(written);
+
+        RscpValue settings = settingsOf(request(handler,
+                spec(E3DCBindingConstants.GROUP_BATTERY, "max-discharge-power"), new DecimalType(6000)));
+
+        assertEquals(5000, numberAt(settings, RscpTag.EMS_MAX_CHARGE_POWER));
+        assertEquals(6000, numberAt(settings, RscpTag.EMS_MAX_DISCHARGE_POWER));
+    }
+
+    @Test
+    void anErrorOfOneParameterIsNoSettingForTheNextWrite() {
+        E3DCCommandHandler handler = new E3DCCommandHandler();
+        handler.updateFromResponse(
+                RscpValue.container(0,
+                        List.of(RscpValue.container(RscpTag.EMS_GET_POWER_SETTINGS, List.of(
+                                RscpValue.of(RscpTag.EMS_MAX_CHARGE_POWER, RscpType.UINT32, 9000),
+                                RscpValue.of(RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED, RscpType.ERROR, 6L))))));
+
+        RscpValue settings = settingsOf(request(handler,
+                spec(E3DCBindingConstants.GROUP_BATTERY, "max-discharge-power"), new DecimalType(6000)));
+
+        assertNull(settings.find(RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED),
+                "an error item cannot be encoded, so it must not be written back");
+        assertEquals(9000, numberAt(settings, RscpTag.EMS_MAX_CHARGE_POWER));
     }
 
     // ------------------------------------------------------------------ registry

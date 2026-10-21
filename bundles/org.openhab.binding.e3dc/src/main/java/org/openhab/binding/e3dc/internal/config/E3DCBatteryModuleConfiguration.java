@@ -22,6 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class E3DCBatteryModuleConfiguration {
 
-    /** Zero based index of the module within the battery data response. */
+    /** Zero based index of the module within the data of its battery. */
     public int moduleIndex;
+
+    /** Zero based index of the battery that reports this module. */
+    public int batteryIndex;
 }

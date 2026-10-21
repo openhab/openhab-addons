@@ -168,10 +168,6 @@ public final class E3DCContainerRequests {
                     RscpTag.PM_REQ_ACTIVE_PHASES, RscpTag.PM_REQ_MAX_PHASE_POWER));
 
     /**
-     * The battery of the cell modules, asked for with the index of the battery rather than of a module: the
-     * answer holds the container of every module, which is what the module channels read.
-     */
-    /**
      * The request of a battery: the answer holds the values of the battery itself and the container of every
      * cell module. The battery and its modules share this request, so it is sent once when both are present.
      */
@@ -188,7 +184,8 @@ public final class E3DCContainerRequests {
 
     /**
      * The battery of the cell modules, asked for with the index of the battery rather than of a module: the
-     * answer holds the container of every module, which is what the module channels read.
+     * answer holds the container of every module of that battery, which is what the module channels read. The
+     * module indexes count inside one battery, so they are requested with the battery they belong to.
      */
     private static final Container BATTERY_MODULE = new Container(E3DCBindingConstants.GROUP_MODULE,
             RscpTag.BAT_REQ_DATA, RscpTag.BAT_INDEX, RscpTag.BAT_DCB_INFO, BATTERY_PARAMETERS);

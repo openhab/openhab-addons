@@ -36,7 +36,6 @@ import org.openhab.core.types.Command;
  * @param type the RSCP type of that parameter
  * @param container the container the parameter has to be nested in, or {@code 0} for the root
  * @param switchValue whether the parameter is a boolean or a one byte flag rather than a number
- * @param kind the shape of request this value belongs to
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -45,6 +44,9 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
 
     /** The largest value an unsigned byte parameter can carry. */
     private static final int MAX_UCHAR8 = 255;
+
+    /** The largest value an unsigned 32 bit parameter can carry. */
+    private static final double MAX_UINT32 = 4294967295.0;
 
     /** The units the device expects for the quantities that can be written. */
     private static final List<Unit<?>> DEVICE_UNITS = List.of(Units.AMPERE, Units.WATT, Units.WATT_HOUR);
@@ -106,10 +108,13 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
             return RscpValue.uchar8(tag, on ? 1 : 0);
         }
         Double number = toNumber(command);
-        if (number == null) {
+        if (number == null || !Double.isFinite(number)) {
             return null;
         }
-        if (number < 0 || (type == RscpType.UCHAR8 && number > MAX_UCHAR8)) {
+        // the four byte parameters travel as a two's complement number, so a value that does not fit into the
+        // unsigned range would be sent as a completely different one
+        if (number < 0 || (type == RscpType.UCHAR8 && number > MAX_UCHAR8)
+                || (type == RscpType.UINT32 && number > MAX_UINT32)) {
             return null;
         }
         if (type == RscpType.FLOAT32) {
@@ -141,6 +146,11 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
      * Numeric commands arrive as a plain number for channels without a unit, but as a quantity for items
      * carrying a unit, such as {@code 16 A} or {@code 3 kW}. A quantity is converted into the unit the
      * device works with, so the user may write in any compatible unit.
+     *
+     * <p>
+     * The share channels are written in percent. A dimensionless quantity is converted into percent as well,
+     * because {@code 0.5} of one and {@code 50 %} are the same share: the number a dimensionless quantity
+     * shows would be a hundredth of the share the device expects.
      */
     private static @Nullable Double toNumber(Command command) {
         if (command instanceof DecimalType decimal) {
@@ -154,8 +164,11 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
                     return converted == null ? null : converted.doubleValue();
                 }
             }
-            // a dimensionless quantity such as a percentage is written as the number it shows
-            return Units.ONE.isCompatible(unit) ? Double.valueOf(quantity.doubleValue()) : null;
+            if (Units.ONE.isCompatible(unit)) {
+                QuantityType<?> percent = quantity.toUnit(Units.PERCENT);
+                return percent == null ? null : percent.doubleValue();
+            }
+            return null;
         }
         return null;
     }

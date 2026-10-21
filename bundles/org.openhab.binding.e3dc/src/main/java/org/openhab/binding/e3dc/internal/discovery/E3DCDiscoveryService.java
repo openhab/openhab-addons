@@ -14,7 +14,6 @@ package org.openhab.binding.e3dc.internal.discovery;
 
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
@@ -50,6 +49,11 @@ import org.slf4j.LoggerFactory;
  * Every answer is logged at DEBUG level, those of indexes that are not proposed included, so that the
  * behaviour of a device can be analysed from the log.
  *
+ * <p>
+ * A scan asks the device one request at a time, so it can take a while. It is serialized by a lock of its own
+ * rather than by the monitor of the service, because the lifecycle methods of the service must not wait for a
+ * scan that is still running.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = ThingHandlerService.class)
@@ -64,9 +68,19 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
 
     private final Logger logger = LoggerFactory.getLogger(E3DCDiscoveryService.class);
 
+    /** Serializes the scans without blocking the lifecycle methods of the service. */
+    private final Object scanLock = new Object();
+
+    /** Whether the service is still in use; a running scan stops asking once it was disposed. */
+    private volatile boolean active = true;
+
     private @Nullable ScheduledFuture<?> backgroundScan;
-    private final Runnable onlineScan = () -> scheduler.schedule(this::scan, ONLINE_SCAN_DELAY_SECONDS,
-            TimeUnit.SECONDS);
+
+    /** The scan that waits for the first poll of a fresh connection, kept so that it can be cancelled. */
+    private @Nullable ScheduledFuture<?> delayedScan;
+
+    /** Asks for a scan once the first poll after the connection came up has filled the things. */
+    private final Runnable onlineScan = this::scheduleDelayedScan;
 
     public E3DCDiscoveryService() {
         super(E3DCBridgeHandler.class,
@@ -74,6 +88,21 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
                         E3DCBindingConstants.THING_TYPE_BATTERY_MODULE, E3DCBindingConstants.THING_TYPE_POWER_METER,
                         E3DCBindingConstants.THING_TYPE_WALLBOX),
                 TIMEOUT_SECONDS, false);
+    }
+
+    @Override
+    public void initialize() {
+        // the service instance is reused when the thing is enabled again
+        active = true;
+        super.initialize();
+    }
+
+    @Override
+    public void dispose() {
+        // a scan that is still running must not publish discoveries of a service that is gone
+        active = false;
+        cancelDelayedScan();
+        super.dispose();
     }
 
     @Override
@@ -94,6 +123,7 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     @Override
     protected synchronized void stopBackgroundDiscovery() {
         thingHandler.removeOnlineListener(onlineScan);
+        cancelDelayedScan();
         ScheduledFuture<?> running = backgroundScan;
         if (running != null) {
             running.cancel(true);
@@ -101,7 +131,34 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
         }
     }
 
-    private synchronized void scan() {
+    private synchronized void scheduleDelayedScan() {
+        cancelDelayedScan();
+        if (!active) {
+            return;
+        }
+        delayedScan = scheduler.schedule(this::scan, ONLINE_SCAN_DELAY_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private synchronized void cancelDelayedScan() {
+        ScheduledFuture<?> pending = delayedScan;
+        if (pending != null) {
+            pending.cancel(true);
+            delayedScan = null;
+        }
+    }
+
+    /** Runs one scan, waiting for a scan that is still in progress instead of asking the device in parallel. */
+    private void scan() {
+        synchronized (scanLock) {
+            runScan();
+        }
+    }
+
+    private void runScan() {
+        if (!active) {
+            logger.debug("The discovery service is not in use any more, no scan is started");
+            return;
+        }
         E3DCBridgeHandler bridge = thingHandler;
         if (!bridge.isConnected()) {
             logger.debug("The device is not connected, so there is nothing to discover yet");
@@ -136,8 +193,11 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
         List<Integer> candidates = E3DCDiscovery.batteryCandidates(available);
         logger.debug("Batteries to ask for: {}", candidates);
         int proposed = 0;
-        TreeSet<Integer> modules = new TreeSet<>();
         for (int battery : candidates) {
+            if (!active) {
+                logger.debug("The discovery service is not in use any more, the batteries are no longer asked for");
+                break;
+            }
             try {
                 RscpValue answer = bridge.sendRequest(List.of(request.request(battery, Set.of())));
                 if (!E3DCDiscovery.isBatteryAnswered(answer)) {
@@ -150,13 +210,13 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
                 proposed++;
                 List<Integer> found = modulesOf(bridge, request, battery, answer);
                 logger.debug("Battery {} reports {} cell modules: {}", battery, found.size(), found);
-                modules.addAll(found);
+                // a module index counts inside its battery, so every module is proposed with its battery
+                for (int module : found) {
+                    thingDiscovered(E3DCDiscovery.module(bridgeUid, battery, module));
+                }
             } catch (RscpException e) {
                 logger.debug("Battery {} could not be queried: {}", battery, e.getMessage());
             }
-        }
-        for (int module : modules) {
-            thingDiscovered(E3DCDiscovery.module(bridgeUid, module));
         }
         return proposed;
     }
@@ -191,6 +251,11 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
         }
         int proposed = 0;
         for (int index = 0; index < max; index++) {
+            if (!active) {
+                logger.debug("The discovery service is not in use any more, the remaining {} are not asked for",
+                        groupId);
+                break;
+            }
             try {
                 RscpValue answer = bridge.sendRequest(List.of(request.request(index, Set.of())));
                 boolean found = answered.test(answer);

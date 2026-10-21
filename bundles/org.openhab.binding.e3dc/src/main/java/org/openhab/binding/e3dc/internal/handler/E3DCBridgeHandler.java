@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -113,8 +114,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
     /**
      * The channel groups a thing needs a container request for, with the configuration key holding the index
-     * of the addressed device. A group without a key is requested with index {@code 0}: the cell modules are
-     * asked for as the first battery, which answers with the container of every module.
+     * of the addressed device.
      */
     private static final Map<ThingTypeUID, List<GroupRequest>> GROUP_REQUESTS = Map.of(//
             E3DCBindingConstants.THING_TYPE_WALLBOX,
@@ -124,7 +124,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             E3DCBindingConstants.THING_TYPE_BATTERY,
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_PACK, "batteryIndex")), //
             E3DCBindingConstants.THING_TYPE_BATTERY_MODULE,
-            List.of(new GroupRequest(E3DCBindingConstants.GROUP_MODULE, null)), //
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_MODULE, "batteryIndex")), //
             E3DCBindingConstants.THING_TYPE_POWER_PLANT,
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_INVERTER, null),
                     new GroupRequest(E3DCBindingConstants.GROUP_EMERGENCY, null)));
@@ -592,28 +592,46 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
      */
     private List<RscpValue> containerRequests() {
         Map<String, RscpValue> requests = new LinkedHashMap<>();
-        // the modules are read through the request of the first battery, one BAT_REQ_DCB_INFO per module index
-        TreeSet<Integer> moduleIndexes = new TreeSet<>();
-        for (Thing thing : getThing().getThings()) {
-            if (E3DCBindingConstants.THING_TYPE_BATTERY_MODULE.equals(thing.getThingTypeUID())) {
-                Integer module = configuredIndex(thing, "moduleIndex");
-                if (module != null && module >= 0) {
-                    moduleIndexes.add(module);
-                }
-            }
-        }
+        // a module index counts inside its battery, so the modules are requested with the data of their battery
+        Map<Integer, Set<Integer>> modules = moduleIndexesByBattery();
         for (Thing thing : getThing().getThings()) {
             for (GroupRequest group : GROUP_REQUESTS.getOrDefault(thing.getThingTypeUID(), List.of())) {
                 E3DCContainerRequests.Container container = E3DCContainerRequests.forGroup(group.groupId());
                 Integer index = configuredIndex(thing, group.indexConfigurationKey());
+                if (index == null && E3DCBindingConstants.THING_TYPE_BATTERY_MODULE.equals(thing.getThingTypeUID())) {
+                    // a module thing created from a file may omit its battery, which is the first one
+                    index = 0;
+                }
                 if (container != null && index != null) {
-                    List<Integer> modules = index == 0 ? List.copyOf(moduleIndexes) : List.of();
+                    Set<Integer> moduleIndexes = modules.get(index);
                     requests.putIfAbsent(container.containerTag() + "/" + index,
-                            container.request(index, droppedTags, modules));
+                            container.request(index, droppedTags, moduleIndexes != null ? moduleIndexes : Set.of()));
                 }
             }
         }
         return new ArrayList<>(requests.values());
+    }
+
+    /** The module indexes of every battery, keyed by the index of the battery that reports them. */
+    private Map<Integer, Set<Integer>> moduleIndexesByBattery() {
+        Map<Integer, Set<Integer>> modules = new TreeMap<>();
+        for (Thing thing : getThing().getThings()) {
+            if (E3DCBindingConstants.THING_TYPE_BATTERY_MODULE.equals(thing.getThingTypeUID())) {
+                Integer module = configuredIndex(thing, "moduleIndex");
+                // a module thing created from a file may omit the battery, which is the first one
+                Integer battery = configuredIndex(thing, "batteryIndex");
+                if (module != null && module >= 0 && (battery == null || battery >= 0)) {
+                    int batteryIndex = battery != null ? battery : 0;
+                    Set<Integer> indexes = modules.get(batteryIndex);
+                    if (indexes == null) {
+                        indexes = new TreeSet<>();
+                        modules.put(batteryIndex, indexes);
+                    }
+                    indexes.add(module);
+                }
+            }
+        }
+        return modules;
     }
 
     /**

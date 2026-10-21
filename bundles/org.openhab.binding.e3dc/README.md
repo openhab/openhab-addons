@@ -42,7 +42,7 @@ What is proposed:
 |-----------------|----------------------------------------------------------------------------------------------------------|
 | `power-plant`   | Always, one per bridge.                                                                                  |
 | `battery`       | The device is asked which batteries it has. Every battery that answers with values is proposed.          |
-| `battery-module`| The cell modules that the batteries report.                                                              |
+| `battery-module`| The cell modules that each battery reports, one thing per battery and module.                             |
 | `power-meter`   | The device reports no count. The indexes 0 to 7 are asked for, and each one that answers with values and at least one active phase is proposed. |
 | `wallbox`       | The device reports no count. The indexes 0 to 7 are asked for, and each one that answers with values is proposed. |
 
@@ -111,9 +111,10 @@ Passwords and the RSCP key are never logged.
 | `wallbox`     | wallboxIndex | integer | Zero based index of the wallbox on the device.     | 0       | yes      |
 | `power-meter` | meterIndex   | integer | Zero based index of the power meter on the device. | 0       | yes      |
 | `battery`     | batteryIndex | integer | Zero based index of the battery on the device.     | 0       | yes      |
-| `battery-module` | moduleIndex | integer | Zero based index of the cell module in the battery data. | N/A | yes   |
+| `battery-module` | batteryIndex | integer | Zero based index of the battery that reports the cell module. | 0 | yes |
+| `battery-module` | moduleIndex | integer | Zero based index of the cell module inside its battery. | N/A | yes |
 
-The module index counts the cell modules of all batteries consecutively, as the device reports them.
+The module index counts the cell modules inside one battery: a system with several batteries reports module 0 once per battery, so a cell module is addressed by the pair of battery and module index.
 
 ## Channels
 
@@ -677,7 +678,7 @@ Bridge e3dc:bridge:device "E3/DC Device" [ host="192.168.1.50", userName="owner@
     Thing wallbox        wallbox0 "E3/DC Wallbox"        [ wallboxIndex=0 ]
     Thing power-meter    meter0   "E3/DC Power Meter"    [ meterIndex=0 ]
     Thing battery        battery0 "E3/DC Battery"        [ batteryIndex=0 ]
-    Thing battery-module module0  "E3/DC Battery Module" [ moduleIndex=0 ]
+    Thing battery-module module0  "E3/DC Battery Module" [ batteryIndex=0, moduleIndex=0 ]
 }
 ```
 

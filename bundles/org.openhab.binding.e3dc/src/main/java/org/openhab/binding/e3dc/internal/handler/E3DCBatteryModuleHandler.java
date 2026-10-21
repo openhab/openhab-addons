@@ -20,6 +20,7 @@ import org.openhab.binding.e3dc.internal.E3DCBindingConstants;
 import org.openhab.binding.e3dc.internal.E3DCChannelRegistry;
 import org.openhab.binding.e3dc.internal.E3DCChannelSpec;
 import org.openhab.binding.e3dc.internal.config.E3DCBatteryModuleConfiguration;
+import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.thing.Thing;
 
@@ -27,12 +28,13 @@ import org.openhab.core.thing.Thing;
  * One battery cell module of the power plant.
  *
  * <p>
- * A module reports its values in its own container inside the battery data, so the handler selects that
- * container by the module index rather than by position.
+ * A module reports its values in its own container inside the data of its battery, so the handler selects the
+ * data container of its battery first and the module container inside it by the module index rather than by
+ * position.
  *
  * <p>
- * The module index is unique within one battery. A system with several batteries is not addressed
- * separately here: the device numbers the modules of all batteries consecutively in the response.
+ * The module index counts the modules of one battery: a system with several batteries reports module 0 once per
+ * battery, so the battery is part of the identity of a module.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -70,7 +72,25 @@ public class E3DCBatteryModuleHandler extends E3DCThingHandler {
 
     @Override
     public void onData(RscpValue response) {
-        super.onData(response);
-        updateEnergies(response, E3DCBindingConstants.GROUP_MODULE, "voltage", ENERGY_SOURCES);
+        RscpValue batteryData = batteryData(response, config.batteryIndex);
+        if (batteryData == null) {
+            // the modules of another battery are no substitute for the ones of this module's battery
+            logger.debug("The device reports no data for battery {}, module {} is not updated", config.batteryIndex,
+                    config.moduleIndex);
+            return;
+        }
+        super.onData(batteryData);
+        updateEnergies(batteryData, E3DCBindingConstants.GROUP_MODULE, "voltage", ENERGY_SOURCES);
+    }
+
+    /** The data container of one battery, or {@code null} when the battery is not part of the answer. */
+    static @Nullable RscpValue batteryData(RscpValue response, int batteryIndex) {
+        for (RscpValue battery : response.findAll(RscpTag.BAT_DATA)) {
+            Number index = battery.findNumber(RscpTag.BAT_INDEX);
+            if (index != null && index.intValue() == batteryIndex) {
+                return battery;
+            }
+        }
+        return null;
     }
 }

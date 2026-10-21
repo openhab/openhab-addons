@@ -17,9 +17,14 @@
 		</channel-groups>
 
 		<config-description>
+			<parameter name="batteryIndex" type="integer" min="0" required="true">
+				<label>Battery Index</label>
+				<description>Zero based index of the battery that reports this cell module.</description>
+				<default>0</default>
+			</parameter>
 			<parameter name="moduleIndex" type="integer" min="0" required="true">
 				<label>Module Index</label>
-				<description>Zero based index of the cell module within the battery data.</description>
+				<description>Zero based index of the cell module within the data of its battery.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
