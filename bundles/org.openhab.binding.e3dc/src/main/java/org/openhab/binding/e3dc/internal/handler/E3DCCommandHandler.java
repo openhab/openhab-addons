@@ -119,14 +119,14 @@ public class E3DCCommandHandler {
                 logger.debug("Command answered with: {}", response.describeTree());
             }
             if (response.containsError()) {
-                logger.warn("The device rejected the command: {}", response.findError());
+                logger.debug("The device rejected the command: {}", response.findError());
                 return false;
             }
             // refresh the snapshot so a following write keeps working with current values
             updateFromResponse(response);
             return true;
         } catch (RscpException e) {
-            logger.warn("Cannot send the command: {}", e.getMessage());
+            logger.debug("Cannot send the command: {}", e.getMessage());
             return false;
         }
     }

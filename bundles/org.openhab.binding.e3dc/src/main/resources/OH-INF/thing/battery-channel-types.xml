@@ -44,6 +44,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Maximum Charge Power</label>
 		<description>Configured limit for battery charging</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -51,6 +55,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Maximum Discharge Power</label>
 		<description>Configured limit for battery discharging</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -58,6 +66,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Discharge Start Power</label>
 		<description>Power above which the battery is discharged</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 

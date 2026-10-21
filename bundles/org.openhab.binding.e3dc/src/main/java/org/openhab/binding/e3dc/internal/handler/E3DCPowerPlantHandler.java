@@ -411,7 +411,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
                 response = bridge.sendRequest(
                         List.of(E3DCBridgeHandler.periodHistoryRequest(container, start, daysOf(container, start))));
             } catch (RscpException e) {
-                logger.warn("History of {} not fetched: {}", start, e.getMessage());
+                logger.debug("History of {} not fetched: {}", start, e.getMessage());
                 emptyInARow++;
                 continue;
             }
