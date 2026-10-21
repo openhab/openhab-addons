@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -83,6 +84,41 @@ class E3DCValueLookupTest {
         Number number = value.asNumber();
         assertNotNull(number, "the value must be a number");
         return number.doubleValue();
+    }
+
+    /** A response with the shape the device answers the module request of two batteries with. */
+    private static RscpValue twoBatteries(int firstVoltage, int secondVoltage) {
+        return RscpValue.container(0, List.of(battery(0, firstVoltage), battery(1, secondVoltage)));
+    }
+
+    /** The data of one battery with exactly one cell module, which reports its index and its voltage. */
+    private static RscpValue battery(int index, int voltage) {
+        return RscpValue.container(RscpTag.BAT_DATA,
+                List.of(RscpValue.uchar8(RscpTag.BAT_INDEX, index),
+                        RscpValue.container(RscpTag.BAT_DCB_INFO, List.of(RscpValue.uchar8(RscpTag.BAT_DCB_INDEX, 0),
+                                RscpValue.of(RscpTag.BAT_DCB_VOLTAGE, RscpType.FLOAT32, (float) voltage)))));
+    }
+
+    /**
+     * The module index counts inside its battery, so two batteries report module 0 and the value of this
+     * module has to come from the data container of its own battery.
+     */
+    @Test
+    void aModuleReadsTheValueOfItsOwnBattery() {
+        RscpValue response = twoBatteries(1, 2);
+        E3DCChannelSpec voltage = spec(E3DCBindingConstants.GROUP_MODULE, "voltage");
+
+        RscpValue first = Objects.requireNonNull(E3DCBatteryModuleHandler.batteryData(response, 0));
+        RscpValue second = Objects.requireNonNull(E3DCBatteryModuleHandler.batteryData(response, 1));
+        RscpValue firstModule = E3DCThingHandler.findValue(first, voltage, 0);
+        RscpValue secondModule = E3DCThingHandler.findValue(second, voltage, 0);
+        assertNotNull(firstModule, "battery 0 reports the module with the voltage 1");
+        assertNotNull(secondModule, "battery 1 reports the module with the voltage 2");
+
+        assertEquals(1.0, numberOf(firstModule), 0.001, "the module of battery 0 carries the voltage of battery 0");
+        assertEquals(2.0, numberOf(secondModule), 0.001, "the module of battery 1 carries the voltage of battery 1");
+        assertNull(E3DCBatteryModuleHandler.batteryData(response, 2),
+                "a battery the device does not report has no data");
     }
 
     @Test

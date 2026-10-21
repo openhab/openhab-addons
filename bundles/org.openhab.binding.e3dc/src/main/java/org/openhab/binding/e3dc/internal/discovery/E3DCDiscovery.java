@@ -179,11 +179,22 @@ final class E3DCDiscovery {
                 .withRepresentationProperty(PROPERTY_BATTERY_INDEX).withLabel("E3/DC Battery " + (index + 1)).build();
     }
 
-    static DiscoveryResult module(ThingUID bridge, int index) {
+    /**
+     * The cell module of one battery.
+     *
+     * <p>
+     * {@code BAT_DCB_INDEX} counts the modules inside one battery, so the battery belongs to the identity of a
+     * module: a system with several batteries reports module 0 once per battery. The result has no
+     * representation property on purpose: it can name only one property, and neither the module index nor the
+     * battery index identifies a module alone, so either one would hide the modules of the other batteries.
+     * The thing UID carries both indexes and keeps the proposals apart.
+     */
+    static DiscoveryResult module(ThingUID bridge, int battery, int module) {
         return DiscoveryResultBuilder
-                .create(new ThingUID(E3DCBindingConstants.THING_TYPE_BATTERY_MODULE, bridge, "module-" + index))
-                .withBridge(bridge).withProperty(PROPERTY_MODULE_INDEX, index)
-                .withRepresentationProperty(PROPERTY_MODULE_INDEX).withLabel("E3/DC Battery Module " + (index + 1))
-                .build();
+                .create(new ThingUID(E3DCBindingConstants.THING_TYPE_BATTERY_MODULE, bridge,
+                        "module-" + battery + "-" + module))
+                .withBridge(bridge).withProperty(PROPERTY_BATTERY_INDEX, battery)
+                .withProperty(PROPERTY_MODULE_INDEX, module)
+                .withLabel("E3/DC Battery " + (battery + 1) + " Module " + (module + 1)).build();
     }
 }

@@ -125,22 +125,26 @@ class E3DCDiscoveryTest {
     }
 
     @Test
-    void aModuleIsProposedWithItsIndex() {
-        DiscoveryResult result = E3DCDiscovery.module(BRIDGE, 0);
+    void aModuleIsProposedWithItsBatteryAndItsIndex() {
+        DiscoveryResult result = E3DCDiscovery.module(BRIDGE, 1, 0);
 
-        assertEquals("e3dc:battery-module:device:module-0", result.getThingUID().getAsString());
+        assertEquals("e3dc:battery-module:device:module-1-0", result.getThingUID().getAsString());
         assertEquals(BRIDGE, result.getBridgeUID());
+        assertEquals(1, result.getProperties().get("batteryIndex"),
+                "the module index counts inside its battery, so the battery belongs to the identity");
         assertEquals(0, result.getProperties().get("moduleIndex"));
-        assertEquals("moduleIndex", result.getRepresentationProperty());
-        assertEquals("E3/DC Battery Module 1", result.getLabel());
+        assertNull(result.getRepresentationProperty(),
+                "neither index identifies a module alone, so the inbox must not match on one of them");
+        assertEquals("E3/DC Battery 2 Module 1", result.getLabel());
     }
 
     /** The properties must carry the names of the configuration parameters, or the thing is created empty. */
     @Test
     void thePropertiesMatchTheConfigurationParameters() {
-        assertNotNull(E3DCBatteryConfiguration.class.getFields()[0]);
-        assertEquals("batteryIndex", E3DCBatteryConfiguration.class.getFields()[0].getName());
-        assertEquals("moduleIndex", E3DCBatteryModuleConfiguration.class.getFields()[0].getName());
+        assertEquals(List.of("moduleIndex", "batteryIndex"), List.of(E3DCBatteryModuleConfiguration.class.getFields())
+                .stream().map(field -> field.getName()).toList());
+        assertEquals(List.of("batteryIndex"),
+                List.of(E3DCBatteryConfiguration.class.getFields()).stream().map(field -> field.getName()).toList());
         assertEquals("batteryIndex", E3DCDiscovery.PROPERTY_BATTERY_INDEX);
         assertEquals("moduleIndex", E3DCDiscovery.PROPERTY_MODULE_INDEX);
     }

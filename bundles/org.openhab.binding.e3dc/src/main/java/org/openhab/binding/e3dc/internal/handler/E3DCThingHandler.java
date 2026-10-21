@@ -427,13 +427,12 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         }
         Integer index = getDeviceIndex();
         RscpValue value = spec.toValue(command);
-        List<RscpValue> request = commandHandler.buildRequest(spec, command, index != null ? index : 0);
-        if (value == null || request == null) {
+        if (value == null) {
             logger.warn("Command {} is not valid for channel {} and was not sent", command, channelUID);
             return;
         }
         // the channel state is only updated once the device acknowledged the write
-        if (commandHandler.send(bridge, request)) {
+        if (commandHandler.execute(bridge, spec, value, index != null ? index : 0)) {
             State state = publishesWrittenState(channelUID) ? stateFor(value, spec) : null;
             if (state != null) {
                 updateState(channelUID, state);
