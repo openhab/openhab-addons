@@ -1096,15 +1096,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * is pruned by removing any channels that are not in {@link #supportedChannelUIDs}.
      *
      * Finally, warns if there are channels in {@link #supportedChannelUIDs} which are not in the thing.
+     * 
+     * @throws AssetNotLoadedException if the bridge handler is not yet loaded
      */
-    private void updateChannelList() {
+    private void updateChannelList() throws AssetNotLoadedException {
         if (!disposing) {
             logger.debug("{} -> updateChannelList()", resourceId);
 
             addRemoveCorrelatedChannelUIDs();
 
-            List<Channel> fullChannels = new ArrayList<>(thing.getChannels());
             List<Channel> backChannels = buildBackLightChannels();
+            List<Channel> fullChannels = new ArrayList<>(thing.getChannels());
             fullChannels.addAll(backChannels);
 
             List<Channel> keepChannels = fullChannels.stream().filter(c -> supportedChannelUIDs.contains(c.getUID()))
@@ -1192,21 +1194,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Build a list of the back- light channels. The back light channels are created based on the main
      * (front) channels but with their channel UID containing a group ID.
+     * 
+     * @throws AssetNotLoadedException if the bridge handler is not yet loaded
      */
-    private List<Channel> buildBackLightChannels() {
+    private List<Channel> buildBackLightChannels() throws AssetNotLoadedException {
         String resId = backLightResourceId;
         if (disposing || resId == null) {
             return List.of();
         }
 
-        String labelPrefix;
-        try {
-            labelPrefix = getBridgeHandler().getLocalizedText("back-light.channel.label.prefix");
-        } catch (AssetNotLoadedException e) {
-            logger.debug("{} -> buildBackLightChannels() bridge not initialized", resourceId);
-            labelPrefix = "Back Light";
-        }
-
+        String labelPrefix = getBridgeHandler().getLocalizedText("back-light.channel.label.prefix");
         List<Channel> backLightChannels = new ArrayList<>();
         for (Channel mainChannel : thing.getChannels()) {
             if (mainChannel.getUID().getGroupId() != null) {
