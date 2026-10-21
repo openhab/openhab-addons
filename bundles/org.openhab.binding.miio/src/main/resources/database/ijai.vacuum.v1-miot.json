@@ -26,6 +26,18 @@
 							"label": "Stop"
 						},
 						{
+							"value": "vacuum-start-edge-sweep",
+							"label": "Start Edge Cleaning"
+						},
+						{
+							"value": "vacuum-pause-edge-sweeping",
+							"label": "Pause Edge Cleaning"
+						},
+						{
+							"value": "vacuum-stop-edge-sweeping",
+							"label": "Stop Edge Cleaning"
+						},
+						{
 							"value": "vacuum-dock",
 							"label": "Return to Dock"
 						},
@@ -161,6 +173,90 @@
 							"parameters": [
 								{
 									"matchValue": "vacuum-stop-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 3,
+						"parameters": [
+							{
+								"piid": 24,
+								"value": ""
+							},
+							{
+								"piid": 25,
+								"value": 1
+							},
+							{
+								"piid": 26,
+								"value": 1
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-edge-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 3,
+						"parameters": [
+							{
+								"piid": 24,
+								"value": ""
+							},
+							{
+								"piid": 25,
+								"value": 1
+							},
+							{
+								"piid": 26,
+								"value": 2
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-pause-edge-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 3,
+						"parameters": [
+							{
+								"piid": 24,
+								"value": ""
+							},
+							{
+								"piid": 25,
+								"value": 1
+							},
+							{
+								"piid": 26,
+								"value": 0
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-edge-sweeping"
 								}
 							]
 						}
@@ -386,7 +482,7 @@
 				],
 				"category": "cleaningrobot",
 				"tags": [],
-				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start\",\"vacuum-pause-sweeping\"\u003d\"Pause\",\"vacuum-stop-sweeping\"\u003d\"Stop\",\"vacuum-dock\"\u003d\"Return to Dock\",\"vacuum-stop-charging\"\u003d\"Stop Returning to Dock\",\"vacuum-reset-main-brush\"\u003d\"Reset Main Brush Life\",\"vacuum-reset-side-brush\"\u003d\"Reset Side Brush Life\",\"vacuum-reset-filter\"\u003d\"Reset Filter Life\",\"vacuum-reset-mop\"\u003d\"Reset Mop Life\",\"vacuum-set-calibration\"\u003d\"Calibrate\",\"vacuum-direct-start-sweep\"\u003d\"Start (Direct Command)\",\"vacuum-direct-stop-sweeping\"\u003d\"Stop (Direct Command)\",\"vacuum-direct-start-only-sweep\"\u003d\"Start Vacuum Only (Direct Command)\",\"vacuum-direct-start-sweep-mop\"\u003d\"Start Vacuum and Mop (Direct Command)\",\"vacuum-direct-start-only-mop\"\u003d\"Start Mop Only (Direct Command)\",\"battery-direct-start-charge\"\u003d\"Return to Dock (Direct Command)\"]`"
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start\",\"vacuum-pause-sweeping\"\u003d\"Pause\",\"vacuum-stop-sweeping\"\u003d\"Stop\",\"vacuum-start-edge-sweep\"\u003d\"Start Edge Cleaning\",\"vacuum-pause-edge-sweeping\"\u003d\"Pause Edge Cleaning\",\"vacuum-stop-edge-sweeping\"\u003d\"Stop Edge Cleaning\",\"vacuum-dock\"\u003d\"Return to Dock\",\"vacuum-stop-charging\"\u003d\"Stop Returning to Dock\",\"vacuum-reset-main-brush\"\u003d\"Reset Main Brush Life\",\"vacuum-reset-side-brush\"\u003d\"Reset Side Brush Life\",\"vacuum-reset-filter\"\u003d\"Reset Filter Life\",\"vacuum-reset-mop\"\u003d\"Reset Mop Life\",\"vacuum-set-calibration\"\u003d\"Calibrate\",\"vacuum-direct-start-sweep\"\u003d\"Start (Direct Command)\",\"vacuum-direct-stop-sweeping\"\u003d\"Stop (Direct Command)\",\"vacuum-direct-start-only-sweep\"\u003d\"Start Vacuum Only (Direct Command)\",\"vacuum-direct-start-sweep-mop\"\u003d\"Start Vacuum and Mop (Direct Command)\",\"vacuum-direct-start-only-mop\"\u003d\"Start Mop Only (Direct Command)\",\"battery-direct-start-charge\"\u003d\"Return to Dock (Direct Command)\"]`"
 			},
 			{
 				"property": "",
