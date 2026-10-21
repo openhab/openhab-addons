@@ -34,9 +34,13 @@ import org.openhab.core.library.unit.Units;
 public enum GeniMeasurand {
     Flow(GeniReadRequest.FlowHead, 0, ValueFormat.Float32, GeniUnit.CubicMetrePerSecond, Units.CUBICMETRE_PER_HOUR, 3),
     Head(GeniReadRequest.FlowHead, 4, ValueFormat.Float32, GeniUnit.TenthMillimetre, SIUnits.METRE, 5),
-    VoltageAC(GeniReadRequest.Power, 0, ValueFormat.Float32, GeniUnit.Volt, 1),
-    PowerConsumption(GeniReadRequest.Power, 12, ValueFormat.Float32, GeniUnit.Watt, 1),
-    MotorSpeed(GeniReadRequest.Power, 20, ValueFormat.Float32, GeniUnit.RevolutionsPerMinute, 0);
+    VoltageAC(GeniReadRequest.Motor, 0, ValueFormat.Float32, GeniUnit.Volt, 1),
+    MotorCurrent(GeniReadRequest.Motor, 8, ValueFormat.Float32, GeniUnit.Ampere, 3),
+    MotorSpeed(GeniReadRequest.Motor, 20, ValueFormat.Float32, GeniUnit.RevolutionsPerMinute, 0),
+    PowerConsumption(GeniReadRequest.Motor, 12, ValueFormat.Float32, GeniUnit.Watt, 1),
+    Energy(GeniReadRequest.Energy, 0, ValueFormat.Float64, GeniUnit.WattSecond, Units.KILOWATT_HOUR, 3),
+    OperatingTime(GeniReadRequest.Counters, 8, ValueFormat.SignedInt32, GeniUnit.Second, 0),
+    StartCount(GeniReadRequest.Counters, 0, ValueFormat.SignedInt32, GeniUnit.Dimensionless, 0);
 
     private final GeniReadRequest readRequest;
     private final int offset;
@@ -84,7 +88,10 @@ public enum GeniMeasurand {
     }
 
     boolean isValid(double value) {
-        return Double.isFinite(value);
+        return Double.isFinite(value) && switch (this) {
+            case OperatingTime, StartCount -> value >= 0;
+            default -> true;
+        };
     }
 
     /**

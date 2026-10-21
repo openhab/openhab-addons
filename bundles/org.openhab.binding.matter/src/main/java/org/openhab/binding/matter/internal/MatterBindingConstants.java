@@ -229,6 +229,9 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR = "doorlock-lockoperationerror";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_LOCKOPERATIONERROR = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR);
+    public static final String CHANNEL_ID_DOORLOCK_SOUNDVOLUME = "doorlock-soundvolume";
+    public static final ChannelTypeUID CHANNEL_DOORLOCK_SOUNDVOLUME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_DOORLOCK_SOUNDVOLUME);
     public static final String CHANNEL_ID_WINDOWCOVERING_LIFT = "windowcovering-lift";
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_LIFT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WINDOWCOVERING_LIFT);

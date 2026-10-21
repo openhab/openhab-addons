@@ -23,6 +23,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.openhab.binding.lifx.internal.LifxProduct.Feature;
 import org.openhab.binding.lifx.internal.LifxProduct.Features;
 import org.openhab.binding.lifx.internal.LifxProduct.Upgrade;
 
@@ -30,6 +34,7 @@ import org.openhab.binding.lifx.internal.LifxProduct.Upgrade;
  * Tests {@link LifxProduct}.
  *
  * @author Wouter Born - Initial contribution
+ * @author Wouter Born - Update product feature regression coverage
  */
 @NonNullByDefault
 public class LifxProductTest {
@@ -136,5 +141,69 @@ public class LifxProductTest {
         assertThat(features.hasFeature(EXTENDED_MULTIZONE), is(true));
         assertThat(features.hasFeature(INFRARED), is(false));
         assertThat(features.hasFeature(MULTIZONE), is(true));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = LifxProduct.class, names = { "PRODUCT_207", "PRODUCT_208", "PRODUCT_219", "PRODUCT_220",
+            "PRODUCT_267", "PRODUCT_268" })
+    public void lightsWithButtonsAreRecognized(LifxProduct product) {
+        assertThat(product.getFeatures().hasFeature(BUTTONS), is(true));
+        assertThat(product.isLight(), is(true));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = LifxProduct.class, names = { "PRODUCT_70", "PRODUCT_71", "PRODUCT_84", "PRODUCT_89",
+            "PRODUCT_115", "PRODUCT_116", "PRODUCT_226" })
+    public void switchesAreNotLights(LifxProduct product) {
+        assertThat(product.isLight(), is(false));
+    }
+
+    @ParameterizedTest(name = "[{index}] {arguments}")
+    @CsvSource(delimiter = '|', useHeadersInDisplayName = true, textBlock = """
+            productID | previousVersion | upgradeVersion
+            117       | 4.147           | 4.148
+            176       | 4.147           | 4.148
+            219       | 4.147           | 4.148
+            265       | 4.147           | 4.148
+            267       | 4.199           | 4.200
+            268       | 4.147           | 4.148
+            """)
+    public void getFeaturesForExtendedTemperatureRangeUpgrade(long productID, String previousVersion,
+            String upgradeVersion) {
+        LifxProduct product = LifxProduct.getProductFromProductID(productID);
+        Features initialFeatures = product.getFeatures();
+        assertThat(initialFeatures.getTemperatureRange(), is(TR_1500_9000));
+        assertThat(product.getFeatures(previousVersion).getTemperatureRange(), is(TR_1500_9000));
+
+        Features upgradedFeatures = product.getFeatures(upgradeVersion);
+        assertThat(upgradedFeatures.getTemperatureRange(), is(TR_1000_10000));
+        assertThat(product.getFeatures("5.0").getTemperatureRange(), is(TR_1000_10000));
+        for (Feature feature : Feature.values()) {
+            assertThat(upgradedFeatures.hasFeature(feature), is(initialFeatures.hasFeature(feature)));
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = LifxProduct.class, names = { "PRODUCT_50", "PRODUCT_60" })
+    public void getFeaturesForMiniWhiteToWarmUpgrade(LifxProduct product) {
+        assertThat(product.getFeatures().getTemperatureRange(), is(TR_2500_9000));
+        assertThat(product.getFeatures("3.69").getTemperatureRange(), is(TR_2500_9000));
+        assertThat(product.getFeatures("3.70").getTemperatureRange(), is(TR_1500_9000));
+    }
+
+    @Test
+    public void extendedMultizoneDoesNotImplyMultizone() {
+        LifxProduct product = LifxProduct.getProductFromProductID(72);
+        assertThat(product.getFeatures().hasFeature(EXTENDED_MULTIZONE), is(true));
+        assertThat(product.getFeatures().hasFeature(MULTIZONE), is(false));
+        assertThat(product.getThingTypeUID(), is(LifxBindingConstants.THING_TYPE_COLORLIGHT));
+    }
+
+    @Test
+    public void multizoneDoesNotRequireExtendedMultizone() {
+        LifxProduct product = LifxProduct.getProductFromProductID(300);
+        assertThat(product.getFeatures().hasFeature(EXTENDED_MULTIZONE), is(false));
+        assertThat(product.getFeatures().hasFeature(MULTIZONE), is(true));
+        assertThat(product.getThingTypeUID(), is(LifxBindingConstants.THING_TYPE_COLORMZLIGHT));
     }
 }

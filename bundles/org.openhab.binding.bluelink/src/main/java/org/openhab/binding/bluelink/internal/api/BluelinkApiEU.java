@@ -574,6 +574,12 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     record BrandConfig(String apiBaseUrl, String loginBaseUrl, String ccspServiceId, String appId, String cfb,
             String pushType, CciAuthenticator.Config cci) {
 
+        // signing keys of the Android app 1.4.0, they change with app updates; the Genesis key is not known
+        private static final CciAuthenticator.Fingerprint HYUNDAI_FINGERPRINT = new CciAuthenticator.Fingerprint(
+                "HyundaiEU", "OsZDfDuCyVXyfqjCoA2JbX2MrLpGwNBC", "Hyundai");
+        private static final CciAuthenticator.Fingerprint KIA_FINGERPRINT = new CciAuthenticator.Fingerprint("KiaEU",
+                "yb4Z1n2nlKeukNilE7QEdbKB34nStPVa", "Kia");
+
         static BrandConfig forBrand(final Brand brand) {
             return switch (brand) {
                 case HYUNDAI ->
@@ -582,20 +588,20 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                             "RFtoRq/vDXJmRndoZaZQyfOot7OrIqGVFj96iY2WL3yyH5Z/pUvlUhqmCxD2t+D65SQ=", "GCM",
                             new CciAuthenticator.Config("4f4953b5-02e1-4dbc-8599-87e983ee1be5",
                                     "https://oneapp.hyundai.com/redirect", "https://cci-api-eu.hyundai.com",
-                                    "com.hyundai.oneapp.eu", "hyundai", "18.7", "APNS"));
+                                    "com.hyundai.oneapp.eu", "hyundai", "18.7", "APNS", HYUNDAI_FINGERPRINT));
                 case KIA -> new BrandConfig("https://prd.eu-ccapi.kia.com:8080", "https://idpconnect-eu.kia.com",
                         "fdc85c00-0a2f-4c64-bcb4-2cfb1500730a", "a2b8469b-30a3-4361-8e13-6fceea8fbe74",
                         "wLTVxwidmH8CfJYBWSnHD6E0huk0ozdiuygB4hLkM5XCgzAL1Dk5sE36d/bx5PFMbZs=", "APNS",
                         new CciAuthenticator.Config("01b36c86-79e8-486c-8009-15f2ad88d670",
                                 "https://oneapp.kia.com/redirect", "https://cci-api-eu.kia.com", "com.kia.oneapp.eu",
-                                "kia", "27", "IOS_APPSTORE"));
+                                "kia", "27", "IOS_APPSTORE", KIA_FINGERPRINT));
                 case GENESIS ->
                     new BrandConfig("https://prd-eu-ccapi.genesis.com:8080", "https://idpconnect-eu.genesis.com",
                             "3020afa2-30ff-412a-aa51-d28fbe901e10", "f11f2b86-e0e7-4851-90df-5600b01d8b70",
                             "RFtoRq/vDXJmRndoZaZQyYo3/qFLtVReW8P7utRPcc0ZxOzOELm9mexvviBk/qqIp4A=", "GCM",
                             new CciAuthenticator.Config("50e3b8b0-ced5-43b7-8a42-f86ac92fe50e",
                                     "https://oneapp.genesis.com/redirect", "https://cci-api-eu.genesis.com",
-                                    "com.genesis.oneapp.eu", "genesis", "18.7", "APNS"));
+                                    "com.genesis.oneapp.eu", "genesis", "18.7", "APNS", null));
                 case UNKNOWN -> throw new IllegalArgumentException("brand not configured");
             };
         }

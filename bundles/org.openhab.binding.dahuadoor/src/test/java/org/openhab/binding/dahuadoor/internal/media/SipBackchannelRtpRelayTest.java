@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link SipBackchannelRtpRelay}.
+ *
+ * @author Sven Schad - Initial contribution
  */
 @NonNullByDefault
 class SipBackchannelRtpRelayTest {

@@ -192,9 +192,10 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
             });
         } catch (final LoginRejectedException e) {
             updateIfCurrent(generation, () -> {
-                final ThingStatusDetail detail = e.getReason() == LoginRejectedException.Reason.BLOCKED
-                        ? ThingStatusDetail.COMMUNICATION_ERROR
-                        : ThingStatusDetail.CONFIGURATION_ERROR;
+                final ThingStatusDetail detail = switch (e.getReason()) {
+                    case CONSENT_REQUIRED, INVALID_CREDENTIALS, REJECTED -> ThingStatusDetail.CONFIGURATION_ERROR;
+                    case BLOCKED, SIGNATURE_REJECTED, TIMESTAMP_REJECTED -> ThingStatusDetail.COMMUNICATION_ERROR;
+                };
                 updateStatus(ThingStatus.OFFLINE, detail,
                         isLegacyRefreshToken(e) ? "@text/account-handler.login.refresh-token"
                                 : e.getStatusDescription());

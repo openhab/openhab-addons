@@ -4,7 +4,8 @@
 			"cgllc.airmonitor.s1"
 		],
 		"propertyMethod": "get_value",
-		"maxProperties": 6,
+		"maxProperties": 5,
+		"experimental": false,
 		"channels": [
 			{
 				"property": "battery",
@@ -12,35 +13,54 @@
 				"channel": "battery",
 				"channelType": "system:battery-level",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"customRefreshCommand": "get_value[\"battery\"]",
 				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				],
 				"readmeComment": "The device with firmware \"4.1.8_9999\" stops recognizing parameter \"battery\" in \"get_value\" command. The \"battery\" value request was extracted to separate command in order to keep backward compatibility to the devices with older firmware."
 			},
 			{
 				"property": "pm25",
 				"friendlyName": "PM2.5",
 				"channel": "pm25",
-				"type": "Number",
+				"type": "Number:Density",
+				"unit": "μg/m3",
 				"stateDescription": {
-					"pattern": "%.1f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
 			},
 			{
 				"property": "co2",
 				"friendlyName": "CO2",
 				"channel": "co2",
 				"description": "Carbon Dioxide",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "ppm",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "co2",
+				"category": "carbondioxide",
 				"tags": [
 					"Measurement",
 					"CO2"
@@ -52,19 +72,29 @@
 				"channel": "tvoc",
 				"description": "Total Volatile Organic Compounds",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "smoke",
 				"tags": [
-					"Measurement"
-				]
+					"Measurement",
+					"VOC"
+				],
+				"readmeComment": "The unit (ppb or mg/m3) is set in the Mi Home app."
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
 				"type": "Number:Dimensionless",
-				"unit": "PERCENT",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],
@@ -79,7 +109,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"unit": "celsius",
 				"stateDescription": {
 					"pattern": "%.1f %unit%",
 					"readOnly": true
@@ -92,6 +122,77 @@
 					"Measurement",
 					"Temperature"
 				]
+			},
+			{
+				"property": "aqi",
+				"friendlyName": "Air Quality Index",
+				"channel": "aqi",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"AQI"
+				]
+			},
+			{
+				"property": "tvoc_unit",
+				"friendlyName": "tVOC Unit",
+				"channel": "tvoc_unit",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "ppb",
+							"label": "ppb"
+						},
+						{
+							"value": "mg_m3",
+							"label": "mg/m3"
+						}
+					]
+				},
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"ppb\"\u003d\"ppb\",\"mg_m3\"\u003d\"mg/m3\"]`"
+			},
+			{
+				"property": "temperature_unit",
+				"friendlyName": "Temperature Unit",
+				"channel": "temperature_unit",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "c",
+							"label": "Celsius"
+						},
+						{
+							"value": "f",
+							"label": "Fahrenheit"
+						}
+					]
+				},
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"c\"\u003d\"Celsius\",\"f\"\u003d\"Fahrenheit\"]`"
 			}
 		]
 	}

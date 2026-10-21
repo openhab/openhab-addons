@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
  * - GET /dahuadoor/sip/state?thing={thingUid}
  * - POST /dahuadoor/sip/answer?thing={thingUid}
  * - POST /dahuadoor/sip/hangup?thing={thingUid}
+ *
+ * @author Sven Schad - Initial contribution
  */
 @NonNullByDefault
 public class SipCallControlServlet extends HttpServlet {

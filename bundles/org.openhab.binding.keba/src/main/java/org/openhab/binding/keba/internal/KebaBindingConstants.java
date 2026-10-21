@@ -30,7 +30,7 @@ public class KebaBindingConstants {
     public static final String BINDING_ID = "keba";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_KECONTACTP20 = new ThingTypeUID(BINDING_ID, "kecontact");
+    public static final ThingTypeUID THING_TYPE_KECONTACT = new ThingTypeUID(BINDING_ID, "kecontact");
 
     // List of all Channel ids
     public static final String CHANNEL_MODEL = "model";
@@ -52,6 +52,10 @@ public class KebaBindingConstants {
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_SERIAL = "serial";
+    public static final String PROPERTY_MODEL = "model";
+    public static final String PROPERTY_FIRMWARE = "firmware";
+    public static final String PROPERTY_PRODUCT_TYPE = "productType";
+    public static final String PROPERTY_SERIAL = "serial";
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_I1 = "I1";
     public static final String CHANNEL_I2 = "I2";
@@ -71,6 +75,30 @@ public class KebaBindingConstants {
     public static final String CHANNEL_SESSION_SESSION_ID = "sessionid";
     public static final String CHANNEL_SETENERGY = "setenergylimit";
     public static final String CHANNEL_AUTHENTICATE = "authenticate";
+    public static final String CHANNEL_UDP_STOP = "udpstop";
+    public static final String CHANNEL_BACKEND = "backend";
+    public static final String CHANNEL_TIME_QUALITY = "timequality";
+    public static final String CHANNEL_BOOT_FLAG = "bootflag";
+    public static final String CHANNEL_DIP_SWITCH_1 = "dipswitch1";
+    public static final String CHANNEL_DIP_SWITCH_2 = "dipswitch2";
+    public static final String CHANNEL_FAILSAFE_TIMEOUT = "failsafetimeout";
+    public static final String CHANNEL_CURR_TIMER = "currtimer";
+    public static final String CHANNEL_CURR_TIMER_TIMEOUT = "currtimertimeout";
+
+    // Additional channel ids used by the Modbus TCP Thing type
+    public static final String CHANNEL_CABLE_STATE = "cablestate";
+    public static final String CHANNEL_ERROR_CODE = "errorcode";
+    public static final String CHANNEL_MAX_CHARGING_CURRENT = "maxchargingcurrent";
+    public static final String CHANNEL_MAX_SUPPORTED_CURRENT = "maxsupportedcurrent";
+    public static final String CHANNEL_PHASE_SWITCH_SOURCE = "phaseswitchsource";
+    public static final String CHANNEL_PHASE_SWITCH_STATE = "phaseswitchstate";
+    public static final String CHANNEL_FAILSAFE_CURRENT_SETTING = "failsafecurrentsetting";
+    public static final String CHANNEL_FAILSAFE_TIMEOUT_SETTING = "failsafetimeoutsetting";
+    public static final String CHANNEL_FAST_CHARGING_STATUS = "fastchargingstatus";
+    public static final String CHANNEL_SET_CHARGING_CURRENT = "setchargingcurrent";
+    public static final String CHANNEL_FAILSAFE_PERSIST = "failsafepersist";
+    public static final String CHANNEL_ACTIVATE_FAST_CHARGING = "activatefastcharging";
+    public static final String CHANNEL_UNLOCK_PLUG = "unlockplug";
 
     public enum KebaType {
         P20,

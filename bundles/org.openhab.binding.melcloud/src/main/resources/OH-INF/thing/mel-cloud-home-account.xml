@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="melcloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="home-account">
+		<label>MELCloud Home Account</label>
+		<description>Account bridge for the MELCloud Home cloud platform.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Email</label>
+				<description>The email address used to sign in to the MELCloud Home app.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password used to sign in to the MELCloud Home app.</description>
+			</parameter>
+			<parameter name="enableRealtimeUpdates" type="boolean" required="false">
+				<label>Enable Realtime Updates</label>
+				<description>Use the push channel for faster updates after changes made outside openHAB. Falls back to polling on
+					failure.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

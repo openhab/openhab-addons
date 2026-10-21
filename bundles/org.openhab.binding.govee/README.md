@@ -183,8 +183,6 @@ arp -a | grep "MAC_ADDRESS"
 
 The `deviceId` parameter contains the eight-byte device identifier returned by the Govee LAN API, not the device's six-byte network interface MAC address.
 The deprecated `macAddress` parameter remains supported as a fallback for existing Things.
-The LAN API discovery response does not include the device's network interface MAC address.
-When possible, the binding resolves that address from the device's IP address and exposes it as the `mac` Thing property so other bindings can correlate the device.
 
 ## Channels
 

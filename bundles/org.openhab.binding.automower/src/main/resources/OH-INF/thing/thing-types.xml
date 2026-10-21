@@ -26,10 +26,15 @@
 				<description>The Application Secret is required to communicate with the Automower® Connect API. See "Application
 					Key" for further details</description>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" required="false" unit="s">
+			<parameter name="pollingInterval" type="integer" required="false" unit="s" min="1" max="86400">
 				<label>Polling Interval</label>
 				<default>300</default>
 				<description>How often the current Automower® states should be polled using REST API</description>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" required="false" unit="s" min="1" max="300">
+				<label>Request Timeout</label>
+				<default>30</default>
+				<description>Maximum time to wait for an Automower® Connect REST API response</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -64,6 +69,8 @@
 			<property name="mowerHasPosition">N/A</property>
 			<property name="mowerHasStayOutZones">N/A</property>
 			<property name="mowerHasWorkAreas">N/A</property>
+			<property name="mowerCuttingHeightMinCm">N/A</property>
+			<property name="mowerCuttingHeightMaxCm">N/A</property>
 			<property name="thingTypeVersion">3</property>
 		</properties>
 
@@ -71,6 +78,18 @@
 			<parameter name="mowerZoneId" type="text" required="false">
 				<label>TimeZone</label>
 				<description>Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone configured in openHAB</description>
+			</parameter>
+			<parameter name="minCuttingHeightCm" type="decimal" required="false" min="0">
+				<label>Minimum Cutting Height (cm)</label>
+				<advanced>true</advanced>
+				<description>Minimum cutting height in cm used to convert the raw mower and work-area values. Leave empty to disable
+					calculated cm channels.</description>
+			</parameter>
+			<parameter name="maxCuttingHeightCm" type="decimal" required="false" min="0">
+				<label>Maximum Cutting Height (cm)</label>
+				<advanced>true</advanced>
+				<description>Maximum cutting height in cm used to convert the raw mower and work-area values. Leave empty to disable
+					calculated cm channels.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -83,6 +102,7 @@
 
 		<label>Automower® StayoutZone</label>
 		<description>An automatic lawn mower stay-out zone</description>
+		<semantic-equipment-tag>Zone</semantic-equipment-tag>
 
 		<channels>
 			<channel id="name" typeId="zone-name-type"/>
@@ -104,6 +124,7 @@
 
 		<label>Automower® WorkArea</label>
 		<description>An automatic lawn mower work-area</description>
+		<semantic-equipment-tag>Zone</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="work-area" typeId="work-area-type"/>
@@ -113,7 +134,9 @@
 		<properties>
 			<property name="mowerId">N/A</property>
 			<property name="workareaId">N/A</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="mowerCuttingHeightMinCm">N/A</property>
+			<property name="mowerCuttingHeightMaxCm">N/A</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 	</thing-type>
 
@@ -157,6 +180,7 @@
 			<channel id="cutting-height" typeId="setting-cutting-height-type"/>
 			<!-- channel created on demand
 				<channel id="headlight-mode" typeId="setting-headlight-mode-type"/>
+				<channel id="cutting-height-cm" typeId="setting-cutting-height-cm-type"/>
 			-->
 		</channels>
 	</channel-group-type>
@@ -214,10 +238,20 @@
 		<label>Work Area</label>
 		<channels>
 			<channel id="name" typeId="workarea-name-type"/>
+			<channel id="id" typeId="workarea-id-type"/>
+			<channel id="type" typeId="workarea-type-type"/>
 			<channel id="cutting-height" typeId="workarea-cutting-height-type"/>
+			<channel id="use-global-cutting-height" typeId="workarea-use-global-cutting-height-type"/>
 			<channel id="enabled" typeId="workarea-enabled-type"/>
+			<channel id="schedulable" typeId="workarea-schedulable-type"/>
 			<channel id="progress" typeId="workarea-progress-type"/>
 			<channel id="last-time-completed" typeId="workarea-last-time-completed-type"/>
+			<channel id="last-time-abandoned" typeId="workarea-last-time-abandoned-type"/>
+			<channel id="orientation" typeId="workarea-orientation-type"/>
+			<channel id="orientation-shift" typeId="workarea-orientation-shift-type"/>
+			<!-- channel created on demand
+				<channel id="cutting-height-cm" typeId="workarea-cutting-height-cm-type"/>
+			-->
 		</channels>
 	</channel-group-type>
 
@@ -447,6 +481,14 @@
 		<description>Prescaled cutting height, range: 1-9</description>
 	</channel-type>
 
+	<channel-type id="setting-cutting-height-cm-type" advanced="true">
+		<item-type unitHint="cm">Number:Length</item-type>
+		<label>Cutting Height</label>
+		<description>Calculated or commanded cutting height in cm. Requires the mower's minimum and maximum cutting-height
+			configuration.</description>
+		<state pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
 	<channel-type id="setting-headlight-mode-type">
 		<item-type>String</item-type>
 		<label>Headlight Mode</label>
@@ -612,6 +654,12 @@
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Name of the Work Area</description>
+	</channel-type>
+
+	<channel-type id="workarea-id-type" advanced="true">
+		<item-type>Number</item-type>
+		<label>Work Area ID</label>
+		<description>Unique numeric identifier of the Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -619,13 +667,62 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cutting Height</label>
 		<description>Cutting height of the Work Area, range: 0-100</description>
-		<state pattern="%d %%"/>
+		<state pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="workarea-cutting-height-cm-type" advanced="true">
+		<item-type unitHint="cm">Number:Length</item-type>
+		<label>Cutting Height</label>
+		<description>Calculated cutting height in cm for the Work Area. The range is inherited from the mower configuration.</description>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="workarea-enabled-type">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>If the Work Area is enabled or disabled</description>
+	</channel-type>
+
+	<channel-type id="workarea-type-type" advanced="true">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<description>The type of the Work Area, e.g. RANDOM</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workarea-use-global-cutting-height-type" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use Global Cutting Height</label>
+		<description>If the Work Area uses the global cutting height instead of its own</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workarea-schedulable-type" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Schedulable</label>
+		<description>If the Work Area can be scheduled</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workarea-last-time-abandoned-type" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Time Abandoned</label>
+		<description>Timestamp when the Work Area was last abandoned</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workarea-orientation-type" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Pattern Orientation</label>
+		<description>Orientation of the mowing pattern in degrees. Pattern based Work Areas only</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="workarea-orientation-shift-type" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Pattern Orientation Shift</label>
+		<description>Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only</description>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="workarea-progress-type" advanced="true">

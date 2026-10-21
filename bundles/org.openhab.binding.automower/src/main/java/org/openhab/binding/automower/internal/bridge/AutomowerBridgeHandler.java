@@ -14,12 +14,14 @@ package org.openhab.binding.automower.internal.bridge;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -219,11 +221,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
         WebSocketSession webSocketSession = this.webSocketSession;
         if (webSocketSession != null) {
-            try {
-                webSocketSession.close();
-            } catch (Exception e) {
-                logger.error("Failed to close WebSocket session: {}", e.getMessage());
-            }
+            webSocketSession.close();
         }
 
         OAuthClientService oAuthService = this.oAuthService;
@@ -241,21 +239,26 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         final String appKey = bridgeConfiguration.getAppKey();
         final String appSecret = bridgeConfiguration.getAppSecret();
         final Integer pollingIntervalS = bridgeConfiguration.getPollingInterval();
+        final Integer requestTimeoutS = bridgeConfiguration.getRequestTimeout();
 
         if (appKey == null || appKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-key");
         } else if (appSecret == null || appSecret.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-secret");
-        } else if (pollingIntervalS != null && pollingIntervalS < 1) {
+        } else if (pollingIntervalS != null && (pollingIntervalS < 1 || pollingIntervalS > 86400)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error-invalid-polling-interval");
+        } else if (requestTimeoutS != null && (requestTimeoutS < 1 || requestTimeoutS > 300)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error-invalid-request-timeout");
         } else {
             OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
                     HUSQVARNA_API_TOKEN_URL, null, appKey, appSecret, null, null);
             this.oAuthService = oAuthService;
 
             if (this.bridge == null) {
-                AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
+                AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler,
+                        requestTimeoutS);
                 this.bridge = currentBridge;
                 // connect WebSocket and poll automower state via REST API once after connection
                 connectWebSocket(new AutomowerWebSocketAdapter(this, currentBridge));
@@ -328,8 +331,11 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             } else {
                 logger.error("Bridge is null, cannot connect WebSocket");
             }
-        } catch (Exception e) {
+        } catch (IOException | ExecutionException | IllegalArgumentException e) {
             logger.error("Failed to start WebSocket client: {}", e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while starting WebSocket client", e);
         }
     }
 }

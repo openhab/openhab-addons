@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -55,6 +56,7 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 
 /**
  * @author Martin Grześlowski - Initial contribution
+ * @author Martin Grześlowski - Shared property caching for channel refreshes
  */
 @NonNullByDefault
 public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig> extends BaseBridgeHandler
@@ -90,13 +92,11 @@ public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig
         logger = LoggerFactory
                 .getLogger(this.getClass().getName() + "[" + config.getUsername().replace(".", "_") + "]");
 
-        ScheduledExecutorService scheduledPool = ThreadPoolManager.getScheduledPool(SalusBindingConstants.BINDING_ID);
-        scheduledPool.schedule(() -> tryConnectToCloud(localSalusApi), 1, MICROSECONDS);
-
         this.devicePropertiesCache = Caffeine.newBuilder().maximumSize(10_000)
                 .expireAfterWrite(Duration.ofSeconds(config.getPropertiesRefreshInterval()))
-                .refreshAfterWrite(Duration.ofSeconds(config.getPropertiesRefreshInterval()))
-                .build(this::findPropertiesForDevice);
+                .build(localSalusApi::findDeviceProperties);
+        ScheduledExecutorService scheduledPool = ThreadPoolManager.getScheduledPool(SalusBindingConstants.BINDING_ID);
+        scheduledPool.schedule(() -> tryConnectToCloud(localSalusApi), 1, MICROSECONDS);
         this.scheduledFuture = scheduledPool.scheduleWithFixedDelay(this::refreshCloudDevices,
                 config.getRefreshInterval() * 2, config.getRefreshInterval(), SECONDS);
 
@@ -169,7 +169,17 @@ public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig
     public SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn)
             throws SalusApiException, AuthSalusApiException {
         logger.debug("Finding properties for device {} using salusClient", dsn);
-        return requireNonNull(salusApi).findDeviceProperties(dsn);
+        try {
+            return requireNonNull(devicePropertiesCache.get(dsn));
+        } catch (CompletionException e) {
+            if (e.getCause() instanceof SalusApiException cause) {
+                throw cause;
+            }
+            if (e.getCause() instanceof AuthSalusApiException cause) {
+                throw cause;
+            }
+            throw e;
+        }
     }
 
     @Override
@@ -186,7 +196,7 @@ public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig
                         setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
                 return false;
             }
-            var properties = devicePropertiesCache.get(dsn);
+            var properties = findPropertiesForDevice(dsn);
             Optional<DeviceProperty<?>> property = requireNonNull(properties).stream()
                     .filter(prop -> prop.getName().equals(propertyName)).findFirst();
             if (property.isEmpty()) {
@@ -200,14 +210,17 @@ public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig
             DeviceProperty<?> prop = property.get();
             if (setValue instanceof Boolean b && prop instanceof DeviceProperty.BooleanDeviceProperty boolProp) {
                 boolProp.setValue(b);
+                devicePropertiesCache.invalidate(dsn);
                 return true;
             }
             if (setValue instanceof String s && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
                 stringProp.setValue(s);
+                devicePropertiesCache.invalidate(dsn);
                 return true;
             }
             if (setValue instanceof Number l && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
                 longProp.setValue(l.longValue());
+                devicePropertiesCache.invalidate(dsn);
                 return true;
             }
 

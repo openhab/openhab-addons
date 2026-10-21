@@ -70,6 +70,7 @@
 /bundles/org.openhab.binding.bticinosmarther/ @MrRonfo
 /bundles/org.openhab.binding.buienradar/ @gedejong
 /bundles/org.openhab.binding.caddx/ @jossuar
+/bundles/org.openhab.binding.caldav/ @AndreasVilippus
 /bundles/org.openhab.binding.casokitchen/ @weymann
 /bundles/org.openhab.binding.cbus/ @jpharvey
 /bundles/org.openhab.binding.chatgpt/ @kaikreuzer
@@ -291,6 +292,7 @@
 /bundles/org.openhab.binding.nikobus/ @crnjan
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.nobohub/ @espenaf
+/bundles/org.openhab.binding.norman/ @BiloxiGeek
 /bundles/org.openhab.binding.novafinedust/ @t2000
 /bundles/org.openhab.binding.ntfy/ @EvilPingu
 /bundles/org.openhab.binding.ntp/ @marcelrv
@@ -298,6 +300,7 @@
 /bundles/org.openhab.binding.nuvo/ @mlobstein
 /bundles/org.openhab.binding.nzwateralerts/ @cossey
 /bundles/org.openhab.binding.oceanic/ @kgoderis
+/bundles/org.openhab.binding.ocpp/ @stamateviorel
 /bundles/org.openhab.binding.ojelectronics/ @EvilPingu
 /bundles/org.openhab.binding.omnikinverter/ @hansbogert
 /bundles/org.openhab.binding.omnilink/ @ecdye
@@ -321,6 +324,7 @@
 /bundles/org.openhab.binding.pegelonline/ @weymann
 /bundles/org.openhab.binding.pentair/ @jsjames
 /bundles/org.openhab.binding.phc/ @gnlpfjh
+/bundles/org.openhab.binding.philipsair/ @marcelrv
 /bundles/org.openhab.binding.pihole/ @magx2
 /bundles/org.openhab.binding.pilight/ @stefanroellin @niklasdoerfler
 /bundles/org.openhab.binding.pioneeravr/ @Stratehm
@@ -375,7 +379,6 @@
 /bundles/org.openhab.binding.sensorcommunity/ @weymann
 /bundles/org.openhab.binding.serial/ @MikeJMajor
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
-/bundles/org.openhab.binding.autoblind/ @BiloxiGeek
 /bundles/org.openhab.binding.shelly/ @markus7017
 /bundles/org.openhab.binding.siemenshvac/ @lo92fr
 /bundles/org.openhab.binding.siemensrds/ @andrewfg
@@ -424,6 +427,7 @@
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.teslapowerwall/ @psmedley
 /bundles/org.openhab.binding.teslascope/ @psmedley
+/bundles/org.openhab.binding.threedprinter/ @computergeek1507
 /bundles/org.openhab.binding.tibber/ @kjoglum @weymann
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
@@ -431,6 +435,7 @@
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tr064/ @J-N-K
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
+/bundles/org.openhab.binding.transit/ @miloit
 /bundles/org.openhab.binding.tuya/ @J-N-K
 /bundles/org.openhab.binding.twilio/ @digitaldan
 /bundles/org.openhab.binding.unifi/ @digitaldan @mgbowman @Hilbrand

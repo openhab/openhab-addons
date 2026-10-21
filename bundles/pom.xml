@@ -75,7 +75,6 @@
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.atmofrance</module>
     <module>org.openhab.binding.autelis</module>
-    <module>org.openhab.binding.autoblind</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.awattar</module>
@@ -109,6 +108,7 @@
     <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
     <module>org.openhab.binding.caddx</module>
+    <module>org.openhab.binding.caldav</module>
     <module>org.openhab.binding.casokitchen</module>
     <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chatgpt</module>
@@ -330,6 +330,7 @@
     <module>org.openhab.binding.nikobus</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.nobohub</module>
+    <module>org.openhab.binding.norman</module>
     <module>org.openhab.binding.novafinedust</module>
     <module>org.openhab.binding.ntfy</module>
     <module>org.openhab.binding.ntp</module>
@@ -337,6 +338,7 @@
     <module>org.openhab.binding.nuvo</module>
     <module>org.openhab.binding.nzwateralerts</module>
     <module>org.openhab.binding.oceanic</module>
+    <module>org.openhab.binding.ocpp</module>
     <module>org.openhab.binding.ojelectronics</module>
     <module>org.openhab.binding.omnikinverter</module>
     <module>org.openhab.binding.omnilink</module>
@@ -360,6 +362,7 @@
     <module>org.openhab.binding.pegelonline</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
+    <module>org.openhab.binding.philipsair</module>
     <module>org.openhab.binding.pihole</module>
     <module>org.openhab.binding.pilight</module>
     <module>org.openhab.binding.pioneeravr</module>
@@ -462,6 +465,7 @@
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.teslapowerwall</module>
     <module>org.openhab.binding.teslascope</module>
+    <module>org.openhab.binding.threedprinter</module>
     <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
@@ -469,6 +473,7 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
+    <module>org.openhab.binding.transit</module>
     <module>org.openhab.binding.tuya</module>
     <module>org.openhab.binding.twilio</module>
     <module>org.openhab.binding.unifi</module>

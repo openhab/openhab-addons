@@ -3,6 +3,7 @@
 		"id": [
 			"zhimi.airmonitor.v1"
 		],
+		"experimental": false,
 		"channels": [
 			{
 				"property": "power",
@@ -18,7 +19,8 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -26,11 +28,17 @@
 				"friendlyName": "Air Quality Index",
 				"channel": "aqi",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "smoke",
 				"tags": [
-					"Measurement"
+					"Measurement",
+					"AQI"
 				]
 			},
 			{
@@ -39,31 +47,55 @@
 				"channel": "battery",
 				"channelType": "system:battery-level",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
 			},
 			{
 				"property": "usb_state",
-				"friendlyName": "USB State",
+				"friendlyName": "USB Power Connected",
 				"channel": "usb_state",
 				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Status",
+					"Power"
+				]
 			},
 			{
 				"property": "time_state",
-				"friendlyName": "Time State",
+				"friendlyName": "Show Clock",
 				"channel": "time_state",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [
+					{
+						"command": "set_time_state",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Switch"
+				]
 			},
 			{
 				"property": "night_state",
-				"friendlyName": "Night State",
+				"friendlyName": "Night Mode",
 				"channel": "night_state",
 				"type": "Switch",
 				"refresh": true,
@@ -72,25 +104,48 @@
 						"command": "set_night_state",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "moon",
+				"tags": [
+					"Switch",
+					"Mode"
 				]
 			},
 			{
 				"property": "night_beg_time",
-				"friendlyName": "Night Begin Time",
+				"friendlyName": "Night Mode Start Time",
 				"channel": "night_begin",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Seconds after midnight (28800 is 08:00)."
 			},
 			{
 				"property": "night_end_time",
-				"friendlyName": "Night End Time",
+				"friendlyName": "Night Mode End Time",
 				"channel": "night_end",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Seconds after midnight (28800 is 08:00)."
 			}
 		]
 	}
