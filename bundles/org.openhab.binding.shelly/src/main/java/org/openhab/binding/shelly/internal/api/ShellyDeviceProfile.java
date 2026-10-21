@@ -21,6 +21,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -143,6 +144,8 @@ public class ShellyDeviceProfile {
     public String coiotEndpoint = "";
 
     public Map<String, String> irCodes = new HashMap<>(); // Sense: list of stored IR codes
+    public Map<Integer, String> thermostatProfiles = new LinkedHashMap<>(); // Wall Display: schedule profile id -> name
+    public boolean thermostatProfilesLoaded; // Wall Display: thermostatProfiles was read from the device
 
     public ShellyDeviceProfile(ThingTypeUID thingTypeUID) {
         initFromThingType(thingTypeUID);

@@ -28,6 +28,8 @@ import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2De
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat.Shelly2DeviceStatusThermostatSchedules;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2ThermostatProfiles;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
@@ -104,6 +106,36 @@ public class Shelly2WallDisplayStatusJsonTest {
         assertThat(thermostat.targetC, is(equalTo(21.5)));
         assertThat(thermostat.currentC, is(equalTo(20.3)));
         assertThat(thermostat.output, is(equalTo(Boolean.TRUE)));
+    }
+
+    @Test
+    void thermostatScheduleMapsProfileIdAndName() throws ShellyApiException {
+        String json = """
+                {"thermostat:0":{"id":0,"enable":true,"target_C":21.5,
+                "schedules":{"enable":true,"profile_id":1,"profile_name":"Summer"}}}
+                """;
+
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatusThermostat thermostat = status.thermostat0;
+        assertNotNull(thermostat);
+        Shelly2DeviceStatusThermostatSchedules schedules = thermostat.schedules;
+        assertNotNull(schedules);
+        assertThat(schedules.enable, is(equalTo(Boolean.TRUE)));
+        assertThat(schedules.profileId, is(equalTo(1)));
+        assertThat(schedules.profileName, is(equalTo("Summer")));
+    }
+
+    @Test
+    void thermostatProfileListMapsIdsAndNames() throws ShellyApiException {
+        String json = """
+                {"profiles":[{"id":0,"name":"Winter"},{"id":1,"name":"Summer"}]}
+                """;
+
+        Shelly2ThermostatProfiles response = ShellyUtils.fromJson(gson, json, Shelly2ThermostatProfiles.class);
+        assertNotNull(response.profiles);
+        assertThat(response.profiles.size(), is(equalTo(2)));
+        assertThat(response.profiles.get(1).id, is(equalTo(1)));
+        assertThat(response.profiles.get(1).name, is(equalTo("Summer")));
     }
 
     @Test
