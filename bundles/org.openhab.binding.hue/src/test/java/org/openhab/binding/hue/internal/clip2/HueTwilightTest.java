@@ -214,13 +214,8 @@ class HueTwilightTest {
         }
 
         @SuppressWarnings("unchecked")
-        Set<String> backSupported() throws Exception {
-            return (Set<String>) getField("backLightSupportedChannelIds");
-        }
-
-        @SuppressWarnings("unchecked")
-        Set<String> mainSupported() throws Exception {
-            return (Set<String>) getField("supportedChannelIds");
+        Set<ChannelUID> supportedUIDs() throws Exception {
+            return (Set<ChannelUID>) getField("supportedChannelUIDs");
         }
 
         Object getField(String name) throws Exception {
@@ -346,8 +341,8 @@ class HueTwilightTest {
     @Test
     void backChannelsAreCreatedFromMainChannelTemplate() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH, CHANNEL_2_EFFECT), List.of());
-        f.backSupported().addAll(Set.of(CHANNEL_2_SWITCH, CHANNEL_2_EFFECT));
-        f.mainSupported().addAll(Set.of(CHANNEL_2_SWITCH, CHANNEL_2_EFFECT));
+        f.supportedUIDs().addAll(Set.of(mainUID(CHANNEL_2_SWITCH), mainUID(CHANNEL_2_EFFECT)));
+        f.supportedUIDs().addAll(Set.of(backUID(CHANNEL_2_SWITCH), backUID(CHANNEL_2_EFFECT)));
 
         f.updateChannelList();
 
@@ -364,8 +359,8 @@ class HueTwilightTest {
     @Test
     void newBackChannelsPushCachedState() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH), List.of());
-        f.backSupported().add(CHANNEL_2_SWITCH);
-        f.mainSupported().add(CHANNEL_2_SWITCH);
+        f.supportedUIDs().add(backUID(CHANNEL_2_SWITCH));
+        f.supportedUIDs().add(mainUID(CHANNEL_2_SWITCH));
         f.contributors().put(BACK_ID, light(BACK_ID, true, 40));
         // make updateThing() take effect on the fake channel list, as the framework would
         f.handler.onUpdateThing = updated -> {
@@ -378,13 +373,12 @@ class HueTwilightTest {
         verify(f.callback, atLeastOnce()).stateUpdated(eq(backUID(CHANNEL_2_SWITCH)), any(State.class));
     }
 
-    // 11
     @Test
     void unusedBackChannelsAreRemoved() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH, CHANNEL_2_BRIGHTNESS),
                 List.of(CHANNEL_2_SWITCH, CHANNEL_2_BRIGHTNESS));
-        f.mainSupported().addAll(Set.of(CHANNEL_2_SWITCH, CHANNEL_2_BRIGHTNESS));
-        f.backSupported().add(CHANNEL_2_SWITCH); // back brightness is NOT supported
+        f.supportedUIDs().addAll(Set.of(mainUID(CHANNEL_2_SWITCH), mainUID(CHANNEL_2_BRIGHTNESS)));
+        f.supportedUIDs().add(backUID(CHANNEL_2_SWITCH)); // back brightness is NOT supported
 
         f.updateChannelList();
 
@@ -540,8 +534,8 @@ class HueTwilightTest {
         assertTrue(f.contributors().containsKey(BACK_ID));
 
         // channel creation: back channels are built from the main channel template
-        f.mainSupported().add(CHANNEL_2_SWITCH);
-        f.backSupported().add(CHANNEL_2_SWITCH);
+        f.supportedUIDs().add(mainUID(CHANNEL_2_SWITCH));
+        f.supportedUIDs().add(backUID(CHANNEL_2_SWITCH));
         f.updateChannelList();
         assertEquals(1, f.handler.updatedThings.size());
         List<ChannelUID> uids = f.handler.updatedThings.get(0).getChannels().stream().map(Channel::getUID).toList();

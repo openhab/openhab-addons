@@ -206,12 +206,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final Map<String, Integer> controlIds = new ConcurrentHashMap<>();
 
     /**
-     * The set of channel IDs that are supported by this thing. e.g. an on/off light may support 'switch' and
+     * The set of channel UIDs that are supported by this thing. e.g. an on/off light may support 'switch' and
      * 'zigbeeStatus' channels, whereas a complex light may support 'switch', 'brightness', 'color', 'color temperature'
      * and 'zigbeeStatus' channels.
      */
-    private final Set<String> supportedChannelIds = ConcurrentHashMap.newKeySet();
-    private final Set<String> backLightSupportedChannelIds = ConcurrentHashMap.newKeySet();
+    private final Set<ChannelUID> supportedChannelUIDs = ConcurrentHashMap.newKeySet();
 
     /**
      * A map of scene IDs versus scene Resources for the scenes that contribute to and command this thing. It is a map
@@ -283,24 +282,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Add a channel ID to the supportedChannelIdSet set. If the channel supports dynamics (timed transitions) then add
-     * the respective channel as well.
+     * Add a channel UID to the {@link #supportedChannelUIDs} set. If the channel supports dynamics (timed transitions)
+     * then add the respective channel as well.
      *
      * @param channelUID the channel UID to add.
      */
     private void addSupportedChannel(ChannelUID channelUID) {
         if (!disposing && !updateDependenciesDone) {
-            String channelId = channelUID.getIdWithoutGroup();
-            boolean isBackLightChannel = BACK_LIGHT_GROUP_ID.equals(channelUID.getGroupId());
-            if (isBackLightChannel) {
-                if (backLightSupportedChannelIds.add(channelId)) {
-                    logger.debug("{} -> addSupportedChannel() '{}' added to back light supported channel set",
-                            resourceId, channelId);
-                }
-            } else if (supportedChannelIds.add(channelId)) {
-                logger.debug("{} -> addSupportedChannel() '{}' added to main supported channel set", resourceId,
-                        channelId);
-                switch (channelId) { // set speaker write only channel default values
+            if (supportedChannelUIDs.add(channelUID)) {
+                logger.debug("{} -> addSupportedChannel() '{}' added to supported channel set", resourceId, channelUID);
+                switch (channelUID.getIdWithoutGroup()) { // set speaker write only channel default values
                     case CHANNEL_2_VOLUME:
                         updateState(channelUID, DEFAULT_SOUND_VOLUME);
                         break;
@@ -310,7 +301,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     default:
                 }
             }
-            if (DYNAMIC_CHANNELS.contains(channelId)) {
+            if (DYNAMIC_CHANNELS.contains(channelUID.getIdWithoutGroup())) {
+                boolean isBackLightChannel = BACK_LIGHT_GROUP_ID.equals(channelUID.getGroupId());
                 clearDynamicsChannel(isBackLightChannel ? backUID(CHANNEL_2_DYNAMICS) : mainUID(CHANNEL_2_DYNAMICS));
             }
         }
@@ -359,8 +351,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
         sceneResourceEntries.clear();
-        supportedChannelIds.clear();
-        backLightSupportedChannelIds.clear();
+        supportedChannelUIDs.clear();
         commandResourceIds.clear();
         serviceContributorsCache.clear();
         controlIds.clear();
@@ -1093,11 +1084,67 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Set the active list of channels by removing any that had initially been created by the thing XML declaration, but
-     * which in fact did not have data returned from the bridge i.e. channels which are not in the supportedChannelIdSet
-     *
-     * Also warn if there are channels in the supportedChannelIdSet set which are not in the thing.
-     *
+     * The full initial list of main channels is initially created from the thing XML declaration. And if
+     * there is a back light then additional channels are added to the list dynamically by cloning the main
+     * channels and applying a 'back-light' prefix.
+     * 
+     * By this time the {@link #supportedChannelUIDs} set has been populated from the initial poll based on
+     * the actual capabilities of the light; specifically the set contains only those channels which returned
+     * a {@link State} that is NOT {@link UndefType.NULL}.
+     * 
+     * The final list of channels is created by a 'subtractive' method i.e. the initial full set of channels
+     * is pruned by removing any channels that are not in {@link #supportedChannelUIDs}.
+     * 
+     * Finally, warns if there are channels in {@link #supportedChannelUIDs} which are not in the thing.
+     */
+    private void updateChannelList() {
+        if (!disposing) {
+            logger.debug("{} -> updateChannelList()", resourceId);
+
+            addRemoveCorrelatedChannelUIDs(supportedChannelUIDs);
+
+            Map<ChannelUID, Channel> fullChannels = new HashMap<>();
+            Map<ChannelUID, Channel> backChannels = buildBackLightChannels();
+
+            fullChannels.putAll(thing.getChannels().stream().collect(Collectors.toMap(c -> c.getUID(), c -> c)));
+            fullChannels.putAll(backChannels); // this removes any duplicates
+
+            List<Channel> keepChannels = fullChannels.values().stream()
+                    .filter(c -> supportedChannelUIDs.contains(c.getUID())).toList();
+
+            if (!backChannels.isEmpty() || keepChannels.size() != thing.getChannels().size()) {
+                if (logger.isDebugEnabled()) {
+                    Set<ChannelUID> keepUIDs = keepChannels.stream().map(c -> c.getUID()).collect(Collectors.toSet());
+                    thing.getChannels().stream().map(c -> c.getUID()).filter(uid -> !keepUIDs.contains(uid))
+                            .forEach(uid -> logger.debug("{} -> updateChannelList() removing unused channel '{}'",
+                                    resourceId, uid.getId()));
+                }
+                updateThing(editThing().withChannels(keepChannels).build());
+
+                // back- light channels did not exist when the state arrived, so push cached state now
+                String backId = backLightResourceId;
+                Resource cached = backId == null ? null : serviceContributorsCache.get(backId);
+                if (!backChannels.isEmpty() && cached != null) {
+                    updateChannels(cached);
+                }
+            }
+        }
+
+        if (logger.isDebugEnabled()) {
+            supportedChannelUIDs.stream().filter(uid -> Objects.isNull(thing.getChannel(uid))) //
+                    .forEach(uid -> logger.debug("{} -> updateChannelList() required channel '{}' missing", resourceId,
+                            uid));
+        } else {
+            supportedChannelUIDs.stream().filter(uid -> Objects.isNull(thing.getChannel(uid)))
+                    .forEach(uid -> logger.warn(
+                            "Thing '{}' is missing required channel '{}'. Please recreate the thing!", thing.getUID(),
+                            uid));
+        }
+    }
+
+    /**
+     * Add correlated channel ID's, and remove forbidden channel ID's.
+     * 
      * Adjusts the channel list so that only the highest level channel is available in the normal channel list. If a
      * light supports the color channel, then it's brightness and switch can be commanded via the 'B' part of the HSB
      * channel value. And if it supports the brightness channel the switch can be controlled via the brightness. So we
@@ -1108,125 +1155,81 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * channels for that purpose. Since they are advanced level, normal users should normally not be confused by them,
      * yet advanced users can use them nevertheless.
      */
-    private void updateChannelList() {
-        if (!disposing) {
-            logger.debug("{} -> updateChannelList()", resourceId);
+    private void addRemoveCorrelatedChannelUIDs(Set<ChannelUID> channelUIDs) {
+        // main channels
+        if (channelUIDs.contains(mainUID(CHANNEL_2_COLOR))) {
+            channelUIDs.add(mainUID(CHANNEL_2_COLOR_XY_ONLY));
+            channelUIDs.remove(mainUID(CHANNEL_2_BRIGHTNESS));
+            channelUIDs.add(mainUID(CHANNEL_2_DIMMING_ONLY));
+            channelUIDs.remove(mainUID(CHANNEL_2_SWITCH));
+            channelUIDs.add(mainUID(CHANNEL_2_ON_OFF_ONLY));
+        }
+        if (channelUIDs.contains(mainUID(CHANNEL_2_BRIGHTNESS))) {
+            channelUIDs.add(mainUID(CHANNEL_2_DIMMING_ONLY));
+            channelUIDs.remove(mainUID(CHANNEL_2_SWITCH));
+            channelUIDs.add(mainUID(CHANNEL_2_ON_OFF_ONLY));
+        }
+        if (channelUIDs.contains(mainUID(CHANNEL_2_SWITCH))) {
+            channelUIDs.add(mainUID(CHANNEL_2_ON_OFF_ONLY));
+        }
 
-            addRemoveChannelIds(supportedChannelIds);
-            addRemoveChannelIds(backLightSupportedChannelIds);
-
-            /*
-             * This binding creates its dynamic list of channels by a 'subtractive' method i.e. the full set of
-             * channels is initially created from the thing type xml, and then for any channels where UndefType.NULL
-             * data is returned, the respective channel is removed from the full list. However in seldom cases
-             * UndefType.NULL may wrongly be returned, so we should log a warning here just in case.
-             */
-            if (logger.isDebugEnabled()) {
-                supportedChannelIds.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
-                        .forEach(channelId -> logger.debug("{} -> updateChannelList() required channel '{}' missing",
-                                resourceId, channelId));
-            } else {
-                supportedChannelIds.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
-                        .forEach(channelId -> logger.warn(
-                                "Thing '{}' is missing required channel '{}'. Please recreate the thing!",
-                                thing.getUID(), channelId));
-            }
-
-            // back light channels are templated on the main channels, so build them before any are removed
-            List<Channel> newBackChannels = buildBackLightChannels();
-            List<Channel> allChannels = new ArrayList<>(thing.getChannels());
-            allChannels.addAll(newBackChannels);
-
-            // keep only the channels that are in use
-            List<Channel> keptChannels = allChannels.stream().filter(channel -> {
-                ChannelUID uid = channel.getUID();
-                String id = uid.getIdWithoutGroup();
-                return BACK_LIGHT_GROUP_ID.equals(uid.getGroupId()) ? backLightSupportedChannelIds.contains(id)
-                        : supportedChannelIds.contains(id);
-            }).toList();
-
-            if (!newBackChannels.isEmpty() || keptChannels.size() != thing.getChannels().size()) {
-                if (logger.isDebugEnabled()) {
-                    Set<ChannelUID> keptUids = keptChannels.stream().map(Channel::getUID).collect(Collectors.toSet());
-                    thing.getChannels().stream().map(Channel::getUID).filter(uid -> !keptUids.contains(uid))
-                            .forEach(uid -> logger.debug("{} -> updateChannelList() removing unused channel '{}'",
-                                    resourceId, uid.getId()));
-                }
-                updateThing(editThing().withChannels(keptChannels).build());
-
-                // the new channels did not exist when the state arrived, so push the cached state now
-                String backId = backLightResourceId;
-                Resource cached = backId == null ? null : serviceContributorsCache.get(backId);
-                if (!newBackChannels.isEmpty() && cached != null) {
-                    updateChannels(cached);
-                }
-            }
+        // back- light channels
+        if (channelUIDs.contains(backUID(CHANNEL_2_COLOR))) {
+            channelUIDs.add(backUID(CHANNEL_2_COLOR_XY_ONLY));
+            channelUIDs.remove(backUID(CHANNEL_2_BRIGHTNESS));
+            channelUIDs.add(backUID(CHANNEL_2_DIMMING_ONLY));
+            channelUIDs.remove(backUID(CHANNEL_2_SWITCH));
+            channelUIDs.add(backUID(CHANNEL_2_ON_OFF_ONLY));
+        }
+        if (channelUIDs.contains(backUID(CHANNEL_2_BRIGHTNESS))) {
+            channelUIDs.add(backUID(CHANNEL_2_DIMMING_ONLY));
+            channelUIDs.remove(backUID(CHANNEL_2_SWITCH));
+            channelUIDs.add(backUID(CHANNEL_2_ON_OFF_ONLY));
+        }
+        if (channelUIDs.contains(backUID(CHANNEL_2_SWITCH))) {
+            channelUIDs.add(backUID(CHANNEL_2_ON_OFF_ONLY));
         }
     }
 
     /**
-     * Add correlated channel ID's, and remove forbidden channel ID's.
+     * Build a map of the back- light channels. The back light channels are created based on the main
+     * (front) channels but with their channel UID containing a group ID.
      */
-    private void addRemoveChannelIds(Set<String> channelIds) {
-        if (channelIds.contains(CHANNEL_2_COLOR)) {
-            channelIds.add(CHANNEL_2_COLOR_XY_ONLY);
-            channelIds.remove(CHANNEL_2_BRIGHTNESS);
-            channelIds.add(CHANNEL_2_DIMMING_ONLY);
-            channelIds.remove(CHANNEL_2_SWITCH);
-            channelIds.add(CHANNEL_2_ON_OFF_ONLY);
-        }
-        if (channelIds.contains(CHANNEL_2_BRIGHTNESS)) {
-            channelIds.add(CHANNEL_2_DIMMING_ONLY);
-            channelIds.remove(CHANNEL_2_SWITCH);
-            channelIds.add(CHANNEL_2_ON_OFF_ONLY);
-        }
-        if (channelIds.contains(CHANNEL_2_SWITCH)) {
-            channelIds.add(CHANNEL_2_ON_OFF_ONLY);
-        }
-    }
-
-    /**
-     * Build a list of the back light channels if they do not already exist. The back light channels are
-     * created based on the main (front) channels but with their channel UID containing a group ID.
-     */
-    private List<Channel> buildBackLightChannels() {
+    private Map<ChannelUID, Channel> buildBackLightChannels() {
         String resId = backLightResourceId;
         if (disposing || resId == null) {
-            return List.of();
+            return Map.of();
         }
+
         String prefix;
         try {
             prefix = getBridgeHandler().getLocalizedText("back-light.channel.label.prefix");
         } catch (AssetNotLoadedException e) {
             logger.debug("{} -> buildBackLightChannels() bridge not initialized", resourceId);
-            return List.of();
+            prefix = "Back Light";
         }
-        List<Channel> backLightChannels = new ArrayList<>();
-        for (String channelId : backLightSupportedChannelIds) {
-            Channel mainChannel = thing.getChannel(channelId);
-            if (mainChannel == null) {
-                logger.debug("{} -> buildBackLightChannels() no main channel '{}' to use as template", resourceId,
-                        channelId);
-                continue;
-            }
-            ChannelUID backChannelUID = backUID(channelId);
+
+        Map<ChannelUID, Channel> backLightChannels = new HashMap<>();
+        for (Channel mainChannel : thing.getChannels()) {
             ChannelTypeUID mainChannelTypeUID = mainChannel.getChannelTypeUID();
-            if (thing.getChannel(backChannelUID) == null && mainChannelTypeUID != null) {
-                ChannelBuilder builder = ChannelBuilder.create(backChannelUID, mainChannel.getAcceptedItemType())
+            if (mainChannel.getUID().getGroupId() == null && mainChannelTypeUID != null) {
+                ChannelUID backUID = backUID(mainChannel.getUID().getIdWithoutGroup());
+                ChannelBuilder builder = ChannelBuilder.create(backUID, mainChannel.getAcceptedItemType())
                         .withType(mainChannelTypeUID).withKind(mainChannel.getKind())
                         .withDefaultTags(mainChannel.getDefaultTags()).withProperties(mainChannel.getProperties())
                         .withAutoUpdatePolicy(mainChannel.getAutoUpdatePolicy())
                         .withConfiguration(mainChannel.getConfiguration());
-                String label = mainChannel.getLabel(); // at this time this should already be localized
+                // by the time this gets called the label and description should already have been localized
+                String label = mainChannel.getLabel();
                 if (label != null) {
                     builder.withLabel("%s %s".formatted(prefix, label));
                 }
-                String description = mainChannel.getDescription(); // at this time this should already be localized
+                String description = mainChannel.getDescription();
                 if (description != null) {
                     builder.withDescription(description);
                 }
-                backLightChannels.add(builder.build());
-                logger.debug("{} -> buildBackLightChannels() adding channel '{}'", resourceId, backChannelUID);
+                backLightChannels.put(backUID, builder.build());
+                logger.debug("{} -> buildBackLightChannels() adding channel '{}'", resourceId, backUID);
             }
         }
         return backLightChannels;
@@ -1552,8 +1555,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         || statusInfo.getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR
                         || !description.equals(statusInfo.getDescription())) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
-                    supportedChannelIds.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
-                    backLightSupportedChannelIds.forEach(channelId -> updateState(backUID(channelId), UnDefType.UNDEF));
+                    supportedChannelUIDs.forEach(channelUID -> updateState(channelUID, UnDefType.UNDEF));
                 }
                 return;
             }
@@ -1691,6 +1693,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private void updateLookups() throws ApiException, AssetNotLoadedException, InterruptedException {
         if (!disposing) {
             logger.debug("{} -> updateLookups()", resourceId);
+
             // get supported services
             List<ResourceReference> services = thisResource.getServiceReferences();
 
