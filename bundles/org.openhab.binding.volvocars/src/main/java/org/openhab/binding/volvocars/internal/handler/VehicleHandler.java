@@ -224,7 +224,7 @@ public class VehicleHandler extends BaseThingHandler {
                 logger.debug("Command {} failed: {}", apiCommand, e.getMessage());
                 status = "FAILED: " + e.getMessage();
             }
-            if (session == currentSession) {
+            if (currentSession.equals(session)) {
                 updateState(new ChannelUID(getThing().getUID(), GROUP_CONTROL, CHANNEL_LAST_COMMAND_STATUS),
                         new StringType(status));
                 if ("lock-reduced-guard".equals(apiCommand)) {
@@ -278,7 +278,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void pollLocked(Object pollSession) {
-        if (session != pollSession) {
+        if (!pollSession.equals(session)) {
             return;
         }
         AccountHandler accountHandler = getAccountHandler();
@@ -301,13 +301,13 @@ public class VehicleHandler extends BaseThingHandler {
                 refreshSlow(api);
                 nextSlowRefresh = Instant.now().plusSeconds(config.slowRefreshInterval * 60L - 30);
             }
-            if (session == pollSession) {
+            if (pollSession.equals(session)) {
                 updateStatus(ThingStatus.ONLINE);
                 accountHandler.reportSuccess(api);
             }
         } catch (VolvoCarsException e) {
             logger.debug("Refreshing vehicle {} failed: {}", getThing().getUID(), e.getMessage());
-            if (session != pollSession) {
+            if (!pollSession.equals(session)) {
                 return;
             }
             if (e.isAuthorizationRequired()) {
@@ -335,7 +335,7 @@ public class VehicleHandler extends BaseThingHandler {
                 : null;
         energyCapabilities = capabilities != null ? capabilities : Set.of();
         Set<String> commands = optional(() -> api.getAvailableCommands(config.vin));
-        if (session != pollSession) {
+        if (!pollSession.equals(session)) {
             return null;
         }
         updateProperties(localVehicle);
@@ -385,13 +385,13 @@ public class VehicleHandler extends BaseThingHandler {
                 case GROUP_TRIP -> !(CHANNEL_AVERAGE_FUEL_CONSUMPTION.equals(id) && !localVehicle.hasCombustionEngine())
                         && !(CHANNEL_AVERAGE_ENERGY_CONSUMPTION.equals(id) && !localVehicle.hasBattery());
                 case GROUP_CONTROL -> commands == null || switch (id) {
-                        case CHANNEL_CLIMATIZATION -> commands.contains("CLIMATIZATION_START");
-                        case CHANNEL_ENGINE_REMOTE_START -> commands.contains("ENGINE_START");
-                        case CHANNEL_HONK_FLASH -> commands.contains("HONK") || commands.contains("FLASH")
-                                || commands.contains("HONK_AND_FLASH");
-                        case CHANNEL_LOCK_REDUCED_GUARD -> commands.contains("LOCK_REDUCED_GUARD");
-                        default -> true;
-                    };
+                    case CHANNEL_CLIMATIZATION -> commands.contains("CLIMATIZATION_START");
+                    case CHANNEL_ENGINE_REMOTE_START -> commands.contains("ENGINE_START");
+                    case CHANNEL_HONK_FLASH ->
+                        commands.contains("HONK") || commands.contains("FLASH") || commands.contains("HONK_AND_FLASH");
+                    case CHANNEL_LOCK_REDUCED_GUARD -> commands.contains("LOCK_REDUCED_GUARD");
+                    default -> true;
+                };
                 default -> true;
             };
             if (!supported) {
@@ -410,9 +410,9 @@ public class VehicleHandler extends BaseThingHandler {
             ValueField centralLock = doors.get("centralLock");
             updateState(GROUP_DOORS, CHANNEL_LOCK,
                     centralLock == null ? UnDefType.UNDEF : switch (String.valueOf(centralLock.getString())) {
-                    case "LOCKED" -> OnOffType.ON;
-                    case "UNLOCKED" -> OnOffType.OFF;
-                    default -> UnDefType.UNDEF;
+                        case "LOCKED" -> OnOffType.ON;
+                        case "UNLOCKED" -> OnOffType.OFF;
+                        default -> UnDefType.UNDEF;
                     });
             DOORS.forEach((key, channel) -> updateState(GROUP_DOORS, channel, toOpenClosed(doors.get(key))));
         }

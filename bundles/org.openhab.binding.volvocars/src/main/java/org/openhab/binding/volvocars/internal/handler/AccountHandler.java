@@ -161,7 +161,7 @@ public class AccountHandler extends BaseBridgeHandler {
      * Called by vehicle handlers after a successful API call.
      */
     public void reportSuccess(VolvoCarsApi usedApi) {
-        if (usedApi == api && getThing().getStatus() != ThingStatus.ONLINE) {
+        if (usedApi.equals(api) && getThing().getStatus() != ThingStatus.ONLINE) {
             cancelReconnectJob();
             updateStatus(ThingStatus.ONLINE);
         }
@@ -171,7 +171,7 @@ public class AccountHandler extends BaseBridgeHandler {
      * Called by vehicle handlers if an API call failed for a reason affecting the whole account.
      */
     public void reportFailure(VolvoCarsApi usedApi, VolvoCarsException e) {
-        if (usedApi != api) {
+        if (!usedApi.equals(api)) {
             return;
         }
         if (e.isAuthorizationRequired()) {

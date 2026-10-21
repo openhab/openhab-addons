@@ -121,7 +121,8 @@
 			<channel id="trip-meter-automatic" typeId="distance">
 				<label>Trip Meter Automatic</label>
 				<description>Distance since the automatic trip meter was reset, which happens after the vehicle was parked
-					for some hours.</description>
+					for some
+					hours.</description>
 			</channel>
 			<channel id="average-fuel-consumption" typeId="average-fuel-consumption"/>
 			<channel id="average-energy-consumption" typeId="average-energy-consumption"/>

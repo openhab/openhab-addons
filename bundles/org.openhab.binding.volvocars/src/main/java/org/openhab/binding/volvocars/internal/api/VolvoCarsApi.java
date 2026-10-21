@@ -77,7 +77,7 @@ public class VolvoCarsApi {
     public List<String> getVehicles() throws VolvoCarsException {
         List<String> vins = new ArrayList<>();
         for (JsonElement element : getDataArray(request(HttpMethod.GET, CONNECTED_VEHICLE_ENDPOINT, null))) {
-            if (element instanceof JsonObject vehicle && vehicle.get("vin")instanceof JsonElement vin
+            if (element instanceof JsonObject vehicle && vehicle.get("vin") instanceof JsonElement vin
                     && vin.isJsonPrimitive()) {
                 vins.add(vin.getAsString());
             }
@@ -117,13 +117,13 @@ public class VolvoCarsApi {
      */
     public Set<String> getSupportedEnergyCapabilities(String vin) throws VolvoCarsException {
         JsonObject response = request(HttpMethod.GET, vehicleUrl(ENERGY_ENDPOINT, vin, "capabilities"), null);
-        JsonObject capabilities = response.get("getEnergyState")instanceof JsonObject wrapped ? wrapped : response;
+        JsonObject capabilities = response.get("getEnergyState") instanceof JsonObject wrapped ? wrapped : response;
         Set<String> supported = new HashSet<>();
         if (!isSupported(capabilities)) {
             return supported;
         }
         for (Map.Entry<String, JsonElement> entry : capabilities.entrySet()) {
-            if (entry.getValue()instanceof JsonObject capability && isSupported(capability)) {
+            if (entry.getValue() instanceof JsonObject capability && isSupported(capability)) {
                 // the capability is called chargingSystemStatus while the state value is chargingStatus
                 supported.add("chargingSystemStatus".equals(entry.getKey()) ? "chargingStatus" : entry.getKey());
             }
@@ -143,7 +143,7 @@ public class VolvoCarsApi {
         Set<String> commands = new HashSet<>();
         for (JsonElement element : getDataArray(
                 request(HttpMethod.GET, vehicleUrl(CONNECTED_VEHICLE_ENDPOINT, vin, "commands"), null))) {
-            if (element instanceof JsonObject command && command.get("command")instanceof JsonElement name
+            if (element instanceof JsonObject command && command.get("command") instanceof JsonElement name
                     && name.isJsonPrimitive()) {
                 commands.add(name.getAsString());
             }
@@ -196,11 +196,11 @@ public class VolvoCarsApi {
 
     private String errorDetails(String content) {
         try {
-            if (JsonParser.parseString(content)instanceof JsonObject response
-                    && response.get("error")instanceof JsonObject error) {
+            if (JsonParser.parseString(content) instanceof JsonObject response
+                    && response.get("error") instanceof JsonObject error) {
                 StringBuilder details = new StringBuilder();
                 for (String key : List.of("message", "description")) {
-                    if (error.get(key)instanceof JsonElement value && value.isJsonPrimitive()) {
+                    if (error.get(key) instanceof JsonElement value && value.isJsonPrimitive()) {
                         details.append(details.isEmpty() ? ": " : " ").append(value.getAsString());
                     }
                 }
@@ -215,7 +215,7 @@ public class VolvoCarsApi {
     private Map<String, ValueField> toValueFields(JsonObject data) {
         Map<String, ValueField> values = new HashMap<>();
         for (Map.Entry<String, JsonElement> entry : data.entrySet()) {
-            if (entry.getValue()instanceof JsonObject object) {
+            if (entry.getValue() instanceof JsonObject object) {
                 ValueField field = parse(object, ValueField.class);
                 if (field != null) {
                     values.put(entry.getKey(), field);
@@ -235,16 +235,16 @@ public class VolvoCarsApi {
     }
 
     private static boolean isSupported(JsonObject object) {
-        return object.get("isSupported")instanceof JsonElement supported && supported.isJsonPrimitive()
+        return object.get("isSupported") instanceof JsonElement supported && supported.isJsonPrimitive()
                 && supported.getAsBoolean();
     }
 
     private static JsonObject getDataObject(JsonObject response) {
-        return response.get("data")instanceof JsonObject data ? data : new JsonObject();
+        return response.get("data") instanceof JsonObject data ? data : new JsonObject();
     }
 
     private static Iterable<JsonElement> getDataArray(JsonObject response) {
-        return response.get("data")instanceof JsonElement data && data.isJsonArray() ? data.getAsJsonArray()
+        return response.get("data") instanceof JsonElement data && data.isJsonArray() ? data.getAsJsonArray()
                 : List.of();
     }
 

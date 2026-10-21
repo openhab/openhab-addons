@@ -78,7 +78,8 @@
 			<parameter name="slowRefreshInterval" type="integer" min="1" unit="min">
 				<label>Maintenance Refresh Interval</label>
 				<description>Interval in minutes to refresh rarely changing maintenance data like service and warning
-					information. Must not be shorter than the refresh interval.</description>
+					information.
+					Must not be shorter than the refresh interval.</description>
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>

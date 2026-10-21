@@ -23,6 +23,7 @@ import java.time.ZoneOffset;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.volvocars.internal.config.AccountConfiguration;
@@ -53,7 +54,7 @@ class VolvoCarsOAuthClientTest {
         }
 
         @Override
-        public Clock withZone(ZoneId zone) {
+        public Clock withZone(@Nullable ZoneId zone) {
             return this;
         }
 

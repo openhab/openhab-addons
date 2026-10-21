@@ -48,7 +48,8 @@ import org.slf4j.LoggerFactory;
  * @author Michael Weger - Initial contribution
  */
 @Component(service = { Servlet.class, VolvoCarsAuthServlet.class }, property = {
-        HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN + "=" + VolvoCarsAuthServlet.SERVLET_PATH })
+        HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN + "=" + VolvoCarsAuthServlet.SERVLET_PATH,
+        HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME + "=volvocars-auth" })
 @NonNullByDefault
 public class VolvoCarsAuthServlet extends HttpServlet {
     public static final String SERVLET_PATH = "/volvocars";

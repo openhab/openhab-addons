@@ -5,7 +5,8 @@
 
 	<type>binding</type>
 	<name>Volvo Cars Binding</name>
-	<description>This binding integrates Volvo cars using the official Volvo Cars Connected Vehicle, Energy and Location APIs.</description>
+	<description>This binding integrates Volvo cars using the official Volvo Cars Connected Vehicle, Energy and Location
+		APIs.</description>
 	<connection>cloud</connection>
 
 </addon:addon>
