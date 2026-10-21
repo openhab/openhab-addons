@@ -8,6 +8,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage of the battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -15,6 +19,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Current of the battery, negative while discharging</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -93,6 +101,10 @@
 		<label>Design Energy</label>
 		<description>Design capacity of the battery in kWh, calculated from the design capacity and the current battery
 			voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -101,6 +113,10 @@
 		<label>Usable Energy</label>
 		<description>Usable capacity of the battery in kWh, calculated from the usable capacity and the current battery
 			voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -109,6 +125,10 @@
 		<label>Usable Remaining Energy</label>
 		<description>Usable energy left in the battery in kWh, calculated from the remaining capacity and the current battery
 			voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 

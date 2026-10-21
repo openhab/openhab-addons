@@ -1,16 +1,12 @@
 # E3DC Binding
 
 This binding integrates [E3/DC](https://www.e3dc.com/) home power plants over the RSCP interface.
-RSCP is the manufacturer's own protocol, so the binding controls far more than the Modbus interface
-offers, including the battery power settings and the individual wallboxes.
+RSCP is the manufacturer's own protocol, so the binding controls far more than the Modbus interface offers, including the battery power settings and the individual wallboxes.
 
-The connection is a TCP socket on port 5033 by default and every frame is encrypted, so the RSCP
-password configured on the device is required.
+The connection is a TCP socket on port 5033 by default and every frame is encrypted, so the RSCP password configured on the device is required.
 
-The cipher is Rijndael with a 256 bit block, which is outside the AES standard and therefore not
-available from the Java runtime. The binding uses the BouncyCastle engine for it, because
-implementations of the 256 bit block disagree about the row shifts and only one convention interoperates
-with the devices.
+The cipher is Rijndael with a 256 bit block, which is outside the AES standard and therefore not available from the Java runtime.
+The binding uses the BouncyCastle engine for it, because implementations of the 256 bit block disagree about the row shifts and only one convention interoperates with the devices.
 
 ## Supported Things
 
@@ -23,8 +19,7 @@ with the devices.
 | Battery      | `battery`     | Values of one battery, such as its voltage, current and state of health. |
 | Battery Module | `battery-module` | Values of one battery cell module, such as its state of health.     |
 
-A power plant is attached to the bridge, wallboxes and power meters are attached to the bridge as
-well and are distinguished by their index.
+A power plant is attached to the bridge, wallboxes and power meters are attached to the bridge as well and are distinguished by their index.
 
 ## Discovery
 
@@ -77,8 +72,8 @@ They show how the device answers for an index it does not have.
 
 #### The credentials
 
-The bridge needs three values, and they are made of two things only: your E3/DC account and the RSCP
-key. There is no separate account on the device.
+The bridge needs three values, and they are made of two things only: your E3/DC account and the RSCP key.
+There is no separate account on the device.
 
 | Parameter      | What it is                                              | Where it comes from                                       |
 |----------------|----------------------------------------------------------|-----------------------------------------------------------|
@@ -86,14 +81,10 @@ key. There is no separate account on the device.
 | `password`     | The password of that E3/DC account                        | The same account                                          |
 | `rscpPassword` | The key the connection is encrypted with                  | _Main Page → Personalize → User profile → RSCP password_   |
 
-`userName` and `password` are the E3/DC account credentials, not a device local account. The
-`rscpPassword` is a separate value: it encrypts the connection and is not checked against a user, so a
-wrong key makes the device drop the connection instead of answering with an authentication error.
+`userName` and `password` are the E3/DC account credentials, not a device local account.
+The `rscpPassword` is a separate value: it encrypts the connection and is not checked against a user, so a wrong key makes the device drop the connection instead of answering with an authentication error.
 
-References: the [E3/DC binding by Björn Brings](https://github.com/bjoernbrings/openhab-addons/tree/E3DC)
-uses the same pair of parameters and documents the account values as `Webusername` (typically the
-e-mail address) and `Webpassword` (used to log into the E3/DC portal);
-[rscp2mqtt](https://github.com/pvtom/rscp2mqtt) configures the same three values.
+References: the [E3/DC binding by Björn Brings](https://github.com/bjoernbrings/openhab-addons/tree/E3DC) uses the same pair of parameters and documents the account values as `Webusername` (typically the e-mail address) and `Webpassword` (used to log into the E3/DC portal); [rscp2mqtt](https://github.com/pvtom/rscp2mqtt) configures the same three values.
 
 #### If the connection stays offline
 
@@ -110,8 +101,8 @@ For a protocol level trace of the handshake, raise the log level for the RSCP cl
 log:set TRACE org.openhab.binding.e3dc.internal.rscp
 ```
 
-At `DEBUG` the log names the host, the port, the account that is being authenticated and, on failure,
-whether the device stayed silent or closed the connection. Passwords and the RSCP key are never logged.
+At `DEBUG` the log names the host, the port, the account that is being authenticated and, on failure, whether the device stayed silent or closed the connection.
+Passwords and the RSCP key are never logged.
 
 ### `power-plant`, `wallbox`, `power-meter`, `battery` and `battery-module` Thing Configuration
 
@@ -126,7 +117,8 @@ The module index counts the cell modules of all batteries consecutively, as the 
 
 ## Channels
 
-The channels are grouped per aspect. Power values are reported in `W`, energy counters in `kWh`.
+The channels are grouped per aspect.
+Power values are reported in `W`, energy counters in `kWh`.
 
 ### Channel Group `power`
 
@@ -203,11 +195,10 @@ The channels are grouped per aspect. Power values are reported in `W`, energy co
 
 #### Trackers and temperature sensors
 
-The number of PV trackers and temperature sensors depends on the installation, and the device reports the number
-of used strings wrongly (an S10 with two connected strings reports one). The binding therefore does not rely on
-that number. On every poll it asks the inverter for the indexes 0 to 5 of the trackers and of the temperature
-sensors, each one with its own request. An index the inverter does not have is answered with an error, which
-does not stop the others.
+The number of PV trackers and temperature sensors depends on the installation, and the device reports the number of used strings wrongly (an S10 with two connected strings reports one).
+The binding therefore does not rely on that number.
+On every poll it asks the inverter for the indexes 0 to 5 of the trackers and of the temperature sensors, each one with its own request.
+An index the inverter does not have is answered with an error, which does not stop the others.
 
 For every index that answers with a value the binding creates channels at runtime, numbered from 1:
 
@@ -218,14 +209,13 @@ For every index that answers with a value the binding creates channels at runtim
 | tracker-N-current      | Number:ElectricCurrent   | Direct current of tracker N                            |
 | temperature-N          | Number:Temperature       | Temperature of sensor N of the inverter                |
 
-- The channels appear with the first poll after the thing came online. A tracker that is connected later
-  gets its channels as soon as the inverter answers for it.
+- The channels appear with the first poll after the thing came online.
+  A tracker that is connected later gets its channels as soon as the inverter answers for it.
 - Channels are only added, never removed, so the link of an item survives a poll the device fails to answer.
   Delete a channel of a tracker that is gone for good by hand.
 - A tracker that is installed but not connected may answer with zeros, in which case it gets channels too.
-- Earlier versions declared `tracker-1`, `tracker-2` and `temperature-1` to `temperature-4` in the thing
-  description. Their channels keep their ids and are converted to the generic channel types, so existing links
-  stay.
+- Earlier versions declared `tracker-1`, `tracker-2` and `temperature-1` to `temperature-4` in the thing description.
+  Their channels keep their ids and are converted to the generic channel types, so existing links stay.
 - The `string-count` channel reports the number of strings the device says it uses.
 
 ### Channel Group `system`
@@ -253,7 +243,8 @@ Locks, power mode, manual charge and idle periods of the battery.
 > **Warning:** Battery controlling can be handled from different clients and the "mixed use" can cause trouble.
 > The ways are the **AI 360** (battery handling in control of the internal E3DC power plant control), the **block charge / discharge switch** (easy handling to enable / disable charging and discharging via rules) and **manual schedules** via the MyE3DC app or rules (your own handling!).
 >
-> Decide for one of these ways at a time. They write to the same idle periods and power settings of the device and can overwrite each other.
+> Decide for one of these ways at a time.
+> They write to the same idle periods and power settings of the device and can overwrite each other.
 | Channel                   | Type         | Description                                     |
 |---------------------------|--------------|-------------------------------------------------|
 | charging-lock             | Switch       | Battery charging is currently blocked            |
@@ -269,8 +260,8 @@ Locks, power mode, manual charge and idle periods of the battery.
 | block-discharging         | Switch       | Blocks battery discharging around the clock, see [The block switches](#the-block-switches) |
 | manual-charge-energy      | Number:Energy | Energy of the manual charge started last        |
 
-The `idle-periods` channel shows the periods during which the battery is locked against charging or
-discharging. Each line reads `name:days:mode:active:hh:mm-hh:mm`, for example:
+The `idle-periods` channel shows the periods during which the battery is locked against charging or discharging.
+Each line reads `name:days:mode:active:hh:mm-hh:mm`, for example:
 
 ```text
 weekend:saturday,sunday:charge:true:08:00-18:00
@@ -279,18 +270,20 @@ weekend:saturday,sunday:charge:true:08:00-18:00
 The days are a comma separated list of `monday` to `sunday`, and the mode is `charge` or `discharge`.
 The device replaces the whole list on every write, so the binding offers one channel and the thing actions to change it:
 
-- Sending text to `idle-periods` replaces the whole list. An empty text removes all periods.
+- Sending text to `idle-periods` replaces the whole list.
+  An empty text removes all periods.
 
-A period is only written when every line is valid, the names are unique and each period ends after it
-starts. The reason is logged as a warning otherwise. The list is also read and replaced with the
-[thing actions](#thing-actions) `getIdlePeriods` and `setIdlePeriods`. A single period is removed with
-the action `deleteIdlePeriod`. To add or change one period, read the list with `getIdlePeriods` and write
-it back with `setIdlePeriods`.
+A period is only written when every line is valid, the names are unique and each period ends after it starts.
+The reason is logged as a warning otherwise.
+The list is also read and replaced with the [thing actions](#thing-actions) `getIdlePeriods` and `setIdlePeriods`.
+A single period is removed with the action `deleteIdlePeriod`.
+To add or change one period, read the list with `getIdlePeriods` and write it back with `setIdlePeriods`.
 
 #### Power mode
 
-`battery-control#set-power-mode` forces the battery into a mode, the same way as the `set/power_mode` topic of
-rscp2mqtt. It is a command channel: it carries no state and offers a few presets as command options. The text is one of:
+`battery-control#set-power-mode` forces the battery into a mode, the same way as the `set/power_mode` topic of rscp2mqtt.
+It is a command channel: it carries no state and offers a few presets as command options.
+The text is one of:
 
 | Text | Effect |
 |------|--------|
@@ -300,51 +293,45 @@ rscp2mqtt. It is a command channel: it carries no state and offers a few presets
 | `discharge:<watts>:<cycles>` | The battery discharges with the given power. |
 | `grid_charge:<watts>:<cycles>` | The battery charges with the given power from the grid. |
 
-The device keeps a forced mode only for a short time. The binding therefore sends the mode again with every poll
-cycle, as many times as `<cycles>` says. With the refresh interval of the bridge, `<cycles>` times the interval is
-the duration, for example `charge:2000:10` charges with 2000 W for ten poll cycles. After that the device returns
-to automatic. A new text replaces the one before, and `auto` ends it at once. The presets use 60 cycles; how long
-that lasts depends on the refresh interval of the bridge.
+The device keeps a forced mode only for a short time.
+The binding therefore sends the mode again with every poll cycle, as many times as `<cycles>` says.
+With the refresh interval of the bridge, `<cycles>` times the interval is the duration, for example `charge:2000:10` charges with 2000 W for ten poll cycles.
+After that the device returns to automatic.
+A new text replaces the one before, and `auto` ends it at once.
+The presets use 60 cycles; how long that lasts depends on the refresh interval of the bridge.
 
-The same is available as the thing action `setPowerMode(mode, watts, cycles)` with `mode` being `auto`, `idle`,
-`charge`, `discharge` or `grid_charge`.
+The same is available as the thing action `setPowerMode(mode, watts, cycles)` with `mode` being `auto`, `idle`, `charge`, `discharge` or `grid_charge`.
 
 #### The block switches
 
-The device has no function that simply blocks charging or discharging of the battery. The switches
-`block-charging` and `block-discharging` provide it with an idle period of their own that locks the
-battery on all seven days, from 00:00 to 23:59:
+The device has no function that simply blocks charging or discharging of the battery.
+The switches `block-charging` and `block-discharging` provide it with an idle period of their own that locks the battery on all seven days, from 00:00 to 23:59:
 
 | Switch              | Idle period it manages                                                |
 |---------------------|-----------------------------------------------------------------------|
 | `block-charging`    | `OH_Block_Charge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:00:00-23:59`       |
 | `block-discharging` | `OH_Block_Discharge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:discharge:true:00:00-23:59` |
 
-- `ON` adds the period to the list and switches on the use of idle periods (`idle-periods-enabled`),
-  because the period has no effect otherwise.
-- `OFF` removes the period again. The use of idle periods stays switched on.
-- All other periods of the list are kept. The switch is `ON` as soon as the list holds an active entry of the
-  right mode, no matter who created it or on which days and at which times it applies, and `OFF` when it
-  holds none.
+- `ON` adds the period to the list and switches on the use of idle periods (`idle-periods-enabled`), because the period has no effect otherwise.
+- `OFF` removes the period again.
+  The use of idle periods stays switched on.
+- All other periods of the list are kept.
+  The switch is `ON` as soon as the list holds an active entry of the right mode, no matter who created it or on which days and at which times it applies, and `OFF` when it holds none.
   If another active entry still exists, `OFF` removes only the period of the switch and the switch stays `ON`.
-- The names differ from the `Charge_Limiter` and `Discharge_Limiter` periods of rscp2mqtt, so both can run
-  next to each other.
+- The names differ from the `Charge_Limiter` and `Discharge_Limiter` periods of rscp2mqtt, so both can run next to each other.
 - The device counts in minutes and has no 24:00, which is why the period ends at 23:59.
 
-The same list can be read and replaced as a whole with the [thing actions](#thing-actions), for example to
-add periods for single weekdays next to the block switches.
+The same list can be read and replaced as a whole with the [thing actions](#thing-actions), for example to add periods for single weekdays next to the block switches.
 
 ### Channel Group `history`
 
-The history group reports the energy counters and the two shares of a whole period. The device answers
-the history containers only when the request states the period, which the binding derives from the
-current date.
+The history group reports the energy counters and the two shares of a whole period.
+The device answers the history containers only when the request states the period, which the binding derives from the current date.
 
-> **Persistence:** The binding publishes the earlier periods as time series entries with a date in the past,
-> see [History Fetch](#history-fetch). Only a persistence service with a real time series database, for example
-> InfluxDB or a SQL database (JDBC), can store them. **rrd4j cannot:** it only records values at the time they
-> arrive, ignores the timestamp of a time series entry and aggregates old values away. Do not use rrd4j for the
-> `history` items.
+> **Persistence:** The binding publishes the earlier periods as time series entries with a date in the past, see [History Fetch](#history-fetch).
+> Only a persistence service with a real time series database, for example InfluxDB or a SQL database (JDBC), can store them.
+> **rrd4j cannot:** it only records values at the time they arrive, ignores the timestamp of a time series entry and aggregates old values away.
+> Do not use rrd4j for the `history` items.
 
 | Channel                  | Type                 | Description                                        |
 |--------------------------|----------------------|----------------------------------------------------|
@@ -396,11 +383,9 @@ The group holds the reserve, the part of the battery the device keeps available 
 
 ### Writable Channels
 
-The following channels accept commands and write the value to the device. A value that the device reports
-is set through the channel that reports it, so there is one channel per value and no second one for
-writing it. The charge and discharge limits are written as one container because switching the power
-limits off resets the enclosed limits: a write for one of them always carries the other values that were
-last read from the device.
+The following channels accept commands and write the value to the device.
+A value that the device reports is set through the channel that reports it, so there is one channel per value and no second one for writing it.
+The charge and discharge limits are written as one container because switching the power limits off resets the enclosed limits: a write for one of them always carries the other values that were last read from the device.
 
 | Channel Group | Channel                      | Type         | Description                                                                 |
 |---------------|------------------------------|--------------|-----------------------------------------------------------------------------|
@@ -427,12 +412,10 @@ last read from the device.
 | `settings`    | max-charge-current           | Number:ElectricCurrent | Highest charging current allowed, 6 to 16 A                        |
 | `settings`    | number-phases                | Number       | Number of phases used for charging, 1 or 3                                   |
 
-A channel state is only updated after the device acknowledged the write, so a rejected command leaves
-the channel untouched.
+A channel state is only updated after the device acknowledged the write, so a rejected command leaves the channel untouched.
 
-A wallbox value is written as the parameter of the request that names it, which is also how the value is
-read: every wallbox control is one channel that reports and sets its value. The `plugged`, `locked` and
-`charging` channels report states the device decides, so they are read only.
+A wallbox value is written as the parameter of the request that names it, which is also how the value is read: every wallbox control is one channel that reports and sets its value.
+The `plugged`, `locked` and `charging` channels report states the device decides, so they are read only.
 
 ### Channel Groups of the `wallbox` Thing
 
@@ -517,16 +500,15 @@ The power values are live.
 | usable-energy | Number:Energy | Usable capacity in kWh, calculated as usable capacity (Ah) × battery voltage (V) |
 | usable-remaining-energy | Number:Energy | Usable energy left in kWh, calculated as usable remaining capacity (Ah) × battery voltage (V) |
 
-The three energy channels are not reported by the device. The binding multiplies the capacity in `Ah` by the
-battery `voltage` of the same poll. The voltage is the present terminal voltage and moves with the state of
-charge and the load, so the kWh values vary by a few percent over a day. Use `design-energy` and `usable-energy`
-as rough guides and the ratio `usable-remaining-energy / usable-energy` (or the SOC) for trends.
+The three energy channels are not reported by the device.
+The binding multiplies the capacity in `Ah` by the battery `voltage` of the same poll.
+The voltage is the present terminal voltage and moves with the state of charge and the load, so the kWh values vary by a few percent over a day.
+Use `design-energy` and `usable-energy` as rough guides and the ratio `usable-remaining-energy / usable-energy` (or the SOC) for trends.
 
 ### Channel Group `module` (battery module)
 
-The module group reports the values of one battery cell module. The capacities are published in `Ah`
-without a unit suffix on the item type, because the item type for electric charge is based on the
-coulomb.
+The module group reports the values of one battery cell module.
+The capacities are published in `Ah` without a unit suffix on the item type, because the item type for electric charge is based on the coulomb.
 
 | Channel               | Type                     | Description                                  |
 |-----------------------|--------------------------|----------------------------------------------|
@@ -568,8 +550,9 @@ coulomb.
 
 ### Channel Group `statistics` (bridge)
 
-The bridge reports how much it occupies the device. All channels are advanced and read only. They show the
-last poll and, for the loop ratio, the summary of the last 20 polls.
+The bridge reports how much it occupies the device.
+All channels are advanced and read only.
+They show the last poll and, for the loop ratio, the summary of the last 20 polls.
 
 | Channel            | Type                 | Description                                                                 |
 |--------------------|----------------------|-----------------------------------------------------------------------------|
@@ -581,16 +564,15 @@ last poll and, for the loop ratio, the summary of the last 20 polls.
 | dispatch-time      | Number:Time          | Time openHAB needed to hand the answer to the things                       |
 | answer-size        | Number:DataAmount    | Size of the answer to the last request                                     |
 
-The loop ratio is the time of all requests on the connection (polls, commands and history fetches) divided by
-the refresh interval. A value below 20 % is the working target; above 100 % the interval is shorter than the
-device needs to answer. The values are only published on linked channels. The log output
-(`E3DCBridgeHandler` at DEBUG and TRACE) does not depend on that.
+The loop ratio is the time of all requests on the connection (polls, commands and history fetches) divided by the refresh interval.
+A value below 20 % is the working target; above 100 % the interval is shorter than the device needs to answer.
+The values are only published on linked channels.
+The log output (`E3DCBridgeHandler` at DEBUG and TRACE) does not depend on that.
 
 ## Thing Actions
 
-The `power-plant` thing provides actions to read and replace the idle periods of the second version, the
-named time windows during which the battery is locked against charging or discharging. They work on the
-same list as the `idle-periods` channel and the [block switches](#the-block-switches).
+The `power-plant` thing provides actions to read and replace the idle periods of the second version, the named time windows during which the battery is locked against charging or discharging.
+They work on the same list as the `idle-periods` channel and the [block switches](#the-block-switches).
 
 | Action                          | Returns   | Description                                                      |
 |---------------------------------|-----------|------------------------------------------------------------------|
@@ -608,30 +590,31 @@ weekend:saturday,sunday:charge:true:08:00-18:00
 ```
 
 - The days are a comma separated list of `monday` to `sunday`, the mode is `charge` or `discharge`.
-- `setIdlePeriods` **replaces** the whole list, because the device does it that way. Read the list first
-  with `getIdlePeriods`, change it and write it back to keep the other periods, including the periods
-  `OH_Block_Charge` and `OH_Block_Discharge` of the [block switches](#the-block-switches).
-- An empty text removes all periods. Nothing is sent when a line is malformed, a name is used twice or a
-  period does not end after it starts. The reason is logged as a warning and the action returns `false`.
-- The periods only take effect while the device uses idle periods, see the channel
-  `idle-periods-enabled`. The actions leave this setting alone; the block switches and the channel switch it on.
+- `setIdlePeriods` **replaces** the whole list, because the device does it that way.
+  Read the list first with `getIdlePeriods`, change it and write it back to keep the other periods, including the periods `OH_Block_Charge` and `OH_Block_Discharge` of the [block switches](#the-block-switches).
+- An empty text removes all periods.
+  Nothing is sent when a line is malformed, a name is used twice or a period does not end after it starts.
+  The reason is logged as a warning and the action returns `false`.
+- The periods only take effect while the device uses idle periods, see the channel `idle-periods-enabled`.
+  The actions leave this setting alone; the block switches and the channel switch it on.
 
 ### History Fetch
 
-The `history#year-*` channels hold the running year as their state. The earlier years are only requested when
-you ask for them with `fetchHistory`, so the device is not asked again and again for values that no longer
-change.
+The `history#year-*` channels hold the running year as their state.
+The earlier years are only requested when you ask for them with `fetchHistory`, so the device is not asked again and again for values that no longer change.
 
-- The action takes no parameters. It starts at the last completed year and goes back year by year.
-- Each year is requested on its own and published as one entry of a time series, stamped with the start of
-  the year. Persistence stores the years under their date, so the yearly values form one series.
-- It stops after two years in a row without data, which is the case before the device was installed. A single
-  year without data in between is tolerated. A year in which every value is zero counts as without data.
+- The action takes no parameters.
+  It starts at the last completed year and goes back year by year.
+- Each year is requested on its own and published as one entry of a time series, stamped with the start of the year.
+  Persistence stores the years under their date, so the yearly values form one series.
+- It stops after two years in a row without data, which is the case before the device was installed.
+  A single year without data in between is tolerated.
+  A year in which every value is zero counts as without data.
   The oldest year tried is 2000.
 - Fetching again replaces the entries of the years found.
 - The channels have to be linked to items that a persistence service stores, otherwise the entries are lost.
-  The service has to be a time series database such as InfluxDB or a SQL database (JDBC). **rrd4j is not
-  suitable:** it cannot store values with a date in the past, so the fetched entries would be lost.
+  The service has to be a time series database such as InfluxDB or a SQL database (JDBC).
+  **rrd4j is not suitable:** it cannot store values with a date in the past, so the fetched entries would be lost.
 
 ```java
 val actions = getActions("e3dc", "e3dc:power-plant:device:plant")
@@ -639,13 +622,14 @@ val years = actions.fetchHistory()
 logInfo("e3dc", "History fetched for " + years + " years")
 ```
 
-`fetchPeriodHistory(period, count)` does the same for the `history#day-*`, `history#week-*` and `history#month-*` channels
-(and for `year`):
+`fetchPeriodHistory(period, count)` does the same for the `history#day-*`, `history#week-*` and `history#month-*` channels (and for `year`):
 
-- It goes back from the last finished period, at most `count` periods (1 to 400). A week runs from Monday to
-  Sunday, a month is a calendar month. Each entry is stamped with the first day of its period.
+- It goes back from the last finished period, at most `count` periods (1 to 400).
+  A week runs from Monday to Sunday, a month is a calendar month.
+  Each entry is stamped with the first day of its period.
 - It stops after three periods in a row without data.
-- Every period is a request to the device, so a large `count` takes a while. The call returns when it is done.
+- Every period is a request to the device, so a large `count` takes a while.
+  The call returns when it is done.
 - The week channels hold the last seven days as their state, so the calendar weeks of the fetch are separate entries.
 
 ```java
@@ -677,14 +661,13 @@ if (periods !== null) {
 }
 ```
 
-To only block or release the battery, use the switches `battery-control#block-charging` and
-`battery-control#block-discharging` instead, see [The block switches](#the-block-switches).
+To only block or release the battery, use the switches `battery-control#block-charging` and `battery-control#block-discharging` instead, see [The block switches](#the-block-switches).
 
 ## Full Example
 
 The example sets up every thing type and uses at least one channel of every channel group.
-Adapt the host, the credentials and the indexes to your installation. The thing ids `device`, `plant`,
-`wallbox0`, `meter0`, `battery0` and `module0` are free to choose; they appear in the channel ids of the items.
+Adapt the host, the credentials and the indexes to your installation.
+The thing ids `device`, `plant`, `wallbox0`, `meter0`, `battery0` and `module0` are free to choose; they appear in the channel ids of the items.
 
 ### Thing Configuration
 
@@ -698,10 +681,10 @@ Bridge e3dc:bridge:device "E3/DC Device" [ host="192.168.1.50", userName="owner@
 }
 ```
 
-The `power-plant` thing is the one to start with. Add the other things only for the parts your installation has.
-The channels `tracker-N-*` and `temperature-N` of the inverter are created at runtime, see
-[Trackers and temperature sensors](#trackers-and-temperature-sensors). Link them from the UI or add them to the
-items file once they exist.
+The `power-plant` thing is the one to start with.
+Add the other things only for the parts your installation has.
+The channels `tracker-N-*` and `temperature-N` of the inverter are created at runtime, see [Trackers and temperature sensors](#trackers-and-temperature-sensors).
+Link them from the UI or add them to the items file once they exist.
 
 ### Item Configuration
 
@@ -860,7 +843,8 @@ sitemap e3dc label="E3/DC" {
 
 ### Rules
 
-The writable command channels need no thing action. A rule sends the command to the item:
+The writable command channels need no thing action.
+A rule sends the command to the item:
 
 ```java
 // force the battery to charge with 2000 W for 60 poll cycles, then return to automatic
@@ -896,12 +880,11 @@ then
 end
 ```
 
-With a refresh interval of 5 seconds, 720 cycles last one hour; after that the device returns to automatic. The idle periods can also be read and replaced with the
-[thing actions](#thing-actions), see the examples there.
+With a refresh interval of 5 seconds, 720 cycles last one hour; after that the device returns to automatic.
+The idle periods can also be read and replaced with the [thing actions](#thing-actions), see the examples there.
 
 ## Notes on Device Support
 
-The RSCP interface is not published in a complete specification, so not every device implements every
-data point listed above. The binding requests the values it knows and stops requesting a value after
-the device has answered with an error several times in a row. Such a channel simply stays without a
-value on that device instead of being reported as zero.
+The RSCP interface is not published in a complete specification, so not every device implements every data point listed above.
+The binding requests the values it knows and stops requesting a value after the device has answered with an error several times in a row.
+Such a channel simply stays without a value on that device instead of being reported as zero.

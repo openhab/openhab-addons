@@ -8,6 +8,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Solar Power</label>
 		<description>Photovoltaic power currently produced</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -15,6 +19,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
 		<description>Power flowing into or out of the battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -22,6 +30,10 @@
 		<item-type>Number:Power</item-type>
 		<label>House Power</label>
 		<description>Power currently consumed by the household</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -29,6 +41,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Grid Power</label>
 		<description>Power drawn from or fed into the grid</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -36,6 +52,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Additional Power</label>
 		<description>Power of an additional producer or consumer</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -57,6 +77,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Wallbox Power</label>
 		<description>Power drawn by all wallboxes</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -64,6 +88,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Wallbox Solar Power</label>
 		<description>Part of the wallbox power that comes from solar</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 

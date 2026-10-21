@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -96,6 +97,7 @@ public class RscpClient implements AutoCloseable {
             this.output = newSocket.getOutputStream();
             this.cipher = new RscpCipher(key);
         } catch (IOException e) {
+            restoreInterrupt(e);
             close();
             throw new RscpException("Cannot connect to " + host + ":" + port, e);
         }
@@ -262,6 +264,7 @@ public class RscpClient implements AutoCloseable {
             currentOutput.flush();
             logger.trace("Sent {} plain bytes, {} encrypted bytes", frame.length, encrypted.length);
         } catch (IOException e) {
+            restoreInterrupt(e);
             throw new RscpException("Cannot send the request: " + e.getMessage(), e);
         }
     }
@@ -308,7 +311,23 @@ public class RscpClient implements AutoCloseable {
             logger.trace("Received {} encrypted bytes for a plain frame of {} bytes", raw.size(), totalPlain);
             return java.util.Arrays.copyOf(plain, totalPlain);
         } catch (IOException e) {
+            restoreInterrupt(e);
             throw new RscpException("Cannot read the response: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Keeps an interruption visible to the caller.
+     *
+     * <p>
+     * A {@link SocketTimeoutException} is also an {@link InterruptedIOException}, but it only reports that the
+     * device stayed silent and is an expected communication failure. Any other {@link InterruptedIOException}
+     * means the thread was interrupted, for example because the handler is being disposed, so the flag is set
+     * again and the callers stop instead of retrying.
+     */
+    private static void restoreInterrupt(IOException e) {
+        if (e instanceof InterruptedIOException && !(e instanceof SocketTimeoutException)) {
+            Thread.currentThread().interrupt();
         }
     }
 

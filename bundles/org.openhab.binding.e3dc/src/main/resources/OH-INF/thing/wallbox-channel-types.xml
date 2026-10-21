@@ -8,6 +8,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Session Power L1</label>
 		<description>Power on phase L1 in the charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -15,6 +19,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Session Power L2</label>
 		<description>Power on phase L2 in the charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -22,6 +30,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Session Power L3</label>
 		<description>Power on phase L3 in the charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -29,6 +41,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
 		<description>Energy produced since commissioning</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -36,6 +52,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy</label>
 		<description>Energy taken from the photovoltaic system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -167,6 +187,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Session Energy L1</label>
 		<description>Energy drawn on phase L1 in the last charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -181,6 +205,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Session Energy L2</label>
 		<description>Energy drawn on phase L2 in the last charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -195,6 +223,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Session Energy L3</label>
 		<description>Energy drawn on phase L3 in the last charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 

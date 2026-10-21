@@ -22,6 +22,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Remaining Charge Power</label>
 		<description>Charge power still available</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -29,6 +33,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Remaining Discharge Power</label>
 		<description>Discharge power still available</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -57,6 +65,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Battery Charge Limit</label>
 		<description>Charge power limit reported by the battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -64,6 +76,10 @@
 		<item-type>Number:Power</item-type>
 		<label>DC/DC Charge Limit</label>
 		<description>Charge power limit of the DC/DC converter</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -71,6 +87,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Used Charge Limit</label>
 		<description>Charge power limit currently applied</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -78,6 +98,10 @@
 		<item-type>Number:Power</item-type>
 		<label>User Charge Limit</label>
 		<description>Charge power limit set by the user</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -85,6 +109,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Battery Discharge Limit</label>
 		<description>Discharge power limit reported by the battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -92,6 +120,10 @@
 		<item-type>Number:Power</item-type>
 		<label>DC/DC Discharge Limit</label>
 		<description>Discharge power limit of the DC/DC converter</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -99,6 +131,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Used Discharge Limit</label>
 		<description>Discharge power limit currently applied</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -106,6 +142,10 @@
 		<item-type>Number:Power</item-type>
 		<label>User Discharge Limit</label>
 		<description>Discharge power limit set by the user</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -132,7 +172,7 @@
 
 	<channel-type id="battery-wallbox-disable-at-mix-mode">
 		<item-type>Switch</item-type>
-		<label>Disable Battery at Mix Mode</label>
+		<label>Battery Off in Mix Mode</label>
 		<description>No battery charging while the wallbox charges in mix mode</description>
 		<state/>
 	</channel-type>
