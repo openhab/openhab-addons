@@ -269,6 +269,8 @@ class ThingDiscoveryServiceTest {
         assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL));
         device.deviceModel = "TWINGUARD";
         assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_TWINGUARD));
+        device.deviceModel = "PLUG_COMPACT_DUAL";
+        assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT));
     }
 
     @Test

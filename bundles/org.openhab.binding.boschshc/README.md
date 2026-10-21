@@ -68,6 +68,7 @@ A simple light control.
 ### Compact Smart Plug
 
 A compact smart plug with energy monitoring capabilities.
+Also used for the Compact Smart Plug [+M].
 
 **Thing Type ID**: `smart-plug-compact`
 
