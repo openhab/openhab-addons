@@ -538,11 +538,6 @@ public class Shelly2RpcSocket implements WriteCallback {
     }
 
     /**
-     * Jetty reports close/error of a previous session asynchronously, possibly after a reconnect already released it
-     * or installed a new one; tearing down for it would drop the requests queued for, or the connection of, the new
-     * session.
-     */
-    /**
      * A reconnect started after a close/error was reported assigns a new id, so the late callback can be recognized
      * and must not tear down the replacement connection.
      */
@@ -550,6 +545,11 @@ public class Shelly2RpcSocket implements WriteCallback {
         return this.connectionId == connectionId;
     }
 
+    /**
+     * Jetty reports close/error of a previous session asynchronously, possibly after a reconnect already released it
+     * or installed a new one; tearing down for it would drop the requests queued for, or the connection of, the new
+     * session.
+     */
     private boolean isStaleSession(@Nullable Session callbackSession) {
         return callbackSession != null && !callbackSession.equals(this.session);
     }
