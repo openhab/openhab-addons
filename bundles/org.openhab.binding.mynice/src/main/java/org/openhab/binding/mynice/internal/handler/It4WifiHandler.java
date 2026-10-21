@@ -291,7 +291,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
     }
 
     public void communicationError(It4WifiConnector source, String message) {
-        if (connector.orElse(null) != source) {
+        if (!source.equals(connector.orElse(null))) {
             return;
         }
 
