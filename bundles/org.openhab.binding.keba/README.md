@@ -129,7 +129,7 @@ Shared channels retain one ID and use protocol fallback where supported.
 | `sessionrfidclass`        | `String`                   | Yes       | UDP                 | RFID authorization class used for the last charging session.                                                                                   |
 | `setenergylimit`          | `Number:Energy`            | No        | Modbus TCP, UDP     | Energy limit for an active or next charging session. Send an energy quantity, for example in watt-hours.                                       |
 | `start`                   | `Switch`                   | No        | REST                | Send `ON` to request that REST starts a charging session.                                                                                      |
-| `stop`                    | `Switch`                   | No        | REST                | Send `ON` to request that REST stops the active charging session.                                                                              |
+| `stop`                    | `Switch`                   | No        | Modbus TCP, REST    | Send `ON` to stop charging: Modbus TCP sets the charging current to `0` mA, otherwise REST stops the session.                                  |
 | `udpstop`                 | `String`                   | No        | UDP                 | Send a UDP stop command with the explicitly supplied 16-digit session RFID tag.                                                                |
 | `authreq`                 | `Switch`                   | Yes       | UDP                 | Whether authentication is required before a charging session can begin.                                                                        |
 | `authon`                  | `Switch`                   | Yes       | UDP, REST           | Whether charging authorization is enabled.                                                                                                     |
@@ -180,6 +180,10 @@ The OpenAPI specification lists these values but does not define their detailed 
 
 `maxsystemcurrent` is the wallbox hardware limit; `maxpilotcurrent` is the current offered to the vehicle;
 `maxpresetcurrent` is the writable user setpoint.
+
+`stop` prefers Modbus TCP and writes `0` mA to register 5004, which suspends the charging session.
+The wallbox keeps this setpoint until a new charging current of at least `6000 mA` is sent, for example via `maxpresetcurrent` or the `setChargingCurrent` action.
+Without Modbus TCP, `stop` uses the REST `stop-charging` request.
 
 `phaseswitchstate` accepts `1` or `3` through REST, Modbus or UDP.
 Commands follow the reported `phaseswitchsource`: `2` uses REST, `3` uses Modbus and `4` uses UDP, without protocol fallback.

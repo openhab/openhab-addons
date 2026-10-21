@@ -1391,11 +1391,13 @@ class KeContactCombinedHandlerTest {
         ChannelUID enabled = new ChannelUID(uid, "enableduser");
         ChannelUID failsafeCurrent = new ChannelUID(uid, "failsafecurrent");
         ChannelUID failsafeTimeout = new ChannelUID(uid, "failsafetimeout");
+        ChannelUID stop = new ChannelUID(uid, "stop");
         Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
                 .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "udpEnabled", false)))
                 .withChannels(ChannelBuilder.create(enabled, "Switch").build(),
                         ChannelBuilder.create(failsafeCurrent, "Number:ElectricCurrent").build(),
-                        ChannelBuilder.create(failsafeTimeout, "Number:Time").build())
+                        ChannelBuilder.create(failsafeTimeout, "Number:Time").build(),
+                        ChannelBuilder.create(stop, "Switch").build())
                 .build();
         ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
         ModbusCommunicationInterface comms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
@@ -1437,6 +1439,14 @@ class KeContactCombinedHandlerTest {
             assertNotNull(write);
             assertEquals(5018, write.getReference());
             assertEquals(30, write.getRegisters().getRegister(0));
+
+            handler.handleCommand(stop, OnOffType.OFF);
+            handler.handleCommand(stop, OnOffType.ON);
+            write = writes.poll(15, TimeUnit.SECONDS);
+            assertNotNull(write);
+            assertEquals(5004, write.getReference());
+            assertEquals(0, write.getRegisters().getRegister(0));
+            assertNull(writes.poll(1500, TimeUnit.MILLISECONDS));
         } finally {
             handler.dispose();
         }
@@ -2064,6 +2074,8 @@ class KeContactCombinedHandlerTest {
                 assertEquals(Protocol.MODBUS, KeContactCombinedHandler.sourceFor("unlockplug", true, true));
                 assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("unlockplug", false, true));
                 assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("unlockplug", false, false));
+                assertEquals(Protocol.MODBUS, KeContactCombinedHandler.sourceFor("stop", true, true));
+                assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("stop", false, true));
                 verifyNoInteractions(manager, transceiver);
 
                 handler.handleCommand(unlock, OnOffType.ON);

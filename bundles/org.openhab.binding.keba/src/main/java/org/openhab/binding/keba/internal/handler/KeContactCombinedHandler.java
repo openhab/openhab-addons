@@ -95,11 +95,12 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     private static final Set<String> REST_SHARED = Objects.requireNonNull(Set.of("state", "I1", "I2", "I3", "U1", "U2",
             "U3", "power", "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent",
             "maxsystemcurrent", "phaseswitchstate", "phaseswitchsource"));
-    private static final Set<String> MODBUS_CHANNELS = Objects.requireNonNull(Set.of("state", "wallbox", "vehicle",
-            "locked", "errorcode", "I1", "I2", "I3", "power", "totalconsumption", "U1", "U2", "U3", "powerfactor",
-            "maxpilotcurrent", "maxsystemcurrent", "fastchargingstatus", "sessionrfidtag", "sessionconsumption",
-            "phaseswitchsource", "phaseswitchstate", "failsafecurrent", "failsafetimeout", "maxpresetcurrent",
-            "setenergylimit", "unlockplug", "enableduser", "failsafepersist", "activatefastcharging"));
+    private static final Set<String> MODBUS_CHANNELS = Objects
+            .requireNonNull(Set.of("state", "wallbox", "vehicle", "locked", "errorcode", "I1", "I2", "I3", "power",
+                    "totalconsumption", "U1", "U2", "U3", "powerfactor", "maxpilotcurrent", "maxsystemcurrent",
+                    "fastchargingstatus", "sessionrfidtag", "sessionconsumption", "phaseswitchsource",
+                    "phaseswitchstate", "failsafecurrent", "failsafetimeout", "maxpresetcurrent", "setenergylimit",
+                    "unlockplug", "enableduser", "failsafepersist", "activatefastcharging", CHANNEL_STOP_CHARGING));
     private static final Set<String> UDP_CHANNELS = Objects.requireNonNull(Set.of("backend", "timequality", "bootflag",
             "dipswitch1", "dipswitch2", "enabledsystem", "enableduser", "maxpresetcurrent", "maxpresetcurrentrange",
             "error1", "error2", "state", "wallbox", "vehicle", "locked", "maxpilotcurrent", "maxpilotcurrentdutycyle",
@@ -544,10 +545,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     }
 
     static Protocol sourceFor(String channel, boolean modbusOnline, boolean restOnline) {
-        if ("stop".equals(channel)) {
-            return restOnline ? Protocol.REST : Protocol.UDP;
-        }
-        if (CHANNEL_UNLOCK_PLUG.equals(channel)) {
+        if (CHANNEL_UNLOCK_PLUG.equals(channel) || CHANNEL_STOP_CHARGING.equals(channel)) {
             return modbusOnline ? Protocol.MODBUS : restOnline ? Protocol.REST : Protocol.UDP;
         }
         if (REST_ONLY.contains(channel)) {

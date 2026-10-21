@@ -240,7 +240,9 @@
 			</channel>
 			<channel id="stop" typeId="command">
 				<label>Stop Charging</label>
-				<description>Send ON to request that the REST API stops the active charging session.</description>
+				<description>Send ON to stop charging. Modbus TCP suspends the session by setting the charging current
+					to 0 mA until
+					a new current is set; without Modbus TCP, the REST API stops the session.</description>
 			</channel>
 			<channel id="togglephaseswitch" typeId="command">
 				<label>Toggle Phase Switch</label>
