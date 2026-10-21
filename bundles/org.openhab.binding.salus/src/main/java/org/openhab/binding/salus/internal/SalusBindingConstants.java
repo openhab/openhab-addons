@@ -63,6 +63,21 @@ public class SalusBindingConstants {
             public static final String EXPECTED_TEMPERATURE = "expected-temperature";
             public static final String WORK_TYPE = "work-type";
             public static final String RUNNING_STATE = "running-state";
+            public static final String COOLING_SETPOINT = "cooling-setpoint";
+            public static final String SYSTEM_MODE = "system-mode";
+            public static final String KEYPAD_LOCK = "keypad-lock";
+            public static final String ALLOW_LOCAL_UNLOCK = "allow-local-unlock";
+            public static final String TEMPERATURE_OFFSET = "temperature-offset";
+            public static final String FROST_TEMPERATURE = "frost-temperature";
+            public static final String MINIMUM_SETPOINT = "minimum-setpoint";
+            public static final String MAXIMUM_SETPOINT = "maximum-setpoint";
+            public static final String VALVE_PROTECTION = "valve-protection";
+            public static final String DISPLAY_OFF = "display-off";
+            public static final String DISPLAY_UNIT = "display-unit";
+            public static final String CLOCK_FORMAT = "clock-format";
+            public static final String ACTIVE_ERRORS = "active-errors";
+            public static final String RSSI = "rssi";
+            public static final String LQI = "lqi";
         }
 
         public static final String GENERIC_OUTPUT_CHANNEL = "generic-output-channel";
