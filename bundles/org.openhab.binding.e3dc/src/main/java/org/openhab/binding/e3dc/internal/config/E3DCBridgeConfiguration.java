@@ -34,6 +34,12 @@ public class E3DCBridgeConfiguration {
     /** Longest interval of the history request in minutes, one day. */
     public static final int MAX_HISTORY_INTERVAL_MINUTES = 1440;
 
+    /** Shortest socket timeout in seconds. */
+    public static final int MIN_TIMEOUT_SECONDS = 1;
+
+    /** Longest socket timeout in seconds, chosen so the conversion to milliseconds stays in the integer range. */
+    public static final int MAX_TIMEOUT_SECONDS = 60;
+
     /** Host name or IP address of the device. */
 
     public String host = "";
@@ -81,5 +87,16 @@ public class E3DCBridgeConfiguration {
     public int historyIntervalSeconds() {
         int minutes = Math.clamp(historyInterval, MIN_HISTORY_INTERVAL_MINUTES, MAX_HISTORY_INTERVAL_MINUTES);
         return Math.max(minutes * 60, refreshIntervalSeconds());
+    }
+
+    /**
+     * The configured socket timeout limited to the supported range, in seconds.
+     *
+     * <p>
+     * The value is passed on as milliseconds, so an unbounded one from a things file would overflow the
+     * multiplication and end up as a negative timeout.
+     */
+    public int timeoutSeconds() {
+        return Math.clamp(timeout, MIN_TIMEOUT_SECONDS, MAX_TIMEOUT_SECONDS);
     }
 }

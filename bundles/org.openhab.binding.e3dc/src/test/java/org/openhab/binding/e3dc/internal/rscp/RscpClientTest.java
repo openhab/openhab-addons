@@ -286,11 +286,15 @@ class RscpClientTest {
             };
             Thread first = new Thread(ask, "request-1");
             Thread second = new Thread(ask, "request-2");
+            first.setDaemon(true);
+            second.setDaemon(true);
             first.start();
             second.start();
             first.join(10_000);
             second.join(10_000);
 
+            assertFalse(first.isAlive(), "the first request must have finished");
+            assertFalse(second.isAlive(), "the second request must have finished");
             assertNull(failure.get(), "both requests must be answered");
         }
         script.await();

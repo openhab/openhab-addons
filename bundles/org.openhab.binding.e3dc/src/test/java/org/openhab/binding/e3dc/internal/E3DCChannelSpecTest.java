@@ -108,11 +108,10 @@ class E3DCChannelSpecTest {
     }
 
     @Test
-    void channelIdsAreUniqueWithinAGroup() {
+    void channelIdsAreNonBlankAndLowerCase() {
         for (Map.Entry<String, Map<String, E3DCChannelSpec>> group : allGroups()) {
-            // a Map cannot hold duplicates, so verify the ids are also non blank and lower case kebab
             for (String channelId : group.getValue().keySet()) {
-                assertFalse(channelId.isBlank());
+                assertFalse(channelId.isBlank(), "the channel id of " + group.getKey() + " is blank");
                 assertTrue(channelId.equals(channelId.toLowerCase(java.util.Locale.ROOT)),
                         "channel id is not lower case: " + channelId);
             }

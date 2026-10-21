@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
 
@@ -91,6 +92,10 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
 
     private @Nullable E3DCPowerMode heldMode;
     private long heldUntilMillis;
+
+    /** Serializes access to the pending lock switch check, which runs on a scheduler thread. */
+    private final Object verifyLock = new Object();
+    private @Nullable ScheduledFuture<?> verifyJob;
 
     /** The trackers and temperature sensors the channels were created for. */
     private E3DCInverterChannels.@Nullable Found knownInverterChannels;
@@ -401,9 +406,9 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
                 Map.of());
         Map<String, TimeSeries> series = new LinkedHashMap<>();
         int delivered = 0;
-        int emptyInARow = 0;
+        EmptyPeriods emptyPeriods = new EmptyPeriods(maxEmpty);
         for (LocalDate start : starts) {
-            if (emptyInARow >= maxEmpty) {
+            if (emptyPeriods.exhausted()) {
                 break;
             }
             RscpValue response;
@@ -412,7 +417,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
                         List.of(E3DCBridgeHandler.periodHistoryRequest(container, start, daysOf(container, start))));
             } catch (RscpException e) {
                 logger.debug("History of {} not fetched: {}", start, e.getMessage());
-                emptyInARow++;
+                emptyPeriods.record(false);
                 continue;
             }
             Map<String, State> states = new LinkedHashMap<>();
@@ -438,10 +443,10 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
                     timeSeries.add(stamp, state);
                 });
                 delivered++;
-                emptyInARow = 0;
+                emptyPeriods.record(true);
             } else {
                 logger.debug("The device holds no history for {}", start);
-                emptyInARow++;
+                emptyPeriods.record(false);
             }
         }
         for (Map.Entry<String, TimeSeries> entry : series.entrySet()) {
@@ -462,6 +467,33 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             return decimal.doubleValue() != 0;
         }
         return true;
+    }
+
+    /**
+     * The rule that ends a history fetch: it stops after a given number of periods in a row without data.
+     *
+     * <p>
+     * A single gap is tolerated, because a period the device does not report says nothing about the periods
+     * before it, and the years before the installation of the device must not be requested one by one.
+     */
+    static final class EmptyPeriods {
+
+        private final int limit;
+        private int inARow;
+
+        EmptyPeriods(int limit) {
+            this.limit = limit;
+        }
+
+        /** Whether no further period may be requested. */
+        boolean exhausted() {
+            return inARow >= limit;
+        }
+
+        /** Records whether the period that was just requested had data. */
+        void record(boolean hasData) {
+            inARow = hasData ? 0 : inARow + 1;
+        }
     }
 
     /** What is wrong with a list of periods, or {@code null} when the device can take it. */
@@ -501,17 +533,49 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             }
             if (!updated.equals(current) && !writeIdlePeriods(updated)) {
                 logger.warn("The lock of {} was not changed because the device did not accept the idle periods",
-                        type.name().toLowerCase());
+                        type.name().toLowerCase(Locale.ROOT));
                 return;
             }
             if (on && !enableIdlePeriods()) {
                 logger.warn("The lock of {} is not active because the device did not confirm switching on the idle"
-                        + " periods", type.name().toLowerCase());
+                        + " periods", type.name().toLowerCase(Locale.ROOT));
                 return;
             }
         }
         // the device takes a moment to report a list it has just accepted, so the check does not run at once
-        scheduler.schedule(() -> verifyBlock(channelUID, type, on, 1), VERIFY_DELAY_SECONDS, TimeUnit.SECONDS);
+        scheduleVerify(channelUID, type, on, 1);
+    }
+
+    /**
+     * Queues the next check of a lock switch, replacing a check that is still pending.
+     *
+     * <p>
+     * The chain is cancelled in {@link #dispose()}, otherwise a check that was waiting would keep running
+     * after the thing is gone, ask the disposed handler for its bridge and repeat that until its attempts
+     * are used up.
+     */
+    private void scheduleVerify(ChannelUID channelUID, E3DCIdlePeriod.Type type, boolean on, int attempt) {
+        synchronized (verifyLock) {
+            cancelVerifyJob();
+            verifyJob = scheduler.schedule(() -> verifyBlock(channelUID, type, on, attempt), VERIFY_DELAY_SECONDS,
+                    TimeUnit.SECONDS);
+        }
+    }
+
+    private void cancelVerifyJob() {
+        ScheduledFuture<?> job = verifyJob;
+        verifyJob = null;
+        if (job != null) {
+            job.cancel(false);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        synchronized (verifyLock) {
+            cancelVerifyJob();
+        }
+        super.dispose();
     }
 
     /**
@@ -533,18 +597,17 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             return;
         }
         if (attempt < VERIFY_ATTEMPTS) {
-            scheduler.schedule(() -> verifyBlock(channelUID, type, on, attempt + 1), VERIFY_DELAY_SECONDS,
-                    TimeUnit.SECONDS);
+            scheduleVerify(channelUID, type, on, attempt + 1);
             return;
         }
         if (state == null) {
             logger.warn("The lock of {} could not be checked because the device did not report its idle periods",
-                    type.name().toLowerCase());
+                    type.name().toLowerCase(Locale.ROOT));
             return;
         }
         logger.warn("The device does not report the lock of {} as {} after {} s, idle periods in use: {}, periods: {}",
-                type.name().toLowerCase(), on ? "active" : "released", VERIFY_ATTEMPTS * VERIFY_DELAY_SECONDS,
-                state.enabled(), E3DCIdlePeriod.toText(state.periods()));
+                type.name().toLowerCase(Locale.ROOT), on ? "active" : "released",
+                VERIFY_ATTEMPTS * VERIFY_DELAY_SECONDS, state.enabled(), E3DCIdlePeriod.toText(state.periods()));
         updateState(channelUID, blocked ? OnOffType.ON : OnOffType.OFF);
     }
 

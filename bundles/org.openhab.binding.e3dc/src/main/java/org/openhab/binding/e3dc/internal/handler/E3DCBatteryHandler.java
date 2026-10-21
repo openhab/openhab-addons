@@ -36,11 +36,18 @@ public class E3DCBatteryHandler extends E3DCThingHandler {
             "usable-energy", "usable-capacity", "usable-remaining-energy", "usable-remaining-capacity");
 
     private final E3DCChannelRegistry registry = E3DCChannelSpec.battery();
-    private final E3DCBatteryConfiguration config;
+    private E3DCBatteryConfiguration config = new E3DCBatteryConfiguration();
 
     public E3DCBatteryHandler(Thing thing) {
         super(thing);
-        this.config = thing.getConfiguration().as(E3DCBatteryConfiguration.class);
+    }
+
+    @Override
+    public void initialize() {
+        // read here rather than in the constructor: an updated index reaches an already created handler only
+        // through initialize(), which the framework calls again after a configuration change
+        config = getConfigAs(E3DCBatteryConfiguration.class);
+        super.initialize();
     }
 
     @Override
