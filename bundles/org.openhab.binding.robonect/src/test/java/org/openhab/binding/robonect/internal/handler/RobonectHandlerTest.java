@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -70,6 +71,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -87,6 +89,7 @@ import org.openhab.core.types.UnDefType;
  * @author Nico Brüttner - Dynamic channel and duration tests
  * @author Nico Brüttner - Command response and delayed refresh tests
  * @author Nico Brüttner - Weather location, condition and timestamp tests
+ * @author Nico Brüttner - Indexed channel labels and quantity tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -140,6 +143,8 @@ public class RobonectHandlerTest {
         verify(callbackMock).thingUpdated(updated.capture());
         assertNotNull(updated.getValue().getChannel("wire-sensor-5-label"));
         assertNotNull(updated.getValue().getChannel("wire-sensor-5-g2"));
+        assertEquals("Wire Sensor 5 Signal G2",
+                Objects.requireNonNull(updated.getValue().getChannel("wire-sensor-5-g2")).getLabel());
         verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-1-g2"), new DecimalType(0));
         verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-2-g2"), new DecimalType(-25));
         verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-5-g2"), new DecimalType(50));
@@ -148,12 +153,16 @@ public class RobonectHandlerTest {
         when(robonectClientMock.getBatteryInfo()).thenReturn(parser.parse("""
                 {"successful":true,"batteries":[{"id":0,"charge":70},{"id":1,"charge":80}]}
                 """, BatteryInfo.class));
-        subject.handleCommand(new ChannelUID(thing.getUID(), "battery-charge"), RefreshType.REFRESH);
+        subject.handleCommand(new ChannelUID(thing.getUID(), "battery-1-charge"), RefreshType.REFRESH);
         verify(callbackMock, atLeastOnce()).thingUpdated(updated.capture());
         assertNotNull(updated.getValue().getChannel("battery-2-charge"));
+        assertEquals("Battery 2 Charge",
+                Objects.requireNonNull(updated.getValue().getChannel("battery-2-charge")).getLabel());
         assertNotNull(updated.getValue().getChannel("wire-sensor-5-label"));
-        verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "battery-charge"),
+        verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "battery-1-charge"),
                 new QuantityType<>(70, org.openhab.core.library.unit.Units.PERCENT));
+        verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "battery-2-charge"),
+                new QuantityType<>(80, Units.PERCENT));
 
         when(robonectClientMock.getWireInfo()).thenReturn(parser.parse("""
                 {"successful":true,"sensors":[{"description":"Left","quality":70}]}
@@ -164,6 +173,16 @@ public class RobonectHandlerTest {
         assertNull(updated.getValue().getChannel("wire-sensor-5-g2"));
         verify(callbackMock).stateUpdated(eq(new ChannelUID(thing.getUID(), "wire-sensor-1-g2")), any());
         assertNotNull(updated.getValue().getChannel("battery-2-charge"));
+
+        when(robonectClientMock.getBatteryInfo()).thenReturn(parser.parse("""
+                {"successful":true,"batteries":[]}
+                """, BatteryInfo.class));
+        subject.handleCommand(new ChannelUID(thing.getUID(), "battery-1-charge"), RefreshType.REFRESH);
+        assertTrue(subject.getThing().getChannels().stream()
+                .noneMatch(channel -> channel.getUID().getId().startsWith("battery-")));
+        assertNotNull(subject.getThing().getChannel("wire-sensor-1-label"));
+        verify(callbackMock, never()).stateUpdated(argThat(channel -> channel.getId().matches("battery-[a-z].*")),
+                any());
     }
 
     @Test
@@ -215,6 +234,36 @@ public class RobonectHandlerTest {
     }
 
     @Test
+    public void shouldUpdateExistingPushChannelLabelsOnlyOnce() {
+        ThingUID uid = new ThingUID("1:2:3");
+        Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid)
+                .withChannels(
+                        ChannelBuilder.create(new ChannelUID(uid, "push-trigger-0-parked-enter"), "Switch")
+                                .withLabel("Push Trigger Setting").build(),
+                        ChannelBuilder.create(new ChannelUID(uid, "push-trigger-0-parked-leave"), "Switch")
+                                .withLabel("Push Trigger Setting").build())
+                .build();
+        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject.setCallback(callbackMock);
+        subject.setRobonectClient(robonectClientMock);
+        when(robonectClientMock.getPushInfo()).thenReturn(new ModelParser().parse("""
+                {"successful":true,"push":{"trigger":{
+                "trigger0":{"name":"Parked","enter":true,"leave":false}}}}
+                """, PushInfo.class));
+
+        ChannelUID refresh = new ChannelUID(uid, "push-interval");
+        subject.handleCommand(refresh, RefreshType.REFRESH);
+
+        assertEquals("Push Trigger 0 Parked Enter",
+                Objects.requireNonNull(subject.getThing().getChannel("push-trigger-0-parked-enter")).getLabel());
+        assertEquals("Push Trigger 0 Parked Leave",
+                Objects.requireNonNull(subject.getThing().getChannel("push-trigger-0-parked-leave")).getLabel());
+        clearInvocations(callbackMock);
+        subject.handleCommand(refresh, RefreshType.REFRESH);
+        verify(callbackMock, never()).thingUpdated(any());
+    }
+
+    @Test
     public void shouldCreatePushTriggerChannelsBeyondTen() {
         ThingUID uid = new ThingUID("1:2:3");
         Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid)
@@ -234,6 +283,8 @@ public class RobonectHandlerTest {
         verify(callbackMock).thingUpdated(updated.capture());
         assertNotNull(updated.getValue().getChannel("push-trigger-0-parked-enter"));
         assertNotNull(updated.getValue().getChannel("push-trigger-12-way_home-leave"));
+        assertEquals("Push Trigger 12 WAY Home Leave",
+                Objects.requireNonNull(updated.getValue().getChannel("push-trigger-12-way_home-leave")).getLabel());
         assertEquals(4, updated.getValue().getChannels().size());
         assertNull(updated.getValue().getChannel("push-trigger-0-name"));
         assertNull(updated.getValue().getChannel("push-trigger-12-enter"));
@@ -640,14 +691,15 @@ public class RobonectHandlerTest {
         assertEquals(MowerMode.AUTO.name(), stateCaptorMode.getValue().toFullString());
         assertEquals(OnOffType.ON, stateCaptorStarted.getValue());
         assertEquals(1, ((DecimalType) stateCaptorWlan.getValue()).intValue());
-        assertEquals(-88, ((DecimalType) stateCaptorWlanStrength.getValue()).intValue());
+        assertEquals(new QuantityType<>(-88, Units.DECIBEL_MILLIWATTS), stateCaptorWlanStrength.getValue());
     }
 
     @Test
     public void shouldRefreshWeatherLocationConditionsAndUnixTimes() {
         when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser().parse("""
-                {"successful":true,"service":{"location":{"cityid":3208628}},
-                "weather":{"sunrise":1792482616,"sunset":1792519939,
+                {"successful":true,"service":{"location":{"cityid":3208628},
+                "config":{"maxrain":40,"minhumidity":20,"maxhumidity":90}},
+                "weather":{"rain":20,"sunrise":1792482616,"sunset":1792519939,
                 "icon":"https://openweathermap.org/img/w/%s.png",
                 "condition":{"toorainy":false,"toocold":true,"toowarm":false,"toodry":false,
                 "toowet":false,"day":false,"night":true},
@@ -658,6 +710,14 @@ public class RobonectHandlerTest {
 
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid"),
                 new DecimalType(3208628));
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-rain"),
+                new QuantityType<>(20, Units.PERCENT));
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-max-rain"),
+                new QuantityType<>(40, Units.PERCENT));
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-min-humidity"),
+                new QuantityType<>(20, Units.PERCENT));
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-max-humidity"),
+                new QuantityType<>(90, Units.PERCENT));
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-icon"),
                 new StringType("https://openweathermap.org/img/w/%s.png"));
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-sunrise"),
@@ -1027,6 +1087,12 @@ public class RobonectHandlerTest {
                 """.formatted(time, time), TimersInfo.class));
         ChannelUID start = new ChannelUID(uid, "timer-1-start");
         subject.handleCommand(start, RefreshType.REFRESH);
+        assertEquals("Timer 1 Start Time",
+                Objects.requireNonNull(subject.getThing().getChannel("timer-1-start")).getLabel());
+        assertEquals("Timer 1 End Time",
+                Objects.requireNonNull(subject.getThing().getChannel("timer-1-end")).getLabel());
+        assertEquals("Timer 1 Monday",
+                Objects.requireNonNull(subject.getThing().getChannel("timer-1-monday")).getLabel());
         var value = ArgumentCaptor.forClass(State.class);
         verify(callbackMock).stateUpdated(eq(start), value.capture());
         DateTimeType state = (DateTimeType) value.getValue();

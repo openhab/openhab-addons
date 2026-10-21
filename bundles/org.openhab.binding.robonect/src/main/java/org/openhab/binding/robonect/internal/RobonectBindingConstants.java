@@ -73,13 +73,6 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_WLAN_AP_DHCP = "wlan-ap-dhcp";
     public static final String CHANNEL_WLAN_AP_DHCP_START = "wlan-ap-dhcp-start";
     public static final String CHANNEL_WLAN_AP_DHCP_END = "wlan-ap-dhcp-end";
-    public static final String CHANNEL_BATTERY_ID = "battery-id";
-    public static final String CHANNEL_BATTERY_CHARGE = "battery-charge";
-    public static final String CHANNEL_BATTERY_VOLTAGE = "battery-voltage";
-    public static final String CHANNEL_BATTERY_CURRENT = "battery-current";
-    public static final String CHANNEL_BATTERY_TEMPERATURE = "battery-temperature";
-    public static final String CHANNEL_BATTERY_CAPACITY = "battery-capacity";
-    public static final String CHANNEL_BATTERY_REMAINING_CAPACITY = "battery-remaining-capacity";
     public static final String CHANNEL_LEFT_DRIVE_POWER = "left-drive-power";
     public static final String CHANNEL_LEFT_DRIVE_SPEED = "left-drive-speed";
     public static final String CHANNEL_LEFT_DRIVE_CURRENT = "left-drive-current";

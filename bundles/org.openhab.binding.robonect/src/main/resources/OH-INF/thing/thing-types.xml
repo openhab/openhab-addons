@@ -9,265 +9,612 @@
 		<description>Mower robot connected via robonect module</description>
 		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 		<channels>
-			<channel id="name" typeId="nameType"/>
-			<channel id="id" typeId="idType"/>
-			<channel id="timestamp" typeId="timestampType"/>
-			<channel id="service-reboot" typeId="serviceOperationType">
+			<channel id="name" typeId="textSettingType">
+				<label>Mower Name</label>
+				<description>Name displayed for the mower in Robonect. Accepts a new name as a command.</description>
+			</channel>
+			<channel id="id" typeId="readOnlyStringType">
+				<label>Mower ID</label>
+				<description>Identifier reported by the mower.</description>
+			</channel>
+			<channel id="timestamp" typeId="dateTimeType">
+				<label>Mower Time</label>
+				<description>Current date and time reported by the Robonect clock.</description>
+			</channel>
+			<channel id="service-reboot" typeId="switchCommandType">
 				<label>Reboot Robonect</label>
+				<description>Send ON to restart the Robonect module. The WLAN connection is interrupted during the restart.</description>
 			</channel>
-			<channel id="service-shutdown" typeId="serviceOperationType">
+			<channel id="service-shutdown" typeId="switchCommandType">
 				<label>Shut Down Robonect</label>
+				<description>Send ON to shut down the Robonect module.</description>
 			</channel>
-			<channel id="service-sleep" typeId="serviceOperationType">
+			<channel id="service-sleep" typeId="switchCommandType">
 				<label>Put Robonect to Sleep</label>
+				<description>Send ON to put the Robonect module into standby.</description>
 			</channel>
-			<channel id="door-enabled" typeId="doorSwitchType"/>
-			<channel id="door-state" typeId="doorStateType"/>
-			<channel id="door-arrested" typeId="doorSwitchType"/>
-			<channel id="battery" typeId="system.battery-level"/>
-			<channel id="wlan-signal" typeId="system.signal-strength"/>
-			<channel id="wlan-signal-strength" typeId="wlanStrengthType"/>
-			<channel id="wlan-enabled" typeId="wlanSwitchType"/>
-			<channel id="wlan-ssid" typeId="wlanStringType"/>
-			<channel id="wlan-ip" typeId="wlanStringType"/>
-			<channel id="wlan-mac" typeId="wlanStringType"/>
-			<channel id="wlan-dhcp" typeId="wlanSwitchType"/>
-			<channel id="wlan-ping" typeId="wlanSwitchType"/>
-			<channel id="wlan-ping-time" typeId="wlanStringType"/>
-			<channel id="wlan-netmask" typeId="wlanStringType"/>
-			<channel id="wlan-gateway" typeId="wlanStringType"/>
-			<channel id="wlan-ap-enabled" typeId="wlanSwitchType"/>
-			<channel id="wlan-ap-ssid" typeId="wlanStringType"/>
-			<channel id="wlan-ap-mac" typeId="wlanStringType"/>
-			<channel id="wlan-ap-hidden" typeId="wlanSwitchType"/>
-			<channel id="wlan-ap-channel" typeId="wlanNumberType"/>
-			<channel id="wlan-ap-encryption" typeId="wlanStringType"/>
-			<channel id="wlan-ap-max-connections" typeId="wlanNumberType"/>
-			<channel id="wlan-ap-ip" typeId="wlanStringType"/>
-			<channel id="wlan-ap-netmask" typeId="wlanStringType"/>
-			<channel id="wlan-ap-gateway" typeId="wlanStringType"/>
-			<channel id="wlan-ap-dhcp" typeId="wlanSwitchType"/>
-			<channel id="wlan-ap-dhcp-start" typeId="wlanStringType"/>
-			<channel id="wlan-ap-dhcp-end" typeId="wlanStringType"/>
-			<channel id="battery-id" typeId="batteryIdType"/>
-			<channel id="battery-charge" typeId="batteryChargeType"/>
-			<channel id="battery-voltage" typeId="batteryVoltageType"/>
-			<channel id="battery-current" typeId="batteryCurrentType"/>
-			<channel id="battery-temperature" typeId="batteryTemperatureType"/>
-			<channel id="battery-capacity" typeId="batteryCapacityType"/>
-			<channel id="battery-remaining-capacity" typeId="batteryRemainingCapacityType"/>
-			<channel id="left-drive-power" typeId="driveMotorPowerType"/>
-			<channel id="left-drive-speed" typeId="driveMotorSpeedType"/>
-			<channel id="left-drive-current" typeId="driveMotorCurrentType"/>
-			<channel id="right-drive-power" typeId="driveMotorPowerType"/>
-			<channel id="right-drive-speed" typeId="driveMotorSpeedType"/>
-			<channel id="right-drive-current" typeId="driveMotorCurrentType"/>
-			<channel id="blade-motor-average" typeId="bladeMotorAverageType"/>
-			<channel id="blade-motor-speed" typeId="bladeMotorSpeedType"/>
-			<channel id="blade-motor-current" typeId="bladeMotorCurrentType"/>
-			<channel id="statistics-running-hours" typeId="statisticsHoursType"/>
-			<channel id="statistics-mowing-hours" typeId="statisticsHoursType"/>
-			<channel id="statistics-searching-hours" typeId="statisticsHoursType"/>
-			<channel id="statistics-charging-hours" typeId="statisticsHoursType"/>
-			<channel id="statistics-charges" typeId="statisticsCountType"/>
-			<channel id="statistics-errors" typeId="statisticsCountType"/>
+			<channel id="door-enabled" typeId="doorSwitchType">
+				<label>Garage Door Enabled</label>
+				<description>Whether the optional garage-door system is enabled.</description>
+			</channel>
+			<channel id="door-state" typeId="doorStateType">
+				<label>Garage Door Position</label>
+				<description>Position of the optional garage door: 0% open, 100% closed, 75% opening, and 25% closing. UP opens,
+					DOWN closes, and STOP releases the door.</description>
+			</channel>
+			<channel id="door-arrested" typeId="doorSwitchType">
+				<label>Garage Door Arrested</label>
+				<description>Whether the optional garage-door system reports that the door is arrested.</description>
+			</channel>
+			<channel id="battery" typeId="batteryLevelType">
+				<label>Mower Battery Level</label>
+				<description>Battery charge level as a percentage.</description>
+			</channel>
+			<channel id="wlan-signal" typeId="system.signal-strength">
+				<label>WLAN Signal Quality</label>
+				<description>WLAN signal quality, converted to a scale from 0 (weakest) to 4 (strongest).</description>
+			</channel>
+			<channel id="wlan-signal-strength" typeId="wlanStrengthType">
+				<label>WLAN Signal Strength</label>
+				<description>Received WLAN signal strength in dBm.</description>
+			</channel>
+			<channel id="wlan-enabled" typeId="readOnlySwitchType">
+				<label>WLAN Enabled</label>
+				<description>Whether Robonect is configured to connect to the WLAN.</description>
+			</channel>
+			<channel id="wlan-ssid" typeId="readOnlyStringType">
+				<label>WLAN SSID</label>
+				<description>Network name of the WLAN configured in Robonect.</description>
+			</channel>
+			<channel id="wlan-ip" typeId="readOnlyStringType">
+				<label>WLAN IP Address</label>
+				<description>IP address of the Robonect WLAN interface.</description>
+			</channel>
+			<channel id="wlan-mac" typeId="readOnlyStringType">
+				<label>WLAN MAC Address</label>
+				<description>MAC address of the Robonect WLAN interface.</description>
+			</channel>
+			<channel id="wlan-dhcp" typeId="readOnlySwitchType">
+				<label>WLAN DHCP Client</label>
+				<description>Whether the WLAN interface obtains its IP configuration through DHCP.</description>
+			</channel>
+			<channel id="wlan-ping" typeId="readOnlySwitchType">
+				<label>Gateway Ping Monitoring</label>
+				<description>Whether gateway connection monitoring is enabled. Robonect pings the gateway every 30 seconds and
+					reconnects the WLAN after three consecutive missed replies.</description>
+			</channel>
+			<channel id="wlan-ping-time" typeId="readOnlyStringType">
+				<label>Gateway Ping Time</label>
+				<description>Gateway ping response time as text, including the unit supplied by Robonect.</description>
+			</channel>
+			<channel id="wlan-netmask" typeId="readOnlyStringType">
+				<label>WLAN Netmask</label>
+				<description>Subnet mask of the Robonect WLAN interface.</description>
+			</channel>
+			<channel id="wlan-gateway" typeId="readOnlyStringType">
+				<label>WLAN Gateway</label>
+				<description>Gateway address used by the Robonect WLAN interface.</description>
+			</channel>
+			<channel id="wlan-ap-enabled" typeId="readOnlySwitchType">
+				<label>Access Point Enabled</label>
+				<description>Whether the Robonect access point is enabled.</description>
+			</channel>
+			<channel id="wlan-ap-ssid" typeId="readOnlyStringType">
+				<label>Access Point SSID</label>
+				<description>Network name broadcast by the Robonect access point.</description>
+			</channel>
+			<channel id="wlan-ap-mac" typeId="readOnlyStringType">
+				<label>Access Point MAC Address</label>
+				<description>MAC address of the Robonect access-point interface.</description>
+			</channel>
+			<channel id="wlan-ap-hidden" typeId="readOnlySwitchType">
+				<label>Access Point Hidden</label>
+				<description>Whether the access-point network name is hidden from WLAN scans.</description>
+			</channel>
+			<channel id="wlan-ap-channel" typeId="readOnlyNumberType">
+				<label>Access Point Radio Channel</label>
+				<description>Radio channel configured for the access point. The setting applies only while Robonect is not connected
+					to a WLAN.</description>
+			</channel>
+			<channel id="wlan-ap-encryption" typeId="readOnlyStringType">
+				<label>Access Point Encryption</label>
+				<description>Authentication and encryption mode reported for the access point.</description>
+			</channel>
+			<channel id="wlan-ap-max-connections" typeId="readOnlyNumberType">
+				<label>Access Point Client Limit</label>
+				<description>Maximum number of clients allowed to connect to the access point.</description>
+			</channel>
+			<channel id="wlan-ap-ip" typeId="readOnlyStringType">
+				<label>Access Point IP Address</label>
+				<description>IP address of the Robonect access-point interface.</description>
+			</channel>
+			<channel id="wlan-ap-netmask" typeId="readOnlyStringType">
+				<label>Access Point Netmask</label>
+				<description>Subnet mask of the Robonect access-point interface.</description>
+			</channel>
+			<channel id="wlan-ap-gateway" typeId="readOnlyStringType">
+				<label>Access Point Gateway</label>
+				<description>Gateway address configured for the Robonect access-point interface.</description>
+			</channel>
+			<channel id="wlan-ap-dhcp" typeId="readOnlySwitchType">
+				<label>Access Point DHCP Server</label>
+				<description>Whether the access point assigns IP addresses to connected clients through DHCP.</description>
+			</channel>
+			<channel id="wlan-ap-dhcp-start" typeId="readOnlyStringType">
+				<label>Access Point DHCP Range Start</label>
+				<description>First IP address in the access-point DHCP address pool.</description>
+			</channel>
+			<channel id="wlan-ap-dhcp-end" typeId="readOnlyStringType">
+				<label>Access Point DHCP Range End</label>
+				<description>Last IP address in the access-point DHCP address pool.</description>
+			</channel>
+			<channel id="left-drive-power" typeId="driveMotorPowerType">
+				<label>Left Drive Power Level</label>
+			</channel>
+			<channel id="left-drive-speed" typeId="driveMotorSpeedType">
+				<label>Left Drive Speed</label>
+			</channel>
+			<channel id="left-drive-current" typeId="driveMotorCurrentType">
+				<label>Left Drive Current</label>
+			</channel>
+			<channel id="right-drive-power" typeId="driveMotorPowerType">
+				<label>Right Drive Power Level</label>
+			</channel>
+			<channel id="right-drive-speed" typeId="driveMotorSpeedType">
+				<label>Right Drive Speed</label>
+			</channel>
+			<channel id="right-drive-current" typeId="driveMotorCurrentType">
+				<label>Right Drive Current</label>
+			</channel>
+			<channel id="blade-motor-average" typeId="readOnlyNumberAdvancedType">
+				<label>Blade Motor Average</label>
+				<description>Unscaled average diagnostic value reported for the blade motor.</description>
+			</channel>
+			<channel id="blade-motor-speed" typeId="bladeMotorSpeedType">
+				<label>Blade Motor Speed</label>
+				<description>Rotational speed of the blade motor.</description>
+			</channel>
+			<channel id="blade-motor-current" typeId="driveMotorCurrentType">
+				<label>Blade Motor Current</label>
+				<description>Electric current drawn by the blade motor.</description>
+			</channel>
+			<channel id="statistics-running-hours" typeId="statisticsHoursAdvancedType">
+				<label>Total Running Time</label>
+				<description>Total mower running time.</description>
+			</channel>
+			<channel id="statistics-mowing-hours" typeId="statisticsHoursAdvancedType">
+				<label>Total Mowing Time</label>
+				<description>Total time spent mowing.</description>
+			</channel>
+			<channel id="statistics-searching-hours" typeId="statisticsHoursAdvancedType">
+				<label>Total Charging-Station Search Time</label>
+				<description>Total time spent searching for the charging station.</description>
+			</channel>
+			<channel id="statistics-charging-hours" typeId="statisticsHoursAdvancedType">
+				<label>Total Charging Time</label>
+				<description>Total time spent charging.</description>
+			</channel>
+			<channel id="statistics-charges" typeId="readOnlyNumberAdvancedType">
+				<label>Full Charge Count</label>
+				<description>Number of full battery charges.</description>
+			</channel>
+			<channel id="statistics-errors" typeId="readOnlyNumberAdvancedType">
+				<label>Recorded Error Count</label>
+				<description>Number of errors recorded by the mower.</description>
+			</channel>
 			<channel id="statistics-seek" typeId="statisticsDurationsType">
-				<label>Recent Searching Durations</label>
+				<label>Recent Charging-Station Search Durations</label>
 			</channel>
-			<channel id="statistics-seek-min" typeId="statisticsDurationType">
-				<label>Minimum Search Duration</label>
+			<channel id="statistics-seek-min" typeId="statisticsDurationAdvancedType">
+				<label>Minimum Charging-Station Search Duration</label>
 			</channel>
-			<channel id="statistics-seek-max" typeId="statisticsDurationType">
-				<label>Maximum Search Duration</label>
+			<channel id="statistics-seek-max" typeId="statisticsDurationAdvancedType">
+				<label>Maximum Charging-Station Search Duration</label>
 			</channel>
-			<channel id="statistics-seek-average" typeId="statisticsDurationType">
-				<label>Average Search Duration</label>
+			<channel id="statistics-seek-average" typeId="statisticsDurationAdvancedType">
+				<label>Average Charging-Station Search Duration</label>
 			</channel>
 			<channel id="statistics-mowing" typeId="statisticsDurationsType">
 				<label>Recent Mowing Durations</label>
 			</channel>
-			<channel id="statistics-mowing-min" typeId="statisticsDurationType">
+			<channel id="statistics-mowing-min" typeId="statisticsDurationAdvancedType">
 				<label>Minimum Mowing Duration</label>
 			</channel>
-			<channel id="statistics-mowing-max" typeId="statisticsDurationType">
+			<channel id="statistics-mowing-max" typeId="statisticsDurationAdvancedType">
 				<label>Maximum Mowing Duration</label>
 			</channel>
-			<channel id="statistics-mowing-average" typeId="statisticsDurationType">
+			<channel id="statistics-mowing-average" typeId="statisticsDurationAdvancedType">
 				<label>Average Mowing Duration</label>
 			</channel>
-			<channel id="remote-1-name" typeId="remoteNameType"/>
-			<channel id="remote-1-visible" typeId="remoteSwitchType"/>
-			<channel id="remote-1-path" typeId="remotePathType"/>
-			<channel id="remote-1-proportion" typeId="remoteProportionType"/>
-			<channel id="remote-1-distance" typeId="remoteDistanceType"/>
-			<channel id="remote-1-corridor-cut" typeId="remoteSwitchType"/>
-			<channel id="remote-2-name" typeId="remoteNameType"/>
-			<channel id="remote-2-visible" typeId="remoteSwitchType"/>
-			<channel id="remote-2-path" typeId="remotePathType"/>
-			<channel id="remote-2-proportion" typeId="remoteProportionType"/>
-			<channel id="remote-2-distance" typeId="remoteDistanceType"/>
-			<channel id="remote-2-corridor-cut" typeId="remoteSwitchType"/>
-			<channel id="remote-3-name" typeId="remoteNameType"/>
-			<channel id="remote-3-visible" typeId="remoteSwitchType"/>
-			<channel id="remote-3-path" typeId="remotePathType"/>
-			<channel id="remote-3-proportion" typeId="remoteProportionType"/>
-			<channel id="remote-3-distance" typeId="remoteDistanceType"/>
-			<channel id="remote-3-corridor-cut" typeId="remoteSwitchType"/>
-			<channel id="remote-4-name" typeId="remoteNameType"/>
-			<channel id="remote-4-visible" typeId="remoteSwitchType"/>
-			<channel id="remote-4-path" typeId="remotePathType"/>
-			<channel id="remote-4-proportion" typeId="remoteProportionType"/>
-			<channel id="remote-4-distance" typeId="remoteDistanceType"/>
-			<channel id="remote-4-corridor-cut" typeId="remoteSwitchType"/>
-			<channel id="remote-5-name" typeId="remoteNameType"/>
-			<channel id="remote-5-visible" typeId="remoteSwitchType"/>
-			<channel id="remote-5-path" typeId="remotePathType"/>
-			<channel id="remote-5-proportion" typeId="remoteProportionType"/>
-			<channel id="remote-5-distance" typeId="remoteDistanceType"/>
-			<channel id="remote-5-corridor-cut" typeId="remoteSwitchType"/>
+			<channel id="remote-1-name" typeId="remoteNameType">
+				<label>Remote Start 1 Name</label>
+			</channel>
+			<channel id="remote-1-visible" typeId="remoteVisibleType">
+				<label>Remote Start 1 Visible</label>
+			</channel>
+			<channel id="remote-1-path" typeId="remotePathType">
+				<label>Remote Start 1 Route</label>
+			</channel>
+			<channel id="remote-1-proportion" typeId="remoteProportionType">
+				<label>Remote Start 1 Selection Frequency</label>
+			</channel>
+			<channel id="remote-1-distance" typeId="remoteDistanceType">
+				<label>Remote Start 1 Distance</label>
+			</channel>
+			<channel id="remote-1-corridor-cut" typeId="remoteCorridorCutType">
+				<label>Remote Start 1 CorridorCut</label>
+			</channel>
+			<channel id="remote-2-name" typeId="remoteNameType">
+				<label>Remote Start 2 Name</label>
+			</channel>
+			<channel id="remote-2-visible" typeId="remoteVisibleType">
+				<label>Remote Start 2 Visible</label>
+			</channel>
+			<channel id="remote-2-path" typeId="remotePathType">
+				<label>Remote Start 2 Route</label>
+			</channel>
+			<channel id="remote-2-proportion" typeId="remoteProportionType">
+				<label>Remote Start 2 Selection Frequency</label>
+			</channel>
+			<channel id="remote-2-distance" typeId="remoteDistanceType">
+				<label>Remote Start 2 Distance</label>
+			</channel>
+			<channel id="remote-2-corridor-cut" typeId="remoteCorridorCutType">
+				<label>Remote Start 2 CorridorCut</label>
+			</channel>
+			<channel id="remote-3-name" typeId="remoteNameType">
+				<label>Remote Start 3 Name</label>
+			</channel>
+			<channel id="remote-3-visible" typeId="remoteVisibleType">
+				<label>Remote Start 3 Visible</label>
+			</channel>
+			<channel id="remote-3-path" typeId="remotePathType">
+				<label>Remote Start 3 Route</label>
+			</channel>
+			<channel id="remote-3-proportion" typeId="remoteProportionType">
+				<label>Remote Start 3 Selection Frequency</label>
+			</channel>
+			<channel id="remote-3-distance" typeId="remoteDistanceType">
+				<label>Remote Start 3 Distance</label>
+			</channel>
+			<channel id="remote-3-corridor-cut" typeId="remoteCorridorCutType">
+				<label>Remote Start 3 CorridorCut</label>
+			</channel>
+			<channel id="remote-4-name" typeId="remoteNameType">
+				<label>Remote Start 4 Name</label>
+			</channel>
+			<channel id="remote-4-visible" typeId="remoteVisibleType">
+				<label>Remote Start 4 Visible</label>
+			</channel>
+			<channel id="remote-4-path" typeId="remotePathType">
+				<label>Remote Start 4 Route</label>
+			</channel>
+			<channel id="remote-4-proportion" typeId="remoteProportionType">
+				<label>Remote Start 4 Selection Frequency</label>
+			</channel>
+			<channel id="remote-4-distance" typeId="remoteDistanceType">
+				<label>Remote Start 4 Distance</label>
+			</channel>
+			<channel id="remote-4-corridor-cut" typeId="remoteCorridorCutType">
+				<label>Remote Start 4 CorridorCut</label>
+			</channel>
+			<channel id="remote-5-name" typeId="remoteNameType">
+				<label>Remote Start 5 Name</label>
+			</channel>
+			<channel id="remote-5-visible" typeId="remoteVisibleType">
+				<label>Remote Start 5 Visible</label>
+			</channel>
+			<channel id="remote-5-path" typeId="remotePathType">
+				<label>Remote Start 5 Route</label>
+			</channel>
+			<channel id="remote-5-proportion" typeId="remoteProportionType">
+				<label>Remote Start 5 Selection Frequency</label>
+			</channel>
+			<channel id="remote-5-distance" typeId="remoteDistanceType">
+				<label>Remote Start 5 Distance</label>
+			</channel>
+			<channel id="remote-5-corridor-cut" typeId="remoteCorridorCutType">
+				<label>Remote Start 5 CorridorCut</label>
+			</channel>
 			<channel id="portal-enabled" typeId="portalSwitchType">
-				<description>Indicates whether the remote service should be used.</description>
+				<label>Remote Portal Enabled</label>
+				<description>Whether the mower.online remote-access service is enabled.</description>
 			</channel>
 			<channel id="portal-connected" typeId="portalSwitchType">
-				<description>Indicates whether the remote service is connected.</description>
+				<label>Remote Portal Connected</label>
+				<description>Whether Robonect is connected to the remote-access service.</description>
 			</channel>
-			<channel id="portal-url" typeId="portalStringType">
-				<description>URL for remote access to the web interface, available only when the remote service is connected.</description>
+			<channel id="portal-url" typeId="readOnlyStringAdvancedType">
+				<label>Remote Portal URL</label>
+				<description>URL for remote access to the Robonect web interface; returned only while the remote service is
+					connected.</description>
 			</channel>
-			<channel id="portal-host" typeId="portalStringType">
-				<description>Desired host name for the remote service.</description>
+			<channel id="portal-host" typeId="readOnlyStringAdvancedType">
+				<label>Remote Portal Host Name</label>
+				<description>Host name reported for access through the remote-access service.</description>
 			</channel>
-			<channel id="weather-break" typeId="weatherSwitchType"/>
-			<channel id="weather-rain" typeId="weatherRainType"/>
-			<channel id="weather-temperature" typeId="weatherTemperatureType"/>
-			<channel id="weather-humidity" typeId="weatherHumidityType"/>
-			<channel id="weather-day" typeId="weatherSwitchType"/>
-			<channel id="weather-city" typeId="weatherCityType"/>
-			<channel id="weather-location-cityid" typeId="weatherLocationCityIdType">
+			<channel id="weather-break" typeId="weatherSwitchType">
+				<label>Weather Mowing Pause</label>
+				<description>Whether the weather service is currently preventing mowing.</description>
+			</channel>
+			<channel id="weather-rain" typeId="driveMotorPowerType">
+				<label>Weather Rain Intensity</label>
+				<description>Current rain intensity reported by the weather service, as a percentage.</description>
+			</channel>
+			<channel id="weather-temperature" typeId="weatherTemperatureAdvancedType">
+				<label>Weather Temperature</label>
+				<description>Current outdoor temperature reported by the weather service.</description>
+			</channel>
+			<channel id="weather-humidity" typeId="weatherHumidityAdvancedType">
+				<label>Weather Relative Humidity</label>
+				<description>Current relative air humidity reported by the weather service.</description>
+			</channel>
+			<channel id="weather-day" typeId="weatherSwitchType">
+				<label>Weather Daylight</label>
+				<description>Whether the weather service currently reports daytime.</description>
+			</channel>
+			<channel id="weather-city" typeId="readOnlyStringAdvancedType">
+				<label>Weather City</label>
+				<description>City name resolved by the weather service.</description>
+			</channel>
+			<channel id="weather-location-cityid" typeId="remotePathType">
 				<label>Weather City ID</label>
-				<description>City ID used by the weather service.</description>
+				<description>City identifier used to select the weather-service location. Accepts a non-negative integer.</description>
 			</channel>
-			<channel id="weather-location-zip" typeId="weatherLocationZipType">
-				<label>Weather ZIP Code</label>
-				<description>ZIP or postal code used by the weather service.</description>
+			<channel id="weather-location-zip" typeId="textSettingAdvancedType">
+				<label>Weather Postal Code</label>
+				<description>Postal code used to select the weather-service location. Sent as text to preserve leading zeroes.</description>
 			</channel>
-			<channel id="weather-location-country" typeId="weatherLocationCountryType">
+			<channel id="weather-location-country" typeId="readOnlyStringAdvancedType">
 				<label>Weather Country</label>
-				<description>Country returned by the weather service.</description>
+				<description>Country returned for the weather-service location.</description>
 			</channel>
-			<channel id="weather-sunrise" typeId="weatherDateTimeType">
+			<channel id="weather-sunrise" typeId="dateTimeAdvancedType">
 				<label>Weather Sunrise</label>
 				<description>Sunrise time returned by the weather service.</description>
 			</channel>
-			<channel id="weather-sunset" typeId="weatherDateTimeType">
+			<channel id="weather-sunset" typeId="dateTimeAdvancedType">
 				<label>Weather Sunset</label>
 				<description>Sunset time returned by the weather service.</description>
 			</channel>
-			<channel id="weather-icon" typeId="weatherIconType">
-				<label>Weather Icon</label>
-				<description>Icon URL or URL template returned by the weather service.</description>
+			<channel id="weather-icon" typeId="readOnlyStringAdvancedType">
+				<label>Weather Icon URL</label>
+				<description>Weather icon URL or URL template returned by the service, including any %s placeholder.</description>
 			</channel>
-			<channel id="weather-timestamp" typeId="weatherDateTimeType">
-				<label>Weather Timestamp</label>
-				<description>Time of the weather data, derived only from timestamp.unix.</description>
+			<channel id="weather-timestamp" typeId="dateTimeAdvancedType">
+				<label>Weather Observation Time</label>
+				<description>Time of the weather data.</description>
 			</channel>
 			<channel id="weather-condition-too-rainy" typeId="weatherSwitchType">
-				<label>Weather Condition Too Rainy</label>
-				<description>Mowing restriction reported by weather.condition.toorainy.</description>
+				<label>Rain Restriction Active</label>
+				<description>Whether the weather service reports that rain prevents mowing.</description>
 			</channel>
 			<channel id="weather-condition-too-cold" typeId="weatherSwitchType">
-				<label>Weather Condition Too Cold</label>
-				<description>Mowing restriction reported by weather.condition.toocold.</description>
+				<label>Cold Restriction Active</label>
+				<description>Whether the weather service reports that low temperature prevents mowing.</description>
 			</channel>
 			<channel id="weather-condition-too-warm" typeId="weatherSwitchType">
-				<label>Weather Condition Too Warm</label>
-				<description>Mowing restriction reported by weather.condition.toowarm.</description>
+				<label>Heat Restriction Active</label>
+				<description>Whether the weather service reports that high temperature prevents mowing.</description>
 			</channel>
 			<channel id="weather-condition-too-dry" typeId="weatherSwitchType">
-				<label>Weather Condition Too Dry</label>
-				<description>Mowing restriction reported by weather.condition.toodry.</description>
+				<label>Dry-Air Restriction Active</label>
+				<description>Whether the weather service reports that low air humidity prevents mowing.</description>
 			</channel>
 			<channel id="weather-condition-too-wet" typeId="weatherSwitchType">
-				<label>Weather Condition Too Wet</label>
-				<description>Mowing restriction reported by weather.condition.toowet.</description>
+				<label>Humid-Air Restriction Active</label>
+				<description>Whether the weather service reports that high air humidity prevents mowing.</description>
 			</channel>
 			<channel id="weather-condition-day" typeId="weatherSwitchType">
-				<label>Weather Condition Day</label>
-				<description>Mowing restriction reported by weather.condition.day.</description>
+				<label>Daytime Restriction Active</label>
+				<description>Whether the weather service reports an active daytime mowing restriction.</description>
 			</channel>
 			<channel id="weather-condition-night" typeId="weatherSwitchType">
-				<label>Weather Condition Night</label>
-				<description>Mowing restriction reported by weather.condition.night.</description>
+				<label>Nighttime Restriction Active</label>
+				<description>Whether the weather service reports an active nighttime mowing restriction.</description>
 			</channel>
-			<channel id="weather-remaining" typeId="weatherRemainingType"/>
-			<channel id="weather-enabled" typeId="weatherConfigSwitchType"/>
-			<channel id="weather-interval" typeId="weatherIntervalType"/>
-			<channel id="weather-max-rain" typeId="weatherHumidityType"/>
-			<channel id="weather-min-temperature" typeId="weatherTemperatureType"/>
-			<channel id="weather-max-temperature" typeId="weatherTemperatureType"/>
-			<channel id="weather-min-humidity" typeId="weatherHumidityType"/>
-			<channel id="weather-max-humidity" typeId="weatherHumidityType"/>
-			<channel id="weather-skip-day" typeId="weatherConfigSwitchType"/>
-			<channel id="weather-skip-night" typeId="weatherConfigSwitchType"/>
-			<channel id="extension-gpio-1-flash" typeId="extensionSwitchType"/>
-			<channel id="extension-gpio-1-inverted" typeId="extensionSwitchType"/>
-			<channel id="extension-gpio-1-status" typeId="extensionSwitchType"/>
-			<channel id="extension-gpio-2-flash" typeId="extensionSwitchType"/>
-			<channel id="extension-gpio-2-inverted" typeId="extensionSwitchType"/>
-			<channel id="extension-gpio-2-status" typeId="extensionSwitchType"/>
-			<channel id="extension-output-1-flash" typeId="extensionSwitchType"/>
-			<channel id="extension-output-1-inverted" typeId="extensionSwitchType"/>
-			<channel id="extension-output-1-status" typeId="extensionSwitchType"/>
-			<channel id="extension-output-2-flash" typeId="extensionSwitchType"/>
-			<channel id="extension-output-2-inverted" typeId="extensionSwitchType"/>
-			<channel id="extension-output-2-status" typeId="extensionSwitchType"/>
-			<channel id="push-url" typeId="pushStringType"/>
-			<channel id="push-username" typeId="pushStringType"/>
-			<channel id="push-password" typeId="pushPasswordType"/>
-			<channel id="push-interval" typeId="pushIntervalType"/>
-			<channel id="mowing-hours" typeId="hoursType"/>
-
-			<channel id="mode" typeId="modeType"/>
-			<channel id="start" typeId="startType"/>
-			<channel id="status" typeId="mowerStatusType"/>
-			<channel id="prevent" typeId="statusPreventType"/>
-			<channel id="home" typeId="statusHomeType"/>
-			<channel id="status-duration" typeId="durationType"/>
-			<channel id="status-distance" typeId="distanceType"/>
-
-			<channel id="timer-status" typeId="timerStatusType"/>
-			<channel id="timer-next" typeId="nextTimerType"/>
-
-			<channel id="job" typeId="jobType"/>
-			<channel id="job-start" typeId="jobTimeType"/>
-			<channel id="job-end" typeId="jobTimeType"/>
-
-			<channel id="offlineTrigger" typeId="offlineTriggerType"/>
-			<channel id="reset-error" typeId="resetErrorType"/>
-
-			<channel id="error-code" typeId="errorCodeType"/>
-			<channel id="error-message" typeId="errorMessageType"/>
-			<channel id="error-date" typeId="errorDateType"/>
-
-			<channel id="last-error-code" typeId="errorCodeType">
-				<label>Last Error Code</label>
-				<description>The Error code of the last error occurred</description>
+			<channel id="weather-remaining" typeId="statisticsDurationAdvancedType">
+				<label>Weather Pause Remaining</label>
+				<description>Remaining waiting time before mowing may resume after a weather event.</description>
+			</channel>
+			<channel id="weather-enabled" typeId="switchCommandAdvancedType">
+				<label>Weather Service Enabled</label>
+				<description>Enable or disable the weather service used by Robonect.</description>
+			</channel>
+			<channel id="weather-interval" typeId="weatherIntervalType">
+				<label>Weather Update Interval</label>
+				<description>Interval at which Robonect requests new data from the weather service.</description>
+			</channel>
+			<channel id="weather-max-rain" typeId="weatherPercentageSettingType">
+				<label>Maximum Rain Intensity</label>
+				<description>Maximum rain intensity allowed before Robonect pauses mowing.</description>
+			</channel>
+			<channel id="weather-min-temperature" typeId="weatherTemperatureSettingType">
+				<label>Minimum Mowing Temperature</label>
+				<description>Minimum outdoor temperature allowed for mowing.</description>
+			</channel>
+			<channel id="weather-max-temperature" typeId="weatherTemperatureSettingType">
+				<label>Maximum Mowing Temperature</label>
+				<description>Maximum outdoor temperature allowed for mowing.</description>
+			</channel>
+			<channel id="weather-min-humidity" typeId="weatherPercentageSettingType">
+				<label>Minimum Mowing Humidity</label>
+				<description>Minimum relative air humidity allowed for mowing.</description>
+			</channel>
+			<channel id="weather-max-humidity" typeId="weatherPercentageSettingType">
+				<label>Maximum Mowing Humidity</label>
+				<description>Maximum relative air humidity allowed for mowing.</description>
+			</channel>
+			<channel id="weather-skip-day" typeId="switchCommandAdvancedType">
+				<label>Prevent Daytime Mowing</label>
+				<description>Prevent mowing during daytime as determined by the weather service.</description>
+			</channel>
+			<channel id="weather-skip-night" typeId="switchCommandAdvancedType">
+				<label>Prevent Nighttime Mowing</label>
+				<description>Prevent mowing during nighttime as determined by the weather service.</description>
+			</channel>
+			<channel id="extension-gpio-1-flash" typeId="extensionFlashType">
+				<label>GPIO 1 Flash on Error</label>
+			</channel>
+			<channel id="extension-gpio-1-inverted" typeId="extensionInvertedType">
+				<label>GPIO 1 Active-Low Signal</label>
+			</channel>
+			<channel id="extension-gpio-1-status" typeId="extensionStatusType">
+				<label>GPIO 1 State</label>
+			</channel>
+			<channel id="extension-gpio-2-flash" typeId="extensionFlashType">
+				<label>GPIO 2 Flash on Error</label>
+			</channel>
+			<channel id="extension-gpio-2-inverted" typeId="extensionInvertedType">
+				<label>GPIO 2 Active-Low Signal</label>
+			</channel>
+			<channel id="extension-gpio-2-status" typeId="extensionStatusType">
+				<label>GPIO 2 State</label>
+			</channel>
+			<channel id="extension-output-1-flash" typeId="extensionFlashType">
+				<label>Output 1 Flash on Error</label>
+			</channel>
+			<channel id="extension-output-1-inverted" typeId="extensionInvertedType">
+				<label>Output 1 Active-Low Signal</label>
+			</channel>
+			<channel id="extension-output-1-status" typeId="extensionStatusType">
+				<label>Output 1 State</label>
+			</channel>
+			<channel id="extension-output-2-flash" typeId="extensionFlashType">
+				<label>Output 2 Flash on Error</label>
+			</channel>
+			<channel id="extension-output-2-inverted" typeId="extensionInvertedType">
+				<label>Output 2 Active-Low Signal</label>
+			</channel>
+			<channel id="extension-output-2-status" typeId="extensionStatusType">
+				<label>Output 2 State</label>
+			</channel>
+			<channel id="push-url" typeId="textSettingAdvancedType">
+				<label>Push Service URL</label>
+				<description>Destination URL for Robonect push-service requests.</description>
+			</channel>
+			<channel id="push-username" typeId="textSettingAdvancedType">
+				<label>Push Service Username</label>
+				<description>Username used to authenticate push-service requests.</description>
+			</channel>
+			<channel id="push-password" typeId="pushPasswordType">
+				<label>Push Service Password</label>
+				<description>Write-only password for push-service authentication. Accepts a new password as a command; its state
+					remains undefined and automatic state prediction is disabled.</description>
+			</channel>
+			<channel id="push-interval" typeId="pushIntervalType">
+				<label>Push Service Interval</label>
+				<description>Interval for cyclic push-service requests.</description>
+			</channel>
+			<channel id="mowing-hours" typeId="statisticsHoursType">
+				<label>Mower Operating Hours</label>
+				<description>Accumulated mower operating hours.</description>
+			</channel>
+			<channel id="mode" typeId="modeType">
+				<label>Mower Mode</label>
+				<description>Operating mode: AUTO follows the timers, HOME remains in the charging station, MANUAL prepares the
+					mower for a separate lawn, and EOD returns home until the next day. Distinguishing EOD from HOME in state updates
+					requires the localized Ajax web-interface request enabled by ajaxUiScraping.</description>
+			</channel>
+			<channel id="start" typeId="startType">
+				<label>Mower Start Release</label>
+				<description>ON releases automatic starts and requests a start; OFF blocks automatic starts and requests a stop. The
+					actual mower activity is shown by Mower Status.</description>
+			</channel>
+			<channel id="status" typeId="mowerStatusType">
+				<label>Mower Status</label>
+				<description>Current mower activity, such as parking, mowing, searching, or charging.</description>
+			</channel>
+			<channel id="prevent" typeId="readOnlyNumberType">
+				<label>Mowing Prevention Code</label>
+				<description>Raw code identifying the condition preventing mowing.</description>
+			</channel>
+			<channel id="home" typeId="readOnlySwitchType">
+				<label>Mower at Charging Station</label>
+				<description>Whether the mower reports that it is at home in the charging station.</description>
+			</channel>
+			<channel id="status-duration" typeId="statisticsDurationType">
+				<label>Current Status Duration</label>
+				<description>Time spent in the current mower status.</description>
+			</channel>
+			<channel id="status-distance" typeId="distanceType">
+				<label>Current Remote-Start Distance</label>
+				<description>Distance travelled from the charging station while travelling to a remote-start point.</description>
+			</channel>
+			<channel id="timer-status" typeId="timerStatusType">
+				<label>Mowing Schedule Status</label>
+				<description>Current mowing schedule state: inactive, active, or standby.</description>
+			</channel>
+			<channel id="timer-next" typeId="dateTimeType">
+				<label>Next Scheduled Start</label>
+				<description>Next start time reported by the mower schedule.</description>
+			</channel>
+			<channel id="job" typeId="jobType">
+				<label>Mowing Job</label>
+				<description>Send ON to start a mowing job using this channel configuration, or OFF to stop it. Active job detection
+					uses the localized Ajax web-interface response when ajaxUiScraping is enabled; otherwise it uses the binding's
+					tracked job state.</description>
+			</channel>
+			<channel id="job-start" typeId="jobTimeType">
+				<label>Mowing Job Start Time</label>
+			</channel>
+			<channel id="job-end" typeId="jobTimeType">
+				<label>Mowing Job End Time</label>
+			</channel>
+			<channel id="offlineTrigger" typeId="offlineTriggerType">
+				<label>Offline Timeout Event</label>
+				<description>Reports the configured offline timeout. The current handler publishes OFFLINE_TIMEOUT as a state
+					update; it does not emit a channel-trigger event.</description>
+			</channel>
+			<channel id="reset-error" typeId="switchCommandType">
+				<label>Reset Mower Error</label>
+				<description>Send ON to reset the mower's current error state. This is an action and does not report whether an
+					error is present.</description>
+			</channel>
+			<channel id="error-code" typeId="readOnlyNumberType">
+				<label>Current Error Code</label>
+				<description>Manufacturer-defined code of the mower's current error.</description>
+			</channel>
+			<channel id="error-message" typeId="errorMessageType">
+				<label>Current Error Message</label>
+				<description>Description of the mower's current error.</description>
+			</channel>
+			<channel id="error-date" typeId="errorDateType">
+				<label>Current Error Time</label>
+				<description>Date and time of the mower's current error.</description>
+			</channel>
+			<channel id="last-error-code" typeId="readOnlyNumberType">
+				<label>Last Recorded Error Code</label>
+				<description>Manufacturer-defined code of the latest error in the mower's error history.</description>
 			</channel>
 			<channel id="last-error-message" typeId="errorMessageType">
-				<label>Last Error Message</label>
-				<description>The error message of the last error occurred</description>
+				<label>Last Recorded Error Message</label>
+				<description>Description of the latest error in the mower's error history.</description>
 			</channel>
 			<channel id="last-error-date" typeId="errorDateType">
-				<label>Last Error Date</label>
-				<description>The date and time of the last error occurred</description>
+				<label>Last Recorded Error Time</label>
+				<description>Date and time of the latest error in the mower's error history.</description>
 			</channel>
-
-			<channel id="health-temperature" typeId="temperatureType"/>
-			<channel id="health-humidity" typeId="humidityType"/>
-
-			<channel id="blades-quality" typeId="blades-quality"/>
-			<channel id="blades-replacement-days" typeId="blades-replacement-days"/>
-			<channel id="blades-usage-hours" typeId="blades-usage-hours"/>
+			<channel id="health-temperature" typeId="weatherTemperatureType">
+				<label>Robonect Internal Temperature</label>
+				<description>Temperature measured inside the Robonect module.</description>
+			</channel>
+			<channel id="health-humidity" typeId="weatherHumidityType">
+				<label>Robonect Internal Humidity</label>
+				<description>Relative humidity measured inside the Robonect module.</description>
+			</channel>
+			<channel id="blades-quality" typeId="blades-quality">
+				<label>Blade Remaining Quality</label>
+				<description>Remaining blade quality estimated by Robonect, as a percentage.</description>
+			</channel>
+			<channel id="blades-replacement-days" typeId="blades-replacement-days">
+				<label>Blade Age</label>
+				<description>Number of days since the blade replacement date recorded in Robonect.</description>
+			</channel>
+			<channel id="blades-usage-hours" typeId="blades-usage-hours">
+				<label>Blade Operating Time</label>
+				<description>Accumulated blade operating time since the last replacement recorded in Robonect.</description>
+			</channel>
 		</channels>
 
 		<properties>
@@ -275,7 +622,7 @@
 			<property name="firmwareVersion">N/A</property>
 			<property name="compiled">N/A</property>
 			<property name="serialNumber">N/A</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -313,7 +660,7 @@
 			<parameter name="detailedInfo" type="boolean" required="false">
 				<label>Detailed Information</label>
 				<default>false</default>
-				<description>Periodically request additional information that may wake a sleeping mower.</description>
+				<description>Periodically request additional mower information.</description>
 			</parameter>
 			<parameter name="detailedInfoInterval" type="integer" required="false" min="1">
 				<label>Detailed Information Interval</label>
@@ -334,111 +681,72 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="serialType">
-		<item-type>String</item-type>
-		<label>Robonect Serial Number</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="versionType">
-		<item-type>String</item-type>
-		<label>Robonect Version</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="compiledType">
-		<item-type>String</item-type>
-		<label>Robonect Version</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="commentType">
-		<item-type>String</item-type>
-		<label>Robonect Firmware Comment</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="nameType">
-		<item-type>String</item-type>
-		<label>Mower Name</label>
-		<description>The name of the mower</description>
-		<state readOnly="false"/>
-	</channel-type>
-
 	<channel-type id="wlanStrengthType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>WLAN Signal Strength</label>
-		<description>The raw WLAN signal strength in dBm.</description>
-		<state readOnly="true" pattern="%d dBm"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="batteryVoltageType">
+	<channel-type id="batteryVoltageType" advanced="true">
 		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
+		<description>Battery terminal voltage.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="batteryCurrentType">
+	<channel-type id="batteryCurrentType" advanced="true">
 		<item-type unitHint="mA">Number:ElectricCurrent</item-type>
 		<label>Battery Current</label>
+		<description>Signed battery current reported by the mower.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="batteryTemperatureType">
+	<channel-type id="batteryTemperatureType" advanced="true">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Battery Temperature</label>
+		<description>Battery temperature.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="batteryCapacityType">
+	<channel-type id="batteryCapacityType" advanced="true">
 		<item-type unitHint="mAh">Number:ElectricCharge</item-type>
 		<label>Battery Capacity</label>
+		<description>Full battery capacity reported by the mower.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="batteryRemainingCapacityType">
+	<channel-type id="batteryRemainingCapacityType" advanced="true">
 		<item-type unitHint="mAh">Number:ElectricCharge</item-type>
 		<label>Battery Remaining Capacity</label>
+		<description>Remaining battery capacity reported by the mower.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="driveMotorPowerType">
+	<channel-type id="driveMotorPowerType" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Drive Motor Power</label>
+		<label>Percentage</label>
+		<description>Power level of the drive motor as a percentage.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="driveMotorSpeedType">
+	<channel-type id="driveMotorSpeedType" advanced="true">
 		<item-type unitHint="cm/s">Number:Speed</item-type>
 		<label>Drive Motor Speed</label>
+		<description>Speed of the drive wheel.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="driveMotorCurrentType">
+	<channel-type id="driveMotorCurrentType" advanced="true">
 		<item-type unitHint="mA">Number:ElectricCurrent</item-type>
 		<label>Drive Motor Current</label>
+		<description>Electric current drawn by the motor.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="bladeMotorAverageType">
-		<item-type>Number</item-type>
-		<label>Blade Motor Average</label>
-		<description>The unscaled average value reported by the mower.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="bladeMotorSpeedType">
-		<item-type>Number</item-type>
+	<channel-type id="bladeMotorSpeedType" advanced="true">
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Blade Motor Speed</label>
-		<description>The unscaled blade motor speed reported by the mower.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="bladeMotorCurrentType">
-		<item-type>Number:ElectricCurrent</item-type>
-		<label>Blade Motor Current</label>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="statisticsHoursType">
@@ -447,195 +755,164 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="statisticsCountType">
-		<item-type>Number</item-type>
-		<label>Operating Count</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="statisticsDurationsType">
+	<channel-type id="statisticsDurationsType" advanced="true">
 		<item-type>String</item-type>
 		<label>Recent Durations</label>
-		<description>Comma-separated durations in minutes, in the order returned by the mower.</description>
+		<description>Recent operation durations as a comma-separated list of minutes, in the order returned by the mower.</description>
 		<state readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="statisticsDurationType">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Recent Duration Statistic</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="remoteNameType">
+	<channel-type id="remoteNameType" advanced="true">
 		<item-type>String</item-type>
 		<label>Remote Start Name</label>
+		<description>Name of the remote-start point, limited to 16 characters.</description>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="remoteSwitchType">
-		<item-type>Switch</item-type>
-		<label>Remote Start Switch</label>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="remotePathType">
+
+	<channel-type id="remotePathType" advanced="true">
 		<item-type>Number</item-type>
 		<label>Remote Start Path</label>
+		<description>Route followed to the remote-start point, using the path code reported by the mower. Commands require
+			useUnofficialApi and a web-interface request.</description>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="remoteProportionType">
+
+	<channel-type id="remoteProportionType" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Remote Start Proportion</label>
+		<description>Frequency with which the mower selects this remote-start point, as a percentage of starts.</description>
 		<state min="0" max="100" step="1" readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
-	<channel-type id="remoteDistanceType">
-		<item-type>Number:Length</item-type>
+
+	<channel-type id="remoteDistanceType" advanced="true">
+		<item-type unitHint="m">Number:Length</item-type>
 		<label>Remote Start Distance</label>
+		<description>Distance from the charging station to the remote-start point along its selected route.</description>
 		<state min="0" max="300" step="1" readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="wireSensorLabelType">
+	<channel-type id="wireSensorLabelType" advanced="true">
 		<item-type>String</item-type>
 		<label>Boundary Wire Sensor Label</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="wireSensorQualityType">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Boundary Wire Sensor Quality</label>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-	<channel-type id="wireSensorValueType">
-		<item-type>Number</item-type>
-		<label>Boundary Wire Sensor Value</label>
-		<description>The unscaled diagnostic value reported by the mower.</description>
+		<description>Position or description of the boundary-wire sensor reported by the mower.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="portalSwitchType">
+	<channel-type id="wireSensorQualityType" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Boundary Wire Sensor Quality</label>
+		<description>Signal quality of the boundary-wire sensor as a percentage.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="wireSensorValueType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Boundary Wire Sensor Value</label>
+		<description>Unscaled A, N, F, G1, or G2 loop-signal diagnostic value reported by the boundary-wire sensor.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="portalSwitchType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Portal Status</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="portalStringType">
-		<item-type>String</item-type>
-		<label>Portal Address</label>
-		<state readOnly="true"/>
-	</channel-type>
 
-	<channel-type id="timerEnabledType">
+	<channel-type id="timerEnabledType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Timer Enabled</label>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="timerTimeType">
-		<item-type>DateTime</item-type>
-		<label>Timer Time</label>
-		<description>Scheduled timer start or end time.</description>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="timerDayType">
-		<item-type>Switch</item-type>
-		<label>Timer Day</label>
+		<description>Whether this timer allows mowing during its configured time window on its selected weekdays. Other mower
+			restrictions and charging pauses still apply.</description>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="weatherSwitchType">
+	<channel-type id="timerTimeType" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timer Time</label>
+		<description>Start or end of the allowed mowing window. Only the time of day is meaningful.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="timerDayType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Timer Day</label>
+		<description>Whether the timer applies on this weekday.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="weatherSwitchType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Weather Status</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="weatherRainType">
-		<item-type>Number</item-type>
-		<label>Rain</label>
-		<state readOnly="true"/>
-	</channel-type>
+
 	<channel-type id="weatherTemperatureType">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Weather Temperature</label>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
+
 	<channel-type id="weatherHumidityType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Weather Humidity</label>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
-	<channel-type id="weatherCityType">
-		<item-type>String</item-type>
-		<label>Weather City</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="weatherLocationCityIdType">
-		<item-type>Number</item-type>
-		<label>Weather City ID</label>
-		<state readOnly="false" pattern="%d"/>
-	</channel-type>
-	<channel-type id="weatherLocationZipType">
-		<item-type>String</item-type>
-		<label>Weather ZIP Code</label>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="weatherLocationCountryType">
-		<item-type>String</item-type>
-		<label>Weather Country</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="weatherDateTimeType">
+
+	<channel-type id="dateTimeType">
 		<item-type>DateTime</item-type>
-		<label>Weather Time</label>
+		<label>Reported Time</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="weatherIconType">
-		<item-type>String</item-type>
-		<label>Weather Icon</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="weatherRemainingType">
-		<item-type unitHint="min">Number:Time</item-type>
-		<label>Weather Remaining Time</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="weatherIntervalType">
+
+	<channel-type id="weatherIntervalType" advanced="true">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Weather Update Interval</label>
 		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
-	<channel-type id="weatherNumberType">
-		<item-type>Number</item-type>
-		<label>Weather Mowing Restriction</label>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="weatherConfigSwitchType">
-		<item-type>Switch</item-type>
-		<label>Weather Service Setting</label>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="extensionSwitchType">
-		<item-type>Switch</item-type>
-		<label>Extension State</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="pushStringType">
+
+	<channel-type id="textSettingType">
 		<item-type>String</item-type>
-		<label>Push Service Setting</label>
+		<label>Text Setting</label>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="pushIntervalType">
+
+	<channel-type id="pushIntervalType" advanced="true">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Push Service Interval</label>
-		<state readOnly="false"/>
+		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
+
 	<channel-type id="pushPasswordType">
 		<item-type>String</item-type>
 		<label>Push Service Password</label>
-		<description>Write-only password for the push service. The password cannot be read back; the state remains undefined.</description>
 		<state readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="pushTriggerSwitchType">
+
+	<channel-type id="pushTriggerSwitchType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Push Trigger Setting</label>
+		<description>Whether Robonect sends a push-service request when entering or leaving this mower state.</description>
 		<state readOnly="false"/>
 	</channel-type>
+
 	<channel-type id="pushModeType">
 		<item-type>Number</item-type>
 		<label>Push Service Mode</label>
-		<description>Push-service request mode, available when the unofficial web interface API is enabled.</description>
 		<state readOnly="false" pattern="%d">
 			<options>
 				<option value="0">Off</option>
@@ -645,156 +922,88 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="idType">
-		<item-type>String</item-type>
-		<label>Mower ID</label>
-		<description>The identifier reported by the mower.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="timestampType">
-		<item-type>DateTime</item-type>
-		<label>Mower Time</label>
-		<description>The current time reported by the mower.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="durationType">
-		<item-type unitHint="min">Number:Time</item-type>
-		<label>Status Duration</label>
-		<description>The time the mower is in the current status.</description>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-	<channel-type id="statusPreventType">
-		<item-type>Number</item-type>
-		<label>Mowing Prevention Code</label>
-		<description>Raw prevention code reported by the mower.</description>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="statusHomeType">
-		<item-type>Switch</item-type>
-		<label>Mower At Home</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="resetErrorType">
-		<item-type>Switch</item-type>
-		<label>Reset Errors</label>
-		<description>Resets the mower's current error state.</description>
-		<state readOnly="false"/>
-	</channel-type>
-
 	<channel-type id="distanceType">
 		<item-type unitHint="m">Number:Length</item-type>
 		<label>Status Distance</label>
-		<description>The distance the mower is away from the charging station when searching the remote start.</description>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="hoursType">
-		<item-type unitHint="h">Number:Time</item-type>
-		<label>Total Mowing Hours</label>
-		<description>The number of total mowing hours</description>
-		<state readOnly="true" pattern="%d %unit% test"/>
-	</channel-type>
-
-	<channel-type id="temperatureType">
-		<item-type unitHint="°C">Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>The temperature inside the mower</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-
-	<channel-type id="humidityType">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<description>The relative humidity in the mower in percent</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="blades-quality">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Blade Quality</label>
-		<description>The quality of the blades</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="blades-usage-hours">
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>Blade Usage Hours</label>
-		<description>The usage time in hours of the blades</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="blades-replacement-days">
 		<item-type unitHint="d">Number:Time</item-type>
 		<label>Blade In Use Days</label>
-		<description>The number of days since the blades have been replaced</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="serviceOperationType">
+	<channel-type id="switchCommandType">
 		<item-type>Switch</item-type>
-		<label>Robonect Service Operation</label>
-		<description>Executes the selected Robonect service operation when switched on.</description>
+		<label>Switch Command</label>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="wlanSwitchType">
+	<channel-type id="readOnlySwitchType">
 		<item-type>Switch</item-type>
-		<label>WLAN Status</label>
+		<label>Status Flag</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wlanStringType">
+	<channel-type id="readOnlyStringType">
 		<item-type>String</item-type>
-		<label>WLAN Information</label>
+		<label>Text Information</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wlanNumberType">
+	<channel-type id="readOnlyNumberType">
 		<item-type>Number</item-type>
-		<label>WLAN Number</label>
+		<label>Numeric Information</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="batteryIdType">
+	<channel-type id="batteryIdType" advanced="true">
 		<item-type>Number</item-type>
 		<label>Battery ID</label>
+		<description>Battery identifier reported by the mower.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="batteryChargeType">
+	<channel-type id="batteryChargeType" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Charge</label>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<description>Battery charge level as a percentage.</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state min="0" max="100" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="doorSwitchType">
+	<channel-type id="doorSwitchType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Door Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="doorStateType">
+	<channel-type id="doorStateType" advanced="true">
 		<item-type>Rollershutter</item-type>
 		<label>Door State</label>
-		<description>Use Up, Down, or Stop to open, close, or release the optional door system.</description>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="modeType">
 		<item-type>String</item-type>
 		<label>Mower Mode</label>
-		<description>The mower mode</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Mode</tag>
@@ -812,21 +1021,22 @@
 	<channel-type id="jobType">
 		<item-type>Switch</item-type>
 		<label>Mowing Job</label>
-		<description>Starts a mowing job</description>
+		<state readOnly="false"/>
 		<config-description-ref uri="channel-type:robonect:jobType"/>
 	</channel-type>
 
 	<channel-type id="jobTimeType">
 		<item-type>DateTime</item-type>
 		<label>Job Time</label>
-		<description>Start or end time reported for the active mowing job.</description>
+		<description>Start or end time of the active mowing job, read from the localized Ajax web-interface response only when
+			ajaxUiScraping is enabled. Only the time of day is meaningful. Cleared when no job is active or the response cannot
+			be read.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="timerStatusType">
 		<item-type>String</item-type>
 		<label>Timer Status</label>
-		<description>The status of the timer</description>
 		<state readOnly="true">
 			<options>
 				<option value="INACTIVE">Inactive</option>
@@ -839,7 +1049,6 @@
 	<channel-type id="mowerStatusType">
 		<item-type>Number</item-type>
 		<label>Mower Status</label>
-		<description>The status of the mower</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -864,7 +1073,6 @@
 	<channel-type id="startType">
 		<item-type>Switch</item-type>
 		<label>Start</label>
-		<description>On if started, Off if stopped</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>
@@ -882,24 +1090,9 @@
 		</event>
 	</channel-type>
 
-	<channel-type id="nextTimerType">
-		<item-type>DateTime</item-type>
-		<label>Next Timer Date</label>
-		<description>The next date the timer starts</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="errorCodeType">
-		<item-type>Number</item-type>
-		<label>Error Code</label>
-		<description>Error code defined by the mower manufacturer</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="errorMessageType">
 		<item-type>String</item-type>
 		<label>Error Message</label>
-		<description>The error message</description>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>Info</tag>
@@ -910,8 +1103,130 @@
 	<channel-type id="errorDateType">
 		<item-type>DateTime</item-type>
 		<label>Error Date</label>
-		<description>The date and time the error occurred</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="weatherTemperatureSettingType" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Weather Temperature Threshold</label>
+		<state readOnly="false" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="weatherPercentageSettingType" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Weather Percentage Threshold</label>
+		<state readOnly="false" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="remoteVisibleType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Remote Start Visibility</label>
+		<description>Whether the remote-start point is visible in the Robonect web interface. Commands require
+			useUnofficialApi and save the setting through a web-interface request.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="remoteCorridorCutType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Remote Start CorridorCut</label>
+		<description>Whether CorridorCut is enabled for the remote-start point. Commands require useUnofficialApi and save the
+			setting through a web-interface request.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="extensionFlashType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Extension Flash on Error</label>
+		<description>Whether the extension is configured to flash when the mower reports an error. Read-only in this binding.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="extensionInvertedType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Extension Active-Low Signal</label>
+		<description>Whether the extension signal is configured as active-low. Read-only in this binding.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="extensionStatusType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Extension State</label>
+		<description>Current on/off state reported for the extension. Read-only in this binding.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statisticsHoursAdvancedType" advanced="true">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Operating Hours</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="statisticsDurationAdvancedType" advanced="true">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Recent Duration Statistic</label>
+		<description>Statistic calculated from the recent operation durations returned by the mower.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="weatherTemperatureAdvancedType" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Weather Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="weatherHumidityAdvancedType" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Weather Humidity</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="dateTimeAdvancedType" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Reported Time</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="textSettingAdvancedType" advanced="true">
+		<item-type>String</item-type>
+		<label>Text Setting</label>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="switchCommandAdvancedType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch Command</label>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="readOnlyStringAdvancedType" advanced="true">
+		<item-type>String</item-type>
+		<label>Text Information</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="readOnlyNumberAdvancedType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Numeric Information</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="batteryLevelType">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Charge</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state min="0" max="100" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

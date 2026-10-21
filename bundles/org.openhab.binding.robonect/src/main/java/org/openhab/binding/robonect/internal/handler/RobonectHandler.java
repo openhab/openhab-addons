@@ -27,6 +27,7 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -140,6 +141,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Nico Brüttner - Command responses and delayed state refresh
  * @author Nico Brüttner - Write-only push password channel
  * @author Nico Brüttner - Weather location and condition channels
+ * @author Nico Brüttner - Indexed channel labels and quantity metadata
  */
 public class RobonectHandler extends BaseThingHandler {
 
@@ -525,19 +527,25 @@ public class RobonectHandler extends BaseThingHandler {
         List<Channel> channels = new ArrayList<>();
         for (Integer id : timerIds.stream().sorted().toList()) {
             String prefix = "timer-" + id + "-";
-            channels.add(createChannel(prefix + "enabled", "Switch", "timerEnabledType"));
-            channels.add(createChannel(prefix + "start", "DateTime", "timerTimeType"));
-            channels.add(createChannel(prefix + "end", "DateTime", "timerTimeType"));
+            String label = "Timer " + id + " ";
+            channels.add(createChannel(prefix + "enabled", "Switch", "timerEnabledType", label + "Enabled"));
+            channels.add(createChannel(prefix + "start", "DateTime", "timerTimeType", label + "Start Time"));
+            channels.add(createChannel(prefix + "end", "DateTime", "timerTimeType", label + "End Time"));
             for (String day : List.of("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")) {
-                channels.add(createChannel(prefix + day, "Switch", "timerDayType"));
+                channels.add(createChannel(prefix + day, "Switch", "timerDayType",
+                        label + Character.toUpperCase(day.charAt(0)) + day.substring(1)));
             }
         }
         updateDynamicChannels(TIMER_CHANNEL_PATTERN, channels);
     }
 
-    private Channel createChannel(String id, String itemType, String channelType) {
+    private Channel createChannel(String id, String itemType, String channelType, String label) {
+        Channel existing = getThing().getChannel(id);
+        if (existing != null) {
+            return ChannelBuilder.create(existing).withLabel(label).build();
+        }
         return ChannelBuilder.create(new ChannelUID(getThing().getUID(), id), itemType)
-                .withType(new ChannelTypeUID(BINDING_ID, channelType)).build();
+                .withType(new ChannelTypeUID(BINDING_ID, channelType)).withLabel(label).build();
     }
 
     private void updateDynamicChannels(Pattern channelPattern, List<Channel> desiredChannels) {
@@ -546,7 +554,10 @@ public class RobonectHandler extends BaseThingHandler {
                 .filter(channel -> channelPattern.matcher(channel.getUID().getId()).matches()).map(Channel::getUID)
                 .collect(Collectors.toSet());
         Set<ChannelUID> desired = desiredChannels.stream().map(Channel::getUID).collect(Collectors.toSet());
-        if (current.equals(desired)) {
+        if (current.equals(desired) && desiredChannels.stream().allMatch(channel -> {
+            Channel existing = getThing().getChannel(channel.getUID());
+            return existing != null && Objects.equals(existing.getLabel(), channel.getLabel());
+        })) {
             return;
         }
         List<Channel> channels = new ArrayList<>(existingChannels.stream()
@@ -557,13 +568,18 @@ public class RobonectHandler extends BaseThingHandler {
 
     private void addDynamicChannels(List<Channel> desiredChannels) {
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        Set<ChannelUID> existing = channels.stream().map(Channel::getUID).collect(Collectors.toSet());
+        boolean changed = false;
         for (Channel channel : desiredChannels) {
-            if (existing.add(channel.getUID())) {
+            Channel existing = getThing().getChannel(channel.getUID());
+            if (existing == null) {
                 channels.add(channel);
+                changed = true;
+            } else if (!Objects.equals(existing.getLabel(), channel.getLabel())) {
+                channels.set(channels.indexOf(existing), channel);
+                changed = true;
             }
         }
-        if (channels.size() == getThing().getChannels().size()) {
+        if (!changed) {
             return;
         }
         updateThing(editThing().withChannels(channels).build());
@@ -660,7 +676,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
         if (weather != null) {
             updateSwitch(CHANNEL_WEATHER_BREAK, weather.getWeatherBreak());
-            updateWeatherNumber(CHANNEL_WEATHER_RAIN, weather.getRain());
+            updateWeatherPercentage(CHANNEL_WEATHER_RAIN, weather.getRain());
             Integer temperature = weather.getTemperature();
             if (temperature != null)
                 updateState(CHANNEL_WEATHER_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
@@ -711,11 +727,11 @@ public class RobonectHandler extends BaseThingHandler {
                 updateState(CHANNEL_WEATHER_INTERVAL, new QuantityType<>(interval, Units.MINUTE));
             WeatherConfig config = service.getConfig();
             if (config != null) {
-                updateWeatherNumber(CHANNEL_WEATHER_MAX_RAIN, config.getMaxrain());
+                updateWeatherPercentage(CHANNEL_WEATHER_MAX_RAIN, config.getMaxrain());
                 updateWeatherTemperature(CHANNEL_WEATHER_MIN_TEMPERATURE, config.getMintemp());
                 updateWeatherTemperature(CHANNEL_WEATHER_MAX_TEMPERATURE, config.getMaxtemp());
-                updateWeatherNumber(CHANNEL_WEATHER_MIN_HUMIDITY, config.getMinhumidity());
-                updateWeatherNumber(CHANNEL_WEATHER_MAX_HUMIDITY, config.getMaxhumidity());
+                updateWeatherPercentage(CHANNEL_WEATHER_MIN_HUMIDITY, config.getMinhumidity());
+                updateWeatherPercentage(CHANNEL_WEATHER_MAX_HUMIDITY, config.getMaxhumidity());
                 updateSwitch(CHANNEL_WEATHER_SKIP_DAY, config.getDontmowduringday());
                 updateSwitch(CHANNEL_WEATHER_SKIP_NIGHT, config.getDontmowduringnight());
             }
@@ -905,7 +921,8 @@ public class RobonectHandler extends BaseThingHandler {
         unofficialApiToken = new Object();
         useUnofficialApi = enabled;
         updateDynamicChannels(Pattern.compile(CHANNEL_PUSH_MODE),
-                enabled ? List.of(createChannel(CHANNEL_PUSH_MODE, "Number", "pushModeType")) : List.of());
+                enabled ? List.of(createChannel(CHANNEL_PUSH_MODE, "Number", "pushModeType", "Push Service Mode"))
+                        : List.of());
     }
 
     private void refreshPushMode() {
@@ -969,10 +986,14 @@ public class RobonectHandler extends BaseThingHandler {
                 updateState(CHANNEL_PUSH_INTERVAL, new QuantityType<>(interval, Units.SECOND));
             List<Channel> channels = new ArrayList<>();
             Map<String, PushTriggers.Trigger> namedTriggers = getNamedPushTriggers(triggers);
-            for (String name : namedTriggers.keySet().stream().sorted().toList()) {
+            for (Map.Entry<String, PushTriggers.Trigger> entry : namedTriggers.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey()).toList()) {
+                String name = entry.getKey();
                 String prefix = "push-trigger-" + name + "-";
-                channels.add(createChannel(prefix + "enter", "Switch", "pushTriggerSwitchType"));
-                channels.add(createChannel(prefix + "leave", "Switch", "pushTriggerSwitchType"));
+                String label = "Push Trigger " + name.substring(0, name.indexOf('-')) + " " + entry.getValue().getName()
+                        + " ";
+                channels.add(createChannel(prefix + "enter", "Switch", "pushTriggerSwitchType", label + "Enter"));
+                channels.add(createChannel(prefix + "leave", "Switch", "pushTriggerSwitchType", label + "Leave"));
             }
             // A write response may contain only the updated trigger; preserve other dynamic channels.
             if (fullResponse) {
@@ -1078,6 +1099,11 @@ public class RobonectHandler extends BaseThingHandler {
     private void updateWeatherNumber(String channel, @Nullable Integer value) {
         if (value != null)
             updateState(channel, new DecimalType(value));
+    }
+
+    private void updateWeatherPercentage(String channel, @Nullable Integer value) {
+        if (value != null)
+            updateState(channel, new QuantityType<>(value, Units.PERCENT));
     }
 
     /** Updates door channels from the optional door-system response. */
@@ -1351,7 +1377,7 @@ public class RobonectHandler extends BaseThingHandler {
             if (info.getWlan() != null) {
                 Integer signal = info.getWlan().getSignal();
                 if (signal != null) {
-                    updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, new DecimalType(signal));
+                    updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, new QuantityType<>(signal, Units.DECIBEL_MILLIWATTS));
                     updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(convertSignalStrength(signal)));
                 } else {
                     updateState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
@@ -1479,27 +1505,24 @@ public class RobonectHandler extends BaseThingHandler {
         List<Channel> channels = new ArrayList<>();
         for (int index = 0; index < batteries.size(); index++) {
             String prefix = "battery-" + (index + 1) + "-";
-            channels.add(createChannel(prefix + "id", "Number", "batteryIdType"));
-            channels.add(createChannel(prefix + "charge", "Number:Dimensionless", "batteryChargeType"));
-            channels.add(createChannel(prefix + "voltage", "Number:ElectricPotential", "batteryVoltageType"));
-            channels.add(createChannel(prefix + "current", "Number:ElectricCurrent", "batteryCurrentType"));
-            channels.add(createChannel(prefix + "temperature", "Number:Temperature", "batteryTemperatureType"));
-            channels.add(createChannel(prefix + "capacity", "Number:ElectricCharge", "batteryCapacityType"));
+            String label = "Battery " + (index + 1) + " ";
+            channels.add(createChannel(prefix + "id", "Number", "batteryIdType", label + "ID"));
+            channels.add(
+                    createChannel(prefix + "charge", "Number:Dimensionless", "batteryChargeType", label + "Charge"));
+            channels.add(createChannel(prefix + "voltage", "Number:ElectricPotential", "batteryVoltageType",
+                    label + "Voltage"));
+            channels.add(createChannel(prefix + "current", "Number:ElectricCurrent", "batteryCurrentType",
+                    label + "Current"));
+            channels.add(createChannel(prefix + "temperature", "Number:Temperature", "batteryTemperatureType",
+                    label + "Temperature"));
+            channels.add(createChannel(prefix + "capacity", "Number:ElectricCharge", "batteryCapacityType",
+                    label + "Full Capacity"));
             channels.add(createChannel(prefix + "remaining-capacity", "Number:ElectricCharge",
-                    "batteryRemainingCapacityType"));
+                    "batteryRemainingCapacityType", label + "Remaining Capacity"));
         }
         updateDynamicChannels(BATTERY_CHANNEL_PATTERN, channels);
         for (int index = 0; index < batteries.size(); index++) {
             updateBatteryState("battery-" + (index + 1) + "-", batteries.get(index));
-        }
-        if (!batteries.isEmpty()) {
-            updateBatteryState("battery-", batteries.getFirst());
-        } else {
-            for (String channel : List.of(CHANNEL_BATTERY_ID, CHANNEL_BATTERY_CHARGE, CHANNEL_BATTERY_VOLTAGE,
-                    CHANNEL_BATTERY_CURRENT, CHANNEL_BATTERY_TEMPERATURE, CHANNEL_BATTERY_CAPACITY,
-                    CHANNEL_BATTERY_REMAINING_CAPACITY)) {
-                updateState(channel, UnDefType.UNDEF);
-            }
         }
     }
 
@@ -1562,7 +1585,7 @@ public class RobonectHandler extends BaseThingHandler {
             }
             Integer speed = blade.getSpeed();
             if (speed != null) {
-                updateState(CHANNEL_BLADE_MOTOR_SPEED, new DecimalType(speed));
+                updateState(CHANNEL_BLADE_MOTOR_SPEED, new QuantityType<>(speed, Units.RPM));
             }
             if (blade.getCurrent() != null) {
                 updateState(CHANNEL_BLADE_MOTOR_CURRENT, new QuantityType<>(blade.getCurrent() / 1000.0, Units.AMPERE));
@@ -1649,10 +1672,13 @@ public class RobonectHandler extends BaseThingHandler {
         List<Channel> channels = new ArrayList<>();
         for (int index = 0; index < sensors.size(); index++) {
             String prefix = "wire-sensor-" + (index + 1) + "-";
-            channels.add(createChannel(prefix + "label", "String", "wireSensorLabelType"));
-            channels.add(createChannel(prefix + "quality", "Number:Dimensionless", "wireSensorQualityType"));
+            String label = "Wire Sensor " + (index + 1) + " ";
+            channels.add(createChannel(prefix + "label", "String", "wireSensorLabelType", label + "Label"));
+            channels.add(createChannel(prefix + "quality", "Number:Dimensionless", "wireSensorQualityType",
+                    label + "Signal Quality"));
             for (String measurement : List.of("a", "n", "f", "g1", "g2")) {
-                channels.add(createChannel(prefix + measurement, "Number", "wireSensorValueType"));
+                channels.add(createChannel(prefix + measurement, "Number", "wireSensorValueType",
+                        label + "Signal " + measurement.toUpperCase(Locale.ROOT)));
             }
         }
         updateDynamicChannels(WIRE_CHANNEL_PATTERN, channels);
