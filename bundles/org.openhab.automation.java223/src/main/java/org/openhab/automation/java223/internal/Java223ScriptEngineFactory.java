@@ -80,7 +80,6 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
     private final Java223HelperLibGenerator helperLibGenerator;
 
     Boolean enableHelper;
-    boolean deactivated = false;
 
     @Activate
     public Java223ScriptEngineFactory(BundleContext bundleContext, Map<String, Object> properties,
@@ -162,7 +161,6 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
     @Deactivate
     public void deactivate() {
         watchService.unregisterListener(this);
-        this.deactivated = true;
     }
 
     @Override

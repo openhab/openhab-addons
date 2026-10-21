@@ -75,7 +75,7 @@ public class Java223CompiledScript extends JavaCompiledScript {
      * @param java223Strategy the {@link Java223Strategy}
      */
     public Java223CompiledScript(JavaScriptEngine engine, Class<?> compiledClass, Java223Strategy java223Strategy) {
-        super(engine, compiledClass, null, java223Strategy, java223Strategy);
+        super(engine, compiledClass, null);
         this.java223Strategy = java223Strategy;
     }
 
