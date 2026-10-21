@@ -22,12 +22,16 @@
 		<item-type>Number:Energy</item-type>
 		<label>Maximum Reserve Energy</label>
 		<description>Highest reserve the battery can hold for emergency power</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="emergency-last-soc">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Reserve Last State of Charge</label>
+		<label>Reserve Last SoC</label>
 		<description>State of charge the battery was left with for emergency power</description>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>

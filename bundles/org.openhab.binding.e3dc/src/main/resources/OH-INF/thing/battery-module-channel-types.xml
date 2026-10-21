@@ -22,6 +22,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -29,6 +33,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage 30s Average</label>
 		<description>Voltage 30s Average of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -36,6 +44,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Current of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -43,6 +55,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current 30s Average</label>
 		<description>Current 30s Average of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -71,6 +87,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Design Voltage</label>
 		<description>Design Voltage of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -78,6 +98,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Maximum Charge Voltage</label>
 		<description>Maximum Charge Voltage of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -85,6 +109,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Charge Current</label>
 		<description>Maximum Charge Current of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -92,6 +120,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Discharge Current</label>
 		<description>Maximum Discharge Current of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -99,6 +131,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Charge High Temperature</label>
 		<description>Charge High Temperature of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -106,6 +142,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Charge Low Temperature</label>
 		<description>Charge Low Temperature of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -233,6 +273,10 @@
 		<label>Remaining Energy</label>
 		<description>Remaining energy of the battery cell module in kWh, calculated from the remaining capacity and the module
 			voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -241,6 +285,10 @@
 		<label>Full Charge Energy</label>
 		<description>Energy at full charge of the battery cell module in kWh, calculated from the full charge capacity and the
 			module voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -249,6 +297,10 @@
 		<label>Design Energy</label>
 		<description>Design energy of the battery cell module in kWh, calculated from the design capacity and the module
 			voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 

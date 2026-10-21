@@ -449,7 +449,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
                     E3DCBindingConstants.GROUP_HISTORY + "#" + entry.getKey());
             sendTimeSeries(channelUID, entry.getValue());
         }
-        logger.info("History fetched for {} periods", delivered);
+        logger.debug("History fetched for {} periods", delivered);
         return delivered;
     }
 

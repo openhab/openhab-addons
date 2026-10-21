@@ -36,6 +36,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Installed Peak Power</label>
 		<description>Peak power of the installed photovoltaic system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -226,6 +230,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Derate at Power</label>
 		<description>Power at which the feed in is reduced</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -240,6 +248,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Manual Charge Energy</label>
 		<description>Energy of the manual battery charge started last</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 

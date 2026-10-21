@@ -241,9 +241,10 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             newClient.connect();
         } catch (RscpException e) {
             newClient.close();
-            // a connection that does not come up is what the user has to act on, so it belongs in the log at
-            // the default level and not only in the thing status
-            logger.warn("Cannot connect to {}:{}: {}", current.host, current.port, e.getMessage());
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
+            logger.debug("Cannot connect to {}:{}: {}", current.host, current.port, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
@@ -255,7 +256,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         lastHistoryPollMillis = 0;
         lastBusyNanos = newClient.getBusyNanos();
         updateStatus(ThingStatus.ONLINE);
-        logger.info("Connected to E3/DC device at {}:{}", current.host, current.port);
+        logger.debug("Connected to E3/DC device at {}:{}", current.host, current.port);
         for (Runnable listener : onlineListeners) {
             listener.run();
         }
@@ -740,6 +741,10 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
     private void handleCommunicationFailure(RscpException e) {
         closeClient();
+        if (Thread.currentThread().isInterrupted()) {
+            // the thread was interrupted, so the handler is shutting down and must not reconnect
+            return;
+        }
         if (isActive()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             // a fresh connection is attempted after a short wait

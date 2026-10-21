@@ -8,6 +8,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy Today</label>
 		<description>Photovoltaic energy of the completed day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -15,6 +19,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>House Energy Today</label>
 		<description>Household energy of the completed day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -22,6 +30,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Grid Supply Today</label>
 		<description>Energy drawn from the grid on the completed day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -29,6 +41,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Grid Feed Today</label>
 		<description>Energy fed into the grid on the completed day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -36,6 +52,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Battery Charge Today</label>
 		<description>Energy charged into the battery on the completed day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -43,6 +63,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Battery Discharge Today</label>
 		<description>Energy taken from the battery on the completed day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -57,6 +81,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy This Week</label>
 		<description>Photovoltaic energy of the last seven days</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -64,6 +92,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>House Energy This Week</label>
 		<description>Household energy of the last seven days</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -71,6 +103,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Grid Supply This Week</label>
 		<description>Energy drawn from the grid in the last seven days</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -78,6 +114,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Grid Feed This Week</label>
 		<description>Energy fed into the grid in the last seven days</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -85,13 +125,21 @@
 		<item-type>Number:Energy</item-type>
 		<label>Battery Charge This Week</label>
 		<description>Energy charged into the battery in the last seven days</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="history-week-battery-out">
 		<item-type>Number:Energy</item-type>
-		<label>Battery Discharge This Week</label>
+		<label>Discharge This Week</label>
 		<description>Energy taken from the battery in the last seven days</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -106,6 +154,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy This Month</label>
 		<description>Photovoltaic energy of the current month</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -113,6 +165,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>House Energy This Month</label>
 		<description>Household energy of the current month</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -120,6 +176,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Grid Supply This Month</label>
 		<description>Energy drawn from the grid in the current month</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -127,6 +187,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Grid Feed This Month</label>
 		<description>Energy fed into the grid in the current month</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -134,13 +198,21 @@
 		<item-type>Number:Energy</item-type>
 		<label>Battery Charge This Month</label>
 		<description>Energy charged into the battery in the current month</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="history-month-battery-out">
 		<item-type>Number:Energy</item-type>
-		<label>Battery Discharge This Month</label>
+		<label>Discharge This Month</label>
 		<description>Energy taken from the battery in the current month</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -155,6 +227,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy This Year</label>
 		<description>Photovoltaic energy of the current year</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -162,6 +238,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>House Energy This Year</label>
 		<description>Household energy of the current year</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -169,6 +249,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Grid Supply This Year</label>
 		<description>Energy drawn from the grid in the current year</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -176,6 +260,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Grid Feed This Year</label>
 		<description>Energy fed into the grid in the current year</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -183,13 +271,21 @@
 		<item-type>Number:Energy</item-type>
 		<label>Battery Charge This Year</label>
 		<description>Energy charged into the battery in the current year</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="history-year-battery-out">
 		<item-type>Number:Energy</item-type>
-		<label>Battery Discharge This Year</label>
+		<label>Discharge This Year</label>
 		<description>Energy taken from the battery in the current year</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -209,21 +305,21 @@
 
 	<channel-type id="history-week-consumed-production">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Self Consumption This Week</label>
+		<label>Self Consumed This Week</label>
 		<description>Share of production used on site in the last seven days</description>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="history-month-consumed-production">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Self Consumption This Month</label>
+		<label>Self Consumed This Month</label>
 		<description>Share of production used on site in the current month</description>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="history-year-consumed-production">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Self Consumption This Year</label>
+		<label>Self Consumed This Year</label>
 		<description>Share of production used on site in the current year</description>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
