@@ -1096,7 +1096,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * is pruned by removing any channels that are not in {@link #supportedChannelUIDs}.
      *
      * Finally, warns if there are channels in {@link #supportedChannelUIDs} which are not in the thing.
-     * 
+     *
      * @throws AssetNotLoadedException if the bridge handler is not yet loaded
      */
     private void updateChannelList() throws AssetNotLoadedException {
@@ -1194,7 +1194,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Build a list of the back- light channels. The back light channels are created based on the main
      * (front) channels but with their channel UID containing a group ID.
-     * 
+     *
      * @throws AssetNotLoadedException if the bridge handler is not yet loaded
      */
     private List<Channel> buildBackLightChannels() throws AssetNotLoadedException {
