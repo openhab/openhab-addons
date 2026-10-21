@@ -1739,6 +1739,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Get the metadata archetype of the light resource referenced by the given service.
+     * Apparently not all lights have a correct metadata {@link Archetype} so we also check
+     * the metadata name for the string "front" or "back".
      *
      * @return the archetype, or {@link Archetype#UNKNOWN_ARCHETYPE} if the light has no metadata.
      * @throws ApiException if a communication error occurred.
@@ -1749,8 +1751,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
             throws ApiException, AssetNotLoadedException, InterruptedException {
         for (Resource light : getBridgeHandler().getResources(lightService).getResources()) {
             MetaData metaData = light.getMetaData();
+            logger.debug("{} -> getLightArchetype() light {} metadata {}", resourceId, light.getId(), metaData);
             if (metaData != null) {
-                return metaData.getArchetype();
+                Archetype archetype = metaData.getArchetype();
+                if (Archetype.TWILIGHT_FRONT == archetype || Archetype.TWILIGHT_BACK == archetype) {
+                    return archetype;
+                }
+                String name = metaData.getName();
+                if (name != null) {
+                    String lowerCaseName = name.toLowerCase();
+                    if (lowerCaseName.contains("front")) {
+                        return Archetype.TWILIGHT_FRONT;
+                    }
+                    if (lowerCaseName.contains("back")) {
+                        return Archetype.TWILIGHT_BACK;
+                    }
+                }
             }
         }
         return Archetype.UNKNOWN_ARCHETYPE;
