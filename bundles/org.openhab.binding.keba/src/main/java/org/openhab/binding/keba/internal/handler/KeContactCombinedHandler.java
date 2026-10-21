@@ -61,6 +61,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Coordinates one wallbox, preferring Modbus and requesting only supplemental UDP/REST data.
@@ -116,6 +118,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             "power", "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent",
             "phaseswitchstate", "phaseswitchsource", "togglephaseswitch", "sessionid"));
 
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactCombinedHandler.class));
     private final ModbusManager modbusManager;
     private final KeContactTransceiver transceiver;
     private final @Nullable ThingTypeRegistry thingTypeRegistry;
@@ -898,6 +901,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                             udp.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
                         }
                     }
+                } else {
+                    logger.debug("Ignoring phase command {}: source {} unknown or its protocol unavailable", command,
+                            source);
                 }
                 return;
             }

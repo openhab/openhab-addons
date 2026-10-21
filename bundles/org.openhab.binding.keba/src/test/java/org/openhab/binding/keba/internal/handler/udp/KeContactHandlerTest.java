@@ -152,7 +152,7 @@ class KeContactHandlerTest {
                 {"ID":101,"Session ID":42,"started":"2026-10-20 10:00:00.000",
                  "started[s]":100,"ended[s]":190,"reason":1,"Sec":250,"E pres":1234,
                  "RFID tag":"1234567890abcdef","RFID class":"0000000000000001","Curr HW":0}
-                """), null);
+                """), (ByteBuffer) null);
 
         assertTrue(handler.readReport(100));
         clearInvocations(listener);

@@ -316,7 +316,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
             Long reportId = unsignedValue(readObject, "ID");
             boolean sessionReport = reportId != null && (reportId == 100 || reportId == 101);
             if (sessionReport && Long.valueOf(0).equals(unsignedValue(readObject, "Session ID"))) {
-                if (reportId == 100) {
+                if (Long.valueOf(100).equals(reportId)) {
                     sessionEnded = true;
                     updateState("session", OnOffType.OFF);
                 }

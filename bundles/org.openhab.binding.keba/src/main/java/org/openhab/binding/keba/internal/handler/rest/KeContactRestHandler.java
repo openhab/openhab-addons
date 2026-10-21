@@ -48,6 +48,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -449,11 +450,11 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                 channelValue = phaseSourceChannelValue(configurationValue(response, "connector_phase_source"));
             }
             phaseSwitchSource = channelValue;
-            if (channelValue != null) {
-                updateState("phaseswitchsource", new DecimalType(channelValue));
-            }
+            // publish UNDEF for an unknown source so the combined handler stops routing phase commands to it
+            updateState("phaseswitchsource", channelValue != null ? new DecimalType(channelValue) : UnDefType.UNDEF);
         } catch (Exception e) {
             phaseSwitchSource = null;
+            updateState("phaseswitchsource", UnDefType.UNDEF);
             logger.debug("Failed to read REST phase switching source: {}", e.getMessage());
         }
     }
