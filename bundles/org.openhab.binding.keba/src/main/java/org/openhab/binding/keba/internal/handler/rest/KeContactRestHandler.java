@@ -85,6 +85,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     private final AtomicInteger generation = new AtomicInteger();
     private boolean initializing;
     private boolean disposed;
+    private volatile @Nullable Integer phaseSwitchSource;
 
     public KeContactRestHandler(Thing thing) {
         this(thing, null, null);
@@ -147,6 +148,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                         serialNumber = resolvedSerialNumber;
                         lastWallboxPoll = null;
                         nextSupplementalPoll = 0;
+                        phaseSwitchSource = null;
                         consecutivePollFailures = 0;
                         online = false;
                         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -270,13 +272,12 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                 consecutivePollFailures = 0;
                 online = true;
                 updateStatus(ThingStatus.ONLINE);
+                // the phase switching source decides how phaseswitchstate is derived, so read it first
+                updatePhaseSwitchSource();
                 updateWallbox(wallbox);
             }
             if (supplementalDue && (!supplemental || isLinked("dipswitchinterpretation"))) {
                 updateDipSwitchInterpretation();
-            }
-            if (supplementalDue && (!supplemental || isLinked("phaseswitchsource"))) {
-                updatePhaseSwitchSource();
             }
             if (supplementalDue && (!supplemental || isLinked("sessionstart") || isLinked("sessionduration")
                     || isLinked("sessionconsumption") || isLinked("sessionid"))) {
@@ -320,10 +321,18 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                 value -> OnOffType.from(Boolean.parseBoolean(value)));
         updateOptionalState("maxphases", wallbox, "maxPhases", DecimalType::new);
         updateOptionalState("maxsupportedcurrent", wallbox, "maxCurrent",
-                value -> new QuantityType<>(Double.parseDouble(value), Units.AMPERE));
+                value -> new QuantityType<>(Double.parseDouble(value) / 1000.0, Units.AMPERE));
         updateOptionalState("phaseconfiguration", wallbox, "phaseUsed", StringType::new);
-        updateOptionalState("phaseswitchstate", wallbox, "phaseUsed",
-                value -> new DecimalType(value.contains("_") ? 3 : 1));
+        Integer phaseSwitchSource = this.phaseSwitchSource;
+        // leave phaseswitchstate untouched while the phase switching source is unknown
+        if (phaseSwitchSource != null) {
+            if (phaseSwitchSource == 0) {
+                updateState("phaseswitchstate", new DecimalType(0));
+            } else {
+                updateOptionalState("phaseswitchstate", wallbox, "phaseUsed",
+                        value -> new DecimalType(value.contains("_") ? 3 : 1));
+            }
+        }
         JsonElement dipSwitchSettings = wallbox.get("dipSwitchSettings");
         if (dipSwitchSettings != null && dipSwitchSettings.isJsonArray()) {
             updateState("dipswitchsettings", new StringType(dipSwitchSettings.toString()));
@@ -431,14 +440,20 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         try {
             JsonObject response = request("/configs/lmgmt/", "GET", null, true);
             JsonElement enabled = configurationValue(response, "connector_phase_enable");
-            JsonElement source = configurationValue(response, "connector_phase_source");
-            Integer channelValue = enabled != null && !enabled.isJsonNull() && !enabled.getAsBoolean()
-                    ? Integer.valueOf(0)
-                    : phaseSourceChannelValue(source);
+            Integer channelValue;
+            if (enabled == null || enabled.isJsonNull()) {
+                channelValue = null;
+            } else if (!enabled.getAsBoolean()) {
+                channelValue = 0;
+            } else {
+                channelValue = phaseSourceChannelValue(configurationValue(response, "connector_phase_source"));
+            }
+            phaseSwitchSource = channelValue;
             if (channelValue != null) {
                 updateState("phaseswitchsource", new DecimalType(channelValue));
             }
         } catch (Exception e) {
+            phaseSwitchSource = null;
             logger.debug("Failed to read REST phase switching source: {}", e.getMessage());
         }
     }
@@ -476,6 +491,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         }
         body.add("configs", configs);
         request("/configs/lmgmt/", "PUT", body.toString(), true);
+        phaseSwitchSource = channelValue;
         updateState("phaseswitchsource", new DecimalType(channelValue));
     }
 
@@ -509,7 +525,6 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
             case "CPM_DIR_CTRL" -> 2;
             case "MODBUS" -> 3;
             case "UDP" -> 4;
-            case "NONE", "DISABLED", "0" -> 0;
             default -> null;
         };
     }

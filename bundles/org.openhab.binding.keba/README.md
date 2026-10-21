@@ -113,7 +113,7 @@ Shared channels retain one ID and use protocol fallback where supported.
 | `externalmeter`           | `Switch`                   | Yes       | REST                | Whether an external meter is present; this is not an external-meter energy reading.                                                            |
 | `temperature`             | `Number:Temperature`       | Yes       | REST                | Internal wallbox temperature, in degrees Celsius.                                                                                              |
 | `phaseswitchsource`       | `Number`                   | No        | All                 | Communication source allowed to control phase switching: disabled, OCPP, REST, Modbus or UDP.                                                  |
-| `phaseswitchstate`        | `Number`                   | No        | All                 | Phase-switch state: `1` for single-phase or `3` for three-phase charging. Commands require the selected `phaseswitchsource`.                   |
+| `phaseswitchstate`        | `Number`                   | No        | All                 | Phase-switch state: `0` deactivated, `1` single-phase or `3` three-phase charging. Commands require the selected `phaseswitchsource`.          |
 | `togglephaseswitch`       | `Switch`                   | No        | REST                | Send `ON` to toggle single- and three-phase charging through REST. `OFF` is ignored; the channel resets after success.                         |
 | `maxphases`               | `Number`                   | Yes       | REST                | Maximum number of charging phases supported by the wallbox.                                                                                    |
 | `phaseconfiguration`      | `String`                   | Yes       | REST                | Configured phase order, rather than just the number of active phases.                                                                          |
@@ -184,6 +184,7 @@ The OpenAPI specification lists these values but does not define their detailed 
 `phaseswitchstate` accepts `1` or `3` through REST, Modbus or UDP.
 Commands follow the reported `phaseswitchsource`: `2` uses REST, `3` uses Modbus and `4` uses UDP, without protocol fallback.
 Commands are ignored while the source is unknown, disabled (`0`), OCPP (`1`), or its selected protocol is unavailable.
+The state reads `0` while phase switching is deactivated (`phaseswitchsource` `0`); otherwise it reports the active phase count.
 For REST, the binding sends `POST /v2/wallboxes/{serialNumber}/phase-toggle?numberOfPhases=1` or `numberOfPhases=3`.
 The phase count is read back during polling rather than assumed after a command.
 KEBA requires a five-minute cooldown between UDP phase changes.
@@ -316,6 +317,10 @@ Consult the model's installation manual for the switch's default setting and loc
 After changing DIP switches, power-cycle the station; a software reset may not apply the new configuration.
 The KeContact P40 has no DIP switches; enable Modbus TCP and configure its port and Unit ID via the KEBA eMobility App, OCPP or REST API.
 The default Modbus TCP port is `502` (configurable via the `port` parameter); the default Unit ID is `255` (configurable via the `unitId` parameter).
+The wallbox serves only one Modbus TCP client at a time, so an EMS cannot poll it in parallel with openHAB.
+Use a Modbus TCP proxy in that case and set `modbusIpAddress` to the proxy, while UDP and REST keep using `ipAddress`.
 
 The REST API uses HTTPS and was tested with P30 x-series firmware 2.1.0 and KeMove API v2.5.0.
-Check REST credentials with the KEBA eMobility App and verify `https://<ipAddress>:<restPort>` reaches the wallbox.
+For REST API access, authenticate with the wallbox's locally configured REST username and password.
+KEBA eMobility Portal credentials are not valid for local REST API access.
+Verify `https://<ipAddress>:<restPort>` reaches the wallbox.

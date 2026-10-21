@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -494,7 +495,7 @@ class KeContactCombinedHandlerTest {
                 }
                 if (Set.of("phase-switch-state", "phase-switch-state-readonly")
                         .contains(typeDefinition.getAttribute("id"))) {
-                    assertEquals(Set.of("1", "3"), optionValues);
+                    assertEquals(Set.of("0", "1", "3"), optionValues);
                     assertEquals("Number", typeDefinition.getElementsByTagName("item-type").item(0).getTextContent());
                     assertEquals(
                             "phase-switch-state-readonly".equals(typeDefinition.getAttribute("id")) ? "true" : "false",
@@ -1559,7 +1560,7 @@ class KeContactCombinedHandlerTest {
                 assertTrue(requests.contains("/wallboxes/12345"));
                 assertEquals("P30", restProperties.get("model"));
                 assertEquals(new DecimalType(linked.isEmpty() ? 0 : 1), restStates.get("output"));
-                assertFalse(requests.contains("/configs/lmgmt/"));
+                assertTrue(requests.contains("/configs/lmgmt/"));
                 assertEquals(linked.contains("dipswitchinterpretation"),
                         requests.contains("/wallboxes/dipswitch/12345"));
                 assertEquals(sessionsExpected, requests.stream().anyMatch(path -> path.startsWith("/sessions?")));
@@ -1665,12 +1666,14 @@ class KeContactCombinedHandlerTest {
         try {
             rest.initialize();
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             assertEquals("/wallboxes/dipswitch/12345", requests.poll(5, TimeUnit.SECONDS));
             assertTrue(Objects.requireNonNull(requests.poll(5, TimeUnit.SECONDS)).startsWith("/sessions?"));
             assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
 
             clock.set(TimeUnit.SECONDS.toNanos(10));
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
 
             primary.set(false);
@@ -1684,9 +1687,11 @@ class KeContactCombinedHandlerTest {
 
             clock.set(TimeUnit.SECONDS.toNanos(70));
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             primary.set(true);
             clock.set(TimeUnit.SECONDS.toNanos(80));
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
 
             List<Boolean> failures = List.of(true, false, true, true, false, true, true, true);
@@ -1695,6 +1700,9 @@ class KeContactCombinedHandlerTest {
                 failWallbox.set(failures.get(poll));
                 clock.set(TimeUnit.SECONDS.toNanos(90 + poll * 10L));
                 assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+                if (!failures.get(poll)) {
+                    assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
+                }
                 assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
                 if (!failures.get(poll)) {
                     assertEquals(ThingStatus.ONLINE, statuses.poll(5, TimeUnit.SECONDS));
@@ -1714,10 +1722,182 @@ class KeContactCombinedHandlerTest {
             primary.set(true);
             clock.set(TimeUnit.SECONDS.toNanos(190));
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             assertEquals(ThingStatus.ONLINE, statuses.poll(5, TimeUnit.SECONDS));
             rest.dispose();
             clock.set(TimeUnit.SECONDS.toNanos(200));
             assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
+        } finally {
+            rest.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(40)
+    void restPhaseSwitchStateFollowsConnectorPhaseEnableReadBeforeEachWallboxUpdate() throws Exception {
+        AtomicLong clock = new AtomicLong();
+        AtomicReference<String> lmgmt = new AtomicReference<>("");
+        AtomicReference<String> phaseUsed = new AtomicReference<>("L1_L2_L3");
+        BlockingQueue<String> events = new LinkedBlockingQueue<>();
+        Map<String, State> states = new ConcurrentHashMap<>();
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:restphasestate")).build();
+        KeContactProtocolHandler.Listener listener = new KeContactProtocolHandler.Listener() {
+            @Override
+            public void stateUpdated(String channel, State state) {
+                states.put(channel, state);
+                if ("phaseswitchstate".equals(channel) || "dipswitchsettings".equals(channel)) {
+                    events.add(channel + "=" + state);
+                }
+            }
+
+            @Override
+            public void statusUpdated(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
+            }
+
+            @Override
+            public void propertiesUpdated(Map<String, String> properties) {
+            }
+
+            @Override
+            public boolean isLinked(String channel) {
+                return false;
+            }
+
+            @Override
+            public boolean isPrimary() {
+                return true;
+            }
+        };
+        KeContactRestHandler rest = new KeContactRestHandler(thing, new Configuration(Map.of("ipAddress", "192.0.2.1",
+                "restEnabled", true, "password", "test-password", "refreshInterval", 10, "refreshIntervalSlow", 60)),
+                listener) {
+            @Override
+            protected long pollingTime() {
+                return clock.get();
+            }
+
+            @Override
+            protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated)
+                    throws IOException {
+                if ("/jwt/login".equals(path)) {
+                    return JsonParser.parseString("{\"accessToken\":\"test-token\"}").getAsJsonObject();
+                }
+                if ("/serialnumber".equals(path)) {
+                    return JsonParser.parseString("{\"value\":\"12345\"}").getAsJsonObject();
+                }
+                events.add(path);
+                if ("/configs/lmgmt/".equals(path)) {
+                    if ("fail".equals(lmgmt.get())) {
+                        throw new IOException("Test failure");
+                    }
+                    return JsonParser.parseString("{\"configs\":[" + lmgmt.get() + "]}").getAsJsonObject();
+                }
+                if ("/wallboxes/12345".equals(path)) {
+                    return JsonParser.parseString(
+                            "{\"maxCurrent\":32000,\"phaseUsed\":\"" + phaseUsed.get() + "\",\"dipSwitchSettings\":[]}")
+                            .getAsJsonObject();
+                }
+                return new JsonObject();
+            }
+        };
+        String enabled = "{\"key\":\"connector_phase_enable\",\"value\":true}";
+        String disabled = "{\"key\":\"connector_phase_enable\",\"value\":false}";
+        String udp = "{\"key\":\"connector_phase_source\",\"value\":\"UDP\"}";
+        String unknown = "{\"key\":\"connector_phase_source\",\"value\":\"UNSUPPORTED\"}";
+        try {
+            // phase switching via UDP, three phases in use; source is read although no channel is linked
+            lmgmt.set(enabled + "," + udp);
+            rest.initialize();
+            assertEquals("/wallboxes/12345", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("phaseswitchstate=3", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("dipswitchsettings=[]", events.poll(5, TimeUnit.SECONDS));
+            assertEquals(new DecimalType(4), states.get("phaseswitchsource"));
+            assertEquals(new QuantityType<>(32, Units.AMPERE), states.get("maxsupportedcurrent"));
+
+            // a source change is picked up on the next fast poll, before the phase state is derived
+            lmgmt.set(disabled + "," + udp);
+            clock.set(TimeUnit.SECONDS.toNanos(10));
+            assertEquals("/wallboxes/12345", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("phaseswitchstate=0", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("dipswitchsettings=[]", events.poll(5, TimeUnit.SECONDS));
+            assertEquals(new DecimalType(0), states.get("phaseswitchsource"));
+
+            lmgmt.set(enabled + "," + udp);
+            phaseUsed.set("L1");
+            clock.set(TimeUnit.SECONDS.toNanos(20));
+            assertEquals("/wallboxes/12345", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("phaseswitchstate=1", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("dipswitchsettings=[]", events.poll(5, TimeUnit.SECONDS));
+            assertEquals(new DecimalType(4), states.get("phaseswitchsource"));
+
+            // an unknown source leaves the phase state untouched
+            long seconds = 30;
+            for (String unknownSource : List.of(udp, enabled + "," + unknown, "fail")) {
+                lmgmt.set(unknownSource);
+                clock.set(TimeUnit.SECONDS.toNanos(seconds));
+                seconds += 10;
+                assertEquals("/wallboxes/12345", events.poll(5, TimeUnit.SECONDS));
+                assertEquals("/configs/lmgmt/", events.poll(5, TimeUnit.SECONDS));
+                assertEquals("dipswitchsettings=[]", events.poll(5, TimeUnit.SECONDS), unknownSource);
+            }
+            assertEquals(new DecimalType(1), states.get("phaseswitchstate"));
+        } finally {
+            rest.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(20)
+    void restPhaseSwitchSourceCommandsWriteConnectorPhaseConfiguration() throws Exception {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:restphasesource")).build();
+        CountDownLatch ready = new CountDownLatch(1);
+        BlockingQueue<String> puts = new LinkedBlockingQueue<>();
+        KeContactProtocolHandler.Listener listener = Objects
+                .requireNonNull(mock(KeContactProtocolHandler.Listener.class));
+        doAnswer(invocation -> {
+            ready.countDown();
+            return null;
+        }).when(listener).statusUpdated(eq(ThingStatus.ONLINE), any(), any());
+        KeContactRestHandler rest = new KeContactRestHandler(thing,
+                new Configuration(Map.of("ipAddress", "192.0.2.1", "restEnabled", true, "password", "test-password",
+                        "refreshInterval", 3600, "refreshIntervalSlow", 3600)),
+                listener) {
+            @Override
+            protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated) {
+                if ("/jwt/login".equals(path)) {
+                    return JsonParser.parseString("{\"accessToken\":\"test-token\"}").getAsJsonObject();
+                }
+                if ("/serialnumber".equals(path)) {
+                    return JsonParser.parseString("{\"value\":\"12345\"}").getAsJsonObject();
+                }
+                if ("PUT".equals(method)) {
+                    assertEquals("/configs/lmgmt/", path);
+                    puts.add(Objects.requireNonNull(body));
+                }
+                return new JsonObject();
+            }
+        };
+        ChannelUID source = new ChannelUID(thing.getUID(), "phaseswitchsource");
+        try {
+            rest.initialize();
+            assertTrue(ready.await(5, TimeUnit.SECONDS));
+            rest.handleCommand(source, new DecimalType(4));
+            assertEquals(JsonParser.parseString("""
+                    {"configs":[{"key":"connector_phase_enable","value":true},
+                    {"key":"connector_phase_source","value":"UDP"}]}
+                    """), JsonParser.parseString(Objects.requireNonNull(puts.poll(5, TimeUnit.SECONDS))));
+            verify(listener).stateUpdated("phaseswitchsource", new DecimalType(4));
+            rest.handleCommand(source, new DecimalType(0));
+            assertEquals(JsonParser.parseString("{\"configs\":[{\"key\":\"connector_phase_enable\",\"value\":false}]}"),
+                    JsonParser.parseString(Objects.requireNonNull(puts.poll(5, TimeUnit.SECONDS))));
+            verify(listener).stateUpdated("phaseswitchsource", new DecimalType(0));
+            rest.handleCommand(source, new DecimalType(5));
+            assertNull(puts.poll(500, TimeUnit.MILLISECONDS));
         } finally {
             rest.dispose();
         }
