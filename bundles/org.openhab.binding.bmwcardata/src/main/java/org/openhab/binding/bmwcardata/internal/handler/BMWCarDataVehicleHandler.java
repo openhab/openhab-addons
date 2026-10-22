@@ -1,0 +1,369 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.bmwcardata.internal.handler;
+
+import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants.*;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataApi;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
+import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
+import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
+import org.openhab.binding.bmwcardata.internal.config.VehicleConfiguration;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link BMWCarDataVehicleHandler} publishes the telematic data of a vehicle, which is either pushed by the
+ * stream of the account or polled from the REST API.
+ *
+ * @author Michael Weger - Initial contribution
+ */
+@NonNullByDefault
+public class BMWCarDataVehicleHandler extends BaseThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(BMWCarDataVehicleHandler.class);
+
+    private String vin = "";
+    private int pollingInterval;
+    private boolean dynamicChannels = true;
+    private final Object dynamicChannelLock = new Object();
+    private @Nullable ScheduledFuture<?> pollJob;
+    // states by channel id, to answer REFRESH commands without spending API requests
+    private final Map<String, State> states = new ConcurrentHashMap<>();
+    // timestamps of the latest values by descriptor, to drop values older than already published ones
+    private final Map<String, Instant> descriptorTimestamps = new ConcurrentHashMap<>();
+    // guarded by this
+    private @Nullable BigDecimal latitude;
+    private @Nullable BigDecimal longitude;
+    private @Nullable Instant lastUpdate;
+
+    public BMWCarDataVehicleHandler(Thing thing) {
+        super(thing);
+    }
+
+    public String getVin() {
+        return vin;
+    }
+
+    @Override
+    public void initialize() {
+        VehicleConfiguration config = getConfigAs(VehicleConfiguration.class);
+        vin = config.vin.trim().toUpperCase(Locale.ROOT);
+        pollingInterval = config.pollingInterval;
+        dynamicChannels = config.dynamicChannels;
+        if (!BMWCarDataApi.isValidVin(vin)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.vin");
+            return;
+        }
+        Bridge bridge = getBridge();
+        updateBridgeStatus(bridge == null ? ThingStatus.OFFLINE : bridge.getStatus());
+    }
+
+    @Override
+    public void dispose() {
+        stopPolling();
+        super.dispose();
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (BMWCarDataApi.isValidVin(vin)) {
+            updateBridgeStatus(bridgeStatusInfo.getStatus());
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            State state = states.get(channelUID.getId());
+            if (state != null) {
+                updateState(channelUID, state);
+            }
+        }
+        // all channels are read-only
+    }
+
+    /**
+     * Publishes the values of the given descriptors.
+     */
+    public void updateTelematicData(Map<String, TelematicValue> data) {
+        BigDecimal newLatitude = null;
+        BigDecimal newLongitude = null;
+        Instant newest = null;
+        Map<String, TelematicValue> dynamicValues = new LinkedHashMap<>();
+        for (Map.Entry<String, TelematicValue> entry : data.entrySet()) {
+            String descriptor = entry.getKey();
+            TelematicValue value = entry.getValue();
+            VehicleChannel channel = VehicleChannel.fromDescriptor(descriptor);
+            // the API returns all descriptors of the container, those never reported by the vehicle without value
+            if ((channel == null && !dynamicChannels) || VehicleChannel.toPrimitive(value) == null) {
+                continue;
+            }
+            Instant timestamp = parseTimestamp(value.timestamp);
+            if (timestamp != null) {
+                if (!isNewer(descriptor, timestamp)) {
+                    continue;
+                }
+                if (newest == null || timestamp.isAfter(newest)) {
+                    newest = timestamp;
+                }
+            }
+            if (channel == null) {
+                dynamicValues.put(descriptor, value);
+                continue;
+            }
+            State state = channel.toState(value);
+            if (state == null) {
+                logger.trace("Ignoring unsupported value {} of {}", value.value, descriptor);
+                continue;
+            }
+            switch (channel) {
+                case LATITUDE -> {
+                    if (state instanceof DecimalType decimal) {
+                        newLatitude = decimal.toBigDecimal();
+                    }
+                }
+                case LONGITUDE -> {
+                    if (state instanceof DecimalType decimal) {
+                        newLongitude = decimal.toBigDecimal();
+                    }
+                }
+                default -> {
+                    String channelUid = channel.getChannelUid();
+                    if (channelUid != null) {
+                        publish(channelUid, state);
+                    }
+                }
+            }
+        }
+
+        State location = null;
+        State lastUpdateState = null;
+        synchronized (this) {
+            if (newLatitude != null || newLongitude != null) {
+                if (newLatitude != null) {
+                    latitude = newLatitude;
+                }
+                if (newLongitude != null) {
+                    longitude = newLongitude;
+                }
+                BigDecimal lat = latitude;
+                BigDecimal lon = longitude;
+                if (lat != null && lon != null) {
+                    location = new PointType(new DecimalType(lat), new DecimalType(lon));
+                }
+            }
+            Instant previous = lastUpdate;
+            if (newest != null && (previous == null || newest.isAfter(previous))) {
+                lastUpdate = newest;
+                lastUpdateState = new DateTimeType(newest);
+            }
+        }
+        if (location != null) {
+            publish(CHANNEL_GPS, location);
+        }
+        if (lastUpdateState != null) {
+            publish(CHANNEL_LAST_UPDATE, lastUpdateState);
+        }
+        if (!dynamicValues.isEmpty()) {
+            updateDynamicChannels(dynamicValues);
+        }
+        // data received from the stream proves the vehicle reachable again after a failed poll
+        if (getThing().getStatus() == ThingStatus.OFFLINE
+                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    /**
+     * Publishes the values of descriptors without predefined channel, creating their channels as needed.
+     */
+    private void updateDynamicChannels(Map<String, TelematicValue> values) {
+        Map<String, State> newStates = new LinkedHashMap<>();
+        // stream and poll may deliver data concurrently, the lock avoids that one thing update overwrites the other
+        synchronized (dynamicChannelLock) {
+            ThingBuilder builder = null;
+            List<String> newChannelIds = new ArrayList<>();
+            for (Map.Entry<String, TelematicValue> entry : values.entrySet()) {
+                String descriptor = entry.getKey();
+                String channelId = GROUP_OTHER + "#" + DynamicChannel.channelId(descriptor);
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+                Channel channel = getThing().getChannel(channelUID);
+                if (channel != null) {
+                    State state = DynamicChannel.toState(entry.getValue(), channel.getAcceptedItemType());
+                    if (state != null) {
+                        newStates.put(channelId, state);
+                    }
+                    continue;
+                }
+                DynamicChannel.Definition definition = DynamicChannel.define(entry.getValue());
+                if (definition == null) {
+                    continue;
+                }
+                if (builder == null) {
+                    builder = editThing();
+                }
+                builder.withChannel(ChannelBuilder.create(channelUID, definition.itemType())
+                        .withType(new ChannelTypeUID(BINDING_ID, definition.channelTypeId())).withLabel(descriptor)
+                        .build());
+                newChannelIds.add(channelId);
+                newStates.put(channelId, definition.state());
+            }
+            if (builder != null) {
+                logger.debug("Creating dynamic channels {}", newChannelIds);
+                updateThing(builder.build());
+            }
+        }
+        newStates.forEach(this::publish);
+    }
+
+    private boolean isNewer(String descriptor, Instant timestamp) {
+        Instant latest = descriptorTimestamps.merge(descriptor, timestamp,
+                (previous, current) -> current.isBefore(previous) ? previous : current);
+        return timestamp.equals(latest);
+    }
+
+    private void publish(String channelUid, State state) {
+        states.put(channelUid, state);
+        updateState(channelUid, state);
+    }
+
+    private void updateBridgeStatus(ThingStatus bridgeStatus) {
+        if (bridgeStatus == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+            startPolling();
+        } else {
+            stopPolling();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    private synchronized void startPolling() {
+        ScheduledFuture<?> job = pollJob;
+        if (job != null && !job.isDone()) {
+            return;
+        }
+        if (pollingInterval > 0) {
+            pollJob = scheduler.scheduleWithFixedDelay(this::poll, 0, pollingInterval, TimeUnit.MINUTES);
+        } else if (!getThing().getProperties().containsKey(PROPERTY_MODEL)) {
+            pollJob = scheduler.schedule(this::retrieveProperties, 0, TimeUnit.SECONDS);
+        }
+    }
+
+    private synchronized void stopPolling() {
+        ScheduledFuture<?> job = pollJob;
+        if (job != null) {
+            job.cancel(true);
+            pollJob = null;
+        }
+    }
+
+    private void poll() {
+        BMWCarDataAccountHandler account = getAccountHandler();
+        if (account == null) {
+            return;
+        }
+        retrieveProperties();
+        try {
+            updateTelematicData(account.fetchTelematicData(vin));
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } catch (BMWCarDataException e) {
+            if (e.isRateLimited()) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.rate-limited");
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+    }
+
+    private void retrieveProperties() {
+        BMWCarDataAccountHandler account = getAccountHandler();
+        if (account == null || getThing().getProperties().containsKey(PROPERTY_MODEL)) {
+            return;
+        }
+        BasicData basicData;
+        try {
+            basicData = account.fetchBasicData(vin);
+        } catch (BMWCarDataException e) {
+            logger.debug("Failed to retrieve basic vehicle data: {}", e.getMessage());
+            return;
+        }
+        Map<String, String> properties = new HashMap<>(editProperties());
+        putIfPresent(properties, PROPERTY_BRAND, basicData.brand);
+        String model = basicData.modelName != null ? basicData.modelName : basicData.series;
+        // the model property marks the properties as retrieved, so it is always set
+        properties.put(PROPERTY_MODEL, model != null ? model : "");
+        putIfPresent(properties, PROPERTY_SERIES, basicData.series);
+        putIfPresent(properties, PROPERTY_DRIVE_TRAIN, basicData.driveTrain);
+        putIfPresent(properties, PROPERTY_PROPULSION_TYPE, basicData.propulsionType);
+        putIfPresent(properties, PROPERTY_COLOR, basicData.colourDescription);
+        putIfPresent(properties, PROPERTY_CONSTRUCTION_DATE, basicData.constructionDate);
+        updateProperties(properties);
+    }
+
+    private static void putIfPresent(Map<String, String> properties, String key, @Nullable String value) {
+        if (value != null && !value.isBlank()) {
+            properties.put(key, value);
+        }
+    }
+
+    private @Nullable BMWCarDataAccountHandler getAccountHandler() {
+        Bridge bridge = getBridge();
+        return bridge != null && bridge.getHandler() instanceof BMWCarDataAccountHandler handler ? handler : null;
+    }
+
+    private static @Nullable Instant parseTimestamp(@Nullable String timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        try {
+            return Instant.parse(timestamp);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
+}

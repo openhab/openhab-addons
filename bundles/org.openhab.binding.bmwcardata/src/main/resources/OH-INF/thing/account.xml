@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwcardata"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>BMW CarData Account</label>
+		<description>Access to the vehicles of a BMW Group customer account via BMW CarData</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="clientId" type="text" required="true">
+				<label>Client ID</label>
+				<description>The client ID created in the BMW CarData section of the MyBMW / MINI customer portal. The client
+					needs
+					the subscriptions "CarData API" and "CarData Streaming".</description>
+			</parameter>
+			<parameter name="streaming" type="boolean">
+				<label>Streaming</label>
+				<description>Receive vehicle data pushed by the CarData streaming service. The data selected for the stream in
+					the
+					customer portal is updated as soon as the vehicle reports it.</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>
