@@ -3,6 +3,8 @@
 		"id": [
 			"dreame.vacuum.r2228o",
 			"dreame.vacuum.r2228z",
+			"dreame.vacuum.r2228",
+			"dreame.vacuum.r2233",
 			"dreame.vacuum.r2338a",
 			"dreame.vacuum.r2338",
 			"dreame.vacuum.r2338h"
@@ -1517,6 +1519,10 @@
 						{
 							"value": "119",
 							"label": "Water level in the washboard is too high"
+						},
+						{
+							"value": "121",
+							"label": "Check whether the dust collection bag is full"
 						}
 					]
 				},
