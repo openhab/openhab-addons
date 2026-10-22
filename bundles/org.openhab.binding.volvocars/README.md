@@ -61,12 +61,12 @@ Discovery runs in the background once an hour and can also be started manually.
 
 ### `account` Bridge Configuration
 
-| Name           | Type | Description                                                                                                      | Default | Required | Advanced |
-|----------------|------|------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
-| `clientId`     | text | Client ID of the application                                                                                     | N/A     | yes      | no       |
-| `clientSecret` | text | Client secret of the application                                                                                 | N/A     | yes      | no       |
-| `apiKey`       | text | VCC API key of the application                                                                                   | N/A     | yes      | no       |
-| `redirectUri`  | text | Redirect URI exactly as registered for the application, e.g. `http://openhab:8080/volvocars`                     | N/A     | yes      | no       |
+| Name           | Type | Description                                                                                                             | Default | Required | Advanced |
+|----------------|------|-------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
+| `clientId`     | text | Client ID of the application                                                                                            | N/A     | yes      | no       |
+| `clientSecret` | text | Client secret of the application                                                                                        | N/A     | yes      | no       |
+| `apiKey`       | text | VCC API key of the application                                                                                          | N/A     | yes      | no       |
+| `redirectUri`  | text | Redirect URI exactly as registered for the application, e.g. `http://openhab:8080/volvocars`                            | N/A     | yes      | no       |
 | `scopes`       | text | Space separated list of scopes to request. Leave empty to request all scopes listed in [Prerequisites](#prerequisites). | (all)   | no       | yes      |
 
 ### Authorization
@@ -86,12 +86,12 @@ Changing the client ID also requires a new authorization.
 
 ### `vehicle` Thing Configuration
 
-| Name                  | Type    | Description                                                                                       | Default | Required | Advanced |
-|-----------------------|---------|---------------------------------------------------------------------------------------------------|---------|----------|----------|
-| `vin`                 | text    | Vehicle Identification Number                                                                     | N/A     | yes      | no       |
-| `refreshInterval`     | integer | Interval in minutes to refresh doors, windows, status, fuel, battery, trip and location data      | 5       | no       | no       |
-| `slowRefreshInterval` | integer | Interval in minutes to refresh rarely changing maintenance data (service, warnings, tyres)        | 30      | no       | yes      |
-| `engineRunTime`       | integer | Duration in minutes (1-15) the engine keeps running after a remote start                         | 15      | no       | yes      |
+| Name                  | Type    | Description                                                                                  | Default | Required | Advanced |
+|-----------------------|---------|----------------------------------------------------------------------------------------------|---------|----------|----------|
+| `vin`                 | text    | Vehicle Identification Number                                                                | N/A     | yes      | no       |
+| `refreshInterval`     | integer | Interval in minutes to refresh doors, windows, status, fuel, battery, trip and location data | 5       | no       | no       |
+| `slowRefreshInterval` | integer | Interval in minutes to refresh rarely changing maintenance data (service, warnings, tyres)   | 30      | no       | yes      |
+| `engineRunTime`       | integer | Duration in minutes (1-15) the engine keeps running after a remote start                     | 15      | no       | yes      |
 
 Every refresh issues several requests to the Volvo Cars APIs.
 Keep the refresh interval moderate to stay within the request limits of your application.
@@ -186,32 +186,32 @@ The location is not available in all markets.
 
 These values are refreshed with the maintenance refresh interval.
 
-| Channel                   | Type          | Read/Write | Description                                                                    |
-|---------------------------|---------------|------------|--------------------------------------------------------------------------------|
-| `service-warning`         | String        | R          | Service status, e.g. `NO_WARNING` or `DISTANCE_DRIVEN_TIME_FOR_SERVICE`        |
-| `distance-to-service`     | Number:Length | R          | Remaining distance until the next service                                      |
-| `time-to-service`         | Number:Time   | R          | Remaining time until the next service                                          |
-| `engine-hours-to-service` | Number:Time   | R          | Remaining engine hours until the next service                                  |
-| `washer-fluid-warning`    | String        | R          | Washer fluid level warning (`NO_WARNING`, `TOO_LOW`)                           |
-| `brake-fluid-warning`     | String        | R          | Brake fluid level warning (`NO_WARNING`, `TOO_LOW`)                            |
-| `oil-level-warning`       | String        | R          | Engine oil level warning (`NO_WARNING`, `SERVICE_REQUIRED`, `TOO_LOW`, `TOO_HIGH`) |
-| `coolant-level-warning`   | String        | R          | Engine coolant level warning (`NO_WARNING`, `TOO_LOW`)                         |
+| Channel                   | Type          | Read/Write | Description                                                                                |
+|---------------------------|---------------|------------|--------------------------------------------------------------------------------------------|
+| `service-warning`         | String        | R          | Service status, e.g. `NO_WARNING` or `DISTANCE_DRIVEN_TIME_FOR_SERVICE`                    |
+| `distance-to-service`     | Number:Length | R          | Remaining distance until the next service                                                  |
+| `time-to-service`         | Number:Time   | R          | Remaining time until the next service                                                      |
+| `engine-hours-to-service` | Number:Time   | R          | Remaining engine hours until the next service                                              |
+| `washer-fluid-warning`    | String        | R          | Washer fluid level warning (`NO_WARNING`, `TOO_LOW`)                                       |
+| `brake-fluid-warning`     | String        | R          | Brake fluid level warning (`NO_WARNING`, `TOO_LOW`)                                        |
+| `oil-level-warning`       | String        | R          | Engine oil level warning (`NO_WARNING`, `SERVICE_REQUIRED`, `TOO_LOW`, `TOO_HIGH`)         |
+| `coolant-level-warning`   | String        | R          | Engine coolant level warning (`NO_WARNING`, `TOO_LOW`)                                     |
 | `tyre-front-left`         | String        | R          | Tyre pressure warning (`NO_WARNING`, `VERY_LOW_PRESSURE`, `LOW_PRESSURE`, `HIGH_PRESSURE`) |
-| `tyre-front-right`        | String        | R          | Tyre pressure warning                                                          |
-| `tyre-rear-left`          | String        | R          | Tyre pressure warning                                                          |
-| `tyre-rear-right`         | String        | R          | Tyre pressure warning                                                          |
-| `light-failure`           | Switch        | R          | `ON` if at least one exterior light reports a failure                          |
-| `light-failures`          | String        | R          | Comma separated list of failed lights, e.g. `brakeLightLeft, fogLightRear`     |
+| `tyre-front-right`        | String        | R          | Tyre pressure warning                                                                      |
+| `tyre-rear-left`          | String        | R          | Tyre pressure warning                                                                      |
+| `tyre-rear-right`         | String        | R          | Tyre pressure warning                                                                      |
+| `light-failure`           | Switch        | R          | `ON` if at least one exterior light reports a failure                                      |
+| `light-failures`          | String        | R          | Comma separated list of failed lights, e.g. `brakeLightLeft, fogLightRear`                 |
 
 ### Group `control`
 
-| Channel               | Type   | Read/Write | Description                                                                                   |
-|-----------------------|--------|------------|-----------------------------------------------------------------------------------------------|
-| `climatization`       | Switch | W          | Send `ON` to start and `OFF` to stop the climatization                                        |
-| `engine-remote-start` | Switch | W          | Send `ON` to start the engine for the configured run time and `OFF` to stop it                |
-| `honk-flash`          | String | W          | Send `HONK`, `FLASH` or `HONK_AND_FLASH`                                                      |
-| `lock-reduced-guard`  | Switch | W          | Send `ON` to lock the car with reduced alarm guard, e.g. to leave a pet inside               |
-| `last-command-status` | String | R          | Result of the last command, e.g. `COMPLETED`, `REJECTED` or `FAILED: <reason>`               |
+| Channel               | Type   | Read/Write | Description                                                                    |
+|-----------------------|--------|------------|--------------------------------------------------------------------------------|
+| `climatization`       | Switch | W          | Send `ON` to start and `OFF` to stop the climatization                         |
+| `engine-remote-start` | Switch | W          | Send `ON` to start the engine for the configured run time and `OFF` to stop it |
+| `honk-flash`          | String | W          | Send `HONK`, `FLASH` or `HONK_AND_FLASH`                                       |
+| `lock-reduced-guard`  | Switch | W          | Send `ON` to lock the car with reduced alarm guard, e.g. to leave a pet inside |
+| `last-command-status` | String | R          | Result of the last command, e.g. `COMPLETED`, `REJECTED` or `FAILED: <reason>` |
 
 The car needs some time to execute a command.
 The binding refreshes the state of the car 15 seconds after a command.

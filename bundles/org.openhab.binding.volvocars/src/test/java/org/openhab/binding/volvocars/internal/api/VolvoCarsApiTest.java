@@ -94,26 +94,26 @@ class VolvoCarsApiTest {
     void connectedVehicleValues() throws VolvoCarsException {
         Map<String, ValueField> doors = api.getValues(VIN, "doors");
 
-        assertEquals("LOCKED", doors.get("centralLock").getString());
-        assertEquals("AJAR", doors.get("tailgate").getString());
-        assertTrue(doors.get("hood").isValid());
+        assertEquals("LOCKED", field(doors, "centralLock").getString());
+        assertEquals("AJAR", field(doors, "tailgate").getString());
+        assertTrue(field(doors, "hood").isValid());
     }
 
     @Test
     void numbersEncodedAsStrings() throws VolvoCarsException {
         Map<String, ValueField> fuel = api.getValues(VIN, "fuel");
 
-        assertEquals(new BigDecimal("47.3"), fuel.get("fuelAmount").getNumber());
-        assertEquals("l", fuel.get("fuelAmount").unit);
+        assertEquals(new BigDecimal("47.3"), field(fuel, "fuelAmount").getNumber());
+        assertEquals("l", field(fuel, "fuelAmount").unit);
     }
 
     @Test
     void energyStateMarksUnsupportedValuesInvalid() throws VolvoCarsException {
         Map<String, ValueField> energy = api.getEnergyState(VIN);
 
-        assertTrue(energy.get("batteryChargeLevel").isValid());
-        assertEquals(new BigDecimal("53"), energy.get("batteryChargeLevel").getNumber());
-        assertFalse(energy.get("chargingPower").isValid());
+        assertTrue(field(energy, "batteryChargeLevel").isValid());
+        assertEquals(new BigDecimal("53"), field(energy, "batteryChargeLevel").getNumber());
+        assertFalse(field(energy, "chargingPower").isValid());
     }
 
     @Test
@@ -132,11 +132,14 @@ class VolvoCarsApiTest {
 
     @Test
     void location() throws VolvoCarsException {
-        Location location = api.getLocation(VIN);
+        Location location = Objects.requireNonNull(api.getLocation(VIN));
 
-        assertNotNull(location);
-        assertEquals(List.of(11.85, 57.72, 0.0), location.geometry.coordinates);
-        assertEquals("90", location.properties.heading);
+        assertEquals(List.of(11.85, 57.72, 0.0), Objects.requireNonNull(location.geometry).coordinates);
+        assertEquals("90", Objects.requireNonNull(location.properties).heading);
+    }
+
+    private static ValueField field(Map<String, ValueField> values, String key) {
+        return Objects.requireNonNull(values.get(key), key);
     }
 
     @Test
