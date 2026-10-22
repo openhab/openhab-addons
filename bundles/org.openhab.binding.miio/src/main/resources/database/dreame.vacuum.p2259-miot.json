@@ -2,7 +2,8 @@
 	"deviceMapping": {
 		"id": [
 			"dreame.vacuum.p2259",
-			"dreame.vacuum.p2157"
+			"dreame.vacuum.p2157",
+			"dreame.vacuum.p2187"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
@@ -490,7 +491,7 @@
 					"Status",
 					"Mode"
 				],
-				"readmeComment": "Not used by the Mi Home app, which sets the suction level with `cleaning_mode`"
+				"readmeComment": "Not used by the Mi Home app, which sets the suction level with `cleaning_mode`; not in the MIoT spec of the dreame.vacuum.p2187"
 			},
 			{
 				"property": "battery-level",

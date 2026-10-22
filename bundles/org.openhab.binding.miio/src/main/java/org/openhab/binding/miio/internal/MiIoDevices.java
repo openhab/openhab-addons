@@ -93,6 +93,7 @@ public enum MiIoDevices {
     DREAME_VACUUM_P2150O("dreame.vacuum.p2150o", "Mijia Robot Vacuum-Mop Dirt Disposal", THING_TYPE_BASIC),
     DREAME_VACUUM_P2156O("dreame.vacuum.p2156o", "MOVA Z500 Robot Vacuum and Mop Cleaner", THING_TYPE_BASIC),
     DREAME_VACUUM_P2157("dreame.vacuum.p2157", "MOVA L600 Robot Vacuum and Mop Cleaner", THING_TYPE_BASIC),
+    DREAME_VACUUM_P2187("dreame.vacuum.p2187", "DreameBot D9 Pro", THING_TYPE_BASIC),
     DREAME_VACUUM_P2259("dreame.vacuum.p2259", "Dreame Bot D9 Max", THING_TYPE_BASIC),
     DREAME_VACUUM_R2104("dreame.vacuum.r2104", "DreameBot W10 Pro Self-Cleaning Robot Vacuum and Mop",
             THING_TYPE_BASIC),
