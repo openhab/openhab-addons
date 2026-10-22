@@ -768,6 +768,28 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         super.updateStatus(status, statusDetail, description);
     }
 
+    // WebSocket events and in-flight polls may still arrive after dispose(), core would reject and log them
+    @Override
+    protected void triggerChannel(ChannelUID channelUID, String event) {
+        if (!stopping) {
+            super.triggerChannel(channelUID, event);
+        }
+    }
+
+    @Override
+    protected void updateThing(Thing thing) {
+        if (!stopping) {
+            super.updateThing(thing);
+        }
+    }
+
+    @Override
+    protected void updateProperties(@Nullable Map<String, String> properties) {
+        if (!stopping) {
+            super.updateProperties(properties);
+        }
+    }
+
     /**
      * Push the full channel state (relays, meters, inputs, sensors) for the given status.
      * Called both from the initial device init and from every full poll cycle so a Thing
