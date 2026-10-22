@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELL
 
 import java.lang.reflect.Field;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -147,9 +148,29 @@ class ShellyBaseHandlerDisposeTest {
         verify(coap).stop();
     }
 
+    @Test
+    void initializeAfterDisposeOfTheSameInstanceIsNotStopping() throws Exception {
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
+        setField(handler, "scheduler", mock(ScheduledExecutorService.class));
+        setField(handler, "stopping", true);
+
+        handler.initialize();
+
+        assertFalse(handler.isStopping());
+    }
+
     private static void setField(Object target, String fieldName, Object value) throws Exception {
-        Field f = target.getClass().getSuperclass().getDeclaredField(fieldName);
-        f.setAccessible(true);
-        f.set(target, value);
+        Class<?> type = target.getClass().getSuperclass();
+        while (type != null) {
+            try {
+                Field f = type.getDeclaredField(fieldName);
+                f.setAccessible(true);
+                f.set(target, value);
+                return;
+            } catch (NoSuchFieldException e) {
+                type = type.getSuperclass();
+            }
+        }
+        throw new NoSuchFieldException(fieldName);
     }
 }

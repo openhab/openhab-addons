@@ -225,6 +225,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     @Override
     public void initialize() {
+        // core re-initializes the same instance after dispose() on thingUpdated() and handleConfigurationUpdate()
+        stopping = false;
         // start background initialization:
         initJob = scheduler.schedule(() -> {
             boolean start = false;
@@ -334,7 +336,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         config = getConfigAs(ShellyThingConfiguration.class);
         updateApiConfig();
-        stopping = false;
         reinitializeThing();// force re-initialization
     }
 
