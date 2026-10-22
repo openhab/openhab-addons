@@ -76,6 +76,7 @@ public enum MiIoDevices {
     DREAME_VACUUM_P2028A("dreame.vacuum.p2028a", "DreameBot L10 Plus", THING_TYPE_BASIC),
     DREAME_VACUUM_P2029("dreame.vacuum.p2029", "Dreame Bot L10 Pro", THING_TYPE_BASIC),
     DREAME_VACUUM_P2036("dreame.vacuum.p2036", "Trouver Robot LDS Vacuum-Mop Finder", THING_TYPE_BASIC),
+    DREAME_VACUUM_P2041("dreame.vacuum.p2041", "Mi Robot Vacuum-Mop 1T", THING_TYPE_BASIC),
     DREAME_VACUUM_P2041O("dreame.vacuum.p2041o", "Mi Robot Vacuum-Mop 2 Pro+", THING_TYPE_BASIC),
     DREAME_VACUUM_P2114A("dreame.vacuum.p2114a", "Xiaomi Robot Vacuum X10+", THING_TYPE_BASIC),
     DREAME_VACUUM_P2114O("dreame.vacuum.p2114o", "Mijia Omni Robot Vacuum-Mop", THING_TYPE_BASIC),
