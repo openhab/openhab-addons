@@ -68,6 +68,17 @@ public class Shelly2ApiRpcDisposeTest {
     }
 
     @Test
+    void initializeAfterDisposeReattachesTheThing() throws Exception {
+        ShellyThingInterface thing = mock(ShellyThingInterface.class);
+        Shelly2ApiRpc api = buildApi(thing, mock(ShellyThingTable.class));
+
+        api.dispose();
+        api.initialize();
+
+        assertSame(thing, api.getThing());
+    }
+
+    @Test
     void webSocketErrorAfterDisposeDoesNotSetTheThingOffline() throws Exception {
         ShellyThingInterface thing = mock(ShellyThingInterface.class);
         Shelly2ApiRpc api = buildApi(thing, mock(ShellyThingTable.class));

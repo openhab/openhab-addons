@@ -110,6 +110,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private static final String REALM_WALLDISPLAY = "ShellyWallDisplay";
 
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
+    private final ShellyThingInterface owner;
     private final ShellyThingTable thingTable;
 
     protected volatile boolean initialized;
@@ -161,6 +162,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
             ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
         super(thingName, config, thing);
+        this.owner = thing;
         this.thingTable = thingTable;
         this.client = webSocketClient;
         this.scheduler = scheduler;
@@ -169,6 +171,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public synchronized void initialize() {
+        reattachThing();
         if (alwaysOn) {
             // dispose, not just disconnect: late Jetty callbacks of the replaced socket must not reach this handler
             Shelly2RpcSocket oldSocket = this.rpcSocket;
@@ -1672,6 +1675,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.trace("{}: Disconnect Rpc Socket", thingName);
         }
         rpcSocket.disconnect();
+    }
+
+    /**
+     * The handler re-initializes the same API instance after {@link #dispose()} on a thing or config update.
+     */
+    protected void reattachThing() {
+        thing = owner;
     }
 
     public Shelly2RpctInterface getRpcHandler() {

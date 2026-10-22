@@ -118,6 +118,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
 
     @Override
     public void initialize() {
+        reattachThing();
         if (!initialized) {
             connected = false;
             initialized = true;
