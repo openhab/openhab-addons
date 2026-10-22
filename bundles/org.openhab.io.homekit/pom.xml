@@ -22,7 +22,7 @@
     <dependency>
       <groupId>io.github.hap-java</groupId>
       <artifactId>hap</artifactId>
-      <!-- kgoderis fork: native DNS-SD advertiser (macOS Bonjour without UDP 5353) -->
+      <!-- Requires hap-java/HAP-Java#213 (native DNS-SD advertiser); bump to release once published -->
       <version>2.0.10-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
