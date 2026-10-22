@@ -88,6 +88,7 @@ public enum MiIoDevices {
     DREAME_VACUUM_P2140O("dreame.vacuum.p2140o", "Mi Robot Vacuum-Mop 2", THING_TYPE_BASIC),
     DREAME_VACUUM_P2140P("dreame.vacuum.p2140p", "Mi Robot Vacuum-Mop 2", THING_TYPE_BASIC),
     DREAME_VACUUM_P2140Q("dreame.vacuum.p2140q", "Mi Robot Vacuum-Mop 2", THING_TYPE_BASIC),
+    DREAME_VACUUM_P2148O("dreame.vacuum.p2148o", "Mijia Robot Vacuum-Mop Ultra Slim", THING_TYPE_BASIC),
     DREAME_VACUUM_P2150A("dreame.vacuum.p2150a", "Mi Robot Vacuum-Mop 2 Ultra", THING_TYPE_BASIC),
     DREAME_VACUUM_P2150B("dreame.vacuum.p2150b", "Mi Robot Vacuum-Mop 2 Ultra Set", THING_TYPE_BASIC),
     DREAME_VACUUM_P2150O("dreame.vacuum.p2150o", "Mijia Robot Vacuum-Mop Dirt Disposal", THING_TYPE_BASIC),
