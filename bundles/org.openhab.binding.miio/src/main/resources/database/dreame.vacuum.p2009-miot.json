@@ -16,23 +16,27 @@
 					"options": [
 						{
 							"value": "sweep",
-							"label": "Sweep"
+							"label": "Start Cleaning"
 						},
 						{
 							"value": "stopsweep",
-							"label": "Stop Sweep"
+							"label": "Pause Cleaning"
+						},
+						{
+							"value": "stop",
+							"label": "Stop Cleaning"
 						},
 						{
 							"value": "dock",
-							"label": "Goto Dock"
+							"label": "Return To Dock"
 						},
 						{
 							"value": "findme",
-							"label": "Find me"
+							"label": "Find Robot"
 						},
 						{
 							"value": "testsound",
-							"label": "Test Sound"
+							"label": "Play Test Sound"
 						}
 					]
 				},
@@ -62,6 +66,20 @@
 							"parameters": [
 								{
 									"matchValue": "stopsweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop"
 								}
 							]
 						}
@@ -109,7 +127,11 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"sweep\"\u003d\"Sweep\",\"stopsweep\"\u003d\"Stop Sweep\",\"dock\"\u003d\"Goto Dock\",\"findme\"\u003d\"Find me\",\"testsound\"\u003d\"Test Sound\"]`"
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"sweep\"\u003d\"Start Cleaning\",\"stopsweep\"\u003d\"Pause Cleaning\",\"stop\"\u003d\"Stop Cleaning\",\"dock\"\u003d\"Return To Dock\",\"findme\"\u003d\"Find Robot\",\"testsound\"\u003d\"Play Test Sound\"]`"
 			},
 			{
 				"property": "status",
@@ -153,7 +175,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"category": "status",
+				"category": "cleaningrobot",
 				"tags": [
 					"Status"
 				],
@@ -171,125 +193,277 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "No Error"
+							"label": "No Fault"
 						},
 						{
 							"value": "1",
-							"label": "Drop"
+							"label": "Wheels are suspended (Code 1)"
 						},
 						{
 							"value": "2",
-							"label": "Cliff"
+							"label": "Cliff sensor error"
 						},
 						{
 							"value": "3",
-							"label": "Bumper"
+							"label": "Collision sensor is stuck (Code 3)"
 						},
 						{
 							"value": "4",
-							"label": "Gesture"
+							"label": "Robot is tilted"
 						},
 						{
 							"value": "5",
-							"label": "Bumper Repeat"
+							"label": "Collision sensor is stuck (Code 5)"
 						},
 						{
 							"value": "6",
-							"label": "Drop Repeat"
+							"label": "Wheels are suspended (Code 6)"
 						},
 						{
 							"value": "7",
-							"label": "Optical Flow"
+							"label": "Internal Error (Code 7)"
 						},
 						{
 							"value": "8",
-							"label": "No Box"
-						},
-						{
-							"value": "9",
-							"label": "No Tankbox"
-						},
-						{
-							"value": "10",
-							"label": "Waterbox Empty"
+							"label": "Dust bin not installed"
 						},
 						{
 							"value": "11",
-							"label": "Box full"
+							"label": "The filter not dry or blocked (Code 11)"
 						},
 						{
 							"value": "12",
-							"label": "Brush"
+							"label": "The main brush wrapped"
 						},
 						{
 							"value": "13",
-							"label": "Side Brush"
+							"label": "The side brush wrapped"
 						},
 						{
 							"value": "14",
-							"label": "Fan"
+							"label": "The filter not dry or blocked (Code 14)"
 						},
 						{
 							"value": "15",
-							"label": "Left Wheel motor"
+							"label": "The robot is stuck, or its main wheels may be blocked by foreign objects (Code 15)"
 						},
 						{
 							"value": "16",
-							"label": "Right Wheel motor"
+							"label": "The robot is stuck, or its main wheels may be blocked by foreign objects (Code 16)"
 						},
 						{
 							"value": "17",
-							"label": "Turn suffocate"
+							"label": "The robot is stuck (Code 17)"
 						},
 						{
 							"value": "18",
-							"label": "Forward suffocate"
-						},
-						{
-							"value": "19",
-							"label": "Charger get"
+							"label": "The robot is stuck (Code 18)"
 						},
 						{
 							"value": "20",
-							"label": "Battery low"
+							"label": "Low battery"
 						},
 						{
 							"value": "21",
-							"label": "Charge fault"
-						},
-						{
-							"value": "22",
-							"label": "Battery percentage"
+							"label": "Charging error"
 						},
 						{
 							"value": "23",
-							"label": "Heart"
+							"label": "Internal Error (Code 23)"
 						},
 						{
 							"value": "24",
-							"label": "Camera occlusion"
+							"label": "Visual positioning sensor error"
 						},
 						{
 							"value": "25",
-							"label": "Camera fault"
+							"label": "Internal Error (Code 25)"
 						},
 						{
 							"value": "26",
-							"label": "Event battery"
-						},
-						{
-							"value": "27",
-							"label": "Forward looking"
+							"label": "Error occurred in the optical sensor"
 						},
 						{
 							"value": "28",
-							"label": "Gyroscope"
+							"label": "The charging dock is not powered on"
+						},
+						{
+							"value": "29",
+							"label": "Battery error"
+						},
+						{
+							"value": "30",
+							"label": "Internal Error (Code 30)"
+						},
+						{
+							"value": "31",
+							"label": "The robot is stuck, or its main wheels may be blocked by foreign objects (Code 31)"
+						},
+						{
+							"value": "32",
+							"label": "The robot is stuck, or its main wheels may be blocked by foreign objects (Code 32)"
+						},
+						{
+							"value": "33",
+							"label": "Internal Error (Code 33)"
+						},
+						{
+							"value": "34",
+							"label": "Internal Error (Code 34)"
+						},
+						{
+							"value": "35",
+							"label": "Internal Error (Code 35)"
+						},
+						{
+							"value": "36",
+							"label": "Internal Error (Code 36)"
+						},
+						{
+							"value": "37",
+							"label": "Internal Error (Code 37)"
+						},
+						{
+							"value": "38",
+							"label": "Internal Error (Code 38)"
+						},
+						{
+							"value": "39",
+							"label": "Internal Error (Code 39)"
+						},
+						{
+							"value": "40",
+							"label": "Internal Error (Code 40)"
+						},
+						{
+							"value": "41",
+							"label": "Strong magnetic field detected"
+						},
+						{
+							"value": "47",
+							"label": "Route notification"
+						},
+						{
+							"value": "48",
+							"label": "Laser distance sensor error"
+						},
+						{
+							"value": "49",
+							"label": "Laser distance sensor bumper error"
+						},
+						{
+							"value": "51",
+							"label": "The filter not dry or blocked (Code 51)"
+						},
+						{
+							"value": "54",
+							"label": "Edge sensor error"
+						},
+						{
+							"value": "55",
+							"label": "Please start the robot in non-carpet area"
+						},
+						{
+							"value": "56",
+							"label": "The 3D obstacle avoidance sensor is malfunctioning"
+						},
+						{
+							"value": "58",
+							"label": "The ultrasonic sensor is malfunctioning"
+						},
+						{
+							"value": "59",
+							"label": "No-Go zone or virtual wall detected"
+						},
+						{
+							"value": "61",
+							"label": "Unable to reach the specified area (Code 61)"
+						},
+						{
+							"value": "62",
+							"label": "Unable to reach the specified area (Code 62)"
+						},
+						{
+							"value": "63",
+							"label": "Cleanup route is blocked (Code 63)"
+						},
+						{
+							"value": "64",
+							"label": "Cleanup route is blocked (Code 64)"
+						},
+						{
+							"value": "65",
+							"label": "Detected that the vacuum-mop is in a restricted area"
+						},
+						{
+							"value": "69",
+							"label": "The mop pad comes off during the cleaning task (Code 69)"
+						},
+						{
+							"value": "70",
+							"label": "The mop pad comes off during the cleaning task (Code 70)"
+						},
+						{
+							"value": "101",
+							"label": "The dust collection bag is full, or the air duct is blocked (Code 101)"
+						},
+						{
+							"value": "102",
+							"label": "The upper cover of auto-empty base is not closed, or the dust collection bag is not installed (Code 102)"
+						},
+						{
+							"value": "103",
+							"label": "The upper cover of auto-empty base is not closed, or the dust collection bag is not installed (Code 103)"
+						},
+						{
+							"value": "104",
+							"label": "The dust collection bag is full, or the air duct is blocked (Code 104)"
+						},
+						{
+							"value": "105",
+							"label": "The clean water tank is not installed"
+						},
+						{
+							"value": "106",
+							"label": "An exception occurred in the dirty water tank (Code 106)"
+						},
+						{
+							"value": "107",
+							"label": "Low water level in the clean water tank, please fill with water timely"
+						},
+						{
+							"value": "108",
+							"label": "An exception occurred in the dirty water tank (Code 108)"
+						},
+						{
+							"value": "109",
+							"label": "An exception occurred in the dirty water tank (Code 109)"
+						},
+						{
+							"value": "110",
+							"label": "An exception occurred in the dirty water tank (Code 110)"
+						},
+						{
+							"value": "111",
+							"label": "The washboard is not installed properly"
+						},
+						{
+							"value": "112",
+							"label": "The water level of the washboard is abnormal"
+						},
+						{
+							"value": "114",
+							"label": "Clean Mop Pad Washboard"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"No Error\",\"1\"\u003d\"Drop\",\"2\"\u003d\"Cliff\",\"3\"\u003d\"Bumper\",\"4\"\u003d\"Gesture\",\"5\"\u003d\"Bumper Repeat\",\"6\"\u003d\"Drop Repeat\",\"7\"\u003d\"Optical Flow\",\"8\"\u003d\"No Box\",\"9\"\u003d\"No Tankbox\",\"10\"\u003d\"Waterbox Empty\",\"11\"\u003d\"Box full\",\"12\"\u003d\"Brush\",\"13\"\u003d\"Side Brush\",\"14\"\u003d\"Fan\",\"15\"\u003d\"Left Wheel motor\",\"16\"\u003d\"Right Wheel motor\",\"17\"\u003d\"Turn suffocate\",\"18\"\u003d\"Forward suffocate\",\"19\"\u003d\"Charger get\",\"20\"\u003d\"Battery low\",\"21\"\u003d\"Charge fault\",\"22\"\u003d\"Battery percentage\",\"23\"\u003d\"Heart\",\"24\"\u003d\"Camera occlusion\",\"25\"\u003d\"Camera fault\",\"26\"\u003d\"Event battery\",\"27\"\u003d\"Forward looking\",\"28\"\u003d\"Gyroscope\"]`"
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Shown by the Mi Home app of the p2036; the app of the p2009 shows the codes of `faults`"
 			},
 			{
 				"property": "battery-level",
@@ -307,7 +481,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
 			},
 			{
 				"property": "charging-state",
@@ -335,27 +514,34 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Status"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"5\"\u003d\"Go Charging\"]`"
 			},
 			{
 				"property": "",
-				"friendlyName": "Consumables Reset",
+				"friendlyName": "Reset Consumable",
 				"channel": "resetConsumable",
 				"type": "String",
 				"stateDescription": {
-					"readOnly": true,
 					"options": [
 						{
 							"value": "mainbrush-cleaner-reset-brush-life",
-							"label": "Reset Main Brush"
+							"label": "Reset Main Brush Life"
 						},
 						{
 							"value": "sidebrush-cleaner-reset-brush-life",
-							"label": "Reset Side Brush"
+							"label": "Reset Side Brush Life"
 						},
 						{
 							"value": "filter-reset-filter-life",
-							"label": "Reset Filter"
+							"label": "Reset Filter Life"
+						},
+						{
+							"value": "sensor-reset-sensor-life",
+							"label": "Reset Sensor Life"
 						}
 					]
 				},
@@ -402,9 +588,27 @@
 								}
 							]
 						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 16,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "sensor-reset-sensor-life"
+								}
+							]
+						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"mainbrush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush\",\"sidebrush-cleaner-reset-brush-life\"\u003d\"Reset Side Brush\",\"filter-reset-filter-life\"\u003d\"Reset Filter\"]`"
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"mainbrush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush Life\",\"sidebrush-cleaner-reset-brush-life\"\u003d\"Reset Side Brush Life\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"sensor-reset-sensor-life\"\u003d\"Reset Sensor Life\"]`"
 			},
 			{
 				"property": "brush-left-time",
@@ -422,7 +626,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "brush-life-level",
@@ -440,7 +649,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
 			},
 			{
 				"property": "brush-left-time1",
@@ -458,7 +672,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "brush-life-level1",
@@ -476,7 +695,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
 			},
 			{
 				"property": "filter-life-level",
@@ -494,7 +718,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
 			},
 			{
 				"property": "filter-left-time",
@@ -512,7 +741,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "work-mode",
@@ -522,14 +756,105 @@
 				"channel": "work-mode",
 				"type": "Number",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 50,
-					"step": 1,
-					"pattern": "%.0f",
-					"readOnly": true
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Idle"
+						},
+						{
+							"value": "1",
+							"label": "Paused"
+						},
+						{
+							"value": "2",
+							"label": "Auto Clean"
+						},
+						{
+							"value": "3",
+							"label": "Back Home"
+						},
+						{
+							"value": "4",
+							"label": "Partial Clean"
+						},
+						{
+							"value": "5",
+							"label": "Follow Wall"
+						},
+						{
+							"value": "6",
+							"label": "Charging"
+						},
+						{
+							"value": "7",
+							"label": "Firmware Update"
+						},
+						{
+							"value": "8",
+							"label": "Factory Test"
+						},
+						{
+							"value": "9",
+							"label": "WiFi Setup"
+						},
+						{
+							"value": "10",
+							"label": "Power Off"
+						},
+						{
+							"value": "11",
+							"label": "Factory"
+						},
+						{
+							"value": "12",
+							"label": "Error Report"
+						},
+						{
+							"value": "13",
+							"label": "Remote Control"
+						},
+						{
+							"value": "14",
+							"label": "Sleep"
+						},
+						{
+							"value": "15",
+							"label": "Self Test"
+						},
+						{
+							"value": "16",
+							"label": "Factory Function Test"
+						},
+						{
+							"value": "17",
+							"label": "Standby"
+						},
+						{
+							"value": "18",
+							"label": "Room Clean"
+						},
+						{
+							"value": "19",
+							"label": "Zone Clean"
+						},
+						{
+							"value": "20",
+							"label": "Spot Clean"
+						},
+						{
+							"value": "21",
+							"label": "Fast Mapping"
+						}
+					]
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Idle\",\"1\"\u003d\"Paused\",\"2\"\u003d\"Auto Clean\",\"3\"\u003d\"Back Home\",\"4\"\u003d\"Partial Clean\",\"5\"\u003d\"Follow Wall\",\"6\"\u003d\"Charging\",\"7\"\u003d\"Firmware Update\",\"8\"\u003d\"Factory Test\",\"9\"\u003d\"WiFi Setup\",\"10\"\u003d\"Power Off\",\"11\"\u003d\"Factory\",\"12\"\u003d\"Error Report\",\"13\"\u003d\"Remote Control\",\"14\"\u003d\"Sleep\",\"15\"\u003d\"Self Test\",\"16\"\u003d\"Factory Function Test\",\"17\"\u003d\"Standby\",\"18\"\u003d\"Room Clean\",\"19\"\u003d\"Zone Clean\",\"20\"\u003d\"Spot Clean\",\"21\"\u003d\"Fast Mapping\"]`"
 			},
 			{
 				"property": "cleaning-time",
@@ -547,7 +872,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "cleaning-area",
@@ -561,36 +891,40 @@
 					"minimum": 0,
 					"maximum": 32767,
 					"step": 1,
-					"pattern": "%.1f %unit%",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "cleaning-mode",
 				"siid": 4,
 				"piid": 4,
-				"friendlyName": "Vacuum Extend - Cleaning Mode",
+				"friendlyName": "Vacuum Extend - Suction Level",
 				"channel": "cleaning-mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "0",
-							"label": "mode 0"
+							"label": "Quiet"
 						},
 						{
 							"value": "1",
-							"label": "mode 1"
+							"label": "Standard"
 						},
 						{
 							"value": "2",
-							"label": "mode 2"
+							"label": "Strong"
 						},
 						{
 							"value": "3",
-							"label": "mode 3"
+							"label": "Turbo"
 						}
 					]
 				},
@@ -598,31 +932,36 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"mode 0\",\"1\"\u003d\"mode 1\",\"2\"\u003d\"mode 2\",\"3\"\u003d\"mode 3\"]`"
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Quiet\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Strong\",\"3\"\u003d\"Turbo\"]`"
 			},
 			{
 				"property": "mop-mode",
 				"siid": 4,
 				"piid": 5,
-				"friendlyName": "Vacuum Extend - Mop Mode",
+				"friendlyName": "Vacuum Extend - Mop Water Level",
 				"channel": "mop-mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "1",
-							"label": "low water"
+							"label": "Low"
 						},
 						{
 							"value": "2",
-							"label": "medium water"
+							"label": "Medium"
 						},
 						{
 							"value": "3",
-							"label": "high water"
+							"label": "High"
 						}
 					]
 				},
@@ -630,34 +969,32 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"low water\",\"2\"\u003d\"medium water\",\"3\"\u003d\"high water\"]`"
+				"category": "water",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
 			},
 			{
 				"property": "waterbox-status",
 				"siid": 4,
 				"piid": 6,
-				"friendlyName": "Vacuum Extend - Waterbox Status",
+				"friendlyName": "Vacuum Extend - Water Tank Installed",
 				"channel": "waterbox-status",
-				"type": "Number",
+				"type": "Switch",
 				"stateDescription": {
-					"readOnly": true,
-					"options": [
-						{
-							"value": "0",
-							"label": "Status 0"
-						},
-						{
-							"value": "1",
-							"label": "Status 1"
-						}
-					]
+					"readOnly": true
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Status 0\",\"1\"\u003d\"Status 1\"]`"
+				"category": "water",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "task-status",
@@ -671,88 +1008,117 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Notask"
+							"label": "Completed"
 						},
 						{
 							"value": "1",
-							"label": "AutoClean"
+							"label": "Auto Cleaning"
 						},
 						{
 							"value": "2",
-							"label": "CustomClean"
+							"label": "Zone Cleaning"
 						},
 						{
 							"value": "3",
-							"label": "SelectAreanClean"
+							"label": "Room Cleaning"
 						},
 						{
 							"value": "4",
-							"label": "SpotArea"
+							"label": "Spot Cleaning"
+						},
+						{
+							"value": "5",
+							"label": "Fast Mapping"
+						},
+						{
+							"value": "6",
+							"label": "Auto Cleaning Paused"
+						},
+						{
+							"value": "7",
+							"label": "Zone Cleaning Paused"
+						},
+						{
+							"value": "8",
+							"label": "Room Cleaning Paused"
+						},
+						{
+							"value": "9",
+							"label": "Spot Cleaning Paused"
+						},
+						{
+							"value": "10",
+							"label": "Map Cleaning Paused"
+						},
+						{
+							"value": "11",
+							"label": "Charging Paused"
+						},
+						{
+							"value": "16",
+							"label": "Auto Charging Paused"
+						},
+						{
+							"value": "17",
+							"label": "Selected Charging Paused"
+						},
+						{
+							"value": "18",
+							"label": "Zone Charging Paused"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Notask\",\"1\"\u003d\"AutoClean\",\"2\"\u003d\"CustomClean\",\"3\"\u003d\"SelectAreanClean\",\"4\"\u003d\"SpotArea\"]`"
+				"category": "cleaningrobot",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Completed\",\"1\"\u003d\"Auto Cleaning\",\"2\"\u003d\"Zone Cleaning\",\"3\"\u003d\"Room Cleaning\",\"4\"\u003d\"Spot Cleaning\",\"5\"\u003d\"Fast Mapping\",\"6\"\u003d\"Auto Cleaning Paused\",\"7\"\u003d\"Zone Cleaning Paused\",\"8\"\u003d\"Room Cleaning Paused\",\"9\"\u003d\"Spot Cleaning Paused\",\"10\"\u003d\"Map Cleaning Paused\",\"11\"\u003d\"Charging Paused\",\"16\"\u003d\"Auto Charging Paused\",\"17\"\u003d\"Selected Charging Paused\",\"18\"\u003d\"Zone Charging Paused\"]`"
 			},
 			{
 				"property": "break-point-restart",
 				"siid": 4,
 				"piid": 11,
-				"friendlyName": "Vacuum Extend - Break Point Restart",
+				"friendlyName": "Vacuum Extend - Resume After Charging",
 				"channel": "break-point-restart",
-				"type": "Number",
-				"stateDescription": {
-					"options": [
-						{
-							"value": "0",
-							"label": "Off"
-						},
-						{
-							"value": "1",
-							"label": "On"
-						}
-					]
-				},
+				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "NUMBER"
+						"parameterType": "ONOFFNUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Returns to the dock to charge when the battery is low and continues the cleaning afterwards"
 			},
 			{
 				"property": "carpet-press",
 				"siid": 4,
 				"piid": 12,
-				"friendlyName": "Vacuum Extend - Carpet Press",
+				"friendlyName": "Vacuum Extend - Carpet Boost",
 				"channel": "carpet-press",
-				"type": "Number",
-				"stateDescription": {
-					"options": [
-						{
-							"value": "0",
-							"label": "Off"
-						},
-						{
-							"value": "1",
-							"label": "On"
-						}
-					]
-				},
+				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "NUMBER"
+						"parameterType": "ONOFFNUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
 			},
 			{
-				"property": "serial-number1",
+				"property": "serial-number",
 				"siid": 4,
 				"piid": 14,
 				"friendlyName": "Vacuum Extend - Serial Number",
@@ -762,13 +1128,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				]
 			},
 			{
 				"property": "clean-rags-tip",
 				"siid": 4,
 				"piid": 16,
-				"friendlyName": "Vacuum Extend - Clean Rags Tip",
+				"friendlyName": "Vacuum Extend - Mop Pad Cleaning Reminder",
 				"channel": "clean-rags-tip",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -782,9 +1153,15 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Minutes of mopping after which the robot reminds to clean the mop pad, `0` switches the reminder off. Offered by the Mi Home app of the p2036 with 15, 30 and 45 minutes"
 			},
 			{
 				"property": "keep-sweeper-time",
@@ -795,14 +1172,16 @@
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
-					"minimum": -1,
-					"maximum": 1000000,
-					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "faults",
@@ -812,10 +1191,437 @@
 				"channel": "faults",
 				"type": "String",
 				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Fault"
+						},
+						{
+							"value": "1",
+							"label": "Wheels are suspended (Code 1)"
+						},
+						{
+							"value": "2",
+							"label": "Cliff sensor error"
+						},
+						{
+							"value": "3",
+							"label": "Collision sensor is stuck (Code 3)"
+						},
+						{
+							"value": "4",
+							"label": "Robot is tilted"
+						},
+						{
+							"value": "5",
+							"label": "Collision sensor is stuck (Code 5)"
+						},
+						{
+							"value": "6",
+							"label": "Wheels are suspended (Code 6)"
+						},
+						{
+							"value": "7",
+							"label": "Internal Error (Code 7)"
+						},
+						{
+							"value": "8",
+							"label": "Dust bin not installed"
+						},
+						{
+							"value": "11",
+							"label": "The filter not dry or blocked (Code 11)"
+						},
+						{
+							"value": "12",
+							"label": "The main brush wrapped"
+						},
+						{
+							"value": "13",
+							"label": "The side brush wrapped"
+						},
+						{
+							"value": "14",
+							"label": "The filter not dry or blocked (Code 14)"
+						},
+						{
+							"value": "15",
+							"label": "The robot is stuck, or its main wheels may be blocked by foreign objects (Code 15)"
+						},
+						{
+							"value": "16",
+							"label": "The robot is stuck, or its main wheels may be blocked by foreign objects (Code 16)"
+						},
+						{
+							"value": "17",
+							"label": "The robot is stuck (Code 17)"
+						},
+						{
+							"value": "18",
+							"label": "The robot is stuck (Code 18)"
+						},
+						{
+							"value": "20",
+							"label": "Low battery"
+						},
+						{
+							"value": "21",
+							"label": "Charging error"
+						},
+						{
+							"value": "23",
+							"label": "Internal Error (Code 23)"
+						},
+						{
+							"value": "24",
+							"label": "Visual positioning sensor error"
+						},
+						{
+							"value": "25",
+							"label": "Internal Error (Code 25)"
+						},
+						{
+							"value": "26",
+							"label": "Error occurred in the optical sensor"
+						},
+						{
+							"value": "28",
+							"label": "The charging dock is not powered on"
+						},
+						{
+							"value": "29",
+							"label": "Battery error"
+						},
+						{
+							"value": "30",
+							"label": "Internal Error (Code 30)"
+						},
+						{
+							"value": "31",
+							"label": "The robot is stuck, or its main wheels may be blocked by foreign objects (Code 31)"
+						},
+						{
+							"value": "32",
+							"label": "The robot is stuck, or its main wheels may be blocked by foreign objects (Code 32)"
+						},
+						{
+							"value": "33",
+							"label": "Internal Error (Code 33)"
+						},
+						{
+							"value": "34",
+							"label": "Internal Error (Code 34)"
+						},
+						{
+							"value": "35",
+							"label": "Internal Error (Code 35)"
+						},
+						{
+							"value": "36",
+							"label": "Internal Error (Code 36)"
+						},
+						{
+							"value": "37",
+							"label": "Internal Error (Code 37)"
+						},
+						{
+							"value": "38",
+							"label": "Internal Error (Code 38)"
+						},
+						{
+							"value": "39",
+							"label": "Internal Error (Code 39)"
+						},
+						{
+							"value": "40",
+							"label": "Internal Error (Code 40)"
+						},
+						{
+							"value": "41",
+							"label": "Strong magnetic field detected"
+						},
+						{
+							"value": "47",
+							"label": "Route notification"
+						},
+						{
+							"value": "48",
+							"label": "Laser distance sensor error"
+						},
+						{
+							"value": "49",
+							"label": "Laser distance sensor bumper error"
+						},
+						{
+							"value": "51",
+							"label": "The filter not dry or blocked (Code 51)"
+						},
+						{
+							"value": "54",
+							"label": "Edge sensor error"
+						},
+						{
+							"value": "55",
+							"label": "Please start the robot in non-carpet area"
+						},
+						{
+							"value": "56",
+							"label": "The 3D obstacle avoidance sensor is malfunctioning"
+						},
+						{
+							"value": "58",
+							"label": "The ultrasonic sensor is malfunctioning"
+						},
+						{
+							"value": "59",
+							"label": "No-Go zone or virtual wall detected"
+						},
+						{
+							"value": "61",
+							"label": "Unable to reach the specified area (Code 61)"
+						},
+						{
+							"value": "62",
+							"label": "Unable to reach the specified area (Code 62)"
+						},
+						{
+							"value": "63",
+							"label": "Cleanup route is blocked (Code 63)"
+						},
+						{
+							"value": "64",
+							"label": "Cleanup route is blocked (Code 64)"
+						},
+						{
+							"value": "65",
+							"label": "Detected that the vacuum-mop is in a restricted area"
+						},
+						{
+							"value": "69",
+							"label": "The mop pad comes off during the cleaning task (Code 69)"
+						},
+						{
+							"value": "70",
+							"label": "The mop pad comes off during the cleaning task (Code 70)"
+						},
+						{
+							"value": "101",
+							"label": "The dust collection bag is full, or the air duct is blocked (Code 101)"
+						},
+						{
+							"value": "102",
+							"label": "The upper cover of auto-empty base is not closed, or the dust collection bag is not installed (Code 102)"
+						},
+						{
+							"value": "103",
+							"label": "The upper cover of auto-empty base is not closed, or the dust collection bag is not installed (Code 103)"
+						},
+						{
+							"value": "104",
+							"label": "The dust collection bag is full, or the air duct is blocked (Code 104)"
+						},
+						{
+							"value": "105",
+							"label": "The clean water tank is not installed"
+						},
+						{
+							"value": "106",
+							"label": "An exception occurred in the dirty water tank (Code 106)"
+						},
+						{
+							"value": "107",
+							"label": "Low water level in the clean water tank, please fill with water timely"
+						},
+						{
+							"value": "108",
+							"label": "An exception occurred in the dirty water tank (Code 108)"
+						},
+						{
+							"value": "109",
+							"label": "An exception occurred in the dirty water tank (Code 109)"
+						},
+						{
+							"value": "110",
+							"label": "An exception occurred in the dirty water tank (Code 110)"
+						},
+						{
+							"value": "111",
+							"label": "The washboard is not installed properly"
+						},
+						{
+							"value": "112",
+							"label": "The water level of the washboard is abnormal"
+						},
+						{
+							"value": "114",
+							"label": "Clean Mop Pad Washboard"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Comma separated list of the active fault codes, `0` when there is none; a single code is shown with its label from the Mi Home app"
+			},
+			{
+				"property": "nation-matched",
+				"siid": 4,
+				"piid": 19,
+				"friendlyName": "Vacuum Extend - Nation Matched",
+				"channel": "nation-matched",
+				"type": "String",
+				"stateDescription": {
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "relocation-status",
+				"siid": 4,
+				"piid": 20,
+				"friendlyName": "Vacuum Extend - Relocation Status",
+				"channel": "relocation-status",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "laser-switch",
+				"siid": 4,
+				"piid": 21,
+				"friendlyName": "Vacuum Extend - 3D Obstacle Avoidance",
+				"channel": "laser-switch",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "switch",
+				"tags": [
+					"Status",
+					"Enabled"
+				],
+				"readmeComment": "Not shown by the Mi Home app of these models"
+			},
+			{
+				"property": "clean-setting",
+				"siid": 4,
+				"piid": 23,
+				"friendlyName": "Vacuum Extend - Cleaning Type",
+				"channel": "clean-setting",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Sweeping"
+						},
+						{
+							"value": "1",
+							"label": "Mopping"
+						},
+						{
+							"value": "2",
+							"label": "Sweeping And Mopping"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Sweeping only works without the water tank. Not offered by the Mi Home app of the p2036"
+			},
+			{
+				"property": "sensitivity",
+				"siid": 4,
+				"piid": 28,
+				"friendlyName": "Vacuum Extend - Carpet Boost Sensitivity",
+				"channel": "sensitivity",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Not shown by the Mi Home app of these models"
+			},
+			{
+				"property": "mop-way",
+				"siid": 4,
+				"piid": 29,
+				"friendlyName": "Vacuum Extend - Mopping Pattern",
+				"channel": "mop-way",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Daily Mopping"
+						},
+						{
+							"value": "1",
+							"label": "Deep Mopping"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Deep mopping mops in a dense Z-shaped pattern. Not offered by the Mi Home app of the p2036"
 			},
 			{
 				"property": "enable",
@@ -830,6 +1636,11 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -845,7 +1656,12 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Time of day in 24-hour format `HH:MM`, for example `22:00`"
 			},
 			{
 				"property": "end-time",
@@ -860,7 +1676,31 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Time of day in 24-hour format `HH:MM`, for example `08:00`"
+			},
+			{
+				"property": "mult-map-state",
+				"siid": 6,
+				"piid": 7,
+				"friendlyName": "Map - Multi-floor Maps",
+				"channel": "mult-map-state",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "switch",
+				"tags": [
+					"Status",
+					"Enabled"
+				],
+				"readmeComment": "Read-only: switching it off makes the robot keep only the map in use"
 			},
 			{
 				"property": "volume",
@@ -869,12 +1709,12 @@
 				"friendlyName": "Audio - Volume",
 				"channel": "volume",
 				"type": "Number:Dimensionless",
-				"unit": "PERCENT",
+				"unit": "percentage",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 100,
 					"step": 1,
-					"pattern": "%.0f"
+					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
 				"actions": [
@@ -882,6 +1722,11 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Control",
+					"SoundVolume"
 				]
 			},
 			{
@@ -891,26 +1736,16 @@
 				"friendlyName": "Audio - Voice Packet Id",
 				"channel": "voice-packet-id",
 				"type": "String",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				]
-			},
-			{
-				"property": "voice-change-state",
-				"siid": 7,
-				"piid": 3,
-				"friendlyName": "Audio - Voice Change State",
-				"channel": "voice-change-state",
-				"type": "String",
 				"stateDescription": {
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				]
 			},
 			{
 				"property": "time-zone",
@@ -923,7 +1758,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Info"
+				]
 			},
 			{
 				"property": "timer-clean",
@@ -932,13 +1772,16 @@
 				"friendlyName": "Time - Timer Clean",
 				"channel": "timer-clean",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				]
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Scheduled cleaning timers, separated by `;`. Read-only: creating a timer needs the map and area ids of the robot, which the Mi Home app supplies"
 			},
 			{
 				"property": "first-clean-time",
@@ -948,13 +1791,17 @@
 				"channel": "first-clean-time",
 				"type": "Number",
 				"stateDescription": {
-					"minimum": 0,
-					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Timestamp"
+				],
+				"readmeComment": "Unix timestamp in seconds"
 			},
 			{
 				"property": "total-clean-time",
@@ -965,13 +1812,16 @@
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
-					"minimum": 0,
-					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "total-clean-times",
@@ -981,13 +1831,15 @@
 				"channel": "total-clean-times",
 				"type": "Number",
 				"stateDescription": {
-					"minimum": 0,
-					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "total-clean-area",
@@ -995,15 +1847,64 @@
 				"piid": 4,
 				"friendlyName": "Clean Logs - Total Clean Area",
 				"channel": "total-clean-area",
-				"type": "Number",
+				"type": "Number:Area",
+				"unit": "square_meter",
 				"stateDescription": {
-					"minimum": 0,
-					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "sensor-left-level",
+				"siid": 16,
+				"piid": 1,
+				"friendlyName": "Sensor - Sensor Life Level",
+				"channel": "sensor-life-level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "sensor-left-time",
+				"siid": 16,
+				"piid": 2,
+				"friendlyName": "Sensor - Sensor Left Time",
+				"channel": "sensor-left-time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 30,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			}
 		],
 		"experimental": false
