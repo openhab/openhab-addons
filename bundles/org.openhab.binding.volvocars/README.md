@@ -73,6 +73,10 @@ Scopes used by the binding:
 | `conve:honk_flash`                                                            | Honk and flash                                         |
 | `location:read`                                                               | Group `location`                                       |
 
+Scope selection when publishing the application:
+
+<img src="doc/scopes-connected-vehicle-api.png" width="400" alt="Developer portal scope selection for the Connected Vehicle API with all scopes used by the binding selected"> <img src="doc/scopes-energy-location-api.png" width="400" alt="Developer portal scope selection with energy:capability:read, energy:state:read and location:read selected, Energy Device API left empty">
+
 If you cannot select some of the scopes for your application, list the scopes it has in the `scopes` parameter of the bridge.
 Values that require a scope that was not granted remain `UNDEF`.
 
