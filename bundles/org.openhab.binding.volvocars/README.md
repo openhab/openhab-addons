@@ -104,10 +104,12 @@ After the bridge has been created, it stays offline until openHAB has been autho
    Otherwise, copy the complete URL from the address bar of your browser and paste it into the form on the authorization page.
    The authorization must be completed within 15 minutes.
 
-The binding stores the refresh token in the openHAB user data and renews the access token automatically.
-Volvo limits how long the authorization of a self-registered application stays valid.
-Users of other integrations report that they have to sign in again about every 7 days.
-When the authorization has expired or was revoked, the bridge goes offline with a hint to the authorization page and you have to authorize again.
+The binding stores the refresh token in the openHAB user data and renews the tokens automatically.
+This does not need the redirect URI, so it also works if the redirect URI is not reachable.
+Volvo ID issues a new refresh token on every renewal and invalidates a refresh token that is not used within 7 days.
+The binding therefore renews the tokens at least once a day, even if no vehicle is polled.
+You have to authorize again if openHAB was not running for more than 7 days, or after the maximum validity of an authorization (6 months according to Volvo).
+In that case, or if Volvo revokes the authorization, the bridge goes offline with a hint to the authorization page.
 Changing the client ID also requires a new authorization.
 
 ### `vehicle` Thing Configuration

@@ -47,6 +47,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler {
     private static final int RECONNECT_INTERVAL_MINUTES = 5;
+    // well within the 7 days after which Volvo ID invalidates an unused refresh token
+    private static final int TOKEN_RENEWAL_INTERVAL_HOURS = 24;
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final HttpClient httpClient;
@@ -56,6 +58,7 @@ public class AccountHandler extends BaseBridgeHandler {
     private @Nullable VolvoCarsOAuthClient oAuthClient;
     private volatile @Nullable VolvoCarsApi api;
     private @Nullable ScheduledFuture<?> reconnectJob;
+    private @Nullable ScheduledFuture<?> tokenRenewalJob;
 
     public AccountHandler(Bridge bridge, HttpClient httpClient, Storage<String> storage,
             VolvoCarsAuthServlet authServlet) {
@@ -78,6 +81,8 @@ public class AccountHandler extends BaseBridgeHandler {
         oAuthClient = localOAuthClient;
         api = localApi;
         authServlet.register(this);
+        tokenRenewalJob = scheduler.scheduleWithFixedDelay(() -> renewTokens(localOAuthClient, localApi),
+                TOKEN_RENEWAL_INTERVAL_HOURS, TOKEN_RENEWAL_INTERVAL_HOURS, TimeUnit.HOURS);
 
         if (localOAuthClient.isAuthorized()) {
             updateStatus(ThingStatus.UNKNOWN);
@@ -94,6 +99,11 @@ public class AccountHandler extends BaseBridgeHandler {
             api = null;
             oAuthClient = null;
             cancelReconnectJob();
+            ScheduledFuture<?> job = tokenRenewalJob;
+            if (job != null) {
+                job.cancel(false);
+                tokenRenewalJob = null;
+            }
         }
     }
 
@@ -191,6 +201,21 @@ public class AccountHandler extends BaseBridgeHandler {
             reportSuccess(usedApi);
         } catch (VolvoCarsException e) {
             logger.debug("Connection check failed: {}", e.getMessage());
+            reportFailure(usedApi, e);
+        }
+    }
+
+    /**
+     * Keeps the authorization alive if no vehicle is polled, e.g. because all vehicle Things are disabled.
+     */
+    private void renewTokens(VolvoCarsOAuthClient usedOAuthClient, VolvoCarsApi usedApi) {
+        if (!usedOAuthClient.isAuthorized()) {
+            return;
+        }
+        try {
+            usedOAuthClient.renewTokens();
+        } catch (VolvoCarsException e) {
+            logger.debug("Renewing the tokens of {} failed: {}", getThing().getUID(), e.getMessage());
             reportFailure(usedApi, e);
         }
     }

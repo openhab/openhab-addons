@@ -156,6 +156,22 @@ class VolvoCarsOAuthClientTest {
     }
 
     @Test
+    void renewTokensRefreshesEvenIfAccessTokenIsStillValid() throws VolvoCarsException {
+        VolvoCarsOAuthClient client = createClient();
+        String state = stateOf(client.createAuthorizationUrl());
+        http.respond(TOKEN_URL, 200, TOKEN_RESPONSE);
+        client.authorize("code", state);
+
+        http.respond(TOKEN_URL, 200, """
+                {"access_token": "access-2", "refresh_token": "refresh-2", "expires_in": 1799}
+                """);
+        client.renewTokens();
+
+        assertEquals("access-2", client.getAccessToken());
+        assertEquals("refresh-2", storage.get(PREFIX + ".refreshToken"));
+    }
+
+    @Test
     void rejectedRefreshTokenRequiresNewAuthorization() throws VolvoCarsException {
         VolvoCarsOAuthClient client = createClient();
         String state = stateOf(client.createAuthorizationUrl());

@@ -174,6 +174,16 @@ public class VolvoCarsOAuthClient {
         accessTokenExpiry = Instant.MIN;
     }
 
+    /**
+     * Refreshes the tokens even if the access token is still valid. Volvo ID rotates the refresh token on every
+     * refresh and invalidates a refresh token that is not used within 7 days, so the grant has to be renewed
+     * periodically even if no API calls are made.
+     */
+    public synchronized void renewTokens() throws VolvoCarsException {
+        invalidateAccessToken();
+        getAccessToken();
+    }
+
     public synchronized void clearTokens() {
         invalidateAccessToken();
         storage.remove(storagePrefix + REFRESH_TOKEN);
