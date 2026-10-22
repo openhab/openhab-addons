@@ -900,6 +900,10 @@ public class DeviceHandler extends ViessmannThingHandler {
                 default:
                     AdditionalProperty additionalProperty = resolveAdditionalProperty(prop, entry);
                     if (additionalProperty == null) {
+                        JsonElement additional = prop.additionalProperties.get(entry);
+                        if (additional != null) {
+                            logger.trace("Skipping unsupported additional property '{}': {}", entry, additional);
+                        }
                         continue;
                     }
                     typeEntry = additionalProperty.type();
@@ -1151,9 +1155,9 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
     }
 
-    private @Nullable AdditionalProperty resolveAdditionalProperty(FeatureProperties properties, String entry) {
+    static @Nullable AdditionalProperty resolveAdditionalProperty(FeatureProperties properties, String entry) {
         JsonElement additional = properties.additionalProperties.get(entry);
-        if (additional == null) {
+        if (additional == null || "vin".equals(entry) || "materialId".equals(entry)) {
             return null;
         }
         String typeEntry = "string";
@@ -1208,7 +1212,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         return new AdditionalProperty(typeEntry, valueEntry, unit, boolValue);
     }
 
-    private record AdditionalProperty(String type, String value, @Nullable String unit, boolean boolValue) {
+    record AdditionalProperty(String type, String value, @Nullable String unit, boolean boolValue) {
     }
 
     /**
