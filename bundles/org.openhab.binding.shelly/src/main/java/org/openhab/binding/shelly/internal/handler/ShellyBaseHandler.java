@@ -1883,6 +1883,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void stop() {
         logger.debug("{}: Shutting down", thingName);
         cancelJobs();
+        Shelly1CoapHandler coap = this.coap;
+        if (coap != null) {
+            coap.stop();
+        }
         api.close();
         profile.initialized = false;
     }

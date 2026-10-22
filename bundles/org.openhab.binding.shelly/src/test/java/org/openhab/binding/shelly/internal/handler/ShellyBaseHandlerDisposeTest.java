@@ -27,6 +27,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -130,6 +131,20 @@ class ShellyBaseHandlerDisposeTest {
 
         assertFalse(initialized.get(5, TimeUnit.SECONDS));
         verify(api, never()).initialize();
+    }
+
+    @Test
+    void stopRemovesTheCoiotListener() throws Exception {
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
+        Shelly1CoapHandler coap = mock(Shelly1CoapHandler.class);
+        setField(handler, "api", mock(ShellyApiInterface.class));
+        setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
+        setField(handler, "coap", coap);
+        handler.profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+
+        handler.stop();
+
+        verify(coap).stop();
     }
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {
