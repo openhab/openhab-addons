@@ -2,7 +2,7 @@
 
 The Matter Binding for openHAB allows seamless integration with Matter-compatible devices.
 
-It currently supports version 1.5.1 of the Matter specification and earlier.
+It currently supports version 1.6.1 of the Matter specification and earlier.
 
 ## Supported functionality
 
@@ -26,7 +26,6 @@ Alpine Linux users (typically docker) and those on older Linux distributions wil
 
 Matter state, including pairings, is stored in `$OPENHAB_USERDATA/matter`.
 Back up this folder before upgrading openHAB.
-Storage written by a newer version can usually be read after a downgrade, but a bridged door lock loses any users or PINs set through a Matter ecosystem.
 
 ## Matter and IPv6
 
@@ -73,11 +72,6 @@ The pairing action can be found in the settings of the "Controller" Thing under 
 <img src="./doc/pairing.png" alt="Matter Pairing" width="600"/>
 
 This action will give feedback on the pairing process, if successful a device will be added to the Inbox.
-
-During pairing openHAB checks the device's certificates against the official Matter certificate list, which is kept in the Matter Distributed Compliance Ledger (DCL).
-A copy of the list is built into the binding and updated from the DCL once a day, so pairing also works without internet access.
-A device whose certificate was revoked, or was not issued by a known manufacturer, is not paired.
-A development or uncertified device that uses a test certificate is paired, and the action result shows a warning.
 
 See [Device Pairing: Code Types](#device-pairing-code-types) for more information on pairing codes and code formats.
 
@@ -192,13 +186,13 @@ Nodes are discovered automatically (see [Discovery](#discovery) for more informa
 | Name                                            | Description                                                                                                                                                                                                                                                               |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Decommission Matter node from fabric            | This will remove the device from the Matter fabric. If the device is online and reachable this will attempt to remove the credentials from the device first before removing it from the network. Once a device is removed, this Thing will go offline and can be removed. |
-| Generate a new pairing code for a Matter device | Generates a new manual and QR pairing code to be used to pair the Matter device with an external Matter controller. The codes are valid for 15 minutes, and the result shows when they expire.                                                                              |
+| Generate a new pairing code for a Matter device | Generates a new manual and QR pairing code to be used to pair the Matter device with an external Matter controller. The codes are valid for 15 minutes, and the result shows when they expire.                                                                            |
 | List Connected Matter Fabrics                   | This will list all the Matter fabrics this node belongs to                                                                                                                                                                                                                |
 | Remove Connected Matter Fabric                  | This removes a connected Matter fabric from a device. Use the 'List connected Matter fabrics' action to retrieve the fabric index number                                                                                                                                  |
 | OTA: Check for firmware updates                 | Queries the Matter server for available firmware updates for this device                                                                                                                                                                                                  |
 | OTA: Start firmware update                      | Starts the firmware update process for this device. Check the Thing status for download progress.                                                                                                                                                                         |
 | OTA: Cancel firmware update                     | Cancels the firmware update process for this device if the download is in progress. Updates will not be possible for approximately 10 minutes after cancellation.                                                                                                         |
-| Keep a sleepy device awake                      | Asks a sleepy device that supports long idle times to stay awake for the given number of seconds, for example before sending it several commands. The device decides how long it stays awake.                                                                             |
+| Keep a sleepy device awake                      | Asks a battery powered device to stay awake for the given number of seconds, for example before sending it several commands. The device decides how long it stays awake.                                                                                                  |
 
 For nodes that contain a Thread Border Router Management Cluster, the following additional actions will be present
 
@@ -269,17 +263,6 @@ rules.when().item('Matter_Node_Ota_Update_Available').changed().toOn().then(e =>
 - **No updates available**: Not all Matter devices support OTA updates, and updates are only available when the device manufacturer provides them to the Matter network.
 - **Update fails**: If an update fails, check the Thing status and logs for error messages. The device may need to be power cycled or reset.
 - **Update stuck**: If an update appears to be stuck, you can try canceling it and restarting the update process after the cool down period.
-
-## Sleepy Devices
-
-Battery powered devices, such as many Thread sensors and locks, sleep most of the time to save power and only wake up to report changes or check for messages.
-Matter calls these Intermittently Connected Devices (ICD), and their sleep settings are shown as Thing properties.
-
-Devices that support long idle times (LIT) can sleep for long periods.
-openHAB registers with them to receive check-ins, short messages the device sends when it wakes up on schedule.
-For these devices the `icdmanagement-checkinregistered` and `icdmanagement-lastcheckin` channels show the registration and the time of the last check-in.
-Such a device is not set offline while it sleeps, only when it misses a scheduled check-in.
-Use the "Keep a sleepy device awake" Thing action to keep it awake for a while, for example before sending it several commands.
 
 ## Channels
 
@@ -596,7 +579,7 @@ If there are issues starting the bridge, check the status field in the bridge se
 
 Pairing codes and other options can be found in the MainUI under "Settings -> Add-on Settings -> Matter Binding"
 
-When the matter bridge starts, if no 3rd party clients are paired, it will automatically open the "Commissioning Window" and keep it open until a client is paired, meaning you can use the QR code or manual pair code found in the bridge settings page to pair a new client like Alexa, Google Home or Apple Home.
+When the matter bridge starts, if no 3rd party clients are paired, it will automatically open the "Commissioning Window", meaning you can use the QR code or manual pair code found in the bridge settings page to pair a new client like Alexa, Google Home or Apple Home.
 
 <img src="./doc/bridge-settings-pair.png" alt="Commissioning Window" width="500"/>
 
@@ -645,15 +628,11 @@ The following is a list of supported Matter device types and their corresponding
 
 ### Item Changes and Device Status
 
-Adding, changing or removing items is applied to the running bridge, so paired apps stay connected.
-Changing an item's label renames the device in place.
-Changing its options or members replaces the device. A device that keeps its type keeps its identity, so paired apps keep it in the same room.
-Changing the device type adds it as a new device.
-An item the bridge cannot add, for example because of an invalid option, is logged and left out until its Matter metadata changes. The rest of the bridge keeps running.
+Changing an item's device type, for example from `OnOffLight` to `DimmableLight`, adds it as a new device in clients like Alexa, Google Home or Apple Home.
+Its room and other settings in those clients need to be set up again.
 
-A device shows as not responding in paired apps when its items are linked to Things and none of those Things is `ONLINE`.
-Items that are not linked to any Thing, such as items driven by rules, always show as responding.
-For a Group item, the Things linked to its member items are checked.
+A device shows as not responding in clients when its item, or the members of its Group item, are linked to Things and none of them is `ONLINE`.
+Items not linked to any Thing, such as items driven by rules, always show as responding.
 
 ### Thermostat group member tags
 
