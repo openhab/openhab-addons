@@ -100,13 +100,18 @@ public class VehicleHandler extends BaseThingHandler {
     /**
      * Identifies the current initialization so that tasks scheduled before a dispose do not publish stale state.
      */
-    private volatile @Nullable Object session;
+    private volatile @Nullable Session session;
 
-    // state determined once per initialization, only accessed from poll()
-    private @Nullable Vehicle vehicle;
-    private Set<String> energyCapabilities = Set.of();
-    private boolean locationSupported = true;
-    private Instant nextSlowRefresh = Instant.MIN;
+    /**
+     * Vehicle information determined once per initialization. Kept per session so that a poll still running from a
+     * previous initialization cannot leak its state into the current one. Only accessed from poll().
+     */
+    private static class Session {
+        private @Nullable Vehicle vehicle;
+        private Set<String> energyCapabilities = Set.of();
+        private boolean locationSupported = true;
+        private Instant nextSlowRefresh = Instant.MIN;
+    }
 
     public VehicleHandler(Thing thing) {
         super(thing);
@@ -123,11 +128,8 @@ public class VehicleHandler extends BaseThingHandler {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.invalid-refresh-interval");
             return;
         }
-        Object currentSession = new Object();
+        Session currentSession = new Session();
         session = currentSession;
-        vehicle = null;
-        locationSupported = true;
-        nextSlowRefresh = Instant.MIN;
         updateStatus(ThingStatus.UNKNOWN);
         pollJob = scheduler.scheduleWithFixedDelay(() -> poll(currentSession), 0, config.refreshInterval,
                 TimeUnit.MINUTES);
@@ -165,34 +167,36 @@ public class VehicleHandler extends BaseThingHandler {
         String group = channelUID.getGroupId();
         String channel = channelUID.getIdWithoutGroup();
         if (GROUP_DOORS.equals(group) && CHANNEL_LOCK.equals(channel) && command instanceof OnOffType onOff) {
-            executeCommand(onOff == OnOffType.ON ? "lock" : "unlock", null);
+            executeCommand(onOff == OnOffType.ON ? "lock" : "unlock", null, null);
         } else if (GROUP_CONTROL.equals(group)) {
             switch (channel) {
                 case CHANNEL_CLIMATIZATION -> {
-                    if (command instanceof OnOffType onOff) {
-                        executeCommand(onOff == OnOffType.ON ? "climatization-start" : "climatization-stop", null);
+                    if (command == OnOffType.ON) {
+                        executeCommand("climatization-start", null, CHANNEL_CLIMATIZATION);
+                    } else if (command == OnOffType.OFF) {
+                        executeCommand("climatization-stop", null, null);
                     }
                 }
                 case CHANNEL_ENGINE_REMOTE_START -> {
                     if (command == OnOffType.ON) {
                         JsonObject body = new JsonObject();
                         body.addProperty("runtimeMinutes", config.engineRunTime);
-                        executeCommand("engine-start", body);
+                        executeCommand("engine-start", body, CHANNEL_ENGINE_REMOTE_START);
                     } else if (command == OnOffType.OFF) {
-                        executeCommand("engine-stop", null);
+                        executeCommand("engine-stop", null, null);
                     }
                 }
                 case CHANNEL_HONK_FLASH -> {
                     String apiCommand = HONK_FLASH_COMMANDS.get(command.toString());
                     if (apiCommand != null) {
-                        executeCommand(apiCommand, null);
+                        executeCommand(apiCommand, null, null);
                     } else {
                         logger.debug("Unsupported command {} for channel {}", command, channelUID);
                     }
                 }
                 case CHANNEL_LOCK_REDUCED_GUARD -> {
                     if (command == OnOffType.ON) {
-                        executeCommand("lock-reduced-guard", null);
+                        executeCommand("lock-reduced-guard", null, CHANNEL_LOCK_REDUCED_GUARD);
                     }
                 }
                 default -> logger.debug("Channel {} does not accept commands", channelUID);
@@ -202,8 +206,12 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void executeCommand(String apiCommand, @Nullable JsonObject body) {
-        Object currentSession = session;
+    /**
+     * @param resetChannel channel of the control group that acts as a push button and is set back to OFF once the
+     *            command was sent successfully, or null
+     */
+    private void executeCommand(String apiCommand, @Nullable JsonObject body, @Nullable String resetChannel) {
+        Session currentSession = session;
         if (currentSession == null) {
             return;
         }
@@ -214,22 +222,23 @@ public class VehicleHandler extends BaseThingHandler {
                 return;
             }
             String status;
+            boolean sent;
             try {
                 CommandResult result = api.executeCommand(config.vin, apiCommand, body);
                 String message = result.message;
                 status = String.valueOf(result.invokeStatus)
                         + (message != null && !message.isBlank() ? ": " + message : "");
+                sent = true;
                 logger.debug("Command {} returned {}", apiCommand, status);
             } catch (VolvoCarsException e) {
                 logger.debug("Command {} failed: {}", apiCommand, e.getMessage());
                 status = "FAILED: " + e.getMessage();
+                sent = false;
             }
             if (currentSession.equals(session)) {
-                updateState(new ChannelUID(getThing().getUID(), GROUP_CONTROL, CHANNEL_LAST_COMMAND_STATUS),
-                        new StringType(status));
-                if ("lock-reduced-guard".equals(apiCommand)) {
-                    updateState(new ChannelUID(getThing().getUID(), GROUP_CONTROL, CHANNEL_LOCK_REDUCED_GUARD),
-                            OnOffType.OFF);
+                updateState(GROUP_CONTROL, CHANNEL_LAST_COMMAND_STATUS, new StringType(status));
+                if (sent && resetChannel != null) {
+                    updateState(GROUP_CONTROL, resetChannel, OnOffType.OFF);
                 }
                 // the vehicle needs some time until the command is reflected in its reported state
                 scheduleRefresh(REFRESH_AFTER_COMMAND_SECONDS);
@@ -239,7 +248,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void scheduleRefresh(int delaySeconds) {
         synchronized (refreshJobLock) {
-            Object currentSession = session;
+            Session currentSession = session;
             ScheduledFuture<?> job = refreshJob;
             if (currentSession != null && (job == null || job.isDone())) {
                 refreshJob = scheduler.schedule(() -> poll(currentSession), delaySeconds, TimeUnit.SECONDS);
@@ -271,13 +280,13 @@ public class VehicleHandler extends BaseThingHandler {
     /**
      * Polls are serialized as they share the per-initialization vehicle information.
      */
-    private void poll(Object pollSession) {
+    private void poll(Session pollSession) {
         synchronized (pollLock) {
             pollLocked(pollSession);
         }
     }
 
-    private void pollLocked(Object pollSession) {
+    private void pollLocked(Session pollSession) {
         if (!pollSession.equals(session)) {
             return;
         }
@@ -289,17 +298,17 @@ public class VehicleHandler extends BaseThingHandler {
             return;
         }
         try {
-            Vehicle localVehicle = vehicle;
+            Vehicle localVehicle = pollSession.vehicle;
             if (localVehicle == null) {
                 localVehicle = loadVehicle(api, pollSession);
                 if (localVehicle == null) {
                     return;
                 }
             }
-            refreshFast(api, localVehicle);
-            if (!Instant.now().isBefore(nextSlowRefresh)) {
-                refreshSlow(api);
-                nextSlowRefresh = Instant.now().plusSeconds(config.slowRefreshInterval * 60L - 30);
+            refreshFast(api, pollSession, localVehicle);
+            if (!Instant.now().isBefore(pollSession.nextSlowRefresh)) {
+                refreshSlow(api, pollSession);
+                pollSession.nextSlowRefresh = Instant.now().plusSeconds(config.slowRefreshInterval * 60L - 30);
             }
             if (pollSession.equals(session)) {
                 updateStatus(ThingStatus.ONLINE);
@@ -319,7 +328,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable Vehicle loadVehicle(VolvoCarsApi api, Object pollSession) throws VolvoCarsException {
+    private @Nullable Vehicle loadVehicle(VolvoCarsApi api, Session pollSession) throws VolvoCarsException {
         Vehicle localVehicle;
         try {
             localVehicle = api.getVehicle(config.vin);
@@ -333,14 +342,14 @@ public class VehicleHandler extends BaseThingHandler {
         Set<String> capabilities = localVehicle.hasBattery()
                 ? optional(() -> api.getSupportedEnergyCapabilities(config.vin))
                 : null;
-        energyCapabilities = capabilities != null ? capabilities : Set.of();
         Set<String> commands = optional(() -> api.getAvailableCommands(config.vin));
         if (!pollSession.equals(session)) {
             return null;
         }
         updateProperties(localVehicle);
         removeUnsupportedChannels(localVehicle, commands);
-        vehicle = localVehicle;
+        pollSession.energyCapabilities = capabilities != null ? capabilities : Set.of();
+        pollSession.vehicle = localVehicle;
         return localVehicle;
     }
 
@@ -404,7 +413,8 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void refreshFast(VolvoCarsApi api, Vehicle localVehicle) throws VolvoCarsException {
+    private void refreshFast(VolvoCarsApi api, Session pollSession, Vehicle localVehicle) throws VolvoCarsException {
+        Set<String> energyCapabilities = pollSession.energyCapabilities;
         Map<String, ValueField> doors = getValues(api, "doors");
         if (doors != null) {
             ValueField centralLock = doors.get("centralLock");
@@ -459,14 +469,14 @@ public class VehicleHandler extends BaseThingHandler {
                 updateEnergy(energy);
             }
         }
-        if (locationSupported) {
-            updateLocation(api);
+        if (pollSession.locationSupported) {
+            pollSession.locationSupported = updateLocation(api);
         }
     }
 
-    private void refreshSlow(VolvoCarsApi api) throws VolvoCarsException {
+    private void refreshSlow(VolvoCarsApi api, Session pollSession) throws VolvoCarsException {
         // retry the location in case it was temporarily unavailable
-        locationSupported = true;
+        pollSession.locationSupported = true;
 
         Map<String, ValueField> diagnostics = getValues(api, "diagnostics");
         if (diagnostics != null) {
@@ -540,7 +550,10 @@ public class VehicleHandler extends BaseThingHandler {
         updateState(GROUP_BATTERY, CHANNEL_CHARGING_POWER, toQuantity(energy.get("chargingPower"), Units.WATT));
     }
 
-    private void updateLocation(VolvoCarsApi api) throws VolvoCarsException {
+    /**
+     * @return false if the location is not available for the vehicle or authorization
+     */
+    private boolean updateLocation(VolvoCarsApi api) throws VolvoCarsException {
         Location location;
         try {
             location = api.getLocation(config.vin);
@@ -548,17 +561,18 @@ public class VehicleHandler extends BaseThingHandler {
             // Volvo answers with 403 if the location scope was not granted or the vehicle's region is not supported
             if (e.getHttpStatus() == HttpStatus.FORBIDDEN_403 || e.getHttpStatus() == HttpStatus.NOT_FOUND_404) {
                 logger.debug("Location of {} is not available: {}", getThing().getUID(), e.getMessage());
-                locationSupported = false;
-                return;
+                return false;
             }
             throw e;
         }
         Location.Geometry geometry = location != null ? location.geometry : null;
         List<Double> coordinates = geometry != null ? geometry.coordinates : null;
         if (coordinates != null && coordinates.size() >= 2) {
+            DecimalType latitude = new DecimalType(coordinates.get(1));
+            DecimalType longitude = new DecimalType(coordinates.get(0));
             updateState(GROUP_LOCATION, CHANNEL_POSITION,
-                    new PointType(new DecimalType(coordinates.get(1)), new DecimalType(coordinates.get(0)),
-                            new DecimalType(coordinates.size() > 2 ? coordinates.get(2) : 0)));
+                    coordinates.size() > 2 ? new PointType(latitude, longitude, new DecimalType(coordinates.get(2)))
+                            : new PointType(latitude, longitude));
         } else {
             updateState(GROUP_LOCATION, CHANNEL_POSITION, UnDefType.UNDEF);
         }
@@ -585,6 +599,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
         updateState(GROUP_LOCATION, CHANNEL_HEADING, heading);
         updateState(GROUP_LOCATION, CHANNEL_TIMESTAMP, timestamp);
+        return true;
     }
 
     /**

@@ -93,6 +93,8 @@ Changing the client ID also requires a new authorization.
 | `slowRefreshInterval` | integer | Interval in minutes to refresh rarely changing maintenance data (service, warnings, tyres)   | 30      | no       | yes      |
 | `engineRunTime`       | integer | Duration in minutes (1-15) the engine keeps running after a remote start                     | 15      | no       | yes      |
 
+`slowRefreshInterval` must not be shorter than `refreshInterval`.
+
 Every refresh issues several requests to the Volvo Cars APIs.
 Keep the refresh interval moderate to stay within the request limits of your application.
 
@@ -212,6 +214,9 @@ These values are refreshed with the maintenance refresh interval.
 | `honk-flash`          | String | W          | Send `HONK`, `FLASH` or `HONK_AND_FLASH`                                       |
 | `lock-reduced-guard`  | Switch | W          | Send `ON` to lock the car with reduced alarm guard, e.g. to leave a pet inside |
 | `last-command-status` | String | R          | Result of the last command, e.g. `COMPLETED`, `REJECTED` or `FAILED: <reason>` |
+
+`climatization`, `engine-remote-start` and `lock-reduced-guard` act as push buttons: they switch back to `OFF` once the command was sent successfully.
+If sending the command failed, they keep their state and `last-command-status` shows the reason.
 
 The car needs some time to execute a command.
 The binding refreshes the state of the car 15 seconds after a command.

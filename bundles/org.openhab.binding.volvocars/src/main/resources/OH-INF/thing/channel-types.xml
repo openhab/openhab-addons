@@ -393,7 +393,8 @@
 	<channel-type id="climatization">
 		<item-type>Switch</item-type>
 		<label>Climatization</label>
-		<description>Starts (ON) or stops (OFF) the climatization of the cabin.</description>
+		<description>Send ON to start and OFF to stop the climatization of the cabin. Switches back to OFF once the start
+			command was sent.</description>
 		<category>Climate</category>
 		<tags>
 			<tag>Switch</tag>
@@ -404,7 +405,8 @@
 	<channel-type id="engine-remote-start">
 		<item-type>Switch</item-type>
 		<label>Engine Remote Start</label>
-		<description>Starts (ON) or stops (OFF) the engine remotely.</description>
+		<description>Send ON to start and OFF to stop the engine remotely. Switches back to OFF once the start command was
+			sent.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>
@@ -430,7 +432,8 @@
 	<channel-type id="lock-reduced-guard">
 		<item-type>Switch</item-type>
 		<label>Lock with Reduced Guard</label>
-		<description>Send ON to lock the vehicle with reduced alarm guard, e.g. to leave a pet inside.</description>
+		<description>Send ON to lock the vehicle with reduced alarm guard, e.g. to leave a pet inside. Switches back to OFF
+			once the command was sent.</description>
 		<category>Lock</category>
 		<tags>
 			<tag>Switch</tag>

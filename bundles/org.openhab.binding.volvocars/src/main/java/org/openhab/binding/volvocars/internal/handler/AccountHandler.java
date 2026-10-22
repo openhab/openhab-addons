@@ -54,7 +54,7 @@ public class AccountHandler extends BaseBridgeHandler {
     private final VolvoCarsAuthServlet authServlet;
 
     private @Nullable VolvoCarsOAuthClient oAuthClient;
-    private @Nullable VolvoCarsApi api;
+    private volatile @Nullable VolvoCarsApi api;
     private @Nullable ScheduledFuture<?> reconnectJob;
 
     public AccountHandler(Bridge bridge, HttpClient httpClient, Storage<String> storage,
@@ -90,9 +90,11 @@ public class AccountHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         authServlet.unregister(this);
-        cancelReconnectJob();
-        api = null;
-        oAuthClient = null;
+        synchronized (this) {
+            api = null;
+            oAuthClient = null;
+            cancelReconnectJob();
+        }
     }
 
     @Override
@@ -202,7 +204,8 @@ public class AccountHandler extends BaseBridgeHandler {
      * Periodically checks the connection until it succeeds, see {@link #reportSuccess(VolvoCarsApi)}.
      */
     private synchronized void scheduleReconnect(VolvoCarsApi usedApi) {
-        if (reconnectJob == null) {
+        // checked under the lock as the handler may have been disposed since the failure was reported
+        if (reconnectJob == null && usedApi.equals(api)) {
             reconnectJob = scheduler.scheduleWithFixedDelay(() -> verifyConnection(usedApi), RECONNECT_INTERVAL_MINUTES,
                     RECONNECT_INTERVAL_MINUTES, TimeUnit.MINUTES);
         }
