@@ -2,8 +2,7 @@
 	"deviceMapping": {
 		"id": [
 			"dreame.vacuum.p2009",
-			"dreame.vacuum.p2036",
-			"dreame.vacuum.p2157"
+			"dreame.vacuum.p2036"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
