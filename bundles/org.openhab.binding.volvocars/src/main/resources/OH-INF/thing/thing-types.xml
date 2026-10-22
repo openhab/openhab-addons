@@ -27,8 +27,8 @@
 			<parameter name="redirectUri" type="text" required="true">
 				<context>url</context>
 				<label>Redirect URI</label>
-				<description>Redirect URI exactly as registered for the application, e.g.
-					http://openhab:8080/volvocars.</description>
+				<description>Redirect URI exactly as registered for the application. Volvo only accepts https URIs, e.g.
+					https://openhab:8443/volvocars.</description>
 			</parameter>
 			<parameter name="scopes" type="text">
 				<label>Scopes</label>

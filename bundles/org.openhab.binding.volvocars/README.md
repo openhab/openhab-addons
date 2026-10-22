@@ -16,18 +16,43 @@ Channels for features the car does not have (e.g. fuel channels of an electric c
 
 ## Prerequisites
 
-The Volvo Cars APIs can only be used through an application registered on the [Volvo Cars developer portal](https://developer.volvocars.com):
+The Volvo Cars APIs can only be used through your own application on the [Volvo Cars developer portal](https://developer.volvocars.com).
+The application must be **published**: only a published application gets the OAuth client credentials (client ID and client secret) the binding needs to sign in to your Volvo ID.
+An unpublished application only provides the VCC API key and short-lived test tokens, which are not sufficient.
 
 1. Sign in to the developer portal with the Volvo ID you use in the Volvo Cars app.
-1. Create an application.
-   The portal shows a _VCC API key_ for it.
-1. Configure the application's OAuth settings:
-   - Add a redirect URI.
-     The simplest is the authorization page of the binding on your openHAB server, e.g. `http://openhab:8080/volvocars`.
-     If that is not accepted (e.g. because only `https` URIs are allowed), you can register any other URI and paste the URL your browser is redirected to into the binding's authorization page, see [Authorization](#authorization).
-   - Select the scopes the application may use.
-     The binding requests all scopes listed below by default.
-1. Note the client ID, client secret and VCC API key of the application.
+1. Create an application in your account.
+   The portal shows a primary _VCC API key_ for it.
+1. Click _Publish_ for the application and fill in the form:
+   - Creator and public information, e.g. your name, your contact details and a business purpose like "Private openHAB integration".
+     These details are not used by the binding.
+   - Scopes: expand every section and select all scopes listed below.
+     The binding requests all of them by default, and Volvo ID rejects the authorization with `invalid_scope` if the application lacks one of them.
+   - Redirect URI: see [Redirect URI](#redirect-uri).
+1. Confirm the summary.
+   The confirmation page shows the client ID and the client secret.
+   Note them together with the VCC API key.
+
+### Redirect URI
+
+After you have signed in, Volvo ID sends your browser to the redirect URI together with the authorization code.
+Volvo is very strict about this URI:
+
+- It must use `https`.
+  Volvo rejects `http` URIs when publishing the application.
+- It must match the `redirectUri` of the bridge exactly, including scheme, host, port, path and a trailing slash, if any.
+- Only your browser opens it, so it does not have to be reachable from the internet.
+
+There are two ways to complete the authorization:
+
+- Register the authorization page of the binding on the HTTPS port of openHAB, e.g. `https://openhab:8443/volvocars` (replace `openhab` with the host name or IP address of your openHAB server).
+  openHAB serves HTTPS on port 8443 with a self-signed certificate by default, so your browser shows a certificate warning that you have to accept.
+  The authorization then completes automatically.
+- Register any other `https` URI, e.g. one that is not reachable at all.
+  Your browser shows an error page after you have signed in.
+  Copy the complete URL from its address bar and paste it into the form on the authorization page of the binding, see [Authorization](#authorization).
+
+### Scopes
 
 Scopes used by the binding:
 
@@ -48,8 +73,7 @@ Scopes used by the binding:
 | `conve:honk_flash`                                                            | Honk and flash                                         |
 | `location:read`                                                               | Group `location`                                       |
 
-Volvo may restrict some scopes, e.g. the ones for locking, engine start and location, to published applications.
-If the application must not request a scope, list the allowed scopes in the `scopes` parameter of the bridge.
+If you cannot select some of the scopes for your application, list the scopes it has in the `scopes` parameter of the bridge.
 Values that require a scope that was not granted remain `UNDEF`.
 
 ## Discovery
@@ -66,14 +90,14 @@ Discovery runs in the background once an hour and can also be started manually.
 | `clientId`     | text | Client ID of the application                                                                                            | N/A     | yes      | no       |
 | `clientSecret` | text | Client secret of the application                                                                                        | N/A     | yes      | no       |
 | `apiKey`       | text | VCC API key of the application                                                                                          | N/A     | yes      | no       |
-| `redirectUri`  | text | Redirect URI exactly as registered for the application, e.g. `http://openhab:8080/volvocars`                            | N/A     | yes      | no       |
+| `redirectUri`  | text | Redirect URI exactly as registered for the application, e.g. `https://openhab:8443/volvocars`                           | N/A     | yes      | no       |
 | `scopes`       | text | Space separated list of scopes to request. Leave empty to request all scopes listed in [Prerequisites](#prerequisites). | (all)   | no       | yes      |
 
 ### Authorization
 
 After the bridge has been created, it stays offline until openHAB has been authorized to access the Volvo ID account:
 
-1. Open `http(s)://<your openHAB address>/volvocars` in a browser.
+1. Open the authorization page of the binding in a browser, e.g. `http://openhab:8080/volvocars` or `https://openhab:8443/volvocars`.
 1. Click _Authorize_ next to the account and sign in with your Volvo ID.
 1. Volvo redirects your browser to the configured redirect URI.
    If that is the authorization page of the binding, the authorization completes automatically.
@@ -81,7 +105,9 @@ After the bridge has been created, it stays offline until openHAB has been autho
    The authorization must be completed within 15 minutes.
 
 The binding stores the refresh token in the openHAB user data and renews the access token automatically.
-If Volvo revokes the refresh token, the bridge goes offline and you have to authorize again.
+Volvo limits how long the authorization of a self-registered application stays valid.
+Users of other integrations report that they have to sign in again about every 7 days.
+When the authorization has expired or was revoked, the bridge goes offline with a hint to the authorization page and you have to authorize again.
 Changing the client ID also requires a new authorization.
 
 ### `vehicle` Thing Configuration
@@ -226,7 +252,7 @@ The binding refreshes the state of the car 15 seconds after a command.
 ### `volvocars.things`
 
 ```java
-Bridge volvocars:account:myaccount "Volvo Account" [ clientId="...", clientSecret="...", apiKey="...", redirectUri="http://openhab:8080/volvocars" ] {
+Bridge volvocars:account:myaccount "Volvo Account" [ clientId="...", clientSecret="...", apiKey="...", redirectUri="https://openhab:8443/volvocars" ] {
     Thing vehicle xc40 "Volvo XC40" [ vin="YV1XZ00000000000", refreshInterval=5 ]
 }
 ```
