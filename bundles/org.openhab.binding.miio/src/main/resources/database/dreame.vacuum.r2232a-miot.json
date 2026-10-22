@@ -2,7 +2,8 @@
 	"deviceMapping": {
 		"id": [
 			"dreame.vacuum.r2232a",
-			"dreame.vacuum.r2251o"
+			"dreame.vacuum.r2251o",
+			"dreame.vacuum.r2232c"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
@@ -81,6 +82,10 @@
 						{
 							"value": "mop-reset-mop-life",
 							"label": "Reset Mop Pad Life"
+						},
+						{
+							"value": "silver-ion-reset-silverion-life",
+							"label": "Reset Silver Ion Life"
 						}
 					]
 				},
@@ -359,13 +364,27 @@
 								}
 							]
 						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 19,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "silver-ion-reset-silverion-life"
+								}
+							]
+						}
 					}
 				],
 				"category": "cleaningrobot",
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Cleaning\",\"vacuum-stop-sweeping\"\u003d\"Pause Cleaning\",\"vacuum-extend-stop-clean\"\u003d\"Stop Cleaning\",\"battery-start-charge\"\u003d\"Return To Dock\",\"vacuum-start-mop-wash\"\u003d\"Start Mop Washing\",\"vacuum-pause-mop-wash\"\u003d\"Pause Mop Washing\",\"vacuum-resume-mop-wash\"\u003d\"Resume Mop Washing\",\"vacuum-start-dry\"\u003d\"Start Mop Drying\",\"vacuum-stop-dry\"\u003d\"Stop Mop Drying\",\"vacuum-start-station-clean\"\u003d\"Start Base Station Cleaning\",\"audio-position\"\u003d\"Find Robot\",\"audio-play-sound\"\u003d\"Play Test Sound\",\"brush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush Life\",\"brush-cleaner-reset-brush-life1\"\u003d\"Reset Side Brush Life\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"sensor-reset-sensor-life\"\u003d\"Reset Sensor Life\",\"mop-reset-mop-life\"\u003d\"Reset Mop Pad Life\"]`"
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Cleaning\",\"vacuum-stop-sweeping\"\u003d\"Pause Cleaning\",\"vacuum-extend-stop-clean\"\u003d\"Stop Cleaning\",\"battery-start-charge\"\u003d\"Return To Dock\",\"vacuum-start-mop-wash\"\u003d\"Start Mop Washing\",\"vacuum-pause-mop-wash\"\u003d\"Pause Mop Washing\",\"vacuum-resume-mop-wash\"\u003d\"Resume Mop Washing\",\"vacuum-start-dry\"\u003d\"Start Mop Drying\",\"vacuum-stop-dry\"\u003d\"Stop Mop Drying\",\"vacuum-start-station-clean\"\u003d\"Start Base Station Cleaning\",\"audio-position\"\u003d\"Find Robot\",\"audio-play-sound\"\u003d\"Play Test Sound\",\"brush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush Life\",\"brush-cleaner-reset-brush-life1\"\u003d\"Reset Side Brush Life\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"sensor-reset-sensor-life\"\u003d\"Reset Sensor Life\",\"mop-reset-mop-life\"\u003d\"Reset Mop Pad Life\",\"silver-ion-reset-silverion-life\"\u003d\"Reset Silver Ion Life\"]`"
 			},
 			{
 				"property": "status",
@@ -1416,6 +1435,10 @@
 						{
 							"value": "119",
 							"label": "Water level in the washboard is too high"
+						},
+						{
+							"value": "121",
+							"label": "The dust collection bag is full, or the air duct is blocked"
 						}
 					]
 				},
@@ -2224,9 +2247,57 @@
 					"Measurement",
 					"Duration"
 				]
+			},
+			{
+				"property": "silverion-life-time",
+				"siid": 19,
+				"piid": 1,
+				"friendlyName": "Silver Ion - Silver Ion Left Time",
+				"channel": "silverion_life_time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				],
+				"readmeComment": "Shown by the Mi Home app for the DreameBot L10s Prime sold in China or Taiwan only"
+			},
+			{
+				"property": "silverion-life-level",
+				"siid": 19,
+				"piid": 2,
+				"friendlyName": "Silver Ion - Silver Ion Life Level",
+				"channel": "silverion_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				],
+				"readmeComment": "Shown by the Mi Home app for the DreameBot L10s Prime sold in China or Taiwan only"
 			}
 		],
-		"readmeComment": "Base Station Cleaning makes the robot leave the station, fills the station with water for manual brushing and drains it after about 3 minutes; send Return To Dock afterwards. Example command for room cleaning (room 3, then room 5; per room the room id, repeats, suction 0 to 3, water level 1 to 3 and order; the room ids are those of the robot map, which the binding cannot read) `xiaomi_robot_execute.sendCommand(\u0027action{\"siid\":4,\"aiid\":1,\"in\":[{\"piid\":1,\"value\":18},{\"piid\":10,\"value\":\"{\\\\\"selects\\\\\":[[3,1,1,2,1],[5,1,1,2,2]]}\"}]}\u0027)`",
+		"readmeComment": "Reset Silver Ion Life is only for the DreameBot L10s Prime. Base Station Cleaning makes the robot leave the station, fills the station with water for manual brushing and drains it after about 3 minutes; send Return To Dock afterwards. Example command for room cleaning (room 3, then room 5; per room the room id, repeats, suction 0 to 3, water level 1 to 3 and order; the room ids are those of the robot map, which the binding cannot read) `xiaomi_robot_execute.sendCommand(\u0027action{\"siid\":4,\"aiid\":1,\"in\":[{\"piid\":1,\"value\":18},{\"piid\":10,\"value\":\"{\\\\\"selects\\\\\":[[3,1,1,2,1],[5,1,1,2,2]]}\"}]}\u0027)`",
 		"experimental": true
 	}
 }
