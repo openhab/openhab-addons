@@ -42,7 +42,7 @@ discoveryConcurrency=16
 
 Discovery creates Things with their address, secure CoAP port, and expected device UUID. To add a Thing manually, select the appliance family and enter its IP address or host name. The advanced `port` setting defaults to `0`, which discovers the secure port from that host.
 
-The appliance must be reachable from openHAB over UDP. Enable its **Remote Control** setting when required for commands. By default, the binding creates and stores a client identity under `$OPENHAB_USERDATA/etc/smartthings/`. Some firmware may require credentials that have already been authorized; the binding does not pair appliances or provision credentials. Certificate and OwnerPSK settings are advanced options for users who already have suitable credentials.
+The appliance must be reachable from openHAB over UDP. Enable its **Remote Control** setting when required for commands. By default, the binding creates and stores a client identity under `$OPENHAB_USERDATA/etc/smartthings/`. Some firmware may require credentials that have already been authorized; the binding does not pair appliances or provision credentials. Certificate and OwnerPSK settings are advanced options for users who already have suitable credentials. In certificate mode, the first valid server certificate is trusted on first use and saved only after the authenticated `/oic/d` identity matches the Thing. This first connection is not independently authenticated, so an attacker able to intercept it could be pinned; configure an independently obtained fingerprint to avoid that risk.
 
 All Thing types use the following configuration parameters:
 
@@ -56,7 +56,7 @@ All Thing types use the following configuration parameters:
 | `deviceId` | text | Expected appliance UUID. If omitted, the first authenticated UUID is remembered and checked on later connections. | — | no | yes |
 | `keyStore` | text | Absolute path to a PKCS12 key store containing an already-authorized client private key and certificate chain. Leave empty to use the generated identity. | — | no | yes |
 | `keyStorePassword` | password | Password for the imported key store and private key. | — | no | yes |
-| `serverFingerprint` | text | Independently verified SHA-256 fingerprint of the appliance's leaf certificate. Leave empty to validate against the bundled Samsung OCF CA, which is community-sourced and whose manufacturer provenance has not been independently authenticated. Use an independently verified fingerprint if this provenance is insufficient for your deployment. | — | no | yes |
+| `serverFingerprint` | text | Optional SHA-256 fingerprint of the appliance's leaf certificate. Leave empty to trust and remember the first valid certificate after the authenticated appliance identity matches this Thing. The first connection is not independently authenticated; set a fingerprint to avoid the trust-on-first-use risk. | — | no | yes |
 | `ownerId` | text | Owner UUID associated with an imported `ownerPsk`; this is not the appliance UUID. | — | no | yes |
 | `ownerPsk` | password | Previously provisioned, authorized OwnerPSK: 16 or 32 bytes encoded as hexadecimal. Mutually exclusive with certificate authentication. | — | no | yes |
 

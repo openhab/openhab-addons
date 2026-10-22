@@ -60,6 +60,7 @@ public class ApplianceHandler extends BaseThingHandler {
     private static final String IDENTITY = "/oic/d";
     private static final String COLLECTION = "/device/0";
     private static final String DEVICE_ID_PROPERTY = "deviceId";
+    private static final String SERVER_FINGERPRINT_PROPERTY = "serverFingerprint";
     private static final int MAX_PENDING_COMMANDS = 16;
     private static final int MAX_PENDING_NOTIFICATIONS = 128;
     private static final int MAX_OBSERVATION_RETRY_SECONDS = 300;
@@ -146,6 +147,8 @@ public class ApplianceHandler extends BaseThingHandler {
         final Map<String, Observation> observations = new HashMap<>();
         @Nullable
         UUID identity;
+        @Nullable
+        String certificateFingerprint;
         volatile @Nullable Transport transport;
         @Nullable
         ScheduledFuture<?> poll;
@@ -193,6 +196,10 @@ public class ApplianceHandler extends BaseThingHandler {
         long activation = retireSession();
         ApplianceConfiguration configuration = getConfigAs(ApplianceConfiguration.class);
         try {
+            if (configuration.serverFingerprint.isBlank() && configuration.ownerPsk.isBlank()) {
+                configuration.serverFingerprint = getThing().getProperties().getOrDefault(SERVER_FINGERPRINT_PROPERTY,
+                        "");
+            }
             configuration.validate();
             String expected = configuration.deviceId.isBlank() ? getThing().getProperties()
                     .getOrDefault(DEVICE_ID_PROPERTY, getThing().getProperties().getOrDefault("deviceid", ""))
@@ -651,19 +658,12 @@ public class ApplianceHandler extends BaseThingHandler {
         } catch (IllegalArgumentException e) {
             throw new IOException("Invalid authenticated appliance identity");
         }
-        UUID certificateIdentity = transport.serverIdentity();
-        if (current.configuration.ownerPsk.isBlank() && current.configuration.serverFingerprint.isBlank()
-                && (certificateIdentity == null || !certificateIdentity.equals(identity))) {
-            throw new IdentityMismatchException();
-        }
-        if (certificateIdentity != null && !certificateIdentity.equals(identity)) {
-            throw new IdentityMismatchException();
-        }
         UUID expectedIdentity = current.identity;
         if (expectedIdentity != null && !expectedIdentity.equals(identity)) {
             throw new IdentityMismatchException();
         }
         current.identity = identity;
+        current.certificateFingerprint = transport.serverFingerprint();
     }
 
     private void sendCommand(Session current, Transport transport, PendingCommand pending) throws IOException {
@@ -811,6 +811,10 @@ public class ApplianceHandler extends BaseThingHandler {
             if (identity != null) {
                 properties.put(DEVICE_ID_PROPERTY, identity.toString());
                 properties.remove("deviceid");
+            }
+            String certificateFingerprint = current.certificateFingerprint;
+            if (certificateFingerprint != null) {
+                properties.put(SERVER_FINGERPRINT_PROPERTY, certificateFingerprint);
             }
             if (!channels.equals(getThing().getChannels()) || !properties.equals(getThing().getProperties())) {
                 logger.debug("Appliance {} updating Thing capabilities: {} channels", getThing().getUID(),

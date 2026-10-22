@@ -83,7 +83,7 @@ class CoapTransportTest {
     }
 
     @Test
-    void certificateProfileAcceptsOneImportedPrivateKeyWithPinOrCaTrust() throws Exception {
+    void certificateProfileAcceptsOneImportedPrivateKeyWithExplicitPinOrTofuTrust() throws Exception {
         Path directory = Path.of("target", "certificate-profile-test").toAbsolutePath();
         Files.createDirectories(directory);
         Path file = directory.resolve("client.p12");
@@ -112,7 +112,7 @@ class CoapTransportTest {
                     dtls.getConfiguration().get(DtlsConfig.DTLS_CIPHER_SUITES));
             config.serverFingerprint = "";
             config.validate();
-            assertInstanceOf(SamsungCertificateVerifier.class,
+            assertInstanceOf(PinnedCertificateVerifier.class,
                     CoapTransport.dtlsConfiguration(config, host).getAdvancedCertificateVerifier());
             config.keyStorePassword = "private-invalid-password";
             config.port = 49155;

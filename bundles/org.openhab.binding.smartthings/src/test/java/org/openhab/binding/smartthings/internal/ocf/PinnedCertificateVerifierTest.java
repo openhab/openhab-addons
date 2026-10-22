@@ -22,6 +22,7 @@ import java.security.cert.CertPath;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.util.HexFormat;
 import java.util.List;
 
 import org.eclipse.californium.scandium.dtls.CertificateMessage;
@@ -62,6 +63,29 @@ class PinnedCertificateVerifierTest {
         when(leaf.getEncoded()).thenReturn(new byte[] { 5 });
         assertNotNull(verifier.verifyCertificate(ConnectionId.EMPTY, null, new InetSocketAddress("127.0.0.1", 49155),
                 false, true, false, message).getException());
+    }
+
+    @Test
+    void pinsTheFirstValidServerCertificateAndRejectsAChangedCertificate() throws Exception {
+        X509Certificate leaf = mock(X509Certificate.class);
+        byte[] encoded = new byte[] { 1, 2, 3 };
+        when(leaf.getEncoded()).thenReturn(encoded);
+        when(leaf.getKeyUsage()).thenReturn(new boolean[] { true });
+        when(leaf.getExtendedKeyUsage()).thenReturn(List.of("1.3.6.1.5.5.7.3.1"));
+        CertPath chain = mock(CertPath.class);
+        doReturn(List.of(leaf)).when(chain).getCertificates();
+        CertificateMessage message = mock(CertificateMessage.class);
+        when(message.getCertificateChain()).thenReturn(chain);
+        var verifier = new PinnedCertificateVerifier();
+        var peer = new InetSocketAddress("127.0.0.1", 49155);
+
+        assertNull(verifier.verifyCertificate(ConnectionId.EMPTY, null, peer, false, false, false, message)
+                .getException());
+        assertEquals(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(encoded)),
+                verifier.fingerprint());
+        when(leaf.getEncoded()).thenReturn(new byte[] { 4, 5, 6 });
+        assertNotNull(verifier.verifyCertificate(ConnectionId.EMPTY, null, peer, false, false, false, message)
+                .getException());
     }
 
     @Test

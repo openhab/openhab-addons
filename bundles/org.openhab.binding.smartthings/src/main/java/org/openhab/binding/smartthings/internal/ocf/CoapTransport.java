@@ -76,7 +76,7 @@ final class CoapTransport implements Transport {
     private final int port;
     private final long timeoutMillis;
     private final Endpoint endpoint;
-    private final @Nullable SamsungCertificateVerifier certificateVerifier;
+    private final @Nullable PinnedCertificateVerifier certificateVerifier;
     private final Object lifecycle = new Object();
     private final Set<Request> pending = new HashSet<>();
     private final Set<Observation> observations = new HashSet<>();
@@ -170,7 +170,7 @@ final class CoapTransport implements Transport {
             } else {
                 port = config.port;
             }
-            certificateVerifier = config.serverFingerprint.isBlank() ? new SamsungCertificateVerifier() : null;
+            certificateVerifier = config.ownerPsk.isBlank() ? createCertificateVerifier(config) : null;
             endpoint = startEndpoint(dtlsConfiguration(config, host, certificateVerifier));
         } catch (IllegalArgumentException | GeneralSecurityException e) {
             throw new IOException("Invalid appliance credentials or connection configuration");
@@ -227,16 +227,18 @@ final class CoapTransport implements Transport {
                 : 40000 + Math.floorMod(31 * Arrays.hashCode(host.getAddress()) + config.deviceId.hashCode(), 20000);
     }
 
+    private static PinnedCertificateVerifier createCertificateVerifier(ApplianceConfiguration config) {
+        return config.serverFingerprint.isBlank() ? new PinnedCertificateVerifier()
+                : new PinnedCertificateVerifier(config.fingerprint());
+    }
+
     static DtlsConnectorConfig dtlsConfiguration(ApplianceConfiguration config, InetAddress host)
             throws IOException, GeneralSecurityException {
-        SamsungCertificateVerifier certificateVerifier = config.serverFingerprint.isBlank()
-                ? new SamsungCertificateVerifier()
-                : null;
-        return dtlsConfiguration(config, host, certificateVerifier);
+        return dtlsConfiguration(config, host, config.ownerPsk.isBlank() ? createCertificateVerifier(config) : null);
     }
 
     private static DtlsConnectorConfig dtlsConfiguration(ApplianceConfiguration config, InetAddress host,
-            @Nullable SamsungCertificateVerifier certificateVerifier) throws IOException, GeneralSecurityException {
+            @Nullable PinnedCertificateVerifier verifier) throws IOException, GeneralSecurityException {
         DtlsConnectorConfig.Builder builder = DtlsConnectorConfig.builder(networkConfiguration())
                 .setAddress(new InetSocketAddress(clientPort(config, host)))
                 .set(DtlsConfig.DTLS_ROLE, DtlsRole.CLIENT_ONLY).set(DtlsConfig.DTLS_MAX_CONNECTIONS, 1)
@@ -290,8 +292,7 @@ final class CoapTransport implements Transport {
                     chain = certificates;
                 }
                 builder.setCertificateIdentityProvider(new SingleCertificateProvider(key, chain, CertificateType.X_509))
-                        .setAdvancedCertificateVerifier(certificateVerifier != null ? certificateVerifier
-                                : new PinnedCertificateVerifier(config.fingerprint()))
+                        .setAdvancedCertificateVerifier(verifier != null ? verifier : createCertificateVerifier(config))
                         // Samsung advertises CA names even when it authorizes a self-signed client UUID.
                         // Truncating against those names would silently send an empty client certificate.
                         .set(DtlsConfig.DTLS_TRUNCATE_CLIENT_CERTIFICATE_PATH, false)
@@ -306,9 +307,9 @@ final class CoapTransport implements Transport {
     }
 
     @Override
-    public @Nullable UUID serverIdentity() {
-        SamsungCertificateVerifier verifier = certificateVerifier;
-        return verifier == null ? null : verifier.serverIdentity();
+    public @Nullable String serverFingerprint() {
+        PinnedCertificateVerifier verifier = certificateVerifier;
+        return verifier == null ? null : verifier.fingerprint();
     }
 
     @Override

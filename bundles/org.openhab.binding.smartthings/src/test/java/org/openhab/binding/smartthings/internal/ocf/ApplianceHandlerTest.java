@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -91,6 +90,7 @@ class ApplianceHandlerTest {
     private final Set<String> unlinkedChannels = ConcurrentHashMap.newKeySet();
     private final List<Thing> changes = new CopyOnWriteArrayList<>();
     private final List<ApplianceHandler> handlers = new ArrayList<>();
+    private final List<ApplianceConfiguration> configurations = new CopyOnWriteArrayList<>();
     private Runnable afterThingUpdate = () -> {
     };
 
@@ -142,8 +142,10 @@ class ApplianceHandlerTest {
             afterThingUpdate.run();
             return null;
         }).when(callback).thingUpdated(any());
-        ApplianceHandler handler = new ApplianceHandler(thing, config -> transport, executor, descriptionProvider,
-                executor.nanoTime::get);
+        ApplianceHandler handler = new ApplianceHandler(thing, config -> {
+            configurations.add(config);
+            return transport;
+        }, executor, descriptionProvider, executor.nanoTime::get);
         handlers.add(handler);
         handler.setCallback(callback);
         assertTimeoutPreemptively(Duration.ofSeconds(2), handler::initialize);
@@ -189,13 +191,15 @@ class ApplianceHandlerTest {
     }
 
     @Test
-    void rejectsDeviceIdentityThatDoesNotMatchTheValidatedServerCertificate() throws Exception {
-        transport.peerIdentity = UUID.fromString("01234567-89ab-cdef-0123-456789abcdef");
-        initialize(Map.of("serverFingerprint", ""), Map.of());
+    void persistsTofuFingerprintOnlyAfterIdentityValidationAndReloadsIt() throws Exception {
+        transport.peerFingerprint = "ab".repeat(32);
+        ApplianceHandler handler = initialize(Map.of("serverFingerprint", ""), Map.of());
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals("ab".repeat(32), handler.getThing().getProperties().get("serverFingerprint"));
 
-        ThingStatusInfo status = awaitStatus(ThingStatus.OFFLINE);
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail());
-        assertEquals(0, changes.size());
+        handler.initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals("ab".repeat(32), configurations.getLast().serverFingerprint);
     }
 
     @Test
@@ -999,10 +1003,12 @@ class ApplianceHandlerTest {
     @Test
     void malformedIdentityNeverPublishesResourceState() throws Exception {
         transport.identity = json("{\"di\":\"not-a-uuid\"}");
-        initialize();
+        transport.peerFingerprint = "ab".repeat(32);
+        ApplianceHandler handler = initialize(Map.of("serverFingerprint", ""), Map.of());
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, awaitStatus(ThingStatus.OFFLINE).getStatusDetail());
         assertTrue(changes.isEmpty());
         assertTrue(states.isEmpty());
+        assertFalse(handler.getThing().getProperties().containsKey("serverFingerprint"));
     }
 
     @Test
@@ -1084,7 +1090,7 @@ class ApplianceHandlerTest {
         final Map<String, AtomicInteger> observeAttempts = new ConcurrentHashMap<>();
         final AtomicInteger subscriptionsClosed = new AtomicInteger();
         volatile boolean observe;
-        volatile UUID peerIdentity = UUID.fromString(DEVICE_ID);
+        volatile @Nullable String peerFingerprint;
         volatile String unobserved = "";
         volatile boolean failRead;
         volatile boolean failPost;
@@ -1115,8 +1121,8 @@ class ApplianceHandlerTest {
         }
 
         @Override
-        public @Nullable UUID serverIdentity() {
-            return peerIdentity;
+        public @Nullable String serverFingerprint() {
+            return peerFingerprint;
         }
 
         @Override

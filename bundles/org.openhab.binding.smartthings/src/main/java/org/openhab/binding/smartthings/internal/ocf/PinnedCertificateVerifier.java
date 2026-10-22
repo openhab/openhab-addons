@@ -17,7 +17,9 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.cert.CertPath;
 import java.security.cert.X509Certificate;
+import java.util.HexFormat;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -34,9 +36,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Authenticates the appliance by an out-of-band, explicitly configured certificate pin.
+ * Authenticates the appliance by an explicit certificate pin or trust-on-first-use.
  * Pinning replaces CA trust, not certificate validity or server-authentication usage checks.
- * Samsung certificates identify OCF UUIDs rather than the appliance's IP address.
  *
  * @author Kai Kreuzer - Initial contribution
  */
@@ -44,13 +45,26 @@ import org.eclipse.jdt.annotation.Nullable;
 final class PinnedCertificateVerifier implements NewAdvancedCertificateVerifier {
     private static final String SERVER_AUTHENTICATION = "1.3.6.1.5.5.7.3.1";
 
-    private final byte[] fingerprint;
+    private record Pin(byte[] fingerprint) {
+    }
+
+    private final AtomicReference<@Nullable Pin> fingerprint;
+
+    PinnedCertificateVerifier() {
+        fingerprint = new AtomicReference<>(null);
+    }
 
     PinnedCertificateVerifier(byte[] fingerprint) {
         if (fingerprint.length != 32) {
             throw new IllegalArgumentException("A SHA-256 certificate fingerprint is required");
         }
-        this.fingerprint = fingerprint.clone();
+        this.fingerprint = new AtomicReference<>(new Pin(fingerprint.clone()));
+    }
+
+    @Nullable
+    String fingerprint() {
+        Pin current = fingerprint.get();
+        return current == null ? null : HexFormat.of().formatHex(current.fingerprint());
     }
 
     @Override
@@ -72,11 +86,18 @@ final class PinnedCertificateVerifier implements NewAdvancedCertificateVerifier 
                 boolean[] usage = leaf.getKeyUsage();
                 // Californium's authentication helper swallows EKU parsing failures; reject malformed extensions here.
                 List<String> extendedUsage = leaf.getExtendedKeyUsage();
-                if ((usage == null || usage.length > 0 && usage[0])
-                        && (extendedUsage == null || extendedUsage.contains(SERVER_AUTHENTICATION)) && MessageDigest
-                                .isEqual(fingerprint, MessageDigest.getInstance("SHA-256").digest(leaf.getEncoded()))) {
-                    // The pinned leaf is the trust anchor; no shared CA or trust-on-first-use fallback is involved.
-                    return new CertificateVerificationResult(cid, chain, null);
+                if (usage == null || usage.length > 0 && usage[0]) {
+                    if (extendedUsage == null || extendedUsage.contains(SERVER_AUTHENTICATION)) {
+                        byte[] presented = MessageDigest.getInstance("SHA-256").digest(leaf.getEncoded());
+                        Pin pinned = fingerprint.get();
+                        if (pinned == null) {
+                            fingerprint.compareAndSet(null, new Pin(presented));
+                            pinned = fingerprint.get();
+                        }
+                        if (pinned != null && MessageDigest.isEqual(pinned.fingerprint(), presented)) {
+                            return new CertificateVerificationResult(cid, chain, null);
+                        }
+                    }
                 }
             } catch (GeneralSecurityException e) {
                 // Return a protocol authentication failure, without certificate or credential diagnostics.

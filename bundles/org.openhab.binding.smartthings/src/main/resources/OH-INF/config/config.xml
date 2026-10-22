@@ -76,11 +76,12 @@
 		</parameter>
 		<parameter name="serverFingerprint" type="text">
 			<label>Server Certificate SHA-256 Fingerprint</label>
-			<description>Explicitly trusted appliance leaf certificate fingerprint obtained through an authenticated,
-				out-of-band
-				source. Leave empty to trust the bundled Samsung OCF CA, which is community-sourced and whose
-				manufacturer provenance
-				has not been independently authenticated. Hexadecimal, with optional colon separators.</description>
+			<description>Optional SHA-256 fingerprint of the appliance leaf certificate. When empty, the binding trusts and
+				remembers the first valid certificate only after the authenticated appliance identity matches this Thing. The
+				first
+				connection is not independently authenticated; use an explicit fingerprint to avoid the trust-on-first-use
+				risk.
+				Hexadecimal, with optional colon separators.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="ownerId" type="text">

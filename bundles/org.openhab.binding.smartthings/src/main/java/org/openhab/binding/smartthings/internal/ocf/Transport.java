@@ -13,7 +13,6 @@
 package org.openhab.binding.smartthings.internal.ocf;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +27,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 interface Transport extends AutoCloseable {
-    default @Nullable UUID serverIdentity() {
+    default @Nullable String serverFingerprint() {
         return null;
     }
 
