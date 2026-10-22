@@ -99,6 +99,8 @@ public enum MiIoDevices {
     DREAME_VACUUM_R2228O("dreame.vacuum.r2228o", "DreameBot L10s Ultra", THING_TYPE_BASIC),
     DREAME_VACUUM_R2228Z("dreame.vacuum.r2228z", "DreameBot L10s Ultra", THING_TYPE_BASIC),
     DREAME_VACUUM_R2232A("dreame.vacuum.r2232a", "DreameBot W10s Pro", THING_TYPE_BASIC),
+    DREAME_VACUUM_R2246("dreame.vacuum.r2246", "DreameBot S10 Plus", THING_TYPE_BASIC),
+    DREAME_VACUUM_R2247("dreame.vacuum.r2247", "DreameBot S10 Pro Plus", THING_TYPE_BASIC),
     DREAME_VACUUM_R2251O("dreame.vacuum.r2251o", "DreameBot W10s", THING_TYPE_BASIC),
     DREAME_VACUUM_R2254("dreame.vacuum.r2254", "Mijia Infinite Robot Vacuum-Mop 1S", THING_TYPE_BASIC),
     DREAME_VACUUM_R2338("dreame.vacuum.r2338", "Dreame L10s Pro Ultra Heat", THING_TYPE_BASIC),
