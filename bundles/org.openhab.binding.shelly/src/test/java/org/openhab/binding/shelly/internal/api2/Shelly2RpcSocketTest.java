@@ -237,6 +237,57 @@ class Shelly2RpcSocketTest {
                 "{\"src\":\"shellyplus1-test\",\"method\":\"NotifyStatus\",\"params\":{}}"));
     }
 
+    @Test
+    void failureOfAnEarlierAttemptKeepsTheNewerConnection() throws Exception {
+        Shelly2RpcSocket.ConnectAttempt first = startConnect();
+        Shelly2RpcSocket.ConnectAttempt second = startConnect();
+        second.onConnect(openSession());
+
+        first.onError(null, new EOFException("upgrade failed"));
+        first.onClose(null, StatusCode.ABNORMAL, "upgrade failed");
+
+        assertTrue(socket.isConnected());
+        verify(handler, never()).onError(anyLong(), any());
+        verify(handler, never()).onClose(anyLong(), anyBoolean(), anyInt(), anyString());
+    }
+
+    @Test
+    void failureOfTheCurrentAttemptIsReported() throws Exception {
+        socket.addMessageHandler(handler);
+        startConnect();
+        Shelly2RpcSocket.ConnectAttempt current = startConnect();
+
+        current.onError(null, new EOFException("upgrade failed"));
+
+        ArgumentCaptor<Long> failedConnectionId = ArgumentCaptor.forClass(Long.class);
+        verify(handler).onError(failedConnectionId.capture(), any());
+        assertTrue(socket.isCurrentConnection(failedConnectionId.getValue()));
+    }
+
+    @Test
+    void lateConnectOfAnEarlierAttemptIsClosed() throws Exception {
+        Shelly2RpcSocket.ConnectAttempt first = startConnect();
+        Shelly2RpcSocket.ConnectAttempt second = startConnect();
+        Session current = openSession();
+        second.onConnect(current);
+        Session late = openSession();
+
+        first.onConnect(late);
+
+        verify(late).close(eq(StatusCode.NORMAL), anyString());
+        verify(current, never()).close(anyInt(), anyString());
+        verify(handler).onConnect(any(), anyBoolean());
+        assertTrue(socket.isConnected());
+    }
+
+    private Shelly2RpcSocket.ConnectAttempt startConnect() throws Exception {
+        clearInvocations(webSocketClient);
+        socket.connect();
+        ArgumentCaptor<Object> endpoint = ArgumentCaptor.forClass(Object.class);
+        verify(webSocketClient).connect(endpoint.capture(), any(), any());
+        return (Shelly2RpcSocket.ConnectAttempt) endpoint.getValue();
+    }
+
     private Session openSession() {
         Session session = mock(Session.class);
         when(session.getRemoteAddress()).thenReturn(DEVICE_ADDRESS);
