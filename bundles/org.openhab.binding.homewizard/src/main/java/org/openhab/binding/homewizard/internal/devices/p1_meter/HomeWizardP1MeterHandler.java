@@ -16,6 +16,8 @@ import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 
+import javax.naming.CommunicationException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
@@ -29,7 +31,6 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -78,9 +79,8 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
                 }
             }
             return true;
-        } catch (JsonSyntaxException ex) {
-            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-device-offline");
+        } catch (JsonSyntaxException | CommunicationException ex) {
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);
             return false;
         }
