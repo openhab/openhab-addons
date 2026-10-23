@@ -324,6 +324,7 @@ public enum MiIoDevices {
     ROCKROBO_VACUUM_S6("rockrobo.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     ROCKROBO_VACUUM_V1("rockrobo.vacuum.v1", "Mi Robot Vacuum", THING_TYPE_VACUUM),
     ROIDMI_VACUUM_R1B("roidmi.vacuum.r1b", "ROIDMI EVE", THING_TYPE_BASIC),
+    ROIDMI_VACUUM_SDJ60("roidmi.vacuum.sdj60", "ROIDMI EVE MAX", THING_TYPE_BASIC),
     ROIDMI_VACUUM_V60("roidmi.vacuum.v60", "ROIDMI EVE vacuum", THING_TYPE_BASIC),
     ROIDMI_VACUUM_V63("roidmi.vacuum.v63", "ROIDMI VACUUM EVE ROOK", THING_TYPE_BASIC),
     ROIDMI_VACUUM_V66("roidmi.vacuum.v66", "ROIDMI EVA", THING_TYPE_BASIC),
