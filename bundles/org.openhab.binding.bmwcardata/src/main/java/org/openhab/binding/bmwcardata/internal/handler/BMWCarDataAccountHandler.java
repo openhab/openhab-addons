@@ -70,6 +70,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link BMWCarDataAccountHandler} authorizes the binding for a BMW CarData client, keeps the tokens fresh,
@@ -100,6 +101,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     // the per-thing request budget of earlier versions, removed at start
     private static final String STORAGE_KEY_BUDGET = "budget";
     private static final String STORAGE_KEY_CONTAINER = "container";
+    // basic data by VIN; it does not change, so discovery and the vehicle Thing share one request
+    private static final String STORAGE_KEY_BASIC_DATA = "basicData.";
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataAccountHandler.class);
     private final HttpClient httpClient;
@@ -229,6 +232,11 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         stopAuthJob();
         deleteAuthorization();
         storage.remove(STORAGE_KEY_CONTAINER);
+        for (String key : List.copyOf(storage.getKeys())) {
+            if (key.startsWith(STORAGE_KEY_BASIC_DATA)) {
+                storage.remove(key);
+            }
+        }
         // the request budget is kept in the shared budget storage, as BMW keeps counting the requests of the client
         super.handleRemoval();
     }
@@ -290,11 +298,33 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     }
 
     /**
-     * Retrieves the static data of a vehicle. Costs one request of the daily quota.
+     * Retrieves the static data of a vehicle. Costs one request of the daily quota the first time; the data is kept,
+     * as it does not change, so discovery and the vehicle Thing share that request.
      */
     public BasicData fetchBasicData(String vin) throws BMWCarDataException {
+        @Nullable
+        BasicData cached = getCachedBasicData(vin);
+        if (cached != null) {
+            return cached;
+        }
         BMWCarDataApi api = requireApi();
-        return call(() -> api.getBasicData(vin));
+        BasicData basicData = call(() -> api.getBasicData(vin));
+        storage.put(STORAGE_KEY_BASIC_DATA + vin, gson.toJson(basicData));
+        return basicData;
+    }
+
+    private @Nullable BasicData getCachedBasicData(String vin) {
+        @Nullable
+        String cached = storage.get(STORAGE_KEY_BASIC_DATA + vin);
+        if (cached == null) {
+            return null;
+        }
+        try {
+            return gson.fromJson(cached, BasicData.class);
+        } catch (JsonParseException e) {
+            storage.remove(STORAGE_KEY_BASIC_DATA + vin);
+            return null;
+        }
     }
 
     /**

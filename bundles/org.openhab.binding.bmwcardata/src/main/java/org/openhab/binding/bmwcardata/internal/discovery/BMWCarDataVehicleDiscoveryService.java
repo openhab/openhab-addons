@@ -18,8 +18,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataApi;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
+import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.VehicleMapping;
 import org.openhab.binding.bmwcardata.internal.handler.BMWCarDataAccountHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
@@ -99,9 +101,36 @@ public class BMWCarDataVehicleDiscoveryService extends AbstractThingHandlerDisco
                     || !VehicleMapping.MAPPING_TYPE_PRIMARY.equals(mapping.mappingType)) {
                 continue;
             }
+            @Nullable
+            BasicData basicData = fetchBasicData(vin);
+            if (basicData != null && Boolean.FALSE.equals(basicData.isTelematicsCapable)) {
+                // it can still be added manually
+                logger.debug("Not offering a vehicle that BMW reports cannot send data");
+                continue;
+            }
             thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_VEHICLE, bridgeUID, vin))
                     .withBridge(bridgeUID).withProperty(CONFIG_VIN, vin).withRepresentationProperty(CONFIG_VIN)
-                    .withLabel("@text/discovery.vehicle.label [\"" + vin + "\"]").build());
+                    .withLabel(label(vin, basicData)).build());
         }
+    }
+
+    /**
+     * @return the basic data of the vehicle, which the vehicle Thing reuses, or {@code null} if it is not available
+     */
+    private @Nullable BasicData fetchBasicData(String vin) {
+        try {
+            return thingHandler.fetchBasicData(vin);
+        } catch (BMWCarDataException e) {
+            logger.debug("Basic data for discovery not available: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private static String label(String vin, @Nullable BasicData basicData) {
+        @Nullable
+        String model = basicData != null ? basicData.modelName : null;
+        return model != null && !model.isBlank()
+                ? "@text/discovery.vehicle.model-label [\"" + model.replace("\"", "'") + "\", \"" + vin + "\"]"
+                : "@text/discovery.vehicle.label [\"" + vin + "\"]";
     }
 }

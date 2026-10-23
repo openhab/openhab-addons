@@ -30,4 +30,6 @@ public class BasicData {
     public @Nullable String propulsionType;
     public @Nullable String colourDescription;
     public @Nullable String constructionDate;
+    // false for vehicles that cannot send data to CarData
+    public @Nullable Boolean isTelematicsCapable;
 }
