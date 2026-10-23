@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,6 +47,7 @@ import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
@@ -167,6 +170,21 @@ class OcppServerBridgeHandlerTest {
         assertFalse(afterRestart.isLocalAuthListInstalled("charx",
                 afterRestart.localAuthListVersion("charx", List.of("B"))));
         assertFalse(afterRestart.isLocalAuthListInstalled("wallbox", version));
+    }
+
+    @Test
+    void aKeystoreThatCannotBeLoadedIsAConfigurationError() throws Exception {
+        Path keystore = Path.of(Objects.requireNonNull(getClass().getResource("/tls-test-keystore.p12")).toURI());
+        when(thing.getConfiguration()).thenReturn(new Configuration(
+                Map.of("tlsKeystorePath", keystore.toString(), "tlsKeystorePassword", "notthepassword")));
+        // The real transport, so the keystore is actually read.
+        OcppServerBridgeHandler real = new OcppServerBridgeHandler(thing, storageService);
+        real.setCallback(callback);
+
+        real.initialize();
+
+        verify(callback).statusUpdated(any(), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                && status.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
     }
 
     @Test
