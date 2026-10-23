@@ -210,7 +210,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         }
         updateState(CH_ID_UNGROUP, OnOffType.OFF);
         updateState(CH_ID_CONTROL, PlayPauseType.PAUSE);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "Group is not available on HEOS system");
+        updateStatus(ThingStatusDetail.GONE, "Group is not available on HEOS system");
     }
 
     @Override

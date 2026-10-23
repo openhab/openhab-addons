@@ -165,7 +165,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             logger.error(
                     "Long running HttpClient for Nanoleaf controller handler {} cannot be started. Creating Handler failed.",
                     httpClientName);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         logger.debug("Using long SSE httpClient={} for {}}", httpClientSSETouchEvent, httpClientName);
@@ -200,7 +200,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                         .checkRequiredFirmware(properties.get(Thing.PROPERTY_MODEL_ID), propertyFirmwareVersion)) {
                     logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
                             propertyFirmwareVersion, API_MIN_FW_VER_LIGHTPANELS);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/error.nanoleaf.controller.incompatibleFirmware");
                     stopAllJobs();
                 } else if (authToken != null && !authToken.isEmpty()) {
@@ -209,22 +209,19 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                     startTouchJob();
                 } else {
                     logger.debug("No token found. Start pairing background job");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "@text/error.nanoleaf.controller.noToken");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.noToken");
                     startPairingJob();
                     stopUpdateJob();
                 }
             } else {
                 logger.warn("No IP address and port configured for the Nanoleaf controller");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "@text/error.nanoleaf.controller.noIp");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.noIp");
                 stopAllJobs();
             }
         } catch (IllegalArgumentException iae) {
             logger.warn("Nanoleaf controller firmware version not in format x.y.z: {}",
                     getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION));
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.nanoleaf.controller.incompatibleFirmware");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.incompatibleFirmware");
         }
     }
 
@@ -258,12 +255,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             } catch (NanoleafUnauthorizedException nue) {
                 logger.debug("Authorization for command {} to channelUID {} failed: {}", command, channelUID,
                         nue.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/error.nanoleaf.controller.invalidToken");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.invalidToken");
             } catch (NanoleafException ne) {
                 logger.debug("Handling command {} to channelUID {} failed: {}", command, channelUID, ne.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/error.nanoleaf.controller.communication");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.communication");
             }
         }
     }
@@ -368,8 +363,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                         TimeUnit.SECONDS);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "@text/error.nanoleaf.controller.noToken");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.noToken");
         }
     }
 
@@ -441,20 +435,17 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             updateStatus(ThingStatus.ONLINE);
         } catch (NanoleafUnauthorizedException nae) {
             logger.debug("Status update unauthorized for controller {}: {}", getThing().getUID(), nae.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.invalidToken");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.invalidToken");
             final String localAuthToken = getAuthToken();
             if (localAuthToken == null || localAuthToken.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "@text/error.nanoleaf.controller.noToken");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.noToken");
             }
         } catch (NanoleafException ne) {
             logger.debug("Status update failed for controller {} : {}", getThing().getUID(), ne.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.communication");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.communication");
         } catch (RuntimeException e) {
             logger.debug("Update job failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
+            updateStatus(ThingStatus.OFFLINE, "@text/error.nanoleaf.controller.runtime");
         }
     }
 
@@ -488,7 +479,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                 authTokenObject = (authTokenObject != null) ? authTokenObject : new AuthToken();
                 if (authTokenObject.getAuthToken().isEmpty()) {
                     logger.debug("No auth token found in response: {}", authTokenResponseString);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/error.nanoleaf.controller.pairingFailed");
                     throw new NanoleafException(authTokenResponseString);
                 }
@@ -508,22 +499,18 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             }
         } catch (JsonSyntaxException e) {
             logger.warn("Received invalid data", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.invalidData");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.invalidData");
         } catch (NanoleafException ne) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.nanoleaf.controller.noTokenReceived");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.noTokenReceived");
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             logger.debug("Cannot send authorization request to controller: ", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.authRequest");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.authRequest");
         } catch (RuntimeException e) {
             logger.warn("Pairing job failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
+            updateStatus(ThingStatus.OFFLINE, "@text/error.nanoleaf.controller.runtime");
         } catch (Exception e) {
             logger.warn("Cannot start http client", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.noClient");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.noClient");
         }
     }
 
@@ -1041,8 +1028,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                     "Panel data could not be retrieved as request not expected(static type missing / dynamic type on) : {}",
                     nfe.getMessage());
         } catch (NanoleafException nue) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.panel.communication");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.panel.communication");
             logger.debug("Panel data could not be retrieved: {}", nue.getMessage());
         }
     }

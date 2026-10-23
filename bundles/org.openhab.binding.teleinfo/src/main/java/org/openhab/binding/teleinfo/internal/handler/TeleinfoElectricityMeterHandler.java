@@ -79,7 +79,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
+        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
 
         Bridge bridge = getBridge();
         logger.debug("bridge = {}", bridge);
@@ -100,7 +100,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
             if (controllerHandler != null) {
                 controllerHandler.removeListener(this);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
             return;
         }
 
@@ -141,26 +141,15 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-
-        if (!(ThingStatus.ONLINE.equals(status))) {
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
             for (Channel channel : getThing().getChannels()) {
                 if (!CHANNEL_LAST_UPDATE.equals(channel.getUID().getId())) {
                     updateState(channel.getUID(), UnDefType.UNDEF);
                 }
             }
         }
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
-        this.updateStatus(status, statusDetail, null);
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        this.updateStatus(status, ThingStatusDetail.NONE, null);
     }
 
     @Override

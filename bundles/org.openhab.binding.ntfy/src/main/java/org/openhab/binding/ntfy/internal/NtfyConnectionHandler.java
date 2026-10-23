@@ -89,12 +89,11 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
         try {
             scheme = (new URI(config.hostname)).getScheme();
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
             return;
         }
         if (!"http".equals(scheme) && !"https".equals(scheme)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.communication-error.unsupported-schema");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.communication-error.unsupported-schema");
             return;
         }
 
@@ -164,7 +163,7 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
                     client.stop();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                     return false;
                 } catch (Exception e) {
                     logger.debug("Error stopping WebSocket connection - ignore it and continue", e);
@@ -174,10 +173,10 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
                 client.start();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 return false;
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 return false;
             }
 
@@ -190,7 +189,7 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
                                 + (new URI(config.hostname + "/" + topicName + "/ws")).getRawSchemeSpecificPart()),
                         setupRequest());
             } catch (IOException | URISyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 return false;
             }
             updateStatus(ThingStatus.ONLINE);
@@ -209,7 +208,7 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
      * @param cause the cause of the connection error
      */
     public void connectionError(Throwable cause) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause.getLocalizedMessage());
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, cause.getLocalizedMessage());
         cancelRetryFuture();
         retryConnectionFuture = scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
     }

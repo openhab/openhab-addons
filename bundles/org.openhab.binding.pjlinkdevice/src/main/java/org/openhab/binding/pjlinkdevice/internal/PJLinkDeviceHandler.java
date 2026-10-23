@@ -365,7 +365,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     private void handleAuthenticationException(AuthenticationException e) {
         this.clearRefreshInterval();
         updateProperty(PJLinkDeviceBindingConstants.PROPERTY_AUTHENTICATION_REQUIRED, Boolean.TRUE.toString());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
     }
 
     private void handleCommunicationException(Exception e) {
@@ -374,12 +374,12 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         if (config != null && config.autoReconnectInterval > 0) {
             this.setup(config.autoReconnectInterval);
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
     }
 
     private void handleConfigurationException(ConfigurationException e) {
         this.clearRefreshInterval();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
     }
 
     private void setupDevice() throws ConfigurationException, IOException, AuthenticationException, ResponseException {

@@ -72,13 +72,13 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
 
         final int port = config.port;
         if (port <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set");
             return;
         }
 
         final String bindAddress = config.bindAddress;
         if (bindAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "BindAddress must be set");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "BindAddress must be set");
             return;
         }
 
@@ -95,9 +95,9 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
             waitForConnection();
 
         } catch (final IllegalArgumentException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, ex.getMessage());
         } catch (final IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error");
             handleIOException(ex);
         }
     }

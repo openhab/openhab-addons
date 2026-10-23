@@ -134,7 +134,11 @@ public class SystemInfoHandler extends BaseThingHandler {
                 thing.getThingTypeUID().getId());
         restoreChannelsConfig(); // After a thing type change, previous channel configs will have been stored, and will
                                  // be restored here.
-        if (instantiateSystemInfoLibrary() && isConfigurationValid() && updateProperties()) {
+        if (!isConfigurationValid()) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.cannot-initialize");
+            return;
+        }
+        if (instantiateSystemInfoLibrary() && updateProperties()) {
             if (!addDynamicChannels()) { // If there are new channel groups, the thing will get recreated with a new
                                          // thing type and this handler will be disposed. Therefore do not do anything
                                          // further here.
@@ -143,8 +147,7 @@ public class SystemInfoHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "@text/offline.cannot-initialize");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.cannot-initialize");
         }
     }
 
@@ -612,7 +615,7 @@ public class SystemInfoHandler extends BaseThingHandler {
             logger.warn("No information for channel {} with device index: {}", channelID, deviceIndex);
         } catch (Exception e) {
             logger.debug("Unexpected error occurred while getting system information!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
         }
         return state != null ? state : UnDefType.UNDEF;
     }

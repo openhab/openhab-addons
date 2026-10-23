@@ -113,10 +113,14 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     private void pollStatus() {
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateGroupePSAState();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -133,6 +137,10 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         if (getBridgeHandler() != null) {
             GroupePSAConfiguration currentConfig = getConfigAs(GroupePSAConfiguration.class);
             final String id = currentConfig.getId();
@@ -140,21 +148,18 @@ public class GroupePSAHandler extends BaseThingHandler {
             final Integer onlineIntervalM = currentConfig.getOnlineInterval();
 
             if (id == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/conf-error-no-vehicle-id");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-vehicle-id");
             } else if (pollingIntervalM != null && pollingIntervalM < 1) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/conf-error-invalid-polling-interval");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-invalid-polling-interval");
             } else if (onlineIntervalM != null && onlineIntervalM < 1) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/conf-error-invalid-online-interval");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-invalid-online-interval");
             } else {
                 this.id = id;
                 this.onlineIntervalM = onlineIntervalM != null ? onlineIntervalM : DEFAULT_ONLINE_INTERVAL_M;
                 startGroupePSAPolling(pollingIntervalM);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -205,6 +210,11 @@ public class GroupePSAHandler extends BaseThingHandler {
     }
 
     private synchronized void updateGroupePSAState() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while updating Thing: {}", thing.getUID());
+            return;
+        }
         if (System.nanoTime() - lastQueryTimeNs <= maxQueryFrequencyNanos) {
             return;
         }
@@ -213,13 +223,12 @@ public class GroupePSAHandler extends BaseThingHandler {
 
         String id = this.id;
         if (id == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-vehicle-id");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-vehicle-id");
             return;
         }
 
-        GroupePSABridgeHandler groupepsaBridge = getBridgeHandler();
-        if (groupepsaBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+        if (!(bridge.getHandler() instanceof GroupePSABridgeHandler groupepsaBridge)) {
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             return;
         }
 
@@ -237,15 +246,13 @@ public class GroupePSAHandler extends BaseThingHandler {
                 if (isConnected(vehicle)) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/comm-error-vehicle-not-connected-to-cloud");
+                    updateStatus(ThingStatus.OFFLINE, "@text/comm-error-vehicle-not-connected-to-cloud");
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error-query-vehicle-failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-query-vehicle-failed");
             }
         } catch (GroupePSACommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     MessageFormat.format("@text/comm-error-query-vehicle-failed", e.getMessage()));
         }
     }

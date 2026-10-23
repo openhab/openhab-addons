@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,8 +137,7 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
     @Nullable
     protected Device validateDeviceId(@Nullable String deviceId) {
         if (deviceId == null || deviceId.isBlank()) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.empty-device-id");
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.empty-device-id");
             return null;
         }
 
@@ -150,10 +148,10 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
             logger.trace("Device validated and initialized:\n{}", deviceInfo);
             return deviceInfo;
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
 
         return null;

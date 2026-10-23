@@ -162,13 +162,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         this.configuration = configuration;
         if (!getThing().getThingTypeUID().equals(THING_TYPE_LUMI)) {
             if (configuration.host.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-ip");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-ip");
                 return;
             }
             if (!tokenCheckPass(configuration.token)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-token");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-token");
                 return;
             }
         }
@@ -394,8 +392,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected void disconnected(@Nullable String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                message != null ? message : "");
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message != null ? message : "");
         final MiIoAsyncCommunication miioCom = this.miioCom;
         if (miioCom != null) {
             lastId = miioCom.getId();
@@ -412,8 +409,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return null;
         }
         if (deviceId.isBlank() && !getCloudServer().isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-cloud");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "@text/offline.config-error-cloud");
             return null;
         }
         if (deviceId.length() == 8 && deviceId.matches("^.*[a-zA-Z]+.*$")) {
@@ -625,8 +621,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     @Override
-    public void onStatusUpdated(ThingStatus status, ThingStatusDetail statusDetail) {
-        updateStatus(status, statusDetail);
+    public void onStatusUpdated(ThingStatusDetail statusDetail) {
+        updateStatus(statusDetail);
+    }
+
+    @Override
+    public void onStatusUpdated(ThingStatus status) {
+        updateStatus(status);
     }
 
     @Override

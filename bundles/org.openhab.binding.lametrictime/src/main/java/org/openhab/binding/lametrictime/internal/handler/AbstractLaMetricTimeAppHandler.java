@@ -59,13 +59,12 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No device bridge has been configured");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
         if (ThingStatus.ONLINE != bridge.getStatus()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -78,13 +77,16 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
         super.bridgeStatusChanged(bridgeStatusInfo);
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            updateWidget(getBridge().getHandler());
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                updateWidget(bridge.getHandler());
+            }
         }
     }
 
     private void updateWidget(@Nullable ThingHandler handler) {
         if (!(handler instanceof LaMetricTimeHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect bridge thing found");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect bridge thing found");
             return;
         }
         LaMetricTimeHandler deviceHandler = (LaMetricTimeHandler) handler;
@@ -100,7 +102,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
                 widget = widgets.get(config.widgetId);
 
                 if (widget == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "No widget found with package name " + packageName + " and widget ID " + config.widgetId);
                     return;
                 }
@@ -109,7 +111,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
             }
         } catch (ApplicationNotFoundException e) {
             logger.debug("LaMetric Time application not found", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "No application found with package name " + packageName);
             return;
         }
@@ -132,7 +134,15 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
     @Override
     public @Nullable Widget getWidget() {
         if (widget == null) {
-            getBridge().getHandler().initialize();
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable while reading widget for Thing: {}", thing.getUID());
+                return null;
+            }
+            ThingHandler handler = bridge.getHandler();
+            if (handler != null) {
+                handler.initialize();
+            }
         }
         return widget;
     }
@@ -144,6 +154,10 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while handling command for Thing: {}", thing.getUID());
+            return;
+        }
 
         try {
             if (command instanceof RefreshType) {
@@ -155,7 +169,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
             handleAppCommand(channelUID, command);
         } catch (Exception e) {
             logger.debug("Failed to communicate - taking app offline", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
