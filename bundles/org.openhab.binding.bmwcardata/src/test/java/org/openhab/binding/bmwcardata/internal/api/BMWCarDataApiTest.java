@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +54,6 @@ class BMWCarDataApiTest {
         SERVER.start();
         HTTP_CLIENT.start();
         // as configured by the handler factory
-        HTTP_CLIENT.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
 
     @AfterAll

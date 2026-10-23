@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpResponseException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
@@ -119,12 +118,8 @@ public final class CarDataTokens {
      *         {@link BMWCarDataException}
      */
     public static BMWCarDataException toException(IOException e) {
-        // core's HTTP client fails a 401 response without WWW-Authenticate header instead of returning it
-        for (Throwable cause = e; cause != null; cause = cause.getCause()) {
-            if (cause instanceof HttpResponseException responseException
-                    && responseException.getResponse().getStatus() == 401) {
-                return new BMWCarDataAuthException("Token refresh rejected", 401);
-            }
+        if (BMWCarDataAuthException.isUnauthorizedResponse(e)) {
+            return new BMWCarDataAuthException("Token refresh rejected", 401);
         }
         return new BMWCarDataException("Token refresh failed: " + e.getMessage(), e);
     }

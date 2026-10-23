@@ -230,7 +230,13 @@ public class BMWCarDataAuthClient {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new BMWCarDataException("Interrupted", e);
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (ExecutionException e) {
+            if (BMWCarDataAuthException.isUnauthorizedResponse(e)) {
+                // the error code in the body is lost, see BMWCarDataAuthException.isUnauthorizedResponse
+                throw new BMWCarDataException("BMW authorization service rejected the request with HTTP 401", 401, e);
+            }
+            throw new BMWCarDataException("Request to BMW authorization service failed: " + e.getMessage(), e);
+        } catch (TimeoutException e) {
             throw new BMWCarDataException("Request to BMW authorization service failed: " + e.getMessage(), e);
         }
     }

@@ -191,14 +191,14 @@ public class BMWCarDataApi {
             Thread.currentThread().interrupt();
             throw new BMWCarDataException("Interrupted", e);
         } catch (ExecutionException e) {
+            if (BMWCarDataAuthException.isUnauthorizedResponse(e)) {
+                throw new BMWCarDataAuthException("Access token rejected", 401);
+            }
             throw new BMWCarDataException("Request to BMW CarData failed: " + e.getMessage(), e);
         } catch (TimeoutException e) {
             throw new BMWCarDataException("Request to BMW CarData timed out", e);
         }
         int status = response.getStatus();
-        if (status == 401) {
-            throw new BMWCarDataAuthException("Access token rejected", status);
-        }
         if (status < 200 || status >= 300) {
             String content = response.getContentAsString();
             BMWCarDataException exception = new BMWCarDataException("BMW CarData request " + method + " "

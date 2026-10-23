@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,8 +60,6 @@ class BMWCarDataAuthClientTest {
     static void startServer() throws Exception {
         SERVER.start();
         HTTP_CLIENT.start();
-        // as configured by the handler factory
-        HTTP_CLIENT.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
 
     @AfterAll
@@ -127,11 +124,14 @@ class BMWCarDataAuthClientTest {
 
         assertEquals(PollStatus.PENDING, pollWithError(authorization, 403, "authorization_pending").status());
         assertEquals(PollStatus.SLOW_DOWN, pollWithError(authorization, 400, "slow_down").status());
-        assertEquals(PollStatus.EXPIRED, pollWithError(authorization, 401, "expired_token").status());
+        assertEquals(PollStatus.EXPIRED, pollWithError(authorization, 400, "expired_token").status());
         assertEquals(PollStatus.DENIED, pollWithError(authorization, 403, "access_denied").status());
 
+        // without WWW-Authenticate header, the HTTP client keeps only the status of a 401
         SERVER.stubFor(post(TOKEN_PATH).willReturn(unauthorized().withBody("{\"error\":\"invalid_client\"}")));
-        assertThrows(BMWCarDataException.class, () -> client.pollDeviceToken(authorization));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> client.pollDeviceToken(authorization));
+        assertEquals(401, e.getHttpStatus());
+        assertFalse(e instanceof BMWCarDataAuthException);
     }
 
     @Test
