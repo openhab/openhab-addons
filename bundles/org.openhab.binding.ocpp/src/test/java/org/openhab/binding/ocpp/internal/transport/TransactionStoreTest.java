@@ -97,6 +97,21 @@ class TransactionStoreTest {
     }
 
     @Test
+    void theExternalMeterReadingAtTheStartIsKeptWithTheTransaction() {
+        MemoryStorage storage = new MemoryStorage();
+        TransactionStore store = new TransactionStore(storage);
+        store.begin(9, "charx", 2);
+        store.rememberExternalStart(9, 1_000_000.0);
+
+        assertEquals(Double.valueOf(1_000_000.0), new TransactionStore(storage).externalStart(9));
+
+        store.end(9);
+        assertNull(store.externalStart(9));
+        store.rememberExternalStart(9, 5.0);
+        assertNull(store.externalStart(9));
+    }
+
+    @Test
     void theMeterRegisterAtTheStartIsKeptWithTheTransaction() {
         MemoryStorage storage = new MemoryStorage();
         TransactionStore store = new TransactionStore(storage);
