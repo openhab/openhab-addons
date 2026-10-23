@@ -254,7 +254,13 @@ public class Ffmpeg {
 
     public void startConverting() {
         synchronized (lifecycleLock) {
-            if (disposed || ipCameraFfmpegThread.isAlive() || System.nanoTime() < retryAfterNanos) {
+            if (disposed || System.nanoTime() < retryAfterNanos) {
+                return;
+            }
+            if (ipCameraFfmpegThread.isAlive()) {
+                if (keepAlive != -1) {
+                    keepAlive = 8;
+                }
                 return;
             }
             stopRequested = false;
