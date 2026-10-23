@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.measure.quantity.Angle;
 
@@ -83,6 +84,8 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     private final Gson gson = new Gson();
     private final MotionBlindsCommunicationManager communicationManager;
     private final Object requestLock = new Object();
+    /** Incremented by every movement command, so a running tilt can tell that it has been superseded */
+    private final AtomicLong movementGeneration = new AtomicLong();
 
     private MotionBlindsConfiguration config = new MotionBlindsConfiguration();
     private String mac = "";
@@ -154,7 +157,9 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
                 logger.debug("Unsupported command {} for channel {}", command, channelUID);
                 return;
             }
-            scheduler.execute(() -> tilt(tilt));
+            // incremented here rather than in the task, so the order follows the arrival of the commands
+            long generation = movementGeneration.incrementAndGet();
+            scheduler.execute(() -> tilt(tilt, generation));
             return;
         }
 
@@ -167,6 +172,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             logger.debug("Unsupported command {} for channel {}", command, channelUID);
             return;
         }
+        movementGeneration.incrementAndGet();
         scheduler.execute(() -> write(data));
     }
 
@@ -192,9 +198,9 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
 
     /**
      * Turn the slats to the given tilt at the current height, see {@link SlatTracker}. From fully lowered this can
-     * take two moves; the state is read again after the first one.
+     * take two moves; the state is read again after the first one. A newer movement command cancels the tilt.
      */
-    private void tilt(int tiltPercent) {
+    private void tilt(int tiltPercent, long generation) {
         for (int move = 1; move <= MAX_TILT_MOVES; move++) {
             Map<String, Object> data = slatTracker.tiltCommand(tiltPercent);
             if (data == null) {
@@ -209,29 +215,52 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             if (data.isEmpty()) {
                 return;
             }
-            write(data);
-            if (move == MAX_TILT_MOVES || thing.getStatus() != ThingStatus.ONLINE || !waitUntilStopped()) {
+            if (!writeIfCurrent(generation, data)) {
+                return;
+            }
+            if (move == MAX_TILT_MOVES || thing.getStatus() != ThingStatus.ONLINE || !waitUntilStopped(generation)) {
                 return;
             }
         }
     }
 
     /**
+     * Send a tilt move unless a newer movement command arrived. The check is made under the request lock, so the
+     * write of a newer command cannot go out between the check and this write and then be overridden by it.
+     *
+     * @return {@code false} if the tilt was superseded and nothing was sent
+     */
+    private boolean writeIfCurrent(long generation, Map<String, Object> data) {
+        synchronized (requestLock) {
+            if (generation != movementGeneration.get()) {
+                logger.debug("Tilt of motor {} is superseded by a newer command", mac);
+                return false;
+            }
+            write(data);
+            return true;
+        }
+    }
+
+    /**
      * Read the status until the motor angle does not change anymore.
      *
-     * @return {@code true} if two consecutive checks found the same angle; {@code false} if interrupted, if the
-     *         status could not be read (the last known angle is then stale and must not be taken as the motor having
-     *         stopped), or if the motor was still moving after all checks: a tilt move takes 1-2 seconds, so the
-     *         blind is then being moved by something else (remote, app, another command) and a further move would
-     *         be based on an intermediate state and interfere with it
+     * @return {@code true} if two consecutive checks found the same angle; {@code false} if interrupted, if a newer
+     *         movement command superseded the tilt, if the status could not be read (the last known angle is then
+     *         stale and must not be taken as the motor having stopped), or if the motor was still moving after all
+     *         checks: a tilt move takes 1-2 seconds, so the blind is then being moved by something else (remote,
+     *         app, another command) and a further move would be based on an intermediate state and interfere with it
      */
-    private boolean waitUntilStopped() {
+    private boolean waitUntilStopped(long generation) {
         Integer previousAngle = null;
         for (int check = 0; check < MAX_STOP_CHECKS; check++) {
             try {
                 Thread.sleep(STOP_CHECK_INTERVAL_MS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                return false;
+            }
+            if (generation != movementGeneration.get()) {
+                logger.debug("Tilt of motor {} is superseded by a newer command", mac);
                 return false;
             }
             if (!poll()) {

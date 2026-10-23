@@ -22,7 +22,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,6 +43,7 @@ import org.openhab.binding.motionblinds.internal.dto.MotionBlindsRequest;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -271,6 +275,45 @@ public class MotionBlindsHandlerTest {
         assertTrue(
                 targetAngle instanceof Integer angle && Math.abs(angle - (124 + 44 - SlatTracker.MOTOR_OVERSHOOT)) <= 2,
                 "second move: " + second);
+    }
+
+    @Test
+    public void stopDuringTiltCancelsSecondMove() throws IOException, InterruptedException {
+        // same motion as in tiltAboveOpenFromFullyLoweredTakesTwoMoves, which leads to a second move
+        Queue<String> reads = new ConcurrentLinkedQueue<>(
+                List.of(status(100, 176), status(99, 150), status(98, 124), status(98, 124)));
+        AtomicBoolean stopSent = new AtomicBoolean();
+        doAnswer(invocation -> {
+            MotionBlindsRequest request = invocation.getArgument(1);
+            if (MSG_GET_DEVICE_LIST.equals(request.msgType)) {
+                return parse(GET_DEVICE_LIST_ACK);
+            } else if (MSG_READ_DEVICE.equals(request.msgType)) {
+                String read = reads.poll();
+                return parse(read != null ? read : status(98, 124));
+            }
+            Map<String, Object> data = request.data;
+            if (data != null && data.containsKey("targetAngle") && !stopSent.getAndSet(true)) {
+                // the user stops the blind while the tilt waits for the first move to end
+                handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), StopMoveType.STOP);
+            }
+            return parse(status(100, 176));
+        }).when(communicationManager).sendRequest(eq(IP), any(), eq(MAC));
+        createHandler(KEY).initialize();
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
+
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_TILT), new PercentType(75));
+
+        verify(communicationManager, timeout(TIMEOUT_MS)).sendRequest(eq(IP),
+                argThat(r -> Map.of("operation", OPERATION_STOP).equals(r.data)), eq(MAC));
+        // give a second move the time it would need; it must not restart the motor after the STOP
+        Thread.sleep(4000);
+        ArgumentCaptor<MotionBlindsRequest> captor = ArgumentCaptor.forClass(MotionBlindsRequest.class);
+        verify(communicationManager, atLeastOnce()).sendRequest(eq(IP), captor.capture(), eq(MAC));
+        assertEquals(
+                List.of(Map.of("targetAngle", 176 - 2 * 29 + SlatTracker.MOTOR_OVERSHOOT),
+                        Map.of("operation", OPERATION_STOP)),
+                captor.getAllValues().stream().filter(r -> MSG_WRITE_DEVICE.equals(r.msgType)).map(r -> r.data)
+                        .toList());
     }
 
     @Test
