@@ -426,6 +426,191 @@ class OcppConnectorHandlerTest {
         verify(chargePoint, never()).send(argThat(r -> r instanceof SetChargingProfileRequest));
     }
 
+    private void rememberStop() {
+        when(thing.getProperties()).thenReturn(java.util.Map.of(PROPERTY_PERSISTED_STOP, "true"));
+    }
+
+    private static boolean isClear(Request request) {
+        return request instanceof ClearChargingProfileRequest;
+    }
+
+    /**
+     * The bug this guards. A session that ends stopped leaves 0 A in the charger's persistent default profile,
+     * which outlives the runtime that wrote it: openHAB restarts knowing no limit, the stop stands, and every
+     * charge after it is suspended with nothing on screen to say why. A rule that only writes on change never
+     * lifts it.
+     */
+    @Test
+    void aStopLeftByAnEarlierRunIsReleased() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        handler.onChargePointReady();
+
+        verify(chargePoint).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
+    @Test
+    void aReleasedStopShowsTheConnectorAsNoLongerPaused() {
+        rememberStop();
+        attachReadyChargePoint();
+
+        handler.onChargePointReady();
+
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_PAUSE)), eq(OnOffType.OFF));
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CHARGE_LIMIT)), eq(UnDefType.UNDEF));
+    }
+
+    /**
+     * The other half, and the reason this reads the remembered value instead of clearing on principle: a cap is
+     * somebody's fuse. Dropping it on every restart would trade a charge that never starts for one that draws
+     * more than the wiring allows.
+     */
+    @Test
+    void aCapLeftByAnEarlierRunIsLeftExactlyWhereItIs() {
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        handler.onChargePointReady();
+
+        verify(chargePoint, never()).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
+    /** This run's own pause is live intent, not residue, so releasing it would start a car somebody stopped. */
+    @Test
+    void aPauseThisRunSetIsNotMistakenForResidue() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        command(CHANNEL_PAUSE, OnOffType.ON);
+        clearInvocations(chargePoint);
+
+        handler.onChargePointReady();
+
+        verify(chargePoint, never()).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
+    /** The wallboxes reconnect all day; only the first readiness of a run has anything to account for. */
+    @Test
+    void aStopIsReleasedOnceNotOnEveryReconnect() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        handler.onChargePointReady();
+        handler.onChargePointReady();
+
+        verify(chargePoint, times(1)).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
+    /**
+     * Joins the two halves: the release above can only work if the run that persisted the stop wrote it down.
+     * A pause carried past its transaction is exactly how a charger ends up holding one.
+     */
+    @Test
+    void aPauseCarriedPastATransactionIsWrittenDown() {
+        attachReadyChargePoint();
+        startTransaction(7);
+        command(CHANNEL_PAUSE, OnOffType.ON);
+
+        endTransaction(7);
+
+        verify(thing).setProperty(PROPERTY_PERSISTED_STOP, "true");
+    }
+
+    /** Carrying a cap past a transaction overwrites the stop on the charger, so the note goes with it. */
+    @Test
+    void aCapCarriedPastATransactionForgetsAnEarlierStop() {
+        rememberStop();
+        attachReadyChargePoint();
+        startTransaction(7);
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(10));
+
+        endTransaction(7);
+
+        verify(thing).setProperty(PROPERTY_PERSISTED_STOP, null);
+    }
+
+    /**
+     * The churn guard. A connector that always writes the default profile does so on every solar ramp step, and
+     * a property update puts the Thing through the registry each time, so an unchanged state writes nothing.
+     */
+    @Test
+    void aRampingCapWritesNoPropertyWhenNoStopIsRemembered() {
+        attachReadyChargePoint();
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(10));
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(12));
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(14));
+
+        verify(thing, never()).setProperty(eq(PROPERTY_PERSISTED_STOP), any());
+    }
+
+    @Test
+    void aChargeEndingOnAnotherLimitStartsTheNextAtTheStartLimit() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        startTransaction(7);
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(16));
+        clearInvocations(chargePoint);
+
+        endTransaction(7);
+
+        SetChargingProfileRequest next = lastProfile(chargePoint);
+        assertEquals(ChargingProfilePurposeType.TxDefaultProfile,
+                next.getCsChargingProfiles().getChargingProfilePurpose());
+        assertEquals(8.0, sentLimit(next));
+    }
+
+    @Test
+    void aChargeEndingPausedStartsTheNextAtTheStartLimitUnpaused() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        startTransaction(7);
+        command(CHANNEL_PAUSE, OnOffType.ON);
+        clearInvocations(chargePoint, callback);
+
+        endTransaction(7);
+
+        assertEquals(8.0, sentLimit(lastProfile(chargePoint)));
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_PAUSE)), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void aChargeNobodyThrottledStillEndsAtTheStartLimit() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        startTransaction(7);
+        clearInvocations(chargePoint);
+
+        endTransaction(7);
+
+        assertEquals(8.0, sentLimit(lastProfile(chargePoint)));
+    }
+
+    @Test
+    void theStartLimitIsWhereAChargerStartsOutOnce() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        handler.onChargePointReady();
+        handler.onChargePointReady();
+
+        verify(chargePoint, times(1)).send(argThat(r -> r instanceof SetChargingProfileRequest));
+        verify(chargePoint).send(argThat(r -> r instanceof SetChargingProfileRequest && sentLimit(r) == 8.0));
+    }
+
+    @Test
+    void aLimitOfThisRunIsNotReplacedByTheStartLimit() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(12));
+        clearInvocations(chargePoint);
+
+        handler.onChargePointReady();
+
+        verify(chargePoint, never()).send(argThat(r -> r instanceof SetChargingProfileRequest));
+    }
+
+    private OcppChargePointHandler attachWithStartLimit(double amps) {
+        when(thing.getConfiguration())
+                .thenReturn(new org.openhab.core.config.core.Configuration(java.util.Map.of("startLimit", amps)));
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        when(chargePoint.recoverTransactionId(1)).thenReturn(null);
+        handler.initialize();
+        return chargePoint;
+    }
+
     private void startTransaction(int transactionId) {
         handler.onTransactionStarted(new eu.chargetime.ocpp.model.core.StartTransactionRequest(1, "tag", 100,
                 java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)), transactionId);

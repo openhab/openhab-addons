@@ -153,6 +153,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile double nominalVoltage = 230.0;
     private volatile int phases = 1;
     private volatile int remoteStartRetries;
+    private volatile double startLimit = -1;
 
     private volatile @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
@@ -167,6 +168,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile boolean limitDeferred;
     // The unit the last profile went out in, checked again once the charger has said which units it takes.
     private volatile @Nullable ChargingRateUnitType lastWireUnit;
+    // Cleared once this run has accounted for a stop a previous run may have left on the charger.
+    private volatile boolean rememberedStopUnchecked = true;
     private volatile boolean smartChargingUnsupportedLogged;
     private volatile boolean phaseSwitchWarningLogged;
 
@@ -209,6 +212,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         nominalVoltage = config.nominalVoltage;
         phases = config.phases;
         remoteStartRetries = config.remoteStartRetries;
+        startLimit = config.startLimit;
         OcppChargePointHandler parent = chargePointHandler();
         if (parent == null) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
@@ -445,6 +449,75 @@ public class OcppConnectorHandler extends BaseThingHandler {
             limitDeferred = false;
             applyLimit();
         }
+        if (startLimit >= 0 && transactionId == null && !paused && Double.isNaN(currentLimitAmps)
+                && Double.isNaN(powerLimitWatts)) {
+            // Nothing of this run's own yet, so the charger starts out where every charge is meant to.
+            startAgainAtStartLimit();
+        }
+        dropRememberedStop();
+    }
+
+    /** A genuine BootNotification; a charger that only drops and reopens its socket does not reach here. */
+    public void onChargerBooted() {
+        rememberedStopUnchecked = true;
+    }
+
+    /**
+     * A 0 A profile stops a charge, and a TxDefaultProfile outlives the runtime that wrote it. So a session
+     * that ended stopped leaves the charger holding a stop, openHAB restarts knowing nothing about it, and
+     * every charge after that is suspended with nothing on screen to explain it. Whether what was left
+     * behind was a stop is kept in a Thing property, so the next run can tell a stop from a cap: a stop is
+     * dropped, a cap is left exactly where it is.
+     */
+    private void dropRememberedStop() {
+        if (!rememberedStopUnchecked || !isReadyToSend() || smartChargingUnsupported()) {
+            return;
+        }
+        rememberedStopUnchecked = false;
+        if (paused || !Double.isNaN(currentLimitAmps) || !Double.isNaN(powerLimitWatts)) {
+            // This run has an intent of its own, and sending it already overwrote whatever was there.
+            return;
+        }
+        if (!isRememberedStop()) {
+            return;
+        }
+        dispatch(ChargingProfileBuilder.clearLimit(connectorId), "ClearChargingProfile[remembered-stop]")
+                .whenComplete((confirmation, ex) -> {
+                    if (ex == null && isCleared(confirmation)) {
+                        logger.info("Connector {} released a 0 A charging profile left by an earlier run; "
+                                + "it would have suspended every charge", connectorId);
+                        rememberPersistedStop(false);
+                        // Items restored from persistence may still say paused; a rule that only writes on
+                        // change would then never send the pause it still wants.
+                        updateState(CHANNEL_CHARGE_LIMIT, UnDefType.UNDEF);
+                        updateState(CHANNEL_POWER_LIMIT, UnDefType.UNDEF);
+                        updateState(CHANNEL_PAUSE, OnOffType.OFF);
+                    } else if (ex != null) {
+                        // Worth another attempt on the next reconnect: until it lands the stop still binds.
+                        rememberedStopUnchecked = true;
+                    }
+                });
+    }
+
+    private boolean isRememberedStop() {
+        return Boolean.parseBoolean(getThing().getProperties().get(PROPERTY_PERSISTED_STOP));
+    }
+
+    /**
+     * Only whether a stop is persisted is worth remembering, not the value: a property update goes through
+     * the Thing registry, and on a connector that always writes the default profile every solar ramp step
+     * would too. A stop arrives and leaves rarely, so only the transition is written.
+     */
+    private void rememberPersistedStop(boolean stop) {
+        if (isRememberedStop() != stop) {
+            updateProperty(PROPERTY_PERSISTED_STOP, stop ? "true" : null);
+        }
+    }
+
+    private static boolean isCleared(eu.chargetime.ocpp.model.@Nullable Confirmation confirmation) {
+        return confirmation instanceof ClearChargingProfileConfirmation cleared
+                && (cleared.getStatus() == ClearChargingProfileStatus.Accepted
+                        || cleared.getStatus() == ClearChargingProfileStatus.Unknown);
     }
 
     private boolean isReadyToSend() {
@@ -545,6 +618,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void setProfile(ProfileClaim claim) {
+        // A TxProfile lapses with its transaction; anything else lands in the charger's persistent default.
+        boolean persists = forceTxDefaultProfile || transactionId == null;
         dispatch(ChargingProfileBuilder.limit(connectorId, claim.wireUnit(), claim.wireValue(), claim.numberPhases(),
                 forceTxDefaultProfile, transactionId), "SetChargingProfile").whenComplete((confirmation, ex) -> {
                     if (ex == null && confirmation instanceof SetChargingProfileConfirmation profile
@@ -552,6 +627,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
                         if (claimPublication(claim)) {
                             profileLanded();
                             publishAcceptedLimit(claim);
+                            if (persists) {
+                                rememberPersistedStop(claim.wireValue() == 0);
+                            }
                         } else {
                             logger.debug("Stale SetChargingProfile confirmation on connector {} ignored", connectorId);
                         }
@@ -612,14 +690,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private void clearProfile(ProfileClaim claim) {
         dispatch(ChargingProfileBuilder.clearLimit(connectorId), "ClearChargingProfile")
                 .whenComplete((confirmation, ex) -> {
-                    if (ex == null && confirmation instanceof ClearChargingProfileConfirmation cleared
-                            && (cleared.getStatus() == ClearChargingProfileStatus.Accepted
-                                    || cleared.getStatus() == ClearChargingProfileStatus.Unknown)) {
+                    if (ex == null && isCleared(confirmation)) {
                         if (claimPublication(claim)) {
                             profileLanded();
                             updateState(CHANNEL_CHARGE_LIMIT, UnDefType.UNDEF);
                             updateState(CHANNEL_POWER_LIMIT, UnDefType.UNDEF);
                             updateState(CHANNEL_PAUSE, OnOffType.OFF);
+                            rememberPersistedStop(false);
                         } else {
                             logger.debug("Stale ClearChargingProfile confirmation on connector {} ignored",
                                     connectorId);
@@ -943,10 +1020,21 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     /** With the transaction gone, a re-send lands as the TxDefaultProfile the next transaction starts under. */
     private void carryLimitPastTransaction() {
-        if (limitHeldByTxProfile) {
+        if (startLimit >= 0) {
+            limitHeldByTxProfile = false;
+            startAgainAtStartLimit();
+        } else if (limitHeldByTxProfile) {
             limitHeldByTxProfile = false;
             applyLimit();
         }
+    }
+
+    /** With a start limit set, every charge begins at it with pause off, whatever the last one ended on. */
+    private void startAgainAtStartLimit() {
+        paused = false;
+        currentLimitAmps = startLimit;
+        powerLimitWatts = Double.NaN;
+        applyLimit();
     }
 
     private void armStuckWatchdog(ChargePointStatus status) {
