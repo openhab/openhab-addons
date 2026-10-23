@@ -18,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.stream.StreamMessageParser.ParsedMessage;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -145,6 +146,10 @@ public class BridgeStreamSource implements StreamSource, MqttMessageSubscriber, 
     public void processMessage(String topic, byte[] payload) {
         if (stopped) {
             return;
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("Bridge message on {}: {}", LogRedaction.vins(topic),
+                    LogRedaction.payload(new String(payload, StandardCharsets.UTF_8)));
         }
         if (topic.equals(settings.statusTopic())) {
             Boolean connected = parseStatus(payload);

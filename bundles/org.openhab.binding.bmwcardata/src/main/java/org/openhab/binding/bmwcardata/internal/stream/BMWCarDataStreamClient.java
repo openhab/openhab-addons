@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.bmwcardata.internal.stream;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.api.Tokens;
 import org.openhab.binding.bmwcardata.internal.stream.StreamMessageParser.ParsedMessage;
@@ -103,6 +105,10 @@ public class BMWCarDataStreamClient implements StreamSource, MqttMessageSubscrib
 
     @Override
     public void processMessage(String topic, byte[] payload) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("BMW CarData stream message on {}: {}", LogRedaction.vins(topic),
+                    LogRedaction.payload(new String(payload, StandardCharsets.UTF_8)));
+        }
         BiConsumer<String, byte[]> rawListener = this.rawListener;
         if (rawListener != null) {
             try {
