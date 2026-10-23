@@ -49,6 +49,7 @@ export class ColorDeviceType extends BaseDeviceType {
                 CustomLevelControlServer.with(LevelControl.Feature.Lighting, LevelControl.Feature.OnOff),
                 CustomColorControlServer.with(
                     ColorControl.Feature.HueSaturation,
+                    ColorControl.Feature.Xy,
                     ColorControl.Feature.ColorTemperature,
                 ),
                 ...this.baseClusterServers,

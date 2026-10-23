@@ -48,12 +48,22 @@ public class ColorDevice extends BaseDevice {
     private static final int ONOFF_DELAY_MILLIS = 500;
     // Level 0 is not permitted with the Lighting feature, so an off light reports the minimum instead
     private static final int MIN_LEVEL = 1;
+    private static final double XY_SCALE = 65536.0;
+    private static final int MAX_XY = 0xFEFF;
+    // degrees of hue and percent of saturation
+    private static final double COLOR_TOLERANCE = 2;
     // the onFuture is used to wait for the device to turn on before updating the HSB values
     private CompletableFuture<Void> onFuture = CompletableFuture.completedFuture(null);
     // the lastH, lastS are used to store the last HSB values as they come in from the device
     private @Nullable DecimalType lastH;
     private @Nullable PercentType lastS;
     private @Nullable PercentType lastB;
+    private @Nullable Double lastX;
+    private @Nullable Double lastY;
+    // the color the item last reported, to tell color changes from brightness changes
+    private volatile @Nullable HSBType reportedColor;
+    // the color the last Matter command sent to the item, so its echo keeps the color mode that command set
+    private volatile @Nullable HSBType matterColor;
 
     public ColorDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);
@@ -74,6 +84,7 @@ public class ColorDevice extends BaseDevice {
             if (hsbType == null) {
                 hsbType = new HSBType();
             }
+            reportedColor = hsbType;
             Integer currentHue = toHue(hsbType.getHue());
             Integer currentSaturation = toSaturation(hsbType.getSaturation());
             attributeMap.put(LevelControlCluster.CLUSTER_PREFIX + "." + LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
@@ -85,6 +96,9 @@ public class ColorDevice extends BaseDevice {
                     currentSaturation);
             attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF,
                     hsbType.getBrightness().intValue() > 0);
+            int[] xy = toXy(hsbType);
+            attributeMap.put(ColorControlCluster.CLUSTER_PREFIX + "." + ColorControlCluster.ATTRIBUTE_CURRENT_X, xy[0]);
+            attributeMap.put(ColorControlCluster.CLUSTER_PREFIX + "." + ColorControlCluster.ATTRIBUTE_CURRENT_Y, xy[1]);
         }
 
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
@@ -120,6 +134,20 @@ public class ColorDevice extends BaseDevice {
                 lastS = new PercentType(Float.valueOf(saturationValue).toString());
                 updateHueSaturation();
                 break;
+            // currentX and currentY are also sent together, X first
+            case ColorControlCluster.ATTRIBUTE_CURRENT_X:
+                lastX = value / XY_SCALE;
+                break;
+            case ColorControlCluster.ATTRIBUTE_CURRENT_Y:
+                Double x = lastX;
+                lastX = null;
+                if (x != null) {
+                    HSBType xyHSB = ColorUtil.xyToHsb(new double[] { x, value / XY_SCALE });
+                    lastH = xyHSB.getHue();
+                    lastS = xyHSB.getSaturation();
+                    updateHueSaturation();
+                }
+                break;
             case ColorControlCluster.ATTRIBUTE_COLOR_TEMPERATURE_MIREDS:
                 Double kelvin = 1e6 / (Double) data;
                 HSBType ctHSB = ColorUtil.xyToHsb(ColorUtil.kelvinToXY(Math.max(1000, Math.min(kelvin, 10000))));
@@ -149,6 +177,23 @@ public class ColorDevice extends BaseDevice {
                     toHue(hsb.getHue())));
             states.add(new AttributeState(ColorControlCluster.CLUSTER_PREFIX,
                     ColorControlCluster.ATTRIBUTE_CURRENT_SATURATION, toSaturation(hsb.getSaturation())));
+            int[] xy = toXy(hsb);
+            states.add(new AttributeState(ColorControlCluster.CLUSTER_PREFIX, ColorControlCluster.ATTRIBUTE_CURRENT_X,
+                    xy[0]));
+            states.add(new AttributeState(ColorControlCluster.CLUSTER_PREFIX, ColorControlCluster.ATTRIBUTE_CURRENT_Y,
+                    xy[1]));
+            HSBType reported = reportedColor;
+            reportedColor = hsb;
+            // A color set in openHAB is a hue and saturation, so apps should show it that way. The echo of a color
+            // an app set keeps the mode the app chose, such as a color temperature.
+            if ((reported == null || !sameColor(hsb, reported)) && !isMatterColor(hsb)) {
+                states.add(
+                        new AttributeState(ColorControlCluster.CLUSTER_PREFIX, ColorControlCluster.ATTRIBUTE_COLOR_MODE,
+                                ColorControlCluster.ColorModeEnum.CURRENT_HUE_AND_CURRENT_SATURATION.getValue()));
+                states.add(new AttributeState(ColorControlCluster.CLUSTER_PREFIX,
+                        ColorControlCluster.ATTRIBUTE_ENHANCED_COLOR_MODE,
+                        ColorControlCluster.EnhancedColorModeEnum.CURRENT_HUE_AND_CURRENT_SATURATION.getValue()));
+            }
             setEndpointStates(states);
         }
     }
@@ -213,7 +258,9 @@ public class ColorDevice extends BaseDevice {
             if (b.intValue() == 0) {
                 b = new PercentType(100);
             }
-            colorItem.send(new HSBType(h, s, b), MATTER_SOURCE);
+            HSBType color = new HSBType(h, s, b);
+            matterColor = color;
+            colorItem.send(color, MATTER_SOURCE);
         }
         this.lastH = null;
         this.lastS = null;
@@ -242,5 +289,32 @@ public class ColorDevice extends BaseDevice {
 
     private Integer toBrightness(PercentType b) {
         return ValueUtils.percentToLevel(b);
+    }
+
+    private boolean isMatterColor(HSBType hsb) {
+        HSBType color = matterColor;
+        return color != null && sameColor(hsb, color);
+    }
+
+    /**
+     * Whether two colors have the same hue and saturation, allowing for the rounding a device applies
+     */
+    private static boolean sameColor(HSBType a, HSBType b) {
+        double hueDifference = Math.abs(a.getHue().doubleValue() - b.getHue().doubleValue());
+        return Math.min(hueDifference, 360 - hueDifference) <= COLOR_TOLERANCE
+                && Math.abs(a.getSaturation().doubleValue() - b.getSaturation().doubleValue()) <= COLOR_TOLERANCE;
+    }
+
+    /**
+     * The color's CIE x and y in Matter's units of 1/65536, at most 0xFEFF. Brightness does not change the color, and
+     * an off light would have no color at all, so it is converted at full brightness.
+     */
+    private int[] toXy(HSBType hsb) {
+        double[] xy = ColorUtil.hsbToXY(new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED));
+        return new int[] { toXyValue(xy[0]), toXyValue(xy[1]) };
+    }
+
+    private int toXyValue(double value) {
+        return (int) Math.max(0, Math.min(MAX_XY, Math.round(value * XY_SCALE)));
     }
 }

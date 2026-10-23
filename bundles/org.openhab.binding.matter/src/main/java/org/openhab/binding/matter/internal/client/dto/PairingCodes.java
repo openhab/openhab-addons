@@ -20,4 +20,5 @@ package org.openhab.binding.matter.internal.client.dto;
 public class PairingCodes {
     public String manualPairingCode;
     public String qrPairingCode;
+    public int commissioningTimeout;
 }

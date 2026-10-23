@@ -91,7 +91,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     }
 
     /**
-     * Note that only HTTP over TLS (HTTPS) is supported (see RFC 7230). Using HTTP without TLS shall NOT be supported,
+     * Note that only HTTP over TLS (HTTPS) is supported (see RFC7230). Using HTTP without TLS shall NOT be supported,
      * as there is no way to authenticate the involved participants.
      * > [!NOTE]
      * > NOTE: Support for the asynchronous BDX mode is provisional.

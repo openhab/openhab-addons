@@ -119,7 +119,7 @@ public class AdministratorCommissioningCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * Node supports Basic Commissioning Method.
+         * Node supports Basic Commissioning Method
          */
         public boolean basic;
 

@@ -48,8 +48,8 @@ public class WebRtcTransportProviderCluster extends BaseCluster {
          * When this feature is supported and a session activates it, a WebRTC DataChannel using the protocol name
          * urn:csa:matter:av-metadata shall be used for transmitting the metadata. The ability to include metadata is
          * supported on a per session basis.
-         * This feature is designed to be JSEP compliant with the RTCDataChannel object interface and consists of
-         * AVMetadataStruct content.
+         * This feature is designed to be JSEP RFC9429 compliant with the RTCDataChannel object interface and consists
+         * of AVMetadataStruct content.
          */
         public boolean metadata;
 
@@ -170,10 +170,10 @@ public class WebRtcTransportProviderCluster extends BaseCluster {
     }
 
     /**
-     * This command allows for string based ICE candidates generated after the initial Offer / Answer exchange, via a
-     * JSEP onicecandidate event, a DOM rtcpeerconnectioniceevent event, or other WebRTC compliant implementations, to
-     * be added to a session during the gathering phase. This is typically used for STUN or TURN discovered candidates,
-     * or to indicate the end of gathering state.
+     * This command allows for string based ICE candidates RFC8839, Section 5.1, generated after the initial Offer /
+     * Answer exchange, via a JSEP onicecandidate event RFC9429, Section 4.1.20, a DOM rtcpeerconnectioniceevent event,
+     * or other WebRTC compliant implementations, to be added to a session during the gathering phase. This is typically
+     * used for STUN or TURN discovered candidates, or to indicate the end of gathering state.
      * This command shall respond with a response status of NOT_FOUND if the WebRTCSessionID does not match an entry in
      * CurrentSessions, or if the matching entry's associated fabric and PeerNodeID do not match the accessing fabric
      * and the Peer Node ID entry stored in the Secure Session Context of the session this command was received on.
