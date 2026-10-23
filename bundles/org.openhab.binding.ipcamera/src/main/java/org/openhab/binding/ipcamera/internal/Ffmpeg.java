@@ -253,6 +253,17 @@ public class Ffmpeg {
     }
 
     public void startConverting() {
+        if (format == FFmpegFormat.HLS) {
+            synchronized (ipCameraHandler) {
+                startConvertingInternal();
+            }
+        } else {
+            startConvertingInternal();
+        }
+    }
+
+    private void startConvertingInternal() {
+        boolean started = false;
         synchronized (lifecycleLock) {
             if (disposed || System.nanoTime() < retryAfterNanos) {
                 return;
@@ -267,12 +278,13 @@ public class Ffmpeg {
             ipCameraFfmpegThread = new IpCameraFfmpegThread();
             logger.debug("Starting FFmpeg conversion for {}.", format);
             ipCameraFfmpegThread.start();
-            if (format == FFmpegFormat.HLS) {
-                ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
-            }
+            started = true;
         }
         if (keepAlive != -1) {
             keepAlive = 8;
+        }
+        if (started && format == FFmpegFormat.HLS) {
+            ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
         }
     }
 

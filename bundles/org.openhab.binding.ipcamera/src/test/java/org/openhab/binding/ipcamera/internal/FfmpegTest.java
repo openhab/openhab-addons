@@ -15,7 +15,10 @@ package org.openhab.binding.ipcamera.internal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_START_STREAM;
+import static org.openhab.core.library.types.OnOffType.ON;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,6 +62,55 @@ class FfmpegTest {
         ffmpeg.stopConverting();
         assertEquals(1, starts.get());
         assertFalse(process.isAlive());
+    }
+
+    @Test
+    void hlsStartAndDisposeDoNotDeadlock() throws Exception {
+        IpCameraHandler handler = mock(IpCameraHandler.class);
+        CountDownLatch cleanupHasHandlerMonitor = new CountDownLatch(1);
+        CountDownLatch allowCleanup = new CountDownLatch(1);
+        AtomicInteger starts = new AtomicInteger();
+        Ffmpeg ffmpeg = new Ffmpeg(handler, FFmpegFormat.HLS, "ffmpeg", "", "rtsp://camera/stream", "", "output.m3u8",
+                "user", "secret", command -> {
+                    starts.incrementAndGet();
+                    return new FakeProcess();
+                });
+        doAnswer(invocation -> {
+            synchronized (handler) {
+                return null;
+            }
+        }).when(handler).setChannelState(CHANNEL_START_STREAM, ON);
+
+        Thread cleanup = new Thread(() -> {
+            synchronized (handler) {
+                cleanupHasHandlerMonitor.countDown();
+                try {
+                    allowCleanup.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                ffmpeg.dispose();
+            }
+        });
+        cleanup.setDaemon(true);
+        cleanup.start();
+        Thread start = new Thread(ffmpeg::startConverting);
+        start.setDaemon(true);
+        try {
+            assertTrue(cleanupHasHandlerMonitor.await(2, TimeUnit.SECONDS));
+            start.start();
+            assertTrue(awaitBlocked(start, 2, TimeUnit.SECONDS));
+        } finally {
+            allowCleanup.countDown();
+        }
+        cleanup.join(TimeUnit.SECONDS.toMillis(2));
+        if (start.getState() != Thread.State.NEW) {
+            start.join(TimeUnit.SECONDS.toMillis(2));
+        }
+
+        assertFalse(cleanup.isAlive());
+        assertFalse(start.isAlive());
+        assertEquals(0, starts.get());
     }
 
     @Test
@@ -134,6 +186,14 @@ class FfmpegTest {
         assertEquals(1, starts.get());
         assertFalse(process.isAlive());
         assertFalse(ffmpeg.isAlive());
+    }
+
+    private static boolean awaitBlocked(Thread thread, long timeout, TimeUnit unit) {
+        long deadline = System.nanoTime() + unit.toNanos(timeout);
+        while (thread.isAlive() && thread.getState() != Thread.State.BLOCKED && System.nanoTime() < deadline) {
+            Thread.yield();
+        }
+        return thread.getState() == Thread.State.BLOCKED;
     }
 
     private static Ffmpeg newFfmpeg(Ffmpeg.ProcessStarter processStarter) {
