@@ -233,6 +233,22 @@ class OcppServerBridgeHandlerTest {
     }
 
     @Test
+    void removingADuplicateChargePointThingLeavesTheOtherRouted() {
+        handler.initialize();
+        OcppChargePointHandler first = mock(OcppChargePointHandler.class);
+        OcppChargePointHandler second = mock(OcppChargePointHandler.class);
+        handler.registerChargePoint("charx", first);
+        handler.registerChargePoint("charx", second);
+        handler.unregisterChargePoint("charx", first);
+        UUID session = UUID.randomUUID();
+        handler.onSessionOpened(session, "charx", null);
+
+        handler.onHeartbeat(session);
+
+        verify(second).onHeartbeat();
+    }
+
+    @Test
     void aReconnectUnderANewSessionClosesTheOldSocket() {
         handler.initialize();
         verify(callback, timeout(2000)).statusUpdated(any(),
