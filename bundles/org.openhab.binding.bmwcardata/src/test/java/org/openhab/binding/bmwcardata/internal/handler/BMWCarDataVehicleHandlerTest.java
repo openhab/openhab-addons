@@ -31,6 +31,7 @@ import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -91,16 +92,16 @@ class BMWCarDataVehicleHandlerTest {
         empty.value = JsonNull.INSTANCE;
         empty.timestamp = "2026-10-01T12:00:00Z";
         handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z"),
-                "vehicle.cabin.door.status", empty, "vehicle.unknown.descriptor", empty));
+                "vehicle.cabin.door.lock.status", empty, "vehicle.unknown.descriptor", empty));
 
         verifyState(CHANNEL_LAST_UPDATE, new DateTimeType(Instant.parse("2026-10-01T10:00:00Z")));
-        verify(callback, never()).stateUpdated(eq(channel("status#doors")), any());
+        verify(callback, never()).stateUpdated(eq(channel("status#door-lock")), any());
         verify(callback, never()).thingUpdated(any());
 
         // the empty value must not block a later value with an older timestamp
-        handler.updateTelematicData(
-                Map.of("vehicle.cabin.door.status", stringValue("CLOSED", null, "2026-10-01T11:00:00Z")));
-        verifyState("status#doors", new StringType("CLOSED"));
+        handler.updateTelematicData(Map.of("vehicle.cabin.door.lock.status",
+                stringValue("SELECTIVE-LOCKED", null, "2026-10-01T11:00:00Z")));
+        verifyState("status#door-lock", new StringType("SELECTIVELOCKED"));
     }
 
     @Test
@@ -119,6 +120,21 @@ class BMWCarDataVehicleHandlerTest {
 
         handler.updateTelematicData(Map.of(LONGITUDE, value(11.56, null, "2026-10-01T10:00:00Z")));
         verifyState(CHANNEL_GPS, PointType.valueOf("48.17,11.56"));
+
+        handler.updateTelematicData(Map.of(LATITUDE, value(48.18, null, "2026-10-01T10:05:00Z"),
+                "vehicle.cabin.infotainment.navigation.currentLocation.altitude",
+                value(520, "m", "2026-10-01T10:05:00Z")));
+        verifyState("navigation#altitude", QuantityType.valueOf("520 m"));
+        verifyState(CHANNEL_GPS, PointType.valueOf("48.18,11.56,520"));
+    }
+
+    @Test
+    void publishesStateOfOpenings() {
+        handler.updateTelematicData(Map.of("vehicle.cabin.window.row1.driver.status",
+                stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
+
+        verifyState("status#window-front-driver", OpenClosedType.OPEN);
+        verifyState("status#window-front-driver-state", new StringType("INTERMEDIATE"));
     }
 
     @Test

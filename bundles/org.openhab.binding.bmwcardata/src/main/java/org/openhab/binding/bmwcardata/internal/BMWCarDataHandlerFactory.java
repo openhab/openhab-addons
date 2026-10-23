@@ -20,6 +20,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.openhab.binding.bmwcardata.internal.handler.BMWCarDataAccountHandler;
 import org.openhab.binding.bmwcardata.internal.handler.BMWCarDataVehicleHandler;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -51,12 +52,14 @@ public class BMWCarDataHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataHandlerFactory.class);
     private final HttpClient httpClient;
     private final StorageService storageService;
+    private final OAuthFactory oAuthFactory;
     private final Gson gson = new Gson();
 
     @Activate
     public BMWCarDataHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference StorageService storageService) {
+            @Reference StorageService storageService, @Reference OAuthFactory oAuthFactory) {
         this.storageService = storageService;
+        this.oAuthFactory = oAuthFactory;
         // a dedicated client is required, as BMW answers with 401 responses without WWW-Authenticate header, which
         // the authentication protocol handler of the common client turns into a failure that hides the error code
         HttpClient client = httpClientFactory.createHttpClient(BINDING_ID);
@@ -91,7 +94,7 @@ public class BMWCarDataHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new BMWCarDataAccountHandler((Bridge) thing, httpClient, gson, storage);
+            return new BMWCarDataAccountHandler((Bridge) thing, httpClient, gson, storage, oAuthFactory);
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
             return new BMWCarDataVehicleHandler(thing);
         }

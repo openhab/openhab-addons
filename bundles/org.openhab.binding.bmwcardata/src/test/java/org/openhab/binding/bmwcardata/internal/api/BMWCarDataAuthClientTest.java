@@ -103,6 +103,17 @@ class BMWCarDataAuthClientTest {
     }
 
     @Test
+    void requestDeviceCodeReportsErrorDescription() {
+        SERVER.stubFor(post(DEVICE_CODE_PATH).willReturn(
+                badRequest().withBody("{\"error\":\"invalid_request\",\"error_description\":\"Unknown client_id\"}")));
+
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> client.requestDeviceCode());
+
+        assertEquals("Device authorization request failed: invalid_request (Unknown client_id)", e.getMessage());
+        assertEquals(400, e.getHttpStatus());
+    }
+
+    @Test
     void requestDeviceCodeRejectsIncompleteResponse() {
         SERVER.stubFor(post(DEVICE_CODE_PATH).willReturn(okJson("{\"device_code\":\"dc\"}")));
 
@@ -144,42 +155,6 @@ class BMWCarDataAuthClientTest {
         assertEquals("urn:ietf:params:oauth:grant-type:device_code", form.get("grant_type"));
         assertEquals("dc", form.get("device_code"));
         assertEquals("verifier", form.get("code_verifier"));
-    }
-
-    @Test
-    void refreshKeepsSessionValuesMissingInResponse() throws Exception {
-        SERVER.stubFor(post(TOKEN_PATH).willReturn(
-                okJson("{\"access_token\":\"access2\",\"refresh_token\":\"refresh3\",\"expires_in\":3600}")));
-
-        Tokens tokens = client.refresh("refresh2", "gcid-1", "id-old");
-
-        assertEquals("access2", tokens.accessToken());
-        assertEquals("refresh3", tokens.refreshToken());
-        assertEquals("id-old", tokens.idToken());
-        assertEquals("gcid-1", tokens.gcid());
-        Map<String, String> form = form(SERVER.findAll(postRequestedFor(urlEqualTo(TOKEN_PATH))).get(0));
-        assertEquals("refresh_token", form.get("grant_type"));
-        assertEquals("refresh2", form.get("refresh_token"));
-    }
-
-    @Test
-    void refreshWithRejectedTokenThrowsAuthException() {
-        SERVER.stubFor(post(TOKEN_PATH).willReturn(badRequest().withBody("{\"error\":\"invalid_grant\"}")));
-
-        assertThrows(BMWCarDataAuthException.class, () -> client.refresh("refresh", "gcid", "id"));
-
-        // 401 responses come without WWW-Authenticate header
-        SERVER.stubFor(post(TOKEN_PATH).willReturn(unauthorized().withBody("{\"error\":\"expired_token\"}")));
-        assertThrows(BMWCarDataAuthException.class, () -> client.refresh("refresh", "gcid", "id"));
-    }
-
-    @Test
-    void refreshWithServerErrorIsNotAnAuthError() {
-        SERVER.stubFor(post(TOKEN_PATH).willReturn(serverError().withBody("{\"error\":\"server_error\"}")));
-
-        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> client.refresh("refresh", "gcid", "id"));
-        assertFalse(e instanceof BMWCarDataAuthException);
-        assertEquals(500, e.getHttpStatus());
     }
 
     private PollResult pollWithError(DeviceAuthorization authorization, int status, String error)

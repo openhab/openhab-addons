@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bmwcardata.internal.handler;
 
+import java.io.IOException;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -31,7 +33,8 @@ import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthClient.DeviceAu
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthClient.PollResult;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthException;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
-import org.openhab.binding.bmwcardata.internal.api.BMWCarDataStreamClient;
+import org.openhab.binding.bmwcardata.internal.api.CarDataTokens;
+import org.openhab.binding.bmwcardata.internal.api.RequestBudget;
 import org.openhab.binding.bmwcardata.internal.api.Tokens;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.Container;
@@ -39,6 +42,18 @@ import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.binding.bmwcardata.internal.api.dto.VehicleMapping;
 import org.openhab.binding.bmwcardata.internal.config.AccountConfiguration;
 import org.openhab.binding.bmwcardata.internal.discovery.BMWCarDataVehicleDiscoveryService;
+import org.openhab.binding.bmwcardata.internal.stream.BMWCarDataStreamClient;
+import org.openhab.binding.bmwcardata.internal.stream.BridgeStreamSource;
+import org.openhab.binding.bmwcardata.internal.stream.StreamListener;
+import org.openhab.binding.bmwcardata.internal.stream.StreamMirror;
+import org.openhab.binding.bmwcardata.internal.stream.StreamSource;
+import org.openhab.binding.bmwcardata.internal.stream.StreamState;
+import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -52,7 +67,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 
 /**
  * The {@link BMWCarDataAccountHandler} authorizes the binding for a BMW CarData client, keeps the tokens fresh,
@@ -61,46 +75,68 @@ import com.google.gson.JsonParseException;
  * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
-public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCarDataStreamClient.Listener {
+public class BMWCarDataAccountHandler extends BaseBridgeHandler implements StreamListener {
 
     private static final String CONTAINER_NAME = "openHAB";
     private static final String CONTAINER_PURPOSE_PREFIX = "openHAB BMW CarData binding";
     // bump the revision whenever the descriptors of VehicleChannel change, so that the container is replaced
-    private static final String CONTAINER_PURPOSE = CONTAINER_PURPOSE_PREFIX + " rev 5";
+    private static final String CONTAINER_PURPOSE = CONTAINER_PURPOSE_PREFIX + " rev 6";
     private static final Duration REFRESH_MARGIN = Duration.ofMinutes(5);
     private static final long RETRY_DELAY_SECONDS = 60;
     private static final long STREAM_STOP_TIMEOUT_SECONDS = 10;
     private static final int SLOW_DOWN_INCREMENT_SECONDS = 5;
-    private static final String STORAGE_KEY_SESSION = "session";
-
-    /**
-     * The persisted part of an authorized session.
-     */
-    private record StoredSession(String clientId, String refreshToken, String gcid) {
-    }
+    private static final Duration INITIAL_REFRESH_DELAY = Duration.ofMinutes(2);
+    // the stream does not replay values sent while it was down
+    private static final Duration CATCH_UP_AFTER_OUTAGE = Duration.ofMinutes(5);
+    private static final Duration CATCH_UP_MIN_SPACING = Duration.ofMinutes(30);
+    // not secret: the client id the stored authorization belongs to, and the stream user name
+    private static final String STORAGE_KEY_CLIENT_ID = "clientId";
+    private static final String STORAGE_KEY_GCID = "gcid";
+    private static final String STORAGE_KEY_BUDGET = "budget";
+    private static final String STORAGE_KEY_CONTAINER = "container";
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataAccountHandler.class);
     private final HttpClient httpClient;
     private final Gson gson;
     private final Storage<String> storage;
+    private final OAuthFactory oAuthFactory;
+    private final AccessTokenRefreshListener refreshListener = this::onAccessTokenResponse;
     private final Object containerLock = new Object();
+    // serializes telematic refreshes, so that concurrent triggers do not spend the request budget twice
+    private final Object refreshLock = new Object();
 
     private AccountConfiguration config = new AccountConfiguration();
     private @Nullable BMWCarDataAuthClient authClient;
     private @Nullable BMWCarDataApi api;
+    private @Nullable RequestBudget budget;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private volatile @Nullable Instant streamDownSince;
+    private volatile @Nullable Instant lastCatchUp;
+    // status description while the request budget is used up
+    private volatile @Nullable String budgetExhausted;
+    private volatile @Nullable StreamState streamState;
+    private final Object statusLock = new Object();
+    private volatile @Nullable OAuthClientService oAuthService;
+    // latest tokens, updated whenever the OAuth client service imports or refreshes them
     private volatile @Nullable Tokens tokens;
-    private volatile @Nullable BMWCarDataStreamClient streamClient;
+    private volatile boolean authorized;
+    private volatile @Nullable StreamSource streamSource;
+    private volatile @Nullable StreamMirror mirror;
+    // whether the local broker of the mirror is connected, null if not known yet
+    private volatile @Nullable Boolean mirrorConnected;
     private volatile @Nullable BMWCarDataVehicleDiscoveryService discoveryService;
     private @Nullable ScheduledFuture<?> authJob;
     private volatile boolean disposed;
     // guarded by containerLock
     private @Nullable String containerId;
 
-    public BMWCarDataAccountHandler(Bridge bridge, HttpClient httpClient, Gson gson, Storage<String> storage) {
+    public BMWCarDataAccountHandler(Bridge bridge, HttpClient httpClient, Gson gson, Storage<String> storage,
+            OAuthFactory oAuthFactory) {
         super(bridge);
         this.httpClient = httpClient;
         this.gson = gson;
         this.storage = storage;
+        this.oAuthFactory = oAuthFactory;
     }
 
     @Override
@@ -112,9 +148,35 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
                     "@text/offline.conf-error.no-client-id");
             return;
         }
+        if (config.usesBroker() && config.brokerHost.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.no-broker-host");
+            return;
+        }
+        if (config.streaming && config.mirrorToBroker && config.isBridgeMode()) {
+            logger.warn("Mirroring the stream to the local broker is ignored in bridge mode, the bridge publishes it");
+        }
         authClient = new BMWCarDataAuthClient(httpClient, gson, clientId);
-        api = new BMWCarDataApi(httpClient, gson, this::getAccessToken);
+
+        String authorizedClientId = storage.get(STORAGE_KEY_CLIENT_ID);
+        if (authorizedClientId != null && !authorizedClientId.equals(clientId)) {
+            logger.debug("The client ID changed, the stored authorization is discarded");
+            deleteAuthorization();
+        }
+        // the device authorization is done by the binding, core's OAuth client service stores and refreshes the tokens
+        OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(oAuthHandle(),
+                BMWCarDataAuthClient.TOKEN_URL, null, clientId, null, null, false);
+        oAuthService.addAccessTokenRefreshListener(refreshListener);
+        this.oAuthService = oAuthService;
+
+        RequestBudget budget = new RequestBudget(storage, STORAGE_KEY_BUDGET, config.requestBudget, Clock.systemUTC());
+        this.budget = budget;
+        api = new BMWCarDataApi(httpClient, gson, this::getAccessToken, budget);
         disposed = false;
+        authorized = false;
+        budgetExhausted = null;
+        streamState = null;
+        mirrorConnected = null;
         updateStatus(ThingStatus.UNKNOWN);
         scheduleAuthJob(this::authenticate, 0);
     }
@@ -123,16 +185,39 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
     public void dispose() {
         stopAuthJob();
         stopStream();
+        stopMirror();
         tokens = null;
+        OAuthClientService oAuthService = this.oAuthService;
+        this.oAuthService = null;
+        if (oAuthService != null) {
+            oAuthService.removeAccessTokenRefreshListener(refreshListener);
+            oAuthFactory.ungetOAuthService(oAuthHandle());
+        }
         super.dispose();
     }
 
     @Override
     public void handleRemoval() {
-        // stop first, so that a running token refresh cannot store the session again
+        // stop first, so that a running token refresh cannot store the tokens again
         stopAuthJob();
-        storage.remove(STORAGE_KEY_SESSION);
+        deleteAuthorization();
+        storage.remove(STORAGE_KEY_CONTAINER);
+        // the request budget is kept, as BMW keeps counting the requests of the account
         super.handleRemoval();
+    }
+
+    private String oAuthHandle() {
+        return getThing().getUID().getAsString();
+    }
+
+    /**
+     * Discards the stored authorization, so that the next start requires a new device authorization.
+     */
+    private void deleteAuthorization() {
+        oAuthFactory.deleteServiceAndAccessToken(oAuthHandle());
+        storage.remove(STORAGE_KEY_CLIENT_ID);
+        storage.remove(STORAGE_KEY_GCID);
+        tokens = null;
     }
 
     private synchronized void stopAuthJob() {
@@ -141,6 +226,11 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
         if (job != null) {
             job.cancel(true);
             authJob = null;
+        }
+        ScheduledFuture<?> refresh = refreshJob;
+        if (refresh != null) {
+            refresh.cancel(true);
+            refreshJob = null;
         }
     }
 
@@ -177,8 +267,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
      * Retrieves the current values of all descriptors used by the binding. Costs one request of the daily quota, plus
      * up to three if the container of the binding has to be set up first.
      */
-    public Map<String, TelematicValue> fetchTelematicData(String vin) throws BMWCarDataException {
-        BMWCarDataApi api = requireApi();
+    private Map<String, TelematicValue> fetchTelematicData(BMWCarDataApi api, String vin) throws BMWCarDataException {
         String containerId = getOrCreateContainer(api);
         try {
             return call(() -> api.getTelematicData(vin, containerId));
@@ -188,10 +277,105 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
                 synchronized (containerLock) {
                     if (containerId.equals(this.containerId)) {
                         this.containerId = null;
+                        storage.remove(STORAGE_KEY_CONTAINER);
                     }
                 }
             }
             throw e;
+        }
+    }
+
+    /**
+     * Reads the current values of all vehicles, one request per vehicle. The refresh is skipped as a whole if the
+     * request budget cannot cover all vehicles.
+     */
+    private void refreshTelematicData(String reason) {
+        BMWCarDataApi api = this.api;
+        RequestBudget budget = this.budget;
+        if (api == null || budget == null || disposed || tokens == null) {
+            return;
+        }
+        List<BMWCarDataVehicleHandler> vehicles = getThing().getThings().stream().map(Thing::getHandler)
+                .filter(BMWCarDataVehicleHandler.class::isInstance).map(BMWCarDataVehicleHandler.class::cast)
+                .filter(vehicle -> BMWCarDataApi.isValidVin(vehicle.getVin())).toList();
+        if (vehicles.isEmpty()) {
+            return;
+        }
+        synchronized (refreshLock) {
+            int needed = vehicles.size() + (containerId == null ? 1 : 0);
+            if (!budget.hasRoomFor(needed)) {
+                reportBudgetExhausted(budget);
+                return;
+            }
+            logger.debug("Refreshing telematic data of {} vehicle(s) ({})", vehicles.size(), reason);
+            for (BMWCarDataVehicleHandler vehicle : vehicles) {
+                try {
+                    vehicle.updateTelematicData(fetchTelematicData(api, vehicle.getVin()));
+                    vehicle.refreshSucceeded();
+                } catch (BMWCarDataException e) {
+                    if (e.isRateLimited()) {
+                        reportBudgetExhausted(budget);
+                        return;
+                    }
+                    vehicle.refreshFailed(e.getMessage());
+                }
+            }
+            clearBudgetExhausted();
+        }
+    }
+
+    private void scheduleRefresh() {
+        synchronized (this) {
+            if (disposed || refreshJob != null) {
+                return;
+            }
+            long initialDelay = INITIAL_REFRESH_DELAY.toSeconds();
+            if (config.refreshInterval > 0) {
+                refreshJob = scheduler.scheduleWithFixedDelay(() -> refreshTelematicData("periodic"), initialDelay,
+                        TimeUnit.HOURS.toSeconds(config.refreshInterval), TimeUnit.SECONDS);
+            } else {
+                refreshJob = scheduler.schedule(() -> refreshTelematicData("startup"), initialDelay, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    private void reportBudgetExhausted(RequestBudget budget) {
+        logger.debug("Skipping BMW CarData requests, {} of {} requests used in the last 24 hours", budget.used(),
+                budget.budget());
+        budgetExhausted = "@text/online.budget-exhausted [\"" + budget.used() + "\", \"" + budget.budget() + "\"]";
+        updateOnlineStatus();
+    }
+
+    private void clearBudgetExhausted() {
+        if (budgetExhausted != null) {
+            budgetExhausted = null;
+            updateOnlineStatus();
+        }
+    }
+
+    /**
+     * Sets the ONLINE status of an authorized account, with a description of a stream or request budget problem.
+     */
+    private void updateOnlineStatus() {
+        if (disposed || !authorized) {
+            return;
+        }
+        String description = null;
+        StreamState state = streamState;
+        if (config.streaming && state != null && state != StreamState.CONNECTED) {
+            description = switch (state) {
+                case DISCONNECTED ->
+                    config.isBridgeMode() ? "@text/online.broker-disconnected" : "@text/online.stream-disconnected";
+                case UPSTREAM_DISCONNECTED -> "@text/online.bridge-disconnected";
+                default -> "@text/online.bridge-unknown";
+            };
+        } else {
+            description = config.isMirrorActive() && Boolean.FALSE.equals(mirrorConnected)
+                    ? "@text/online.mirror-disconnected"
+                    : budgetExhausted;
+        }
+        synchronized (statusLock) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
         }
     }
 
@@ -208,20 +392,51 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
     }
 
     @Override
-    public void onStreamConnectionChanged(boolean connected, @Nullable String reason) {
-        if (connected) {
-            logger.debug("Connected to BMW CarData streaming");
-        } else {
-            logger.debug("Disconnected from BMW CarData streaming: {}", reason);
+    public void onStreamStateChanged(StreamState state, @Nullable String detail) {
+        logger.debug("BMW CarData stream state {}{}", state, detail != null ? ": " + detail : "");
+        streamState = state;
+        StreamMirror mirror = this.mirror;
+        if (mirror != null) {
+            mirror.publishStreamState(state == StreamState.CONNECTED);
         }
+        Instant now = Instant.now();
+        if (state == StreamState.CONNECTED) {
+            Instant downSince = streamDownSince;
+            streamDownSince = null;
+            Instant last = lastCatchUp;
+            if (downSince != null && Duration.between(downSince, now).compareTo(CATCH_UP_AFTER_OUTAGE) >= 0
+                    && (last == null || Duration.between(last, now).compareTo(CATCH_UP_MIN_SPACING) >= 0)) {
+                lastCatchUp = now;
+                scheduler.execute(() -> refreshTelematicData("stream outage"));
+            }
+        } else if (streamDownSince == null) {
+            streamDownSince = now;
+        }
+        updateOnlineStatus();
     }
 
+    /**
+     * Supplies the REST client with a valid access token. Core refreshes the token first if it has expired.
+     */
     private String getAccessToken() throws BMWCarDataException {
-        Tokens tokens = this.tokens;
-        if (tokens == null || tokens.isExpired(Instant.now())) {
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService == null || !authorized) {
             throw new BMWCarDataException("Not authorized");
         }
-        return tokens.accessToken();
+        try {
+            AccessTokenResponse response = oAuthService.getAccessTokenResponse();
+            String accessToken = response != null ? response.getAccessToken() : null;
+            if (accessToken == null) {
+                throw new BMWCarDataException("Not authorized");
+            }
+            return accessToken;
+        } catch (OAuthResponseException e) {
+            throw CarDataTokens.toException(e);
+        } catch (OAuthException e) {
+            throw CarDataTokens.toException(e);
+        } catch (IOException e) {
+            throw CarDataTokens.toException(e);
+        }
     }
 
     private BMWCarDataApi requireApi() throws BMWCarDataException {
@@ -256,6 +471,14 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
             if (id != null) {
                 return id;
             }
+            // the stored id saves listing the containers after each restart; it is bound to the container revision
+            String stored = storage.get(STORAGE_KEY_CONTAINER);
+            String suffix = "|" + CONTAINER_PURPOSE;
+            if (stored != null && stored.endsWith(suffix)) {
+                id = stored.substring(0, stored.length() - suffix.length());
+                containerId = id;
+                return id;
+            }
             for (Container container : call(api::getContainers)) {
                 String existingId = container.containerId;
                 String purpose = container.purpose;
@@ -282,6 +505,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
                 logger.debug("Created telematic data container {}", id);
             }
             containerId = id;
+            storage.put(STORAGE_KEY_CONTAINER, id + suffix);
             return id;
         }
     }
@@ -297,26 +521,34 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
         authJob = scheduler.schedule(job, delaySeconds, TimeUnit.SECONDS);
     }
 
+    /**
+     * Starts with the stored authorization if there is one, otherwise with a new device authorization.
+     */
     private void authenticate() {
-        BMWCarDataAuthClient authClient = this.authClient;
-        if (authClient == null || disposed) {
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService == null || disposed) {
             return;
         }
-        StoredSession session = loadSession();
-        if (session == null) {
-            startDeviceAuthorization();
-            return;
-        }
+        AccessTokenResponse stored;
         try {
-            onAuthenticated(authClient.refresh(session.refreshToken(), session.gcid(), null));
-        } catch (BMWCarDataAuthException e) {
-            logger.debug("Stored authorization is no longer valid: {}", e.getMessage());
-            storage.remove(STORAGE_KEY_SESSION);
-            startDeviceAuthorization();
-        } catch (BMWCarDataException e) {
-            updateOfflineIfActive(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            scheduleAuthJob(this::authenticate, RETRY_DELAY_SECONDS);
+            // refreshes the token if it has expired
+            stored = oAuthService.getAccessTokenResponse();
+        } catch (OAuthResponseException e) {
+            handleAuthFailure(CarDataTokens.toException(e), this::authenticate);
+            return;
+        } catch (OAuthException e) {
+            handleAuthFailure(CarDataTokens.toException(e), this::authenticate);
+            return;
+        } catch (IOException e) {
+            handleAuthFailure(CarDataTokens.toException(e), this::authenticate);
+            return;
         }
+        if (stored == null || stored.getRefreshToken() == null) {
+            startDeviceAuthorization();
+            return;
+        }
+        // confirms that the stored refresh token still works and provides a fresh id token for the stream
+        refreshTokens();
     }
 
     private void startDeviceAuthorization() {
@@ -324,6 +556,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
         if (authClient == null || disposed) {
             return;
         }
+        authorized = false;
         try {
             DeviceAuthorization authorization = authClient.requestDeviceCode();
             updateOfflineIfActive(ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.authorization-pending [\""
@@ -365,62 +598,134 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
                 updateOfflineIfActive(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.access-denied");
             case AUTHORIZED -> {
                 if (newTokens != null) {
-                    onAuthenticated(newTokens);
+                    importTokens(newTokens);
                 }
             }
         }
     }
 
-    private void onAuthenticated(Tokens newTokens) {
-        if (disposed) {
+    /**
+     * Hands the tokens of a completed device authorization to core's OAuth client service, which stores them
+     * encrypted and refreshes them from then on.
+     */
+    private void importTokens(Tokens newTokens) {
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService == null || disposed) {
             return;
         }
-        tokens = newTokens;
-        saveSession(newTokens);
-        scheduleTokenRefresh(newTokens);
-        updateOnlineIfActive();
-        if (config.streaming) {
-            startStream(newTokens);
+        try {
+            oAuthService.importAccessTokenResponse(CarDataTokens.toAccessTokenResponse(newTokens, Instant.now()));
+        } catch (OAuthException e) {
+            // the service has been closed, the handler is being disposed
+            logger.debug("Could not store the tokens: {}", e.getMessage());
+            return;
         }
+        storage.put(STORAGE_KEY_CLIENT_ID, config.clientId.trim());
+        storage.put(STORAGE_KEY_GCID, newTokens.gcid());
+        tokens = newTokens;
+        onAuthenticated();
+    }
+
+    private void onAuthenticated() {
+        Tokens current = tokens;
+        if (disposed || current == null) {
+            return;
+        }
+        authorized = true;
+        scheduleTokenRefresh(current);
+        updateOnlineStatus();
+        startStream(current);
+        scheduleRefresh();
         BMWCarDataVehicleDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null && getThing().getThings().isEmpty()) {
             discoveryService.discoverVehicles();
         }
     }
 
+    /**
+     * Refreshes the tokens before they expire, as the stream needs a valid id token for every (re)connect.
+     */
     private void refreshTokens() {
-        BMWCarDataAuthClient authClient = this.authClient;
-        Tokens current = tokens;
-        if (authClient == null || current == null || disposed) {
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService == null || disposed) {
             return;
         }
         try {
-            Tokens newTokens = authClient.refresh(current.refreshToken(), current.gcid(), current.idToken());
-            if (disposed) {
-                return;
-            }
-            tokens = newTokens;
-            saveSession(newTokens);
-            if (streamClient != null) {
-                restartStream(newTokens);
-            }
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateOnlineIfActive();
-            }
-            scheduleTokenRefresh(newTokens);
-        } catch (BMWCarDataAuthException e) {
+            onAccessTokenResponse(oAuthService.refreshToken());
+        } catch (OAuthResponseException e) {
+            handleAuthFailure(CarDataTokens.toException(e), this::refreshTokens);
+            return;
+        } catch (OAuthException e) {
+            handleAuthFailure(CarDataTokens.toException(e), this::refreshTokens);
+            return;
+        } catch (IOException e) {
+            handleAuthFailure(CarDataTokens.toException(e), this::refreshTokens);
+            return;
+        }
+        Tokens current = tokens;
+        if (current == null) {
+            handleAuthFailure(new BMWCarDataAuthException("Incomplete token response", 0), this::refreshTokens);
+            return;
+        }
+        if (!authorized) {
+            onAuthenticated();
+            return;
+        }
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateOnlineStatus();
+        }
+        scheduleTokenRefresh(current);
+    }
+
+    /**
+     * Called by core's OAuth client service after every successful refresh, also if a REST request triggered it.
+     */
+    private void onAccessTokenResponse(AccessTokenResponse response) {
+        if (disposed) {
+            return;
+        }
+        Tokens previous = tokens;
+        Tokens refreshed = CarDataTokens.fromAccessTokenResponse(response, previous, storage.get(STORAGE_KEY_GCID));
+        if (refreshed == null) {
+            logger.debug("The token response lacks the id token or gcid needed for the stream");
+            return;
+        }
+        storage.put(STORAGE_KEY_GCID, refreshed.gcid());
+        tokens = refreshed;
+        if (streamSource != null && previous != null && !refreshed.idToken().equals(previous.idToken())) {
+            restartStream(refreshed);
+        }
+    }
+
+    /**
+     * Starts a new device authorization if the stored authorization was rejected, otherwise retries later.
+     */
+    private void handleAuthFailure(BMWCarDataException e, Runnable retry) {
+        if (disposed) {
+            return;
+        }
+        if (e instanceof BMWCarDataAuthException) {
             logger.debug("Authorization is no longer valid: {}", e.getMessage());
+            OAuthClientService oAuthService = this.oAuthService;
+            if (oAuthService != null) {
+                try {
+                    // clears the stored token, but keeps the service for the import after the new authorization
+                    oAuthService.importAccessTokenResponse(new AccessTokenResponse());
+                } catch (OAuthException ex) {
+                    // the service has been closed, the handler is being disposed
+                }
+            }
             tokens = null;
             stopStream();
-            storage.remove(STORAGE_KEY_SESSION);
             startDeviceAuthorization();
-        } catch (BMWCarDataException e) {
-            logger.debug("Token refresh failed: {}", e.getMessage());
-            if (current.isExpired(Instant.now())) {
-                updateOfflineIfActive(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-            scheduleAuthJob(this::refreshTokens, RETRY_DELAY_SECONDS);
+            return;
         }
+        logger.debug("Token refresh failed: {}", e.getMessage());
+        Tokens current = tokens;
+        if (current == null || current.isExpired(Instant.now())) {
+            updateOfflineIfActive(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        scheduleAuthJob(retry, RETRY_DELAY_SECONDS);
     }
 
     private void scheduleTokenRefresh(Tokens tokens) {
@@ -428,32 +733,55 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
         scheduleAuthJob(this::refreshTokens, Math.max(delay, RETRY_DELAY_SECONDS));
     }
 
+    /**
+     * Starts the configured stream source. In bridge mode the binding does not connect to BMW's streaming broker, as
+     * BMW accepts only one connection per account and the bridge holds it.
+     */
     private void startStream(Tokens tokens) {
         stopStream();
-        try {
-            BMWCarDataStreamClient client = new BMWCarDataStreamClient(tokens, gson, scheduler, this);
-            streamClient = client;
-            // dispose() may have run concurrently before the client was assigned
-            if (disposed) {
-                stopStream();
+        if (!config.streaming) {
+            return;
+        }
+        if (streamDownSince == null) {
+            streamDownSince = Instant.now();
+        }
+        StreamSource source;
+        if (config.isBridgeMode()) {
+            source = new BridgeStreamSource(config.brokerSettings(),
+                    "openhab-bmwcardata-" + getThing().getUID().getId(), scheduler, this);
+        } else {
+            try {
+                StreamMirror mirror = startMirror();
+                source = new BMWCarDataStreamClient(tokens, scheduler, this,
+                        mirror != null ? mirror::publishMessage : null);
+            } catch (BMWCarDataException e) {
+                logger.warn("Unable to start BMW CarData streaming: {}", e.getMessage());
                 return;
             }
-            client.start();
-        } catch (BMWCarDataException e) {
-            logger.warn("Unable to start BMW CarData streaming: {}", e.getMessage());
         }
+        streamSource = source;
+        // dispose() may have run concurrently before the source was assigned
+        if (disposed) {
+            stopStream();
+            return;
+        }
+        source.start();
     }
 
     /**
-     * Reconnects the stream with a new id token. The broker closes a connection when its id token expires, and it
-     * accepts only one connection per customer, so the new connection is opened after the old one has been closed.
+     * Reconnects the direct stream with a new id token. The broker closes a connection when its id token expires, and
+     * it accepts only one connection per customer, so the new connection is opened after the old one has been closed.
      */
     private void restartStream(Tokens newTokens) {
-        stopStream().orTimeout(STREAM_STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS).whenComplete((result, error) -> {
+        if (config.isBridgeMode()) {
+            // the bridge authenticates at BMW itself
+            return;
+        }
+        stopStream(false).orTimeout(STREAM_STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS).whenComplete((result, error) -> {
             // a later refresh or a dispose supersedes this restart
             if (!disposed && newTokens.equals(tokens)) {
                 scheduler.execute(() -> {
-                    if (!disposed && newTokens.equals(tokens) && streamClient == null) {
+                    if (!disposed && newTokens.equals(tokens) && streamSource == null) {
                         startStream(newTokens);
                     }
                 });
@@ -462,45 +790,69 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements BMWCa
     }
 
     private CompletableFuture<Boolean> stopStream() {
-        BMWCarDataStreamClient client = streamClient;
-        streamClient = null;
-        return client != null ? client.stop() : CompletableFuture.completedFuture(true);
+        return stopStream(true);
+    }
+
+    /**
+     * @param reportDisconnect whether to report the disconnect to the mirror; not for a reconnect with a new id token
+     */
+    private CompletableFuture<Boolean> stopStream(boolean reportDisconnect) {
+        StreamMirror mirror = this.mirror;
+        if (reportDisconnect && mirror != null && streamSource != null) {
+            mirror.publishStreamState(false);
+        }
+        StreamSource source = streamSource;
+        streamSource = null;
+        streamState = null;
+        return source != null ? source.stop() : CompletableFuture.completedFuture(true);
+    }
+
+    /**
+     * Starts mirroring the direct stream to the local broker if configured. The mirror keeps its own connection, so it
+     * is independent of reconnects of the BMW stream.
+     *
+     * @return the running mirror, or {@code null} if mirroring is not active
+     */
+    private synchronized @Nullable StreamMirror startMirror() {
+        StreamMirror current = mirror;
+        if (current != null || !config.isMirrorActive() || disposed) {
+            return current;
+        }
+        try {
+            StreamMirror newMirror = new StreamMirror(config.brokerSettings(),
+                    "openhab-bmwcardata-mirror-" + getThing().getUID().getId(), scheduler, this::onMirrorBrokerState);
+            mirror = newMirror;
+            newMirror.start();
+            return newMirror;
+        } catch (BMWCarDataException e) {
+            logger.warn("Unable to mirror the CarData stream to the local broker: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private synchronized void stopMirror() {
+        StreamMirror current = mirror;
+        mirror = null;
+        mirrorConnected = null;
+        if (current != null) {
+            current.stop();
+        }
+    }
+
+    /**
+     * The state of the local broker of the mirror only affects the status description, not the status, as the data
+     * of BMW still arrives.
+     */
+    private void onMirrorBrokerState(boolean connected) {
+        mirrorConnected = connected;
+        updateOnlineStatus();
     }
 
     private void updateOfflineIfActive(ThingStatusDetail detail, @Nullable String description) {
         if (!disposed) {
-            updateStatus(ThingStatus.OFFLINE, detail, description);
-        }
-    }
-
-    private void updateOnlineIfActive() {
-        if (!disposed) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    private @Nullable StoredSession loadSession() {
-        String json = storage.get(STORAGE_KEY_SESSION);
-        if (json == null) {
-            return null;
-        }
-        try {
-            StoredSession session = gson.fromJson(json, StoredSession.class);
-            // a session of a different client id cannot be refreshed
-            if (session != null && config.clientId.trim().equals(session.clientId())) {
-                return session;
+            synchronized (statusLock) {
+                updateStatus(ThingStatus.OFFLINE, detail, description);
             }
-        } catch (JsonParseException e) {
-            logger.debug("Ignoring malformed stored session: {}", e.getMessage());
         }
-        return null;
-    }
-
-    private void saveSession(Tokens tokens) {
-        if (disposed) {
-            return;
-        }
-        storage.put(STORAGE_KEY_SESSION,
-                gson.toJson(new StoredSession(config.clientId.trim(), tokens.refreshToken(), tokens.gcid())));
     }
 }

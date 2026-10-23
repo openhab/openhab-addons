@@ -36,6 +36,8 @@ import org.openhab.binding.bmwcardata.internal.api.dto.Container.ContainerList;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue.TelematicDataResponse;
 import org.openhab.binding.bmwcardata.internal.api.dto.VehicleMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -43,6 +45,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 /**
  * The {@link BMWCarDataApi} is the client of the BMW CarData REST API. Every request counts towards the daily request
@@ -67,19 +70,23 @@ public class BMWCarDataApi {
         String getAccessToken() throws BMWCarDataException;
     }
 
+    private final Logger logger = LoggerFactory.getLogger(BMWCarDataApi.class);
     private final HttpClient httpClient;
     private final Gson gson;
     private final AccessTokenProvider tokenProvider;
+    private final RequestBudget budget;
     private final String baseUrl;
 
-    public BMWCarDataApi(HttpClient httpClient, Gson gson, AccessTokenProvider tokenProvider) {
-        this(httpClient, gson, tokenProvider, API_BASE_URL);
+    public BMWCarDataApi(HttpClient httpClient, Gson gson, AccessTokenProvider tokenProvider, RequestBudget budget) {
+        this(httpClient, gson, tokenProvider, budget, API_BASE_URL);
     }
 
-    BMWCarDataApi(HttpClient httpClient, Gson gson, AccessTokenProvider tokenProvider, String baseUrl) {
+    BMWCarDataApi(HttpClient httpClient, Gson gson, AccessTokenProvider tokenProvider, RequestBudget budget,
+            String baseUrl) {
         this.httpClient = httpClient;
         this.gson = gson;
         this.tokenProvider = tokenProvider;
+        this.budget = budget;
         this.baseUrl = baseUrl;
     }
 
@@ -161,10 +168,16 @@ public class BMWCarDataApi {
 
     private String send(HttpMethod method, String path, @Nullable String containerId, @Nullable String jsonBody)
             throws BMWCarDataException {
+        String accessToken = tokenProvider.getAccessToken();
+        // counted only once the request can actually be sent
+        if (!budget.tryAcquire()) {
+            throw BMWCarDataException.budgetExhausted(budget.used(), budget.budget());
+        }
+        logger.debug("BMW CarData request {} {} ({} of {} requests used in 24 hours)", method, redactVin(path),
+                budget.used(), budget.budget());
         Request request = httpClient.newRequest(baseUrl + path).method(method)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + tokenProvider.getAccessToken())
-                .header(HttpHeader.ACCEPT, "application/json").header("x-version", API_VERSION)
-                .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken).header(HttpHeader.ACCEPT, "application/json")
+                .header("x-version", API_VERSION).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         if (containerId != null) {
             request.param("containerId", containerId);
         }
@@ -187,10 +200,32 @@ public class BMWCarDataApi {
             throw new BMWCarDataAuthException("Access token rejected", status);
         }
         if (status < 200 || status >= 300) {
-            throw new BMWCarDataException("BMW CarData request " + method + " " + redactVin(path) + " failed with HTTP "
-                    + status + ": " + errorOf(response.getContentAsString()), status);
+            String content = response.getContentAsString();
+            BMWCarDataException exception = new BMWCarDataException("BMW CarData request " + method + " "
+                    + redactVin(path) + " failed with HTTP " + status + ": " + errorOf(content), status,
+                    errorIdOf(content));
+            if (exception.isRateLimited()) {
+                // BMW counts requests the binding does not know of, e.g. those of other tools using the account
+                budget.markExhausted();
+            }
+            throw exception;
         }
         return response.getContentAsString();
+    }
+
+    private static @Nullable String errorIdOf(@Nullable String content) {
+        if (content == null || content.isBlank()) {
+            return null;
+        }
+        try {
+            JsonElement root = JsonParser.parseString(content);
+            if (root.isJsonObject() && root.getAsJsonObject().get("exveErrorId") instanceof JsonPrimitive errorId) {
+                return errorId.getAsString();
+            }
+        } catch (JsonParseException e) {
+            // not a structured error response
+        }
+        return null;
     }
 
     private <T> T parse(@Nullable String content, Class<T> type) throws BMWCarDataException {

@@ -16,11 +16,13 @@ import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +40,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -52,11 +55,11 @@ import com.google.gson.JsonPrimitive;
  * The {@link VehicleChannel} maps the channels of a vehicle to the CarData technical descriptors they represent.
  *
  * @author Michael Weger - Initial contribution
+ * @author Mark Herwege - Value conversion from TelematicStateConverter and CarDataUnits of the mybmw rewrite
  */
 @NonNullByDefault
 public enum VehicleChannel {
-    DOOR_LOCK(GROUP_STATUS, "door-lock", "vehicle.cabin.door.lock.status", Kind.STRING, null),
-    DOORS(GROUP_STATUS, "doors", "vehicle.cabin.door.status", Kind.STRING, null),
+    DOOR_LOCK(GROUP_STATUS, "door-lock", "vehicle.cabin.door.lock.status", Kind.LOCK_STATE, null),
     TRUNK(GROUP_STATUS, "trunk", "vehicle.body.trunk.isOpen", Kind.CONTACT, null),
     HOOD(GROUP_STATUS, "hood", "vehicle.body.hood.isOpen", Kind.CONTACT, null),
     TRUNK_LOCKED(GROUP_STATUS, "trunk-locked", "vehicle.body.trunk.isLocked", Kind.SWITCH, null),
@@ -66,17 +69,18 @@ public enum VehicleChannel {
     DOOR_REAR_DRIVER(GROUP_STATUS, "door-rear-driver", "vehicle.cabin.door.row2.driver.isOpen", Kind.CONTACT, null),
     DOOR_REAR_PASSENGER(GROUP_STATUS, "door-rear-passenger", "vehicle.cabin.door.row2.passenger.isOpen", Kind.CONTACT,
             null),
-    WINDOW_FRONT_DRIVER(GROUP_STATUS, "window-front-driver", "vehicle.cabin.window.row1.driver.status", Kind.STRING,
+    WINDOW_FRONT_DRIVER(GROUP_STATUS, "window-front-driver", "vehicle.cabin.window.row1.driver.status", Kind.OPENING,
             null),
     WINDOW_FRONT_PASSENGER(GROUP_STATUS, "window-front-passenger", "vehicle.cabin.window.row1.passenger.status",
-            Kind.STRING, null),
-    WINDOW_REAR_DRIVER(GROUP_STATUS, "window-rear-driver", "vehicle.cabin.window.row2.driver.status", Kind.STRING,
+            Kind.OPENING, null),
+    WINDOW_REAR_DRIVER(GROUP_STATUS, "window-rear-driver", "vehicle.cabin.window.row2.driver.status", Kind.OPENING,
             null),
     WINDOW_REAR_PASSENGER(GROUP_STATUS, "window-rear-passenger", "vehicle.cabin.window.row2.passenger.status",
-            Kind.STRING, null),
+            Kind.OPENING, null),
     REAR_WINDOW(GROUP_STATUS, "rear-window", "vehicle.body.trunk.window.isOpen", Kind.CONTACT, null),
-    SUNROOF(GROUP_STATUS, "sunroof", "vehicle.cabin.sunroof.overallStatus", Kind.STRING, null),
+    SUNROOF(GROUP_STATUS, "sunroof", "vehicle.cabin.sunroof.overallStatus", Kind.OPENING, null),
     MOVING(GROUP_STATUS, "moving", "vehicle.isMoving", Kind.SWITCH, null),
+    DEEP_SLEEP(GROUP_STATUS, "deep-sleep", "vehicle.vehicle.deepSleepModeActive", Kind.SWITCH, null),
     BATTERY_VOLTAGE(GROUP_STATUS, "battery-voltage", "vehicle.electricalSystem.battery.voltage", Kind.QUANTITY,
             Units.VOLT),
     BATTERY_SOC(GROUP_STATUS, "battery-soc", "vehicle.electricalSystem.battery.stateOfCharge", Kind.QUANTITY,
@@ -121,7 +125,10 @@ public enum VehicleChannel {
             MetricPrefix.KILO(SIUnits.METRE)),
     TOTAL_RANGE(GROUP_RANGE, "total", "vehicle.drivetrain.lastRemainingRange", Kind.QUANTITY,
             MetricPrefix.KILO(SIUnits.METRE)),
-    ELECTRIC_RANGE(GROUP_RANGE, "electric", "vehicle.drivetrain.electricEngine.remainingElectricRange", Kind.QUANTITY,
+    ELECTRIC_RANGE(GROUP_RANGE, "electric", "vehicle.drivetrain.electricEngine.kombiRemainingElectricRange",
+            Kind.QUANTITY, MetricPrefix.KILO(SIUnits.METRE)),
+    ELECTRIC_RANGE_FORECAST(GROUP_RANGE, "electric-charging-forecast",
+            "vehicle.drivetrain.electricEngine.remainingElectricRange", Kind.QUANTITY,
             MetricPrefix.KILO(SIUnits.METRE)),
     FUEL_LEVEL(GROUP_RANGE, "fuel-level", "vehicle.drivetrain.fuelSystem.level", Kind.QUANTITY, Units.PERCENT),
     REMAINING_FUEL(GROUP_RANGE, "remaining-fuel", "vehicle.drivetrain.fuelSystem.remainingFuel", Kind.QUANTITY,
@@ -248,23 +255,49 @@ public enum VehicleChannel {
         STRING,
         SWITCH,
         CONTACT,
+        // an opening that can be partly open: a contact that is open when partly open, plus a detail channel with
+        // the reported state
+        OPENING,
+        // a lock state word, normalized so that e.g. SELECTIVE-LOCKED and SELECTIVELOCKED compare equal
+        LOCK_STATE,
         DATETIME
     }
 
     private static final Map<String, VehicleChannel> BY_DESCRIPTOR = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(VehicleChannel::getDescriptor, Function.identity()));
 
-    // unit spellings used by CarData that differ from the openHAB unit symbols
-    private static final Map<String, String> UNIT_ALIASES = Map.ofEntries(Map.entry("percent", "%"),
-            Map.entry("degrees", "°"), Map.entry("degree", "°"), Map.entry("celsius", "°C"),
-            Map.entry("kilometers", "km"), Map.entry("kilometres", "km"), Map.entry("miles", "mi"),
-            Map.entry("liters", "l"), Map.entry("litres", "l"), Map.entry("minutes", "min"));
+    // units as sent by CarData, in lower case; other units are parsed by openHAB
+    private static final Map<String, Unit<?>> UNITS = Map.ofEntries(Map.entry("km", MetricPrefix.KILO(SIUnits.METRE)),
+            Map.entry("kilometers", MetricPrefix.KILO(SIUnits.METRE)),
+            Map.entry("kilometres", MetricPrefix.KILO(SIUnits.METRE)), Map.entry("mi", ImperialUnits.MILE),
+            Map.entry("miles", ImperialUnits.MILE), Map.entry("m", SIUnits.METRE), Map.entry("ft", ImperialUnits.FOOT),
+            Map.entry("%", Units.PERCENT), Map.entry("percent", Units.PERCENT), Map.entry("v", Units.VOLT),
+            Map.entry("a", Units.AMPERE), Map.entry("w", Units.WATT), Map.entry("kw", MetricPrefix.KILO(Units.WATT)),
+            Map.entry("kwh", Units.KILOWATT_HOUR), Map.entry("s", Units.SECOND), Map.entry("min", Units.MINUTE),
+            Map.entry("minutes", Units.MINUTE), Map.entry("h", Units.HOUR), Map.entry("weeks", Units.WEEK),
+            Map.entry("months", Units.MONTH), Map.entry("kpa", MetricPrefix.KILO(SIUnits.PASCAL)),
+            Map.entry("bar", Units.BAR), Map.entry("°c", SIUnits.CELSIUS), Map.entry("celsius", SIUnits.CELSIUS),
+            Map.entry("°", Units.DEGREE_ANGLE), Map.entry("degree", Units.DEGREE_ANGLE),
+            Map.entry("degrees", Units.DEGREE_ANGLE), Map.entry("l", Units.LITRE), Map.entry("liters", Units.LITRE),
+            Map.entry("litres", Units.LITRE), Map.entry("gal", ImperialUnits.GALLON_LIQUID_US),
+            Map.entry("km/h", SIUnits.KILOMETRE_PER_HOUR), Map.entry("mph", ImperialUnits.MILES_PER_HOUR));
 
-    // the catalogue documents points in time as "dd.mm.yyyy hh:mm:ss UTC" or "dd.mm.yyyy hh:mm UTC"
-    private static final DateTimeFormatter CATALOGUE_DATE_TIME = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm[:ss]");
+    // points in time as documented by the catalogue, besides ISO 8601 and epoch seconds
+    private static final List<DateTimeFormatter> DATE_TIME_FORMATS = List.of(
+            DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm[:ss][ 'UTC']", Locale.ROOT),
+            DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm[:ss][ 'UTC']", Locale.ROOT));
+    private static final List<DateTimeFormatter> DATE_FORMATS = List.of(
+            DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.ROOT),
+            DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ROOT), DateTimeFormatter.ISO_LOCAL_DATE);
 
-    // values used by CarData to mark a descriptor value as unavailable
-    private static final Set<String> UNDEFINED_VALUES = Set.of("INVALID", "-NA-", "UNKNOWN", "ASN_isUnknown");
+    // normalized words used by CarData to mark a value as unavailable
+    private static final Set<String> UNDEFINED_WORDS = Set.of("", "INVALID", "NA", "UNKNOWN", "ISUNKNOWN");
+    private static final Set<String> TRUE_WORDS = Set.of("TRUE", "ISTRUE", "ON", "YES", "ACTIVE");
+    private static final Set<String> FALSE_WORDS = Set.of("FALSE", "ISFALSE", "OFF", "NO", "INACTIVE");
+    // doors are documented as boolean but reported as OPEN or CLOSED; windows and the sunroof can be partly open
+    private static final Set<String> OPEN_WORDS = Set.of("OPEN", "INTERMEDIATE", "OPENTILT", "INTERMEDIATETILT", "TRUE",
+            "ISTRUE");
+    private static final Set<String> CLOSED_WORDS = Set.of("CLOSED", "FALSE", "ISFALSE");
 
     private final String groupId;
     private final @Nullable String channelId;
@@ -294,6 +327,15 @@ public enum VehicleChannel {
         return channelId != null ? groupId + "#" + channelId : null;
     }
 
+    /**
+     * @return the id of the channel with the reported state of an opening, {@code <channel>-state}, or {@code null}
+     *         for all other kinds
+     */
+    public @Nullable String getDetailChannelUid() {
+        String channelUid = getChannelUid();
+        return kind == Kind.OPENING && channelUid != null ? channelUid + "-state" : null;
+    }
+
     public static @Nullable VehicleChannel fromDescriptor(String descriptor) {
         return BY_DESCRIPTOR.get(descriptor);
     }
@@ -303,9 +345,11 @@ public enum VehicleChannel {
     }
 
     /**
-     * Converts a descriptor value into the state of this channel.
+     * Converts a descriptor value into the state of this channel. CarData values are loosely typed: booleans arrive
+     * as JSON booleans, as {@code "true"} or as words such as {@code ASN_isTrue}, and the REST API sends numbers as
+     * strings. Values that are marked as unavailable or cannot be interpreted result in {@link UnDefType#UNDEF}.
      *
-     * @return the state, or {@code null} if the value is missing or cannot be represented
+     * @return the state, or {@code null} if the value is missing
      */
     public @Nullable State toState(TelematicValue telematicValue) {
         JsonPrimitive primitive = toPrimitive(telematicValue);
@@ -315,19 +359,17 @@ public enum VehicleChannel {
         if (isUndefined(primitive)) {
             return UnDefType.UNDEF;
         }
-        return switch (kind) {
-            case STRING -> new StringType(primitive.getAsString());
+        State state = switch (kind) {
+            case STRING -> new StringType(primitive.getAsString().strip());
+            case LOCK_STATE -> {
+                String word = word(primitive);
+                yield word == null ? null : new StringType(word);
+            }
             case SWITCH -> {
                 Boolean bool = toBoolean(primitive);
                 yield bool == null ? null : OnOffType.from(bool);
             }
-            case CONTACT -> {
-                // door states are documented as boolean, but reported as OPEN or CLOSED
-                String text = primitive.getAsString().trim();
-                Boolean bool = "OPEN".equalsIgnoreCase(text) ? Boolean.TRUE
-                        : "CLOSED".equalsIgnoreCase(text) ? Boolean.FALSE : toBoolean(primitive);
-                yield bool == null ? null : bool ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-            }
+            case CONTACT, OPENING -> toContact(primitive);
             case DATETIME -> {
                 Instant instant = toInstant(primitive);
                 yield instant == null ? null : new DateTimeType(instant);
@@ -338,6 +380,20 @@ public enum VehicleChannel {
             }
             case QUANTITY -> toQuantity(primitive, telematicValue.unit);
         };
+        return state != null ? state : UnDefType.UNDEF;
+    }
+
+    /**
+     * Converts a value for the detail channel of an opening, see {@link #getDetailChannelUid()}.
+     *
+     * @return the reported state, e.g. {@code INTERMEDIATE}, or {@code null} if the value is missing
+     */
+    public @Nullable State toDetailState(TelematicValue telematicValue) {
+        JsonPrimitive primitive = toPrimitive(telematicValue);
+        if (primitive == null) {
+            return null;
+        }
+        return isUndefined(primitive) ? UnDefType.UNDEF : new StringType(primitive.getAsString().strip());
     }
 
     private @Nullable State toQuantity(JsonPrimitive primitive, @Nullable String unitSymbol) {
@@ -356,61 +412,129 @@ public enum VehicleChannel {
         return new QuantityType<>(number, unit);
     }
 
+    private static @Nullable State toContact(JsonPrimitive primitive) {
+        if (primitive.isBoolean()) {
+            return primitive.getAsBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+        }
+        String word = word(primitive);
+        if (word != null && OPEN_WORDS.contains(word)) {
+            return OpenClosedType.OPEN;
+        }
+        if (word != null && CLOSED_WORDS.contains(word)) {
+            return OpenClosedType.CLOSED;
+        }
+        return null;
+    }
+
     static @Nullable JsonPrimitive toPrimitive(TelematicValue telematicValue) {
         JsonElement value = telematicValue.value;
         return value != null && value.isJsonPrimitive() ? value.getAsJsonPrimitive() : null;
     }
 
     static boolean isUndefined(JsonPrimitive primitive) {
-        return primitive.isString() && UNDEFINED_VALUES.contains(primitive.getAsString().trim());
+        if (!primitive.isString()) {
+            return false;
+        }
+        String word = word(primitive);
+        return word == null || UNDEFINED_WORDS.contains(word);
+    }
+
+    /**
+     * Normalizes a CarData word for comparison: upper case, without the {@code ASN_} prefix and without punctuation,
+     * so that {@code ASN_selective-Locked}, {@code SELECTIVE_LOCKED} and {@code SELECTIVELOCKED} compare equal.
+     *
+     * @return the normalized word, or {@code null} if the value is not a string or empty
+     */
+    static @Nullable String word(JsonPrimitive primitive) {
+        if (!primitive.isString()) {
+            return null;
+        }
+        String word = primitive.getAsString().strip().toUpperCase(Locale.ROOT);
+        if (word.startsWith("ASN_")) {
+            word = word.substring(4);
+        }
+        word = word.replaceAll("[^A-Z0-9]", "");
+        return word.isEmpty() ? null : word;
     }
 
     static @Nullable Unit<?> parseUnit(@Nullable String symbol) {
         if (symbol == null || symbol.isBlank()) {
             return null;
         }
-        String trimmed = symbol.trim();
-        return UnitUtils.parseUnit(UNIT_ALIASES.getOrDefault(trimmed.toLowerCase(Locale.ROOT), trimmed));
+        String trimmed = symbol.strip();
+        Unit<?> unit = UNITS.get(trimmed.toLowerCase(Locale.ROOT));
+        return unit != null ? unit : UnitUtils.parseUnit(trimmed);
     }
 
     /**
-     * Converts a point in time. The catalogue documents it as int32 in the format {@code dd.mm.yyyy hh:mm:ss UTC},
-     * therefore epoch seconds, that format and ISO 8601 are accepted.
+     * Converts a point in time. The catalogue documents e.g. {@code dd.mm.yyyy hh:mm:ss UTC} for an int32 value,
+     * therefore epoch seconds, the documented formats, dates and ISO 8601 are accepted.
      */
     static @Nullable Instant toInstant(JsonPrimitive primitive) {
         if (primitive.isNumber()) {
             return Instant.ofEpochSecond(primitive.getAsLong());
         }
-        String text = primitive.getAsString().trim();
+        String text = primitive.getAsString().strip();
         try {
             return Instant.parse(text);
         } catch (DateTimeParseException e) {
-            // try the documented format
+            // try the documented formats below
         }
-        try {
-            return LocalDateTime.parse(text.replace(" UTC", ""), CATALOGUE_DATE_TIME).toInstant(ZoneOffset.UTC);
-        } catch (DateTimeParseException e) {
-            BigDecimal epochSeconds = toNumber(primitive);
-            return epochSeconds == null ? null : Instant.ofEpochSecond(epochSeconds.longValue());
+        for (DateTimeFormatter format : DATE_TIME_FORMATS) {
+            try {
+                return LocalDateTime.parse(text, format).toInstant(ZoneOffset.UTC);
+            } catch (DateTimeParseException e) {
+                // try the next format
+            }
         }
+        for (DateTimeFormatter format : DATE_FORMATS) {
+            try {
+                return LocalDate.parse(text, format).atStartOfDay().toInstant(ZoneOffset.UTC);
+            } catch (DateTimeParseException e) {
+                // try the next format
+            }
+        }
+        BigDecimal epochSeconds = toNumber(primitive);
+        return epochSeconds == null ? null : Instant.ofEpochSecond(epochSeconds.longValue());
     }
 
     static @Nullable BigDecimal toNumber(JsonPrimitive primitive) {
         try {
-            return primitive.isNumber() ? primitive.getAsBigDecimal() : new BigDecimal(primitive.getAsString().trim());
+            return primitive.isNumber() ? primitive.getAsBigDecimal() : new BigDecimal(primitive.getAsString().strip());
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * @return the value of a JSON boolean or a boolean word such as {@code true} or {@code ASN_isTrue}, {@code null}
+     *         for other values, also for words such as {@code ACTIVE} that may be one value of a longer list
+     */
+    static @Nullable Boolean toStrictBoolean(JsonPrimitive primitive) {
+        if (primitive.isBoolean()) {
+            return primitive.getAsBoolean();
+        }
+        String word = word(primitive);
+        if ("TRUE".equals(word) || "ISTRUE".equals(word)) {
+            return Boolean.TRUE;
+        }
+        if ("FALSE".equals(word) || "ISFALSE".equals(word)) {
+            return Boolean.FALSE;
+        }
+        return null;
     }
 
     static @Nullable Boolean toBoolean(JsonPrimitive primitive) {
         if (primitive.isBoolean()) {
             return primitive.getAsBoolean();
         }
-        return switch (primitive.getAsString().trim().toLowerCase(Locale.ROOT)) {
-            case "true", "asn_istrue" -> Boolean.TRUE;
-            case "false", "asn_isfalse" -> Boolean.FALSE;
-            default -> null;
-        };
+        String word = word(primitive);
+        if (word != null && TRUE_WORDS.contains(word)) {
+            return Boolean.TRUE;
+        }
+        if (word != null && FALSE_WORDS.contains(word)) {
+            return Boolean.FALSE;
+        }
+        return null;
     }
 }

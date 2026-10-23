@@ -15,6 +15,7 @@ package org.openhab.binding.bmwcardata.internal.api;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.bmwcardata.internal.MapStorage;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.binding.bmwcardata.internal.api.dto.VehicleMapping;
 
@@ -46,6 +48,7 @@ class BMWCarDataApiTest {
     private static final String VIN = "WBA12345678901234";
 
     private @NonNullByDefault({}) BMWCarDataApi api;
+    private @NonNullByDefault({}) RequestBudget budget;
 
     @BeforeAll
     static void startServer() throws Exception {
@@ -64,7 +67,8 @@ class BMWCarDataApiTest {
     @BeforeEach
     void setUp() {
         SERVER.resetAll();
-        api = new BMWCarDataApi(HTTP_CLIENT, new Gson(), () -> "token", "http://localhost:" + SERVER.port());
+        budget = new RequestBudget(new MapStorage(), "budget", 3, Clock.systemUTC());
+        api = new BMWCarDataApi(HTTP_CLIENT, new Gson(), () -> "token", budget, "http://localhost:" + SERVER.port());
     }
 
     @Test
@@ -116,6 +120,36 @@ class BMWCarDataApiTest {
         SERVER.verify(postRequestedFor(urlEqualTo("/customers/containers"))
                 .withRequestBody(matchingJsonPath("$.technicalDescriptors[0]", equalTo("vehicle.isMoving")))
                 .withRequestBody(matchingJsonPath("$.name", equalTo("openHAB"))));
+    }
+
+    @Test
+    void requestsAreCountedAndWithheldWhenBudgetIsUsedUp() throws Exception {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(okJson("{\"brand\":\"BMW\"}")));
+
+        for (int i = 0; i < 3; i++) {
+            api.getBasicData(VIN);
+        }
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+
+        assertTrue(e.isBudgetExhausted());
+        assertTrue(e.isRateLimited());
+        assertEquals(3, budget.used());
+        SERVER.verify(3, getRequestedFor(urlEqualTo(path)));
+    }
+
+    @Test
+    void bmwRateLimitMarksBudgetExhausted() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(
+                aResponse().withStatus(403).withBody("{\"exveErrorId\":\"CU-429\",\"exveErrorMsg\":\"Rate limit\"}")));
+
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+
+        assertEquals("CU-429", e.getErrorId());
+        assertTrue(e.isRateLimited());
+        assertFalse(e.isBudgetExhausted());
+        assertFalse(budget.hasRoomFor(1));
     }
 
     @Test

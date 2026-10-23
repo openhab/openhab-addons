@@ -10,22 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwcardata.internal.api;
+package org.openhab.binding.bmwcardata.internal.stream;
 
-import java.nio.charset.StandardCharsets;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
-
-import javax.net.ssl.TrustManagerFactory;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
-import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue.StreamMessage;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
+import org.openhab.binding.bmwcardata.internal.api.Tokens;
+import org.openhab.binding.bmwcardata.internal.stream.StreamMessageParser.ParsedMessage;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.MqttVersion;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.Protocol;
@@ -36,9 +31,6 @@ import org.openhab.core.io.transport.mqtt.reconnect.PeriodicReconnectStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
-
 /**
  * The {@link BMWCarDataStreamClient} receives telematic data pushed by the BMW CarData streaming broker.
  * The broker authenticates with the customer id ({@code gcid}) as user name and the id token as password and publishes
@@ -47,7 +39,7 @@ import com.google.gson.JsonParseException;
  * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
-public class BMWCarDataStreamClient implements MqttMessageSubscriber, MqttConnectionObserver {
+public class BMWCarDataStreamClient implements StreamSource, MqttMessageSubscriber, MqttConnectionObserver {
 
     private static final String HOST = "customer.streaming-cardata.bmwgroup.com";
     private static final int PORT = 9000;
@@ -56,31 +48,28 @@ public class BMWCarDataStreamClient implements MqttMessageSubscriber, MqttConnec
     private static final int RECONNECT_INTERVAL_MILLIS = 60_000;
     private static final int FIRST_RECONNECT_MILLIS = 10_000;
 
-    /**
-     * Receives the data and connection changes of the stream.
-     */
-    public interface Listener {
-        void onStreamData(String vin, Map<String, TelematicValue> data);
-
-        void onStreamConnectionChanged(boolean connected, @Nullable String reason);
-    }
-
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataStreamClient.class);
-    private final Gson gson;
-    private final Listener listener;
+    private final StreamListener listener;
+    private final @Nullable BiConsumer<String, byte[]> rawListener;
     private final String topic;
     private final MqttBrokerConnection connection;
 
-    public BMWCarDataStreamClient(Tokens tokens, Gson gson, ScheduledExecutorService scheduler, Listener listener)
-            throws BMWCarDataException {
-        this.gson = gson;
+    /**
+     * @param tokens tokens with the stream credentials
+     * @param scheduler scheduler for connection timeouts
+     * @param listener receiver of data and state changes
+     * @param rawListener receives every message unmodified with its topic, e.g. to mirror the stream; it must not
+     *            block
+     */
+    public BMWCarDataStreamClient(Tokens tokens, ScheduledExecutorService scheduler, StreamListener listener,
+            @Nullable BiConsumer<String, byte[]> rawListener) throws BMWCarDataException {
         this.listener = listener;
+        this.rawListener = rawListener;
         this.topic = tokens.gcid() + "/+";
 
         MqttBrokerConnection connection = new MqttBrokerConnection(Protocol.TCP, MqttVersion.V3, HOST, PORT, true, true,
                 tokens.gcid());
-        // the connection trusts any certificate unless trust managers are set explicitly
-        connection.setTrustManagers(defaultTrustManagerFactory().getTrustManagers());
+        connection.setTrustManagers(BrokerSettings.defaultTrustManagers());
         connection.setCredentials(tokens.gcid(), tokens.idToken());
         connection.setKeepAliveInterval(KEEP_ALIVE_SECONDS);
         connection.setCleanSessionStart(true);
@@ -95,6 +84,7 @@ public class BMWCarDataStreamClient implements MqttMessageSubscriber, MqttConnec
      * Connects to the broker and subscribes to the data of all vehicles of the customer. The subscription is restored
      * by the connection after each reconnect.
      */
+    @Override
     public void start() {
         connection.subscribe(topic, this);
         connection.start().whenComplete((connected, error) -> {
@@ -105,11 +95,7 @@ public class BMWCarDataStreamClient implements MqttMessageSubscriber, MqttConnec
         });
     }
 
-    /**
-     * Disconnects from the broker.
-     *
-     * @return a future completed when the connection is closed
-     */
+    @Override
     public CompletableFuture<Boolean> stop() {
         connection.removeConnectionObserver(this);
         return connection.stop();
@@ -117,45 +103,33 @@ public class BMWCarDataStreamClient implements MqttMessageSubscriber, MqttConnec
 
     @Override
     public void processMessage(String topic, byte[] payload) {
-        StreamMessage message;
-        try {
-            message = gson.fromJson(new String(payload, StandardCharsets.UTF_8), StreamMessage.class);
-        } catch (JsonParseException e) {
-            logger.debug("Ignoring malformed BMW CarData stream message: {}", e.getMessage());
-            return;
+        BiConsumer<String, byte[]> rawListener = this.rawListener;
+        if (rawListener != null) {
+            try {
+                rawListener.accept(topic, payload);
+            } catch (RuntimeException e) {
+                // a failure of the mirror must not stop the processing of the stream
+                logger.debug("Forwarding a stream message failed: {}", e.getMessage());
+            }
         }
+        ParsedMessage message = StreamMessageParser.parse(topic, payload);
         if (message == null) {
+            logger.debug("Ignoring BMW CarData stream message without data");
             return;
         }
-        String vin = message.vin;
-        if (vin == null) {
-            vin = topic.substring(topic.lastIndexOf('/') + 1);
-        }
-        Map<String, TelematicValue> data = message.data;
-        if (data != null && !data.isEmpty()) {
-            logger.debug("Received stream data: {}", data.keySet());
-            listener.onStreamData(vin, data);
-        }
+        logger.debug("Received stream data: {}", message.data().keySet());
+        listener.onStreamData(message.vin(), message.data());
     }
 
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         switch (state) {
-            case CONNECTED -> listener.onStreamConnectionChanged(true, null);
-            case DISCONNECTED -> listener.onStreamConnectionChanged(false, error != null ? error.getMessage() : null);
+            case CONNECTED -> listener.onStreamStateChanged(StreamState.CONNECTED, null);
+            case DISCONNECTED ->
+                listener.onStreamStateChanged(StreamState.DISCONNECTED, error != null ? error.getMessage() : null);
             case CONNECTING -> {
                 // wait for the outcome of the connection attempt
             }
-        }
-    }
-
-    private static TrustManagerFactory defaultTrustManagerFactory() throws BMWCarDataException {
-        try {
-            TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            factory.init((KeyStore) null);
-            return factory;
-        } catch (NoSuchAlgorithmException | KeyStoreException e) {
-            throw new BMWCarDataException("Unable to initialize TLS trust store", e);
         }
     }
 }

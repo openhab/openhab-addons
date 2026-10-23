@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -92,8 +93,9 @@ class VehicleChannelTest {
 
     @Test
     void quantityRejectsIncompatibleUnitAndNonNumbers() {
-        assertNull(VehicleChannel.MILEAGE.toState(value(new JsonPrimitive(1), "V")));
-        assertNull(VehicleChannel.MILEAGE.toState(value(new JsonPrimitive("n/a"), "km")));
+        // a unit of another dimension is not interpreted with the default unit
+        assertEquals(UnDefType.UNDEF, VehicleChannel.MILEAGE.toState(value(new JsonPrimitive(1), "V")));
+        assertEquals(UnDefType.UNDEF, VehicleChannel.MILEAGE.toState(value(new JsonPrimitive("n/a"), "km")));
         assertNull(VehicleChannel.MILEAGE.toState(value(null, "km")));
     }
 
@@ -102,7 +104,7 @@ class VehicleChannelTest {
         assertEquals(OnOffType.ON, VehicleChannel.PLUGGED.toState(value(new JsonPrimitive(true), null)));
         assertEquals(OnOffType.OFF, VehicleChannel.MOVING.toState(value(new JsonPrimitive("false"), null)));
         assertEquals(UnDefType.UNDEF, VehicleChannel.MOVING.toState(value(new JsonPrimitive("UNKNOWN"), null)));
-        assertNull(VehicleChannel.MOVING.toState(value(new JsonPrimitive("maybe"), null)));
+        assertEquals(UnDefType.UNDEF, VehicleChannel.MOVING.toState(value(new JsonPrimitive("maybe"), null)));
         assertEquals(OpenClosedType.OPEN, VehicleChannel.TRUNK.toState(value(new JsonPrimitive(true), null)));
         assertEquals(OpenClosedType.CLOSED, VehicleChannel.HOOD.toState(value(new JsonPrimitive("false"), null)));
         assertEquals(new StringType("SECURED"),
@@ -139,7 +141,7 @@ class VehicleChannelTest {
         assertEquals(expected, VehicleChannel.TRIP_END.toState(value(new JsonPrimitive("2017-05-15T15:51:00Z"), null)));
         assertEquals(expected, VehicleChannel.TRIP_END.toState(value(new JsonPrimitive(1494863460), null)));
         assertEquals(expected, VehicleChannel.TRIP_END.toState(value(new JsonPrimitive("1494863460"), null)));
-        assertNull(VehicleChannel.TRIP_END.toState(value(new JsonPrimitive("yesterday"), null)));
+        assertEquals(UnDefType.UNDEF, VehicleChannel.TRIP_END.toState(value(new JsonPrimitive("yesterday"), null)));
     }
 
     @Test
@@ -157,6 +159,55 @@ class VehicleChannelTest {
                 VehicleChannel.TRIP_RECUPERATION.toState(value(new JsonPrimitive("12.5"), "kWh/100km")));
         assertEquals(new DecimalType(new BigDecimal("4.5")),
                 VehicleChannel.TRIP_ACCELERATION_RATING.toState(value(new JsonPrimitive("4.5"), "stars")));
+    }
+
+    @Test
+    void openingsAreOpenWhenPartlyOpenAndReportTheirState() {
+        TelematicValue intermediate = value(new JsonPrimitive("INTERMEDIATE"), null);
+        assertEquals(OpenClosedType.OPEN, VehicleChannel.WINDOW_FRONT_DRIVER.toState(intermediate));
+        assertEquals(new StringType("INTERMEDIATE"), VehicleChannel.WINDOW_FRONT_DRIVER.toDetailState(intermediate));
+        assertEquals("status#window-front-driver-state", VehicleChannel.WINDOW_FRONT_DRIVER.getDetailChannelUid());
+
+        TelematicValue tilted = value(new JsonPrimitive("OPEN_TILT"), null);
+        assertEquals(OpenClosedType.OPEN, VehicleChannel.SUNROOF.toState(tilted));
+        assertEquals(new StringType("OPEN_TILT"), VehicleChannel.SUNROOF.toDetailState(tilted));
+        assertEquals(OpenClosedType.CLOSED, VehicleChannel.SUNROOF.toState(value(new JsonPrimitive("CLOSED"), null)));
+
+        // doors only report OPEN or CLOSED and have no state channel
+        assertNull(VehicleChannel.DOOR_FRONT_DRIVER.getDetailChannelUid());
+    }
+
+    @Test
+    void wordsAreNormalized() {
+        assertEquals(new StringType("SELECTIVELOCKED"),
+                VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("SELECTIVE-LOCKED"), null)));
+        assertEquals(new StringType("SECURED"),
+                VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("ASN_secured"), null)));
+        assertEquals(OnOffType.ON, VehicleChannel.DEEP_SLEEP.toState(value(new JsonPrimitive("ACTIVE"), null)));
+        assertEquals(OnOffType.OFF, VehicleChannel.DEEP_SLEEP.toState(value(new JsonPrimitive("Off"), null)));
+        assertEquals(UnDefType.UNDEF, VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("N/A"), null)));
+        assertEquals(UnDefType.UNDEF, VehicleChannel.CHARGING_STATUS.toState(value(new JsonPrimitive(""), null)));
+    }
+
+    @Test
+    void moreUnitsAndDateFormats() {
+        assertEquals(new QuantityType<>(30, ImperialUnits.MILES_PER_HOUR),
+                VehicleChannel.AVG_SPEED.toState(value(new JsonPrimitive(30), "mph")));
+        assertEquals(new QuantityType<>(12, ImperialUnits.GALLON_LIQUID_US),
+                VehicleChannel.REMAINING_FUEL.toState(value(new JsonPrimitive(12), "gal")));
+        assertEquals(new DateTimeType(Instant.parse("2018-09-30T23:00:00Z")),
+                VehicleChannel.INSPECTION_DATE.toState(value(new JsonPrimitive("09/30/2018 23:00 UTC"), null)));
+        assertEquals(new DateTimeType(Instant.parse("2027-03-01T00:00:00Z")),
+                VehicleChannel.INSPECTION_DATE.toState(value(new JsonPrimitive("01.03.2027"), null)));
+    }
+
+    @Test
+    void dynamicChannelsInferSwitchesOnlyFromBooleans() {
+        assertEquals(DynamicChannel.TYPE_SWITCH, Objects
+                .requireNonNull(DynamicChannel.define(value(new JsonPrimitive("ASN_isTrue"), null))).channelTypeId());
+        // ACTIVE may be one value of a longer list, e.g. ACTIVE, INACTIVE, STANDBY
+        assertEquals(DynamicChannel.TYPE_STRING, Objects
+                .requireNonNull(DynamicChannel.define(value(new JsonPrimitive("ACTIVE"), null))).channelTypeId());
     }
 
     static TelematicValue value(@Nullable JsonElement element, @Nullable String unit) {

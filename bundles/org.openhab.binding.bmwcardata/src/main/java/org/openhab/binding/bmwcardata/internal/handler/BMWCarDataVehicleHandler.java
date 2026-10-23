@@ -37,6 +37,8 @@ import org.openhab.binding.bmwcardata.internal.config.VehicleConfiguration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -66,10 +68,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataVehicleHandler.class);
 
     private String vin = "";
-    private int pollingInterval;
     private boolean dynamicChannels = true;
     private final Object dynamicChannelLock = new Object();
-    private @Nullable ScheduledFuture<?> pollJob;
+    private @Nullable ScheduledFuture<?> propertiesJob;
     // states by channel id, to answer REFRESH commands without spending API requests
     private final Map<String, State> states = new ConcurrentHashMap<>();
     // timestamps of the latest values by descriptor, to drop values older than already published ones
@@ -77,6 +78,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     // guarded by this
     private @Nullable BigDecimal latitude;
     private @Nullable BigDecimal longitude;
+    private @Nullable BigDecimal altitude;
     private @Nullable Instant lastUpdate;
 
     public BMWCarDataVehicleHandler(Thing thing) {
@@ -91,7 +93,6 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     public void initialize() {
         VehicleConfiguration config = getConfigAs(VehicleConfiguration.class);
         vin = config.vin.trim().toUpperCase(Locale.ROOT);
-        pollingInterval = config.pollingInterval;
         dynamicChannels = config.dynamicChannels;
         if (!BMWCarDataApi.isValidVin(vin)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.vin");
@@ -103,7 +104,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        stopPolling();
+        cancelProperties();
         super.dispose();
     }
 
@@ -131,6 +132,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     public void updateTelematicData(Map<String, TelematicValue> data) {
         BigDecimal newLatitude = null;
         BigDecimal newLongitude = null;
+        BigDecimal newAltitude = null;
         Instant newest = null;
         Map<String, TelematicValue> dynamicValues = new LinkedHashMap<>();
         for (Map.Entry<String, TelematicValue> entry : data.entrySet()) {
@@ -175,6 +177,17 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                     if (channelUid != null) {
                         publish(channelUid, state);
                     }
+                    String detailChannelUid = channel.getDetailChannelUid();
+                    State detailState = channel.toDetailState(value);
+                    if (detailChannelUid != null && detailState != null) {
+                        publish(detailChannelUid, detailState);
+                    }
+                    if (channel == VehicleChannel.ALTITUDE && state instanceof QuantityType<?> altitudeState) {
+                        QuantityType<?> metres = altitudeState.toUnit(SIUnits.METRE);
+                        if (metres != null) {
+                            newAltitude = metres.toBigDecimal();
+                        }
+                    }
                 }
             }
         }
@@ -182,6 +195,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         State location = null;
         State lastUpdateState = null;
         synchronized (this) {
+            if (newAltitude != null) {
+                altitude = newAltitude;
+            }
             if (newLatitude != null || newLongitude != null) {
                 if (newLatitude != null) {
                     latitude = newLatitude;
@@ -191,8 +207,11 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                 }
                 BigDecimal lat = latitude;
                 BigDecimal lon = longitude;
+                BigDecimal alt = altitude;
                 if (lat != null && lon != null) {
-                    location = new PointType(new DecimalType(lat), new DecimalType(lon));
+                    location = alt != null
+                            ? new PointType(new DecimalType(lat), new DecimalType(lon), new DecimalType(alt))
+                            : new PointType(new DecimalType(lat), new DecimalType(lon));
                 }
             }
             Instant previous = lastUpdate;
@@ -273,50 +292,41 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private void updateBridgeStatus(ThingStatus bridgeStatus) {
         if (bridgeStatus == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
-            startPolling();
+            scheduleProperties();
         } else {
-            stopPolling();
+            cancelProperties();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
-    private synchronized void startPolling() {
-        ScheduledFuture<?> job = pollJob;
-        if (job != null && !job.isDone()) {
-            return;
-        }
-        if (pollingInterval > 0) {
-            pollJob = scheduler.scheduleWithFixedDelay(this::poll, 0, pollingInterval, TimeUnit.MINUTES);
-        } else if (!getThing().getProperties().containsKey(PROPERTY_MODEL)) {
-            pollJob = scheduler.schedule(this::retrieveProperties, 0, TimeUnit.SECONDS);
+    /**
+     * Called by the account after the telematic data of this vehicle was refreshed via the REST API.
+     */
+    void refreshSucceeded() {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
-    private synchronized void stopPolling() {
-        ScheduledFuture<?> job = pollJob;
+    /**
+     * Called by the account if the telematic data of this vehicle could not be refreshed via the REST API.
+     */
+    void refreshFailed(@Nullable String reason) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+    }
+
+    private synchronized void scheduleProperties() {
+        ScheduledFuture<?> job = propertiesJob;
+        if ((job == null || job.isDone()) && !getThing().getProperties().containsKey(PROPERTY_MODEL)) {
+            propertiesJob = scheduler.schedule(this::retrieveProperties, 0, TimeUnit.SECONDS);
+        }
+    }
+
+    private synchronized void cancelProperties() {
+        ScheduledFuture<?> job = propertiesJob;
         if (job != null) {
             job.cancel(true);
-            pollJob = null;
-        }
-    }
-
-    private void poll() {
-        BMWCarDataAccountHandler account = getAccountHandler();
-        if (account == null) {
-            return;
-        }
-        retrieveProperties();
-        try {
-            updateTelematicData(account.fetchTelematicData(vin));
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        } catch (BMWCarDataException e) {
-            if (e.isRateLimited()) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.rate-limited");
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
+            propertiesJob = null;
         }
     }
 

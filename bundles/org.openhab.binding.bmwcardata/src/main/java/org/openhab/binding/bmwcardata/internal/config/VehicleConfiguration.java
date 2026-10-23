@@ -22,8 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class VehicleConfiguration {
     public String vin = "";
-    /** Interval of REST API polls in minutes; 0 disables polling. */
-    public int pollingInterval = 120;
     /** Create channels for descriptors without predefined channel. */
     public boolean dynamicChannels = true;
 }

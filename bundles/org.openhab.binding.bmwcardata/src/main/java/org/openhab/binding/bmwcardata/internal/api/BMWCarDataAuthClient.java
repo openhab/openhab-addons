@@ -38,7 +38,7 @@ import com.google.gson.JsonParseException;
 
 /**
  * The {@link BMWCarDataAuthClient} implements the OAuth 2.0 device authorization grant (RFC 8628) with PKCE against
- * the BMW customer identity service (GCDM), as well as the refresh of the resulting tokens.
+ * the BMW customer identity service (GCDM). The resulting tokens are refreshed by openHAB's OAuth client service.
  *
  * @author Michael Weger - Initial contribution
  */
@@ -48,9 +48,10 @@ public class BMWCarDataAuthClient {
     private static final String BASE_URL = "https://customer.bmwgroup.com";
     private static final String DEVICE_CODE_PATH = "/gcdm/oauth/device/code";
     private static final String TOKEN_PATH = "/gcdm/oauth/token";
+    /** Token endpoint, also used by openHAB's OAuth client service to refresh the tokens. */
+    public static final String TOKEN_URL = BASE_URL + TOKEN_PATH;
     private static final String SCOPE = "authenticate_user openid cardata:api:read cardata:streaming:read";
     private static final String GRANT_TYPE_DEVICE_CODE = "urn:ietf:params:oauth:grant-type:device_code";
-    private static final String GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
     private static final int TIMEOUT_SECONDS = 30;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 5;
 
@@ -59,7 +60,6 @@ public class BMWCarDataAuthClient {
     private static final String ERROR_SLOW_DOWN = "slow_down";
     private static final String ERROR_EXPIRED_TOKEN = "expired_token";
     private static final String ERROR_ACCESS_DENIED = "access_denied";
-    private static final String ERROR_INVALID_GRANT = "invalid_grant";
 
     /**
      * A pending device authorization the user has to confirm at {@link #verificationUri}.
@@ -168,41 +168,6 @@ public class BMWCarDataAuthClient {
         };
     }
 
-    /**
-     * Refreshes the tokens of an authorized session.
-     *
-     * @param refreshToken the current refresh token
-     * @param gcid the customer id of the session, used if the token response does not repeat it
-     * @param idToken the current id token, used if the token response does not contain a new one
-     * @throws BMWCarDataAuthException if the refresh token is no longer accepted
-     */
-    public Tokens refresh(String refreshToken, @Nullable String gcid, @Nullable String idToken)
-            throws BMWCarDataException {
-        Fields fields = new Fields();
-        fields.put("client_id", clientId);
-        fields.put("grant_type", GRANT_TYPE_REFRESH_TOKEN);
-        fields.put("refresh_token", refreshToken);
-
-        ContentResponse response = post(baseUrl + TOKEN_PATH, fields);
-        TokenResponse dto = parseTokenResponse(response);
-        if (response.getStatus() == 200) {
-            if (dto.gcid == null) {
-                dto.gcid = gcid;
-            }
-            if (dto.idToken == null) {
-                dto.idToken = idToken;
-            }
-            if (dto.refreshToken == null) {
-                dto.refreshToken = refreshToken;
-            }
-            return toTokens(dto);
-        }
-        if (ERROR_INVALID_GRANT.equals(dto.error) || ERROR_EXPIRED_TOKEN.equals(dto.error)) {
-            throw new BMWCarDataAuthException("Refresh token rejected: " + dto.error, response.getStatus());
-        }
-        throw new BMWCarDataException("Token refresh failed: " + dto.error, response.getStatus());
-    }
-
     private Tokens toTokens(TokenResponse dto) throws BMWCarDataException {
         String accessToken = dto.accessToken;
         String refreshToken = dto.refreshToken;
@@ -248,7 +213,9 @@ public class BMWCarDataAuthClient {
             TokenResponse dto = gson.fromJson(response.getContentAsString(), TokenResponse.class);
             String error = dto != null ? dto.error : null;
             if (error != null) {
-                return error;
+                // the description tells which parameter BMW rejected, e.g. an unknown client id
+                String description = dto != null ? dto.errorDescription : null;
+                return description == null || description.isBlank() ? error : error + " (" + description + ")";
             }
         } catch (JsonParseException e) {
             // fall through to the HTTP status

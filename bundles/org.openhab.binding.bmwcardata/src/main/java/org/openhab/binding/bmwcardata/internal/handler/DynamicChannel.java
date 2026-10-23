@@ -75,7 +75,7 @@ final class DynamicChannel {
         if (primitive == null || VehicleChannel.isUndefined(primitive)) {
             return null;
         }
-        Boolean bool = VehicleChannel.toBoolean(primitive);
+        Boolean bool = VehicleChannel.toStrictBoolean(primitive);
         if (bool != null) {
             return new Definition(OnOffType.from(bool), CoreItemFactory.SWITCH, TYPE_SWITCH);
         }
