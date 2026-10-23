@@ -36,7 +36,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * {@value #MOTOR_ANGLE_PER_PERCENT}° per percent of travel, limited to 0-180°. That range is wider than the swing of
  * the real slats, so the estimate itself drifts from the slats when the blind changes direction, but its changes
  * measure the travel much finer than the reported position, which is rounded to whole percents. The tracker
- * therefore accumulates the changes of the motor angle, and moves the blind with relative angle targets. The motor
+ * therefore accumulates the changes of the motor angle, and the changes of the position only while the motor angle is
+ * at an end stop and does not follow the travel. It moves the blind with relative angle targets. The motor
  * overshoots angle targets by about {@value #MOTOR_OVERSHOOT}° in the direction of travel, which is compensated.
  *
  * @author Oleksandr Mishchuk - Initial contribution
@@ -94,7 +95,20 @@ public class SlatTracker {
         Slats current = slats;
         if (current != null) {
             if (newAngle != null && oldAngle != null) {
-                current = move(current, newAngle - oldAngle, SLACK_TOLERANCE);
+                int angleChange = newAngle - oldAngle;
+                int untracked = newPosition != null && oldPosition != null
+                        ? untrackedTravel(oldAngle, newAngle, (newPosition - oldPosition) * MOTOR_ANGLE_PER_PERCENT)
+                        : 0;
+                // travel at the end stop the motor angle started at happened before the angle changed, travel at
+                // the end stop it ended at afterwards
+                boolean beforeAngleChange = untracked < 0 ? oldAngle <= 0 : oldAngle >= MAX_ANGLE;
+                if (untracked != 0 && beforeAngleChange) {
+                    current = move(current, untracked, SLACK_TOLERANCE);
+                }
+                current = move(current, angleChange, SLACK_TOLERANCE);
+                if (untracked != 0 && !beforeAngleChange) {
+                    current = move(current, untracked, SLACK_TOLERANCE);
+                }
             } else if (newPosition != null && oldPosition != null) {
                 current = move(current, (newPosition - oldPosition) * MOTOR_ANGLE_PER_PERCENT, SLACK_TOLERANCE);
             }
@@ -121,6 +135,23 @@ public class SlatTracker {
             angle = newAngle;
         }
         slats = current;
+    }
+
+    /**
+     * The motor angle stays at its end stop while the blind travels further in that direction, so its change misses
+     * that travel; the reported position still shows it. It is only taken from the position when it exceeds the
+     * rounding of the position to whole percents, and only in the direction of an end stop the angle was at.
+     *
+     * @return the travel in motor degrees that the change of the motor angle does not show, {@code 0} if none
+     */
+    private static int untrackedTravel(int oldAngle, int newAngle, int positionChange) {
+        int untracked = positionChange - (newAngle - oldAngle);
+        if (Math.abs(untracked) <= MOTOR_ANGLE_PER_PERCENT) {
+            return 0;
+        }
+        boolean atEndStop = untracked < 0 ? oldAngle <= 0 || newAngle <= 0
+                : oldAngle >= MAX_ANGLE || newAngle >= MAX_ANGLE;
+        return atEndStop ? untracked : 0;
     }
 
     /**

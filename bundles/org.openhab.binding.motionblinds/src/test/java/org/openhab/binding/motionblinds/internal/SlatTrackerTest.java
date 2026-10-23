@@ -95,6 +95,31 @@ public class SlatTrackerTest {
     }
 
     @Test
+    public void reversalAtMidHeightAfterRaisingFromBottom() {
+        tracker.update(100, 176);
+        tracker.update(94, 0);
+        // raised to mid-height with the motor angle at its end stop
+        tracker.update(50, 0);
+        tracker.update(56, 180);
+        // a small move up at mid-height turns the slats, the bottom rail is far from the sill
+        tracker.update(55, 151);
+        assertEquals(67, tracker.getTilt());
+    }
+
+    @Test
+    public void descentWithMotorAngleAtEndStopReachesTheSill() {
+        tracker.update(100, 176);
+        tracker.update(94, 0);
+        tracker.update(50, 0);
+        tracker.update(56, 180);
+        // lowered until the bottom rail rests on the sill, with the motor angle at its end stop
+        tracker.update(99, 180);
+        // moving up lifts the bottom rail off the sill, so the slats drop to horizontal
+        tracker.update(98, 151);
+        assertEquals(50, tracker.getTilt());
+    }
+
+    @Test
     public void motorStoppingShortOfTheSlackCountsAsHorizontal() {
         tracker.update(100, 176);
         // the motor overshot less than expected and stopped 4° before the end of the slack
