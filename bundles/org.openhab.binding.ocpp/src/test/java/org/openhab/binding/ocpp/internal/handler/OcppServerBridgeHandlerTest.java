@@ -184,6 +184,21 @@ class OcppServerBridgeHandlerTest {
     }
 
     @Test
+    void aServerThatCouldNotBindIsStartedAgainLater() {
+        org.mockito.Mockito.doThrow(new IllegalStateException("Address already in use")).doNothing().when(transport)
+                .start(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyInt());
+        handler.serverRetryMillis = 50;
+
+        handler.initialize();
+
+        verify(transport, timeout(2000).times(2)).start(org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyInt());
+        verify(callback, timeout(2000)).statusUpdated(any(),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        assertEquals(transport, handler.getTransport());
+    }
+
+    @Test
     void aTransactionAcceptedBeforeItsHandlerExistsIsStillPersisted() {
         handler.initialize();
         verify(callback, timeout(2000)).statusUpdated(any(),
