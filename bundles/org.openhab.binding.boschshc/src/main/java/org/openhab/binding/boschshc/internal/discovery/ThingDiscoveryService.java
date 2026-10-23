@@ -69,7 +69,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             Map.entry("BSM", BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH),
             Map.entry("PSM", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT),
             Map.entry("PLUG_COMPACT", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT),
-            Map.entry("PLUG_COMPACT_MATTER", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT_MATTER),
+            Map.entry("PLUG_COMPACT_DUAL", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT_MATTER),
             Map.entry("CAMERA_360", BoschSHCBindingConstants.THING_TYPE_CAMERA_360),
             Map.entry("CAMERA_EYES", BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES),
             Map.entry("BWTH", BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT), // wall thermostat
