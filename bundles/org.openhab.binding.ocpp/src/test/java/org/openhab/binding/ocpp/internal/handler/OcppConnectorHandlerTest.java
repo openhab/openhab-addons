@@ -318,6 +318,31 @@ class OcppConnectorHandlerTest {
     }
 
     @Test
+    void aNewestFirstMeterValuesPublishesTheNewestReadingAndTimestamp() {
+        java.time.ZonedDateTime older = java.time.ZonedDateTime.parse("2026-01-01T10:00:00Z");
+        java.time.ZonedDateTime newer = java.time.ZonedDateTime.parse("2026-01-01T10:05:00Z");
+        eu.chargetime.ocpp.model.core.SampledValue stale = new eu.chargetime.ocpp.model.core.SampledValue("10");
+        stale.setMeasurand("Energy.Active.Import.Register");
+        stale.setUnit("Wh");
+        eu.chargetime.ocpp.model.core.SampledValue fresh = new eu.chargetime.ocpp.model.core.SampledValue("20");
+        fresh.setMeasurand("Energy.Active.Import.Register");
+        fresh.setUnit("Wh");
+        eu.chargetime.ocpp.model.core.MeterValuesRequest request = new eu.chargetime.ocpp.model.core.MeterValuesRequest(
+                1);
+        request.setMeterValue(new eu.chargetime.ocpp.model.core.MeterValue[] {
+                new eu.chargetime.ocpp.model.core.MeterValue(newer,
+                        new eu.chargetime.ocpp.model.core.SampledValue[] { fresh }),
+                new eu.chargetime.ocpp.model.core.MeterValue(older,
+                        new eu.chargetime.ocpp.model.core.SampledValue[] { stale }) });
+
+        handler.onMeterValues(request);
+
+        assertChannel(CHANNEL_TIMESTAMP, new org.openhab.core.library.types.DateTimeType(newer));
+        assertChannel(CHANNEL_ENERGY_ACTIVE_IMPORT,
+                new org.openhab.core.library.types.QuantityType<>(20, org.openhab.core.library.unit.Units.WATT_HOUR));
+    }
+
+    @Test
     void aFaultLeavesAvailabilityAlone() {
         // Faulted reports a fault, not the operator taking the connector out of service, so availability must
         // stand.

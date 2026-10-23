@@ -15,8 +15,11 @@ package org.openhab.binding.ocpp.internal.handler;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -859,13 +862,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
         states.forEach(this::updateState);
         MeterValue[] meterValues = request.getMeterValue();
         if (meterValues != null && meterValues.length > 0) {
-            ZonedDateTime timestamp = null;
-            for (int i = meterValues.length - 1; i >= 0 && timestamp == null; i--) {
-                timestamp = meterValues[i].getTimestamp();
-            }
-            if (timestamp != null) {
-                updateState(CHANNEL_TIMESTAMP, new DateTimeType(timestamp));
-            }
+            Arrays.stream(meterValues).map(MeterValue::getTimestamp).filter(Objects::nonNull)
+                    .max(Comparator.naturalOrder())
+                    .ifPresent(timestamp -> updateState(CHANNEL_TIMESTAMP, new DateTimeType(timestamp)));
         }
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
