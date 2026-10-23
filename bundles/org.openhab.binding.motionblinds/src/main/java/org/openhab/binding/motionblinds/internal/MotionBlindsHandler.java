@@ -87,6 +87,8 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     private final Gson gson = new Gson();
     private final MotionBlindsCommunicationManager communicationManager;
     private final Object requestLock = new Object();
+    /** Keeps the decision for a status and its update together, so a rejected key is not overwritten by ONLINE */
+    private final Object statusLock = new Object();
     /** Incremented by every movement command, so a running tilt can tell that it has been superseded */
     private final AtomicLong movementGeneration = new AtomicLong();
 
@@ -98,6 +100,11 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     private volatile String deviceType = "";
     private volatile @Nullable String token;
     private volatile @Nullable String accessToken;
+    /**
+     * The motor rejected the key; cleared only by an accepted request or a new initialization, not by messages that
+     * merely show the motor is reachable
+     */
+    private boolean accessDenied;
     private @Nullable ScheduledFuture<?> pollJob;
     /** Refresh, write and tilt tasks submitted to the scheduler, canceled on dispose */
     private final Set<Future<?>> tasks = ConcurrentHashMap.newKeySet();
@@ -139,7 +146,10 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
 
         Object currentSession = new Object();
         session = currentSession;
-        updateStatus(ThingStatus.UNKNOWN);
+        synchronized (statusLock) {
+            accessDenied = false;
+            updateStatus(ThingStatus.UNKNOWN);
+        }
         communicationManager.registerListener(mac, this);
         pollJob = scheduler.scheduleWithFixedDelay(() -> poll(currentSession), 0,
                 Math.max(MIN_REFRESH_INTERVAL, config.refreshInterval), TimeUnit.SECONDS);
@@ -343,21 +353,51 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     }
 
     private void requestFailed(Object session, IOException e) {
-        if (session != this.session) {
+        if (!session.equals(this.session)) {
             logger.debug("Request to motor {} abandoned after dispose: {}", mac, e.getMessage());
         } else if (e instanceof AccessDeniedException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-access-denied");
+            synchronized (statusLock) {
+                accessDenied = true;
+                updateAccessDeniedStatus();
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     /**
+     * The motor accepted an authenticated request, so the key is valid.
+     */
+    private void authenticated() {
+        synchronized (statusLock) {
+            accessDenied = false;
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    /**
+     * The motor was heard from. That does not prove the key is accepted, so a rejected key stays reported.
+     */
+    private void reachable() {
+        synchronized (statusLock) {
+            if (accessDenied) {
+                updateAccessDeniedStatus();
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
+    }
+
+    private void updateAccessDeniedStatus() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "@text/offline.config-error-access-denied");
+    }
+
+    /**
      * @throws IOException if the handler was disposed after the work of the given session was started
      */
     private void ensureCurrent(Object session) throws IOException {
-        if (session != this.session) {
+        if (!session.equals(this.session)) {
             throw new IOException("Handler of motor " + mac + " was disposed");
         }
     }
@@ -377,13 +417,12 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
                 ensureCurrent(session);
                 String actionResult = response.actionResult;
                 if (actionResult == null) {
-                    if (MSG_WRITE_DEVICE.equals(msgType)) {
-                        // the acknowledge carries the state before the command, it may arrive after the first
-                        // Report of the movement and must not roll the state back
-                        updateStatus(ThingStatus.ONLINE);
-                    } else {
+                    // the acknowledge of a WriteDevice carries the state before the command, it may arrive after
+                    // the first Report of the movement and must not roll the state back
+                    if (!MSG_WRITE_DEVICE.equals(msgType)) {
                         handleStatus(response);
                     }
+                    authenticated();
                     return response;
                 }
                 logger.debug("Motor {} rejected {}: {}", mac, msgType, actionResult);
@@ -551,6 +590,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         }
         if (MSG_REPORT.equals(message.msgType) || MSG_HEARTBEAT.equals(message.msgType)) {
             handleStatus(message);
+            reachable();
         }
     }
 
@@ -566,7 +606,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
                 logger.debug("Unable to parse status of motor {}: {}", mac, e.getMessage());
             }
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateChannels(DeviceStatus status) {

@@ -159,6 +159,24 @@ public class MotionBlindsHandlerTest {
     }
 
     @Test
+    public void heartbeatDoesNotHideRejectedKey() throws IOException {
+        respond(GET_DEVICE_LIST_ACK, ACCESS_TOKEN_ERROR, ACCESS_TOKEN_ERROR);
+        createHandler(KEY).initialize();
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isAccessDenied()));
+
+        // the motor is reachable and reports its state, but that does not prove that the key is accepted
+        handler.onMessage(parse(HEARTBEAT), IP);
+        verify(callback).stateUpdated(channel(CHANNEL_POSITION), eq(new PercentType(98)));
+        assertTrue(isAccessDenied().matches(handler.getThing().getStatusInfo()));
+        verify(callback, never()).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
+
+        // an accepted request clears it
+        respond(READ_DEVICE_ACK);
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), RefreshType.REFRESH);
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
+    }
+
+    @Test
     public void noResponseGoesOfflineWithCommunicationError() throws IOException {
         when(communicationManager.sendRequest(anyString(), any(), eq(MAC))).thenThrow(new IOException("No response"));
         createHandler(KEY).initialize();
@@ -452,5 +470,11 @@ public class MotionBlindsHandlerTest {
 
     private static org.mockito.ArgumentMatcher<ThingStatusInfo> isStatus(ThingStatus status) {
         return info -> info.getStatus() == status;
+    }
+
+    private static org.mockito.ArgumentMatcher<ThingStatusInfo> isAccessDenied() {
+        return info -> info.getStatus() == ThingStatus.OFFLINE
+                && info.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR
+                && "@text/offline.config-error-access-denied".equals(info.getDescription());
     }
 }
