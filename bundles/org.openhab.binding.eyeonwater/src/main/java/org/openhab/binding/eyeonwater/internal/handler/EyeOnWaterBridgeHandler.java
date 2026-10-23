@@ -220,7 +220,6 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
             stopPolling();
             cancelReconnect();
             client = null;
-            registeredMeters.clear();
         }
 
         ServiceRegistration<?> reg = discoveryServiceReg;
