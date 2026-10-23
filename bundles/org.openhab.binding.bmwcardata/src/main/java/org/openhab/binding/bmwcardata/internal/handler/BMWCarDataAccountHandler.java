@@ -92,6 +92,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     // not secret: the client id the stored authorization belongs to, and the stream user name
     private static final String STORAGE_KEY_CLIENT_ID = "clientId";
     private static final String STORAGE_KEY_GCID = "gcid";
+    // the per-thing request budget of earlier versions, removed at start
     private static final String STORAGE_KEY_BUDGET = "budget";
     private static final String STORAGE_KEY_CONTAINER = "container";
 
@@ -99,6 +100,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private final HttpClient httpClient;
     private final Gson gson;
     private final Storage<String> storage;
+    // request budgets by client ID, so they survive recreating the account thing
+    private final Storage<String> budgetStorage;
     private final OAuthFactory oAuthFactory;
     private final AccessTokenRefreshListener refreshListener = this::onAccessTokenResponse;
     private final Object containerLock = new Object();
@@ -131,11 +134,12 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private @Nullable String containerId;
 
     public BMWCarDataAccountHandler(Bridge bridge, HttpClient httpClient, Gson gson, Storage<String> storage,
-            OAuthFactory oAuthFactory) {
+            Storage<String> budgetStorage, OAuthFactory oAuthFactory) {
         super(bridge);
         this.httpClient = httpClient;
         this.gson = gson;
         this.storage = storage;
+        this.budgetStorage = budgetStorage;
         this.oAuthFactory = oAuthFactory;
     }
 
@@ -169,7 +173,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         oAuthService.addAccessTokenRefreshListener(refreshListener);
         this.oAuthService = oAuthService;
 
-        RequestBudget budget = new RequestBudget(storage, STORAGE_KEY_BUDGET, config.requestBudget, Clock.systemUTC());
+        // BMW counts the requests per client, also when the account thing is recreated with a new UID
+        storage.remove(STORAGE_KEY_BUDGET);
+        RequestBudget budget = new RequestBudget(budgetStorage, clientId, config.requestBudget, Clock.systemUTC());
         this.budget = budget;
         api = new BMWCarDataApi(httpClient, gson, this::getAccessToken, budget);
         disposed = false;
@@ -202,7 +208,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         stopAuthJob();
         deleteAuthorization();
         storage.remove(STORAGE_KEY_CONTAINER);
-        // the request budget is kept, as BMW keeps counting the requests of the account
+        // the request budget is kept in the shared budget storage, as BMW keeps counting the requests of the client
         super.handleRemoval();
     }
 
