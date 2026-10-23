@@ -38,8 +38,10 @@ import org.openhab.binding.mynice.internal.xml.MyNiceXStream;
 import org.openhab.binding.mynice.internal.xml.RequestBuilder;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
+import org.openhab.binding.mynice.internal.xml.dto.Event;
 import org.openhab.binding.mynice.internal.xml.dto.Response;
 import org.openhab.binding.mynice.internal.xml.dto.T4Command;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -47,8 +49,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.events.Event;
 
 /**
  * The {@link It4WifiHandler} is responsible for handling commands, which are
