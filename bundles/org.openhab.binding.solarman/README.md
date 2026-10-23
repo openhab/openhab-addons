@@ -58,6 +58,7 @@ Possible values:
 | kstar_hybrid       | KSTAR Hybrid inverters                             |                                                                  |
 | sofar_wifikit      | SOFAR WiFi Kit                                     |                                                                  |
 | zcs_azzurro-ktl-v3 | ZCS Azzurro KTL-V3 inverters                       | ZCS Azzurro 3.3/4.4/5.5/6.6 KTL-V3 (rebranded Sofar KTLX-G3)     |
+| sunwoda_hybrid     | SUNWODA Hybrid Three-Phase inverters               | e.g. SW10KH3UT with LSW-5 stick                                  |
 
 The `additionalRequests` allows the user to specify additional address ranges to be polled. The format of the value is `mb_functioncode1:start1-end1, mb_functioncode2:start2-end2,...`
 For example `"0x03:0x27D-0x27E"` will issue an additional read for Holding Registers between `0x27D` and `0x27E`.

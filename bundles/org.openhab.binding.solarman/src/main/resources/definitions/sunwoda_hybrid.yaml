@@ -1,0 +1,537 @@
+# Sunwoda hybrid three-phase inverter (tested: SW10KH3UT) via Solarman LSW-5 stick
+# Register map reverse-engineered 2026-10-23 by correlating local reads with Solarman cloud data.
+# All values are input registers (function code 0x04).
+
+requests:
+  - start: 0x000D
+    end: 0x0038
+    mb_functioncode: 0x04
+  - start: 0x0053
+    end: 0x005D
+    mb_functioncode: 0x04
+  - start: 0x0138
+    end: 0x0198
+    mb_functioncode: 0x04
+  - start: 0x01A4
+    end: 0x01AE
+    mb_functioncode: 0x04
+  - start: 0x0262
+    end: 0x0264
+    mb_functioncode: 0x04
+
+parameters:
+  - group: Solar
+    items:
+      - name: "PV1 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0181]
+
+      - name: "PV1 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x0182]
+
+      - name: "PV1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x0183]
+
+      - name: "PV2 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0184]
+
+      - name: "PV2 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x0185]
+
+      - name: "PV2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x0186]
+
+      - name: "Daily Production"
+        class: "energy"
+        state_class: "measurement"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x000E, 0x000D]
+
+      - name: "Total Production"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0010, 0x000F]
+
+  - group: Battery
+    items:
+      - name: "SOC"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        registers: [0x01A6]
+
+      - name: "Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x01A4]
+
+      - name: "Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x01AC]
+
+      - name: "Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x01AE]
+
+      - name: "BMS Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0262]
+
+      - name: "BMS SOC"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        registers: [0x0263]
+
+      - name: "BMS SOH"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        registers: [0x0264]
+
+      - name: "Daily Charge"
+        class: "energy"
+        state_class: "measurement"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0032, 0x0031]
+
+      - name: "Total Charge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0034, 0x0033]
+
+      - name: "Daily Discharge"
+        class: "energy"
+        state_class: "measurement"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0036, 0x0035]
+
+      - name: "Total Discharge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0038, 0x0037]
+
+  - group: Grid
+    items:
+      - name: "L1 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0162]
+
+      - name: "L2 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0163]
+
+      - name: "L3 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0164]
+
+      - name: "L1 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x0153]
+
+      - name: "L2 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x0154]
+
+      - name: "L3 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x0155]
+
+      - name: "L1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0156]
+
+      - name: "L2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0157]
+
+      - name: "L3 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0158]
+
+      - name: "Total Reactive Power"
+        class: "reactive_power"
+        state_class: "measurement"
+        uom: "var"
+        scale: 1
+        rule: 2
+        registers: [0x0160]
+
+      - name: "Total Apparent Power"
+        class: "apparent_power"
+        state_class: "measurement"
+        uom: "VA"
+        scale: 1
+        rule: 2
+        registers: [0x0161]
+
+      - name: "Frequency"
+        class: "frequency"
+        state_class: "measurement"
+        uom: "Hz"
+        scale: 0.01
+        rule: 1
+        registers: [0x013B]
+
+      - name: "Daily Energy Exported"
+        class: "energy"
+        state_class: "measurement"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0022, 0x0021]
+
+      - name: "Total Energy Exported"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0024, 0x0023]
+
+      - name: "Daily Energy Imported"
+        class: "energy"
+        state_class: "measurement"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0026, 0x0025]
+
+      - name: "Total Energy Imported"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0028, 0x0027]
+
+  - group: Load
+    items:
+      - name: "Total Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0198]
+
+      - name: "L1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x016B]
+
+      - name: "L2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x016C]
+
+      - name: "L3 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x016D]
+
+      - name: "L1 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x0168]
+
+      - name: "L2 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x0169]
+
+      - name: "L3 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x016A]
+
+      - name: "Daily Consumption"
+        class: "energy"
+        state_class: "measurement"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x002A, 0x0029]
+
+      - name: "Total Consumption"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x002C, 0x002B]
+
+  - group: Inverter
+    items:
+      - name: "Active Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x014A]
+
+      - name: "Reactive Power"
+        class: "reactive_power"
+        state_class: "measurement"
+        uom: "var"
+        scale: 1
+        rule: 2
+        registers: [0x014B]
+
+      - name: "Apparent Power"
+        class: "apparent_power"
+        state_class: "measurement"
+        uom: "VA"
+        scale: 1
+        rule: 2
+        registers: [0x014C]
+
+      - name: "L1 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0138]
+
+      - name: "L2 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0139]
+
+      - name: "L3 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x013A]
+
+      - name: "L1 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x013E]
+
+      - name: "L2 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x013F]
+
+      - name: "L3 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x0140]
+
+      - name: "L1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0141]
+
+      - name: "L2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0142]
+
+      - name: "L3 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0143]
+
+      - name: "DC Bus Positive Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0151]
+
+      - name: "DC Bus Negative Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0152]
+
+      - name: "Temperature"
+        class: "temperature"
+        state_class: "measurement"
+        uom: "°C"
+        scale: 0.1
+        rule: 2
+        registers: [0x0197]
+
+      - name: "Rated Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x0053]
+
+  - group: Alert
+    items:
+      - name: "INV Event Code"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [0x0166]
+
+      - name: "DC Event Code"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [0x0167]
+
+      - name: "EMS Event Code"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [0x005D]
