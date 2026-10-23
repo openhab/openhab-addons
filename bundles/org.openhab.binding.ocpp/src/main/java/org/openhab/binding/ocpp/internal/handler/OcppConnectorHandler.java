@@ -157,6 +157,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
     private volatile @Nullable Integer meterStart;
+    // A charger may report Available before it sends the stop, which still has to settle the session it ends.
+    private volatile @Nullable ForgottenTransaction forgotten;
     // NaN is no limit, which leaves the charger at its own maximum; 0 is a limit that stops the charge.
     private volatile double currentLimitAmps = Double.NaN;
     private volatile double powerLimitWatts = Double.NaN;
@@ -838,6 +840,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 // Available means no active transaction.
                 Integer stale = transactionId;
                 if (stale != null) {
+                    forgotten = new ForgottenTransaction(stale, meterStart);
                     transactionId = null;
                     meterStart = null;
                     updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
@@ -922,6 +925,20 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     public void onTransactionStopped(StopTransactionRequest request) {
         Integer meterStop = request.getMeterStop();
+        Integer stopped = request.getTransactionId();
+        ForgottenTransaction late = forgotten;
+        if (late != null && stopped != null && late.transactionId() == stopped) {
+            forgotten = null;
+            Integer lateStart = late.meterStart();
+            if (meterStop != null) {
+                updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
+                if (lateStart != null && transactionId == null) {
+                    updateState(CHANNEL_SESSION_ENERGY, new QuantityType<>(meterStop - lateStart, Units.WATT_HOUR));
+                }
+            }
+            publishStopTimestamp(request);
+            return;
+        }
         Integer start = meterStart;
         if (meterStop != null) {
             updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
@@ -932,13 +949,17 @@ public class OcppConnectorHandler extends BaseThingHandler {
             updateState(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
         }
         meterStart = null;
+        publishStopTimestamp(request);
+        this.transactionId = null;
+        updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
+        carryLimitPastTransaction();
+    }
+
+    private void publishStopTimestamp(StopTransactionRequest request) {
         ZonedDateTime timestamp = request.getTimestamp();
         if (timestamp != null) {
             updateState(CHANNEL_TIMESTAMP_STOP, new DateTimeType(timestamp));
         }
-        this.transactionId = null;
-        updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
-        carryLimitPastTransaction();
     }
 
     /** With the transaction gone, a re-send lands as the TxDefaultProfile the next transaction starts under. */
@@ -973,5 +994,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (task != null) {
             task.cancel(false);
         }
+    }
+
+    private record ForgottenTransaction(int transactionId, @Nullable Integer meterStart) {
     }
 }

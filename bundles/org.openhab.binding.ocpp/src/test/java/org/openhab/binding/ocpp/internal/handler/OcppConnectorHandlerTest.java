@@ -577,4 +577,51 @@ class OcppConnectorHandlerTest {
                 "un-pausing with a set limit must restore it, not clear the cap");
         assertEquals(16.0, sentLimit(unpause), "un-pausing must restore the previous 16 A limit");
     }
+
+    @Test
+    void anAvailableForgetsAnOpenSessionWithoutLoggingATotalForIt() {
+        startTransaction(7);
+        handler.onMeterValues(meterValues("Energy.Active.Import.Register", null, "kWh", "1.6"));
+
+        handler.onStatusNotification(status(ChargePointStatus.Available));
+
+        assertChannel(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_METER_STOP)), any());
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_SESSION_ENERGY)), any());
+    }
+
+    @Test
+    void aStopThatArrivesAfterAvailableStillLogsTheSessionTotal() {
+        startTransaction(7);
+        handler.onStatusNotification(status(ChargePointStatus.Available));
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_METER_STOP,
+                new org.openhab.core.library.types.QuantityType<>(1600, org.openhab.core.library.unit.Units.WATT_HOUR));
+        assertChannel(CHANNEL_SESSION_ENERGY,
+                new org.openhab.core.library.types.QuantityType<>(1500, org.openhab.core.library.unit.Units.WATT_HOUR));
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_TIMESTAMP_STOP)), any());
+    }
+
+    @Test
+    void aLateStopLeavesTheNextSessionRunning() {
+        startTransaction(7);
+        handler.onStatusNotification(status(ChargePointStatus.Available));
+        startTransaction(8);
+        clearInvocations(callback);
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_METER_STOP,
+                new org.openhab.core.library.types.QuantityType<>(1600, org.openhab.core.library.unit.Units.WATT_HOUR));
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_TRANSACTION_ID)), any());
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_SESSION_ENERGY)), any());
+
+        endTransaction(8);
+
+        assertChannel(CHANNEL_SESSION_ENERGY,
+                new org.openhab.core.library.types.QuantityType<>(1500, org.openhab.core.library.unit.Units.WATT_HOUR));
+        assertChannel(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
+    }
 }
