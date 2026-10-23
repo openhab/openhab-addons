@@ -326,6 +326,7 @@ public enum MiIoDevices {
     ROIDMI_VACUUM_R1B("roidmi.vacuum.r1b", "ROIDMI EVE", THING_TYPE_BASIC),
     ROIDMI_VACUUM_SDJ60("roidmi.vacuum.sdj60", "ROIDMI EVE MAX", THING_TYPE_BASIC),
     ROIDMI_VACUUM_V60("roidmi.vacuum.v60", "ROIDMI EVE vacuum", THING_TYPE_BASIC),
+    ROIDMI_VACUUM_V62("roidmi.vacuum.v62", "ROIDMI EVE CC", THING_TYPE_BASIC),
     ROIDMI_VACUUM_V63("roidmi.vacuum.v63", "ROIDMI VACUUM EVE ROOK", THING_TYPE_BASIC),
     ROIDMI_VACUUM_V66("roidmi.vacuum.v66", "ROIDMI EVA", THING_TYPE_BASIC),
     S090615_SWITCH_XSWITCH01("090615.switch.xswitch01", "PTX OneKey Switch (WIFI)", THING_TYPE_BASIC),
