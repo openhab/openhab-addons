@@ -54,7 +54,7 @@ public class RemoteEntity implements EntityType {
                 .addPrimaryChannel(ItemType.SWITCH) //
                 .add("send_command", ItemType.STRING) //
                 .addIfSupported(LEARN_COMMAND, "learn_command", ItemType.SWITCH) //
-                .addIfSupported(DELETE_COMMAND, "delete_command", ItemType.SWITCH) //
+                .addIfSupported(DELETE_COMMAND, "delete_command", ItemType.STRING) //
                 .build();
     }
 

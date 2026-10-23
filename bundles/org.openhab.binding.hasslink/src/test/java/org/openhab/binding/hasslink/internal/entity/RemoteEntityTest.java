@@ -26,12 +26,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.hasslink.internal.HassLinkChannelFactory;
+import org.openhab.binding.hasslink.internal.ItemType;
 import org.openhab.binding.hasslink.internal.api.dto.EntityState;
 import org.openhab.binding.hasslink.internal.entity.impl.RemoteEntity;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ThingUID;
+
+import com.google.gson.JsonPrimitive;
 
 /**
  * Tests channel discovery, state handling, and commands for Home Assistant remote entities.
@@ -59,11 +62,20 @@ class RemoteEntityTest extends AbstractEntityTest {
         @MethodSource("org.openhab.binding.hasslink.internal.entity.RemoteEntityTest#fixtures")
         @DisplayName("discovers supported channels")
         void discoversSupportedChannels(Fixture fixture) {
-            EntityState state = fixture.load(RemoteEntityTest.this);
+            EntityState fixtureState = fixture.load(RemoteEntityTest.this);
+            // The fixture's supported_features is 0, but we want to test the discovery of the delete_command channel,
+            // which is only available when supported_features=2
+            EntityState state = new EntityState(fixtureState.entityId(), fixtureState.state(),
+                    Map.of("supported_features", new JsonPrimitive(2)));
             List<Channel> channels = HassLinkChannelFactory.buildChannels(List.of(state),
                     new ThingUID("hasslink", "fixture"), "Fixture", mockBridgeForEntity(entity));
 
             assertThat(channels, hasSize(entity.getChannelSpecs(state, context).size()));
+            Channel deleteCommandChannel = channels.stream()
+                    .filter(channel -> "delete_command"
+                            .equals(channel.getConfiguration().get(HassLinkChannelFactory.CONFIG_ATTRIBUTE)))
+                    .findFirst().orElseThrow();
+            assertThat(deleteCommandChannel.getAcceptedItemType(), is(ItemType.STRING.name()));
         }
     }
 
