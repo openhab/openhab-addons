@@ -17,8 +17,11 @@ import static org.openhab.binding.motionblinds.internal.MotionBlindsBindingConst
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -96,6 +99,14 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     private volatile @Nullable String token;
     private volatile @Nullable String accessToken;
     private @Nullable ScheduledFuture<?> pollJob;
+    /** Refresh, write and tilt tasks submitted to the scheduler, canceled on dispose */
+    private final Set<Future<?>> tasks = ConcurrentHashMap.newKeySet();
+    /**
+     * Identifies the current initialization; {@code null} while disposed. Work captures it when it is started and
+     * checks it before each request, so work started before a dispose neither sends anything nor publishes state
+     * afterwards, also when the Thing has been initialized again meanwhile.
+     */
+    private volatile @Nullable Object session;
     private SlatTracker slatTracker = new SlatTracker(3, 2);
 
     public MotionBlindsHandler(Thing thing, MotionBlindsCommunicationManager communicationManager) {
@@ -126,19 +137,26 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         accessToken = null;
         slatTracker = new SlatTracker(config.tiltTravel, config.tiltSlack);
 
+        Object currentSession = new Object();
+        session = currentSession;
         updateStatus(ThingStatus.UNKNOWN);
         communicationManager.registerListener(mac, this);
-        pollJob = scheduler.scheduleWithFixedDelay(this::poll, 0,
+        pollJob = scheduler.scheduleWithFixedDelay(() -> poll(currentSession), 0,
                 Math.max(MIN_REFRESH_INTERVAL, config.refreshInterval), TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
+        session = null;
         ScheduledFuture<?> job = pollJob;
         if (job != null) {
             job.cancel(true);
             pollJob = null;
         }
+        // a request already waiting for its answer is not interrupted by this, but the session check stops it
+        // from sending anything further
+        tasks.forEach(task -> task.cancel(true));
+        tasks.clear();
         communicationManager.unregisterListener(mac, this);
         token = null;
         accessToken = null;
@@ -146,8 +164,13 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        Object currentSession = session;
+        if (currentSession == null) {
+            logger.debug("Ignoring command {} for channel {}: motor {} is not initialized", command, channelUID, mac);
+            return;
+        }
         if (command instanceof RefreshType) {
-            scheduler.execute(this::poll);
+            submit(() -> poll(currentSession));
             return;
         }
 
@@ -159,7 +182,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             }
             // incremented here rather than in the task, so the order follows the arrival of the commands
             long generation = movementGeneration.incrementAndGet();
-            scheduler.execute(() -> tilt(tilt, generation));
+            submit(() -> tilt(currentSession, tilt, generation));
             return;
         }
 
@@ -173,7 +196,12 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             return;
         }
         movementGeneration.incrementAndGet();
-        scheduler.execute(() -> write(data));
+        submit(() -> write(currentSession, data));
+    }
+
+    private void submit(Runnable task) {
+        tasks.removeIf(Future::isDone);
+        tasks.add(scheduler.submit(task));
     }
 
     private @Nullable Map<String, Object> positionCommand(Command command) {
@@ -200,12 +228,12 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
      * Turn the slats to the given tilt at the current height, see {@link SlatTracker}. From fully lowered this can
      * take two moves; the state is read again after the first one. A newer movement command cancels the tilt.
      */
-    private void tilt(int tiltPercent, long generation) {
+    private void tilt(Object session, int tiltPercent, long generation) {
         for (int move = 1; move <= MAX_TILT_MOVES; move++) {
             Map<String, Object> data = slatTracker.tiltCommand(tiltPercent);
             if (data == null) {
                 // the state of the slats is not known yet
-                poll();
+                poll(session);
                 data = slatTracker.tiltCommand(tiltPercent);
             }
             if (data == null) {
@@ -215,10 +243,11 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             if (data.isEmpty()) {
                 return;
             }
-            if (!writeIfCurrent(generation, data)) {
+            if (!writeIfCurrent(session, generation, data)) {
                 return;
             }
-            if (move == MAX_TILT_MOVES || thing.getStatus() != ThingStatus.ONLINE || !waitUntilStopped(generation)) {
+            if (move == MAX_TILT_MOVES || thing.getStatus() != ThingStatus.ONLINE
+                    || !waitUntilStopped(session, generation)) {
                 return;
             }
         }
@@ -230,13 +259,13 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
      *
      * @return {@code false} if the tilt was superseded and nothing was sent
      */
-    private boolean writeIfCurrent(long generation, Map<String, Object> data) {
+    private boolean writeIfCurrent(Object session, long generation, Map<String, Object> data) {
         synchronized (requestLock) {
             if (generation != movementGeneration.get()) {
                 logger.debug("Tilt of motor {} is superseded by a newer command", mac);
                 return false;
             }
-            write(data);
+            write(session, data);
             return true;
         }
     }
@@ -250,7 +279,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
      *         checks: a tilt move takes 1-2 seconds, so the blind is then being moved by something else (remote,
      *         app, another command) and a further move would be based on an intermediate state and interfere with it
      */
-    private boolean waitUntilStopped(long generation) {
+    private boolean waitUntilStopped(Object session, long generation) {
         Integer previousAngle = null;
         for (int check = 0; check < MAX_STOP_CHECKS; check++) {
             try {
@@ -263,7 +292,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
                 logger.debug("Tilt of motor {} is superseded by a newer command", mac);
                 return false;
             }
-            if (!poll()) {
+            if (!poll(session)) {
                 return false;
             }
             Integer angle = slatTracker.getMotorAngle();
@@ -294,28 +323,42 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
      *
      * @return {@code true} if the status was read
      */
-    private boolean poll() {
+    private boolean poll(Object session) {
         try {
-            request(MSG_READ_DEVICE, null);
+            request(session, MSG_READ_DEVICE, null);
             return true;
-        } catch (AccessDeniedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-access-denied");
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            requestFailed(session, e);
+            return false;
         }
-        return false;
     }
 
-    private void write(Map<String, Object> data) {
+    private void write(Object session, Map<String, Object> data) {
         try {
             // the acknowledge carries the state before the command; the new state arrives with Report messages
-            request(MSG_WRITE_DEVICE, data);
-        } catch (AccessDeniedException e) {
+            request(session, MSG_WRITE_DEVICE, data);
+        } catch (IOException e) {
+            requestFailed(session, e);
+        }
+    }
+
+    private void requestFailed(Object session, IOException e) {
+        if (session != this.session) {
+            logger.debug("Request to motor {} abandoned after dispose: {}", mac, e.getMessage());
+        } else if (e instanceof AccessDeniedException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-access-denied");
-        } catch (IOException e) {
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    /**
+     * @throws IOException if the handler was disposed after the work of the given session was started
+     */
+    private void ensureCurrent(Object session) throws IOException {
+        if (session != this.session) {
+            throw new IOException("Handler of motor " + mac + " was disposed");
         }
     }
 
@@ -323,12 +366,15 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
      * Send a {@code ReadDevice} or {@code WriteDevice} request. If the motor rejects the access token, a new token
      * is fetched and the request is retried once.
      */
-    private MotionBlindsMessage request(String msgType, @Nullable Map<String, Object> data) throws IOException {
+    private MotionBlindsMessage request(Object session, String msgType, @Nullable Map<String, Object> data)
+            throws IOException {
         synchronized (requestLock) {
             for (int attempt = 1;; attempt++) {
-                String currentAccessToken = getAccessToken();
-                MotionBlindsMessage response = send(
+                String currentAccessToken = getAccessToken(session);
+                MotionBlindsMessage response = send(session,
                         new MotionBlindsRequest(msgType, mac, deviceType, currentAccessToken, data));
+                // an answer that arrives after a dispose must not update the Thing anymore
+                ensureCurrent(session);
                 String actionResult = response.actionResult;
                 if (actionResult == null) {
                     if (MSG_WRITE_DEVICE.equals(msgType)) {
@@ -353,17 +399,21 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     /**
      * Send a request to the motor. If the IP address is not known yet, or the motor does not answer on it anymore,
      * the motor is found by its MAC address with a multicast {@code GetDeviceList} and the request is sent (again) to
-     * the address it answered from.
+     * the address it answered from. Nothing is sent anymore once the handler was disposed.
      */
-    private MotionBlindsMessage send(MotionBlindsRequest request) throws IOException {
+    private MotionBlindsMessage send(Object session, MotionBlindsRequest request) throws IOException {
+        ensureCurrent(session);
         String currentIp = ipAddress;
         if (currentIp.isEmpty()) {
-            return communicationManager.sendRequest(resolveIpAddress(), request, mac);
+            String resolvedIp = resolveIpAddress();
+            ensureCurrent(session);
+            return communicationManager.sendRequest(resolvedIp, request, mac);
         }
         try {
             // only this motor's answer is accepted, so another device at a stale address leads to a new search
             return communicationManager.sendRequest(currentIp, request, mac);
         } catch (IOException e) {
+            ensureCurrent(session);
             String resolvedIp;
             try {
                 resolvedIp = resolveIpAddress();
@@ -373,6 +423,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             if (resolvedIp.equals(currentIp)) {
                 throw e;
             }
+            ensureCurrent(session);
             return communicationManager.sendRequest(resolvedIp, request, mac);
         }
     }
@@ -400,14 +451,14 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         }
     }
 
-    private String getAccessToken() throws IOException {
+    private String getAccessToken(Object session) throws IOException {
         String current = accessToken;
         if (current != null) {
             return current;
         }
         String currentToken = token;
         if (currentToken == null || deviceType.isEmpty()) {
-            currentToken = fetchDeviceList();
+            currentToken = fetchDeviceList(session);
         }
         try {
             current = AccessTokenCalculator.calculate(config.key, currentToken);
@@ -423,8 +474,8 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
      *
      * @return the token
      */
-    private String fetchDeviceList() throws IOException {
-        MotionBlindsMessage response = send(new MotionBlindsRequest(MSG_GET_DEVICE_LIST));
+    private String fetchDeviceList(Object session) throws IOException {
+        MotionBlindsMessage response = send(session, new MotionBlindsRequest(MSG_GET_DEVICE_LIST));
         String newToken = response.token;
         if (!MSG_GET_DEVICE_LIST_ACK.equals(response.msgType) || newToken == null) {
             throw new IOException("Unexpected response to " + MSG_GET_DEVICE_LIST + ": " + response.msgType);

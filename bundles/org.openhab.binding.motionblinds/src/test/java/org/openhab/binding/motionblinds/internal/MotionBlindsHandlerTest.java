@@ -25,10 +25,13 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,6 +77,8 @@ public class MotionBlindsHandlerTest {
     private static final String KEY = "12ab345c-d67e-8f";
     // covers the time the handler waits for the answer to a multicast GetDeviceList
     private static final long TIMEOUT_MS = 5000;
+    /** First move of a tilt to 75% from fully lowered at 176°, see {@link #motorTiltsInTwoMoves} */
+    private static final int FIRST_TILT_MOVE = 176 - 2 * 29 + SlatTracker.MOTOR_OVERSHOOT;
 
     private @Mock @NonNullByDefault({}) MotionBlindsCommunicationManager communicationManager;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
@@ -279,25 +284,9 @@ public class MotionBlindsHandlerTest {
 
     @Test
     public void stopDuringTiltCancelsSecondMove() throws IOException, InterruptedException {
-        // same motion as in tiltAboveOpenFromFullyLoweredTakesTwoMoves, which leads to a second move
-        Queue<String> reads = new ConcurrentLinkedQueue<>(
-                List.of(status(100, 176), status(99, 150), status(98, 124), status(98, 124)));
-        AtomicBoolean stopSent = new AtomicBoolean();
-        doAnswer(invocation -> {
-            MotionBlindsRequest request = invocation.getArgument(1);
-            if (MSG_GET_DEVICE_LIST.equals(request.msgType)) {
-                return parse(GET_DEVICE_LIST_ACK);
-            } else if (MSG_READ_DEVICE.equals(request.msgType)) {
-                String read = reads.poll();
-                return parse(read != null ? read : status(98, 124));
-            }
-            Map<String, Object> data = request.data;
-            if (data != null && data.containsKey("targetAngle") && !stopSent.getAndSet(true)) {
-                // the user stops the blind while the tilt waits for the first move to end
-                handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), StopMoveType.STOP);
-            }
-            return parse(status(100, 176));
-        }).when(communicationManager).sendRequest(eq(IP), any(), eq(MAC));
+        // the user stops the blind while the tilt waits for the first move to end
+        motorTiltsInTwoMoves(() -> handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION),
+                StopMoveType.STOP));
         createHandler(KEY).initialize();
         verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
 
@@ -307,13 +296,59 @@ public class MotionBlindsHandlerTest {
                 argThat(r -> Map.of("operation", OPERATION_STOP).equals(r.data)), eq(MAC));
         // give a second move the time it would need; it must not restart the motor after the STOP
         Thread.sleep(4000);
+        assertEquals(List.of(Map.of("targetAngle", FIRST_TILT_MOVE), Map.of("operation", OPERATION_STOP)), writes());
+    }
+
+    @Test
+    public void disposeDuringTiltCancelsSecondMove() throws IOException, InterruptedException {
+        CountDownLatch firstMove = new CountDownLatch(1);
+        motorTiltsInTwoMoves(firstMove::countDown);
+        createHandler(KEY).initialize();
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
+
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_TILT), new PercentType(75));
+        assertTrue(firstMove.await(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        handler.dispose();
+        clearInvocations(callback);
+        int requestsBeforeDispose = mockingDetails(communicationManager).getInvocations().size();
+
+        // give a second move the time it would need; nothing may be sent or published anymore
+        Thread.sleep(4000);
+        assertEquals(requestsBeforeDispose, mockingDetails(communicationManager).getInvocations().size());
+        assertEquals(List.of(Map.of("targetAngle", FIRST_TILT_MOVE)), writes());
+        verifyNoInteractions(callback);
+    }
+
+    /**
+     * The motor answers like in {@link #tiltAboveOpenFromFullyLoweredTakesTwoMoves}, so a tilt to 75% takes two
+     * moves.
+     *
+     * @param onFirstTiltMove run when the first tilt move is sent
+     */
+    private void motorTiltsInTwoMoves(Runnable onFirstTiltMove) throws IOException {
+        Queue<String> reads = new ConcurrentLinkedQueue<>(
+                List.of(status(100, 176), status(99, 150), status(98, 124), status(98, 124)));
+        AtomicBoolean firstTiltMoveSent = new AtomicBoolean();
+        doAnswer(invocation -> {
+            MotionBlindsRequest request = invocation.getArgument(1);
+            if (MSG_GET_DEVICE_LIST.equals(request.msgType)) {
+                return parse(GET_DEVICE_LIST_ACK);
+            } else if (MSG_READ_DEVICE.equals(request.msgType)) {
+                String read = reads.poll();
+                return parse(read != null ? read : status(98, 124));
+            }
+            Map<String, Object> data = request.data;
+            if (data != null && data.containsKey("targetAngle") && !firstTiltMoveSent.getAndSet(true)) {
+                onFirstTiltMove.run();
+            }
+            return parse(status(100, 176));
+        }).when(communicationManager).sendRequest(eq(IP), any(), eq(MAC));
+    }
+
+    private List<@Nullable Map<String, Object>> writes() throws IOException {
         ArgumentCaptor<MotionBlindsRequest> captor = ArgumentCaptor.forClass(MotionBlindsRequest.class);
         verify(communicationManager, atLeastOnce()).sendRequest(eq(IP), captor.capture(), eq(MAC));
-        assertEquals(
-                List.of(Map.of("targetAngle", 176 - 2 * 29 + SlatTracker.MOTOR_OVERSHOOT),
-                        Map.of("operation", OPERATION_STOP)),
-                captor.getAllValues().stream().filter(r -> MSG_WRITE_DEVICE.equals(r.msgType)).map(r -> r.data)
-                        .toList());
+        return captor.getAllValues().stream().filter(r -> MSG_WRITE_DEVICE.equals(r.msgType)).map(r -> r.data).toList();
     }
 
     @Test
