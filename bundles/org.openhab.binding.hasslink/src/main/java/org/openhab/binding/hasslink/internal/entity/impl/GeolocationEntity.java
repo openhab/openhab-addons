@@ -43,7 +43,7 @@ public class GeolocationEntity implements EntityType {
     @Override
     public List<ChannelSpec> getChannelSpecs(EntityState entityState, EntityContext context) {
         ChannelSpecsBuilder builder = ChannelSpecsBuilder.create(entityState, context) //
-                .addPrimaryChannel(ItemType.number("Distance"));
+                .addPrimaryChannel(ItemType.number("Length"));
 
         builder.addAttr("source", ItemType.STRING);
 

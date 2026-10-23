@@ -67,6 +67,9 @@ class GeolocationEntityTest extends AbstractEntityTest {
                     new ThingUID("hasslink", "fixture"), "Fixture", mockBridgeForEntity(entity));
 
             assertThat(channels, hasSize(entity.getChannelSpecs(state, context).size()));
+            Channel primaryChannel = channels.stream().filter(channel -> !channel.getUID().getId().contains("#"))
+                    .findFirst().orElseThrow();
+            assertThat(primaryChannel.getAcceptedItemType(), is("Number:Length"));
         }
     }
 
