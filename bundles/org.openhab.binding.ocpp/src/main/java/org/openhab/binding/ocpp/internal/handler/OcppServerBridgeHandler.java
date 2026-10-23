@@ -209,8 +209,8 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         }
     }
 
-    public void unregisterChargePoint(String chargePointId) {
-        chargePoints.remove(chargePointId);
+    public void unregisterChargePoint(String chargePointId, OcppChargePointHandler handler) {
+        chargePoints.remove(chargePointId, handler);
     }
 
     public void connectorDiscovered(String chargePointId, int connectorId) {

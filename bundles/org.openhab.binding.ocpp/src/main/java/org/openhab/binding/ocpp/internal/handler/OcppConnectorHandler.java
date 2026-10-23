@@ -304,7 +304,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         OcppChargePointHandler parent = chargePoint;
         if (parent != null) {
-            parent.unregisterConnector(connectorId);
+            parent.unregisterConnector(connectorId, this);
         }
         chargePoint = null;
     }
