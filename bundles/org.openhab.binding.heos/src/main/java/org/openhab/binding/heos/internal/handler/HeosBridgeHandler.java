@@ -14,6 +14,12 @@ package org.openhab.binding.heos.internal.handler;
 
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.CONNECTION_LOST;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.CONNECTION_RESTORED;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.EVENT_STREAM_TIMEOUT;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.EVENT_TYPE_EVENT;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.EVENT_TYPE_SYSTEM;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.PID;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 
 import java.io.IOException;
@@ -169,7 +175,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             if (!username.isBlank() && !password.isBlank()) {
                 login(connection, username, password);
             } else {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Can't log in. Username or password not set.");
+                updateStatus(ThingStatus.ONLINE, "Localmode, cloud username or password not set.");
             }
 
             fetchPlayersAndGroups();
