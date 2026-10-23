@@ -323,6 +323,7 @@ public enum MiIoDevices {
     ROBOROCK_VACUUM_T7V3("roborock.vacuum.t7v3", "Roborock Vacuum T7 v3", THING_TYPE_VACUUM),
     ROCKROBO_VACUUM_S6("rockrobo.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     ROCKROBO_VACUUM_V1("rockrobo.vacuum.v1", "Mi Robot Vacuum", THING_TYPE_VACUUM),
+    ROIDMI_VACUUM_R1B("roidmi.vacuum.r1b", "ROIDMI EVE", THING_TYPE_BASIC),
     ROIDMI_VACUUM_V60("roidmi.vacuum.v60", "ROIDMI EVE vacuum", THING_TYPE_BASIC),
     ROIDMI_VACUUM_V66("roidmi.vacuum.v66", "ROIDMI EVA", THING_TYPE_BASIC),
     S090615_SWITCH_XSWITCH01("090615.switch.xswitch01", "PTX OneKey Switch (WIFI)", THING_TYPE_BASIC),
