@@ -134,6 +134,20 @@ class MeterValueMapperTest {
         assertNull(new MeterValueMapper().toState("-Infinity", "W"));
     }
 
+    @Test
+    void theNewestBlockWinsWhateverOrderTheChargerListsThemIn() {
+        ZonedDateTime older = ZonedDateTime.parse("2026-01-01T10:00:00Z");
+        ZonedDateTime newer = ZonedDateTime.parse("2026-01-01T10:05:00Z");
+        MeterValuesRequest request = new MeterValuesRequest(1);
+        request.setMeterValue(new MeterValue[] {
+                new MeterValue(newer, new SampledValue[] { sample("Power.Active.Import", null, "W", "7400") }),
+                new MeterValue(older, new SampledValue[] { sample("Power.Active.Import", null, "W", "1200") }) });
+
+        Map<String, State> states = new MeterValueMapper().toStates(request);
+
+        assertEquals(new QuantityType<>(7400, Units.WATT), states.get("power-active-import"));
+    }
+
     private static SampledValue sample(String measurand, @org.eclipse.jdt.annotation.Nullable String phase, String unit,
             String value) {
         SampledValue sampledValue = new SampledValue(value);
