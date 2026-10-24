@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -39,6 +40,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.ocpp.internal.transport.OcppTransport;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.storage.Storage;
@@ -185,14 +187,13 @@ class OcppServerBridgeHandlerTest {
 
     @Test
     void aServerThatCouldNotBindIsStartedAgainLater() {
-        org.mockito.Mockito.doThrow(new IllegalStateException("Address already in use")).doNothing().when(transport)
-                .start(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyInt());
+        Mockito.doThrow(new IllegalStateException("Address already in use")).doNothing().when(transport)
+                .start(anyString(), anyInt());
         handler.serverRetryMillis = 50;
 
         handler.initialize();
 
-        verify(transport, timeout(2000).times(2)).start(org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyInt());
+        verify(transport, timeout(2000).times(2)).start(anyString(), anyInt());
         verify(callback, timeout(2000)).statusUpdated(any(),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));
         assertEquals(transport, handler.getTransport());
