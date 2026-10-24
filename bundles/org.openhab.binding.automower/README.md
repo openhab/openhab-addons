@@ -164,7 +164,7 @@ These channels hold the different Work Area configurations.
 | work-area#id                                                         | Number                    | R           | Unique numeric ID of the Work Area                                                  | true     |
 | work-area#type                                                       | String                    | R           | The type of the Work Area, e.g. RANDOM                                              | true     |
 | work-area#cutting-height                                             | Number:Dimensionless      | R/W         | Cutting height of the Work Area in percent. 0-100                                   | false    |
-| work-area#cutting-height-cm<sup id="a3">[3](#f3)</sup>               | Number:Length             | R           | Calculated cutting height in cm                                                     | true     |
+| work-area#cutting-height-cm<sup id="a3">[3](#f3)</sup>               | Number:Length             | R/W         | Calculated cutting height in cm; commands set the nearest whole percent             | true     |
 | work-area#use-global-cutting-height                                  | Switch                    | R           | If the Work Area uses the global cutting height instead of its own                  | true     |
 | work-area#enabled                                                    | Switch                    | R/W         | If the Work Area is enabled or disabled                                             | false    |
 | work-area#schedulable                                                | Switch                    | R           | If the Work Area can be scheduled                                                   | true     |
@@ -174,7 +174,9 @@ These channels hold the different Work Area configurations.
 | work-area#orientation                                                | Number:Angle              | R/W         | Orientation of the mowing pattern in degrees. Pattern based Work Areas only         | true     |
 | work-area#orientation-shift                                          | Number:Angle              | R/W         | Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only   | true     |
 
-The advanced read-only `work-area#cutting-height-cm` channel reports the calculated height using the limits inherited from the mower. The inherited minimum and maximum are also visible as work-area properties.
+The advanced `work-area#cutting-height-cm` channel reports the calculated height using the limits inherited from the mower. Commands within that range are mapped to the nearest whole percent (0-100). The inherited minimum and maximum are also visible as work-area properties.
+
+Both cm channels accept length commands such as `4.5 cm` or `45 mm`, and unitless numeric commands are interpreted as centimeters. Values outside the configured range, incompatible units, and commands without valid height limits are ignored.
 
 #### Calendar Tasks Channels (Work Area)
 

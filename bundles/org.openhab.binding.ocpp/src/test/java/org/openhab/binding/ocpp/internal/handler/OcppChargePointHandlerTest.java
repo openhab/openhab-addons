@@ -89,6 +89,20 @@ class OcppChargePointHandlerTest {
     }
 
     @Test
+    void removingADuplicateConnectorThingLeavesTheOtherRouted() {
+        OcppConnectorHandler first = mock(OcppConnectorHandler.class);
+        OcppConnectorHandler second = mock(OcppConnectorHandler.class);
+        handler.registerConnector(2, first);
+        handler.registerConnector(2, second);
+        handler.unregisterConnector(2, first);
+
+        handler.onStatusNotification(
+                new StatusNotificationRequest(2, ChargePointErrorCode.NoError, ChargePointStatus.Charging));
+
+        verify(second).onStatusNotification(any());
+    }
+
+    @Test
     void chargePointWideMessagesAreNotRoutedToAConnector() {
         // Connector 0 addresses the charge point itself, so there is no connector to hand it to.
         handler.onStatusNotification(

@@ -26,6 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -55,6 +57,7 @@ import eu.chargetime.ocpp.model.core.ChargePointErrorCode;
 import eu.chargetime.ocpp.model.core.ChargePointStatus;
 import eu.chargetime.ocpp.model.core.ChargingProfilePurposeType;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
+import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 import eu.chargetime.ocpp.model.smartcharging.ChargingProfileStatus;
 import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileConfirmation;
 import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileRequest;
@@ -135,6 +138,7 @@ class OcppConnectorHandlerTest {
         when(chargePoint.getChargePointId()).thenReturn("charger");
         when(chargePoint.recoverTransactionId(1)).thenReturn(7);
         when(chargePoint.recoverMeterStart(7)).thenReturn(1000);
+        when(chargePoint.recoverExternalStart(7)).thenReturn(null);
         Bridge bridge = mock(Bridge.class);
         when(bridge.getHandler()).thenReturn(chargePoint);
         when(callback.getBridge(chargePointUID)).thenReturn(bridge);
@@ -320,6 +324,31 @@ class OcppConnectorHandlerTest {
     }
 
     @Test
+    void aNewestFirstMeterValuesPublishesTheNewestReadingAndTimestamp() {
+        java.time.ZonedDateTime older = java.time.ZonedDateTime.parse("2026-01-01T10:00:00Z");
+        java.time.ZonedDateTime newer = java.time.ZonedDateTime.parse("2026-01-01T10:05:00Z");
+        eu.chargetime.ocpp.model.core.SampledValue stale = new eu.chargetime.ocpp.model.core.SampledValue("10");
+        stale.setMeasurand("Energy.Active.Import.Register");
+        stale.setUnit("Wh");
+        eu.chargetime.ocpp.model.core.SampledValue fresh = new eu.chargetime.ocpp.model.core.SampledValue("20");
+        fresh.setMeasurand("Energy.Active.Import.Register");
+        fresh.setUnit("Wh");
+        eu.chargetime.ocpp.model.core.MeterValuesRequest request = new eu.chargetime.ocpp.model.core.MeterValuesRequest(
+                1);
+        request.setMeterValue(new eu.chargetime.ocpp.model.core.MeterValue[] {
+                new eu.chargetime.ocpp.model.core.MeterValue(newer,
+                        new eu.chargetime.ocpp.model.core.SampledValue[] { fresh }),
+                new eu.chargetime.ocpp.model.core.MeterValue(older,
+                        new eu.chargetime.ocpp.model.core.SampledValue[] { stale }) });
+
+        handler.onMeterValues(request);
+
+        assertChannel(CHANNEL_TIMESTAMP, new org.openhab.core.library.types.DateTimeType(newer));
+        assertChannel(CHANNEL_ENERGY_ACTIVE_IMPORT,
+                new org.openhab.core.library.types.QuantityType<>(20, org.openhab.core.library.unit.Units.WATT_HOUR));
+    }
+
+    @Test
     void aFaultLeavesAvailabilityAlone() {
         // Faulted reports a fault, not the operator taking the connector out of service, so availability must
         // stand.
@@ -426,6 +455,141 @@ class OcppConnectorHandlerTest {
         endTransaction(7);
 
         verify(chargePoint, never()).send(argThat(r -> r instanceof SetChargingProfileRequest));
+    }
+
+    private void linkExternalMeter() {
+        when(callback.isChannelLinked(new ChannelUID(THING_UID, CHANNEL_EXTERNAL_ENERGY))).thenReturn(true);
+    }
+
+    private void externalReading(String reading) {
+        command(CHANNEL_EXTERNAL_ENERGY, new QuantityType<>(reading));
+    }
+
+    private static QuantityType<?> wattHours(double wh) {
+        return new QuantityType<>(wh, Units.WATT_HOUR);
+    }
+
+    @Test
+    void externalReadingsConvertToWattHours() {
+        assertEquals(1500.0, OcppConnectorHandler.toWattHours(new QuantityType<>("1.5 kWh")));
+        assertEquals(2000.0, OcppConnectorHandler.toWattHours(new DecimalType(2)));
+        assertEquals(null, OcppConnectorHandler.toWattHours(new QuantityType<>("7 kW")));
+    }
+
+    /** A CHARX has no meter of its own; the PowerTag on its supply is what the session is sized from. */
+    @Test
+    void aLinkedExternalMeterSizesTheSessionInsteadOfTheCharger() {
+        attachReadyChargePoint();
+        linkExternalMeter();
+        externalReading("1000 kWh");
+        startTransaction(7);
+        externalReading("1005 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(5000));
+    }
+
+    @Test
+    void theStartReadingIsKeptWithTheTransaction() {
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        linkExternalMeter();
+        externalReading("1000 kWh");
+
+        startTransaction(7);
+
+        verify(chargePoint).rememberExternalStart(7, 1_000_000.0);
+    }
+
+    @Test
+    void withoutAReadingAtTheStartTheChargerSizesTheSession() {
+        attachReadyChargePoint();
+        linkExternalMeter();
+        startTransaction(7);
+        externalReading("1005 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(1500));
+    }
+
+    @Test
+    void anUnlinkedExternalChannelIsIgnored() {
+        attachReadyChargePoint();
+        externalReading("1000 kWh");
+        startTransaction(7);
+        externalReading("1005 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(1500));
+    }
+
+    @Test
+    void aCounterThatWentBackwardsGivesNoSessionTotal() {
+        attachReadyChargePoint();
+        linkExternalMeter();
+        externalReading("1000 kWh");
+        startTransaction(7);
+        externalReading("3 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
+    }
+
+    @Test
+    void anExternalStartSurvivesARestart() {
+        ThingUID chargePointUID = new ThingUID(THING_TYPE_CHARGEPOINT, "server", "charger");
+        when(thing.getBridgeUID()).thenReturn(chargePointUID);
+        OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
+        when(chargePoint.getChargePointId()).thenReturn("charger");
+        when(chargePoint.recoverTransactionId(1)).thenReturn(7);
+        when(chargePoint.recoverExternalStart(7)).thenReturn(1_000_000.0);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(chargePoint);
+        when(callback.getBridge(chargePointUID)).thenReturn(bridge);
+        linkExternalMeter();
+        handler.initialize();
+        externalReading("1002 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(2000));
+    }
+
+    /** The link was removed mid-session; a meterless charger's registers must not size it instead. */
+    @Test
+    void anExternalStartIsRecoveredWithoutTheLink() {
+        ThingUID chargePointUID = new ThingUID(THING_TYPE_CHARGEPOINT, "server", "charger");
+        when(thing.getBridgeUID()).thenReturn(chargePointUID);
+        OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
+        when(chargePoint.getChargePointId()).thenReturn("charger");
+        when(chargePoint.recoverTransactionId(1)).thenReturn(7);
+        when(chargePoint.recoverMeterStart(7)).thenReturn(0);
+        when(chargePoint.recoverExternalStart(7)).thenReturn(1_000_000.0);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(chargePoint);
+        when(callback.getBridge(chargePointUID)).thenReturn(bridge);
+        handler.initialize();
+
+        handler.onTransactionStopped(new StopTransactionRequest(0, ZonedDateTime.now(ZoneOffset.UTC), 7));
+
+        assertChannel(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
+    }
+
+    @Test
+    void aStopAfterAvailableIsSizedFromTheExternalMeter() {
+        attachReadyChargePoint();
+        linkExternalMeter();
+        externalReading("1000 kWh");
+        startTransaction(7);
+        handler.onStatusNotification(status(ChargePointStatus.Available));
+        externalReading("1005 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(5000));
     }
 
     private void startTransaction(int transactionId) {

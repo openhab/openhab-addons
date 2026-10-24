@@ -34,6 +34,7 @@ public class TransactionStore {
     private static final String SEQUENCE_KEY = "sequence";
     private static final String TX_PREFIX = "tx:";
     private static final String METER_PREFIX = "meter:";
+    private static final String EXTERNAL_PREFIX = "external:";
     private static final char SEPARATOR = '\t';
 
     private final Logger logger = LoggerFactory.getLogger(TransactionStore.class);
@@ -83,6 +84,28 @@ public class TransactionStore {
     public synchronized void end(int transactionId) {
         storage.remove(TX_PREFIX + transactionId);
         storage.remove(METER_PREFIX + transactionId);
+        storage.remove(EXTERNAL_PREFIX + transactionId);
+    }
+
+    /** The external meter's reading in Wh when the transaction started, for a charger without a meter. */
+    public synchronized void rememberExternalStart(int transactionId, double wattHours) {
+        if (storage.get(TX_PREFIX + transactionId) != null) {
+            storage.put(EXTERNAL_PREFIX + transactionId, Double.toString(wattHours));
+        }
+    }
+
+    public synchronized @Nullable Double externalStart(int transactionId) {
+        String stored = storage.get(EXTERNAL_PREFIX + transactionId);
+        if (stored == null) {
+            return null;
+        }
+        try {
+            return Double.valueOf(stored);
+        } catch (NumberFormatException e) {
+            logger.warn("Persisted external meter start '{}' for transaction {} is not a number; the session "
+                    + "reports no energy", stored, transactionId);
+            return null;
+        }
     }
 
     public synchronized @Nullable Integer meterStart(int transactionId) {
@@ -122,6 +145,7 @@ public class TransactionStore {
             if (key.startsWith(TX_PREFIX) && matches(storage.get(key), chargePointId, connectorId)) {
                 storage.remove(key);
                 storage.remove(METER_PREFIX + key.substring(TX_PREFIX.length()));
+                storage.remove(EXTERNAL_PREFIX + key.substring(TX_PREFIX.length()));
             }
         }
     }

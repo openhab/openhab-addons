@@ -59,6 +59,8 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_INTRUSION_DETECTION_SYSTEM = new ThingTypeUID(BINDING_ID,
             "intrusion-detection-system");
     public static final ThingTypeUID THING_TYPE_SMART_PLUG_COMPACT = new ThingTypeUID(BINDING_ID, "smart-plug-compact");
+    public static final ThingTypeUID THING_TYPE_SMART_PLUG_COMPACT_MATTER = new ThingTypeUID(BINDING_ID,
+            "smart-plug-compact-matter");
     public static final ThingTypeUID THING_TYPE_SMART_BULB = new ThingTypeUID(BINDING_ID, "smart-bulb");
     public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR = new ThingTypeUID(BINDING_ID, "smoke-detector");
     public static final ThingTypeUID THING_TYPE_UNIVERSAL_SWITCH = new ThingTypeUID(BINDING_ID, "universal-switch");

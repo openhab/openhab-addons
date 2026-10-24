@@ -477,13 +477,13 @@
 
 	<channel-type id="setting-cutting-height-type">
 		<item-type>Number</item-type>
-		<label>Cutting Height</label>
+		<label>Cutting Height (1-9)</label>
 		<description>Prescaled cutting height, range: 1-9</description>
 	</channel-type>
 
 	<channel-type id="setting-cutting-height-cm-type" advanced="true">
 		<item-type unitHint="cm">Number:Length</item-type>
-		<label>Cutting Height</label>
+		<label>Cutting Height (cm)</label>
 		<description>Calculated or commanded cutting height in cm. Requires the mower's minimum and maximum cutting-height
 			configuration.</description>
 		<state pattern="%.1f %unit%" readOnly="false"/>
@@ -495,14 +495,14 @@
 	</channel-type>
 
 	<channel-type id="stat-cutting-blade-usage-time-type">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Cutting Blade Usage Time</label>
 		<description>The time since the last reset of the cutting blade usage counter</description>
 		<state pattern="%.1f h"/>
 	</channel-type>
 
 	<channel-type id="stat-down-time-type" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Down Time</label>
 		<description>The time the Automower® has been disconnected from the cloud</description>
 		<state readOnly="true" pattern="%1$tdd:%1$tHh:%1$tMm:%1$tSs"/>
@@ -523,56 +523,56 @@
 	</channel-type>
 
 	<channel-type id="stat-total-charging-time-type">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Total Charging Time</label>
 		<description>Total charging time</description>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
 	<channel-type id="stat-total-cutting-time-type">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Total Cutting Time</label>
 		<description>Total cutting time</description>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
 	<channel-type id="stat-total-cutting-percent-type">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Relative Total Cutting Time</label>
 		<description>Total cutting time in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="stat-total-drive-distance-type">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="m">Number:Length</item-type>
 		<label>Total Drive Distance</label>
 		<description>Total driven distance</description>
 		<state readOnly="true" pattern="%.1f km"/>
 	</channel-type>
 
 	<channel-type id="stat-total-running-time-type">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Total Running Time</label>
 		<description>The total running time (the wheel motors have been running)</description>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
 	<channel-type id="stat-total-searching-time-type">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Total Searching Time</label>
 		<description>The total searching time</description>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
 	<channel-type id="stat-total-searching-percent-type">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Relative Total Searching Time</label>
 		<description>The total searching time in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="stat-up-time-type" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Up Time</label>
 		<description>The time the Automower® has been connected to the cloud</description>
 		<state readOnly="true" pattern="%1$tdd:%1$tHh:%1$tMm:%1$tSs"/>
@@ -664,17 +664,18 @@
 	</channel-type>
 
 	<channel-type id="workarea-cutting-height-type">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Cutting Height</label>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Cutting Height (%)</label>
 		<description>Cutting height of the Work Area, range: 0-100</description>
 		<state pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="workarea-cutting-height-cm-type" advanced="true">
 		<item-type unitHint="cm">Number:Length</item-type>
-		<label>Cutting Height</label>
-		<description>Calculated cutting height in cm for the Work Area. The range is inherited from the mower configuration.</description>
-		<state pattern="%.1f %unit%"/>
+		<label>Cutting Height (cm)</label>
+		<description>Calculated or commanded cutting height in cm for the Work Area. Commands set the nearest whole percent
+			using the range inherited from the mower configuration.</description>
+		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="workarea-enabled-type">
@@ -712,21 +713,21 @@
 	</channel-type>
 
 	<channel-type id="workarea-orientation-type" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unitHint="°">Number:Angle</item-type>
 		<label>Pattern Orientation</label>
 		<description>Orientation of the mowing pattern in degrees. Pattern based Work Areas only</description>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="workarea-orientation-shift-type" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unitHint="°">Number:Angle</item-type>
 		<label>Pattern Orientation Shift</label>
 		<description>Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only</description>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="workarea-progress-type" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Progress</label>
 		<description>The progress on a Work Area. EPOS Automower® and systematic mowing Work Areas only</description>
 		<state readOnly="true" pattern="%d %%"/>

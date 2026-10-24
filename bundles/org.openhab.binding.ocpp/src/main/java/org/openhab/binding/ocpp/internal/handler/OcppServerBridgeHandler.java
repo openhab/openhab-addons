@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -81,6 +82,8 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     private volatile @Nullable OcppDiscoveryService discoveryService;
     private volatile OcppServerConfiguration config = new OcppServerConfiguration();
 
+    long serverRetryMillis = TimeUnit.MINUTES.toMillis(1);
+
     public OcppServerBridgeHandler(Bridge bridge, StorageService storageService) {
         super(bridge);
         this.storageService = storageService;
@@ -135,38 +138,63 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             this.transport = newTransport;
         }
 
-        startupTask = scheduler.submit(() -> {
-            synchronized (lifecycleLock) {
-                if (disposed || generation != lifecycleGeneration) {
-                    return;
-                }
-            }
-            try {
-                newTransport.start(localConfig.host, localConfig.port);
-            } catch (RuntimeException e) {
-                boolean current;
-                synchronized (lifecycleLock) {
-                    current = !disposed && generation == lifecycleGeneration;
-                    if (generation == lifecycleGeneration) {
-                        transport = null;
-                    }
-                }
-                if (current) {
-                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Could not start OCPP server: " + e.getMessage());
-                }
+        startupTask = scheduler.submit(() -> startServer(newTransport, localConfig, generation));
+    }
+
+    /**
+     * A bind address that is not up yet at boot, or a port another process still holds, clears on its own; without
+     * a retry the bridge would stay offline until the Thing is edited or openHAB restarts.
+     */
+    private void startServer(OcppTransport newTransport, OcppServerConfiguration localConfig, long generation) {
+        synchronized (lifecycleLock) {
+            if (disposed || generation != lifecycleGeneration) {
                 return;
             }
-            boolean adopted;
+        }
+        try {
+            newTransport.start(localConfig.host, localConfig.port);
+        } catch (RuntimeException e) {
+            boolean current;
             synchronized (lifecycleLock) {
-                adopted = !disposed && generation == lifecycleGeneration;
+                current = !disposed && generation == lifecycleGeneration;
+                if (generation == lifecycleGeneration) {
+                    transport = null;
+                }
             }
-            if (adopted) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                newTransport.stop();
+            if (current) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Could not start OCPP server: " + e.getMessage());
+                startupTask = scheduler.schedule(() -> retryServer(localConfig, generation), serverRetryMillis,
+                        TimeUnit.MILLISECONDS);
             }
-        });
+            return;
+        }
+        boolean adopted;
+        synchronized (lifecycleLock) {
+            adopted = !disposed && generation == lifecycleGeneration;
+        }
+        if (adopted) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            newTransport.stop();
+        }
+    }
+
+    /** A server that failed to bind cannot be started again, so the retry builds a fresh one. */
+    private void retryServer(OcppServerConfiguration localConfig, long generation) {
+        OcppTransport fresh;
+        try {
+            fresh = createTransport(localConfig);
+        } catch (RuntimeException e) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+        synchronized (lifecycleLock) {
+            if (disposed || generation != lifecycleGeneration) {
+                return;
+            }
+            transport = fresh;
+        }
+        startServer(fresh, localConfig, generation);
     }
 
     @Override
@@ -196,7 +224,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
 
     protected OcppTransport createTransport(OcppServerConfiguration serverConfig) {
         return new ChargeTimeTransport(this, serverConfig.pingInterval, serverConfig.requestTimeoutSeconds,
-                serverConfig.authPassword);
+                serverConfig.authPassword, serverConfig.tlsKeystorePath, serverConfig.tlsKeystorePassword);
     }
 
     public void registerChargePoint(String chargePointId, OcppChargePointHandler handler) {
@@ -209,8 +237,8 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         }
     }
 
-    public void unregisterChargePoint(String chargePointId) {
-        chargePoints.remove(chargePointId);
+    public void unregisterChargePoint(String chargePointId, OcppChargePointHandler handler) {
+        chargePoints.remove(chargePointId, handler);
     }
 
     public void connectorDiscovered(String chargePointId, int connectorId) {
@@ -442,6 +470,24 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         TransactionStore.Location location = store.locate(transactionId);
         return location != null && chargePointId.equals(location.chargePointId()) ? store.meterStart(transactionId)
                 : null;
+    }
+
+    public void rememberExternalStart(int transactionId, String chargePointId, double wattHours) {
+        TransactionStore store = transactionStore;
+        if (store != null && isOwnedBy(store, transactionId, chargePointId)) {
+            store.rememberExternalStart(transactionId, wattHours);
+        }
+    }
+
+    public @Nullable Double externalStartOf(int transactionId, String chargePointId) {
+        TransactionStore store = transactionStore;
+        return store != null && isOwnedBy(store, transactionId, chargePointId) ? store.externalStart(transactionId)
+                : null;
+    }
+
+    private static boolean isOwnedBy(TransactionStore store, int transactionId, String chargePointId) {
+        TransactionStore.Location location = store.locate(transactionId);
+        return location != null && chargePointId.equals(location.chargePointId());
     }
 
     public void forgetTransaction(int transactionId) {

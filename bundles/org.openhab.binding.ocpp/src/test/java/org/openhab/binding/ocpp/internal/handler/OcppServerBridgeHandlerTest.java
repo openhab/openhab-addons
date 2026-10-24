@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,18 +35,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.ocpp.internal.transport.OcppTransport;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
@@ -170,6 +175,21 @@ class OcppServerBridgeHandlerTest {
     }
 
     @Test
+    void aKeystoreThatCannotBeLoadedIsAConfigurationError() throws Exception {
+        Path keystore = Path.of(Objects.requireNonNull(getClass().getResource("/tls-test-keystore.p12")).toURI());
+        when(thing.getConfiguration()).thenReturn(new Configuration(
+                Map.of("tlsKeystorePath", keystore.toString(), "tlsKeystorePassword", "notthepassword")));
+        // The real transport, so the keystore is actually read.
+        OcppServerBridgeHandler real = new OcppServerBridgeHandler(thing, storageService);
+        real.setCallback(callback);
+
+        real.initialize();
+
+        verify(callback).statusUpdated(any(), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                && status.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
+    }
+
+    @Test
     void aPasswordTheLibraryWouldRejectFailsInitializationInstead() {
         // The library only accepts 16-20 byte Basic-auth passwords; out-of-range must fail config, not lock
         // them out.
@@ -181,6 +201,20 @@ class OcppServerBridgeHandlerTest {
                 && status.getStatusDetail() == org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR));
         verify(transport, org.mockito.Mockito.after(500).never()).start(org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyInt());
+    }
+
+    @Test
+    void aServerThatCouldNotBindIsStartedAgainLater() {
+        Mockito.doThrow(new IllegalStateException("Address already in use")).doNothing().when(transport)
+                .start(anyString(), anyInt());
+        handler.serverRetryMillis = 50;
+
+        handler.initialize();
+
+        verify(transport, timeout(2000).times(2)).start(anyString(), anyInt());
+        verify(callback, timeout(2000)).statusUpdated(any(),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        assertEquals(transport, handler.getTransport());
     }
 
     @Test
@@ -230,6 +264,22 @@ class OcppServerBridgeHandlerTest {
 
         org.junit.jupiter.api.Assertions.assertNull(handler.openTransactionFor("charx", 2),
                 "a stop before the handler exists must clear the persisted transaction");
+    }
+
+    @Test
+    void removingADuplicateChargePointThingLeavesTheOtherRouted() {
+        handler.initialize();
+        OcppChargePointHandler first = mock(OcppChargePointHandler.class);
+        OcppChargePointHandler second = mock(OcppChargePointHandler.class);
+        handler.registerChargePoint("charx", first);
+        handler.registerChargePoint("charx", second);
+        handler.unregisterChargePoint("charx", first);
+        UUID session = UUID.randomUUID();
+        handler.onSessionOpened(session, "charx", null);
+
+        handler.onHeartbeat(session);
+
+        verify(second).onHeartbeat();
     }
 
     @Test

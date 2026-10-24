@@ -14,6 +14,8 @@ package org.openhab.binding.ocpp.internal.transport;
 
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +66,11 @@ public final class MeterValueMapper {
         if (meterValues == null) {
             return states;
         }
-        for (MeterValue meterValue : meterValues) {
+        MeterValue[] chronological = meterValues.clone();
+        // OCPP does not order the blocks; the newest must be applied last so it wins.
+        Arrays.sort(chronological,
+                Comparator.comparing(MeterValue::getTimestamp, Comparator.nullsFirst(Comparator.naturalOrder())));
+        for (MeterValue meterValue : chronological) {
             SampledValue[] samples = meterValue.getSampledValue();
             if (samples == null) {
                 continue;
