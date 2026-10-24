@@ -233,7 +233,27 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         disconnectOnConnect = false;
         connection = -1;
         connectionState = ConnectionState.DISCONNECTED;
+        failCurrentProcedure("failed because the Bluetooth adapter stopped");
         currentProcedure = PROCEDURE_NONE;
+    }
+
+    private void failCurrentProcedure(String reason) {
+        switch (currentProcedure.type) {
+            case CHARACTERISTIC_READ:
+                ReadCharacteristicProcedure readProcedure = (ReadCharacteristicProcedure) currentProcedure;
+                readProcedure.readFuture.completeExceptionally(new BluetoothException(
+                        "Read characteristic " + readProcedure.characteristic.getUuid() + " " + reason));
+                break;
+            case CHARACTERISTIC_WRITE:
+            case NOTIFICATION_ENABLE:
+            case NOTIFICATION_DISABLE:
+                WriteCharacteristicProcedure writeProcedure = (WriteCharacteristicProcedure) currentProcedure;
+                writeProcedure.writeFuture.completeExceptionally(new BluetoothException(
+                        "Write characteristic " + writeProcedure.characteristic.getUuid() + " " + reason));
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -745,21 +765,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         connectionState = ConnectionState.DISCONNECTED;
         connection = -1;
 
-        BlueGigaProcedure procedure = currentProcedure;
-        switch (procedure.type) {
-            case CHARACTERISTIC_READ:
-                ReadCharacteristicProcedure readProcedure = (ReadCharacteristicProcedure) procedure;
-                readProcedure.readFuture.completeExceptionally(new BluetoothException("Read characteristic "
-                        + readProcedure.characteristic.getUuid() + " failed due to disconnect of device " + address));
-                break;
-            case CHARACTERISTIC_WRITE:
-                WriteCharacteristicProcedure writeProcedure = (WriteCharacteristicProcedure) procedure;
-                writeProcedure.writeFuture.completeExceptionally(new BluetoothException("Write characteristic "
-                        + writeProcedure.characteristic.getUuid() + " failed due to disconnect of device " + address));
-                break;
-            default:
-                break;
-        }
+        failCurrentProcedure("failed due to disconnect of device " + address);
         currentProcedure = PROCEDURE_NONE;
 
         notifyListeners(BluetoothEventType.CONNECTION_STATE,

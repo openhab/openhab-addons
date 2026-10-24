@@ -690,22 +690,22 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     }
 
     public boolean cancelConnectionAttempt(BluetoothAddress address) {
-        boolean activeAttempt = false;
+        boolean activeAttempt;
         boolean pendingAttempt;
-        synchronized (pendingConnections) {
-            activeAttempt = address.equals(connectingAddress.get());
-            if (activeAttempt) {
-                clearConnectionAttempt(connectingAddress, address);
+        synchronized (gapProcedureLock) {
+            synchronized (pendingConnections) {
+                activeAttempt = address.equals(connectingAddress.get());
+                pendingAttempt = pendingConnections.removeIf(request -> address.equals(request.address()));
             }
-            pendingAttempt = pendingConnections.removeIf(request -> address.equals(request.address()));
+            if (activeAttempt) {
+                bgEndProcedure();
+                synchronized (pendingConnections) {
+                    clearConnectionAttempt(connectingAddress, address);
+                }
+            }
         }
         if (activeAttempt || pendingAttempt) {
             getDevice(address).connectionAttemptCancelled();
-        }
-        if (activeAttempt) {
-            bgEndProcedure();
-        }
-        if (activeAttempt || pendingAttempt) {
             dispatchPendingConnection();
         }
         return activeAttempt || pendingAttempt || connections.containsValue(address);

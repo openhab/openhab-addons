@@ -14,17 +14,24 @@ package org.openhab.binding.bluetooth.bluegiga;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.bluegiga.handler.BlueGigaBridgeHandler;
@@ -44,6 +51,56 @@ class BlueGigaBluetoothDeviceTest {
                 BlueGigaBluetoothDevice.alternateAddressType(BluetoothAddressType.GAP_ADDRESS_TYPE_PUBLIC));
         assertEquals(BluetoothAddressType.GAP_ADDRESS_TYPE_PUBLIC,
                 BlueGigaBluetoothDevice.alternateAddressType(BluetoothAddressType.GAP_ADDRESS_TYPE_RANDOM));
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    void adapterStoppedFailsPendingCharacteristicRead() throws Exception {
+        BlueGigaBridgeHandler handler = mock(BlueGigaBridgeHandler.class);
+        BluetoothAddress address = new BluetoothAddress("E0:7D:EA:26:94:2F");
+        BlueGigaBluetoothCharacteristic characteristic = new BlueGigaBluetoothCharacteristic(42);
+        characteristic.setUUID(UUID.randomUUID());
+        when(handler.bgReadCharacteristic(7, 42)).thenReturn(true);
+        BlueGigaBluetoothDevice device = new BlueGigaBluetoothDevice(handler, address,
+                BluetoothAddressType.GAP_ADDRESS_TYPE_PUBLIC);
+        Field connectionField = BlueGigaBluetoothDevice.class.getDeclaredField("connection");
+        connectionField.setAccessible(true);
+        connectionField.setInt(device, 7);
+
+        try {
+            CompletableFuture<byte[]> future = device.readCharacteristic(characteristic);
+            device.adapterStopped();
+
+            assertTrue(future.isCompletedExceptionally());
+            assertThrows(CompletionException.class, future::join);
+        } finally {
+            device.dispose();
+        }
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    void adapterStoppedFailsPendingCharacteristicWrite() throws Exception {
+        BlueGigaBridgeHandler handler = mock(BlueGigaBridgeHandler.class);
+        BluetoothAddress address = new BluetoothAddress("E0:7D:EA:26:94:2F");
+        BlueGigaBluetoothCharacteristic characteristic = new BlueGigaBluetoothCharacteristic(42);
+        characteristic.setUUID(UUID.randomUUID());
+        when(handler.bgWriteCharacteristic(eq(7), eq(42), any(int[].class))).thenReturn(true);
+        BlueGigaBluetoothDevice device = new BlueGigaBluetoothDevice(handler, address,
+                BluetoothAddressType.GAP_ADDRESS_TYPE_PUBLIC);
+        Field connectionField = BlueGigaBluetoothDevice.class.getDeclaredField("connection");
+        connectionField.setAccessible(true);
+        connectionField.setInt(device, 7);
+
+        try {
+            CompletableFuture<@Nullable Void> future = device.writeCharacteristic(characteristic, new byte[] { 1 });
+            device.adapterStopped();
+
+            assertTrue(future.isCompletedExceptionally());
+            assertThrows(CompletionException.class, future::join);
+        } finally {
+            device.dispose();
+        }
     }
 
     @Test
