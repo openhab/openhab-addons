@@ -239,6 +239,32 @@
 		</getAction>
 	</channel>
 
+	<!-- WLAN Config 3 - 6 Ghz -->
+	<channel name="macSignalStrength3" label="MAC Wifi Signal Strength 6Ghz"
+		description="Wifi Signal Strength of the device with
+		the given MAC (see macOnline). This is set in case the Device is connected to 6Ghz"
+		typeId="system:signal-strength">
+		<item type="Number"/>
+		<service deviceType="urn:dslforum-org:device:LANDevice:1"
+			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration3"/>
+		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_SignalStrength"
+			postProcessor="processMacSignalStrength">
+			<parameter name="NewAssociatedDeviceMACAddress" thingParameter="macOnline"
+				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
+		</getAction>
+	</channel>
+	<channel name="macSpeed3" label="MAC Wifi Speed 6Ghz"
+		description="Wifi Speed of the device with
+		the given MAC (see macOnline). This is set in case the Device is connected to 6Ghz">
+		<item type="Number:DataTransferRate" unit="Mbit/s" statePattern="%d Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:LANDevice:1"
+			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration3"/>
+		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_Speed">
+			<parameter name="NewAssociatedDeviceMACAddress" thingParameter="macOnline"
+				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
+		</getAction>
+	</channel>
+
 	<!-- WAN Device -->
 	<channel name="wanAccessType" label="Access Type">
 		<item type="String"/>
