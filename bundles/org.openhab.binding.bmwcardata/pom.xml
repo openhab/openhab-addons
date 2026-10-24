@@ -15,6 +15,13 @@
   <name>openHAB Add-ons :: Bundles :: BMW CarData Binding</name>
 
   <dependencies>
+    <!-- QR code on the authorization page; MIT licensed, no dependencies, embedded into the bundle -->
+    <dependency>
+      <groupId>io.nayuki</groupId>
+      <artifactId>qrcodegen</artifactId>
+      <version>1.8.0</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.wiremock</groupId>
       <artifactId>wiremock-standalone</artifactId>

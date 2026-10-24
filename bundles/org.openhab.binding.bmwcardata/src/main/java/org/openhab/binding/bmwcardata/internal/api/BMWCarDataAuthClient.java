@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bmwcardata.internal.api;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -69,6 +70,14 @@ public class BMWCarDataAuthClient {
 
         public boolean isExpired(Instant now) {
             return !now.isBefore(expiresAt);
+        }
+
+        /**
+         * @return the link to the BMW portal with the user code filled in, so the user only has to confirm it
+         */
+        public String userLink() {
+            return verificationUri + (verificationUri.contains("?") ? "&" : "?") + "user_code="
+                    + URLEncoder.encode(userCode, StandardCharsets.UTF_8);
         }
 
         @Override

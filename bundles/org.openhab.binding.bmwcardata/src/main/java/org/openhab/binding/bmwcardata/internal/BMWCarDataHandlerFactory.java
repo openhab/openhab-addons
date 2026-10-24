@@ -14,6 +14,9 @@ package org.openhab.binding.bmwcardata.internal;
 
 import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants.*;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -46,7 +49,8 @@ import com.google.gson.Gson;
  * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.bmwcardata", service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.bmwcardata", service = { ThingHandlerFactory.class,
+        BMWCarDataHandlerFactory.class })
 public class BMWCarDataHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataHandlerFactory.class);
@@ -54,6 +58,7 @@ public class BMWCarDataHandlerFactory extends BaseThingHandlerFactory {
     private final StorageService storageService;
     private final OAuthFactory oAuthFactory;
     private final Gson gson = new Gson();
+    private final Set<BMWCarDataAccountHandler> accountHandlers = ConcurrentHashMap.newKeySet();
 
     @Activate
     public BMWCarDataHandlerFactory(@Reference HttpClientFactory httpClientFactory,
@@ -94,11 +99,28 @@ public class BMWCarDataHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new BMWCarDataAccountHandler((Bridge) thing, httpClient, gson, storage, oAuthFactory);
+            BMWCarDataAccountHandler handler = new BMWCarDataAccountHandler((Bridge) thing, httpClient, gson, storage,
+                    oAuthFactory);
+            accountHandlers.add(handler);
+            return handler;
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
             return new BMWCarDataVehicleHandler(thing);
         }
 
         return null;
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof BMWCarDataAccountHandler accountHandler) {
+            accountHandlers.remove(accountHandler);
+        }
+    }
+
+    /**
+     * @return the handlers of the account Things, for the authorization page
+     */
+    public Set<BMWCarDataAccountHandler> getAccountHandlers() {
+        return Set.copyOf(accountHandlers);
     }
 }

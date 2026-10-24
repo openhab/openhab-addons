@@ -11,3 +11,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+qrcodegen
+* License: MIT License
+* Project: https://www.nayuki.io/page/qr-code-generator-library
+* Source: https://github.com/nayuki/QR-Code-generator
