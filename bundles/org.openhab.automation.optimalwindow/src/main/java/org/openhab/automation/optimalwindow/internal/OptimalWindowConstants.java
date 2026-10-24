@@ -44,6 +44,7 @@ public class OptimalWindowConstants {
     public static final String CONFIG_REMAINING_ITEM = "remainingItem";
     public static final String CONFIG_COUNTDOWN_ITEM = "countdownItem";
     public static final String CONFIG_WINDOW_TEXT_ITEM = "windowTextItem";
+    public static final String CONFIG_AVERAGE_ITEM = "averageItem";
 
     // trigger outputs
     public static final String OUTPUT_EVENT = "windowEvent";

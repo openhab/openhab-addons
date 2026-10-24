@@ -42,6 +42,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -80,6 +81,7 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
     private final @Nullable String countdownItem;
     private final @Nullable String remainingItem;
     private final @Nullable String windowTextItem;
+    private final @Nullable String averageItem;
     private final Map<String, State> lastStates = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> initialRefreshJob;
@@ -107,6 +109,7 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         countdownItem = getItemName(configuration, CONFIG_COUNTDOWN_ITEM);
         remainingItem = getItemName(configuration, CONFIG_REMAINING_ITEM);
         windowTextItem = getItemName(configuration, CONFIG_WINDOW_TEXT_ITEM);
+        averageItem = getItemName(configuration, CONFIG_AVERAGE_ITEM);
     }
 
     @Override
@@ -209,6 +212,7 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
             updateItem(countdownItem, UnDefType.UNDEF);
             updateItem(remainingItem, UnDefType.UNDEF);
             updateItem(windowTextItem, UnDefType.UNDEF);
+            updateItem(averageItem, UnDefType.UNDEF);
             clearPlannedWindow(now.toInstant());
             return;
         }
@@ -219,6 +223,7 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         updateItem(countdownItem, toMinutes(Duration.between(instant, getNextStart(result, instant))));
         updateItem(remainingItem, toMinutes(Duration.between(instant, getCurrentEnd(result, instant))));
         updateItem(windowTextItem, new StringType(result.getText(zoneSupplier.get())));
+        updateItem(averageItem, new DecimalType(BigDecimal.valueOf(result.getAverage())));
         sendPlannedWindow(result, now);
     }
 

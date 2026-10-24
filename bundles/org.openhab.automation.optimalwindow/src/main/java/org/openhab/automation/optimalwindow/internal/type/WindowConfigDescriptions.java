@@ -111,6 +111,9 @@ public class WindowConfigDescriptions {
                 advanced));
         parameters.add(statusItem(CONFIG_WINDOW_TEXT_ITEM, "Status Item: Window Text",
                 "Status only: String item for the window as text, e.g. 10:45\u201314:45.", advanced));
+        parameters.add(statusItem(CONFIG_AVERAGE_ITEM, "Status Item: Average",
+                "Status only: Number item for the average forecast value within the window, e.g. the average price.",
+                advanced));
         return parameters;
     }
 

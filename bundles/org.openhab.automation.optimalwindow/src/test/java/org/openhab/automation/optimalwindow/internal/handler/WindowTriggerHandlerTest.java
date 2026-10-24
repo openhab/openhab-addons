@@ -52,6 +52,7 @@ import org.openhab.core.events.Event;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.events.ItemStateEvent;
 import org.openhab.core.items.events.ItemTimeSeriesEvent;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -100,8 +101,9 @@ public class WindowTriggerHandlerTest {
     }
 
     private WindowTriggerHandler createHandler(Map<String, Object> extraConfig) {
-        Map<String, Object> config = new HashMap<>(Map.of("forecastItem", "Price", "length", "2h", "activeItem",
-                "Active", "windowTextItem", "WindowText", "countdownItem", "Countdown", "remainingItem", "Remaining"));
+        Map<String, Object> config = new HashMap<>(
+                Map.of("forecastItem", "Price", "length", "2h", "activeItem", "Active", "windowTextItem", "WindowText",
+                        "countdownItem", "Countdown", "remainingItem", "Remaining", "averageItem", "Average"));
         config.putAll(extraConfig);
         Trigger trigger = ModuleBuilder.createTrigger().withId("1").withTypeUID(OptimalWindowConstants.TRIGGER_TYPE_ID)
                 .withConfiguration(new Configuration(config)).build();
@@ -153,6 +155,7 @@ public class WindowTriggerHandlerTest {
         assertEquals(OptimalWindowConstants.EVENT_END, triggered().get(0).get(OptimalWindowConstants.OUTPUT_EVENT));
         assertEquals(OnOffType.OFF, lastState("Active"));
         assertEquals(new StringType("02:00\u201304:00"), lastState("WindowText"));
+        assertEquals(new DecimalType(5.0), lastState("Average"));
 
         at(2);
         handler.refresh();
@@ -250,6 +253,7 @@ public class WindowTriggerHandlerTest {
         assertEquals(OptimalWindowConstants.EVENT_END, triggered().get(0).get(OptimalWindowConstants.OUTPUT_EVENT));
         assertEquals(OnOffType.OFF, lastState("Active"));
         assertEquals(UnDefType.UNDEF, lastState("WindowText"));
+        assertEquals(UnDefType.UNDEF, lastState("Average"));
     }
 
     @Test

@@ -56,7 +56,7 @@ public class OptimalWindowModuleTypeProviderTest {
         assertEquals(Set.of(CONFIG_FORECAST_ITEM, CONFIG_PERSISTENCE_SERVICE, CONFIG_RANGE_START, CONFIG_RANGE_DURATION,
                 CONFIG_LENGTH, CONFIG_CONSECUTIVE, CONFIG_GOAL, CONFIG_PREFER_START, CONFIG_ACTIVE_ITEM,
                 CONFIG_START_ITEM, CONFIG_END_ITEM, CONFIG_COUNTDOWN_ITEM, CONFIG_REMAINING_ITEM,
-                CONFIG_WINDOW_TEXT_ITEM), names(trigger.getConfigurationDescriptions()));
+                CONFIG_WINDOW_TEXT_ITEM, CONFIG_AVERAGE_ITEM), names(trigger.getConfigurationDescriptions()));
     }
 
     @Test

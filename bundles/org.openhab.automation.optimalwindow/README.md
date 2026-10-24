@@ -3,7 +3,7 @@
 Run devices during the cheapest, cleanest or sunniest period.
 
 This automation finds the best time window in a forecast according to the specified goal and switches a device on when the window starts and off when it ends.
-It works with any `Number Item that has a forecast, for example:
+It works with any `Number` Item that has a forecast, for example:
 
 - electricity prices from the aWATTar, Energy-Charts, ENTSO-E, Energi Data Service or Tibber bindings
 - CO2 intensity of the grid
@@ -83,14 +83,15 @@ With `consecutive=false`, it fires at the start and end of each part.
 
 These optional parameters select the Items that receive the calculated status, e.g. to show it in the UI.
 
-| Parameter      | Type             | Description                                      |
-| -------------- | ---------------- | ------------------------------------------------ |
-| activeItem     | Switch Item      | `ON` while the window is active, otherwise `OFF` |
-| startItem      | DateTime Item    | Start of the window                              |
-| endItem        | DateTime Item    | End of the window                                |
-| countdownItem  | Number:Time Item | Time until the window starts                     |
-| remainingItem  | Number:Time Item | Time until the window (or the current part) ends |
-| windowTextItem | String Item      | Window as text, e.g. `01:00–05:00`               |
+| Parameter      | Type             | Description                                                      |
+| -------------- | ---------------- | ---------------------------------------------------------------- |
+| activeItem     | Switch Item      | `ON` while the window is active, otherwise `OFF`                 |
+| startItem      | DateTime Item    | Start of the window                                              |
+| endItem        | DateTime Item    | End of the window                                                |
+| countdownItem  | Number:Time Item | Time until the window starts                                     |
+| remainingItem  | Number:Time Item | Time until the window (or the current part) ends                 |
+| windowTextItem | String Item      | Window as text, e.g. `01:00–05:00`                               |
+| averageItem    | Number Item      | Average forecast value within the window, e.g. the average price |
 
 They are updated, not commanded, so the `activeItem` does not switch a device.
 To switch a device, add an action that sends a command, or use the rule template, see [How a Rule Is Built](#how-a-rule-is-built).
