@@ -54,10 +54,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Go2RtcManager {
 
-    public record StreamEntry(String streamName, int backchannelRtpPort) {
+    /**
+     * @param audioIngestPort local UDP port carrying raw PCM/16000 door audio (little endian) for this stream,
+     *            {@code 0}
+     *            to take the audio from the device RTSP stream
+     */
+    public record StreamEntry(String streamName, int backchannelRtpPort, int audioIngestPort) {
+        public StreamEntry(String streamName, int backchannelRtpPort) {
+            this(streamName, backchannelRtpPort, 0);
+        }
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Go2RtcManager.class);
+
+    /** Offset of the loopback RTSP listener (used by ffmpeg sources) relative to the API port, 1984 -> 8554. */
+    private static final int RTSP_PORT_OFFSET = 6570;
 
     /** Health-check timeout in milliseconds. */
     private static final int HEALTH_CHECK_TIMEOUT_MS = 2000;
@@ -279,22 +290,37 @@ public class Go2RtcManager {
 
         String rtspUrl = "rtsp://" + userInfo + "@" + hostname + ":554/cam/realmonitor?channel=" + rtspChannel
                 + "&subtype=" + rtspSubtype + "#backchannel=0";
+        String videoOnlyRtspUrl = rtspUrl + "#media=video";
 
         StringBuilder yaml = new StringBuilder();
         yaml.append("log:\n  level: ").append(resolveGo2RtcLogLevel()).append("\n");
         yaml.append("streams:\n");
         for (StreamEntry entry : streams) {
             yaml.append("  ").append(entry.streamName()).append(":\n");
-            yaml.append("    - '").append(rtspUrl.replace("'", "''")).append("'\n");
+            if (entry.audioIngestPort() > 0) {
+                // The audio source comes first so that it wins the audio track; the device RTSP provides video only
+                yaml.append("    - '").append(buildAudioIngestExec(entry.audioIngestPort()).replace("'", "''"))
+                        .append("'\n");
+                yaml.append("    - '").append(videoOnlyRtspUrl.replace("'", "''")).append("'\n");
+            } else {
+                yaml.append("    - '").append(rtspUrl.replace("'", "''")).append("'\n");
+            }
             yaml.append("    - '").append(buildBackchannelExec(entry.backchannelRtpPort()).replace("'", "''"))
                     .append("'\n");
         }
         yaml.append("api:\n  listen: \"127.0.0.1:").append(apiPort).append("\"\n");
+        yaml.append("rtsp:\n  listen: \"127.0.0.1:").append(apiPort + RTSP_PORT_OFFSET).append("\"\n");
         // TCP only: the DTLS handshake over UDP ICE does not complete with Firefox/Chrome clients
         yaml.append("webrtc:\n  listen: \":").append(webRtcPort).append("/tcp\"\n");
         yaml.append("  filters:\n    networks: [tcp4, tcp6]\n");
         yaml.append("  candidates:\n").append(candidates);
         return yaml.toString();
+    }
+
+    private String buildAudioIngestExec(int audioIngestPort) {
+        return "exec:ffmpeg -hide_banner -loglevel " + resolveFfmpegLogLevel()
+                + " -fflags nobuffer -f s16le -ar 16000 -ac 1 -i udp://127.0.0.1:" + audioIngestPort
+                + " -c:a pcm_alaw -ar 8000 -ac 1 -rtsp_transport tcp -f rtsp {output}";
     }
 
     private String buildBackchannelExec(int backchannelRtpPort) {
