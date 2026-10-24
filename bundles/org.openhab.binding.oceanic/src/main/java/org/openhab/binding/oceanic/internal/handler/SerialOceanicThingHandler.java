@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.TooManyListenersException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -62,6 +63,11 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     private final SerialPortManager serialPortManager;
     private final AtomicInteger lifecycleGeneration = new AtomicInteger();
     private volatile boolean disposed;
+    /**
+     * Per-connection park gate for {@link #serialEvent}. Closing the port does not interrupt a sleeping provider
+     * thread, so each open arms a fresh latch and teardown counts it down before removeEventListener/close.
+     */
+    private volatile @Nullable CountDownLatch serialEventPark;
 
     private @Nullable SerialPort serialPort;
     private @Nullable InputStream inputStream;
@@ -150,6 +156,8 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
             InputStream in = Objects.requireNonNull(port.getInputStream(), "serial input stream");
             OutputStream out = Objects.requireNonNull(port.getOutputStream(), "serial output stream");
+            // Arm before addEventListener so the first callback parks on a live gate
+            armSerialEventWait();
             port.addEventListener(this);
             port.notifyOnDataAvailable(true);
 
@@ -201,6 +209,8 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     }
 
     private void closeLocalPort(SerialPort port) {
+        // Wake any parked serialEvent callback before remove/close (nrjavaserial does not interrupt it)
+        releaseSerialEventWait();
         try {
             port.removeEventListener();
         } catch (Exception e) {
@@ -210,6 +220,29 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             port.close();
         } catch (Exception e) {
             logger.debug("Error while closing abandoned serial port: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Prepare a fresh park gate for the next serial event callback. Any previous latch is counted down so a stale
+     * reconnect cycle cannot leave an old provider thread blocked forever.
+     */
+    private void armSerialEventWait() {
+        CountDownLatch previous = serialEventPark;
+        serialEventPark = new CountDownLatch(1);
+        if (previous != null) {
+            previous.countDown();
+        }
+    }
+
+    /**
+     * Unblock {@link #serialEvent} so the serial provider thread can exit before the listener is removed or the port
+     * is closed.
+     */
+    private void releaseSerialEventWait() {
+        CountDownLatch park = serialEventPark;
+        if (park != null) {
+            park.countDown();
         }
     }
 
@@ -288,6 +321,8 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 logger.debug("Error while closing the output stream: {}", e.getMessage());
             }
         }
+        // Wake parked serialEvent before removeEventListener/close — otherwise provider threads accumulate
+        releaseSerialEventWait();
         SerialPort port = serialPort;
         if (port != null) {
             try {
@@ -324,7 +359,10 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         }
         final int failureGeneration = connectionGeneration + 1;
         logger.warn("Oceanic serial failure: {}", reason);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        // Guard status so a delayed failure cannot mark a healthy replacement OFFLINE without reconnect
+        if (!publishOfflineIfCurrent(failureGeneration, ThingStatusDetail.COMMUNICATION_ERROR, reason)) {
+            return;
+        }
         // Release resources from the scheduler so we never join the reader from itself
         scheduler.execute(() -> {
             synchronized (SerialOceanicThingHandler.this) {
@@ -393,12 +431,18 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     @Override
     public void serialEvent(SerialPortEvent serialPortEvent) {
         /*
-         * Put the serial event thread to sleep. Some serial providers (historically nrjavaserial; also relevant when a
-         * provider spins on select/FD_SET) drive a high-CPU event loop unless this callback blocks.
+         * Park the serial event thread until this connection's latch is released. Some serial providers (historically
+         * nrjavaserial; also relevant when a provider spins on select/FD_SET) drive a high-CPU event loop unless this
+         * callback blocks. Closing the port does not interrupt a sleeping Java thread, so await a per-connection latch
+         * counted down from {@link #releaseSerialEventWait()} before removeEventListener/close.
          */
+        logger.trace("Received a serial port event : {}", serialPortEvent.getEventType());
+        CountDownLatch park = serialEventPark;
+        if (park == null) {
+            return;
+        }
         try {
-            logger.trace("Received a serial port event : {}", serialPortEvent.getEventType());
-            Thread.sleep(Long.MAX_VALUE);
+            park.await();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
