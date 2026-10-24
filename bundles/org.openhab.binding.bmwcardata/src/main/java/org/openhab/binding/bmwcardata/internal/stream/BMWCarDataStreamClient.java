@@ -106,7 +106,7 @@ public class BMWCarDataStreamClient implements StreamSource, MqttMessageSubscrib
     @Override
     public void processMessage(String topic, byte[] payload) {
         if (logger.isTraceEnabled()) {
-            logger.trace("BMW CarData stream message on {}: {}", LogRedaction.vins(topic),
+            logger.trace("BMW CarData stream message on {}: {}", LogRedaction.topic(topic),
                     LogRedaction.payload(new String(payload, StandardCharsets.UTF_8)));
         }
         BiConsumer<String, byte[]> rawListener = this.rawListener;

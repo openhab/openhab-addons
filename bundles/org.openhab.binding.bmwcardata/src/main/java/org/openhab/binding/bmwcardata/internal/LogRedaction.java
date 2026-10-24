@@ -47,6 +47,10 @@ public final class LogRedaction {
     /** Replacement for hidden values */
     public static final String HIDDEN = "***";
 
+    /** A UUID, the format of the client ID and the customer ID (gcid) */
+    private static final Pattern UUID = Pattern
+            .compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
+
     /** JWT, as used for the access and ID tokens */
     private static final Pattern JWT = Pattern.compile("eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]*");
 
@@ -87,6 +91,21 @@ public final class LogRedaction {
         }
         matcher.appendTail(result);
         return result.toString();
+    }
+
+    /**
+     * Redacts an MQTT topic. The topics of the CarData stream are {@code <gcid>/<VIN>}: a level that is a UUID, such as
+     * the customer ID, is hidden, and a VIN is shortened.
+     *
+     * @param topic an MQTT topic
+     * @return the redacted topic
+     */
+    public static String topic(String topic) {
+        String[] levels = topic.split("/", -1);
+        for (int i = 0; i < levels.length; i++) {
+            levels[i] = UUID.matcher(levels[i]).matches() ? HIDDEN : vins(levels[i]);
+        }
+        return String.join("/", levels);
     }
 
     /**

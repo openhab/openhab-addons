@@ -497,7 +497,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                 return;
             }
         }
-        logger.trace("Ignoring stream data of vehicle {} without thing", LogRedaction.vin(vin));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Ignoring stream data of vehicle {} without thing", LogRedaction.vin(vin));
+        }
     }
 
     @Override

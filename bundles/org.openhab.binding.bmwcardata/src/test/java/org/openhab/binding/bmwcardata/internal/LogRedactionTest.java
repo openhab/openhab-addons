@@ -44,6 +44,14 @@ class LogRedactionTest {
     }
 
     @Test
+    void hidesCustomerIdInStreamTopic() {
+        // the direct stream subscribes to <gcid>/+, so every message topic is <gcid>/<VIN>
+        assertEquals("***/WBA…2345", LogRedaction.topic("6f1a2b3c-0000-1111-2222-333344445555/" + VIN));
+        assertEquals("bmw/raw/WBA…2345", LogRedaction.topic("bmw/raw/" + VIN));
+        assertEquals("bmw/status", LogRedaction.topic("bmw/status"));
+    }
+
+    @Test
     void leavesOtherTextAlone() {
         // a 17 character run inside a longer token is not a VIN, nor is a 13 character container id
         String text = "token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9 container abc1234567890";

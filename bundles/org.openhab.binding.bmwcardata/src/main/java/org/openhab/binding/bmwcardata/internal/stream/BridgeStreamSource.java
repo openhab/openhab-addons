@@ -148,7 +148,7 @@ public class BridgeStreamSource implements StreamSource, MqttMessageSubscriber, 
             return;
         }
         if (logger.isTraceEnabled()) {
-            logger.trace("Bridge message on {}: {}", LogRedaction.vins(topic),
+            logger.trace("Bridge message on {}: {}", LogRedaction.topic(topic),
                     LogRedaction.payload(new String(payload, StandardCharsets.UTF_8)));
         }
         if (topic.equals(settings.statusTopic())) {

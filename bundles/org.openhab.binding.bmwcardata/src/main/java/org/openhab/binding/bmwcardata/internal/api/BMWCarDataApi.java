@@ -177,8 +177,10 @@ public class BMWCarDataApi {
         if (!budget.tryAcquire()) {
             throw BMWCarDataException.budgetExhausted(budget.used(), budget.budget());
         }
-        logger.debug("BMW CarData request {} {} ({} of {} requests used in 24 hours)", method, LogRedaction.vins(path),
-                budget.used(), budget.budget());
+        if (logger.isDebugEnabled()) {
+            logger.debug("BMW CarData request {} {} ({} of {} requests used in 24 hours)", method,
+                    LogRedaction.vins(path), budget.used(), budget.budget());
+        }
         Request request = httpClient.newRequest(baseUrl + path).method(method)
                 .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken).header(HttpHeader.ACCEPT, "application/json")
                 .header("x-version", API_VERSION).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -187,8 +189,10 @@ public class BMWCarDataApi {
         }
         if (jsonBody != null) {
             request.content(new StringContentProvider("application/json", jsonBody, StandardCharsets.UTF_8));
-            logger.trace("BMW CarData request {} {} body: {}", method, LogRedaction.vins(path),
-                    LogRedaction.payload(jsonBody));
+            if (logger.isTraceEnabled()) {
+                logger.trace("BMW CarData request {} {} body: {}", method, LogRedaction.vins(path),
+                        LogRedaction.payload(jsonBody));
+            }
         }
         ContentResponse response;
         try {
