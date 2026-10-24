@@ -704,7 +704,7 @@
               <configuration>
                 <skip>${markdownlint.execution.skip}</skip>
                 <workingDirectory>${project.basedir}</workingDirectory>
-                <arguments>exec --yes markdownlint-cli2 -- **/*.md !**/target/** !**/node_modules/** --config ${maven.multiModuleProjectDirectory}/.github/markdownlint.yaml</arguments>
+                <arguments>exec --yes markdownlint-cli2 -- **/*.md !**/target/** !**/node_modules/** --config ${markdownlint.config.path}</arguments>
               </configuration>
             </execution>
           </executions>
@@ -903,6 +903,18 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>configure-markdownlint-path</id>
+                <goals>
+                  <goal>bsh-property</goal>
+                </goals>
+                <phase>validate</phase>
+                <configuration>
+                  <source>// Avoid absolute paths with spaces and platform-dependent argument quoting.
+                    config = session.getRequest().getMultiModuleProjectDirectory().toPath().resolve(".github/markdownlint.yaml");
+                    project.getProperties().setProperty("markdownlint.config.path", project.getBasedir().toPath().relativize(config).toString().replace(java.io.File.separatorChar, '/'));</source>
+                </configuration>
+              </execution>
               <execution>
                 <id>configure-markdownlint</id>
                 <goals>
