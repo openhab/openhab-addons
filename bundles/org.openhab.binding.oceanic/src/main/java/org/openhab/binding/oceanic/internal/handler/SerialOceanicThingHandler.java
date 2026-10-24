@@ -400,12 +400,12 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     return "";
                 }
                 connectionGeneration = reader.getConnectionGeneration();
-                // Response storage is connection-scoped so a superseded reader cannot satisfy a new request
-                reader.clearLastResponse();
             }
 
             Throttler.lock(config.port);
 
+            // Clear after throttle acquire so a delayed reply during the wait cannot satisfy this request
+            reader.clearLastResponse();
             String request = commandAsString + "\r";
 
             try {
@@ -414,7 +414,8 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 }
                 out.write(request.getBytes());
                 out.flush();
-            } catch (IOException e) {
+            } catch (IOException | IllegalStateException e) {
+                // IllegalStateException: purejavacomm after concurrent close during Throttler.lock wait
                 handleSerialFailure(connectionGeneration,
                         "Error writing '" + request + "' to serial port " + config.port + " : " + e.getMessage());
                 Throttler.unlock(config.port);
