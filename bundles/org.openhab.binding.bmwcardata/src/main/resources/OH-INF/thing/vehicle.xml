@@ -1,0 +1,1335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwcardata"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>BMW CarData Vehicle</label>
+		<description>A vehicle mapped to the BMW CarData account</description>
+		<semantic-equipment-tag>Car</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="status" typeId="status-group"/>
+			<channel-group id="range" typeId="range-group"/>
+			<channel-group id="charge" typeId="charge-group"/>
+			<channel-group id="battery" typeId="battery-group"/>
+			<channel-group id="climate" typeId="climate-group"/>
+			<channel-group id="navigation" typeId="navigation-group"/>
+			<channel-group id="trip" typeId="trip-group"/>
+			<channel-group id="tyres" typeId="tyres-group"/>
+			<channel-group id="security" typeId="security-group"/>
+			<channel-group id="service" typeId="service-group"/>
+			<channel-group id="statistics" typeId="statistics-group"/>
+			<channel-group id="other" typeId="other-group"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">BMW Group</property>
+		</properties>
+		<representation-property>vin</representation-property>
+
+		<config-description>
+			<parameter name="vin" type="text" required="true">
+				<label>Vehicle Identification Number</label>
+				<description>The 17 character VIN of the vehicle.</description>
+			</parameter>
+			<parameter name="dynamicChannels" type="boolean">
+				<label>Dynamic Channels</label>
+				<description>Create a channel for each received data point without predefined channel, e.g. data selected for
+					the
+					stream in the customer portal.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="status-group">
+		<label>Vehicle Status</label>
+		<channels>
+			<channel id="door-lock" typeId="door-lock"/>
+			<channel id="trunk" typeId="door">
+				<label>Trunk</label>
+				<description>Whether the trunk is open</description>
+			</channel>
+			<channel id="hood" typeId="door">
+				<label>Hood</label>
+				<description>Whether the hood is open</description>
+			</channel>
+			<channel id="trunk-locked" typeId="trunk-locked"/>
+			<channel id="door-front-driver" typeId="door">
+				<label>Front Driver Door</label>
+				<description>Whether the front door on the driver side is open</description>
+			</channel>
+			<channel id="door-front-passenger" typeId="door">
+				<label>Front Passenger Door</label>
+				<description>Whether the front door on the passenger side is open</description>
+			</channel>
+			<channel id="door-rear-driver" typeId="door">
+				<label>Rear Driver Door</label>
+				<description>Whether the rear door on the driver side is open</description>
+			</channel>
+			<channel id="door-rear-passenger" typeId="door">
+				<label>Rear Passenger Door</label>
+				<description>Whether the rear door on the passenger side is open</description>
+			</channel>
+			<channel id="window-front-driver" typeId="window">
+				<label>Front Driver Window</label>
+			</channel>
+			<channel id="window-front-driver-state" typeId="window-state">
+				<label>Front Driver Window State</label>
+			</channel>
+			<channel id="window-front-passenger" typeId="window">
+				<label>Front Passenger Window</label>
+			</channel>
+			<channel id="window-front-passenger-state" typeId="window-state">
+				<label>Front Passenger Window State</label>
+			</channel>
+			<channel id="window-rear-driver" typeId="window">
+				<label>Rear Driver Window</label>
+			</channel>
+			<channel id="window-rear-driver-state" typeId="window-state">
+				<label>Rear Driver Window State</label>
+			</channel>
+			<channel id="window-rear-passenger" typeId="window">
+				<label>Rear Passenger Window</label>
+			</channel>
+			<channel id="window-rear-passenger-state" typeId="window-state">
+				<label>Rear Passenger Window State</label>
+			</channel>
+			<channel id="rear-window" typeId="window">
+				<label>Rear Window</label>
+				<description>Whether the rear window is open</description>
+			</channel>
+			<channel id="sunroof" typeId="window">
+				<label>Sunroof</label>
+				<description>Whether the sunroof is open or tilted</description>
+			</channel>
+			<channel id="sunroof-state" typeId="sunroof-state"/>
+			<channel id="moving" typeId="moving"/>
+			<channel id="ignition" typeId="ignition"/>
+			<channel id="engine" typeId="engine"/>
+			<channel id="deep-sleep" typeId="deep-sleep"/>
+			<channel id="battery-voltage" typeId="battery-voltage"/>
+			<channel id="battery-soc" typeId="battery-soc"/>
+			<channel id="last-update" typeId="last-update"/>
+		</channels>
+	</channel-group-type>
+
+
+	<channel-group-type id="range-group">
+		<label>Range</label>
+		<channels>
+			<channel id="mileage" typeId="mileage"/>
+			<channel id="total" typeId="range">
+				<label>Total Range</label>
+				<description>Total remaining range</description>
+			</channel>
+			<channel id="electric" typeId="range">
+				<label>Electric Range</label>
+				<description>Remaining electric range</description>
+			</channel>
+			<channel id="electric-charging-forecast" typeId="range">
+				<label>Electric Range Forecast</label>
+				<description>Predicted electric range during charging</description>
+			</channel>
+			<channel id="fuel-level" typeId="fuel-level"/>
+			<channel id="remaining-fuel" typeId="remaining-fuel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="charge-group">
+		<label>Charging</label>
+		<channels>
+			<channel id="soc" typeId="soc"/>
+			<channel id="target-soc" typeId="target-soc"/>
+			<channel id="status" typeId="charging-status"/>
+			<channel id="plugged" typeId="plugged"/>
+			<channel id="power" typeId="charging-power"/>
+			<channel id="time-remaining" typeId="charging-time-remaining"/>
+			<channel id="ac-current" typeId="charging-current">
+				<label>AC Charging Current</label>
+				<description>Current AC charging current</description>
+			</channel>
+			<channel id="ac-voltage" typeId="charging-voltage"/>
+			<channel id="ac-limit" typeId="current-limit">
+				<label>AC Charging Limit</label>
+				<description>Selected limit of the AC charging current</description>
+			</channel>
+			<channel id="phases" typeId="charging-phases"/>
+			<channel id="method" typeId="charging-method"/>
+			<channel id="port" typeId="port"/>
+			<channel id="predicted-soc" typeId="predicted-soc"/>
+			<channel id="min-target-soc" typeId="min-target-soc"/>
+			<channel id="time-to-full" typeId="time-to-full"/>
+			<channel id="mode" typeId="charging-mode"/>
+			<channel id="end-reason" typeId="charging-end-reason"/>
+			<channel id="last-result" typeId="last-charging-result"/>
+			<channel id="cable-lock" typeId="cable-lock"/>
+			<channel id="flap" typeId="charging-flap"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="battery-group">
+		<label>High-Voltage Battery</label>
+		<channels>
+			<channel id="capacity" typeId="battery-energy">
+				<label>Battery Capacity</label>
+				<description>Size of the high-voltage battery</description>
+			</channel>
+			<channel id="energy-content" typeId="battery-energy">
+				<label>Energy Content</label>
+				<description>Maximum energy content of the high-voltage battery</description>
+			</channel>
+			<channel id="health" typeId="battery-health"/>
+			<channel id="energy-to-full" typeId="energy-to-full"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="security-group">
+		<label>Security</label>
+		<channels>
+			<channel id="alarm" typeId="alarm"/>
+			<channel id="arm-status" typeId="alarm-arm-status"/>
+			<channel id="activation-time" typeId="alarm-activation-time"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="service-group">
+		<label>Service</label>
+		<channels>
+			<channel id="distance" typeId="service-distance"/>
+			<channel id="inspection-date" typeId="inspection-date"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="statistics-group">
+		<label>Statistics</label>
+		<channels>
+			<channel id="grid-energy" typeId="grid-energy"/>
+			<channel id="fuel-consumed" typeId="fuel-consumed"/>
+			<channel id="avg-consumption" typeId="avg-consumption"/>
+			<channel id="avg-speed" typeId="avg-speed"/>
+			<channel id="weekly-distance" typeId="weekly-distance">
+				<label>Weekly Distance</label>
+				<description>Average distance driven per week</description>
+			</channel>
+			<channel id="weekly-distance-long-term" typeId="weekly-distance">
+				<label>Weekly Distance (Long-Term)</label>
+				<description>Average distance driven per week over two months</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="climate-group">
+		<label>Climate</label>
+		<channels>
+			<channel id="comfort-state" typeId="comfort-state"/>
+			<channel id="progress" typeId="preconditioning-progress"/>
+			<channel id="remaining-running-time" typeId="preconditioning-remaining-time">
+				<label>Preconditioning Remaining Time</label>
+				<description>Remaining running time of the preconditioning</description>
+			</channel>
+			<channel id="target-temperature" typeId="target-temperature"/>
+			<channel id="rear-defrost" typeId="heating-active">
+				<label>Rear Window Heating</label>
+				<description>Whether the rear window heating is active</description>
+			</channel>
+			<channel id="mirror-heating" typeId="heating-active">
+				<label>Mirror Heating</label>
+				<description>Whether the exterior mirror heating is active</description>
+			</channel>
+			<channel id="air-purification" typeId="air-purification"/>
+			<channel id="auxiliary-activity" typeId="auxiliary-activity"/>
+			<channel id="auxiliary-remaining-time" typeId="preconditioning-remaining-time">
+				<label>Auxiliary Climate Remaining Time</label>
+				<description>Remaining running time of the auxiliary climate control</description>
+			</channel>
+			<channel id="auxiliary-error" typeId="auxiliary-error"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="navigation-group">
+		<label>Navigation</label>
+		<channels>
+			<channel id="gps" typeId="gps"/>
+			<channel id="heading" typeId="heading"/>
+			<channel id="altitude" typeId="altitude"/>
+			<channel id="gps-fix" typeId="gps-fix"/>
+			<channel id="destination-distance" typeId="destination-distance"/>
+			<channel id="arrival-time" typeId="arrival-time"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="trip-group">
+		<label>Last Trip</label>
+		<channels>
+			<channel id="end-time" typeId="trip-end-time"/>
+			<channel id="end-mileage" typeId="trip-end-mileage"/>
+			<channel id="end-soc" typeId="trip-end-soc"/>
+			<channel id="recuperation" typeId="trip-recuperation"/>
+			<channel id="comfort-energy" typeId="trip-comfort-energy"/>
+			<channel id="electric-share" typeId="trip-share">
+				<label>Electric Share</label>
+				<description>Share of the distance driven electrically</description>
+			</channel>
+			<channel id="eco-pro-share" typeId="trip-share">
+				<label>ECO PRO Share</label>
+				<description>Share of the trip driven in ECO PRO mode</description>
+			</channel>
+			<channel id="eco-pro-plus-share" typeId="trip-share">
+				<label>ECO PRO+ Share</label>
+				<description>Share of the trip driven in ECO PRO+ mode</description>
+			</channel>
+			<channel id="acceleration-rating" typeId="trip-rating">
+				<label>Acceleration Rating</label>
+				<description>Rating of the acceleration behaviour from 0 to 5 stars</description>
+			</channel>
+			<channel id="anticipation-rating" typeId="trip-rating">
+				<label>Anticipation Rating</label>
+				<description>Rating of the anticipatory driving from 0 to 5 stars</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tyres-group">
+		<label>Tyres</label>
+		<channels>
+			<channel id="pressure-front-left" typeId="tyre-pressure">
+				<label>Front Left Pressure</label>
+			</channel>
+			<channel id="pressure-front-right" typeId="tyre-pressure">
+				<label>Front Right Pressure</label>
+			</channel>
+			<channel id="pressure-rear-left" typeId="tyre-pressure">
+				<label>Rear Left Pressure</label>
+			</channel>
+			<channel id="pressure-rear-right" typeId="tyre-pressure">
+				<label>Rear Right Pressure</label>
+			</channel>
+			<channel id="target-front-left" typeId="tyre-target-pressure">
+				<label>Front Left Target Pressure</label>
+			</channel>
+			<channel id="target-front-right" typeId="tyre-target-pressure">
+				<label>Front Right Target Pressure</label>
+			</channel>
+			<channel id="target-rear-left" typeId="tyre-target-pressure">
+				<label>Rear Left Target Pressure</label>
+			</channel>
+			<channel id="target-rear-right" typeId="tyre-target-pressure">
+				<label>Rear Right Target Pressure</label>
+			</channel>
+			<channel id="temperature-front-left" typeId="tyre-temperature">
+				<label>Front Left Temperature</label>
+			</channel>
+			<channel id="temperature-front-right" typeId="tyre-temperature">
+				<label>Front Right Temperature</label>
+			</channel>
+			<channel id="temperature-rear-left" typeId="tyre-temperature">
+				<label>Rear Left Temperature</label>
+			</channel>
+			<channel id="temperature-rear-right" typeId="tyre-temperature">
+				<label>Rear Right Temperature</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="door-lock">
+		<item-type>String</item-type>
+		<label>Door Lock</label>
+		<description>Lock state of the doors as reported by the vehicle</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="SECURED">Secured</option>
+				<option value="LOCKED">Locked</option>
+				<option value="SELECTIVELOCKED">Partly Locked</option>
+				<option value="UNLOCKED">Unlocked</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="door">
+		<item-type>Contact</item-type>
+		<label>Door</label>
+		<description>Whether the door is open</description>
+		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="window">
+		<item-type>Contact</item-type>
+		<label>Window</label>
+		<description>Whether the window is open; a partly open window is open</description>
+		<category>Window</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="window-state" advanced="true">
+		<item-type>String</item-type>
+		<label>Window State</label>
+		<description>State of the window as reported by the vehicle</description>
+		<category>Window</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenLevel</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Closed</option>
+				<option value="INTERMEDIATE">Partly Open</option>
+				<option value="OPEN">Open</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sunroof-state" advanced="true">
+		<item-type>String</item-type>
+		<label>Sunroof State</label>
+		<description>Overall state of the sunroof as reported by the vehicle</description>
+		<category>Window</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenLevel</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Closed</option>
+				<option value="OPEN">Open</option>
+				<option value="OPEN_TILT">Tilted</option>
+				<option value="INTERMEDIATE_TILT">Partly Tilted</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="deep-sleep" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Deep Sleep</label>
+		<description>Whether the deep sleep mode is active, which keeps most systems off to save the 12V battery while
+			parked
+			for a long time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-limit" advanced="true">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>AC Charging Limit</label>
+		<description>Selected limit of the AC charging current</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="moving">
+		<item-type>Switch</item-type>
+		<label>Moving</label>
+		<description>Whether the vehicle is moving</description>
+		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-voltage" advanced="true">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>12V Battery Voltage</label>
+		<description>Voltage of the 12V battery</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="last-update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Time of the most recent data reported by the vehicle</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mileage">
+		<item-type unitHint="km,mi">Number:Length</item-type>
+		<label>Mileage</label>
+		<description>Total distance travelled by the vehicle</description>
+		<category>Line</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="range">
+		<item-type unitHint="km,mi">Number:Length</item-type>
+		<label>Range</label>
+		<category>Line</category>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="fuel-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Fuel Level</label>
+		<description>Fill level of the fuel tank</description>
+		<category>Oil</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="remaining-fuel">
+		<item-type unitHint="l,gal">Number:Volume</item-type>
+		<label>Remaining Fuel</label>
+		<description>Amount of fuel in the tank</description>
+		<category>Oil</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<description>State of charge of the high-voltage battery</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="target-soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Target State of Charge</label>
+		<description>State of charge at which charging stops</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="charging-status">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<description>Charging state as reported by the vehicle</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NOCHARGING">Not Charging</option>
+				<option value="INITIALIZATION">Initializing</option>
+				<option value="CHARGINGACTIVE">Charging</option>
+				<option value="CHARGINGPAUSED">Paused</option>
+				<option value="CHARGINGENDED">Ended</option>
+				<option value="CHARGINGERROR">Error</option>
+				<option value="CHARGINGINTERRUPTED">Interrupted</option>
+				<option value="CHARGINGDISRUPTED">Disrupted</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plugged">
+		<item-type>Switch</item-type>
+		<label>Plugged</label>
+		<description>Whether a charging cable is plugged in</description>
+		<category>PowerOutlet</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charging-power">
+		<item-type unitHint="kW">Number:Power</item-type>
+		<label>Charging Power</label>
+		<description>Current charging power</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="charging-time-remaining">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Charging Time Remaining</label>
+		<description>Estimated time until charging is completed</description>
+		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="gps">
+		<item-type>Location</item-type>
+		<label>GPS Location</label>
+		<description>Current location of the vehicle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heading" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Heading</label>
+		<description>Compass heading of the vehicle</description>
+		<category>Zoom</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Position</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="trunk-locked">
+		<item-type>Switch</item-type>
+		<label>Trunk Locked</label>
+		<description>Whether the trunk is locked</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="comfort-state">
+		<item-type>String</item-type>
+		<label>Preconditioning State</label>
+		<description>State of the cabin preconditioning</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NOT_ACTIVE">Not Active</option>
+				<option value="COMFORT_HEATING">Heating</option>
+				<option value="COMFORT_COOLING">Cooling</option>
+				<option value="COMFORT_VENTILATION">Ventilation</option>
+				<option value="DEFROST">Defrost</option>
+				<option value="COMFORT_UNDEFINED">Undefined</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="battery-soc" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>12V Battery State of Charge</label>
+		<description>State of charge of the 12V battery</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="service-distance">
+		<item-type unitHint="km,mi">Number:Length</item-type>
+		<label>Next Service Distance</label>
+		<description>Remaining distance until the next service</description>
+		<category>Line</category>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="charging-current" advanced="true">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Charging Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="charging-voltage" advanced="true">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>AC Charging Voltage</label>
+		<description>Current AC charging voltage</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="charging-phases" advanced="true">
+		<item-type>String</item-type>
+		<label>Charging Phases</label>
+		<description>Number of phases used for charging</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_CHARGING">Not Charging</option>
+				<option value="1-PHASES">1 Phase</option>
+				<option value="2-PHASES">2 Phases</option>
+				<option value="3-PHASES">3 Phases</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="charging-method" advanced="true">
+		<item-type>String</item-type>
+		<label>Charging Method</label>
+		<description>Charging method and plug type</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="port" advanced="true">
+		<item-type>String</item-type>
+		<label>Charging Port</label>
+		<description>Whether a charging plug is connected to the charging port</description>
+		<category>PowerOutlet</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="CONNECTED">Connected</option>
+				<option value="DISCONNECTED">Disconnected</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tyre-pressure">
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
+		<label>Tyre Pressure</label>
+		<description>Measured tyre pressure</description>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="tyre-target-pressure" advanced="true">
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
+		<label>Tyre Target Pressure</label>
+		<description>Target tyre pressure</description>
+		<category>Pressure</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="tyre-temperature" advanced="true">
+		<item-type unitHint="°C,°F">Number:Temperature</item-type>
+		<label>Tyre Temperature</label>
+		<description>Measured tyre temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="preconditioning-progress" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Preconditioning Progress</label>
+		<description>Progress of the active preconditioning</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="preconditioning-remaining-time">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Remaining Time</label>
+		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="target-temperature">
+		<item-type unitHint="°C,°F">Number:Temperature</item-type>
+		<label>Preconditioning Target Temperature</label>
+		<description>Target cabin temperature of the preconditioning</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heating-active" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heating Active</label>
+		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="air-purification" advanced="true">
+		<item-type>String</item-type>
+		<label>Air Purification</label>
+		<description>State of the cabin air purification</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="UNFILTERED">Unfiltered</option>
+				<option value="PURIFYING_ONGOING">Purifying</option>
+				<option value="PURIFIED">Purified</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="auxiliary-activity">
+		<item-type>String</item-type>
+		<label>Auxiliary Climate Activity</label>
+		<description>Activity of the auxiliary climate control</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="standby">Standby</option>
+				<option value="heating">Heating</option>
+				<option value="cooling">Cooling</option>
+				<option value="ventilation">Ventilation</option>
+				<option value="inactive">Inactive</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="auxiliary-error" advanced="true">
+		<item-type>String</item-type>
+		<label>Auxiliary Climate Error</label>
+		<description>Reason why the auxiliary climate control was not executed</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="OK">OK</option>
+				<option value="LowFuel">Low Fuel</option>
+				<option value="LowBattery">Low Battery</option>
+				<option value="QuotaExceeded">Quota Exceeded</option>
+				<option value="HeaterFailure">Heater Failure</option>
+				<option value="ComponentFailure">Component Failure</option>
+				<option value="OpenOrUnlocked">Open or Unlocked</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="altitude" advanced="true">
+		<item-type unitHint="m,ft">Number:Length</item-type>
+		<label>Altitude</label>
+		<description>Altitude of the vehicle above sea level</description>
+		<category>Line</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Position</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="gps-fix" advanced="true">
+		<item-type>String</item-type>
+		<label>GPS Fix</label>
+		<description>Quality of the GPS position</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_FIX">No Fix</option>
+				<option value="GPS_FIX_2D">2D Fix</option>
+				<option value="GPS_FIX_3D">3D Fix</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="destination-distance">
+		<item-type unitHint="km,mi">Number:Length</item-type>
+		<label>Destination Distance</label>
+		<description>Distance to the active navigation destination</description>
+		<category>Line</category>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="arrival-time">
+		<item-type>String</item-type>
+		<label>Arrival Time</label>
+		<description>Expected arrival time at the navigation destination (hh:mm)</description>
+		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="trip-end-time">
+		<item-type>DateTime</item-type>
+		<label>Trip End</label>
+		<description>Time when the last trip ended</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="trip-end-mileage" advanced="true">
+		<item-type unitHint="km,mi">Number:Length</item-type>
+		<label>Mileage at Trip End</label>
+		<description>Total mileage at the end of the last trip</description>
+		<category>Line</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="trip-end-soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>State of Charge at Trip End</label>
+		<description>State of charge of the high-voltage battery at the end of the last trip</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="trip-recuperation">
+		<item-type>Number</item-type>
+		<label>Recuperation</label>
+		<description>Energy recovered during the last trip in kWh/100km</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f kWh/100km"/>
+	</channel-type>
+
+	<channel-type id="trip-comfort-energy" advanced="true">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Comfort Energy</label>
+		<description>Electrical energy consumed in COMFORT mode during the last trip</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="trip-share" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Trip Share</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="trip-rating" advanced="true">
+		<item-type>Number</item-type>
+		<label>Driving Rating</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="ignition" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Ignition</label>
+		<description>Whether the ignition is on</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="engine">
+		<item-type>Switch</item-type>
+		<label>Engine Running</label>
+		<description>Whether the engine is running</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<description>Whether the anti-theft alarm is going off</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm-arm-status">
+		<item-type>String</item-type>
+		<label>Alarm Arm Status</label>
+		<description>Arming state of the anti-theft alarm system</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="unarmed">Unarmed</option>
+				<option value="doorsOnly">Doors Only</option>
+				<option value="doorsTiltCabin">Doors, Tilt and Cabin</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarm-activation-time" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Alarm</label>
+		<description>Time of the last alarm as reported by the vehicle, without time zone</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-energy" advanced="true">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Battery Energy</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-health">
+		<item-type>Number</item-type>
+		<label>Battery Health</label>
+		<description>Health of the high-voltage battery as state of certified energy (SoCE)</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="energy-to-full">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy to Full Charge</label>
+		<description>Energy required to fully charge the high-voltage battery</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="inspection-date">
+		<item-type>DateTime</item-type>
+		<label>Next Inspection</label>
+		<description>Date of the next legal inspection</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
+	</channel-type>
+
+	<channel-type id="grid-energy" advanced="true">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Total Grid Energy</label>
+		<description>Total energy charged from the grid over the lifetime of the vehicle</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="fuel-consumed" advanced="true">
+		<item-type unitHint="l,gal">Number:Volume</item-type>
+		<label>Total Fuel Consumed</label>
+		<description>Total fuel consumed over the lifetime of the vehicle</description>
+		<category>Oil</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="avg-consumption" advanced="true">
+		<item-type>Number</item-type>
+		<label>Average Consumption</label>
+		<description>Average electric consumption in kWh/100km</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f kWh/100km"/>
+	</channel-type>
+
+	<channel-type id="avg-speed" advanced="true">
+		<item-type unitHint="km/h,mph">Number:Speed</item-type>
+		<label>Average Speed</label>
+		<description>Average speed of the vehicle</description>
+		<category>Motion</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="weekly-distance" advanced="true">
+		<item-type unitHint="km,mi">Number:Length</item-type>
+		<label>Weekly Distance</label>
+		<category>Line</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="predicted-soc" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Predicted State of Charge</label>
+		<description>Predicted state of charge at the end of charging</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="min-target-soc" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Minimum Target State of Charge</label>
+		<description>Minimum state of charge requested for smart charging</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="time-to-full" advanced="true">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Time to Full Charge</label>
+		<description>Estimated time until the high-voltage battery is fully charged</description>
+		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="charging-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Charging Mode</label>
+		<description>Current charging mode</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NORMAL_PROGNOSE_BASED">Normal</option>
+				<option value="STEP_BASED">Step Based</option>
+				<option value="PLC_MODE">PLC Mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="charging-end-reason" advanced="true">
+		<item-type>String</item-type>
+		<label>Charging End Reason</label>
+		<description>Reason why the last charging ended</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-charging-result" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Charging Result</label>
+		<description>Result of the last charging</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="SUCCESS">Success</option>
+				<option value="FAILED">Failed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="cable-lock" advanced="true">
+		<item-type>String</item-type>
+		<label>Charging Cable Lock</label>
+		<description>Lock state of the charging cable</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charging-flap" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Charging Flap</label>
+		<description>Whether the charging flap is open</description>
+		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-group-type id="other-group">
+		<label>Other Data</label>
+		<description>Data points without predefined channel, their channels are created when the data is received</description>
+	</channel-group-type>
+
+	<!-- Channel types of dynamic channels, their item type is derived from the received data -->
+	<channel-type id="generic-number">
+		<item-type>Number</item-type>
+		<label>Number Value</label>
+		<description>Numeric data point without predefined channel</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="generic-string">
+		<item-type>String</item-type>
+		<label>Text Value</label>
+		<description>Text data point without predefined channel</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="generic-switch">
+		<item-type>Switch</item-type>
+		<label>Switch Value</label>
+		<description>Boolean data point without predefined channel</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
