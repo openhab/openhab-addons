@@ -122,6 +122,14 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
 
     String getDebugLog(String id) throws ShellyApiException;
 
+    default void setDebugLogEnabled(boolean enable) throws ShellyApiException {
+        // no-op by default; only implemented for Gen2+ devices
+    }
+
+    default boolean isDebugLogEnabled() {
+        return false;
+    }
+
     String setCloud(boolean enabled) throws ShellyApiException;
 
     String setApRoaming(boolean enable) throws ShellyApiException;
