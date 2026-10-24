@@ -52,6 +52,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -168,15 +169,15 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     private boolean configure() {
         if (config.ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, "text/offline.config-error-missing-host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "text/offline.config-error-missing-host");
             return false;
         }
         if (!supportedApiVersions.contains(config.apiVersion)) {
-            updateStatus(ThingStatus.OFFLINE, "@text/offline.config-error-invalid-api-version");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-api-version");
             return false;
         }
         if (config.isUsingApiVersion2() && config.bearerToken.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, "@text/offline.config-error-missing-bearer-token");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-missing-bearer-token");
             return false;
         }
 
