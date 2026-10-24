@@ -89,77 +89,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         disposed = false;
         final int generation = lifecycleGeneration.incrementAndGet();
         super.initialize();
-
-        SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
-
-        if (serialPort == null && config.port != null) {
-            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.port);
-
-            if (portIdentifier == null) {
-                String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
-                        .collect(Collectors.joining(System.lineSeparator()));
-                String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s",
-                        config.port, availablePorts);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
-                // Port may appear later (USB unplug/replug) — keep retrying while the handler is active
-                scheduleReconnect(generation);
-                return;
-            }
-
-            try {
-                logger.info("Connecting to the Oceanic water softener using {}.", config.port);
-                SerialPort port = portIdentifier.open(this.getThing().getUID().getBindingId(), 2000);
-                serialPort = port;
-
-                int nativeFd = getNativeFileDescriptor(port);
-                // Only macOS jtermios select()/FD_SET has a fixed 1024-bit bitmap; Linux uses poll().
-                if (MACOS_SELECT_FD_LIMIT && nativeFd >= PUREJAVACOMM_MACOS_FD_SETSIZE) {
-                    String message = String.format(
-                            "Serial port '%s' opened with file descriptor %d which is >= %d. "
-                                    + "macOS purejavacomm/jtermios select() only supports FDs 0-%d; "
-                                    + "reads would fail with ArrayIndexOutOfBoundsException in FD_SET. "
-                                    + "Restart openHAB so the FD is lower, free unused file descriptors, "
-                                    + "or use a serial transport that supports poll()/higher FDs.",
-                            config.port, nativeFd, PUREJAVACOMM_MACOS_FD_SETSIZE, PUREJAVACOMM_MACOS_FD_SETSIZE - 1);
-                    logger.error("{}", message);
-                    closeSerialResources(false);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-                    scheduleReconnect(generation);
-                    return;
-                } else if (nativeFd >= 0) {
-                    logger.debug("Opened serial port '{}' with native file descriptor {}", config.port, nativeFd);
-                }
-
-                port.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-                port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-                port.enableReceiveThreshold(1);
-                port.disableReceiveTimeout();
-
-                InputStream in = Objects.requireNonNull(port.getInputStream(), "serial input stream");
-                OutputStream out = Objects.requireNonNull(port.getOutputStream(), "serial output stream");
-                inputStream = in;
-                outputStream = out;
-
-                port.addEventListener(this);
-                port.notifyOnDataAvailable(true);
-
-                SerialPortReader reader = new SerialPortReader(in);
-                readerThread = reader;
-                reader.start();
-
-                updateStatus(ThingStatus.ONLINE);
-            } catch (PortInUseException portInUseException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
-                scheduleReconnect(generation);
-            } catch (UnsupportedCommOperationException | IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
-                scheduleReconnect(generation);
-            } catch (TooManyListenersException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Too many listeners to serial port.");
-                scheduleReconnect(generation);
-            }
-        }
+        openSerialConnection(generation);
     }
 
     @Override
@@ -169,6 +99,97 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         cancelReconnect();
         closeSerialResources(true);
         super.dispose();
+    }
+
+    /**
+     * Open the configured serial port for the given lifecycle generation. Used by framework
+     * {@link #initialize()} and by soft reconnect; never clears {@link #disposed}.
+     */
+    private void openSerialConnection(int generation) {
+        if (!isLifecycleCurrent(generation)) {
+            return;
+        }
+
+        SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
+
+        if (serialPort != null || config.port == null) {
+            return;
+        }
+
+        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.port);
+
+        if (portIdentifier == null) {
+            String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
+                    .collect(Collectors.joining(System.lineSeparator()));
+            String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s",
+                    config.port, availablePorts);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+            // Port may appear later (USB unplug/replug) — keep retrying while the handler is active
+            scheduleReconnect(generation);
+            return;
+        }
+
+        try {
+            logger.info("Connecting to the Oceanic water softener using {}.", config.port);
+            SerialPort port = portIdentifier.open(this.getThing().getUID().getBindingId(), 2000);
+            if (!isLifecycleCurrent(generation)) {
+                port.close();
+                return;
+            }
+            serialPort = port;
+
+            int nativeFd = getNativeFileDescriptor(port);
+            // Only macOS jtermios select()/FD_SET has a fixed 1024-bit bitmap; Linux uses poll().
+            if (MACOS_SELECT_FD_LIMIT && nativeFd >= PUREJAVACOMM_MACOS_FD_SETSIZE) {
+                String message = String.format(
+                        "Serial port '%s' opened with file descriptor %d which is >= %d. "
+                                + "macOS purejavacomm/jtermios select() only supports FDs 0-%d; "
+                                + "reads would fail with ArrayIndexOutOfBoundsException in FD_SET. "
+                                + "Restart openHAB so the FD is lower, free unused file descriptors, "
+                                + "or use a serial transport that supports poll()/higher FDs.",
+                        config.port, nativeFd, PUREJAVACOMM_MACOS_FD_SETSIZE, PUREJAVACOMM_MACOS_FD_SETSIZE - 1);
+                logger.error("{}", message);
+                closeSerialResources(false);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                scheduleReconnect(generation);
+                return;
+            } else if (nativeFd >= 0) {
+                logger.debug("Opened serial port '{}' with native file descriptor {}", config.port, nativeFd);
+            }
+
+            port.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+            port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+            port.enableReceiveThreshold(1);
+            port.disableReceiveTimeout();
+
+            InputStream in = Objects.requireNonNull(port.getInputStream(), "serial input stream");
+            OutputStream out = Objects.requireNonNull(port.getOutputStream(), "serial output stream");
+            inputStream = in;
+            outputStream = out;
+
+            port.addEventListener(this);
+            port.notifyOnDataAvailable(true);
+
+            SerialPortReader reader = new SerialPortReader(in);
+            readerThread = reader;
+            reader.start();
+
+            if (!isLifecycleCurrent(generation)) {
+                closeSerialResources(true);
+                return;
+            }
+            updateStatus(ThingStatus.ONLINE);
+        } catch (PortInUseException portInUseException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
+            scheduleReconnect(generation);
+        } catch (UnsupportedCommOperationException | IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
+            scheduleReconnect(generation);
+        } catch (TooManyListenersException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Too many listeners to serial port.");
+            scheduleReconnect(generation);
+        }
     }
 
     private boolean isLifecycleCurrent(int generation) {
@@ -198,12 +219,9 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             return;
         }
         logger.debug("Reconnecting Oceanic serial thing handler");
-        // Soft reset only — do not call dispose()/super.dispose() or a later queued failure could revive us
+        // Soft reset only — do not call initialize()/dispose(); those would clear disposed or tear down polling
         closeSerialResources(true);
-        if (!isLifecycleCurrent(generation)) {
-            return;
-        }
-        initialize();
+        openSerialConnection(generation);
     }
 
     /**
