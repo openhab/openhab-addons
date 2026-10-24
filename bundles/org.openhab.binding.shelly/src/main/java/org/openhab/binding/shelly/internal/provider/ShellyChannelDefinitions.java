@@ -94,6 +94,7 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_PERCENT = "Number:Dimensionless"; // 0–100% (battery, humidity)
     public static final String ITEMT_DIMENSIONLESS = "Number:Dimensionless"; // ratios (dB)
     public static final String ITEMT_PRESSURE = "Number:Pressure";
+    public static final String ITEMT_PLAYER = "Player"; // Media playback control (PLAY/PAUSE/NEXT/PREVIOUS)
 
     // shortcuts to avoid line breaks (make code more readable)
     private static final String CHGR_DEVST = CHANNEL_GROUP_DEV_STATUS;
@@ -111,6 +112,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_COLOR = CHANNEL_GROUP_COLOR_CONTROL;
     private static final String CHGR_WHITE = CHANNEL_GROUP_WHITE_CONTROL;
     private static final String CHGR_LORA = CHANNEL_GROUP_LORA;
+    private static final String CHGR_MEDIA = CHANNEL_GROUP_MEDIA;
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
     public static final String PREFIX_CHANNEL = "channel-type." + BINDING_ID + ".";
@@ -209,6 +211,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE, "deviceFirmware", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_RELAY_IN_THERMOSTAT, "relayInThermostat",
+                        ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_SENSOR_IN_THERMOSTAT, "sensorInThermostat",
+                        ITEMT_SWITCH))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -402,11 +408,28 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_CAPACITOR_VOLTAGE, "sensorCapacitorVoltage",
                         ITEMT_VOLT))
 
+                // Battery of an attached external sensor (Gen2 devicepower:1)
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH))
+
+                // Wall Display Media Player
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_CONTROL, "mediaControl", ITEMT_PLAYER))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_VOLUME, "system:volume", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_TITLE, "mediaTitle", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_ARTIST, "mediaArtist", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_ALBUM, "mediaAlbum", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_TYPE, "mediaContentType", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_MEDIA_ID, "playMediaId", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_RADIO_FAV_ID, "playRadioFavId", ITEMT_NUMBER))
+
                 // TRV
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_POSITION, "sensorPosition", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_MODE, "controlMode", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_PROFILE, "controlProfile", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP, "targetTemp", ITEMT_TEMP))
+
+                // Wall Display Thermostat (reuses CHGR_CONTROL / CHANNEL_CONTROL_SETTEMP from TRV above)
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_THERMOSTAT_ENABLE, "thermostatEnable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BCONTROL, "boostControl", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH))
@@ -513,6 +536,8 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
         addChannel(thing, add, profile.settings.ledStatusDisable != null, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi
         addChannel(thing, add, profile.settings.calibrated != null, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED);
+        addChannel(thing, add, status.relayInThermostat != null, CHGR_DEVST, CHANNEL_DEVST_RELAY_IN_THERMOSTAT);
+        addChannel(thing, add, status.sensorInThermostat != null, CHGR_DEVST, CHANNEL_DEVST_SENSOR_IN_THERMOSTAT);
 
         if (!profile.isBlu) { // currently not supported for BLU devices
             addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
@@ -1091,7 +1116,7 @@ public class ShellyChannelDefinitions {
         return createChannel(thing, channelId, group, channelName);
     }
 
-    private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
+    public static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
             String channelName) throws IllegalArgumentException {
         addChannel(thing, newChannels, supported, group, channelName, null);
     }
