@@ -92,32 +92,38 @@
 		</parameter>
 		<parameter name="play" type="text">
 			<label>Play Value</label>
-			<description>A string (like "START") that is sent for the PLAY command and recognised as PLAY state when received. Defaults to PLAY. The Outgoing Value Format is not applied to this value.</description>
+			<description>A string (like "START") that is sent for the PLAY command and recognised as PLAY state when received.
+				Defaults to PLAY. The Outgoing Value Format is not applied to this value.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="pause" type="text">
 			<label>Pause Value</label>
-			<description>A string (like "HALT") that is sent for the PAUSE command and recognised as PAUSE state when received. Defaults to PAUSE. The Outgoing Value Format is not applied to this value.</description>
+			<description>A string (like "HALT") that is sent for the PAUSE command and recognised as PAUSE state when received.
+				Defaults to PAUSE. The Outgoing Value Format is not applied to this value.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="next" type="text">
 			<label>Next Value</label>
-			<description>A string (like "SKIP") that is sent for the NEXT command and recognised as NEXT command when received. Defaults to NEXT. The Outgoing Value Format is not applied to this value.</description>
+			<description>A string (like "SKIP") that is sent for the NEXT command and recognised as NEXT command when received.
+				Defaults to NEXT. The Outgoing Value Format is not applied to this value.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="previous" type="text">
 			<label>Previous Value</label>
-			<description>A string (like "BACK") that is sent for the PREVIOUS command and recognised as PREVIOUS command when received. Defaults to PREVIOUS. The Outgoing Value Format is not applied to this value.</description>
+			<description>A string (like "BACK") that is sent for the PREVIOUS command and recognised as PREVIOUS command when
+				received. Defaults to PREVIOUS. The Outgoing Value Format is not applied to this value.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="rewind" type="text">
 			<label>Rewind Value</label>
-			<description>A string (like "RW") that is sent for the REWIND command and recognised as REWIND state when received. Defaults to REWIND. The Outgoing Value Format is not applied to this value.</description>
+			<description>A string (like "RW") that is sent for the REWIND command and recognised as REWIND state when received.
+				Defaults to REWIND. The Outgoing Value Format is not applied to this value.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="fastforward" type="text">
 			<label>Fast Forward Value</label>
-			<description>A string (like "FF") that is sent for the FASTFORWARD command and recognised as FASTFORWARD state when received. Defaults to FASTFORWARD. The Outgoing Value Format is not applied to this value.</description>
+			<description>A string (like "FF") that is sent for the FASTFORWARD command and recognised as FASTFORWARD state when
+				received. Defaults to FASTFORWARD. The Outgoing Value Format is not applied to this value.</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
