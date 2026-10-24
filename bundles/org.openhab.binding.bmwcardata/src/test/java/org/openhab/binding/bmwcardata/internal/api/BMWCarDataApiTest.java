@@ -165,6 +165,35 @@ class BMWCarDataApiTest {
     }
 
     @Test
+    void gatewayErrorPageIsNotQuoted() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(502)
+                .withBody("<html><head><title>502 Bad Gateway</title></head><body>nginx/1.31.3</body></html>")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertEquals("BMW CarData request GET /customers/vehicles/WBA***/basicData failed with HTTP 502: Bad Gateway",
+                e.getMessage());
+        assertEquals(502, e.getHttpStatus());
+        assertTrue(e.isTransient());
+    }
+
+    @Test
+    void onlyFailuresOnBmwSideAreTransient() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(404)));
+        assertFalse(assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN)).isTransient());
+
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(429).withBody("{\"exveErrorId\":\"CU-429\"}")));
+        assertFalse(assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN)).isTransient());
+        // withheld by the budget, not sent at all
+        assertFalse(assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN)).isTransient());
+
+        // connection refused
+        BMWCarDataApi unreachable = new BMWCarDataApi(HTTP_CLIENT, new Gson(), () -> "token",
+                new RequestBudget(new MapStorage(), "budget", 3, Clock.systemUTC()), "http://localhost:1");
+        assertTrue(assertThrows(BMWCarDataException.class, () -> unreachable.getBasicData(VIN)).isTransient());
+    }
+
+    @Test
     void invalidIdentifiersAreRejectedWithoutRequest() {
         assertThrows(BMWCarDataException.class, () -> api.getBasicData("../containers"));
         assertThrows(BMWCarDataException.class, () -> api.getTelematicData(VIN, "a/b"));

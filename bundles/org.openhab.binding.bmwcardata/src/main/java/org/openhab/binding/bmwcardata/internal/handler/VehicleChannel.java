@@ -396,6 +396,23 @@ public enum VehicleChannel {
         return isUndefined(primitive) ? UnDefType.UNDEF : new StringType(primitive.getAsString().strip());
     }
 
+    /**
+     * Derives the state of {@link #PLUGGED} from the charging port status, for vehicles that report only the latter.
+     *
+     * @return {@code ON} for {@code CONNECTED}, {@code OFF} for {@code DISCONNECTED}, or {@code null} for other values
+     */
+    static @Nullable State toPluggedState(TelematicValue telematicValue) {
+        JsonPrimitive primitive = toPrimitive(telematicValue);
+        String word = primitive != null ? word(primitive) : null;
+        if ("CONNECTED".equals(word)) {
+            return OnOffType.ON;
+        }
+        if ("DISCONNECTED".equals(word)) {
+            return OnOffType.OFF;
+        }
+        return null;
+    }
+
     private @Nullable State toQuantity(JsonPrimitive primitive, @Nullable String unitSymbol) {
         BigDecimal number = toNumber(primitive);
         if (number == null) {

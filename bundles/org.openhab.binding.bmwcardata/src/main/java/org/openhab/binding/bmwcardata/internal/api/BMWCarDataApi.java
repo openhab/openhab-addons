@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.Container;
 import org.openhab.binding.bmwcardata.internal.api.dto.Container.ContainerList;
@@ -202,7 +203,7 @@ public class BMWCarDataApi {
         if (status < 200 || status >= 300) {
             String content = response.getContentAsString();
             BMWCarDataException exception = new BMWCarDataException("BMW CarData request " + method + " "
-                    + redactVin(path) + " failed with HTTP " + status + ": " + errorOf(content), status,
+                    + redactVin(path) + " failed with HTTP " + status + ": " + errorOf(status, content), status,
                     errorIdOf(content));
             if (exception.isRateLimited()) {
                 // BMW counts requests the binding does not know of, e.g. those of other tools using the account
@@ -241,9 +242,13 @@ public class BMWCarDataApi {
         }
     }
 
-    private static String errorOf(@Nullable String content) {
+    private static String errorOf(int status, @Nullable String content) {
         if (content == null || content.isBlank()) {
             return "<no content>";
+        }
+        // gateway errors come as HTML pages, which tell no more than the status
+        if (content.stripLeading().startsWith("<")) {
+            return HttpStatus.getMessage(status);
         }
         // error responses are short structured messages, but must not flood the log
         String excerpt = content.length() > 200 ? content.substring(0, 200) : content;

@@ -95,6 +95,8 @@ The stream is not affected by this limit, so the binding uses the API only to co
 - Two minutes after the authorization, and then every `refreshInterval` hours, the current values of all vehicles are read, one request per vehicle.
 - When the stream was interrupted for five minutes or more, the values are read again after the reconnect, as the stream does not replay missed values.
   This catch-up runs at most every 30 minutes.
+- When a read fails on BMW's side (e.g. HTTP 502) or times out, it is repeated once after 15 minutes for the affected vehicles.
+  While the stream is connected, such a failure does not set the vehicle `OFFLINE`, as the stream keeps its values up to date.
 - The static vehicle data shown as Thing properties is read once per vehicle, and the binding sets up its own telematic data container named `openHAB` on first use, which costs a few requests.
 
 The binding counts its requests over a rolling 24 hours, also across restarts, and sends at most `requestBudget` requests.
@@ -162,7 +164,7 @@ A channel is only updated if the vehicle reports the corresponding data and, for
 | charge#soc                           | Number:Dimensionless     | State of charge of the high-voltage battery                                   | no       |
 | charge#target-soc                    | Number:Dimensionless     | State of charge at which charging stops                                       | no       |
 | charge#status                        | String                   | Charging state                                                                | no       |
-| charge#plugged                       | Switch                   | Whether a charging cable is plugged in                                        | no       |
+| charge#plugged                       | Switch                   | Whether a charging cable is plugged in (see below)                            | no       |
 | charge#power                         | Number:Power             | Current charging power                                                        | no       |
 | charge#time-remaining                | Number:Time              | Estimated time until charging is completed                                    | no       |
 | charge#ac-current                    | Number:ElectricCurrent   | Current AC charging current                                                   | yes      |
@@ -170,7 +172,7 @@ A channel is only updated if the vehicle reports the corresponding data and, for
 | charge#ac-limit                      | Number:ElectricCurrent   | Selected limit of the AC charging current                                     | yes      |
 | charge#phases                        | String                   | Number of phases used for charging                                            | yes      |
 | charge#method                        | String                   | Charging method and plug type                                                 | yes      |
-| charge#dc-port                       | String                   | Whether a DC charging plug is connected                                       | yes      |
+| charge#dc-port                       | String                   | Whether a charging plug is connected to the charging port                     | yes      |
 | charge#predicted-soc                 | Number:Dimensionless     | Predicted state of charge at the end of charging                              | yes      |
 | charge#min-target-soc                | Number:Dimensionless     | Minimum state of charge requested for smart charging                          | yes      |
 | charge#time-to-full                  | Number:Time              | Estimated time until the battery is fully charged                             | yes      |
@@ -235,6 +237,7 @@ A channel is only updated if the vehicle reports the corresponding data and, for
 
 The String channels show the values as reported by the vehicle; the door lock state is normalized, e.g. `SELECTIVE-LOCKED` becomes `SELECTIVELOCKED`.
 Windows and the sunroof are `OPEN` also when they are only partly open or tilted; the advanced `-state` channels show the reported state.
+Not every vehicle reports whether a charging cable is plugged in; until it does, `charge#plugged` follows the charging port status (`CONNECTED` or `DISCONNECTED`).
 Values the vehicle reports as unavailable (e.g. `INVALID`, `-NA-` or `UNKNOWN`), and values that cannot be interpreted, set the channel to `UNDEF`.
 
 ### Dynamic Channels

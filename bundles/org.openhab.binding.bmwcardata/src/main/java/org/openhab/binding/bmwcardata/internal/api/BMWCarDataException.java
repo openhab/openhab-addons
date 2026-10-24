@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.bmwcardata.internal.api;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -83,6 +86,18 @@ public class BMWCarDataException extends Exception {
      */
     public boolean isRateLimited() {
         return budgetExhausted || httpStatus == 429 || ERROR_RATE_LIMIT.equals(errorId);
+    }
+
+    /**
+     * @return whether the request failed on BMW's side or on the way there, e.g. a 502 of BMW's gateway or a
+     *         timeout, so that the same request may succeed later
+     */
+    public boolean isTransient() {
+        if (httpStatus >= 500) {
+            return true;
+        }
+        Throwable cause = getCause();
+        return httpStatus == 0 && (cause instanceof TimeoutException || cause instanceof ExecutionException);
     }
 
     /**

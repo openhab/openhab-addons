@@ -743,8 +743,8 @@
 
 	<channel-type id="dc-port" advanced="true">
 		<item-type>String</item-type>
-		<label>DC Charging Port</label>
-		<description>Whether a DC charging plug is connected</description>
+		<label>Charging Port</label>
+		<description>Whether a charging plug is connected to the charging port</description>
 		<category>PowerOutlet</category>
 		<tags>
 			<tag>Status</tag>

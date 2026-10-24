@@ -75,6 +75,10 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private final Map<String, State> states = new ConcurrentHashMap<>();
     // timestamps of the latest values by descriptor, to drop values older than already published ones
     private final Map<String, Instant> descriptorTimestamps = new ConcurrentHashMap<>();
+    // once the vehicle reports isPlugged, the plug state is no longer derived from the charging port status
+    private volatile boolean pluggedReported;
+    // a refresh or stream message of the account may still deliver data while the handler is disposed
+    private volatile boolean disposed;
     // guarded by this
     private @Nullable BigDecimal latitude;
     private @Nullable BigDecimal longitude;
@@ -91,6 +95,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        disposed = false;
         VehicleConfiguration config = getConfigAs(VehicleConfiguration.class);
         vin = config.vin.trim().toUpperCase(Locale.ROOT);
         dynamicChannels = config.dynamicChannels;
@@ -104,6 +109,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        disposed = true;
         cancelProperties();
         super.dispose();
     }
@@ -130,6 +136,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      * Publishes the values of the given descriptors.
      */
     public void updateTelematicData(Map<String, TelematicValue> data) {
+        if (disposed) {
+            return;
+        }
         BigDecimal newLatitude = null;
         BigDecimal newLongitude = null;
         BigDecimal newAltitude = null;
@@ -181,6 +190,15 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                     State detailState = channel.toDetailState(value);
                     if (detailChannelUid != null && detailState != null) {
                         publish(detailChannelUid, detailState);
+                    }
+                    if (channel == VehicleChannel.PLUGGED) {
+                        pluggedReported = true;
+                    } else if (channel == VehicleChannel.DC_PORT && !pluggedReported) {
+                        State pluggedState = VehicleChannel.toPluggedState(value);
+                        String pluggedChannelUid = VehicleChannel.PLUGGED.getChannelUid();
+                        if (pluggedState != null && pluggedChannelUid != null) {
+                            publish(pluggedChannelUid, pluggedState);
+                        }
                     }
                     if (channel == VehicleChannel.ALTITUDE && state instanceof QuantityType<?> altitudeState) {
                         QuantityType<?> metres = altitudeState.toUnit(SIUnits.METRE);
@@ -303,7 +321,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      * Called by the account after the telematic data of this vehicle was refreshed via the REST API.
      */
     void refreshSucceeded() {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
+        if (!disposed && getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -312,7 +330,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      * Called by the account if the telematic data of this vehicle could not be refreshed via the REST API.
      */
     void refreshFailed(@Nullable String reason) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        if (!disposed) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        }
     }
 
     private synchronized void scheduleProperties() {

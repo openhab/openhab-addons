@@ -105,6 +105,36 @@ class BMWCarDataVehicleHandlerTest {
     }
 
     @Test
+    void ignoresDataAndRefreshResultsAfterDispose() {
+        handler.dispose();
+
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        handler.refreshSucceeded();
+        handler.refreshFailed("late failure");
+
+        verifyNoInteractions(callback);
+    }
+
+    @Test
+    void derivesPluggedFromChargingPortUntilVehicleReportsIt() {
+        String port = "vehicle.body.chargingPort.status";
+        handler.updateTelematicData(Map.of(port, stringValue("Connected", null, "2026-10-01T10:00:00Z")));
+        verifyState("charge#plugged", OnOffType.ON);
+
+        handler.updateTelematicData(Map.of(port, stringValue("DISCONNECTED", null, "2026-10-01T10:01:00Z")));
+        verifyState("charge#plugged", OnOffType.OFF);
+
+        // other values leave the plug state as it is
+        handler.updateTelematicData(Map.of(port, stringValue("INVALID", null, "2026-10-01T10:02:00Z")));
+        verify(callback, never()).stateUpdated(channel("charge#plugged"), UnDefType.UNDEF);
+
+        handler.updateTelematicData(Map.of("vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged",
+                value(false, null, "2026-10-01T10:03:00Z")));
+        handler.updateTelematicData(Map.of(port, stringValue("CONNECTED", null, "2026-10-01T10:04:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("charge#plugged"), OnOffType.ON);
+    }
+
+    @Test
     void ignoresValuesOlderThanPublishedOnes() {
         handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
         handler.updateTelematicData(Map.of(MILEAGE, value(100, "km", "2026-10-01T09:00:00Z")));
