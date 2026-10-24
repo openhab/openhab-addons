@@ -1800,10 +1800,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
             MetaData metaData = light.getMetaData();
             if (metaData != null) {
-                Archetype aarchetype = metaData.getArchetype();
-                logger.debug("{} -> getLightArchetype() light {} metadata {}", resourceId, light.getId(), aarchetype);
-                if (FRONT_ARCHETYPES.contains(aarchetype) || BACK_ARCHETYPES.contains(aarchetype)) {
-                    return aarchetype;
+                Archetype archetype = metaData.getArchetype();
+                logger.debug("{} -> getLightArchetype() light {} metadata {}", resourceId, light.getId(), archetype);
+                if (FRONT_ARCHETYPES.contains(archetype) || BACK_ARCHETYPES.contains(archetype)) {
+                    return archetype;
                 }
             }
         }
