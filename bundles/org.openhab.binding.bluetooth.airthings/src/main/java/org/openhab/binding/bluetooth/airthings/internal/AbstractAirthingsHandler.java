@@ -198,7 +198,6 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
                         BluetoothCharacteristic characteristic = device.getCharacteristic(getDataUUID());
                         if (characteristic != null) {
                             readState = ReadState.READING;
-                            errorReadCounter = 0;
                             errorResolvingCounter = 0;
                             device.readCharacteristic(characteristic)
                                     .whenComplete((data, ex) -> handleReadCompleted(characteristic, data, ex));
@@ -241,6 +240,11 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
             return;
         }
         try {
+            Bridge bridge = getBridge();
+            if (bridge == null || bridge.getStatusInfo().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
             if (error != null || data == null) {
                 errorReadCounter++;
                 logger.debug("Read data from device {} failed {} times", address, errorReadCounter);
