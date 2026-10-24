@@ -14,6 +14,7 @@ The follow things are supported:
 - `envoy` The Envoy gateway thing, which is a bridge thing.
 - `inverter` An Enphase micro inverter connected to a solar panel.
 - `relay`  An Enphase relay.
+- `battery` An Enphase IQ Battery (Encharge). Only available on Envoy gateways with version 7 firmware and higher.
 
 Not all Envoy gateways support all channels and things.
 Therefore some data on inverters and the relay may not be available.
@@ -21,7 +22,7 @@ The binding auto detects which data is available and will report this in the log
 
 ## Discovery
 
-The binding can discover Envoy gateways, micro inverters and relays.
+The binding can discover Envoy gateways, micro inverters, relays and IQ Batteries.
 If login access is needed the Bridge `envoy` needs to be configured after discovering and adding before other things can be discovered.
 In that case, after configuring the login, run discovery again.
 
@@ -64,11 +65,11 @@ For Envoy versions 7 and newer has the following authentication configuration op
 
 ### Thing configuration
 
-The micro inverter `inverter` and `relay` things have only 1 parameter:
+The micro inverter `inverter`, `relay` and `battery` things have only 1 parameter:
 
 | parameter    | required | description                       |
 |--------------|----------|-----------------------------------|
-| serialNumber | yes      | The serial number of the inverter |
+| serialNumber | yes      | The serial number of the device   |
 
 ## Channels
 
@@ -87,6 +88,15 @@ An example of a production channel name is: `production#wattsNow`.
 On Envoy gateways with version 7 firmware and higher the `consumption` data is read from the metering endpoint.
 This endpoint only provides the instantaneous `wattsNow` value (and `wattHoursLifetime` when a total-consumption meter is present).
 The `wattHoursToday` and `wattHoursSevenDays` consumption channels are not available from this endpoint and stay undefined.
+
+When IQ Batteries are installed, the `storage` channel group shows the aggregated data of all batteries.
+This data is only available on Envoy gateways with version 7 firmware and higher, and is only retrieved when at least one of these channels is linked.
+
+| channel         | type                 | description                                                                  |
+|-----------------|----------------------|------------------------------------------------------------------------------|
+| wattsNow        | Number:Power         | Latest battery power. Positive when discharging, negative when charging      |
+| stateOfCharge   | Number:Dimensionless | State of charge of all IQ Batteries combined                                 |
+| availableEnergy | Number:Energy        | Energy currently stored in the batteries                                     |
 
 The `inverter` thing has the following channels:
 
@@ -113,6 +123,18 @@ The `relay` thing has the following channels:
 | line2Connected  | Contact      | If power line 2 is connected. If closed it's connected |
 | line2Connected  | Contact      | If power line 3 is connected. If closed it's connected |
 
+The `battery` thing has the following channels:
+
+| channel            | type                 | advanced | description                              |
+|--------------------|----------------------|----------|------------------------------------------|
+| stateOfCharge      | Number:Dimensionless | no       | State of charge of the battery           |
+| temperature        | Number:Temperature   | no       | Temperature of the battery               |
+| maxCellTemperature | Number:Temperature   | no       | Highest temperature of the battery cells |
+| capacity           | Number:Energy        | yes      | Capacity of the battery                  |
+| sleepEnabled       | Switch (Read Only)   | yes      | If the battery sleep mode is enabled     |
+| status             | String               | no       | The status of the battery                |
+| communicating      | Switch (Read Only)   | yes      | If the battery is communicating          |
+
 The `inverter` and `relay` have the following additional advanced channels:
 
 | channel         | type               | description                          |
@@ -131,6 +153,7 @@ Bridge enphase:envoy:789012 "Envoy" [ serialNumber="12345789012" ] {
   Things:
     inverter 123456 "Enphase Inverter 123456" [ serialNumber="789012123456" ]
     inverter 223456 "Enphase Inverter 223456" [ serialNumber="789012223456" ]
+    battery 323456 "Enphase Battery 323456" [ serialNumber="789012323456" ]
 }
 ```
 
@@ -153,4 +176,11 @@ Number:Power  i1WattsNow           "Watts Now [%d %unit%]"                      
 Number:Power i2LastReportWatts "Last Report [%d %unit%]"                          { channel="enphase:inverter:789012:223456:lastReportWatts" }
 Number:Power i21MaxReportWatts "Max Report [%d %unit%]"                           { channel="enphase:inverter:789012:223456:maxReportWatts" }
 DateTime     i2LastReportDate  "Last Report Date [%1$tY-%1$tm-%1$td %1$tH:%1$tM]" { channel="enphase:inverter:789012:223456:lastReportDate" }
+
+Number:Power         envoyBatteryPower    "Battery Power [%d %unit%]"     { channel="enphase:envoy:789012:storage#wattsNow" }
+Number:Dimensionless envoyBatterySoc      "Battery SoC [%d %unit%]"       { channel="enphase:envoy:789012:storage#stateOfCharge" }
+Number:Energy        envoyBatteryEnergy   "Battery Energy [%.1f kWh]"     { channel="enphase:envoy:789012:storage#availableEnergy" }
+
+Number:Dimensionless b1StateOfCharge      "Battery SoC [%d %unit%]"       { channel="enphase:battery:789012:323456:stateOfCharge" }
+Number:Temperature   b1Temperature        "Battery Temperature [%d %unit%]" { channel="enphase:battery:789012:323456:temperature" }
 ```

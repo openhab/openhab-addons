@@ -348,12 +348,12 @@ public class MiIoBasicHandlerValueInParametersTest {
 
     @Test
     public void databaseActionsWithConstantInputAreUnchanged() throws IOException {
-        handler.loadDatabase("dreame.vacuum.mc1808-miot.json");
+        handler.loadDatabase("dreame.vacuum.p2114a-miot.json");
 
         assertEquals(
-                List.of("action{\"did\":\"vacuumaction\",\"siid\":18,\"aiid\":1,\"in\":[{\"piid\":1,\"value\":2}]}"),
-                handler.send("vacuumaction", new StringType("vacuum")));
-        assertEquals(List.of("action{\"did\":\"vacuumaction\",\"siid\":18,\"aiid\":2,\"in\":[]}"),
-                handler.send("vacuumaction", new StringType("stop")));
+                List.of("action{\"did\":\"actions\",\"siid\":4,\"aiid\":4,\"in\":[{\"piid\":10,\"value\":\"2,1\"}]}"),
+                handler.send("actions", new StringType("vacuum-start-mop-wash")));
+        assertEquals(List.of("action{\"did\":\"actions\",\"siid\":4,\"aiid\":2,\"in\":[]}"),
+                handler.send("actions", new StringType("vacuum-extend-stop-clean")));
     }
 }

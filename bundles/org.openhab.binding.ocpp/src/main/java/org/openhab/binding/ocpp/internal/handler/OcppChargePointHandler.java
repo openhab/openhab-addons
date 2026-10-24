@@ -279,7 +279,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         cancelScheduledWork();
         OcppServerBridgeHandler serverHandler = server;
         if (serverHandler != null) {
-            serverHandler.unregisterChargePoint(chargePointId);
+            serverHandler.unregisterChargePoint(chargePointId, this);
         }
         server = null;
         synchronized (stateLock) {
@@ -318,8 +318,8 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         connectors.put(connectorId, handler);
     }
 
-    public void unregisterConnector(int connectorId) {
-        connectors.remove(connectorId);
+    public void unregisterConnector(int connectorId, OcppConnectorHandler handler) {
+        connectors.remove(connectorId, handler);
     }
 
     public CompletionStage<Confirmation> send(Request request) {
@@ -688,6 +688,18 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     public @Nullable Integer recoverMeterStart(int transactionId) {
         OcppServerBridgeHandler serverHandler = server;
         return serverHandler != null ? serverHandler.meterStartOf(transactionId, chargePointId) : null;
+    }
+
+    public void rememberExternalStart(int transactionId, double wattHours) {
+        OcppServerBridgeHandler serverHandler = server;
+        if (serverHandler != null) {
+            serverHandler.rememberExternalStart(transactionId, chargePointId, wattHours);
+        }
+    }
+
+    public @Nullable Double recoverExternalStart(int transactionId) {
+        OcppServerBridgeHandler serverHandler = server;
+        return serverHandler != null ? serverHandler.externalStartOf(transactionId, chargePointId) : null;
     }
 
     public void transactionCompleted(int transactionId) {

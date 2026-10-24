@@ -15,8 +15,11 @@ package org.openhab.binding.ocpp.internal.handler;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -158,6 +161,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
     private volatile @Nullable Integer meterStart;
+    // A meter-less charger can be sized from an energy item linked to external-energy instead.
+    private volatile @Nullable Double externalEnergyWh;
+    private volatile @Nullable Double externalStartWh;
     // NaN is no limit, which leaves the charger at its own maximum; 0 is a limit that stops the charge.
     private volatile double currentLimitAmps = Double.NaN;
     private volatile double powerLimitWatts = Double.NaN;
@@ -247,6 +253,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 meterStart = start;
                 updateState(CHANNEL_METER_START, new QuantityType<>(start, Units.WATT_HOUR));
             }
+            externalStartWh = parent.recoverExternalStart(open);
             updateState(CHANNEL_TRANSACTION_ID, new DecimalType(open));
             logger.debug("Recovered open transaction {} on connector {} after restart", open, connectorId);
         }
@@ -309,7 +316,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         OcppChargePointHandler parent = chargePoint;
         if (parent != null) {
-            parent.unregisterConnector(connectorId);
+            parent.unregisterConnector(connectorId, this);
         }
         chargePoint = null;
     }
@@ -396,6 +403,12 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 break;
             case CHANNEL_HARDWARE_MAX_CURRENT:
                 changeHardwareMaxCurrent(command);
+                break;
+            case CHANNEL_EXTERNAL_ENERGY:
+                Double wattHours = toWattHours(command);
+                if (wattHours != null) {
+                    externalEnergyWh = wattHours;
+                }
                 break;
             default:
                 break;
@@ -918,6 +931,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 if (stale != null) {
                     transactionId = null;
                     meterStart = null;
+                    externalStartWh = null;
                     updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
                     OcppChargePointHandler cp = chargePoint;
                     if (cp != null) {
@@ -937,13 +951,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
         states.forEach(this::updateState);
         MeterValue[] meterValues = request.getMeterValue();
         if (meterValues != null && meterValues.length > 0) {
-            ZonedDateTime timestamp = null;
-            for (int i = meterValues.length - 1; i >= 0 && timestamp == null; i--) {
-                timestamp = meterValues[i].getTimestamp();
-            }
-            if (timestamp != null) {
-                updateState(CHANNEL_TIMESTAMP, new DateTimeType(timestamp));
-            }
+            Arrays.stream(meterValues).map(MeterValue::getTimestamp).filter(Objects::nonNull)
+                    .max(Comparator.naturalOrder())
+                    .ifPresent(timestamp -> updateState(CHANNEL_TIMESTAMP, new DateTimeType(timestamp)));
         }
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
@@ -996,6 +1006,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (timestamp != null) {
             updateState(CHANNEL_TIMESTAMP_START, new DateTimeType(timestamp));
         }
+        // Without a reading at the start the session falls back to the charger's own register.
+        Double external = isLinked(CHANNEL_EXTERNAL_ENERGY) ? externalEnergyWh : null;
+        externalStartWh = external;
+        OcppChargePointHandler cp = chargePoint;
+        if (external != null && cp != null) {
+            cp.rememberExternalStart(transactionId, external);
+        }
     }
 
     public void onTransactionStopped(StopTransactionRequest request) {
@@ -1004,12 +1021,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (meterStop != null) {
             updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
         }
-        if (meterStop != null && start != null) {
-            updateState(CHANNEL_SESSION_ENERGY, new QuantityType<>(meterStop - start, Units.WATT_HOUR));
-        } else {
-            updateState(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
-        }
+        updateState(CHANNEL_SESSION_ENERGY, sessionEnergy(meterStop, start));
         meterStart = null;
+        externalStartWh = null;
         ZonedDateTime timestamp = request.getTimestamp();
         if (timestamp != null) {
             updateState(CHANNEL_TIMESTAMP_STOP, new DateTimeType(timestamp));
@@ -1017,6 +1031,32 @@ public class OcppConnectorHandler extends BaseThingHandler {
         this.transactionId = null;
         updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
         carryLimitPastTransaction();
+    }
+
+    /** A session started on the external meter is closed against it, never against the charger's register. */
+    private State sessionEnergy(@Nullable Integer meterStop, @Nullable Integer start) {
+        Double externalStart = externalStartWh;
+        if (externalStart != null) {
+            Double externalStop = isLinked(CHANNEL_EXTERNAL_ENERGY) ? externalEnergyWh : null;
+            // A meter that was reset or replaced mid-session runs backwards.
+            return externalStop != null && externalStop >= externalStart
+                    ? new QuantityType<>(externalStop - externalStart, Units.WATT_HOUR)
+                    : UnDefType.UNDEF;
+        }
+        return meterStop != null && start != null ? new QuantityType<>(meterStop - start, Units.WATT_HOUR)
+                : UnDefType.UNDEF;
+    }
+
+    /** A plain number from an item without a unit is taken as kWh, the unit meters count in. */
+    static @Nullable Double toWattHours(Command command) {
+        if (command instanceof QuantityType<?> quantity) {
+            QuantityType<?> wattHours = quantity.toUnit(Units.WATT_HOUR);
+            return wattHours != null ? wattHours.doubleValue() : null;
+        }
+        if (command instanceof DecimalType number) {
+            return number.doubleValue() * 1000;
+        }
+        return null;
     }
 
     /** With the transaction gone, a re-send lands as the TxDefaultProfile the next transaction starts under. */
