@@ -90,6 +90,17 @@
 				<description>idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected.</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="tlsKeystorePath" type="text">
+				<label>TLS Keystore Path</label>
+				<description>PKCS12 keystore holding the server's TLS certificate and key. Set to serve wss:// instead of ws://.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tlsKeystorePassword" type="text">
+				<context>password</context>
+				<label>TLS Keystore Password</label>
+				<description>Password for the TLS keystore (store and key password).</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="chargerIds" type="text" multiple="true">
 				<label>Permitted Charger IDs</label>
 				<description>Charge point id allow-list. Empty accepts any charger; otherwise unlisted chargers are rejected and

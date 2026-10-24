@@ -196,7 +196,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
 
     protected OcppTransport createTransport(OcppServerConfiguration serverConfig) {
         return new ChargeTimeTransport(this, serverConfig.pingInterval, serverConfig.requestTimeoutSeconds,
-                serverConfig.authPassword);
+                serverConfig.authPassword, serverConfig.tlsKeystorePath, serverConfig.tlsKeystorePassword);
     }
 
     public void registerChargePoint(String chargePointId, OcppChargePointHandler handler) {

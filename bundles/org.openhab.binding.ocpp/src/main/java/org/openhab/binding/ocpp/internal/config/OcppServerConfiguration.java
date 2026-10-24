@@ -37,5 +37,7 @@ public class OcppServerConfiguration {
     public int requestTimeoutSeconds = 30;
     public String authPassword = "";
     public List<String> whitelistTagIds = List.of();
+    public String tlsKeystorePath = "";
+    public String tlsKeystorePassword = "";
     public List<String> chargerIds = List.of();
 }
