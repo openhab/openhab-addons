@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -60,6 +62,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -492,7 +495,7 @@ class KeContactCombinedHandlerTest {
                 }
                 if (Set.of("phase-switch-state", "phase-switch-state-readonly")
                         .contains(typeDefinition.getAttribute("id"))) {
-                    assertEquals(Set.of("1", "3"), optionValues);
+                    assertEquals(Set.of("0", "1", "3"), optionValues);
                     assertEquals("Number", typeDefinition.getElementsByTagName("item-type").item(0).getTextContent());
                     assertEquals(
                             "phase-switch-state-readonly".equals(typeDefinition.getAttribute("id")) ? "true" : "false",
@@ -539,14 +542,15 @@ class KeContactCombinedHandlerTest {
                 assertEquals(1, descriptions.getLength(), "Missing specific description: " + channel);
                 assertTrue(descriptions.item(0).getTextContent().strip().length() > 20, channel);
             }
-            assertEquals(69, channels.size());
+            assertEquals(68, channels.size());
             assertFalse(channels.contains("triggerphaseswitch"));
             assertTrue(channels.contains("unlockplug"));
             assertTrue(channels.contains("udpstop"));
             assertFalse(channels.contains("cablestate"));
             assertFalse(channels.contains("unlock"));
             assertTrue(channels.containsAll(List.of("maxsystemcurrent", "maxpilotcurrent", "failsafecurrent",
-                    "failsafetimeout", "input", "restoutput", "togglephaseswitch")));
+                    "failsafetimeout", "input", "output", "togglephaseswitch")));
+            assertFalse(channels.contains("restoutput"));
             assertEquals("command", channelTypesById.get("togglephaseswitch"));
             assertFalse(channels.contains("maxsupportedcurrent"));
             assertFalse(channels.contains("maxchargingcurrent"));
@@ -977,15 +981,148 @@ class KeContactCombinedHandlerTest {
     }
 
     @Test
+    @Timeout(20)
+    void udpOnlyThingPollsReport100ForSharedSessionChannels() throws Exception {
+        for (String linkedChannel : List.of("sessionduration", "sessionconsumption")) {
+            ThingUID uid = new ThingUID("keba:kecontact:udp-session");
+            var channels = List
+                    .of("session", "sessionstart", "sessionduration", "sessionid",
+                            "sessionconsumption")
+                    .stream().map(
+                            channel -> ChannelBuilder
+                                    .create(new ChannelUID(uid, channel),
+                                            "session".equals(channel) ? "Switch"
+                                                    : "sessionstart".equals(channel) ? "DateTime" : "Number")
+                                    .build())
+                    .toList();
+            Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                    .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "modbusEnabled", false,
+                            "restEnabled", false, "refreshInterval", 3600, "refreshIntervalSlow", 3600)))
+                    .withChannels(channels).build();
+            KeContactTransceiver transceiver = new KeContactTransceiver() {
+                @Override
+                public void registerHandler(KeContactHandler handler) {
+                }
+
+                @Override
+                protected @Nullable ByteBuffer send(String message, KeContactHandler handler) {
+                    String reply = switch (message) {
+                        case "report 1" -> "{\"ID\":1,\"Product\":\"P30\"}";
+                        case "report 2" -> "{\"ID\":2,\"State\":3}";
+                        case "report 100" -> """
+                                {"ID":100,"Session ID":4294967295,"started":"2026-10-20 10:00:00.000",
+                                 "started[s]":100,"ended[s]":0,"reason":0,"Sec":160}
+                                """;
+                        default -> null;
+                    };
+                    return reply == null ? null : ByteBuffer.wrap(reply.getBytes(StandardCharsets.US_ASCII));
+                }
+            };
+            ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+            ChannelUID duration = new ChannelUID(uid, "sessionduration");
+            when(callback.isChannelLinked(new ChannelUID(uid, linkedChannel))).thenReturn(true);
+            CountDownLatch received = new CountDownLatch(1);
+            doAnswer(invocation -> {
+                received.countDown();
+                return null;
+            }).when(callback).stateUpdated(eq(duration), any());
+            KeContactCombinedHandler handler = new KeContactCombinedHandler(thing,
+                    Objects.requireNonNull(mock(ModbusManager.class)), transceiver);
+            handler.setCallback(callback);
+            try {
+                handler.initialize();
+                assertTrue(received.await(5, TimeUnit.SECONDS));
+                for (var channel : channels) {
+                    assertNotNull(handler.getThing().getChannel(channel.getUID()));
+                    assertEquals(
+                            "sessionconsumption".equals(channel.getUID().getId()) ? Protocol.MODBUS : Protocol.REST,
+                            KeContactCombinedHandler.sourceFor(channel.getUID().getId(), true, true));
+                    assertEquals("sessionconsumption".equals(channel.getUID().getId()) ? Protocol.MODBUS : Protocol.UDP,
+                            KeContactCombinedHandler.sourceFor(channel.getUID().getId(), true, false));
+                }
+                verify(callback).stateUpdated(new ChannelUID(uid, "session"), OnOffType.ON);
+                verify(callback).stateUpdated(new ChannelUID(uid, "sessionstart"),
+                        new DateTimeType(Instant.parse("2026-10-20T10:00:00Z")));
+                verify(callback).stateUpdated(duration, new QuantityType<>(60, Units.SECOND));
+                verify(callback).stateUpdated(new ChannelUID(uid, "sessionid"), new DecimalType(4294967295L));
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @Test
+    @Timeout(20)
+    void sharedOutputUsesRestReadbackAndUdpCommandsWithUdpFallback() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:shared-output");
+        ChannelUID output = new ChannelUID(uid, "output");
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(
+                        new Configuration(Map.of("ipAddress", "192.0.2.1", "modbusEnabled", false, "restEnabled", true,
+                                "password", "test-password", "refreshInterval", 3600, "refreshIntervalSlow", 3600)))
+                .withChannels(ChannelBuilder.create(output, "Number").build()).build();
+        List<KeContactProtocolHandler.Listener> restListeners = new ArrayList<>();
+        List<KeContactProtocolHandler.Listener> udpListeners = new ArrayList<>();
+        try (var restAdapters = mockConstruction(KeContactRestHandler.class, (adapter, context) -> {
+            KeContactProtocolHandler.Listener listener = Objects
+                    .requireNonNull((KeContactProtocolHandler.Listener) context.arguments().get(2));
+            restListeners.add(listener);
+            doAnswer(invocation -> {
+                listener.statusUpdated(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                return null;
+            }).when(adapter).initialize();
+        }); var udpAdapters = mockConstruction(KeContactHandler.class, (adapter, context) -> {
+            udpListeners.add((KeContactProtocolHandler.Listener) context.arguments().get(3));
+            when(adapter.readReport(anyInt())).thenReturn(true);
+        })) {
+            KeContactCombinedHandler handler = new KeContactCombinedHandler(thing,
+                    Objects.requireNonNull(mock(ModbusManager.class)),
+                    Objects.requireNonNull(mock(KeContactTransceiver.class)));
+            ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+            handler.setCallback(callback);
+            try {
+                handler.initialize();
+                KeContactRestHandler rest = restAdapters.constructed().get(0);
+                KeContactHandler udp = udpAdapters.constructed().get(0);
+                verify(udp, timeout(5000)).readReport(1);
+                KeContactProtocolHandler.Listener restListener = restListeners.get(0);
+                KeContactProtocolHandler.Listener udpListener = udpListeners.get(0);
+                assertNotNull(handler.getThing().getChannel(output));
+                assertNull(handler.getThing().getChannel("restoutput"));
+
+                restListener.stateUpdated("output", new DecimalType(1));
+                verify(callback).stateUpdated(output, new DecimalType(1));
+                restListener.stateUpdated("output", new DecimalType(0));
+                verify(callback).stateUpdated(output, new DecimalType(0));
+                udpListener.stateUpdated("output", new DecimalType(150));
+                verify(callback, never()).stateUpdated(output, new DecimalType(150));
+
+                handler.handleCommand(output, new DecimalType(150));
+                verify(udp, timeout(5000)).handleCommand(output, new DecimalType(150));
+                verify(rest, never()).handleCommand(eq(output), any());
+
+                restListener.statusUpdated(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, null);
+                udpListener.stateUpdated("output", new DecimalType(150));
+                verify(callback).stateUpdated(output, new DecimalType(150));
+                restListener.statusUpdated(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                udpListener.stateUpdated("output", new DecimalType(10));
+                verify(callback, never()).stateUpdated(output, new DecimalType(10));
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @Test
     @Timeout(80)
     void udpInputDoesNotOverwriteRestX2Output() throws Exception {
         ThingUID uid = new ThingUID("keba:kecontact:inputs");
         ChannelUID x1 = new ChannelUID(uid, "input");
-        ChannelUID restOutput = new ChannelUID(uid, "restoutput");
+        ChannelUID output = new ChannelUID(uid, "output");
         Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
                 .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1")))
                 .withChannels(ChannelBuilder.create(x1, "Switch").build(),
-                        ChannelBuilder.create(restOutput, "Switch").build())
+                        ChannelBuilder.create(output, "Number").build())
                 .build();
         ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
         ModbusCommunicationInterface comms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
@@ -1029,7 +1166,7 @@ class KeContactCombinedHandlerTest {
             handler.initialize();
             assertTrue(inputReceived.await(30, TimeUnit.SECONDS));
             verify(callback).stateUpdated(x1, OnOffType.ON);
-            verify(callback, never()).stateUpdated(eq(restOutput), any());
+            verify(callback, never()).stateUpdated(eq(output), any());
         } finally {
             handler.dispose();
         }
@@ -1040,10 +1177,13 @@ class KeContactCombinedHandlerTest {
     void udpPhaseSwitchAcceptsOnlyOneOrThreePhases() throws Exception {
         ThingUID uid = new ThingUID("keba:kecontact:phasecounts");
         ChannelUID trigger = new ChannelUID(uid, "phaseswitchstate");
+        ChannelUID source = new ChannelUID(uid, "phaseswitchsource");
         Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
                 .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "modbusEnabled", false,
                         "refreshInterval", 3600, "refreshIntervalSlow", 3600)))
-                .withChannels(ChannelBuilder.create(trigger, "Number").build()).build();
+                .withChannels(ChannelBuilder.create(trigger, "Number").build(),
+                        ChannelBuilder.create(source, "Number").build())
+                .build();
         BlockingQueue<String> writes = new LinkedBlockingQueue<>();
         CountDownLatch initialized = new CountDownLatch(1);
         KeContactTransceiver transceiver = new KeContactTransceiver() {
@@ -1058,18 +1198,20 @@ class KeContactCombinedHandlerTest {
                 }
                 String response = switch (message) {
                     case "report 1" -> "{\"ID\":1,\"Product\":\"KC-P30-123456A-XXX\"}";
-                    case "report 2" -> "{\"ID\":2,\"State\":3}";
+                    case "report 2" -> "{\"ID\":2,\"State\":3,\"X2 phaseSwitch source\":4}";
                     default -> null;
                 };
-                if ("report 2".equals(message)) {
-                    initialized.countDown();
-                }
                 return response == null ? null : ByteBuffer.wrap(response.getBytes(StandardCharsets.US_ASCII));
             }
         };
         KeContactCombinedHandler handler = new KeContactCombinedHandler(thing,
                 Objects.requireNonNull(mock(ModbusManager.class)), transceiver);
-        handler.setCallback(Objects.requireNonNull(mock(ThingHandlerCallback.class)));
+        ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+        doAnswer(invocation -> {
+            initialized.countDown();
+            return null;
+        }).when(callback).stateUpdated(source, new DecimalType(4));
+        handler.setCallback(callback);
         try {
             handler.initialize();
             assertTrue(initialized.await(5, TimeUnit.SECONDS));
@@ -1084,6 +1226,170 @@ class KeContactCombinedHandlerTest {
             assertNull(writes.poll(1200, TimeUnit.MILLISECONDS));
         } finally {
             handler.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(30)
+    void unknownRestPhaseSourceStopsRoutingPhaseCommandsToRest() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:phase-source-invalidated");
+        ChannelUID phase = new ChannelUID(uid, "phaseswitchstate");
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(
+                        new Configuration(Map.of("ipAddress", "192.0.2.1", "modbusEnabled", false, "refreshInterval",
+                                3600, "refreshIntervalSlow", 3600, "restEnabled", true, "password", "test-password")))
+                .withChannels(ChannelBuilder.create(phase, "Number").build()).build();
+        List<KeContactProtocolHandler.Listener> restListeners = new ArrayList<>();
+        BlockingQueue<Command> udpWrites = new LinkedBlockingQueue<>();
+        BlockingQueue<Command> restWrites = new LinkedBlockingQueue<>();
+        try (var udpAdapters = mockConstruction(KeContactHandler.class, (adapter, context) -> {
+            when(adapter.readReport(anyInt())).thenReturn(true);
+            doAnswer(invocation -> {
+                udpWrites.add(invocation.getArgument(1));
+                return null;
+            }).when(adapter).handleCommand(eq(phase), any());
+        }); var restAdapters = mockConstruction(KeContactRestHandler.class, (adapter, context) -> {
+            KeContactProtocolHandler.Listener listener = Objects
+                    .requireNonNull((KeContactProtocolHandler.Listener) context.arguments().get(2));
+            restListeners.add(listener);
+            doAnswer(invocation -> {
+                listener.statusUpdated(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                return null;
+            }).when(adapter).initialize();
+            doAnswer(invocation -> {
+                restWrites.add(invocation.getArgument(1));
+                return null;
+            }).when(adapter).handleCommand(eq(phase), any());
+        })) {
+            KeContactTransceiver transceiver = new KeContactTransceiver() {
+                @Override
+                public void registerHandler(KeContactHandler handler) {
+                }
+            };
+            KeContactCombinedHandler handler = new KeContactCombinedHandler(thing,
+                    Objects.requireNonNull(mock(ModbusManager.class)), transceiver);
+            ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+            when(callback.isChannelLinked(phase)).thenReturn(true);
+            handler.setCallback(callback);
+            try {
+                handler.initialize();
+                verify(udpAdapters.constructed().get(0), timeout(5000)).readReport(1);
+                KeContactProtocolHandler.Listener rest = restListeners.get(0);
+                rest.stateUpdated("phaseswitchsource", new DecimalType(2));
+                handler.handleCommand(phase, new DecimalType(3));
+                assertEquals(new DecimalType(3), restWrites.poll(5, TimeUnit.SECONDS));
+
+                // REST stays online but can no longer determine the source
+                rest.stateUpdated("phaseswitchsource", UnDefType.UNDEF);
+                handler.handleCommand(phase, new DecimalType(1));
+                assertNull(restWrites.poll(1000, TimeUnit.MILLISECONDS));
+                assertTrue(udpWrites.isEmpty());
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @Test
+    @Timeout(30)
+    void phaseCommandsFollowSelectedSourceInsteadOfProtocolPriority() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:phase-source-routing");
+        ChannelUID phase = new ChannelUID(uid, "phaseswitchstate");
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "refreshInterval", 3600,
+                        "refreshIntervalSlow", 3600, "restEnabled", true, "password", "test-password")))
+                .withChannels(ChannelBuilder.create(phase, "Number").build()).build();
+        List<KeContactProtocolHandler.Listener> modbusListeners = new ArrayList<>();
+        List<KeContactProtocolHandler.Listener> restListeners = new ArrayList<>();
+        BlockingQueue<Command> modbusWrites = new LinkedBlockingQueue<>();
+        BlockingQueue<Command> udpWrites = new LinkedBlockingQueue<>();
+        BlockingQueue<Command> restWrites = new LinkedBlockingQueue<>();
+        try (var modbusAdapters = mockConstruction(KeContactModbusHandler.class, (adapter, context) -> {
+            KeContactProtocolHandler.Listener listener = Objects
+                    .requireNonNull((KeContactProtocolHandler.Listener) context.arguments().get(3));
+            modbusListeners.add(listener);
+            doAnswer(invocation -> {
+                listener.statusUpdated(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                return null;
+            }).when(adapter).initialize();
+            doAnswer(invocation -> {
+                modbusWrites.add(invocation.getArgument(1));
+                return null;
+            }).when(adapter).handleCommand(eq(phase), any());
+        }); var udpAdapters = mockConstruction(KeContactHandler.class, (adapter, context) -> {
+            when(adapter.readReport(anyInt())).thenReturn(true);
+            doAnswer(invocation -> {
+                udpWrites.add(invocation.getArgument(1));
+                return null;
+            }).when(adapter).handleCommand(eq(phase), any());
+        }); var restAdapters = mockConstruction(KeContactRestHandler.class, (adapter, context) -> {
+            KeContactProtocolHandler.Listener listener = Objects
+                    .requireNonNull((KeContactProtocolHandler.Listener) context.arguments().get(2));
+            restListeners.add(listener);
+            doAnswer(invocation -> {
+                listener.statusUpdated(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                return null;
+            }).when(adapter).initialize();
+            doAnswer(invocation -> {
+                restWrites.add(invocation.getArgument(1));
+                return null;
+            }).when(adapter).handleCommand(eq(phase), any());
+        })) {
+            KeContactTransceiver transceiver = new KeContactTransceiver() {
+                @Override
+                public void registerHandler(KeContactHandler handler) {
+                }
+            };
+            KeContactCombinedHandler handler = new KeContactCombinedHandler(thing,
+                    Objects.requireNonNull(mock(ModbusManager.class)), transceiver);
+            ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+            when(callback.isChannelLinked(phase)).thenReturn(true);
+            handler.setCallback(callback);
+            try {
+                handler.initialize();
+                KeContactProtocolHandler.Listener listener = modbusListeners.get(0);
+                verify(udpAdapters.constructed().get(0), timeout(5000)).readReport(1);
+                assertTrue(listener.isLinked("phaseswitchsource"));
+                listener.stateUpdated("phaseswitchsource", new DecimalType(4));
+                handler.handleCommand(phase, new DecimalType(3));
+                assertEquals(new DecimalType(3), udpWrites.poll(5, TimeUnit.SECONDS));
+                assertTrue(modbusWrites.isEmpty());
+
+                listener.stateUpdated("phaseswitchsource", new DecimalType(3));
+                handler.handleCommand(phase, new DecimalType(1));
+                assertEquals(new DecimalType(1), modbusWrites.poll(5, TimeUnit.SECONDS));
+                assertTrue(udpWrites.isEmpty());
+
+                listener.stateUpdated("phaseswitchsource", new DecimalType(2));
+                handler.handleCommand(phase, new DecimalType(1));
+                assertEquals(new DecimalType(1), restWrites.poll(5, TimeUnit.SECONDS));
+                handler.handleCommand(phase, new DecimalType(3));
+                assertEquals(new DecimalType(3), restWrites.poll(5, TimeUnit.SECONDS));
+                assertTrue(modbusWrites.isEmpty());
+                assertTrue(udpWrites.isEmpty());
+
+                restListeners.get(0).statusUpdated(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, null);
+                handler.handleCommand(phase, new DecimalType(3));
+                assertNull(restWrites.poll(500, TimeUnit.MILLISECONDS));
+                assertTrue(modbusWrites.isEmpty());
+                assertTrue(udpWrites.isEmpty());
+
+                for (State source : List.of(new DecimalType(0), new DecimalType(1), UnDefType.UNDEF)) {
+                    listener.stateUpdated("phaseswitchsource", source);
+                    handler.handleCommand(phase, new DecimalType(3));
+                }
+                assertNull(modbusWrites.poll(500, TimeUnit.MILLISECONDS));
+                assertNull(udpWrites.poll(500, TimeUnit.MILLISECONDS));
+                assertTrue(restWrites.isEmpty());
+
+                listener.stateUpdated("phaseswitchsource", new DecimalType(3));
+                listener.statusUpdated(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, null);
+                handler.handleCommand(phase, new DecimalType(3));
+                assertNull(udpWrites.poll(500, TimeUnit.MILLISECONDS));
+                assertNull(modbusWrites.poll(500, TimeUnit.MILLISECONDS));
+            } finally {
+                handler.dispose();
+            }
         }
     }
 
@@ -1149,11 +1455,13 @@ class KeContactCombinedHandlerTest {
         ChannelUID enabled = new ChannelUID(uid, "enableduser");
         ChannelUID failsafeCurrent = new ChannelUID(uid, "failsafecurrent");
         ChannelUID failsafeTimeout = new ChannelUID(uid, "failsafetimeout");
+        ChannelUID stop = new ChannelUID(uid, "stop");
         Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
                 .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "udpEnabled", false)))
                 .withChannels(ChannelBuilder.create(enabled, "Switch").build(),
                         ChannelBuilder.create(failsafeCurrent, "Number:ElectricCurrent").build(),
-                        ChannelBuilder.create(failsafeTimeout, "Number:Time").build())
+                        ChannelBuilder.create(failsafeTimeout, "Number:Time").build(),
+                        ChannelBuilder.create(stop, "Switch").build())
                 .build();
         ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
         ModbusCommunicationInterface comms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
@@ -1195,6 +1503,14 @@ class KeContactCombinedHandlerTest {
             assertNotNull(write);
             assertEquals(5018, write.getReference());
             assertEquals(30, write.getRegisters().getRegister(0));
+
+            handler.handleCommand(stop, OnOffType.OFF);
+            handler.handleCommand(stop, OnOffType.ON);
+            write = writes.poll(15, TimeUnit.SECONDS);
+            assertNotNull(write);
+            assertEquals(5004, write.getReference());
+            assertEquals(0, write.getRegisters().getRegister(0));
+            assertNull(writes.poll(1500, TimeUnit.MILLISECONDS));
         } finally {
             handler.dispose();
         }
@@ -1219,8 +1535,10 @@ class KeContactCombinedHandlerTest {
         assertEquals(Protocol.MODBUS, KeContactCombinedHandler.sourceFor("vehicle", true, true));
         assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("temperature", true, true));
         assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("sessionstart", true, true));
-        assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("restoutput", true, true));
-        assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("restoutput", false, false));
+        assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("output", true, true));
+        assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("output", false, true));
+        assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("output", true, false));
+        assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("output", false, false));
         assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("input", true, true));
         assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("display", true, true));
         assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("maxpilotcurrentdutycyle", true, true));
@@ -1248,8 +1566,9 @@ class KeContactCombinedHandlerTest {
     @Timeout(40)
     void supplementalRestSkipsDuplicateAndUnlinkedEndpoints() throws Exception {
         for (Set<String> linked : List.of(Set.<String> of(), Set.of("sessionstart", "dipswitchinterpretation"),
-                Set.of("sessionconsumption"))) {
-            boolean sessionsExpected = linked.contains("sessionstart") || linked.contains("sessionconsumption");
+                Set.of("sessionconsumption"), Set.of("sessionid"))) {
+            boolean sessionsExpected = linked.contains("sessionstart") || linked.contains("sessionconsumption")
+                    || linked.contains("sessionid");
             BlockingQueue<String> requests = new LinkedBlockingQueue<>();
             Map<String, String> restProperties = new ConcurrentHashMap<>();
             Map<String, State> restStates = new ConcurrentHashMap<>();
@@ -1261,6 +1580,9 @@ class KeContactCombinedHandlerTest {
                 @Override
                 public void stateUpdated(String channel, State state) {
                     restStates.put(channel, state);
+                    if ("sessionconsumption".equals(channel)) {
+                        completed.countDown();
+                    }
                 }
 
                 @Override
@@ -1288,7 +1610,9 @@ class KeContactCombinedHandlerTest {
                 protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated) {
                     requests.add(path);
                     if (path.startsWith("/sessions?")) {
-                        completed.countDown();
+                        return JsonParser.parseString("""
+                                {"sessions":[{"id":4294967295,"startDate":1000,"duration":90000,"energyConsumed":1000}]}
+                                """).getAsJsonObject();
                     }
                     if ("/jwt/login".equals(path)) {
                         return JsonParser.parseString("{\"accessToken\":\"test-token\"}").getAsJsonObject();
@@ -1297,7 +1621,8 @@ class KeContactCombinedHandlerTest {
                         return JsonParser.parseString("{\"value\":\"12345\"}").getAsJsonObject();
                     }
                     if ("/wallboxes/12345".equals(path)) {
-                        return JsonParser.parseString("{\"model\":\"P30\",\"x2active\":true}").getAsJsonObject();
+                        return JsonParser.parseString("{\"model\":\"P30\",\"x2active\":" + !linked.isEmpty() + "}")
+                                .getAsJsonObject();
                     }
                     return new JsonObject();
                 }
@@ -1308,11 +1633,16 @@ class KeContactCombinedHandlerTest {
                 rest.dispose();
                 assertTrue(requests.contains("/wallboxes/12345"));
                 assertEquals("P30", restProperties.get("model"));
-                assertEquals(OnOffType.ON, restStates.get("restoutput"));
-                assertFalse(requests.contains("/configs/lmgmt/"));
+                assertEquals(new DecimalType(linked.isEmpty() ? 0 : 1), restStates.get("output"));
+                assertTrue(requests.contains("/configs/lmgmt/"));
                 assertEquals(linked.contains("dipswitchinterpretation"),
                         requests.contains("/wallboxes/dipswitch/12345"));
                 assertEquals(sessionsExpected, requests.stream().anyMatch(path -> path.startsWith("/sessions?")));
+                if (sessionsExpected) {
+                    assertEquals(new DecimalType(4294967295L), restStates.get("sessionid"));
+                    assertEquals(new DateTimeType(Instant.ofEpochMilli(1000)), restStates.get("sessionstart"));
+                    assertEquals(new QuantityType<>(90, Units.SECOND), restStates.get("sessionduration"));
+                }
             } finally {
                 rest.dispose();
             }
@@ -1410,12 +1740,14 @@ class KeContactCombinedHandlerTest {
         try {
             rest.initialize();
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             assertEquals("/wallboxes/dipswitch/12345", requests.poll(5, TimeUnit.SECONDS));
             assertTrue(Objects.requireNonNull(requests.poll(5, TimeUnit.SECONDS)).startsWith("/sessions?"));
             assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
 
             clock.set(TimeUnit.SECONDS.toNanos(10));
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
 
             primary.set(false);
@@ -1429,9 +1761,11 @@ class KeContactCombinedHandlerTest {
 
             clock.set(TimeUnit.SECONDS.toNanos(70));
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             primary.set(true);
             clock.set(TimeUnit.SECONDS.toNanos(80));
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
 
             List<Boolean> failures = List.of(true, false, true, true, false, true, true, true);
@@ -1440,6 +1774,9 @@ class KeContactCombinedHandlerTest {
                 failWallbox.set(failures.get(poll));
                 clock.set(TimeUnit.SECONDS.toNanos(90 + poll * 10L));
                 assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+                if (!failures.get(poll)) {
+                    assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
+                }
                 assertNull(requests.poll(1200, TimeUnit.MILLISECONDS));
                 if (!failures.get(poll)) {
                     assertEquals(ThingStatus.ONLINE, statuses.poll(5, TimeUnit.SECONDS));
@@ -1459,6 +1796,7 @@ class KeContactCombinedHandlerTest {
             primary.set(true);
             clock.set(TimeUnit.SECONDS.toNanos(190));
             assertEquals("/wallboxes/12345", requests.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", requests.poll(5, TimeUnit.SECONDS));
             assertEquals(ThingStatus.ONLINE, statuses.poll(5, TimeUnit.SECONDS));
             rest.dispose();
             clock.set(TimeUnit.SECONDS.toNanos(200));
@@ -1469,8 +1807,181 @@ class KeContactCombinedHandlerTest {
     }
 
     @Test
+    @Timeout(40)
+    void restPhaseSwitchStateFollowsConnectorPhaseEnableReadBeforeEachWallboxUpdate() throws Exception {
+        AtomicLong clock = new AtomicLong();
+        AtomicReference<String> lmgmt = new AtomicReference<>("");
+        AtomicReference<String> phaseUsed = new AtomicReference<>("L1_L2_L3");
+        BlockingQueue<String> events = new LinkedBlockingQueue<>();
+        Map<String, State> states = new ConcurrentHashMap<>();
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:restphasestate")).build();
+        KeContactProtocolHandler.Listener listener = new KeContactProtocolHandler.Listener() {
+            @Override
+            public void stateUpdated(String channel, State state) {
+                states.put(channel, state);
+                if ("phaseswitchstate".equals(channel) || "dipswitchsettings".equals(channel)) {
+                    events.add(channel + "=" + state);
+                }
+            }
+
+            @Override
+            public void statusUpdated(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
+            }
+
+            @Override
+            public void propertiesUpdated(Map<String, String> properties) {
+            }
+
+            @Override
+            public boolean isLinked(String channel) {
+                return false;
+            }
+
+            @Override
+            public boolean isPrimary() {
+                return true;
+            }
+        };
+        KeContactRestHandler rest = new KeContactRestHandler(thing, new Configuration(Map.of("ipAddress", "192.0.2.1",
+                "restEnabled", true, "password", "test-password", "refreshInterval", 10, "refreshIntervalSlow", 60)),
+                listener) {
+            @Override
+            protected long pollingTime() {
+                return clock.get();
+            }
+
+            @Override
+            protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated)
+                    throws IOException {
+                if ("/jwt/login".equals(path)) {
+                    return JsonParser.parseString("{\"accessToken\":\"test-token\"}").getAsJsonObject();
+                }
+                if ("/serialnumber".equals(path)) {
+                    return JsonParser.parseString("{\"value\":\"12345\"}").getAsJsonObject();
+                }
+                events.add(path);
+                if ("/configs/lmgmt/".equals(path)) {
+                    if ("fail".equals(lmgmt.get())) {
+                        throw new IOException("Test failure");
+                    }
+                    return JsonParser.parseString("{\"configs\":[" + lmgmt.get() + "]}").getAsJsonObject();
+                }
+                if ("/wallboxes/12345".equals(path)) {
+                    return JsonParser.parseString(
+                            "{\"maxCurrent\":32000,\"phaseUsed\":\"" + phaseUsed.get() + "\",\"dipSwitchSettings\":[]}")
+                            .getAsJsonObject();
+                }
+                return new JsonObject();
+            }
+        };
+        String enabled = "{\"key\":\"connector_phase_enable\",\"value\":true}";
+        String disabled = "{\"key\":\"connector_phase_enable\",\"value\":false}";
+        String udp = "{\"key\":\"connector_phase_source\",\"value\":\"UDP\"}";
+        String unknown = "{\"key\":\"connector_phase_source\",\"value\":\"UNSUPPORTED\"}";
+        try {
+            // phase switching via UDP, three phases in use; source is read although no channel is linked
+            lmgmt.set(enabled + "," + udp);
+            rest.initialize();
+            assertEquals("/wallboxes/12345", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("phaseswitchstate=3", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("dipswitchsettings=[]", events.poll(5, TimeUnit.SECONDS));
+            assertEquals(new DecimalType(4), states.get("phaseswitchsource"));
+            assertEquals(new QuantityType<>(32, Units.AMPERE), states.get("maxsupportedcurrent"));
+
+            // a source change is picked up on the next fast poll, before the phase state is derived
+            lmgmt.set(disabled + "," + udp);
+            clock.set(TimeUnit.SECONDS.toNanos(10));
+            assertEquals("/wallboxes/12345", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("phaseswitchstate=0", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("dipswitchsettings=[]", events.poll(5, TimeUnit.SECONDS));
+            assertEquals(new DecimalType(0), states.get("phaseswitchsource"));
+
+            lmgmt.set(enabled + "," + udp);
+            phaseUsed.set("L1");
+            clock.set(TimeUnit.SECONDS.toNanos(20));
+            assertEquals("/wallboxes/12345", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("/configs/lmgmt/", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("phaseswitchstate=1", events.poll(5, TimeUnit.SECONDS));
+            assertEquals("dipswitchsettings=[]", events.poll(5, TimeUnit.SECONDS));
+            assertEquals(new DecimalType(4), states.get("phaseswitchsource"));
+
+            // an unknown source leaves the phase state untouched
+            long seconds = 30;
+            for (String unknownSource : List.of(udp, enabled + "," + unknown, "fail")) {
+                lmgmt.set(unknownSource);
+                clock.set(TimeUnit.SECONDS.toNanos(seconds));
+                seconds += 10;
+                assertEquals("/wallboxes/12345", events.poll(5, TimeUnit.SECONDS));
+                assertEquals("/configs/lmgmt/", events.poll(5, TimeUnit.SECONDS));
+                assertEquals("dipswitchsettings=[]", events.poll(5, TimeUnit.SECONDS), unknownSource);
+                assertEquals(UnDefType.UNDEF, states.get("phaseswitchsource"), unknownSource);
+                states.put("phaseswitchsource", new DecimalType(4));
+            }
+            assertEquals(new DecimalType(1), states.get("phaseswitchstate"));
+        } finally {
+            rest.dispose();
+        }
+    }
+
+    @Test
     @Timeout(20)
-    void restPhaseTogglePostsOnlyOnAndResetsAfterSuccess() throws Exception {
+    void restPhaseSwitchSourceCommandsWriteConnectorPhaseConfiguration() throws Exception {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:restphasesource")).build();
+        CountDownLatch ready = new CountDownLatch(1);
+        BlockingQueue<String> puts = new LinkedBlockingQueue<>();
+        KeContactProtocolHandler.Listener listener = Objects
+                .requireNonNull(mock(KeContactProtocolHandler.Listener.class));
+        doAnswer(invocation -> {
+            ready.countDown();
+            return null;
+        }).when(listener).statusUpdated(eq(ThingStatus.ONLINE), any(), any());
+        KeContactRestHandler rest = new KeContactRestHandler(thing,
+                new Configuration(Map.of("ipAddress", "192.0.2.1", "restEnabled", true, "password", "test-password",
+                        "refreshInterval", 3600, "refreshIntervalSlow", 3600)),
+                listener) {
+            @Override
+            protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated) {
+                if ("/jwt/login".equals(path)) {
+                    return JsonParser.parseString("{\"accessToken\":\"test-token\"}").getAsJsonObject();
+                }
+                if ("/serialnumber".equals(path)) {
+                    return JsonParser.parseString("{\"value\":\"12345\"}").getAsJsonObject();
+                }
+                if ("PUT".equals(method)) {
+                    assertEquals("/configs/lmgmt/", path);
+                    puts.add(Objects.requireNonNull(body));
+                }
+                return new JsonObject();
+            }
+        };
+        ChannelUID source = new ChannelUID(thing.getUID(), "phaseswitchsource");
+        try {
+            rest.initialize();
+            assertTrue(ready.await(5, TimeUnit.SECONDS));
+            rest.handleCommand(source, new DecimalType(4));
+            assertEquals(JsonParser.parseString("""
+                    {"configs":[{"key":"connector_phase_enable","value":true},
+                    {"key":"connector_phase_source","value":"UDP"}]}
+                    """), JsonParser.parseString(Objects.requireNonNull(puts.poll(5, TimeUnit.SECONDS))));
+            verify(listener).stateUpdated("phaseswitchsource", new DecimalType(4));
+            rest.handleCommand(source, new DecimalType(0));
+            assertEquals(JsonParser.parseString("{\"configs\":[{\"key\":\"connector_phase_enable\",\"value\":false}]}"),
+                    JsonParser.parseString(Objects.requireNonNull(puts.poll(5, TimeUnit.SECONDS))));
+            verify(listener).stateUpdated("phaseswitchsource", new DecimalType(0));
+            rest.handleCommand(source, new DecimalType(5));
+            assertNull(puts.poll(500, TimeUnit.MILLISECONDS));
+        } finally {
+            rest.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(20)
+    void restPhaseCommandsUseExplicitCountsAndResetToggleAfterSuccess() throws Exception {
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:resttoggle")).build();
         CountDownLatch ready = new CountDownLatch(1);
@@ -1495,13 +2006,19 @@ class KeContactCombinedHandlerTest {
                     return JsonParser.parseString("{\"value\":\"12345\"}").getAsJsonObject();
                 }
                 if ("POST".equals(method)) {
-                    assertNull(body);
+                    if (path.contains("?numberOfPhases=")) {
+                        assertEquals("{}", body);
+                    } else {
+                        assertNull(body);
+                    }
                     assertTrue(authenticated);
                     posts.add(path);
-                    if ("/wallboxes/12345/phase-toggle".equals(path) && failToggle.get()) {
+                    if (path.startsWith("/wallboxes/12345/phase-toggle") && failToggle.get()) {
                         throw new IllegalStateException("Test failure");
                     }
-                    assertTrue(List.of("/wallboxes/12345/phase-toggle", "/wallboxes/12345/unlock").contains(path));
+                    assertTrue(List.of("/wallboxes/12345/phase-toggle", "/wallboxes/12345/unlock",
+                            "/wallboxes/12345/phase-toggle?numberOfPhases=1",
+                            "/wallboxes/12345/phase-toggle?numberOfPhases=3").contains(path));
                 }
                 return new JsonObject();
             }
@@ -1511,6 +2028,16 @@ class KeContactCombinedHandlerTest {
         try {
             rest.initialize();
             assertTrue(ready.await(5, TimeUnit.SECONDS));
+            ChannelUID phase = new ChannelUID(thing.getUID(), "phaseswitchstate");
+            rest.handleCommand(phase, new DecimalType(1));
+            assertEquals("/wallboxes/12345/phase-toggle?numberOfPhases=1", posts.poll(5, TimeUnit.SECONDS));
+            rest.handleCommand(phase, new DecimalType(3));
+            assertEquals("/wallboxes/12345/phase-toggle?numberOfPhases=3", posts.poll(5, TimeUnit.SECONDS));
+            for (String value : List.of("0", "2", "4", "-1", "1.5", "3.1", "4294967297")) {
+                rest.handleCommand(phase, new DecimalType(value));
+            }
+            rest.handleCommand(phase, OnOffType.ON);
+            verify(listener, never()).stateUpdated(eq("phaseswitchstate"), any());
             rest.handleCommand(toggle, OnOffType.OFF);
             rest.handleCommand(toggle, new DecimalType(1));
             rest.handleCommand(new ChannelUID(thing.getUID(), "triggerphaseswitch"), OnOffType.ON);
@@ -1529,6 +2056,9 @@ class KeContactCombinedHandlerTest {
             rest.handleCommand(toggle, OnOffType.ON);
             assertEquals("/wallboxes/12345/phase-toggle", posts.poll(5, TimeUnit.SECONDS));
             verify(listener, never()).stateUpdated("togglephaseswitch", OnOffType.OFF);
+            rest.handleCommand(phase, new DecimalType(1));
+            assertEquals("/wallboxes/12345/phase-toggle?numberOfPhases=1", posts.poll(5, TimeUnit.SECONDS));
+            verify(listener, never()).stateUpdated(eq("phaseswitchstate"), any());
         } finally {
             rest.dispose();
         }
@@ -1588,13 +2118,20 @@ class KeContactCombinedHandlerTest {
                 assertNull(handler.getThing().getChannel("triggerphaseswitch"));
                 var phaseState = Objects.requireNonNull(handler.getThing().getChannel("phaseswitchstate"));
                 assertEquals("Number", phaseState.getAcceptedItemType());
-                assertEquals(new ChannelTypeUID("keba", "phase-switch-state-readonly"), phaseState.getChannelTypeUID());
+                assertEquals(new ChannelTypeUID("keba", "phase-switch-state"), phaseState.getChannelTypeUID());
                 assertNotNull(handler.getThing().getChannel(unlock));
                 assertNotNull(handler.getThing().getChannel(stop));
                 assertNull(handler.getThing().getChannel(new ChannelUID(uid, "unlock")));
                 KeContactRestHandler rest = adapters.constructed().get(0);
                 handler.handleCommand(phaseState.getUID(), new DecimalType(3));
                 verify(rest, after(250).never()).handleCommand(eq(phaseState.getUID()), any());
+                when(callback.isChannelLinked(phaseState.getUID())).thenReturn(true);
+                assertTrue(listeners.get(0).isLinked("phaseswitchsource"));
+                listeners.get(0).stateUpdated("phaseswitchsource", new DecimalType(2));
+                handler.handleCommand(phaseState.getUID(), new DecimalType(1));
+                verify(rest, timeout(5000)).handleCommand(phaseState.getUID(), new DecimalType(1));
+                handler.handleCommand(phaseState.getUID(), new DecimalType(3));
+                verify(rest, timeout(5000)).handleCommand(phaseState.getUID(), new DecimalType(3));
                 handler.handleCommand(toggle, OnOffType.ON);
                 verify(rest, timeout(5000)).handleCommand(toggle, OnOffType.ON);
                 listeners.get(0).stateUpdated("togglephaseswitch", OnOffType.OFF);
@@ -1603,6 +2140,8 @@ class KeContactCombinedHandlerTest {
                 assertEquals(Protocol.MODBUS, KeContactCombinedHandler.sourceFor("unlockplug", true, true));
                 assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("unlockplug", false, true));
                 assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("unlockplug", false, false));
+                assertEquals(Protocol.MODBUS, KeContactCombinedHandler.sourceFor("stop", true, true));
+                assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("stop", false, true));
                 verifyNoInteractions(manager, transceiver);
 
                 handler.handleCommand(unlock, OnOffType.ON);
@@ -1621,10 +2160,10 @@ class KeContactCombinedHandlerTest {
                 assertEquals(new ChannelTypeUID("keba", "phase-switch-state"),
                         Objects.requireNonNull(handler.getThing().getChannel(phaseState.getUID())).getChannelTypeUID());
                 handler.handleConfigurationUpdate(Map.of("modbusEnabled", false));
-                assertEquals(new ChannelTypeUID("keba", "phase-switch-state-readonly"),
+                assertEquals(new ChannelTypeUID("keba", "phase-switch-state"),
                         Objects.requireNonNull(handler.getThing().getChannel(phaseState.getUID())).getChannelTypeUID());
                 handler.handleConfigurationUpdate(Map.of("udpEnabled", true, "udpDisplayOnly", true));
-                assertEquals(new ChannelTypeUID("keba", "phase-switch-state-readonly"),
+                assertEquals(new ChannelTypeUID("keba", "phase-switch-state"),
                         Objects.requireNonNull(handler.getThing().getChannel(phaseState.getUID())).getChannelTypeUID());
                 handler.handleConfigurationUpdate(Map.of("restEnabled", false));
                 assertNull(handler.getThing().getChannel(toggle));
