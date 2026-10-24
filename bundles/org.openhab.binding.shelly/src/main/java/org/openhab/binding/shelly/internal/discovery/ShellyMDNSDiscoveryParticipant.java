@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -150,6 +151,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             return null;
         }
         logger.debug("{}: Shelly device discovered: IP address={}", serviceName, address);
+        requestUpdateOnWakeup(serviceName, address);
 
         try {
             // Get device settings — capture a consistent local snapshot; @Modified may run concurrently
@@ -174,6 +176,21 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             // point, so skip this result instead of letting the exception surface as an unhandled ERROR
             logger.debug("{}: Configuration Admin unavailable, skipping discovery result", serviceName);
             return null;
+        }
+    }
+
+    /**
+     * A sleeping battery device announces itself via mDNS every time it wakes up, and is reachable only for a short
+     * while. Ask an existing Thing for that device to update now, its own poll would most likely come too late.
+     */
+    private void requestUpdateOnWakeup(String serviceName, String address) {
+        ShellyThingInterface thing = thingTable.findThing(serviceName);
+        if (thing == null) {
+            thing = thingTable.findThing(address);
+        }
+        if (thing != null && thing.getProfile().hasBattery && !thing.getProfile().alwaysOn) {
+            logger.debug("{}: Device woke up, requesting update", serviceName);
+            thing.requestUpdates(1, true);
         }
     }
 
