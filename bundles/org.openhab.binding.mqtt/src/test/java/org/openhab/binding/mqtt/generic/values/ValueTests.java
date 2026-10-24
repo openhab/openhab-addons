@@ -27,10 +27,13 @@ import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
@@ -307,6 +310,60 @@ public class ValueTests {
         // Test formatting 0/100
         assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("0"));
         assertThat(v.getMQTTpublishValue(PercentType.HUNDRED, null), is("100"));
+    }
+
+    @Test
+    public void playerDefaultStrings() {
+        PlayerValue v = new PlayerValue();
+        assertThat(v.getItemType(), is("Player"));
+
+        // Commands from the item are passed through and published as their names
+        assertThat(v.parseCommand(PlayPauseType.PLAY), is(PlayPauseType.PLAY));
+        assertThat(v.getMQTTpublishValue(PlayPauseType.PLAY, null), is("PLAY"));
+        assertThat(v.getMQTTpublishValue(PlayPauseType.PAUSE, null), is("PAUSE"));
+        assertThat(v.getMQTTpublishValue(NextPreviousType.NEXT, null), is("NEXT"));
+        assertThat(v.getMQTTpublishValue(NextPreviousType.PREVIOUS, null), is("PREVIOUS"));
+        assertThat(v.getMQTTpublishValue(RewindFastforwardType.REWIND, null), is("REWIND"));
+        assertThat(v.getMQTTpublishValue(RewindFastforwardType.FASTFORWARD, null), is("FASTFORWARD"));
+
+        // Incoming MQTT payloads are parsed as strings and mapped
+        assertThat(p(v, "PLAY"), is(new StringType("PLAY")));
+        assertThat(v.parseMessage(new StringType("PLAY")), is(PlayPauseType.PLAY));
+        assertThat(v.parseMessage(new StringType("PAUSE")), is(PlayPauseType.PAUSE));
+        assertThat(v.parseMessage(new StringType("NEXT")), is(NextPreviousType.NEXT));
+        assertThat(v.parseMessage(new StringType("PREVIOUS")), is(NextPreviousType.PREVIOUS));
+        assertThat(v.parseMessage(new StringType("REWIND")), is(RewindFastforwardType.REWIND));
+        assertThat(v.parseMessage(new StringType("FASTFORWARD")), is(RewindFastforwardType.FASTFORWARD));
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+    }
+
+    @Test
+    public void playerCustomStrings() {
+        PlayerValue v = new PlayerValue("start", "halt", "skip", "back", "rw", "ff");
+
+        assertThat(v.getMQTTpublishValue(PlayPauseType.PLAY, null), is("start"));
+        assertThat(v.getMQTTpublishValue(PlayPauseType.PAUSE, null), is("halt"));
+        assertThat(v.getMQTTpublishValue(NextPreviousType.NEXT, null), is("skip"));
+        assertThat(v.getMQTTpublishValue(NextPreviousType.PREVIOUS, null), is("back"));
+        assertThat(v.getMQTTpublishValue(RewindFastforwardType.REWIND, null), is("rw"));
+        assertThat(v.getMQTTpublishValue(RewindFastforwardType.FASTFORWARD, null), is("ff"));
+
+        assertThat(v.parseMessage(new StringType("start")), is(PlayPauseType.PLAY));
+        assertThat(v.parseMessage(new StringType("halt")), is(PlayPauseType.PAUSE));
+        assertThat(v.parseMessage(new StringType("skip")), is(NextPreviousType.NEXT));
+        assertThat(v.parseMessage(new StringType("back")), is(NextPreviousType.PREVIOUS));
+        assertThat(v.parseMessage(new StringType("rw")), is(RewindFastforwardType.REWIND));
+        assertThat(v.parseMessage(new StringType("ff")), is(RewindFastforwardType.FASTFORWARD));
+
+        // The default names are not recognised once custom strings are configured
+        assertThrows(IllegalArgumentException.class, () -> v.parseMessage(new StringType("PLAY")));
+    }
+
+    @Test
+    public void playerRejectsInvalidCommands() {
+        PlayerValue v = new PlayerValue();
+        assertThrows(IllegalArgumentException.class, () -> v.parseCommand(OnOffType.ON));
+        assertThrows(IllegalArgumentException.class, () -> v.parseCommand(new StringType("foo")));
     }
 
     @Test
