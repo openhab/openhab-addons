@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.ocpp.internal.transport.ChargerCapabilities;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -429,7 +431,7 @@ class OcppConnectorHandlerTest {
     }
 
     private void rememberStop() {
-        when(thing.getProperties()).thenReturn(java.util.Map.of(PROPERTY_PERSISTED_STOP, "true"));
+        when(thing.getProperties()).thenReturn(Map.of(PROPERTY_PERSISTED_STOP, "true"));
     }
 
     private static boolean isClear(Request request) {
@@ -635,8 +637,7 @@ class OcppConnectorHandlerTest {
     }
 
     private OcppChargePointHandler attachWithStartLimit(double amps) {
-        when(thing.getConfiguration())
-                .thenReturn(new org.openhab.core.config.core.Configuration(java.util.Map.of("startLimit", amps)));
+        when(thing.getConfiguration()).thenReturn(new Configuration(Map.of("startLimit", amps)));
         OcppChargePointHandler chargePoint = attachReadyChargePoint();
         when(chargePoint.recoverTransactionId(1)).thenReturn(null);
         handler.initialize();
