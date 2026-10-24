@@ -29,6 +29,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Gradient {
 
+    public static final int MAX_POINTS = 5;
+
     private @Nullable List<Color2> points;
     private @SerializedName("points_capable") int pointsCapable;
 
@@ -80,9 +82,6 @@ public class Gradient {
         if (points != null) {
             List<Color2> resultPoints = new ArrayList<>(points.size());
             for (Color2 point : points) {
-                if (point == null) {
-                    continue;
-                }
                 ColorXy colorXy = point.getColorXy();
                 if (colorXy == null) {
                     continue;
@@ -102,5 +101,9 @@ public class Gradient {
             result.points = resultPoints;
         }
         return result;
+    }
+
+    public int getPointsCapable() {
+        return pointsCapable;
     }
 }

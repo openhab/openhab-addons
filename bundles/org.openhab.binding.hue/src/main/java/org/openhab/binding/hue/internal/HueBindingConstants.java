@@ -199,10 +199,10 @@ public class HueBindingConstants {
             CHANNEL_GROUP_SOFTWARE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "update-ready";
 
     // gradient channels
-    private static final String CHANNEL_2_GRADIENT_PREFIX = "gradient-color-";
-    private static final String CHANNEL_2_GRADIENT_REGEX = "^" + CHANNEL_2_GRADIENT_PREFIX + "([1-5])$";
+    private static final String CHANNEL_2_GRADIENT = "gradient-color-";
+    private static final String CHANNEL_2_GRADIENT_REGEX = "^" + CHANNEL_2_GRADIENT + "([1-5])$"; // 1-5 points max
 
-    public static final String CHANNEL_2_GRADIENT_FORMAT = CHANNEL_2_GRADIENT_PREFIX + "%d";
+    public static final String CHANNEL_2_GRADIENT_FORMAT = CHANNEL_2_GRADIENT + "%d";
     public static final Pattern CHANNEL_2_GRADIENT_PATTERN = Pattern.compile(CHANNEL_2_GRADIENT_REGEX);
 
     // channel IDs that (optionally) support dynamics

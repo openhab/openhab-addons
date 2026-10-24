@@ -168,26 +168,24 @@ public class Setters {
      * Setter for a gradient point color xy field:
      * Use the given command value to set the target resource DTO value based on the attributes of the source resource
      * (if any). Use the HS parts of the HSB value to set the value of the 'ColorXy' JSON element, and ignore the 'B'
-     * part.
+     * part. Updates the cached (source) gradient point immediately.
      *
      * @param target the target resource.
      * @param command the new state command should be an HSBType with the new color XY value.
-     * @param source another resource containing the color Gamut.
-     *
-     * @return the target resource.
+     * @param cache another (cached) resource containing the color Gamut and the Gradient.
+     * @return the target resource or null if the command cannot be applied.
      */
-    public static Resource setGradientPointColorXy(Resource target, Command command, int index,
-            @Nullable Resource source) {
-        if (command instanceof HSBType hsb && source.getGradient() instanceof Gradient sourceGradient) {
-            hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
-            Gamut gamut = target.getGamut();
-            gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(source) ? source.getGamut() : null;
+    public static @Nullable Resource setGradientPointColorXy(Resource target, Command command, int index,
+            @Nullable Resource cache) {
+        if (command instanceof HSBType hsb && cache != null && cache.getGradient() instanceof Gradient gradient) {
+            HSBType hsb2 = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
+            Gamut gamut = cache.getGamut();
             gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
-            Gradient targetGradient = sourceGradient.copy();
-            targetGradient.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb, gamut)));
-            target.setGradient(targetGradient);
+            gradient.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut)));
+            target.setGradient(gradient);
+            return target;
         }
-        return target;
+        return null;
     }
 
     /**

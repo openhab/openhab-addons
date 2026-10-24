@@ -631,15 +631,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
             default:
                 Matcher gradientChannelMatcher = CHANNEL_2_GRADIENT_PATTERN.matcher(channelId);
                 if (gradientChannelMatcher.matches()) {
-                    if (command instanceof HSBType hsb) {
-                        int index = Integer.parseInt(gradientChannelMatcher.group(1)) - 1;
-                        putResource = new Resource(ResourceType.LIGHT);
-                        putResource = Setters.setGradientPointColorXy(putResource, hsb, index, cache);
-                        break;
-                    }
+                    int index = Integer.parseInt(gradientChannelMatcher.group(1)) - 1;
+                    putResource = new Resource(ResourceType.LIGHT);
+                    putResource = Setters.setGradientPointColorXy(putResource, command, index, cache);
+                    break;
                 }
+
+                // if we reach here then the channel is not supported for this command
                 if (logger.isDebugEnabled()) {
-                    logger.debug("{} -> handleCommand() channelUID:{} unknown", resourceId, channelUID);
+                    logger.debug("{} -> handleCommand() for unknown channelUID:{}", resourceId, channelUID);
                 } else {
                     logger.warn("Command received for unknown channel '{}'.", channelUID);
                 }
@@ -648,8 +648,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         if (putResource == null) {
             if (logger.isDebugEnabled()) {
-                logger.debug("{} -> handleCommand() command:{} not supported on channelUID:{}", resourceId, command,
-                        channelUID);
+                logger.debug("{} -> handleCommand({}) not supported on channelUID:{}", resourceId, command, channelUID);
             } else {
                 logger.warn("Command '{}' is not supported on channel '{}'.", command, channelUID);
             }
@@ -2271,7 +2270,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Update the gradient channel states based on the given resource's gradient points.
+     * Update the gradient channel states based on the given resource's gradient points. Initalizes unused
+     * channels to 'NULL' if the light does not support gradients at all, or does not support the maximum
+     * number of points.
      *
      * @param isBackLight true if the gradient channels are for the back light, false for the main light.
      * @param resource the resource containing the gradient points.
@@ -2281,21 +2282,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private void updateGradientStates(boolean isBackLight, Resource resource, boolean fullUpdate)
             throws CriticalFieldMissingException {
         Gradient gradient = resource.getGradient();
-        if (gradient == null) {
-            // no gradient so remove the 5 gradient channels pre-defined in the thing type
-            if (fullUpdate) {
-                for (int i = 1; i <= 5; i++) {
-                    ChannelUID channelUID = isBackLight ? backUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i))
-                            : mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i));
-                    updateState(channelUID, UnDefType.NULL, true);
-                }
+        if (fullUpdate) {
+            // eliminate any gradient channels that are not supported by the light
+            int startIndex = gradient == null ? 0 : gradient.getPointsCapable();
+            for (int i = startIndex; i < Gradient.MAX_POINTS; i++) {
+                ChannelUID channelUID = isBackLight ? backUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i + 1))
+                        : mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i + 1));
+                updateState(channelUID, UnDefType.NULL, true);
             }
+        }
+        if (gradient == null) {
             return;
         }
-        for (int i = 1; i <= gradient.getXyPoints().size(); i++) {
-            ChannelUID channelUID = isBackLight ? backUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i))
-                    : mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i));
-            updateState(channelUID, resource.getGradientState(i - 1), fullUpdate);
+        for (int i = 0; i < gradient.getXyPoints().size(); i++) {
+            ChannelUID channelUID = isBackLight ? backUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i + 1))
+                    : mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i + 1));
+            updateState(channelUID, resource.getGradientState(i), fullUpdate);
         }
     }
 }

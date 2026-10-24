@@ -550,6 +550,7 @@ public class Resource {
             if (index < 0 || index >= points.size()) {
                 throw new CriticalFieldMissingException("'point' %d is missing".formatted(index));
             }
+            ColorXy color = this.color;
             Gamut gamut = color != null ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
             if (gamut == null) {
                 throw new CriticalFieldMissingException("'gamut' is missing");
