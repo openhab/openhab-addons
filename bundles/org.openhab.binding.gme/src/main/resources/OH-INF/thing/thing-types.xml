@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="api">
+		<label>GME API Account</label>
+		<description>Connection to the Gestore dei Mercati Energetici market data API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="password-last-changed" typeId="timestamp">
+				<label>Password Last Changed</label>
+				<description>Date when the current GME API password was first observed or changed.</description>
+			</channel>
+			<channel id="password-expiry" typeId="timestamp">
+				<label>Password Expiry</label>
+				<description>Estimated expiry date of the current GME API password.</description>
+			</channel>
+			<channel id="password-days-remaining" typeId="password-days">
+				<label>Password Days Remaining</label>
+				<description>Estimated number of days remaining before the GME API password expires.</description>
+			</channel>
+			<channel id="password-status" typeId="password-status">
+				<label>Password Status</label>
+				<description>Password age status: OK, CHANGE_SOON or EXPIRED.</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username for the GME API.</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for the GME API.</description>
+			</parameter>
+
+			<parameter name="initialPasswordChangedAt" type="text">
+				<label>Initial Password Change Date</label>
+				<description>Optional date when the current GME API password was changed, in YYYY-MM-DD format. This is only used to
+					initialise password age tracking when no previous tracking information exists.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="marketZone" type="text">
+				<label>Market Zone</label>
+				<description>Italian electricity market zone used to retrieve zonal market prices. PUN Index prices are national and
+					are not affected by this setting.</description>
+				<options>
+					<option value="NORD">NORD - Northern Italy</option>
+					<option value="CNOR">CNOR - Central-Northern Italy</option>
+					<option value="CSUD">CSUD - Central-Southern Italy</option>
+					<option value="SUD">SUD - Southern Italy</option>
+					<option value="CALA">CALA - Calabria</option>
+					<option value="SICI">SICI - Sicily</option>
+					<option value="SARD">SARD - Sardinia</option>
+				</options>
+			</parameter>
+
+			<parameter name="granularity" type="text">
+				<label>Market Granularity</label>
+				<description>Granularity requested from the GME MGP market. PT60 preserves hourly pricing; PT30 and PT15 enable
+					finer market time units.</description>
+				<default>PT60</default>
+				<options>
+					<option value="PT60">PT60 - 60 minutes</option>
+					<option value="PT30">PT30 - 30 minutes</option>
+					<option value="PT15">PT15 - 15 minutes</option>
+				</options>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" unit="min" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval used to refresh market data.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="pun">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>PUN Prices</label>
+		<description>Italian PUN electricity market prices from the GME MGP market.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="market" typeId="market-summary">
+				<label>Market</label>
+			</channel-group>
+			<channel-group id="today" typeId="daily-prices">
+				<label>Today</label>
+			</channel-group>
+			<channel-group id="tomorrow" typeId="daily-prices">
+				<label>Tomorrow</label>
+			</channel-group>
+		</channel-groups>
+
+	</thing-type>
+
+	<channel-group-type id="market-summary">
+		<label>Market Summary</label>
+		<channels>
+			<channel id="current-price" typeId="energy-price">
+				<label>Current Price</label>
+			</channel>
+			<channel id="next-price" typeId="energy-price">
+				<label>Next Price</label>
+			</channel>
+			<channel id="tomorrow-available" typeId="availability">
+				<label>Tomorrow Available</label>
+			</channel>
+			<channel id="last-update" typeId="timestamp">
+				<label>Last Update</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="daily-prices">
+		<label>Daily Prices</label>
+		<channels>
+			<channel id="prices" typeId="energy-price">
+				<label>Prices</label>
+				<description>PUN prices for the day at the configured GME market granularity as a time series.</description>
+			</channel>
+			<channel id="zonal-prices" typeId="energy-price">
+				<label>Zonal Prices</label>
+				<description>Prices for the configured GME market zone for the day as a time series.</description>
+			</channel>
+			<channel id="average" typeId="energy-price">
+				<label>Average</label>
+			</channel>
+			<channel id="min" typeId="energy-price">
+				<label>Minimum</label>
+			</channel>
+			<channel id="max" typeId="energy-price">
+				<label>Maximum</label>
+			</channel>
+			<channel id="min-time" typeId="timestamp">
+				<label>Minimum Time</label>
+			</channel>
+			<channel id="max-time" typeId="timestamp">
+				<label>Maximum Time</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="energy-price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Energy Price</label>
+		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
+		<state readOnly="true" pattern="%.6f %unit%"/>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="password-days">
+		<item-type>Number</item-type>
+		<label>Password Days Remaining</label>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="password-status">
+		<item-type>String</item-type>
+		<label>Password Status</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="availability">
+		<item-type>Switch</item-type>
+		<label>Availability</label>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
