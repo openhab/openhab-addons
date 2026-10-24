@@ -67,11 +67,14 @@ public class WledState {
         public int pss = 0;
         public int pl = -1;
         public int lor = 0;
+        public int mainseg = 0;
     }
 
     public class UdpnState {
         public boolean send = false;
         public boolean recv = false;
+        public int sgrp = 0;
+        public int rgrp = 0;
     }
 
     public class SegmentState {
@@ -91,7 +94,17 @@ public class WledState {
         public boolean sel = true;
         public boolean rev = false;
         public boolean mi = false;
-        public String n = "Segment X";
+        public boolean frz = false;
+        public int m12 = 0;
+        public int si = 0;
+        public int cct = 0;
+        public int c1 = 0;
+        public int c2 = 0;
+        public int c3 = 0;
+        public boolean o1 = false;
+        public boolean o2 = false;
+        public boolean o3 = false;
+        public @Nullable String n = "Segment X";
     }
 
     public class NightLightState {
@@ -106,10 +119,28 @@ public class WledState {
         public String ver = "00000";
         public String mac = "";
         public Object leds = "{}";
+        public @Nullable String name;
+        public @Nullable String arch;
+        public @Nullable String brand;
+        public boolean live = false;
+        public @Nullable String lm;
+        public @Nullable String lip;
+        public long uptime = 0;
+        public long freeheap = 0;
+        public @Nullable Wifi wifi;
+    }
+
+    public static class Wifi {
+        public int rssi = 0;
+        public int signal = 0;
     }
 
     public class LedInfo {
         public boolean rgbw = false;
+        public boolean cct = false;
+        public int count = 0;
+        public int pwr = 0;
+        public int fps = 0;
     }
 
     public class PresetState {

@@ -157,6 +157,7 @@ You can add the following channels:
 - **image**: This channel handles binary images in common java supported formats (bmp,jpg,png).
 - **datetime**: This channel handles date/time values.
 - **rollershutter**: This channel is for rollershutters.
+- **player**: This channel is for media players. Each command (play/pause, next/previous, rewind/fastforward) can be mapped to an individual string.
 - **trigger**: This channel emits the received MQTT payload as a channel event without updating an Item state.
 
 ## Channel Configuration
@@ -306,6 +307,33 @@ If **on**, **off**, or **stop** are not defined, an explicit 0 or 100 will be se
 Note that **formatBeforePublish** will be ignored for these values, in case your device uses a vastly different format for these special commands than it does for number values.
 
 You can connect this channel to a Rollershutter or Dimmer item.
+
+### Channel Type "player"
+
+You can connect this channel to a Player item.
+
+- **play**: An optional string (like "Start") that is sent for the `PLAY` command and recognised as the `PLAY` state when received. Defaults to `PLAY`.
+- **pause**: An optional string (like "Halt") that is sent for the `PAUSE` command and recognised as the `PAUSE` state when received. Defaults to `PAUSE`.
+- **next**: An optional string (like "Skip") that is sent for the `NEXT` command and recognised as the `NEXT` command when received. Defaults to `NEXT`.
+- **previous**: An optional string (like "Back") that is sent for the `PREVIOUS` command and recognised as the `PREVIOUS` command when received. Defaults to `PREVIOUS`.
+- **rewind**: An optional string (like "RW") that is sent for the `REWIND` command and recognised as the `REWIND` state when received. Defaults to `REWIND`.
+- **fastforward**: An optional string (like "FF") that is sent for the `FASTFORWARD` command and recognised as the `FASTFORWARD` state when received. Defaults to `FASTFORWARD`.
+
+Note that **formatBeforePublish** will be ignored for these values.
+Since `NEXT` and `PREVIOUS` are commands without a state, a received `NEXT`/`PREVIOUS` message is sent as a command to the linked item instead of updating its state.
+
+Example (the BLE remote from [openhab-core#4972](https://github.com/openhab/openhab-core/issues/4972)):
+
+```java
+Thing mqtt:topic:bleremote "BLE Remote" (mqtt:broker:mybroker) {
+    Channels:
+        Type player : control "Control" [ commandTopic="ble/remote/set", play="PLAY", pause="PAUSE", next="NEXT", previous="PREV" ]
+}
+```
+
+```java
+Player BLERemoteControl "BLE Remote" { channel="mqtt:topic:bleremote:control" }
+```
 
 ## Rule Actions
 
@@ -460,6 +488,7 @@ Default pattern applied for each type:
 | **image**         | --                                 | --                                          | No publishing supported.                                                                                               |
 | **datetime**      | ZonedDateTime                      | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.                                                                         |
 | **rollershutter** | String                             | "%s"                                        | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.                               |
+| **player**        | String                             | --                                          | No pattern supported. Always the **play**, **pause**, **next**, **previous**, **rewind** and **fastforward** strings.  |
 
 Any outgoing value transformation will **always** result in a **string** value.
 

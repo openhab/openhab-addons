@@ -85,6 +85,16 @@
 		<config-description-ref uri="thing-type:mqtt:rollershutter_channel"></config-description-ref>
 	</channel-type>
 
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Player</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<config-description-ref uri="thing-type:mqtt:player_channel"></config-description-ref>
+	</channel-type>
+
 	<channel-type id="colorRGB">
 		<item-type>Color</item-type>
 		<label>Color Value (Red,Green,Blue)</label>
