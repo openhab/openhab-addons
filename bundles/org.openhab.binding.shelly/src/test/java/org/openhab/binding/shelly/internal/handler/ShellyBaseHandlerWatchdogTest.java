@@ -138,6 +138,7 @@ class ShellyBaseHandlerWatchdogTest {
         handler.setCallback(callback);
 
         handler.updateStatus(ThingStatus.OFFLINE);
+        handler.updateStatus(ThingStatus.OFFLINE, "gone");
         handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "gone");
 
         verify(callback, never()).statusUpdated(any(), any());
