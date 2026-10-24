@@ -39,6 +39,9 @@ This is then transferred to the action module.
 | `loopTime`       | Decimal | The interval the output value will be updated in milliseconds. Note: the output will also be updated when the input value or the setpoint changes. | Y        |
 | `integralMinValue` | Decimal | The I-part will be limited (min) to this value.                                                                                                    | N        |
 | `integralMaxValue` | Decimal | The I-part will be limited (max) to this value.                                                                                                    | N        |
+| `integralDecayTime` | Decimal | Time constant in seconds for fading out the I-part while the deviation is not growing. 0 (default) disables the fade-out.                          | N        |
+| `integralHoldItem` | Item    | Switch or Contact Item that suspends the I-part while the actuator cannot act on the process. Empty (default) always integrates.                     | N        |
+| `integralHoldDirectional` | Boolean | While the hold is active, suspend only the accumulation that takes the I-part further from zero and let a step that brings it back through. `false` (default) suspends both. | N        |
 | `pInspector`     | Item    | Name of the inspector Item for the current P-part                                                                                                  | N        |
 | `iInspector`     | Item    | Name of the inspector Item for the current I-part                                                                                                  | N        |
 | `dInspector`     | Item    | Name of the inspector Item for the current D-part                                                                                                  | N        |
@@ -52,6 +55,41 @@ The I-part can be limited via `integralMinValue`/`integralMaxValue`.
 This is useful if the regulation cannot meet its setpoint from time to time.
 E.g. a heating controller in the summer, which can not cool (min limit) or when the heating valve is already at 100% and the room is only slowly heating up (max limit).
 When controlling a heating valve, reasonable values are 0% (min limit) and 100% (max limit).
+
+### Integral Decay
+
+A plain integrator only unwinds on an error of the opposite sign.
+A process that settles slightly off its setpoint, because the actuator is discrete or because the load cannot be fully served, therefore holds a saturated I-part indefinitely: the error never changes sign, so nothing ever reduces it.
+Limiting the I-part does not help here, because it bounds the value but not how long it stays there.
+
+`integralDecayTime` fades the I-part towards zero while the deviation is no longer growing.
+After one decay time the I-part has fallen to about 37% of its value, after three decay times to about 5%.
+While the deviation is still increasing in the direction the I-part is already pushing, which is when integral action is actually needed, the I-part accumulates normally and is not faded out.
+
+Choose the decay time from how long the I-part should be allowed to stay saturated once the demand has gone, and keep it well above the `loopTime`.
+A decay that is too fast caps the I-part the controller can build up at all: for a constant error the I-part settles near `ki * error * integralDecayTime / loopTime`, with `loopTime` in seconds, so a control loop that needs a large steady-state I-part to hold its actuator open needs a correspondingly long decay time.
+The loop period matters because the controller integrates once per invocation: at a 60 s `loopTime` the same gains and decay time settle sixty times lower than at 1 s.
+0 (the default) disables the fade-out and keeps the classic behaviour.
+
+### Integral Hold
+
+Some processes have periods where the actuator physically cannot influence the process variable, without the controller output being saturated.
+A mixing damper is the usual example: while the supply air is colder than the room, opening the damper cannot heat that room, so the error persists no matter what the controller does.
+Integrating through such a period winds the I-part up to its limit, and the loop is then muted for a long time once the plant recovers.
+
+The controller cannot detect this itself, because from its point of view the error is real and the output is free to move.
+`integralHoldItem` lets the rule that knows about the plant say so: while that Item is `ON` (or `CLOSED` for a Contact), the I-part keeps its current value but stops growing.
+What has already been accumulated is deliberately retained, because it still describes the steady-state action the process needs; only the growth is suspended.
+
+Anything that is not a definite `ON` leaves the controller integrating, so a missing or uninitialised Item cannot silently freeze the loop.
+A configured `integralDecayTime` still applies while the hold is active.
+
+The hold is symmetric by default: it suspends the accumulation in both directions.
+That suits a condition the rule reports only briefly, but it also blocks the step that would bring the I-part back, so a loop held through a long period stays at the value it reached even once the process starts moving the right way again.
+
+Set `integralHoldDirectional` to suspend only the accumulation that takes the I-part further from zero, and let a step that brings it back through.
+This is the conditional-integration form of anti-windup: the I-part cannot wind further into a condition it cannot act on, but it recovers as soon as the deviation reverses, without the rule having to decide when to stop reporting the condition.
+It also makes the hold tolerant of a noisy plant signal, because the decision is taken per step from the sign of the deviation rather than from how long the condition has been reported.
 
 You can view the internal P-, I- and D-parts of the controller with the inspector Items.
 These values are useful when tuning the controller.
