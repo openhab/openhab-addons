@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
@@ -60,9 +61,11 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     /**
      * macOS purejavacomm/jtermios {@code fd_set} is an array of 32 ints (1024 bits). Indexing uses {@code fd / 32}, so
      * descriptors 0–1023 are valid; FD {@code >= 1024} throws {@link ArrayIndexOutOfBoundsException} in {@code FD_SET}.
+     * Linux purejavacomm defaults to {@code poll()} and is not subject to this limit.
      */
-    private static final int PUREJAVACOMM_FD_SETSIZE = 1024;
+    private static final int PUREJAVACOMM_MACOS_FD_SETSIZE = 1024;
     private static final int RECONNECT_INTERVAL_SECONDS = 15;
+    private static final boolean MACOS_SELECT_FD_LIMIT = isMacOs();
 
     private final Logger logger = LoggerFactory.getLogger(SerialOceanicThingHandler.class);
 
@@ -109,14 +112,15 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 serialPort = port;
 
                 int nativeFd = getNativeFileDescriptor(port);
-                if (nativeFd >= PUREJAVACOMM_FD_SETSIZE) {
+                // Only macOS jtermios select()/FD_SET has a fixed 1024-bit bitmap; Linux uses poll().
+                if (MACOS_SELECT_FD_LIMIT && nativeFd >= PUREJAVACOMM_MACOS_FD_SETSIZE) {
                     String message = String.format(
                             "Serial port '%s' opened with file descriptor %d which is >= %d. "
                                     + "macOS purejavacomm/jtermios select() only supports FDs 0-%d; "
                                     + "reads would fail with ArrayIndexOutOfBoundsException in FD_SET. "
                                     + "Restart openHAB so the FD is lower, free unused file descriptors, "
                                     + "or use a serial transport that supports poll()/higher FDs.",
-                            config.port, nativeFd, PUREJAVACOMM_FD_SETSIZE, PUREJAVACOMM_FD_SETSIZE - 1);
+                            config.port, nativeFd, PUREJAVACOMM_MACOS_FD_SETSIZE, PUREJAVACOMM_MACOS_FD_SETSIZE - 1);
                     logger.error("{}", message);
                     closeSerialResources(false);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
@@ -212,7 +216,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         if (reader != null) {
             try {
                 reader.interrupt();
-                if (joinReader && reader != Thread.currentThread()) {
+                if (joinReader && !reader.equals(Thread.currentThread())) {
                     reader.join(2000);
                 }
             } catch (InterruptedException e) {
@@ -287,6 +291,11 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             closeSerialResources(true);
             scheduleReconnect(generation);
         });
+    }
+
+    private static boolean isMacOs() {
+        String osName = System.getProperty("os.name");
+        return osName != null && osName.toLowerCase(Locale.ENGLISH).startsWith("mac");
     }
 
     /**
@@ -501,15 +510,21 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                         break;
                     }
                 }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                if (!interrupted) {
+                    interrupted = true;
+                    logger.error("An exception occurred while reading serial port : {}", e.getMessage(), e);
+                    handleReaderFailure("purejavacomm FD_SET/select failure (file descriptor likely >= "
+                            + PUREJAVACOMM_MACOS_FD_SETSIZE + "): " + e.getMessage());
+                }
             } catch (Exception e) {
                 if (!interrupted) {
                     interrupted = true;
                     logger.error("An exception occurred while reading serial port : {}", e.getMessage(), e);
                     String reason = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-                    if (reason.contains("out of bounds") || reason.contains("FD_SET")
-                            || e instanceof ArrayIndexOutOfBoundsException) {
+                    if (reason.contains("out of bounds") || reason.contains("FD_SET")) {
                         reason = "purejavacomm FD_SET/select failure (file descriptor likely >= "
-                                + PUREJAVACOMM_FD_SETSIZE + "): " + reason;
+                                + PUREJAVACOMM_MACOS_FD_SETSIZE + "): " + reason;
                     }
                     handleReaderFailure(reason);
                 }
