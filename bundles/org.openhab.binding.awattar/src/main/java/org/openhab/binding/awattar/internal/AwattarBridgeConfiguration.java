@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AwattarBridgeConfiguration {
+    public String provider = "awattar";
     public double basePrice;
     public double vatPercent;
     public double serviceFee;
