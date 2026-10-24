@@ -118,6 +118,7 @@ Device things support some of the following channels:
 | volume                        | Dimmer             | Preset the sound volume to be played on the next `alarm-sound`, `alert-sound`, or `chime-sound` play request.       |
 | duration                      | Number:Time        | Preset the sound duration on the next `alarm-sound` play request.                                                   |
 | mute                          | Switch             | Channel to mute or un-mute the speaker output. Note: it is impossible to mute the `alarm-sound`.                    |
+| gradient-color-`N`            | Color              | Color of the color gradient point `N`. Note: it only uses the HS- part of the HSB, the B- part is ingored.          |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.

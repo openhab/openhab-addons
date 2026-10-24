@@ -14,6 +14,7 @@ package org.openhab.binding.hue.internal;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
@@ -127,6 +128,7 @@ public class HueBindingConstants {
     public static final String PROPERTY_COLOR_TEMP_RANGE = "colorTemperatureRange";
     public static final String PROPERTY_COLOR_GAMUT = "colorGamut";
     public static final String PROPERTY_FIRMWARE_UPDATE_STATE = "firmwareUpdateState";
+    public static final String PROPERTY_GRADIENT_POINTS_CAPABLE = "gradientPointsCapable";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 
@@ -196,6 +198,12 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_SECURITY_MOTION_LAST_UPDATED = "security-motion-last-updated";
     public static final String CHANNEL_2_UPDATE_READY_TO_INSTALL = //
             CHANNEL_GROUP_SOFTWARE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "update-ready";
+
+    // gradient channels
+    private static final String CHANNEL_2_GRADIENT_PREFIX = "gradient-color-";
+    public static final String CHANNEL_2_GRADIENT_FORMAT = CHANNEL_2_GRADIENT_PREFIX + "%d";
+    public static final Pattern CHANNEL_2_GRADIENT_PATTERN = Pattern
+            .compile("^" + CHANNEL_2_GRADIENT_PREFIX + "[1-5]$");
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,

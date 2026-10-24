@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +45,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ColorXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.Gamut2;
+import org.openhab.binding.hue.internal.api.dto.clip2.Gradient;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
@@ -170,6 +172,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private static final int INCREASE_DECREASE_PERCENT = 10;
     private static final int MIN_MIREK_DELTA = 10;
+
+    // light service archetypes for dual light devices
+    private final Set<Archetype> FRONT_ARCHETYPES = Set.of(Archetype.TWILIGHT_FRONT, Archetype.UP_AND_DOWN_DOWN);
+    private final Set<Archetype> BACK_ARCHETYPES = Set.of(Archetype.TWILIGHT_BACK, Archetype.UP_AND_DOWN_UP);
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -623,10 +629,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 return;
 
             default:
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{} -> handleCommand() channelUID:{} unknown", resourceId, channelUID);
+                Matcher gradientChannelMatcher = CHANNEL_2_GRADIENT_PATTERN.matcher(channelId);
+                if (gradientChannelMatcher.matches()) {
+                    if (command instanceof HSBType hsb) {
+                        int index = Integer.parseInt(gradientChannelMatcher.group(1)) - 1;
+                        putResource = new Resource(ResourceType.LIGHT);
+                        putResource = Setters.setGradientPointColorXy(putResource, hsb, index, cache);
+                    }
                 } else {
-                    logger.warn("Command received for unknown channel '{}'.", channelUID);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("{} -> handleCommand() channelUID:{} unknown", resourceId, channelUID);
+                    } else {
+                        logger.warn("Command received for unknown channel '{}'.", channelUID);
+                    }
                 }
                 return;
         }
@@ -1308,6 +1323,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (thisResource.getType() == ResourceType.DEVICE) {
             updateState(CHANNEL_2_LAST_UPDATED, new DateTimeType(), fullUpdate);
         }
+        updateGradientStates(true, resource, fullUpdate); // true: update back light gradient states
         return true;
     }
 
@@ -1417,6 +1433,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTempState, fullUpdate);
                 updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTempAbsState, fullUpdate);
                 updateState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
+                updateGradientStates(false, resource, fullUpdate); // false: update front light gradient states
                 // fall through for dimming and on/off related channels
 
             case GROUPED_LIGHT:
@@ -1699,18 +1716,24 @@ public class Clip2ThingHandler extends BaseThingHandler {
             // get supported services
             List<ResourceReference> services = thisResource.getServiceReferences();
 
-            // resolve the Twilight front and back lights first; any lookup failure propagates before state changes
             String frontId = null;
             String backId = null;
-            for (ResourceReference service : services) {
-                if (ResourceType.LIGHT != service.getType()) {
-                    continue;
+
+            List<ResourceReference> lights = services.stream().filter(s -> ResourceType.LIGHT == s.getType()).toList();
+            if (lights.size() > 1) {
+                // resolve the Twilight front and back lights
+                for (ResourceReference light : lights) {
+                    Archetype archetype = getLightArchetype(light);
+                    if (BACK_ARCHETYPES.contains(archetype)) {
+                        backId = light.getId();
+                    } else if (FRONT_ARCHETYPES.contains(archetype)) {
+                        frontId = light.getId();
+                    }
                 }
-                Archetype archetype = getLightArchetype(service);
-                if (archetype == Archetype.TWILIGHT_BACK) {
-                    backId = service.getId();
-                } else if (archetype == Archetype.TWILIGHT_FRONT) {
-                    frontId = service.getId();
+                // fallback to the service declaration order
+                if (frontId == null || backId == null) {
+                    frontId = lights.get(0).getId();
+                    backId = lights.get(1).getId();
                 }
             }
 
@@ -1750,22 +1773,20 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private Archetype getLightArchetype(ResourceReference lightService)
             throws ApiException, AssetNotLoadedException, InterruptedException {
         for (Resource light : getBridgeHandler().getResources(lightService).getResources()) {
-            MetaData metaData = light.getMetaData();
-            logger.debug("{} -> getLightArchetype() light {} metadata {}", resourceId, light.getId(), metaData);
-            if (metaData != null) {
-                Archetype archetype = metaData.getArchetype();
-                if (Archetype.TWILIGHT_FRONT == archetype || Archetype.TWILIGHT_BACK == archetype) {
+            ProductData productData = light.getProductData();
+            if (productData != null) {
+                Archetype archetype = productData.getProductArchetype();
+                logger.debug("{} -> getLightArchetype() light {} productdata {}", resourceId, light.getId(), archetype);
+                if (FRONT_ARCHETYPES.contains(archetype) || BACK_ARCHETYPES.contains(archetype)) {
                     return archetype;
                 }
-                String name = metaData.getName();
-                if (name != null) {
-                    String lowerCaseName = name.toLowerCase();
-                    if (lowerCaseName.contains("front")) {
-                        return Archetype.TWILIGHT_FRONT;
-                    }
-                    if (lowerCaseName.contains("back")) {
-                        return Archetype.TWILIGHT_BACK;
-                    }
+            }
+            MetaData metaData = light.getMetaData();
+            if (metaData != null) {
+                Archetype aarchetype = metaData.getArchetype();
+                logger.debug("{} -> getLightArchetype() light {} metadata {}", resourceId, light.getId(), aarchetype);
+                if (FRONT_ARCHETYPES.contains(aarchetype) || BACK_ARCHETYPES.contains(aarchetype)) {
+                    return aarchetype;
                 }
             }
         }
@@ -1820,6 +1841,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     legacyLightState = new LegacyLightState();
                     logger.debug("{} -> enabled operating mode work-around for {}", resourceId, modelId);
                 }
+            }
+
+            // gradient data
+            Gradient gradient = resource.getGradient();
+            if (gradient != null) {
+                thing.setProperty(PROPERTY_GRADIENT_POINTS_CAPABLE, String.valueOf(gradient.getXyPoints().size()));
             }
 
             thing.setProperties(props);
@@ -2246,6 +2273,34 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Resource cacheEntry = serviceContributorsCache.get(resource.getId());
         if (cacheEntry != null) {
             Setters.setResource(cacheEntry, resource);
+        }
+    }
+
+    /**
+     * Update the gradient channel states based on the given resource's gradient points.
+     *
+     * @param isBackLight true if the gradient channels are for the back light, false for the main light.
+     * @param resource the resource containing the gradient points.
+     * @param fullUpdate if true always update the channel, otherwise only update if state is not 'UNDEF'.
+     * @throws CriticalFieldMissingException if a critical field is missing in the resource.
+     */
+    private void updateGradientStates(boolean isBackLight, Resource resource, boolean fullUpdate)
+            throws CriticalFieldMissingException {
+        Gradient gradient = resource.getGradient();
+        if (gradient == null) {
+            // no gradient so remove the 5 gradient channels pre-defined in the thing type
+            if (fullUpdate) {
+                for (int i = 1; i <= 5; i++) {
+                    ChannelUID channelUID = isBackLight ? backUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i))
+                            : mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i));
+                    updateState(channelUID, UnDefType.NULL, true);
+                }
+            }
+        }
+        for (int i = 1; i <= gradient.getXyPoints().size(); i++) {
+            ChannelUID channelUID = isBackLight ? backUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i))
+                    : mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i));
+            updateState(channelUID, resource.getGradientState(i - 1), fullUpdate);
         }
     }
 }
