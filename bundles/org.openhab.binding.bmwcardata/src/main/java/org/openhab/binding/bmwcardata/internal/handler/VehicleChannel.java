@@ -151,7 +151,7 @@ public enum VehicleChannel {
             Units.AMPERE),
     PHASES(GROUP_CHARGE, "phases", "vehicle.drivetrain.electricEngine.charging.phaseNumber", Kind.STRING, null),
     CHARGING_METHOD(GROUP_CHARGE, "method", "vehicle.drivetrain.electricEngine.charging.method", Kind.STRING, null),
-    DC_PORT(GROUP_CHARGE, "dc-port", "vehicle.body.chargingPort.status", Kind.STRING, null),
+    PORT(GROUP_CHARGE, "port", "vehicle.body.chargingPort.status", Kind.STRING, null),
     PREDICTED_SOC(GROUP_CHARGE, "predicted-soc", "vehicle.drivetrain.electricEngine.charging.level", Kind.QUANTITY,
             Units.PERCENT),
     MIN_TARGET_SOC(GROUP_CHARGE, "min-target-soc", "vehicle.powertrain.electric.battery.stateOfCharge.targetMin",

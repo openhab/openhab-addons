@@ -193,7 +193,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                     }
                     if (channel == VehicleChannel.PLUGGED) {
                         pluggedReported = true;
-                    } else if (channel == VehicleChannel.DC_PORT && !pluggedReported) {
+                    } else if (channel == VehicleChannel.PORT && !pluggedReported) {
                         State pluggedState = VehicleChannel.toPluggedState(value);
                         String pluggedChannelUid = VehicleChannel.PLUGGED.getChannelUid();
                         if (pluggedState != null && pluggedChannelUid != null) {

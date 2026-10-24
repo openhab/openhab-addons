@@ -172,7 +172,7 @@ A channel is only updated if the vehicle reports the corresponding data and, for
 | charge#ac-limit                      | Number:ElectricCurrent   | Selected limit of the AC charging current                                     | yes      |
 | charge#phases                        | String                   | Number of phases used for charging                                            | yes      |
 | charge#method                        | String                   | Charging method and plug type                                                 | yes      |
-| charge#dc-port                       | String                   | Whether a charging plug is connected to the charging port                     | yes      |
+| charge#port                          | String                   | Whether a charging plug is connected to the charging port                     | yes      |
 | charge#predicted-soc                 | Number:Dimensionless     | Predicted state of charge at the end of charging                              | yes      |
 | charge#min-target-soc                | Number:Dimensionless     | Minimum state of charge requested for smart charging                          | yes      |
 | charge#time-to-full                  | Number:Time              | Estimated time until the battery is fully charged                             | yes      |
