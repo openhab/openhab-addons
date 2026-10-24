@@ -122,9 +122,11 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     .collect(Collectors.joining(System.lineSeparator()));
             String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s",
                     config.port, availablePorts);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
-            // Port may appear later (USB unplug/replug) — keep retrying while the handler is active
-            scheduleReconnect(generation);
+            // Guard status under the publish monitor so a stale attempt cannot take a replacement OFFLINE
+            if (publishOfflineIfCurrent(generation, ThingStatusDetail.CONFIGURATION_ERROR, description)) {
+                // Port may appear later (USB unplug/replug) — keep retrying while the handler is active
+                scheduleReconnect(generation);
+            }
             return;
         }
 
@@ -133,8 +135,10 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             logger.info("Connecting to the Oceanic water softener using {}.", config.port);
             port = portIdentifier.open(this.getThing().getUID().getBindingId(), 2000);
         } catch (PortInUseException portInUseException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
-            scheduleReconnect(generation);
+            if (publishOfflineIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Port in use: " + config.port)) {
+                scheduleReconnect(generation);
+            }
             return;
         }
 
@@ -161,18 +165,38 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 inputStream = in;
                 outputStream = out;
                 readerThread = reader;
-                reader.start();
+                // ONLINE before reader.start() so an immediate EOF/FD_SET OFFLINE is not overwritten
                 updateStatus(ThingStatus.ONLINE);
+                reader.start();
             }
         } catch (UnsupportedCommOperationException | IOException e) {
             closeLocalPort(port);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
-            scheduleReconnect(generation);
+            if (publishOfflineIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error")) {
+                scheduleReconnect(generation);
+            }
         } catch (TooManyListenersException e) {
             closeLocalPort(port);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Too many listeners to serial port.");
-            scheduleReconnect(generation);
+            if (publishOfflineIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Too many listeners to serial port.")) {
+                scheduleReconnect(generation);
+            }
+        }
+    }
+
+    /**
+     * Publish an OFFLINE status only when {@code generation} is still current, under the same monitor used to publish
+     * a successful connection. Prevents a superseded open from marking a healthy replacement OFFLINE without
+     * scheduling a reconnect for that replacement.
+     *
+     * @return {@code true} if the status was published (caller may schedule reconnect)
+     */
+    private boolean publishOfflineIfCurrent(int generation, ThingStatusDetail detail, @Nullable String description) {
+        synchronized (this) {
+            if (!isLifecycleCurrent(generation)) {
+                return false;
+            }
+            updateStatus(ThingStatus.OFFLINE, detail, description);
+            return true;
         }
     }
 
