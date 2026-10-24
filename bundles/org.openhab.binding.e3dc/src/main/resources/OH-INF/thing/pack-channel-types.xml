@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="pack-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Voltage of the battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Current of the battery, negative while discharging</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-charge-cycles">
+		<item-type>Number</item-type>
+		<label>Charge Cycles</label>
+		<description>Number of charge cycles of the battery</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-module-count">
+		<item-type>Number</item-type>
+		<label>Module Count</label>
+		<description>Number of battery modules</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-soh">
+		<item-type>Number:Dimensionless</item-type>
+		<label>State of Health</label>
+		<description>Absolute state of charge of the battery, a measure of its state of health</description>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-status-code">
+		<item-type>Number</item-type>
+		<label>Status Code</label>
+		<description>Status code of the battery</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-error-code">
+		<item-type>Number</item-type>
+		<label>Error Code</label>
+		<description>Error code of the battery</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-device-name">
+		<item-type>String</item-type>
+		<label>Device Name</label>
+		<description>Name of the battery</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-training-mode">
+		<item-type>Number</item-type>
+		<label>Training Mode</label>
+		<description>Training mode of the battery</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-design-capacity">
+		<item-type>Number</item-type>
+		<label>Design Capacity</label>
+		<description>Design capacity of the battery</description>
+		<state pattern="%.1f Ah" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-usable-capacity">
+		<item-type>Number</item-type>
+		<label>Usable Capacity</label>
+		<description>Usable capacity of the battery</description>
+		<state pattern="%.1f Ah" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-usable-remaining-capacity">
+		<item-type>Number</item-type>
+		<label>Usable Remaining Capacity</label>
+		<description>Usable capacity left in the battery</description>
+		<state pattern="%.1f Ah" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-design-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Design Energy</label>
+		<description>Design capacity of the battery in kWh, calculated from the design capacity and the current battery
+			voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-usable-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Usable Energy</label>
+		<description>Usable capacity of the battery in kWh, calculated from the usable capacity and the current battery
+			voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pack-usable-remaining-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Usable Remaining Energy</label>
+		<description>Usable energy left in the battery in kWh, calculated from the remaining capacity and the current battery
+			voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

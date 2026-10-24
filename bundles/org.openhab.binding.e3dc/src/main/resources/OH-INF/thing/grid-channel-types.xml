@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="grid-active-phases">
+		<item-type>Number</item-type>
+		<label>Active Phases</label>
+		<description>Number of phases in use (1 to 3)</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

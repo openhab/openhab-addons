@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="module">
+		<label>Module</label>
+		<description>Values of one battery cell module</description>
+		<channels>
+			<channel id="soc" typeId="module-soc"/>
+			<channel id="soh" typeId="module-soh"/>
+			<channel id="voltage" typeId="module-voltage"/>
+			<channel id="voltage-avg-30s" typeId="module-voltage-avg-30s"/>
+			<channel id="current" typeId="module-current"/>
+			<channel id="current-avg-30s" typeId="module-current-avg-30s"/>
+			<channel id="remaining-capacity" typeId="module-remaining-capacity"/>
+			<channel id="full-charge-capacity" typeId="module-full-charge-capacity"/>
+			<channel id="design-capacity" typeId="module-design-capacity"/>
+			<channel id="remaining-energy" typeId="module-remaining-energy"/>
+			<channel id="full-charge-energy" typeId="module-full-charge-energy"/>
+			<channel id="design-energy" typeId="module-design-energy"/>
+			<channel id="design-voltage" typeId="module-design-voltage"/>
+			<channel id="max-charge-voltage" typeId="module-max-charge-voltage"/>
+			<channel id="max-charge-current" typeId="module-max-charge-current"/>
+			<channel id="max-discharge-current" typeId="module-max-discharge-current"/>
+			<channel id="charge-high-temperature" typeId="module-charge-high-temperature"/>
+			<channel id="charge-low-temperature" typeId="module-charge-low-temperature"/>
+			<channel id="cycles" typeId="module-cycles"/>
+			<channel id="status" typeId="module-status"/>
+			<channel id="warning" typeId="module-warning"/>
+			<channel id="alarm" typeId="module-alarm"/>
+			<channel id="error" typeId="module-error"/>
+			<channel id="nr-sensor" typeId="module-nr-sensor"/>
+			<channel id="nr-series-cell" typeId="module-nr-series-cell"/>
+			<channel id="nr-parallel-cell" typeId="module-nr-parallel-cell"/>
+			<channel id="firmware-version" typeId="module-firmware-version"/>
+			<channel id="protocol-version" typeId="module-protocol-version"/>
+			<channel id="table-version" typeId="module-table-version"/>
+			<channel id="pcb-version" typeId="module-pcb-version"/>
+			<channel id="device-name" typeId="module-device-name"/>
+			<channel id="manufacturer" typeId="module-manufacturer"/>
+			<channel id="manufacture-date" typeId="module-manufacture-date"/>
+			<channel id="serial-number" typeId="module-serial-number"/>
+			<channel id="serial-code" typeId="module-serial-code"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
