@@ -1,0 +1,680 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.volvocars.internal.handler;
+
+import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.*;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import javax.measure.Unit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.volvocars.internal.api.ApiUnits;
+import org.openhab.binding.volvocars.internal.api.VolvoCarsApi;
+import org.openhab.binding.volvocars.internal.api.VolvoCarsException;
+import org.openhab.binding.volvocars.internal.api.dto.CommandResult;
+import org.openhab.binding.volvocars.internal.api.dto.Location;
+import org.openhab.binding.volvocars.internal.api.dto.ValueField;
+import org.openhab.binding.volvocars.internal.api.dto.Vehicle;
+import org.openhab.binding.volvocars.internal.config.VehicleConfiguration;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
+
+/**
+ * The {@link VehicleHandler} polls the state of a single vehicle and executes remote commands.
+ *
+ * @author Michael Weger - Initial contribution
+ */
+@NonNullByDefault
+public class VehicleHandler extends BaseThingHandler {
+    private static final Unit<?> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
+    private static final int REFRESH_AFTER_COMMAND_SECONDS = 15;
+    private static final int COALESCED_REFRESH_DELAY_SECONDS = 2;
+
+    private static final Map<String, String> DOORS = Map.of("frontLeftDoor", CHANNEL_FRONT_LEFT, "frontRightDoor",
+            CHANNEL_FRONT_RIGHT, "rearLeftDoor", CHANNEL_REAR_LEFT, "rearRightDoor", CHANNEL_REAR_RIGHT, "hood",
+            CHANNEL_HOOD, "tailgate", CHANNEL_TAILGATE, "tankLid", CHANNEL_TANK_LID);
+    private static final Map<String, String> WINDOWS = Map.of("frontLeftWindow", CHANNEL_FRONT_LEFT, "frontRightWindow",
+            CHANNEL_FRONT_RIGHT, "rearLeftWindow", CHANNEL_REAR_LEFT, "rearRightWindow", CHANNEL_REAR_RIGHT, "sunroof",
+            CHANNEL_SUNROOF);
+    private static final Map<String, String> TYRES = Map.of("frontLeft", CHANNEL_TYRE_FRONT_LEFT, "frontRight",
+            CHANNEL_TYRE_FRONT_RIGHT, "rearLeft", CHANNEL_TYRE_REAR_LEFT, "rearRight", CHANNEL_TYRE_REAR_RIGHT);
+    private static final Map<String, String> HONK_FLASH_COMMANDS = Map.of("HONK", "honk", "FLASH", "flash",
+            "HONK_AND_FLASH", "honk-flash");
+
+    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
+    private final Object pollLock = new Object();
+    private final Object refreshJobLock = new Object();
+
+    private VehicleConfiguration config = new VehicleConfiguration();
+    private @Nullable ScheduledFuture<?> pollJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
+
+    /**
+     * Identifies the current initialization so that tasks scheduled before a dispose do not publish stale state.
+     */
+    private volatile @Nullable Session session;
+
+    /**
+     * Vehicle information determined once per initialization. Kept per session so that a poll still running from a
+     * previous initialization cannot leak its state into the current one. Only accessed from poll().
+     */
+    private static class Session {
+        private @Nullable Vehicle vehicle;
+        private Set<String> energyCapabilities = Set.of();
+        private boolean locationSupported = true;
+        private Instant nextSlowRefresh = Instant.MIN;
+    }
+
+    public VehicleHandler(Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        config = getConfigAs(VehicleConfiguration.class);
+        if (config.vin.isBlank()) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-vin");
+            return;
+        }
+        if (config.refreshInterval < 1 || config.slowRefreshInterval < config.refreshInterval) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.invalid-refresh-interval");
+            return;
+        }
+        Session currentSession = new Session();
+        session = currentSession;
+        updateStatus(ThingStatus.UNKNOWN);
+        pollJob = scheduler.scheduleWithFixedDelay(() -> poll(currentSession), 0, config.refreshInterval,
+                TimeUnit.MINUTES);
+    }
+
+    @Override
+    public void dispose() {
+        session = null;
+        ScheduledFuture<?> job = pollJob;
+        if (job != null) {
+            job.cancel(true);
+            pollJob = null;
+        }
+        cancelRefreshJob();
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                scheduleRefresh(COALESCED_REFRESH_DELAY_SECONDS);
+            }
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            // the API returns the values of a whole group at once, so coalesce the refresh requests of all channels
+            scheduleRefresh(COALESCED_REFRESH_DELAY_SECONDS);
+            return;
+        }
+        String group = channelUID.getGroupId();
+        String channel = channelUID.getIdWithoutGroup();
+        if (GROUP_DOORS.equals(group) && CHANNEL_LOCK.equals(channel) && command instanceof OnOffType onOff) {
+            executeCommand(onOff == OnOffType.ON ? "lock" : "unlock", null, null);
+        } else if (GROUP_CONTROL.equals(group)) {
+            switch (channel) {
+                case CHANNEL_CLIMATIZATION -> {
+                    if (command == OnOffType.ON) {
+                        executeCommand("climatization-start", null, CHANNEL_CLIMATIZATION);
+                    } else if (command == OnOffType.OFF) {
+                        executeCommand("climatization-stop", null, null);
+                    }
+                }
+                case CHANNEL_ENGINE_REMOTE_START -> {
+                    if (command == OnOffType.ON) {
+                        JsonObject body = new JsonObject();
+                        body.addProperty("runtimeMinutes", config.engineRunTime);
+                        executeCommand("engine-start", body, CHANNEL_ENGINE_REMOTE_START);
+                    } else if (command == OnOffType.OFF) {
+                        executeCommand("engine-stop", null, null);
+                    }
+                }
+                case CHANNEL_HONK_FLASH -> {
+                    String apiCommand = HONK_FLASH_COMMANDS.get(command.toString());
+                    if (apiCommand != null) {
+                        executeCommand(apiCommand, null, null);
+                    } else {
+                        logger.debug("Unsupported command {} for channel {}", command, channelUID);
+                    }
+                }
+                case CHANNEL_LOCK_REDUCED_GUARD -> {
+                    if (command == OnOffType.ON) {
+                        executeCommand("lock-reduced-guard", null, CHANNEL_LOCK_REDUCED_GUARD);
+                    }
+                }
+                default -> logger.debug("Channel {} does not accept commands", channelUID);
+            }
+        } else {
+            logger.debug("Channel {} does not accept command {}", channelUID, command);
+        }
+    }
+
+    /**
+     * @param resetChannel channel of the control group that acts as a push button and is set back to OFF once the
+     *            command was sent successfully, or null
+     */
+    private void executeCommand(String apiCommand, @Nullable JsonObject body, @Nullable String resetChannel) {
+        Session currentSession = session;
+        if (currentSession == null) {
+            return;
+        }
+        scheduler.execute(() -> {
+            VolvoCarsApi api = getApi();
+            if (api == null) {
+                logger.debug("Unable to execute {}, account is not available", apiCommand);
+                return;
+            }
+            String status;
+            boolean sent;
+            try {
+                CommandResult result = api.executeCommand(config.vin, apiCommand, body);
+                String message = result.message;
+                status = String.valueOf(result.invokeStatus)
+                        + (message != null && !message.isBlank() ? ": " + message : "");
+                sent = true;
+                logger.debug("Command {} returned {}", apiCommand, status);
+            } catch (VolvoCarsException e) {
+                logger.debug("Command {} failed: {}", apiCommand, e.getMessage());
+                status = "FAILED: " + e.getMessage();
+                sent = false;
+            }
+            if (currentSession.equals(session)) {
+                updateState(GROUP_CONTROL, CHANNEL_LAST_COMMAND_STATUS, new StringType(status));
+                if (sent && resetChannel != null) {
+                    updateState(GROUP_CONTROL, resetChannel, OnOffType.OFF);
+                }
+                // the vehicle needs some time until the command is reflected in its reported state
+                scheduleRefresh(REFRESH_AFTER_COMMAND_SECONDS);
+            }
+        });
+    }
+
+    private void scheduleRefresh(int delaySeconds) {
+        synchronized (refreshJobLock) {
+            Session currentSession = session;
+            ScheduledFuture<?> job = refreshJob;
+            if (currentSession != null && (job == null || job.isDone())) {
+                refreshJob = scheduler.schedule(() -> poll(currentSession), delaySeconds, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    private void cancelRefreshJob() {
+        synchronized (refreshJobLock) {
+            ScheduledFuture<?> job = refreshJob;
+            if (job != null) {
+                job.cancel(true);
+                refreshJob = null;
+            }
+        }
+    }
+
+    private @Nullable AccountHandler getAccountHandler() {
+        Bridge bridge = getBridge();
+        ThingHandler handler = bridge != null ? bridge.getHandler() : null;
+        return handler instanceof AccountHandler accountHandler ? accountHandler : null;
+    }
+
+    private @Nullable VolvoCarsApi getApi() {
+        AccountHandler accountHandler = getAccountHandler();
+        return accountHandler != null ? accountHandler.getApi() : null;
+    }
+
+    /**
+     * Polls are serialized as they share the per-initialization vehicle information.
+     */
+    private void poll(Session pollSession) {
+        synchronized (pollLock) {
+            pollLocked(pollSession);
+        }
+    }
+
+    private void pollLocked(Session pollSession) {
+        if (!pollSession.equals(session)) {
+            return;
+        }
+        AccountHandler accountHandler = getAccountHandler();
+        VolvoCarsApi api = accountHandler != null ? accountHandler.getApi() : null;
+        Bridge bridge = getBridge();
+        if (accountHandler == null || api == null || bridge == null || bridge.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+        try {
+            Vehicle localVehicle = pollSession.vehicle;
+            if (localVehicle == null) {
+                localVehicle = loadVehicle(api, pollSession);
+                if (localVehicle == null) {
+                    return;
+                }
+            }
+            refreshFast(api, pollSession, localVehicle);
+            if (!Instant.now().isBefore(pollSession.nextSlowRefresh)) {
+                refreshSlow(api, pollSession);
+                pollSession.nextSlowRefresh = Instant.now().plusSeconds(config.slowRefreshInterval * 60L - 30);
+            }
+            if (pollSession.equals(session)) {
+                updateStatus(ThingStatus.ONLINE);
+                accountHandler.reportSuccess(api);
+            }
+        } catch (VolvoCarsException e) {
+            logger.debug("Refreshing vehicle {} failed: {}", getThing().getUID(), e.getMessage());
+            if (!pollSession.equals(session)) {
+                return;
+            }
+            if (e.isAuthorizationRequired()) {
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+                accountHandler.reportFailure(api, e);
+            } else {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+    }
+
+    private @Nullable Vehicle loadVehicle(VolvoCarsApi api, Session pollSession) throws VolvoCarsException {
+        Vehicle localVehicle;
+        try {
+            localVehicle = api.getVehicle(config.vin);
+        } catch (VolvoCarsException e) {
+            if (e.getHttpStatus() == HttpStatus.NOT_FOUND_404 || e.getHttpStatus() == HttpStatus.FORBIDDEN_403) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.unknown-vin");
+                return null;
+            }
+            throw e;
+        }
+        Set<String> capabilities = localVehicle.hasBattery()
+                ? optional(() -> api.getSupportedEnergyCapabilities(config.vin))
+                : null;
+        Set<String> commands = optional(() -> api.getAvailableCommands(config.vin));
+        if (!pollSession.equals(session)) {
+            return null;
+        }
+        updateProperties(localVehicle);
+        removeUnsupportedChannels(localVehicle, commands);
+        pollSession.energyCapabilities = capabilities != null ? capabilities : Set.of();
+        pollSession.vehicle = localVehicle;
+        return localVehicle;
+    }
+
+    private void updateProperties(Vehicle localVehicle) {
+        Map<String, String> properties = editProperties();
+        properties.put(PROPERTY_VIN, config.vin);
+        putProperty(properties, PROPERTY_MODEL, localVehicle.getModel());
+        putProperty(properties, PROPERTY_MODEL_YEAR,
+                localVehicle.modelYear > 0 ? Integer.toString(localVehicle.modelYear) : null);
+        putProperty(properties, PROPERTY_FUEL_TYPE, localVehicle.fuelType);
+        putProperty(properties, PROPERTY_GEARBOX, localVehicle.gearbox);
+        putProperty(properties, PROPERTY_EXTERIOR_COLOUR, localVehicle.externalColour);
+        Double capacity = localVehicle.batteryCapacityKWh;
+        putProperty(properties, PROPERTY_BATTERY_CAPACITY, capacity != null ? capacity.toString() : null);
+        Vehicle.Images images = localVehicle.images;
+        putProperty(properties, PROPERTY_EXTERIOR_IMAGE_URL, images != null ? images.exteriorImageUrl : null);
+        updateProperties(properties);
+    }
+
+    private static void putProperty(Map<String, String> properties, String key, @Nullable String value) {
+        if (value != null && !value.isBlank()) {
+            properties.put(key, value);
+        } else {
+            properties.remove(key);
+        }
+    }
+
+    /**
+     * Removes the channels of features the vehicle does not have, e.g. fuel channels of an electric car.
+     *
+     * @param commands the commands supported by the vehicle, or null if they are unknown
+     */
+    private void removeUnsupportedChannels(Vehicle localVehicle, @Nullable Set<String> commands) {
+        List<Channel> unsupported = new ArrayList<>();
+        for (Channel channel : getThing().getChannels()) {
+            ChannelUID uid = channel.getUID();
+            String group = uid.getGroupId();
+            String id = uid.getIdWithoutGroup();
+            boolean supported = switch (group != null ? group : "") {
+                case GROUP_FUEL -> localVehicle.hasCombustionEngine();
+                case GROUP_BATTERY -> localVehicle.hasBattery();
+                case GROUP_TRIP -> !(CHANNEL_AVERAGE_FUEL_CONSUMPTION.equals(id) && !localVehicle.hasCombustionEngine())
+                        && !(CHANNEL_AVERAGE_ENERGY_CONSUMPTION.equals(id) && !localVehicle.hasBattery());
+                case GROUP_CONTROL -> commands == null || switch (id) {
+                    case CHANNEL_CLIMATIZATION -> commands.contains("CLIMATIZATION_START");
+                    case CHANNEL_ENGINE_REMOTE_START -> commands.contains("ENGINE_START");
+                    case CHANNEL_HONK_FLASH ->
+                        commands.contains("HONK") || commands.contains("FLASH") || commands.contains("HONK_AND_FLASH");
+                    case CHANNEL_LOCK_REDUCED_GUARD -> commands.contains("LOCK_REDUCED_GUARD");
+                    default -> true;
+                };
+                default -> true;
+            };
+            if (!supported) {
+                unsupported.add(channel);
+            }
+        }
+        if (!unsupported.isEmpty()) {
+            logger.debug("Removing {} channels not supported by vehicle {}", unsupported.size(), getThing().getUID());
+            updateThing(editThing().withoutChannels(unsupported).build());
+        }
+    }
+
+    private void refreshFast(VolvoCarsApi api, Session pollSession, Vehicle localVehicle) throws VolvoCarsException {
+        Set<String> energyCapabilities = pollSession.energyCapabilities;
+        Map<String, ValueField> doors = getValues(api, "doors");
+        if (doors != null) {
+            ValueField centralLock = doors.get("centralLock");
+            updateState(GROUP_DOORS, CHANNEL_LOCK,
+                    centralLock == null ? UnDefType.UNDEF : switch (String.valueOf(centralLock.getString())) {
+                        case "LOCKED" -> OnOffType.ON;
+                        case "UNLOCKED" -> OnOffType.OFF;
+                        default -> UnDefType.UNDEF;
+                    });
+            DOORS.forEach((key, channel) -> updateState(GROUP_DOORS, channel, toOpenClosed(doors.get(key))));
+        }
+        Map<String, ValueField> windows = getValues(api, "windows");
+        if (windows != null) {
+            WINDOWS.forEach((key, channel) -> updateState(GROUP_WINDOWS, channel, toOpenClosed(windows.get(key))));
+        }
+        Map<String, ValueField> engine = getValues(api, "engine-status");
+        if (engine != null) {
+            ValueField engineStatus = engine.get("engineStatus");
+            updateState(GROUP_STATUS, CHANNEL_ENGINE_RUNNING,
+                    engineStatus == null || "UNSPECIFIED".equals(engineStatus.getString()) ? UnDefType.UNDEF
+                            : OnOffType.from("RUNNING".equals(engineStatus.getString())));
+        }
+        Map<String, ValueField> odometer = getValues(api, "odometer");
+        if (odometer != null) {
+            updateState(GROUP_STATUS, CHANNEL_ODOMETER, toQuantity(odometer.get("odometer"), KILOMETRE));
+        }
+        Map<String, ValueField> accessibility = getValues(api, "command-accessibility");
+        if (accessibility != null) {
+            ValueField availability = accessibility.get("availabilityStatus");
+            String reason = availability != null ? availability.unavailableReason : null;
+            updateState(GROUP_STATUS, CHANNEL_AVAILABILITY,
+                    reason != null && !reason.isBlank() ? new StringType(reason) : toString(availability));
+        }
+        Map<String, ValueField> statistics = getValues(api, "statistics");
+        if (statistics != null) {
+            updateStatistics(statistics);
+        }
+        if (localVehicle.hasCombustionEngine() || (localVehicle.hasBattery() && energyCapabilities.isEmpty())) {
+            Map<String, ValueField> fuel = getValues(api, "fuel");
+            if (fuel != null) {
+                updateState(GROUP_FUEL, CHANNEL_FUEL_AMOUNT, toQuantity(fuel.get("fuelAmount"), Units.LITRE));
+                if (energyCapabilities.isEmpty()) {
+                    // vehicles without Energy API support report the battery level as part of the fuel status
+                    updateState(GROUP_BATTERY, CHANNEL_BATTERY_LEVEL,
+                            toQuantity(fuel.get("batteryChargeLevel"), Units.PERCENT));
+                }
+            }
+        }
+        if (!energyCapabilities.isEmpty()) {
+            Map<String, ValueField> energy = getEnergyState(api);
+            if (energy != null) {
+                updateEnergy(energy);
+            }
+        }
+        if (pollSession.locationSupported) {
+            pollSession.locationSupported = updateLocation(api);
+        }
+    }
+
+    private void refreshSlow(VolvoCarsApi api, Session pollSession) throws VolvoCarsException {
+        // retry the location in case it was temporarily unavailable
+        pollSession.locationSupported = true;
+
+        Map<String, ValueField> diagnostics = getValues(api, "diagnostics");
+        if (diagnostics != null) {
+            updateState(GROUP_MAINTENANCE, CHANNEL_SERVICE_WARNING, toString(diagnostics.get("serviceWarning")));
+            updateState(GROUP_MAINTENANCE, CHANNEL_DISTANCE_TO_SERVICE,
+                    toQuantity(diagnostics.get("distanceToService"), KILOMETRE));
+            updateState(GROUP_MAINTENANCE, CHANNEL_TIME_TO_SERVICE,
+                    toQuantity(diagnostics.get("timeToService"), Units.MONTH));
+            updateState(GROUP_MAINTENANCE, CHANNEL_ENGINE_HOURS_TO_SERVICE,
+                    toQuantity(diagnostics.get("engineHoursToService"), Units.HOUR));
+            updateState(GROUP_MAINTENANCE, CHANNEL_WASHER_FLUID_WARNING,
+                    toString(diagnostics.get("washerFluidLevelWarning")));
+        }
+        Map<String, ValueField> brakes = getValues(api, "brakes");
+        if (brakes != null) {
+            updateState(GROUP_MAINTENANCE, CHANNEL_BRAKE_FLUID_WARNING, toString(brakes.get("brakeFluidLevelWarning")));
+        }
+        Map<String, ValueField> engineWarnings = getValues(api, "engine");
+        if (engineWarnings != null) {
+            updateState(GROUP_MAINTENANCE, CHANNEL_OIL_LEVEL_WARNING, toString(engineWarnings.get("oilLevelWarning")));
+            updateState(GROUP_MAINTENANCE, CHANNEL_COOLANT_LEVEL_WARNING,
+                    toString(engineWarnings.get("engineCoolantLevelWarning")));
+        }
+        Map<String, ValueField> tyres = getValues(api, "tyres");
+        if (tyres != null) {
+            TYRES.forEach((key, channel) -> updateState(GROUP_MAINTENANCE, channel, toString(tyres.get(key))));
+        }
+        Map<String, ValueField> warnings = getValues(api, "warnings");
+        if (warnings != null) {
+            Set<String> failures = new TreeSet<>();
+            warnings.forEach((key, field) -> {
+                if ("FAILURE".equals(field.getString())) {
+                    failures.add(key.endsWith("Warning") ? key.substring(0, key.length() - "Warning".length()) : key);
+                }
+            });
+            updateState(GROUP_MAINTENANCE, CHANNEL_LIGHT_FAILURE, OnOffType.from(!failures.isEmpty()));
+            updateState(GROUP_MAINTENANCE, CHANNEL_LIGHT_FAILURES, new StringType(String.join(", ", failures)));
+        }
+    }
+
+    private void updateStatistics(Map<String, ValueField> statistics) {
+        updateState(GROUP_TRIP, CHANNEL_AVERAGE_SPEED,
+                toQuantity(statistics.get("averageSpeed"), SIUnits.KILOMETRE_PER_HOUR));
+        updateState(GROUP_TRIP, CHANNEL_AVERAGE_SPEED_AUTOMATIC,
+                toQuantity(statistics.get("averageSpeedAutomatic"), SIUnits.KILOMETRE_PER_HOUR));
+        updateState(GROUP_TRIP, CHANNEL_TRIP_METER_MANUAL, toQuantity(statistics.get("tripMeterManual"), KILOMETRE));
+        updateState(GROUP_TRIP, CHANNEL_TRIP_METER_AUTOMATIC,
+                toQuantity(statistics.get("tripMeterAutomatic"), KILOMETRE));
+        updateState(GROUP_TRIP, CHANNEL_AVERAGE_FUEL_CONSUMPTION, toDecimal(statistics.get("averageFuelConsumption")));
+        updateState(GROUP_TRIP, CHANNEL_AVERAGE_ENERGY_CONSUMPTION,
+                toDecimal(statistics.get("averageEnergyConsumption")));
+        updateState(GROUP_FUEL, CHANNEL_DISTANCE_TO_EMPTY_TANK,
+                toQuantity(statistics.get("distanceToEmptyTank"), KILOMETRE));
+        updateState(GROUP_BATTERY, CHANNEL_DISTANCE_TO_EMPTY_BATTERY,
+                toQuantity(statistics.get("distanceToEmptyBattery"), KILOMETRE));
+    }
+
+    private void updateEnergy(Map<String, ValueField> energy) {
+        updateState(GROUP_BATTERY, CHANNEL_BATTERY_LEVEL, toQuantity(energy.get("batteryChargeLevel"), Units.PERCENT));
+        updateState(GROUP_BATTERY, CHANNEL_ELECTRIC_RANGE, toQuantity(energy.get("electricRange"), KILOMETRE));
+        updateState(GROUP_BATTERY, CHANNEL_CHARGER_CONNECTION_STATUS, toString(energy.get("chargerConnectionStatus")));
+        updateState(GROUP_BATTERY, CHANNEL_CHARGING_STATUS, toString(energy.get("chargingStatus")));
+        updateState(GROUP_BATTERY, CHANNEL_CHARGING_TYPE, toString(energy.get("chargingType")));
+        updateState(GROUP_BATTERY, CHANNEL_CHARGER_POWER_STATUS, toString(energy.get("chargerPowerStatus")));
+        updateState(GROUP_BATTERY, CHANNEL_ESTIMATED_CHARGING_TIME,
+                toQuantity(energy.get("estimatedChargingTimeToTargetBatteryChargeLevel"), Units.MINUTE));
+        updateState(GROUP_BATTERY, CHANNEL_TARGET_BATTERY_LEVEL,
+                toQuantity(energy.get("targetBatteryChargeLevel"), Units.PERCENT));
+        updateState(GROUP_BATTERY, CHANNEL_CHARGING_CURRENT_LIMIT,
+                toQuantity(energy.get("chargingCurrentLimit"), Units.AMPERE));
+        updateState(GROUP_BATTERY, CHANNEL_CHARGING_POWER, toQuantity(energy.get("chargingPower"), Units.WATT));
+    }
+
+    /**
+     * @return false if the location is not available for the vehicle or authorization
+     */
+    private boolean updateLocation(VolvoCarsApi api) throws VolvoCarsException {
+        Location location;
+        try {
+            location = api.getLocation(config.vin);
+        } catch (VolvoCarsException e) {
+            // Volvo answers with 403 if the location scope was not granted or the vehicle's region is not supported
+            if (e.getHttpStatus() == HttpStatus.FORBIDDEN_403 || e.getHttpStatus() == HttpStatus.NOT_FOUND_404) {
+                logger.debug("Location of {} is not available: {}", getThing().getUID(), e.getMessage());
+                return false;
+            }
+            throw e;
+        }
+        Location.Geometry geometry = location != null ? location.geometry : null;
+        List<Double> coordinates = geometry != null ? geometry.coordinates : null;
+        if (coordinates != null && coordinates.size() >= 2) {
+            DecimalType latitude = new DecimalType(coordinates.get(1));
+            DecimalType longitude = new DecimalType(coordinates.get(0));
+            updateState(GROUP_LOCATION, CHANNEL_POSITION,
+                    coordinates.size() > 2 ? new PointType(latitude, longitude, new DecimalType(coordinates.get(2)))
+                            : new PointType(latitude, longitude));
+        } else {
+            updateState(GROUP_LOCATION, CHANNEL_POSITION, UnDefType.UNDEF);
+        }
+        Location.Properties properties = location != null ? location.properties : null;
+        State heading = UnDefType.UNDEF;
+        State timestamp = UnDefType.UNDEF;
+        if (properties != null) {
+            String localHeading = properties.heading;
+            if (localHeading != null) {
+                try {
+                    heading = new QuantityType<>(new BigDecimal(localHeading), Units.DEGREE_ANGLE);
+                } catch (NumberFormatException e) {
+                    logger.debug("Ignoring invalid heading {}", localHeading);
+                }
+            }
+            String localTimestamp = properties.timestamp;
+            if (localTimestamp != null) {
+                try {
+                    timestamp = new DateTimeType(ZonedDateTime.parse(localTimestamp).toInstant());
+                } catch (DateTimeParseException e) {
+                    logger.debug("Ignoring invalid timestamp {}", localTimestamp);
+                }
+            }
+        }
+        updateState(GROUP_LOCATION, CHANNEL_HEADING, heading);
+        updateState(GROUP_LOCATION, CHANNEL_TIMESTAMP, timestamp);
+        return true;
+    }
+
+    /**
+     * Reads a Connected Vehicle API resource.
+     *
+     * @return the values, or null if the vehicle does not provide the resource or the scope was not granted
+     */
+    private @Nullable Map<String, ValueField> getValues(VolvoCarsApi api, String resource) throws VolvoCarsException {
+        return optional(() -> api.getValues(config.vin, resource));
+    }
+
+    private @Nullable Map<String, ValueField> getEnergyState(VolvoCarsApi api) throws VolvoCarsException {
+        return optional(() -> api.getEnergyState(config.vin));
+    }
+
+    @FunctionalInterface
+    private interface ApiCall<T> {
+        T call() throws VolvoCarsException;
+    }
+
+    /**
+     * Executes an API call whose resource may not be available for every vehicle or authorization: the API
+     * answers with 404 for resources the vehicle does not support and with 403 for scopes that were not granted.
+     *
+     * @return the result of the call, or null if the resource is not available
+     */
+    private <T> @Nullable T optional(ApiCall<T> call) throws VolvoCarsException {
+        try {
+            return call.call();
+        } catch (VolvoCarsException e) {
+            if (e.getHttpStatus() == HttpStatus.NOT_FOUND_404 || e.getHttpStatus() == HttpStatus.FORBIDDEN_403) {
+                logger.debug("Resource not available for {}: {}", getThing().getUID(), e.getMessage());
+                return null;
+            }
+            throw e;
+        }
+    }
+
+    private void updateState(String group, String channel, State state) {
+        updateState(new ChannelUID(getThing().getUID(), group, channel), state);
+    }
+
+    private static State toOpenClosed(@Nullable ValueField field) {
+        if (field == null) {
+            return UnDefType.UNDEF;
+        }
+        return switch (String.valueOf(field.getString())) {
+            case "OPEN", "AJAR" -> OpenClosedType.OPEN;
+            case "CLOSED" -> OpenClosedType.CLOSED;
+            default -> UnDefType.UNDEF;
+        };
+    }
+
+    private static State toString(@Nullable ValueField field) {
+        String value = field != null && field.isValid() ? field.getString() : null;
+        return value != null ? new StringType(value) : UnDefType.UNDEF;
+    }
+
+    private static State toDecimal(@Nullable ValueField field) {
+        BigDecimal value = field != null && field.isValid() ? field.getNumber() : null;
+        return value != null ? new DecimalType(value) : UnDefType.UNDEF;
+    }
+
+    /**
+     * @param defaultUnit the unit to use if the API reports no or an unknown unit
+     */
+    static State toQuantity(@Nullable ValueField field, Unit<?> defaultUnit) {
+        BigDecimal value = field != null && field.isValid() ? field.getNumber() : null;
+        if (field == null || value == null) {
+            return UnDefType.UNDEF;
+        }
+        Unit<?> unit = ApiUnits.parse(field.unit);
+        if (unit == null || !unit.isCompatible(defaultUnit)) {
+            unit = defaultUnit;
+        }
+        return new QuantityType<>(value, unit);
+    }
+}

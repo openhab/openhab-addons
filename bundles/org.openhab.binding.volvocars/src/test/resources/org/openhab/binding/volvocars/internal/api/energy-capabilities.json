@@ -1,0 +1,9 @@
+{
+  "getEnergyState": {
+    "isSupported": true,
+    "batteryChargeLevel": { "isSupported": true },
+    "electricRange": { "isSupported": true },
+    "chargingSystemStatus": { "isSupported": true },
+    "chargingPower": { "isSupported": false }
+  }
+}
