@@ -231,8 +231,11 @@ public class BMWCarDataAuthClient {
             Thread.currentThread().interrupt();
             throw new BMWCarDataException("Interrupted", e);
         } catch (ExecutionException e) {
-            if (BMWCarDataAuthException.isUnauthorizedResponse(e)) {
-                // the error code in the body is lost, see BMWCarDataAuthException.isUnauthorizedResponse
+            if (HttpResponses.isUnauthorizedResponse(e)) {
+                // the error code in the body is lost, see HttpResponses.isUnauthorizedResponse: BMW answers an
+                // invalid client, an expired code and an account pending activation with 401, which cannot be told
+                // apart; while polling, the account handler starts a new authorization once the code has expired by
+                // its own clock
                 throw new BMWCarDataException("BMW authorization service rejected the request with HTTP 401", 401, e);
             }
             throw new BMWCarDataException("Request to BMW authorization service failed: " + e.getMessage(), e);

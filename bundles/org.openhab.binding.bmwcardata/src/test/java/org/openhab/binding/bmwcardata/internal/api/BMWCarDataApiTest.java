@@ -53,7 +53,6 @@ class BMWCarDataApiTest {
     static void startServer() throws Exception {
         SERVER.start();
         HTTP_CLIENT.start();
-        // as configured by the handler factory
     }
 
     @AfterAll
@@ -153,7 +152,13 @@ class BMWCarDataApiTest {
     @Test
     void errorResponsesAreClassified() {
         String path = "/customers/vehicles/" + VIN + "/basicData";
+        // without WWW-Authenticate header, the HTTP client fails the request
         SERVER.stubFor(get(path).willReturn(unauthorized()));
+        assertThrows(BMWCarDataAuthException.class, () -> api.getBasicData(VIN));
+
+        // with the header, the HTTP client returns the response
+        SERVER.stubFor(get(path).willReturn(
+                unauthorized().withHeader("WWW-Authenticate", "Bearer error=\"invalid_token\"").withBody("{}")));
         assertThrows(BMWCarDataAuthException.class, () -> api.getBasicData(VIN));
 
         SERVER.stubFor(get(path).willReturn(aResponse().withStatus(429).withBody("{\"exveErrorId\":\"CU-429\"}")));

@@ -13,8 +13,6 @@
 package org.openhab.binding.bmwcardata.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpResponseException;
 
 /**
  * The {@link BMWCarDataAuthException} signals that the stored authorization is no longer accepted and the user has
@@ -29,23 +27,5 @@ public class BMWCarDataAuthException extends BMWCarDataException {
 
     public BMWCarDataAuthException(String message, int httpStatus) {
         super(message, httpStatus);
-    }
-
-    /**
-     * BMW answers 401 without WWW-Authenticate header. The authentication protocol handler of openHAB's common HTTP
-     * client turns such a response into a failure, an {@link HttpResponseException} that keeps the status but not the
-     * body.
-     *
-     * @param e failure of a request, or one wrapping it
-     * @return whether the request failed because the server answered HTTP 401
-     */
-    public static boolean isUnauthorizedResponse(@Nullable Throwable e) {
-        for (Throwable cause = e; cause != null; cause = cause.getCause()) {
-            if (cause instanceof HttpResponseException responseException
-                    && responseException.getResponse().getStatus() == 401) {
-                return true;
-            }
-        }
-        return false;
     }
 }

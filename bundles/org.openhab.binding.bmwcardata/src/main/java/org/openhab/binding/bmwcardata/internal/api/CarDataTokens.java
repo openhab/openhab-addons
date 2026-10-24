@@ -118,7 +118,7 @@ public final class CarDataTokens {
      *         {@link BMWCarDataException}
      */
     public static BMWCarDataException toException(IOException e) {
-        if (BMWCarDataAuthException.isUnauthorizedResponse(e)) {
+        if (HttpResponses.isUnauthorizedResponse(e)) {
             return new BMWCarDataAuthException("Token refresh rejected", 401);
         }
         return new BMWCarDataException("Token refresh failed: " + e.getMessage(), e);
