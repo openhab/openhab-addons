@@ -46,7 +46,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -74,8 +73,9 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class RadioThermostatHandler extends BaseThingHandler implements RadioThermostatEventListener {
-    private static final int DEFAULT_REFRESH_PERIOD = 2;
-    private static final int DEFAULT_LOG_REFRESH_PERIOD = 10;
+    private static final int DEFAULT_REFRESH_PERIOD_MIN = 2;
+    private static final int DEFAULT_LOG_REFRESH_PERIOD_MIN = 10;
+    private static final int COMMAND_POLLING_DELAY_SEC = 20;
 
     private final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatHandler.class);
@@ -89,8 +89,9 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private @Nullable ScheduledFuture<?> logRefreshJob;
     private @Nullable ScheduledFuture<?> clockSyncJob;
 
-    private int refreshPeriod = DEFAULT_REFRESH_PERIOD;
-    private int logRefreshPeriod = DEFAULT_LOG_REFRESH_PERIOD;
+    private volatile long lastCommandTime = 0L;
+    private int refreshPeriod = DEFAULT_REFRESH_PERIOD_MIN;
+    private int logRefreshPeriod = DEFAULT_LOG_REFRESH_PERIOD_MIN;
     private boolean isCT80 = false;
     private boolean disableLogs = false;
     private boolean clockSync = false;
@@ -196,32 +197,44 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      * Start the job to periodically update data from the thermostat
      */
     private void startAutomaticRefresh() {
+        rescheduleRefreshJob(0);
+    }
+
+    /**
+     * Cancels any previously scheduled refreshJob and schedule it again with the given initial delay
+     *
+     * @param initialDelaySec the delay before the refreshJob runs for the first time
+     */
+    private synchronized void rescheduleRefreshJob(int initialDelaySec) {
         ScheduledFuture<?> refreshJob = this.refreshJob;
-        if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = () -> {
-                // populate the heat and cool programs on the thermostat from the user configuration,
-                // the commands will be sent each time the refresh job runs until a success response is seen
-                if (!heatProgramJson.isEmpty()) {
-                    final String response = connector.sendCommand(null, null, heatProgramJson, HEAT_PROGRAM_RESOURCE);
-                    if (response.contains("success")) {
-                        heatProgramJson = BLANK;
-                    }
-                }
-
-                if (!coolProgramJson.isEmpty()) {
-                    final String response = connector.sendCommand(null, null, coolProgramJson, COOL_PROGRAM_RESOURCE);
-                    if (response.contains("success")) {
-                        coolProgramJson = BLANK;
-                    }
-                }
-
-                // send an async call to the thermostat to get the 'tstat' data
-                connector.getAsyncThermostatData(DEFAULT_RESOURCE);
-            };
-
-            refreshJob = null;
-            this.refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refreshPeriod, TimeUnit.MINUTES);
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
         }
+        refreshJob = null;
+
+        Runnable runnable = () -> {
+            // populate the heat and cool programs on the thermostat from the user configuration,
+            // the commands will be sent each time the refresh job runs until a success response is seen
+            if (!heatProgramJson.isEmpty()) {
+                final String response = connector.sendCommand(null, null, heatProgramJson, HEAT_PROGRAM_RESOURCE);
+                if (response.contains("success")) {
+                    heatProgramJson = BLANK;
+                }
+            }
+
+            if (!coolProgramJson.isEmpty()) {
+                final String response = connector.sendCommand(null, null, coolProgramJson, COOL_PROGRAM_RESOURCE);
+                if (response.contains("success")) {
+                    coolProgramJson = BLANK;
+                }
+            }
+
+            // send an async call to the thermostat to get the 'tstat' data
+            connector.getAsyncThermostatData(DEFAULT_RESOURCE);
+        };
+
+        this.refreshJob = scheduler.scheduleWithFixedDelay(runnable, initialDelaySec, refreshPeriod * 60,
+                TimeUnit.SECONDS);
     }
 
     /**
@@ -288,7 +301,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         logger.debug("Disposing the RadioThermostat handler.");
         connector.removeEventListener(this);
 
@@ -336,9 +349,11 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
+        final String channel = channelUID.getId();
+
         if (command instanceof RefreshType) {
-            updateChannel(channelUID.getId(), rthermData);
+            updateChannel(channel, rthermData);
         } else {
             Integer cmdInt = -1;
             final String cmdStr = command.toString();
@@ -350,10 +365,19 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 logger.debug("Command: {} -> Not an integer", cmdStr);
             }
 
-            switch (channelUID.getId()) {
+            final boolean isModeChange = MODE.equals(channel)
+                    && !cmdInt.equals(rthermData.getThermostatData().getMode());
+
+            // When processing a command, delay the polling job for 20s unless changing mode then wait the refreshPeriod
+            if (!MESSAGE.equals(channel) && !isModeChange) {
+                lastCommandTime = System.currentTimeMillis();
+                rescheduleRefreshJob(!MODE.equals(channel) ? COMMAND_POLLING_DELAY_SEC : refreshPeriod * 60);
+            }
+
+            switch (channel) {
                 case MODE:
                     // only do if commanded mode is different than current mode
-                    if (!cmdInt.equals(rthermData.getThermostatData().getMode())) {
+                    if (isModeChange) {
                         connector.sendCommand("tmode", cmdStr, DEFAULT_RESOURCE);
 
                         // set the new operating mode, reset everything else,
@@ -412,7 +436,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 case REMOTE_TEMP:
                     if (cmdInt != -1) {
                         final QuantityType<Temperature> remoteTemp = ((QuantityType<Temperature>) command)
-                                .toUnit(ImperialUnits.FAHRENHEIT);
+                                .toUnit(API_TEMPERATURE_UNIT);
                         if (remoteTemp != null) {
                             connector.sendCommand("rem_temp", handleRemoteTempDeadband(remoteTemp),
                                     REMOTE_TEMP_RESOURCE);
@@ -441,10 +465,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      */
     @Override
     public void onNewMessageEvent(RadioThermostatEvent event) {
-        logger.debug("onNewMessageEvent: key {} = {}", event.getKey(), event.getValue());
-
         final String evtKey = event.getKey();
         final String evtVal = event.getValue();
+
+        logger.debug("onNewMessageEvent: key {} = {}, startTime: {}", evtKey, evtVal, event.getStartTime());
 
         if (KEY_ERROR.equals(evtKey)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -455,10 +479,16 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             // Map the JSON response to the correct object and update appropriate channels
             switch (evtKey) {
                 case DEFAULT_RESOURCE:
-                    rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatTstatDTO.class));
-                    // if thermostat returned -1 for temperature, skip this update
-                    if (rthermData.getThermostatData().getTemperature() >= 0) {
-                        updateAllChannels();
+                    // if polling startTime is before lastCommandTime, ignore this update
+                    if (event.getStartTime() > lastCommandTime) {
+                        rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatTstatDTO.class));
+                        // if thermostat returned -1 for temperature, skip this update
+                        if (rthermData.getThermostatData().getTemperature() >= 0) {
+                            // Update the relevant channels with the data from '/tstat'
+                            TSAT_CHANNEL_IDS.forEach(channelId -> {
+                                updateChannel(channelId, rthermData);
+                            });
+                        }
                     }
                     break;
                 case HUMIDITY_RESOURCE:
@@ -491,7 +521,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             try {
                 value = getValue(channelId, rthermData, thermostatSchedule);
             } catch (Exception e) {
-                logger.debug("Error setting {} value", channelId.toUpperCase());
+                logger.debug("Error getting {} value", channelId);
                 return;
             }
 
@@ -535,17 +565,11 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             @Nullable RadioThermostatSchedule thermostatSchedule) {
         switch (channelId) {
             case TEMPERATURE:
-                if (data.getThermostatData().getTemperature() != null) {
-                    return new QuantityType<>(data.getThermostatData().getTemperature(), API_TEMPERATURE_UNIT);
-                } else {
-                    return null;
-                }
+                return data.getThermostatData().getTemperature() != null
+                        ? new QuantityType<>(data.getThermostatData().getTemperature(), API_TEMPERATURE_UNIT)
+                        : null;
             case HUMIDITY:
-                if (data.getHumidity() != null) {
-                    return new QuantityType<>(data.getHumidity(), API_HUMIDITY_UNIT);
-                } else {
-                    return null;
-                }
+                return data.getHumidity() != null ? new QuantityType<>(data.getHumidity(), API_HUMIDITY_UNIT) : null;
             case MODE:
                 return data.getThermostatData().getMode();
             case FAN_MODE:
@@ -553,11 +577,9 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             case PROGRAM_MODE:
                 return data.getThermostatData().getProgramMode();
             case SET_POINT:
-                if (data.getThermostatData().getSetpoint() != 0) {
-                    return new QuantityType<>(data.getThermostatData().getSetpoint(), API_TEMPERATURE_UNIT);
-                } else {
-                    return null;
-                }
+                return data.getThermostatData().getSetpoint() != 0
+                        ? new QuantityType<>(data.getThermostatData().getSetpoint(), API_TEMPERATURE_UNIT)
+                        : null;
             case OVERRIDE:
                 return data.getThermostatData().getOverride();
             case HOLD:
@@ -566,11 +588,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 return data.getThermostatData().getStatus();
             case FAN_STATUS:
                 // workaround for some thermostats that don't report that the fan is on during heating or cooling
-                if (data.getThermostatData().getStatus() > 0) {
-                    return 1;
-                } else {
-                    return data.getThermostatData().getFanStatus();
-                }
+                return data.getThermostatData().getStatus() > 0 ? 1 : data.getThermostatData().getFanStatus();
             case DAY:
                 return data.getThermostatData().getTime().getDayOfWeek();
             case HOUR:
@@ -592,33 +610,13 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             case NEXT_TEMP:
                 if (thermostatSchedule != null) {
                     final Integer nextTemp = thermostatSchedule.getNextTemp(data.getThermostatData());
-                    if (nextTemp != null) {
-                        return new QuantityType<>(nextTemp, API_TEMPERATURE_UNIT);
-                    }
+                    return nextTemp != null ? new QuantityType<>(nextTemp, API_TEMPERATURE_UNIT) : null;
                 }
                 return null;
             case NEXT_TIME:
-                if (thermostatSchedule != null) {
-                    final ZonedDateTime nextTime = thermostatSchedule.getNextTime(data.getThermostatData());
-                    if (nextTime != null) {
-                        return nextTime;
-                    }
-                }
-                return null;
+                return thermostatSchedule != null ? thermostatSchedule.getNextTime(data.getThermostatData()) : null;
         }
         return null;
-    }
-
-    /**
-     * Updates all channels from rthermData
-     */
-    private void updateAllChannels() {
-        // Update all channels from rthermData
-        getThing().getChannels().forEach(channel -> {
-            if (!NO_UPDATE_CHANNEL_IDS.contains(channel.getUID().getId())) {
-                updateChannel(channel.getUID().getId(), rthermData);
-            }
-        });
     }
 
     /**
