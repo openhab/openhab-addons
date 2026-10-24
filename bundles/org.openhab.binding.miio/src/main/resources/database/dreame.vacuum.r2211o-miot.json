@@ -748,18 +748,37 @@
 				"property": "waterbox-status",
 				"siid": 4,
 				"piid": 6,
-				"friendlyName": "Vacuum Extend - Water Tank Installed",
+				"friendlyName": "Vacuum Extend - Water Tank and Mop Status",
 				"channel": "waterbox_status",
-				"type": "Switch",
+				"type": "Number",
 				"stateDescription": {
-					"readOnly": true
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Water Tank, No Mop"
+						},
+						{
+							"value": "1",
+							"label": "Water Tank, No Mop"
+						},
+						{
+							"value": "2",
+							"label": "No Water Tank, Mop"
+						},
+						{
+							"value": "3",
+							"label": "Water Tank and Mop"
+						}
+					]
 				},
 				"refresh": true,
 				"actions": [],
 				"category": "water",
 				"tags": [
 					"Status"
-				]
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Water Tank, No Mop\",\"1\"\u003d\"Water Tank, No Mop\",\"2\"\u003d\"No Water Tank, Mop\",\"3\"\u003d\"Water Tank and Mop\"]`"
 			},
 			{
 				"property": "task-status",

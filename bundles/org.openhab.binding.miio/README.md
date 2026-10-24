@@ -3027,7 +3027,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cleaning_area              | Number:Area          | Vacuum Extend - Cleaning Area            |            |
 | cleaning_mode              | Number               | Vacuum Extend - Suction Level            | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
 | mop_mode                   | Number               | Vacuum Extend - Mop Water Level          | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
-| waterbox_status            | Switch               | Vacuum Extend - Water Tank Installed     |            |
+| waterbox_status            | Number               | Vacuum Extend - Water Tank and Mop Status | Value mapping `["0"="No Water Tank, No Mop","1"="Water Tank, No Mop","2"="No Water Tank, Mop","3"="Water Tank and Mop"]` |
 | task_status                | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Completed","1"="Auto Cleaning","2"="Zone Cleaning","3"="Room Cleaning","4"="Spot Cleaning","5"="Fast Mapping","6"="Auto Cleaning Paused","7"="Zone Cleaning Paused","8"="Room Cleaning Paused","9"="Spot Cleaning Paused","10"="Map Cleaning Paused","11"="Charging Paused","12"="Back Washing Paused","13"="Room Back Washing Paused","14"="Zone Back Washing Paused","15"="Auto Back Washing Paused","16"="Auto Charging Paused","17"="Selected Charging Paused","18"="Zone Charging Paused","19"="Spot Charging Paused"]` |
 | break_point_restart        | Switch               | Vacuum Extend - Resume After Charging    | Returns to the dock to charge when the battery is low and continues the cleaning afterwards |
 | carpet_press               | Switch               | Vacuum Extend - Carpet Boost             | Not shown by the Mi Home app of this model |
@@ -3149,7 +3149,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cleaning_area              | Number:Area          | Vacuum Extend - Cleaning Area            |            |
 | cleaning_mode              | Number               | Vacuum Extend - Suction Level            | Value mapping `["0"="Quiet","1"="Standard","2"="Strong","3"="Turbo"]` |
 | mop_mode                   | Number               | Vacuum Extend - Mop Water Level          | Value mapping `["1"="Slightly Dry","2"="Moist","3"="Wet"]` |
-| waterbox_status            | Switch               | Vacuum Extend - Water Tank Installed     |            |
+| waterbox_status            | Number               | Vacuum Extend - Water Tank and Mop Status | Value mapping `["0"="No Water Tank, No Mop","1"="Water Tank, No Mop","2"="No Water Tank, Mop","3"="Water Tank and Mop"]` |
 | task_status                | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Completed","1"="Auto Cleaning","2"="Zone Cleaning","3"="Room Cleaning","4"="Spot Cleaning","5"="Fast Mapping","6"="Auto Cleaning Paused","7"="Zone Cleaning Paused","8"="Room Cleaning Paused","9"="Spot Cleaning Paused","10"="Map Cleaning Paused","11"="Charging Paused","12"="Back Washing Paused","13"="Room Back Washing Paused","14"="Zone Back Washing Paused","15"="Auto Back Washing Paused","16"="Auto Charging Paused","17"="Selected Charging Paused","18"="Zone Charging Paused","24"="Summoned Clean Paused"]` |
 | break_point_restart        | Switch               | Vacuum Extend - Resume After Charging    | Returns to the dock to charge when the battery is low and continues the cleaning afterwards |
 | carpet_press               | Switch               | Vacuum Extend - Carpet Boost             | The Mi Home app offers it while `carpet_distinguish` is on |
@@ -16031,7 +16031,7 @@ Number:Time cleaning_time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="m
 Number:Area cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
 Number cleaning_mode "Vacuum Extend - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:cleaning_mode"}
 Number mop_mode "Vacuum Extend - Mop Water Level" (G_vacuum) {channel="miio:basic:vacuum:mop_mode"}
-Switch waterbox_status "Vacuum Extend - Water Tank Installed" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
+Number waterbox_status "Vacuum Extend - Water Tank and Mop Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
 Number task_status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task_status"}
 Switch break_point_restart "Vacuum Extend - Resume After Charging" (G_vacuum) {channel="miio:basic:vacuum:break_point_restart"}
 Switch carpet_press "Vacuum Extend - Carpet Boost" (G_vacuum) {channel="miio:basic:vacuum:carpet_press"}
@@ -16159,7 +16159,7 @@ Number:Time cleaning_time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="m
 Number:Area cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
 Number cleaning_mode "Vacuum Extend - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:cleaning_mode"}
 Number mop_mode "Vacuum Extend - Mop Water Level" (G_vacuum) {channel="miio:basic:vacuum:mop_mode"}
-Switch waterbox_status "Vacuum Extend - Water Tank Installed" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
+Number waterbox_status "Vacuum Extend - Water Tank and Mop Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
 Number task_status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task_status"}
 Switch break_point_restart "Vacuum Extend - Resume After Charging" (G_vacuum) {channel="miio:basic:vacuum:break_point_restart"}
 Switch carpet_press "Vacuum Extend - Carpet Boost" (G_vacuum) {channel="miio:basic:vacuum:carpet_press"}
