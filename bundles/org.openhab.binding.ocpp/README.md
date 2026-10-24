@@ -122,6 +122,7 @@ A charger that does not advertise the profile is left untouched.
 | power-offered           | Number:Power             | R          | Power offered to the vehicle                                                                    |
 | energy-active-import    | Number:Energy            | R          | Energy register (Energy.Active.Import.Register)                                                 |
 | session-energy          | Number:Energy            | R          | Energy of the last session (meter-stop − meter-start), published once at session end            |
+| external-energy         | Number:Energy            | W          | Energy counter of an external meter for a charger without one; sizes `session-energy` when linked |
 | charging                | Switch                   | RW         | ON while a transaction runs; command to remote start/stop                                       |
 | charge-limit            | Number:ElectricCurrent   | RW         | Charge current cap via SetChargingProfile; 0 stops the charge                                   |
 | power-limit             | Number:Power             | RW         | Charge power cap (watts) for power-only chargers; takes over from charge-limit until a later charge-limit clears it |
@@ -135,6 +136,8 @@ A charger that does not advertise the profile is left untouched.
 Beyond the channels above, the rest of the OCPP 1.6 SampledValue set is added to the connector the first time the charger reports it: `current-import`, `current-export`, `voltage`, `frequency`, `power-active-export`, `power-reactive-import`, `power-reactive-export`, `power-factor`, `energy-active-export`, `energy-active-import-interval`, `energy-active-export-interval`, `energy-reactive-import`, `energy-reactive-export`, `energy-reactive-import-interval`, `energy-reactive-export-interval`, `soc`, `rpm` and `temperature`.
 Every connector also carries the transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`) and the metering timestamps (`timestamp`, `timestamp-start`, `timestamp-stop`).
 A transaction that was open when openHAB restarted keeps its `transaction-id` and its `meter-start`, so `session-energy` is still sized when it stops.
+A charger without its own meter, such as a Phoenix CHARX, reports no usable `meter-start` or `meter-stop`. If its supply is metered elsewhere, link that meter's energy counter item to `external-energy` with the `follow` profile: `session-energy` is then the counter at the stop minus the counter at the start, and the start reading survives a restart too.
+A plain `Number` item is read as kWh. Without a reading at the start the session falls back to the charger's own values; with none at the stop, or a counter that went backwards, `session-energy` is UNDEF.
 At a stop, `meter-stop` and `session-energy` are published before `transaction-id` is cleared, so a rule triggered by `transaction-id` changing to UNDEF reads the settled total.
 
 For chargers that reject a TxProfile outside a transaction (e.g. Phoenix CHARX), set `forceTxDefaultProfile` on the connector so the charge limit is sent as a TxDefaultProfile.

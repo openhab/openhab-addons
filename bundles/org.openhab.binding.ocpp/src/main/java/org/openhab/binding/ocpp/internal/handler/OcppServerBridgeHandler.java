@@ -444,6 +444,24 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
                 : null;
     }
 
+    public void rememberExternalStart(int transactionId, String chargePointId, double wattHours) {
+        TransactionStore store = transactionStore;
+        if (store != null && isOwnedBy(store, transactionId, chargePointId)) {
+            store.rememberExternalStart(transactionId, wattHours);
+        }
+    }
+
+    public @Nullable Double externalStartOf(int transactionId, String chargePointId) {
+        TransactionStore store = transactionStore;
+        return store != null && isOwnedBy(store, transactionId, chargePointId) ? store.externalStart(transactionId)
+                : null;
+    }
+
+    private static boolean isOwnedBy(TransactionStore store, int transactionId, String chargePointId) {
+        TransactionStore.Location location = store.locate(transactionId);
+        return location != null && chargePointId.equals(location.chargePointId());
+    }
+
     public void forgetTransaction(int transactionId) {
         TransactionStore store = transactionStore;
         if (store != null) {

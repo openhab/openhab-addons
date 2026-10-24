@@ -193,6 +193,7 @@
 			<channel id="power-offered" typeId="power-offered"/>
 			<channel id="energy-active-import" typeId="energy-active-import"/>
 			<channel id="session-energy" typeId="session-energy"/>
+			<channel id="external-energy" typeId="external-energy"/>
 			<!-- Extra OCPP telemetry measurands — aggregate current/voltage, export direction,
 				reactive/apparent power, power factor, frequency, interval energy, soc, rpm,
 				temperature — are NOT declared here. OcppConnectorHandler creates them dynamically
@@ -559,15 +560,23 @@
 	<channel-type id="session-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Session Energy</label>
-		<description>Energy delivered in the last charging session (meter-stop minus meter-start), published once when
-			the
-			transaction ends. Empty on a meter-less charger.</description>
+		<description>Energy delivered in the last charging session (meter-stop minus meter-start, or from external-energy when
+			that is linked), published once when the transaction ends. Empty on a meter-less charger without external-energy.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="external-energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>External Energy Meter</label>
+		<description>For a charger without its own meter: link the energy counter of the meter on its supply here with the
+			follow profile, and session-energy is taken from it. A number without a unit is read as kWh.</description>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<!-- Reusable metering channel types (full OCPP measurand set) -->
