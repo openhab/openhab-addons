@@ -190,6 +190,7 @@ class OcppConnectorHandlerTest {
                 java.util.Map.of("remoteStartRetries", new java.math.BigDecimal(1))));
         OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
         when(chargePoint.isReady()).thenReturn(true);
+        when(chargePoint.getCapabilities()).thenReturn(ChargerCapabilities.unknown());
         when(chargePoint.getChargePointId()).thenReturn("charger");
         when(chargePoint.recoverTransactionId(org.mockito.ArgumentMatchers.anyInt())).thenReturn(null);
         when(chargePoint.send(any()))
@@ -215,6 +216,7 @@ class OcppConnectorHandlerTest {
                 java.util.Map.of("remoteStartRetries", new java.math.BigDecimal(1))));
         OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
         when(chargePoint.isReady()).thenReturn(true);
+        when(chargePoint.getCapabilities()).thenReturn(ChargerCapabilities.unknown());
         when(chargePoint.getChargePointId()).thenReturn("charger");
         when(chargePoint.recoverTransactionId(org.mockito.ArgumentMatchers.anyInt())).thenReturn(null);
         when(chargePoint.send(any()))
@@ -500,6 +502,29 @@ class OcppConnectorHandlerTest {
         verify(chargePoint, times(1)).send(argThat(OcppConnectorHandlerTest::isClear));
     }
 
+    /** A restart mid-session must not lift the transaction's own cap along with the old stop. */
+    @Test
+    void releasingAStopLeavesTheTransactionsOwnCap() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        handler.onChargePointReady();
+
+        verify(chargePoint).send(argThat(r -> r instanceof ClearChargingProfileRequest clear
+                && clear.getChargingProfilePurpose() == ChargingProfilePurposeType.TxDefaultProfile));
+    }
+
+    @Test
+    void aConnectorAddedToAConnectedChargerReleasesTheStop() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        when(chargePoint.recoverTransactionId(1)).thenReturn(null);
+
+        handler.initialize();
+
+        verify(chargePoint).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
     /**
      * Joins the two halves: the release above can only work if the run that persisted the stop wrote it down.
      * A pause carried past its transaction is exactly how a charger ends up holding one.
@@ -588,6 +613,13 @@ class OcppConnectorHandlerTest {
         handler.onChargePointReady();
 
         verify(chargePoint, times(1)).send(argThat(r -> r instanceof SetChargingProfileRequest));
+        verify(chargePoint).send(argThat(r -> r instanceof SetChargingProfileRequest && sentLimit(r) == 8.0));
+    }
+
+    @Test
+    void aConnectorAddedToAConnectedChargerStartsAtTheStartLimit() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+
         verify(chargePoint).send(argThat(r -> r instanceof SetChargingProfileRequest && sentLimit(r) == 8.0));
     }
 

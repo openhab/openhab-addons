@@ -234,6 +234,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         startPolling();
         if (parent.isReady()) {
             requestStatus();
+            onChargePointReady();
         }
     }
 
@@ -481,7 +482,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (!isRememberedStop()) {
             return;
         }
-        dispatch(ChargingProfileBuilder.clearLimit(connectorId), "ClearChargingProfile[remembered-stop]")
+        dispatch(ChargingProfileBuilder.clearDefaultLimit(connectorId), "ClearChargingProfile[remembered-stop]")
                 .whenComplete((confirmation, ex) -> {
                     if (ex == null && isCleared(confirmation)) {
                         logger.info("Connector {} released a 0 A charging profile left by an earlier run; "
