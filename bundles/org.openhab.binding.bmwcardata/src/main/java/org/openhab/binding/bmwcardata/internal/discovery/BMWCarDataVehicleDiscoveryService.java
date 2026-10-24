@@ -103,11 +103,6 @@ public class BMWCarDataVehicleDiscoveryService extends AbstractThingHandlerDisco
             }
             @Nullable
             BasicData basicData = fetchBasicData(vin);
-            if (basicData != null && Boolean.FALSE.equals(basicData.isTelematicsCapable)) {
-                // it can still be added manually
-                logger.debug("Not offering a vehicle that BMW reports cannot send data");
-                continue;
-            }
             thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_VEHICLE, bridgeUID, vin))
                     .withBridge(bridgeUID).withProperty(CONFIG_VIN, vin).withRepresentationProperty(CONFIG_VIN)
                     .withLabel(label(vin, basicData)).build());
@@ -126,11 +121,32 @@ public class BMWCarDataVehicleDiscoveryService extends AbstractThingHandlerDisco
         }
     }
 
-    private static String label(String vin, @Nullable BasicData basicData) {
-        @Nullable
-        String model = basicData != null ? basicData.modelName : null;
-        return model != null && !model.isBlank()
-                ? "@text/discovery.vehicle.model-label [\"" + model.replace("\"", "'") + "\", \"" + vin + "\"]"
-                : "@text/discovery.vehicle.label [\"" + vin + "\"]";
+    private String label(String vin, @Nullable BasicData basicData) {
+        String label = "";
+        boolean telematicsCapable = true; // assume true, as the vehicle is primary and should be telematics capable
+        if (basicData != null) {
+            String brand = basicData.brand;
+            if (brand != null && !brand.isBlank()) {
+                label += brand;
+            }
+            String model = basicData.modelName;
+            if (model != null && !model.isBlank()) {
+                if (!label.isEmpty()) {
+                    label += " ";
+                }
+                label += model;
+            }
+            telematicsCapable = Boolean.TRUE.equals(basicData.isTelematicsCapable);
+        }
+        if (!label.isEmpty()) {
+            label += " (" + vin + ")";
+        } else {
+            label = vin;
+        }
+        if (!telematicsCapable) {
+            logger.info("Discovered vehicle {} is not capable to send data", vin);
+            label = "@text/discovery.vehicle.no-telematics.label [\"" + label + "\"]";
+        }
+        return label;
     }
 }
