@@ -89,7 +89,7 @@ public class ChromecastScheduler {
             return;
         }
         cancelRefresh();
-        logger.debug("Scheduling refresh in {} seconds", refreshRate);
+        logger.debug("Scheduling refresh every {} seconds", refreshRate);
         // With an initial delay of 1 second the refresh job can be restarted when several channels are refreshed at
         // once e.g. due to channel linking
         refreshFuture = scheduler.scheduleWithFixedDelay(refreshRunnable, 1, refreshRate, TimeUnit.SECONDS);
