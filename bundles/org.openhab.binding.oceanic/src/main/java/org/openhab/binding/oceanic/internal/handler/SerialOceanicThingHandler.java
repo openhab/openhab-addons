@@ -94,6 +94,10 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     /**
      * Open the configured serial port for the given lifecycle generation. Used by framework
      * {@link #initialize()} and by soft reconnect; never clears {@link #disposed}.
+     * <p>
+     * The native open may block and runs outside the handler monitor. Resources are published to shared fields only
+     * after a generation check under the monitor; a superseded attempt closes only its local port, never a replacement
+     * connection.
      */
     private void openSerialConnection(int generation) {
         if (!isLifecycleCurrent(generation)) {
@@ -101,9 +105,14 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         }
 
         SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
-
-        if (serialPort != null || config.port == null) {
+        if (config.port == null) {
             return;
+        }
+
+        synchronized (this) {
+            if (!isLifecycleCurrent(generation) || serialPort != null) {
+                return;
+            }
         }
 
         SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.port);
@@ -119,15 +128,17 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             return;
         }
 
+        final SerialPort port;
         try {
             logger.info("Connecting to the Oceanic water softener using {}.", config.port);
-            SerialPort port = portIdentifier.open(this.getThing().getUID().getBindingId(), 2000);
-            if (!isLifecycleCurrent(generation)) {
-                port.close();
-                return;
-            }
-            serialPort = port;
+            port = portIdentifier.open(this.getThing().getUID().getBindingId(), 2000);
+        } catch (PortInUseException portInUseException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
+            scheduleReconnect(generation);
+            return;
+        }
 
+        try {
             port.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
             port.enableReceiveThreshold(1);
@@ -135,31 +146,46 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
             InputStream in = Objects.requireNonNull(port.getInputStream(), "serial input stream");
             OutputStream out = Objects.requireNonNull(port.getOutputStream(), "serial output stream");
-            inputStream = in;
-            outputStream = out;
-
             port.addEventListener(this);
             port.notifyOnDataAvailable(true);
 
-            SerialPortReader reader = new SerialPortReader(in);
-            readerThread = reader;
-            reader.start();
+            SerialPortReader reader = new SerialPortReader(in, generation);
 
-            if (!isLifecycleCurrent(generation)) {
-                closeSerialResources(true);
-                return;
+            synchronized (this) {
+                if (!isLifecycleCurrent(generation) || serialPort != null) {
+                    // Superseded before publish — close only this attempt's resources
+                    closeLocalPort(port);
+                    return;
+                }
+                serialPort = port;
+                inputStream = in;
+                outputStream = out;
+                readerThread = reader;
+                reader.start();
+                updateStatus(ThingStatus.ONLINE);
             }
-            updateStatus(ThingStatus.ONLINE);
-        } catch (PortInUseException portInUseException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
-            scheduleReconnect(generation);
         } catch (UnsupportedCommOperationException | IOException e) {
+            closeLocalPort(port);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
             scheduleReconnect(generation);
         } catch (TooManyListenersException e) {
+            closeLocalPort(port);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Too many listeners to serial port.");
             scheduleReconnect(generation);
+        }
+    }
+
+    private void closeLocalPort(SerialPort port) {
+        try {
+            port.removeEventListener();
+        } catch (Exception e) {
+            logger.debug("Error while removing serial event listener from abandoned open: {}", e.getMessage());
+        }
+        try {
+            port.close();
+        } catch (Exception e) {
+            logger.debug("Error while closing abandoned serial port: {}", e.getMessage());
         }
     }
 
@@ -171,9 +197,15 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         if (!isLifecycleCurrent(generation)) {
             return;
         }
-        cancelReconnect();
-        logger.info("Scheduling Oceanic serial reconnect in {} seconds", RECONNECT_INTERVAL_SECONDS);
-        reconnectJob = scheduler.schedule(() -> reconnect(generation), RECONNECT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        synchronized (this) {
+            if (!isLifecycleCurrent(generation)) {
+                return;
+            }
+            cancelReconnect();
+            logger.info("Scheduling Oceanic serial reconnect in {} seconds", RECONNECT_INTERVAL_SECONDS);
+            reconnectJob = scheduler.schedule(() -> reconnect(generation), RECONNECT_INTERVAL_SECONDS,
+                    TimeUnit.SECONDS);
+        }
     }
 
     private void cancelReconnect() {
@@ -185,18 +217,20 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     }
 
     private void reconnect(int generation) {
-        if (!isLifecycleCurrent(generation)) {
-            logger.debug("Skipping Oceanic serial reconnect; handler disposed or superseded");
-            return;
+        synchronized (this) {
+            if (!isLifecycleCurrent(generation)) {
+                logger.debug("Skipping Oceanic serial reconnect; handler disposed or superseded");
+                return;
+            }
+            logger.debug("Reconnecting Oceanic serial thing handler");
+            // Soft reset only — do not call initialize()/dispose(); those would clear disposed or tear down polling
+            closeSerialResources(true);
         }
-        logger.debug("Reconnecting Oceanic serial thing handler");
-        // Soft reset only — do not call initialize()/dispose(); those would clear disposed or tear down polling
-        closeSerialResources(true);
         openSerialConnection(generation);
     }
 
     /**
-     * Close the reader thread and serial resources.
+     * Close the reader thread and serial resources currently published on this handler.
      *
      * @param joinReader whether to join the reader thread (must be false when called from the reader itself)
      */
@@ -204,7 +238,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         SerialPortReader reader = readerThread;
         if (reader != null) {
             try {
-                reader.interrupt();
+                reader.requestStop();
                 if (joinReader && !reader.equals(Thread.currentThread())) {
                     reader.join(2000);
                 }
@@ -250,26 +284,32 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
      * Stop the reader, mark the thing OFFLINE, release the port, and schedule a backoff reconnect.
      * Never continue reading after FD_SET / stream-closed style failures (avoids busy-loop CPU use).
      * <p>
-     * Bumps {@link #lifecycleGeneration} immediately so already-queued failure/reconnect work for the previous
-     * generation cannot close a newer connection or revive the handler after {@link #dispose()}.
+     * Claims failure only for {@code connectionGeneration} via CAS so a stale reader/write cannot advance the
+     * lifecycle or schedule cleanup of a replacement connection.
      */
-    private void handleSerialFailure(String reason) {
+    private void handleSerialFailure(int connectionGeneration, String reason) {
         if (disposed) {
             return;
         }
-        final int generation = lifecycleGeneration.incrementAndGet();
+        // Atomically supersede only the connection generation that observed the failure
+        if (!lifecycleGeneration.compareAndSet(connectionGeneration, connectionGeneration + 1)) {
+            return;
+        }
         if (disposed) {
             return;
         }
+        final int failureGeneration = connectionGeneration + 1;
         logger.warn("Oceanic serial failure: {}", reason);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         // Release resources from the scheduler so we never join the reader from itself
         scheduler.execute(() -> {
-            if (!isLifecycleCurrent(generation)) {
-                return;
+            synchronized (SerialOceanicThingHandler.this) {
+                if (!isLifecycleCurrent(failureGeneration)) {
+                    return;
+                }
+                closeSerialResources(true);
+                scheduleReconnect(failureGeneration);
             }
-            closeSerialResources(true);
-            scheduleReconnect(generation);
         });
     }
 
@@ -279,9 +319,11 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
 
             OutputStream out = outputStream;
-            if (out == null || getThing().getStatus() != ThingStatus.ONLINE) {
+            SerialPortReader reader = readerThread;
+            if (out == null || reader == null || getThing().getStatus() != ThingStatus.ONLINE) {
                 return "";
             }
+            final int connectionGeneration = reader.getConnectionGeneration();
 
             Throttler.lock(config.port);
 
@@ -295,7 +337,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 out.write(request.getBytes());
                 out.flush();
             } catch (IOException e) {
-                handleSerialFailure(
+                handleSerialFailure(connectionGeneration,
                         "Error writing '" + request + "' to serial port " + config.port + " : " + e.getMessage());
                 Throttler.unlock(config.port);
                 return "";
@@ -312,10 +354,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 }
                 if (System.currentTimeMillis() - timeStamp > REQUEST_TIMEOUT) {
                     logger.warn("A timeout occurred while requesting data from the water softener");
-                    SerialPortReader reader = readerThread;
-                    if (reader != null) {
-                        reader.reset();
-                    }
+                    reader.reset();
                     break;
                 }
             }
@@ -343,16 +382,24 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
     public class SerialPortReader extends Thread {
 
-        private boolean interrupted = false;
+        private volatile boolean interrupted = false;
+        /** Set before intentional shutdown so late EOF/errors do not report as connection failures. */
+        private volatile boolean stopping = false;
         private final InputStream inputStream;
+        private final int connectionGeneration;
         int index = 0;
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
 
-        public SerialPortReader(InputStream in) {
+        public SerialPortReader(InputStream in, int connectionGeneration) {
             super(String.format("OH-binding-%s-%s", OceanicBindingConstants.BINDING_ID, "SerialPortReader"));
             this.inputStream = in;
+            this.connectionGeneration = connectionGeneration;
             this.setName("SerialPortReader-" + getThing().getUID());
+        }
+
+        int getConnectionGeneration() {
+            return connectionGeneration;
         }
 
         public void reset() {
@@ -360,11 +407,18 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             index = 0;
         }
 
-        @Override
-        public void interrupt() {
-            logger.trace("Interrupting the SerialPortReader");
+        /**
+         * Request an intentional stop. Must be published before closing streams so a racing EOF does not claim failure.
+         */
+        void requestStop() {
+            stopping = true;
             interrupted = true;
             super.interrupt();
+        }
+
+        @Override
+        public void interrupt() {
+            requestStop();
         }
 
         @Override
@@ -390,7 +444,9 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     if (len < 0) {
                         // EOF / stream closed — do not busy-loop on repeated read() calls
                         interrupted = true;
-                        handleSerialFailure("Serial input stream closed");
+                        if (!stopping) {
+                            handleSerialFailure(connectionGeneration, "Serial input stream closed");
+                        }
                         return;
                     }
 
@@ -451,20 +507,20 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
                 // Typical on macOS purejavacomm when FD >= 1024 (select fd_set is 1024 bits)
-                if (!interrupted) {
+                if (!interrupted && !stopping) {
                     interrupted = true;
                     logger.error("An exception occurred while reading serial port : {}", e.getMessage(), e);
-                    handleSerialFailure("purejavacomm FD_SET/select failure: " + e.getMessage());
+                    handleSerialFailure(connectionGeneration, "purejavacomm FD_SET/select failure: " + e.getMessage());
                 }
             } catch (Exception e) {
-                if (!interrupted) {
+                if (!interrupted && !stopping) {
                     interrupted = true;
                     logger.error("An exception occurred while reading serial port : {}", e.getMessage(), e);
                     String reason = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
                     if (reason.contains("out of bounds") || reason.contains("FD_SET")) {
                         reason = "purejavacomm FD_SET/select failure: " + reason;
                     }
-                    handleSerialFailure(reason);
+                    handleSerialFailure(connectionGeneration, reason);
                 }
             }
             logger.debug("Serial port reader for '{}' has stopped", getThing().getUID());
