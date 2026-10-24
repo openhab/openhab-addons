@@ -483,12 +483,16 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     public String getContentFrom(String url) throws SecurityException, CommunicationException {
         var response = sendRequest(httpClient.newRequest(url));
 
-        if (response == null || response.getStatus() != HttpStatus.OK_200) {
+        if (response == null) {
             logger.warn("No valid data available from {}", url);
             throw new CommunicationException("No valid response from the device");
         }
         if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
             throw new SecurityException("Bearer token is invalid.");
+        }
+        if (response.getStatus() != HttpStatus.OK_200) {
+            logger.warn("No valid data available from {}", url);
+            throw new CommunicationException("No valid response from the device");
         }
 
         return response.getContentAsString();
