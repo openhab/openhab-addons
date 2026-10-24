@@ -26,6 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -53,6 +55,7 @@ import eu.chargetime.ocpp.model.core.ChargePointErrorCode;
 import eu.chargetime.ocpp.model.core.ChargePointStatus;
 import eu.chargetime.ocpp.model.core.ChargingProfilePurposeType;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
+import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 import eu.chargetime.ocpp.model.smartcharging.ChargingProfileStatus;
 import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileConfirmation;
 import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileRequest;
@@ -133,6 +136,7 @@ class OcppConnectorHandlerTest {
         when(chargePoint.getChargePointId()).thenReturn("charger");
         when(chargePoint.recoverTransactionId(1)).thenReturn(7);
         when(chargePoint.recoverMeterStart(7)).thenReturn(1000);
+        when(chargePoint.recoverExternalStart(7)).thenReturn(null);
         Bridge bridge = mock(Bridge.class);
         when(bridge.getHandler()).thenReturn(chargePoint);
         when(callback.getBridge(chargePointUID)).thenReturn(bridge);
@@ -526,6 +530,26 @@ class OcppConnectorHandlerTest {
         endTransaction(7);
 
         assertChannel(CHANNEL_SESSION_ENERGY, wattHours(2000));
+    }
+
+    /** The link was removed mid-session; a meterless charger's registers must not size it instead. */
+    @Test
+    void anExternalStartIsRecoveredWithoutTheLink() {
+        ThingUID chargePointUID = new ThingUID(THING_TYPE_CHARGEPOINT, "server", "charger");
+        when(thing.getBridgeUID()).thenReturn(chargePointUID);
+        OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
+        when(chargePoint.getChargePointId()).thenReturn("charger");
+        when(chargePoint.recoverTransactionId(1)).thenReturn(7);
+        when(chargePoint.recoverMeterStart(7)).thenReturn(0);
+        when(chargePoint.recoverExternalStart(7)).thenReturn(1_000_000.0);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(chargePoint);
+        when(callback.getBridge(chargePointUID)).thenReturn(bridge);
+        handler.initialize();
+
+        handler.onTransactionStopped(new StopTransactionRequest(0, ZonedDateTime.now(ZoneOffset.UTC), 7));
+
+        assertChannel(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
     }
 
     @Test

@@ -245,7 +245,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 meterStart = start;
                 updateState(CHANNEL_METER_START, new QuantityType<>(start, Units.WATT_HOUR));
             }
-            externalStartWh = isLinked(CHANNEL_EXTERNAL_ENERGY) ? parent.recoverExternalStart(open) : null;
+            externalStartWh = parent.recoverExternalStart(open);
             updateState(CHANNEL_TRANSACTION_ID, new DecimalType(open));
             logger.debug("Recovered open transaction {} on connector {} after restart", open, connectorId);
         }
