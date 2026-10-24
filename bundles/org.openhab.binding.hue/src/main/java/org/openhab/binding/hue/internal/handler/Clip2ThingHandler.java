@@ -2296,6 +2296,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateState(channelUID, UnDefType.NULL, true);
                 }
             }
+            return;
         }
         for (int i = 1; i <= gradient.getXyPoints().size(); i++) {
             ChannelUID channelUID = isBackLight ? backUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i))
