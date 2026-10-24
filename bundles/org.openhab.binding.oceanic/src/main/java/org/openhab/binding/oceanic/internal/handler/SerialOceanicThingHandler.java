@@ -62,6 +62,12 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
     private final SerialPortManager serialPortManager;
     private final AtomicInteger lifecycleGeneration = new AtomicInteger();
+    /**
+     * Serializes {@link #requestResponse} so only one write/wait cycle runs at a time. Must not be the handler
+     * monitor: the wait loop sleeps without releasing a lock, and the reader needs that monitor to publish
+     * {@code lastResponse}.
+     */
+    private final Object requestLock = new Object();
     private volatile boolean disposed;
     /**
      * Park gate for the currently published connection's {@link #serialEvent} callbacks. Published atomically with the
@@ -380,20 +386,26 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
     @Override
     protected @Nullable String requestResponse(String commandAsString) {
-        synchronized (this) {
+        // Serialize requests on requestLock; never hold the handler monitor across the wait (see acceptResponse)
+        synchronized (requestLock) {
             SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
 
-            OutputStream out = outputStream;
-            SerialPortReader reader = readerThread;
-            if (out == null || reader == null || getThing().getStatus() != ThingStatus.ONLINE) {
-                return "";
+            final OutputStream out;
+            final SerialPortReader reader;
+            final int connectionGeneration;
+            synchronized (this) {
+                out = outputStream;
+                reader = readerThread;
+                if (out == null || reader == null || getThing().getStatus() != ThingStatus.ONLINE) {
+                    return "";
+                }
+                connectionGeneration = reader.getConnectionGeneration();
+                // Response storage is connection-scoped so a superseded reader cannot satisfy a new request
+                reader.clearLastResponse();
             }
-            final int connectionGeneration = reader.getConnectionGeneration();
 
             Throttler.lock(config.port);
 
-            // Response storage is connection-scoped so a superseded reader cannot satisfy a new request
-            reader.clearLastResponse();
             String request = commandAsString + "\r";
 
             try {
