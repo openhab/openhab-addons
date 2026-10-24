@@ -118,6 +118,7 @@ Device things support some of the following channels:
 | volume                        | Dimmer             | Preset the sound volume to be played on the next `alarm-sound`, `alert-sound`, or `chime-sound` play request.       |
 | duration                      | Number:Time        | Preset the sound duration on the next `alarm-sound` play request.                                                   |
 | mute                          | Switch             | Channel to mute or un-mute the speaker output. Note: it is impossible to mute the `alarm-sound`.                    |
+| gradient-color-`N`            | Color              | Color of the color gradient point `N`. Note: it only uses the HS- part of the HSB, the B- part is ingored.          |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
@@ -154,6 +155,16 @@ So (for example) the channel value `1002` ((1 * 1000) + 2) means that the second
 The `rotary-steps` channel is a trigger channel.
 When the dial is turned, the channel receives a number corresponding to the number of steps of the last movement of a rotary dial.
 A positive number means the dial was rotated clock-wise, whereas a negative number means it was rotated counter-clockwise.
+
+### Channels for Devices with Two Lights (Hue Twilight)
+
+Some devices, such as the Hue Twilight, contain two independent lights: a front light and a back light.
+The binding detects these devices automatically from the `twilight front` and `twilight back` archetypes reported by the bridge.
+The front light uses the normal channels of the thing, e.g. `brightness` or `color-temperature`, as shown above.
+The back light is exposed in an additional channel group called `back-light`, which provides its own set of channels, e.g. `back-light#color`.
+The back light channels are created dynamically, so only the channels that the back light actually supports are shown.
+Commands sent to a `back-light` channel control only the back light, and commands sent to the normal channels control only the front light.
+The `dynamics` channel is also available per light: use `dynamics` for the front light and `back-light#dynamics` for the back light.
 
 ### Channels for Rooms and Zones
 

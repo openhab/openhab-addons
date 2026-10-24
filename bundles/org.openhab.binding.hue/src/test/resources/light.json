@@ -847,6 +847,251 @@
 			},
 			"mode": "normal",
 			"type": "light"
+		},
+		{
+			"id": "x",
+			"id_v1": "/lights/1",
+			"owner": {
+				"rid": "y",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Signe gulvlampe",
+				"archetype": "hue_signe",
+				"function": "decorative"
+			},
+			"product_data": {
+				"function": "decorative"
+			},
+			"identify": {
+			},
+			"service_id": 0,
+			"on": {
+				"on": true
+			},
+			"dimming": {
+				"brightness": 70.36,
+				"min_dim_level": 0.01
+			},
+			"dimming_delta": {
+			},
+			"color_temperature": {
+				"mirek": null,
+				"mirek_valid": false,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 500
+				}
+			},
+			"color_temperature_delta": {
+			},
+			"color": {
+				"xy": {
+					"x": 0.5791,
+					"y": 0.3918
+				},
+				"gamut": {
+					"red": {
+						"x": 0.6915,
+						"y": 0.3083
+					},
+					"green": {
+						"x": 0.17,
+						"y": 0.7
+					},
+					"blue": {
+						"x": 0.1532,
+						"y": 0.0475
+					}
+				},
+				"gamut_type": "C"
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none",
+					"dynamic_palette"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				"signal_values": [
+					"no_signal",
+					"on_off",
+					"on_off_color",
+					"alternating"
+				]
+			},
+			"mode": "normal",
+			"gradient": {
+				"points": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.5791,
+								"y": 0.3876
+							}
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5406,
+								"y": 0.3964
+							}
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4702,
+								"y": 0.3463
+							}
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5099,
+								"y": 0.2886
+							}
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5704,
+								"y": 0.2691
+							}
+						}
+					}
+				],
+				"mode": "interpolated_palette",
+				"points_capable": 5,
+				"mode_values": [
+					"interpolated_palette",
+					"interpolated_palette_mirrored",
+					"random_pixelated",
+					"segmented_palette"
+				],
+				"pixel_count": 10
+			},
+			"effects": {
+				"status_values": [
+					"no_effect",
+					"candle",
+					"fire",
+					"prism",
+					"sparkle",
+					"opal",
+					"glisten",
+					"underwater",
+					"cosmos",
+					"sunbeam",
+					"enchant"
+				],
+				"status": "no_effect",
+				"effect_values": [
+					"no_effect",
+					"candle",
+					"fire",
+					"prism",
+					"sparkle",
+					"opal",
+					"glisten",
+					"underwater",
+					"cosmos",
+					"sunbeam",
+					"enchant"
+				]
+			},
+			"effects_v2": {
+				"action": {
+					"effect_values": [
+						"no_effect",
+						"candle",
+						"fire",
+						"prism",
+						"sparkle",
+						"opal",
+						"glisten",
+						"underwater",
+						"cosmos",
+						"sunbeam",
+						"enchant"
+					]
+				},
+				"status": {
+					"effect": "no_effect",
+					"effect_values": [
+						"no_effect",
+						"candle",
+						"fire",
+						"prism",
+						"sparkle",
+						"opal",
+						"glisten",
+						"underwater",
+						"cosmos",
+						"sunbeam",
+						"enchant"
+					]
+				}
+			},
+			"timed_effects": {
+				"status_values": [
+					"no_effect",
+					"sunrise",
+					"sunset"
+				],
+				"status": "no_effect",
+				"effect_values": [
+					"no_effect",
+					"sunrise",
+					"sunset"
+				]
+			},
+			"powerup": {
+				"preset": "safety",
+				"configured": true,
+				"on": {
+					"mode": "on",
+					"on": {
+						"on": true
+					}
+				},
+				"dimming": {
+					"mode": "dimming",
+					"dimming": {
+						"brightness": 100.0
+					}
+				},
+				"color": {
+					"mode": "color_temperature",
+					"color_temperature": {
+						"mirek": 366
+					}
+				}
+			},
+			"content_configuration": {
+				"orientation": {
+					"status": "set",
+					"configurable": false,
+					"orientation": "vertical"
+				},
+				"order": {
+					"status": "set",
+					"configurable": false,
+					"order": "forward"
+				}
+			},
+			"type": "light"
 		}
 	]
 }

@@ -31,6 +31,24 @@
 				<description>The date and time when the rotary steps were last updated.</description>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="gradient-color-1">
+				<type>system:color</type>
+			</add-channel>
+			<add-channel id="gradient-color-2">
+				<type>system:color</type>
+			</add-channel>
+			<add-channel id="gradient-color-3">
+				<type>system:color</type>
+			</add-channel>
+			<add-channel id="gradient-color-4">
+				<type>system:color</type>
+			</add-channel>
+			<add-channel id="gradient-color-5">
+				<type>system:color</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="hue:room">

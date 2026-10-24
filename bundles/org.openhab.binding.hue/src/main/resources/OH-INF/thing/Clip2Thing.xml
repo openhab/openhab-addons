@@ -111,10 +111,25 @@
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="duration" typeId="duration"/>
+			<channel id="gradient-color-1" typeId="system.color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="gradient-color-2" typeId="system.color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="gradient-color-3" typeId="system.color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="gradient-color-4" typeId="system.color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="gradient-color-5" typeId="system.color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>resourceId</representation-property>
