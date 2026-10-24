@@ -44,6 +44,7 @@ import org.eclipse.jetty.client.util.MultiPartContentProvider;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.util.HttpCookieStore;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
@@ -87,6 +88,7 @@ import com.google.gson.reflect.TypeToken;
 public class UniFiProtectPublicClient implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectPublicClient.class);
     private final HttpClient httpClient;
+    private final HttpClient apiHttpClient;
     private final WebSocketClient wsClient;
     private final Gson gson;
     private final URI baseUri;
@@ -101,6 +103,8 @@ public class UniFiProtectPublicClient implements Closeable {
     public UniFiProtectPublicClient(HttpClient httpClient, String host, int port, Gson gson, String token,
             ScheduledExecutorService executorService) {
         this.httpClient = httpClient;
+        this.apiHttpClient = new HttpClient(httpClient.getSslContextFactory());
+        this.apiHttpClient.setCookieStore(new HttpCookieStore.Empty());
         this.baseUri = URI.create("https://" + host + ":" + port + "/proxy/protect/integration/");
         this.gson = gson;
         this.defaultHeaders = Map.of("X-API-KEY", token, "Accept", "application/json");
@@ -109,6 +113,7 @@ public class UniFiProtectPublicClient implements Closeable {
         this.wsClient.unmanage(this.httpClient);
         this.executorService = executorService;
         try {
+            this.apiHttpClient.start();
             this.wsClient.start();
         } catch (Exception e) {
             throw new IllegalStateException("Failed to start Jetty clients", e);
@@ -119,9 +124,15 @@ public class UniFiProtectPublicClient implements Closeable {
     public void close() throws IOException {
         logger.debug("Closing UniFiProtectApiClient");
         try {
-            wsClient.stop();
+            apiHttpClient.stop();
         } catch (Exception e) {
-            throw new IOException("Failed to stop client", e);
+            throw new IOException("Failed to stop API HTTP client", e);
+        } finally {
+            try {
+                wsClient.stop();
+            } catch (Exception e) {
+                throw new IOException("Failed to stop WebSocket client", e);
+            }
         }
     }
 
@@ -439,7 +450,7 @@ public class UniFiProtectPublicClient implements Closeable {
     private Request newRequest(HttpMethod method, String path) {
         URI uri = resolvePath(path);
         logger.trace("New request {} {} {}", method, path, uri);
-        Request request = httpClient.newRequest(uri).method(method).timeout(30, TimeUnit.SECONDS);
+        Request request = apiHttpClient.newRequest(uri).method(method).timeout(30, TimeUnit.SECONDS);
         for (Map.Entry<String, String> h : defaultHeaders.entrySet()) {
             request.header(h.getKey(), h.getValue());
         }
