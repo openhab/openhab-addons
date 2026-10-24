@@ -15,11 +15,8 @@ package org.openhab.binding.oceanic.internal.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
@@ -58,14 +55,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
     private static final long REQUEST_TIMEOUT = 10000;
     private static final int BAUD = 19200;
-    /**
-     * macOS purejavacomm/jtermios {@code fd_set} is an array of 32 ints (1024 bits). Indexing uses {@code fd / 32}, so
-     * descriptors 0–1023 are valid; FD {@code >= 1024} throws {@link ArrayIndexOutOfBoundsException} in {@code FD_SET}.
-     * Linux purejavacomm defaults to {@code poll()} and is not subject to this limit.
-     */
-    private static final int PUREJAVACOMM_MACOS_FD_SETSIZE = 1024;
     private static final int RECONNECT_INTERVAL_SECONDS = 15;
-    private static final boolean MACOS_SELECT_FD_LIMIT = isMacOs();
 
     private final Logger logger = LoggerFactory.getLogger(SerialOceanicThingHandler.class);
 
@@ -137,25 +127,6 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 return;
             }
             serialPort = port;
-
-            int nativeFd = getNativeFileDescriptor(port);
-            // Only macOS jtermios select()/FD_SET has a fixed 1024-bit bitmap; Linux uses poll().
-            if (MACOS_SELECT_FD_LIMIT && nativeFd >= PUREJAVACOMM_MACOS_FD_SETSIZE) {
-                String message = String.format(
-                        "Serial port '%s' opened with file descriptor %d which is >= %d. "
-                                + "macOS purejavacomm/jtermios select() only supports FDs 0-%d; "
-                                + "reads would fail with ArrayIndexOutOfBoundsException in FD_SET. "
-                                + "Restart openHAB so the FD is lower, free unused file descriptors, "
-                                + "or use a serial transport that supports poll()/higher FDs.",
-                        config.port, nativeFd, PUREJAVACOMM_MACOS_FD_SETSIZE, PUREJAVACOMM_MACOS_FD_SETSIZE - 1);
-                logger.error("{}", message);
-                closeSerialResources(false);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-                scheduleReconnect(generation);
-                return;
-            } else if (nativeFd >= 0) {
-                logger.debug("Opened serial port '{}' with native file descriptor {}", config.port, nativeFd);
-            }
 
             port.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
@@ -278,13 +249,19 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     /**
      * Stop the reader, mark the thing OFFLINE, release the port, and schedule a backoff reconnect.
      * Never continue reading after FD_SET / stream-closed style failures (avoids busy-loop CPU use).
+     * <p>
+     * Bumps {@link #lifecycleGeneration} immediately so already-queued failure/reconnect work for the previous
+     * generation cannot close a newer connection or revive the handler after {@link #dispose()}.
      */
-    private void handleReaderFailure(String reason) {
-        final int generation = lifecycleGeneration.get();
-        if (!isLifecycleCurrent(generation)) {
+    private void handleSerialFailure(String reason) {
+        if (disposed) {
             return;
         }
-        logger.warn("Oceanic serial reader failure: {}", reason);
+        final int generation = lifecycleGeneration.incrementAndGet();
+        if (disposed) {
+            return;
+        }
+        logger.warn("Oceanic serial failure: {}", reason);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         // Release resources from the scheduler so we never join the reader from itself
         scheduler.execute(() -> {
@@ -294,62 +271,6 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             closeSerialResources(true);
             scheduleReconnect(generation);
         });
-    }
-
-    private void handleWriteFailure(String reason) {
-        final int generation = lifecycleGeneration.get();
-        if (!isLifecycleCurrent(generation)) {
-            return;
-        }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        scheduler.execute(() -> {
-            if (!isLifecycleCurrent(generation)) {
-                return;
-            }
-            closeSerialResources(true);
-            scheduleReconnect(generation);
-        });
-    }
-
-    private static boolean isMacOs() {
-        String osName = System.getProperty("os.name");
-        return osName != null && osName.toLowerCase(Locale.ENGLISH).startsWith("mac");
-    }
-
-    /**
-     * Best-effort unwrap of the purejavacomm native file descriptor through the openHAB serial transport wrapper.
-     *
-     * @return native FD, or {@code -1} if it cannot be determined
-     */
-    private int getNativeFileDescriptor(SerialPort port) {
-        try {
-            Object pureJavaPort = port;
-            try {
-                Field spField = port.getClass().getDeclaredField("sp");
-                spField.setAccessible(true);
-                Object wrapped = spField.get(port);
-                if (wrapped != null) {
-                    pureJavaPort = wrapped;
-                }
-            } catch (NoSuchFieldException e) {
-                // Port may already be a purejavacomm SerialPort
-            }
-
-            try {
-                Method getter = pureJavaPort.getClass().getMethod("getNativeFileDescriptor");
-                Object value = getter.invoke(pureJavaPort);
-                if (value instanceof Integer fd) {
-                    return fd;
-                }
-            } catch (NoSuchMethodException e) {
-                Field fdField = pureJavaPort.getClass().getDeclaredField("m_FD");
-                fdField.setAccessible(true);
-                return fdField.getInt(pureJavaPort);
-            }
-        } catch (Exception e) {
-            logger.debug("Could not determine native file descriptor for serial port: {}", e.getMessage());
-        }
-        return -1;
     }
 
     @Override
@@ -374,7 +295,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 out.write(request.getBytes());
                 out.flush();
             } catch (IOException e) {
-                handleWriteFailure(
+                handleSerialFailure(
                         "Error writing '" + request + "' to serial port " + config.port + " : " + e.getMessage());
                 Throttler.unlock(config.port);
                 return "";
@@ -469,7 +390,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     if (len < 0) {
                         // EOF / stream closed — do not busy-loop on repeated read() calls
                         interrupted = true;
-                        handleReaderFailure("Serial input stream closed");
+                        handleSerialFailure("Serial input stream closed");
                         return;
                     }
 
@@ -529,11 +450,11 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     }
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
+                // Typical on macOS purejavacomm when FD >= 1024 (select fd_set is 1024 bits)
                 if (!interrupted) {
                     interrupted = true;
                     logger.error("An exception occurred while reading serial port : {}", e.getMessage(), e);
-                    handleReaderFailure("purejavacomm FD_SET/select failure (file descriptor likely >= "
-                            + PUREJAVACOMM_MACOS_FD_SETSIZE + "): " + e.getMessage());
+                    handleSerialFailure("purejavacomm FD_SET/select failure: " + e.getMessage());
                 }
             } catch (Exception e) {
                 if (!interrupted) {
@@ -541,10 +462,9 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     logger.error("An exception occurred while reading serial port : {}", e.getMessage(), e);
                     String reason = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
                     if (reason.contains("out of bounds") || reason.contains("FD_SET")) {
-                        reason = "purejavacomm FD_SET/select failure (file descriptor likely >= "
-                                + PUREJAVACOMM_MACOS_FD_SETSIZE + "): " + reason;
+                        reason = "purejavacomm FD_SET/select failure: " + reason;
                     }
-                    handleReaderFailure(reason);
+                    handleSerialFailure(reason);
                 }
             }
             logger.debug("Serial port reader for '{}' has stopped", getThing().getUID());
