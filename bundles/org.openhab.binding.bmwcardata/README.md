@@ -36,7 +36,6 @@ If the account reports `Device authorization request failed: invalid_request`, B
 After the account has been authorized, the vehicles mapped to the account as primary user are discovered.
 A discovery scan costs one request of the daily API quota, so it only runs automatically after authorization while the account has no vehicle Things.
 Discovered vehicles are labeled with their model, which costs one more request per vehicle once; a vehicle Thing created from the result reuses that data.
-Vehicles that BMW reports cannot send data are not offered, but can still be added manually.
 Further scans can be started manually from the Inbox.
 
 ## Thing Configuration
