@@ -58,9 +58,9 @@ public abstract class AwattarBestPriceResult {
     public abstract boolean isActive(Instant pointInTime);
 
     /**
-     * Returns the hours of the best price.
+     * Returns the API price intervals of the best price.
      *
-     * @return the hours of the best price as a string
+     * @return the price intervals of the best price as a string
      */
     public abstract String getHours();
 }
