@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
@@ -79,6 +80,16 @@ class MacTTSAudioStream extends FixedLengthAudioStream implements Disposable {
         this.inputStream = createInputStream();
     }
 
+    /**
+     * Timeout for the 'say' process before it is considered hung and destroyed.
+     */
+    private static final int SYNTHESIS_TIMEOUT_SECONDS = 60;
+
+    /**
+     * Grace period allowed for the process to terminate after being destroyed.
+     */
+    private static final int GRACE_PERIOD_SECONDS = 5;
+
     @Override
     public AudioFormat getFormat() {
         return audioFormat;
@@ -90,8 +101,13 @@ class MacTTSAudioStream extends FixedLengthAudioStream implements Disposable {
         logger.debug("Executing on command line: {}", (Object) command);
 
         try {
-            Process process = Runtime.getRuntime().exec(command);
-            process.waitFor();
+            Process process = new ProcessBuilder(command).redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                    .redirectError(ProcessBuilder.Redirect.DISCARD).start();
+            int exitCode = runWithTimeout(process, SYNTHESIS_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            if (exitCode != 0) {
+                throw new AudioException("The 'say' command exited with non-zero code " + exitCode
+                        + " while generating '" + outputFile + "'");
+            }
             file = new File(outputFile);
             if (!file.exists()) {
                 throw new AudioException("Generated file '" + outputFile + "' does not exist.'");
@@ -104,7 +120,42 @@ class MacTTSAudioStream extends FixedLengthAudioStream implements Disposable {
         } catch (IOException e) {
             throw new AudioException("Error while executing '" + command + "'", e);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new AudioException("The '" + command + "' has been interrupted", e);
+        }
+    }
+
+    /**
+     * Waits for the given process to terminate and returns its exit code.
+     *
+     * If the process does not terminate within the given timeout, it is destroyed (forcibly, if necessary) and an
+     * {@link AudioException} is thrown. This protects against hung 'say' processes blocking synthesis forever.
+     *
+     * If the current thread is interrupted while waiting, the process is forcibly destroyed before the interruption is
+     * propagated, so no hung process is left behind.
+     *
+     * @param process the process to wait for
+     * @param timeout the maximum time to wait for the process
+     * @param unit the time unit of the timeout argument
+     * @return the exit code of the terminated process
+     * @throws InterruptedException if the current thread is interrupted while waiting
+     * @throws AudioException if the process did not terminate within the timeout
+     */
+    static int runWithTimeout(Process process, long timeout, TimeUnit unit)
+            throws InterruptedException, AudioException {
+        try {
+            if (process.waitFor(timeout, unit)) {
+                return process.exitValue();
+            }
+            process.destroy();
+            if (!process.waitFor(GRACE_PERIOD_SECONDS, TimeUnit.SECONDS)) {
+                process.destroyForcibly();
+                process.waitFor(GRACE_PERIOD_SECONDS, TimeUnit.SECONDS);
+            }
+            throw new AudioException("The 'say' process did not finish within " + timeout + " " + unit);
+        } catch (InterruptedException e) {
+            process.destroyForcibly();
+            throw e;
         }
     }
 
