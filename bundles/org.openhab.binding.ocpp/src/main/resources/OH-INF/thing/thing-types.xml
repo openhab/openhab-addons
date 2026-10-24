@@ -92,11 +92,7 @@
 			</parameter>
 			<parameter name="tlsKeystorePath" type="text">
 				<label>TLS Keystore Path</label>
-				<description>Path to a PKCS12 keystore holding the server's TLS certificate and key. When set, the OCPP
-					endpoint runs
-					over wss:// (TLS) instead of ws:// — OCPP security profile 2 with a Charger
-					Password, or an encrypted profile 0
-					without. Empty leaves the endpoint plain.</description>
+				<description>PKCS12 keystore holding the server's TLS certificate and key. Set to serve wss:// instead of ws://.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="tlsKeystorePassword" type="text">
