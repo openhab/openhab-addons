@@ -16,6 +16,7 @@ import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -37,6 +38,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -141,7 +143,7 @@ public class SOAPConnector {
         try {
             SOAPMessage soapMessage = Objects.requireNonNull(soapMessageCache.putIfAbsentAndGet(soapRequest, () -> {
                 try {
-                    SOAPMessage newValue = doSOAPRequestUncached(soapRequest);
+                    SOAPMessage newValue = doSOAPRequestRetryOnClosedConnection(soapRequest);
                     logger.trace("Storing in cache: {}", newValue);
                     return newValue;
                 } catch (Tr064CommunicationException e) {
@@ -159,6 +161,39 @@ public class SOAPConnector {
                 throw e;
             }
         }
+    }
+
+    /**
+     * execute a read-only SOAP request and repeat it once if the remote host has closed the re-used connection in the
+     * meantime (the failed connection is dropped by the HTTP client, so the repetition uses a new one)
+     *
+     * @param soapRequest the request itself
+     * @return the SOAPMessage answer from the remote host
+     * @throws Tr064CommunicationException if an error occurs during the request
+     */
+    private SOAPMessage doSOAPRequestRetryOnClosedConnection(SOAPRequest soapRequest)
+            throws Tr064CommunicationException {
+        try {
+            return doSOAPRequestUncached(soapRequest);
+        } catch (Tr064CommunicationException e) {
+            if (!isConnectionClosed(e)) {
+                throw e;
+            }
+            logger.debug("Connection closed by remote host, retrying {}", soapRequest);
+            return doSOAPRequestUncached(soapRequest);
+        }
+    }
+
+    private static boolean isConnectionClosed(Throwable throwable) {
+        @Nullable
+        Throwable cause = throwable.getCause();
+        while (cause != null) {
+            if (cause instanceof EOFException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
     }
 
     /**
