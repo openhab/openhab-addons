@@ -161,6 +161,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
     private volatile @Nullable Integer meterStart;
+    // A charger may report Available before it sends the stop, which still has to settle the session it ends.
+    private volatile @Nullable ForgottenTransaction forgotten;
     // A meter-less charger can be sized from an energy item linked to external-energy instead.
     private volatile @Nullable Double externalEnergyWh;
     private volatile @Nullable Double externalStartWh;
@@ -929,6 +931,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 // Available means no active transaction.
                 Integer stale = transactionId;
                 if (stale != null) {
+                    forgotten = new ForgottenTransaction(stale, meterStart, externalStartWh);
                     transactionId = null;
                     meterStart = null;
                     externalStartWh = null;
@@ -1017,25 +1020,41 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     public void onTransactionStopped(StopTransactionRequest request) {
         Integer meterStop = request.getMeterStop();
+        Integer stopped = request.getTransactionId();
+        ForgottenTransaction late = forgotten;
+        if (late != null && stopped != null && late.transactionId() == stopped) {
+            forgotten = null;
+            if (meterStop != null) {
+                updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
+            }
+            if (transactionId == null) {
+                updateState(CHANNEL_SESSION_ENERGY, sessionEnergy(meterStop, late.meterStart(), late.externalStart()));
+            }
+            publishStopTimestamp(request);
+            return;
+        }
         Integer start = meterStart;
         if (meterStop != null) {
             updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
         }
-        updateState(CHANNEL_SESSION_ENERGY, sessionEnergy(meterStop, start));
+        updateState(CHANNEL_SESSION_ENERGY, sessionEnergy(meterStop, start, externalStartWh));
         meterStart = null;
         externalStartWh = null;
-        ZonedDateTime timestamp = request.getTimestamp();
-        if (timestamp != null) {
-            updateState(CHANNEL_TIMESTAMP_STOP, new DateTimeType(timestamp));
-        }
+        publishStopTimestamp(request);
         this.transactionId = null;
         updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
         carryLimitPastTransaction();
     }
 
+    private void publishStopTimestamp(StopTransactionRequest request) {
+        ZonedDateTime timestamp = request.getTimestamp();
+        if (timestamp != null) {
+            updateState(CHANNEL_TIMESTAMP_STOP, new DateTimeType(timestamp));
+        }
+    }
+
     /** A session started on the external meter is closed against it, never against the charger's register. */
-    private State sessionEnergy(@Nullable Integer meterStop, @Nullable Integer start) {
-        Double externalStart = externalStartWh;
+    private State sessionEnergy(@Nullable Integer meterStop, @Nullable Integer start, @Nullable Double externalStart) {
         if (externalStart != null) {
             Double externalStop = isLinked(CHANNEL_EXTERNAL_ENERGY) ? externalEnergyWh : null;
             // A meter that was reset or replaced mid-session runs backwards.
@@ -1102,5 +1121,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (task != null) {
             task.cancel(false);
         }
+    }
+
+    private record ForgottenTransaction(int transactionId, @Nullable Integer meterStart,
+            @Nullable Double externalStart) {
     }
 }

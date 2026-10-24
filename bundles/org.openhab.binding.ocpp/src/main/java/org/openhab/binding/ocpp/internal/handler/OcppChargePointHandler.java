@@ -702,8 +702,8 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         return serverHandler != null ? serverHandler.externalStartOf(transactionId, chargePointId) : null;
     }
 
+    /** The route stays until the stop arrives or the connector starts another transaction. */
     public void transactionCompleted(int transactionId) {
-        transactions.remove(transactionId);
         OcppServerBridgeHandler serverHandler = server;
         if (serverHandler != null) {
             serverHandler.forgetTransaction(transactionId);
