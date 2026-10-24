@@ -15,6 +15,7 @@ package org.openhab.binding.motionblinds.internal;
 import static org.openhab.binding.motionblinds.internal.MotionBlindsBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
@@ -140,6 +141,10 @@ public class MotionBlindsCommunicationManager {
         try (DatagramSocket socket = new DatagramSocket()) {
             byte[] buffer = new byte[RECEIVE_BUFFER_SIZE];
             for (int attempt = 1;; attempt++) {
+                // waiting for the answer is not interruptible, but a canceled request must not be sent again
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedIOException("Request to " + ipAddress + " was interrupted");
+                }
                 socket.send(new DatagramPacket(payload, payload.length, address, sendPort));
                 MotionBlindsMessage message = receiveResponse(socket, buffer, address, expectedType, expectedMac);
                 if (message != null) {
