@@ -40,39 +40,77 @@ There are more parameters which all have defaults set.
 
 The DenonMarantz AVR supports the following channels (some channels are model specific):
 
-| Channel ID                | Item Type                 | Description                                   |
-|---------------------------|---------------------------|-----------------------------------------------|
-| _General_                 |                           |                                               |
-|  general#power            | Switch (RW)               | Power on/off                                  |
-|  general#surroundProgram  | String (R)                | Current surround program (e.g. STEREO)        |
-|  general#artist           | String (R)                | Artist of current track                       |
-|  general#album            | String (R)                | Album of current track                        |
-|  general#track            | String (R)                | Title of current track                        |
-|  general#command          | String (W)                | Command to send to the AVR (for use in Rules) |
-| _Main zone_               |                           |                                               |
-|  mainZone#power           | Switch (RW)               | Main zone power on/off                        |
-|  mainZone#volume          | Dimmer (RW)               | Main zone volume                              |
-|  mainZone#volumeDB        | Number:Dimensionless (RW) | Main zone volume in dB (-80 offset)           |
-|  mainZone#mute            | Switch (RW)               | Main zone mute                                |
-|  mainZone#input           | String (RW)               | Main zone input (e.g. TV, TUNER, ..)          |
-|  _Zone 2_                 |                           |                                               |
-|  zone2#power              | Switch (RW)               | Zone 2 power on/off                           |
-|  zone2#volume             | Dimmer (RW)               | Zone 2 volume                                 |
-|  zone2#volumeDB           | Number:Dimensionless (RW) | Zone 2 volume in dB (-80 offset)              |
-|  zone2#mute               | Switch (RW)               | Zone 2 mute                                   |
-|  zone2#input              | String (RW)               | Zone 2 input                                  |
-|  _Zone 3_                 |                           |                                               |
-|  zone3#power              | Switch (RW)               | Zone 3 power on/off                           |
-|  zone3#volume             | Dimmer (RW)               | Zone 3 volume                                 |
-|  zone3#volumeDB           | Number:Dimensionless (RW) | Zone 3 volume in dB (-80 offset)              |
-|  zone3#mute               | Switch (RW)               | Zone 3 mute                                   |
-|  zone3#input              | String (RW)               | Zone 3 input                                  |
-|  _Zone 4_                 |                           |                                               |
-|  zone4#power              | Switch (RW)               | Zone 4 power on/off                           |
-|  zone4#volume             | Dimmer (RW)               | Zone 4 volume                                 |
-|  zone4#volumeDB           | Number:Dimensionless (RW) | Zone 4 volume in dB (-80 offset)              |
-|  zone4#mute               | Switch (RW)               | Zone 4 mute                                   |
-|  zone4#input              | String (RW)               | Zone 4 input                                  |
+| Channel ID                        | Item Type                 | Description                                             | Protocol      |
+|-----------------------------------|---------------------------|---------------------------------------------------------|---------------|
+| _General_                         |                           |                                                         |               |
+| general#power                     | Switch (RW)               | Power on/off                                            | HTTP + Telnet |
+| general#surroundProgram           | String (R)                | Current surround program (e.g. STEREO)                  | HTTP + Telnet |
+| general#allZoneStereo             | Switch (RW)               | All zone stereo on/off                                  | Telnet        |
+| general#speakerPreset             | Number:Dimensionless (RW) | Speaker preset 1/2                                      | Telnet        |
+| general#artist                    | String (R)                | Artist of current track                                 | HTTP + Telnet |
+| general#album                     | String (R)                | Album of current track                                  | HTTP + Telnet |
+| general#track                     | String (R)                | Title of current track                                  | HTTP + Telnet |
+| general#command                   | String (W)                | Command to send to the AVR (for use in Rules)           | HTTP + Telnet |
+| _Main zone_                       |                           |                                                         |               |
+| mainZone#power                    | Switch (RW)               | Main zone power on/off                                  | HTTP + Telnet |
+| mainZone#volume                   | Dimmer (RW)               | Main zone volume                                        | HTTP + Telnet |
+| mainZone#volumeDB                 | Number:Dimensionless (RW) | Main zone volume in dB (-80 offset)                     | HTTP + Telnet |
+| mainZone#mute                     | Switch (RW)               | Main zone mute                                          | HTTP + Telnet |
+| mainZone#input                    | String (RW)               | Main zone input (e.g. TV, TUNER, ..)                    | HTTP + Telnet |
+| _Zone 2_                          |                           |                                                         |               |
+| zone2#power                       | Switch (RW)               | Zone 2 power on/off                                     | HTTP + Telnet |
+| zone2#volume                      | Dimmer (RW)               | Zone 2 volume                                           | HTTP + Telnet |
+| zone2#volumeDB                    | Number:Dimensionless (RW) | Zone 2 volume in dB (-80 offset)                        | HTTP + Telnet |
+| zone2#mute                        | Switch (RW)               | Zone 2 mute                                             | HTTP + Telnet |
+| zone2#input                       | String (RW)               | Zone 2 input                                            | HTTP + Telnet |
+| _Zone 3_                          |                           |                                                         |               |
+| zone3#power                       | Switch (RW)               | Zone 3 power on/off                                     | HTTP + Telnet |
+| zone3#volume                      | Dimmer (RW)               | Zone 3 volume                                           | HTTP + Telnet |
+| zone3#volumeDB                    | Number:Dimensionless (RW) | Zone 3 volume in dB (-80 offset)                        | HTTP + Telnet |
+| zone3#mute                        | Switch (RW)               | Zone 3 mute                                             | HTTP + Telnet |
+| zone3#input                       | String (RW)               | Zone 3 input                                            | HTTP + Telnet |
+| _Zone 4_                          |                           |                                                         |               |
+| zone4#power                       | Switch (RW)               | Zone 4 power on/off                                     | HTTP + Telnet |
+| zone4#volume                      | Dimmer (RW)               | Zone 4 volume                                           | HTTP + Telnet |
+| zone4#volumeDB                    | Number:Dimensionless (RW) | Zone 4 volume in dB (-80 offset)                        | HTTP + Telnet |
+| zone4#mute                        | Switch (RW)               | Zone 4 mute                                             | HTTP + Telnet |
+| zone4#input                       | String (RW)               | Zone 4 input                                            | HTTP + Telnet |
+| _Channel volume_                  |                           |                                                         |               |
+| channelVolume#frontLeft           | Number:Dimensionless (RW) | Channel volume front left in dB (-50 offset)            | Telnet        |
+| channelVolume#frontRight          | Number:Dimensionless (RW) | Channel volume front right in dB (-50 offset)           | Telnet        |
+| channelVolume#center              | Number:Dimensionless (RW) | Channel volume center in dB (-50 offset)                | Telnet        |
+| channelVolume#subwoofer           | Number:Dimensionless (RW) | Channel volume subwoofer in dB (-50 offset)             | Telnet        |
+| channelVolume#subwoofer2          | Number:Dimensionless (RW) | Channel volume subwoofer 2 in dB (-50 offset)           | Telnet        |
+| channelVolume#subwoofer3          | Number:Dimensionless (RW) | Channel volume subwoofer 3 in dB (-50 offset)           | Telnet        |
+| channelVolume#subwoofer4          | Number:Dimensionless (RW) | Channel volume subwoofer 4 in dB (-50 offset)           | Telnet        |
+| channelVolume#surroundLeft        | Number:Dimensionless (RW) | Channel volume surround left in dB (-50 offset)         | Telnet        |
+| channelVolume#surroundRight       | Number:Dimensionless (RW) | Channel volume surround right in dB (-50 offset)        | Telnet        |
+| channelVolume#surroundBackLeft    | Number:Dimensionless (RW) | Channel volume surround back left in dB (-50 offset)    | Telnet        |
+| channelVolume#surroundBackRight   | Number:Dimensionless (RW) | Channel volume surround back right in dB (-50 offset)   | Telnet        |
+| channelVolume#surroundBack        | Number:Dimensionless (RW) | Channel volume surround back in dB (-50 offset)         | Telnet        |
+| channelVolume#frontHeightLeft     | Number:Dimensionless (RW) | Channel volume front height left in dB (-50 offset)     | Telnet        |
+| channelVolume#frontHeightRight    | Number:Dimensionless (RW) | Channel volume front height right in dB (-50 offset)    | Telnet        |
+| channelVolume#frontWideLeft       | Number:Dimensionless (RW) | Channel volume front wide left in dB (-50 offset)       | Telnet        |
+| channelVolume#frontWideRight      | Number:Dimensionless (RW) | Channel volume front wide right in dB (-50 offset)      | Telnet        |
+| channelVolume#topFrontLeft        | Number:Dimensionless (RW) | Channel volume top front left in dB (-50 offset)        | Telnet        |
+| channelVolume#topFrontRight       | Number:Dimensionless (RW) | Channel volume top front right in dB (-50 offset)       | Telnet        |
+| channelVolume#topMiddleLeft       | Number:Dimensionless (RW) | Channel volume top middle left in dB (-50 offset)       | Telnet        |
+| channelVolume#topMiddleRight      | Number:Dimensionless (RW) | Channel volume top middle right in dB (-50 offset)      | Telnet        |
+| channelVolume#topRearLeft         | Number:Dimensionless (RW) | Channel volume top rear left in dB (-50 offset)         | Telnet        |
+| channelVolume#topRearRight        | Number:Dimensionless (RW) | Channel volume top rear right in dB (-50 offset)        | Telnet        |
+| channelVolume#rearHeightLeft      | Number:Dimensionless (RW) | Channel volume rear height left in dB (-50 offset)      | Telnet        |
+| channelVolume#rearHeightRight     | Number:Dimensionless (RW) | Channel volume rear height right in dB (-50 offset)     | Telnet        |
+| channelVolume#frontDolbyLeft      | Number:Dimensionless (RW) | Channel volume front Dolby left in dB (-50 offset)      | Telnet        |
+| channelVolume#frontDolbyRight     | Number:Dimensionless (RW) | Channel volume front Dolby right in dB (-50 offset)     | Telnet        |
+| channelVolume#surroundDolbyLeft   | Number:Dimensionless (RW) | Channel volume surround Dolby left in dB (-50 offset)   | Telnet        |
+| channelVolume#surroundDolbyRight  | Number:Dimensionless (RW) | Channel volume surround Dolby right in dB (-50 offset)  | Telnet        |
+| channelVolume#backDolbyLeft       | Number:Dimensionless (RW) | Channel volume back Dolby left in dB (-50 offset)       | Telnet        |
+| channelVolume#backDolbyRight      | Number:Dimensionless (RW) | Channel volume back Dolby right in dB (-50 offset)      | Telnet        |
+| channelVolume#surroundHeightLeft  | Number:Dimensionless (RW) | Channel volume surround height left in dB (-50 offset)  | Telnet        |
+| channelVolume#surroundHeightRight | Number:Dimensionless (RW) | Channel volume surround height right in dB (-50 offset) | Telnet        |
+| channelVolume#topSurround         | Number:Dimensionless (RW) | Channel volume top surround in dB (-50 offset)          | Telnet        |
+| channelVolume#centerHeight        | Number:Dimensionless (RW) | Channel volume center height in dB (-50 offset)         | Telnet        |
+| channelVolume#tactileTransducer   | Number:Dimensionless (RW) | Channel volume tactile transducer in dB (-50 offset)    | Telnet        |
 
 (R) = read-only (no updates possible),
 (RW) = read-write,
@@ -89,14 +127,15 @@ Thing denonmarantz:avr:1 "Receiver" @ "Living room" [host="192.168.1.100"]
 `.items` file:
 
 ```java
-Switch               marantz_power    "Receiver" <switch>         {channel="denonmarantz:avr:1:general#power"}
-Dimmer               marantz_volume   "Volume"   <soundvolume>    {channel="denonmarantz:avr:1:mainZone#volume"}
-Number:Dimensionless marantz_volumeDB "Volume [%.1f dB]"          {channel="denonmarantz:avr:1:mainzone#volume", unit="dB"}
-Switch               marantz_mute     "Mute"     <mute>           {channel="denonmarantz:avr:1:mainZone#mute"}
-Switch               marantz_z2power  "Zone 2"                    {channel="denonmarantz:avr:1:zone2#power"}
-String               marantz_input    "Input [%s]"                {channel="denonmarantz:avr:1:mainZone#input" }
-String               marantz_surround "Surround: [%s]"            {channel="denonmarantz:avr:1:general#surroundProgram"}
-String               marantz_command                              {channel="denonmarantz:avr:1:general#command"}
+Switch               marantz_power                  "Receiver" <switch>           {channel="denonmarantz:avr:1:general#power"}
+Dimmer               marantz_volume                 "Volume"   <soundvolume>      {channel="denonmarantz:avr:1:mainZone#volume"}
+Number:Dimensionless marantz_volumeDB               "Volume [%.1f dB]"            {channel="denonmarantz:avr:1:mainzone#volume", unit="dB"}
+Switch               marantz_mute                   "Mute"     <mute>             {channel="denonmarantz:avr:1:mainZone#mute"}
+Switch               marantz_z2power                "Zone 2"                      {channel="denonmarantz:avr:1:zone2#power"}
+String               marantz_input                  "Input [%s]"                  {channel="denonmarantz:avr:1:mainZone#input" }
+String               marantz_surround               "Surround: [%s]"              {channel="denonmarantz:avr:1:general#surroundProgram"}
+Number:Dimensionless marantz_tactileTransducerLevel "Bass Shaker Level [%.1f dB]" {channel="denonmarantz:avr:1:channelVolume#tactileTransducer", unit="dB"}
+String               marantz_command                                              {channel="denonmarantz:avr:1:general#command"}
 ```
 
 `.sitemap` file:
@@ -105,11 +144,12 @@ String               marantz_command                              {channel="deno
 ...
 Group item=marantz_input label="Receiver" icon="receiver" {
     Default   item=marantz_power
-    Default   item=marantz_mute      visibility=[marantz_power==ON]
-    Setpoint  item=marantz_volume    label="Volume [%.1f]" minValue=0 maxValue=40 step=0.5  visibility=[marantz_power==ON]
-    Default   item=marantz_volumeDB  visibility=[marantz_power==ON]
-    Selection item=marantz_input     mappings=[TV=TV,MPLAY=Kodi]  visibility=[marantz_power==ON]
-    Default   item=marantz_surround  visibility=[marantz_power==ON]
+    Default   item=marantz_mute                   visibility=[marantz_power==ON]
+    Setpoint  item=marantz_volume                 label="Volume [%.1f]" minValue=0 maxValue=40 step=0.5  visibility=[marantz_power==ON]
+    Default   item=marantz_volumeDB               visibility=[marantz_power==ON]
+    Selection item=marantz_input                  mappings=[TV=TV,MPLAY=Kodi]  visibility=[marantz_power==ON]
+    Default   item=marantz_surround               visibility=[marantz_power==ON]
+    Setpoint  item=marantz_tactileTransducerLevel visibility=[marantz_power==ON] minValue=-12 maxValue=12 step=0.5
 }
 ...
 ```

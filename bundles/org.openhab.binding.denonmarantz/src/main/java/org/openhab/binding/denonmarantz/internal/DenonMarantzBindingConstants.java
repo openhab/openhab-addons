@@ -47,6 +47,8 @@ public class DenonMarantzBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_POWER = "general#power";
     public static final String CHANNEL_SURROUND_PROGRAM = "general#surroundProgram";
+    public static final String CHANNEL_ALL_ZONE_STEREO = "general#allZoneStereo";
+    public static final String CHANNEL_SPEAKER_PRESET = "general#speakerPreset";
     public static final String CHANNEL_COMMAND = "general#command";
     public static final String CHANNEL_NOW_PLAYING_ARTIST = "general#artist";
     public static final String CHANNEL_NOW_PLAYING_ALBUM = "general#album";
@@ -75,6 +77,53 @@ public class DenonMarantzBindingConstants {
     public static final String CHANNEL_ZONE4_VOLUME_DB = "zone4#volumeDB";
     public static final String CHANNEL_ZONE4_MUTE = "zone4#mute";
     public static final String CHANNEL_ZONE4_INPUT = "zone4#input";
+
+    public static final String CHANNEL_CVFL = "channelVolume#frontLeft";
+    public static final String CHANNEL_CVFR = "channelVolume#frontRight";
+    public static final String CHANNEL_CVC = "channelVolume#center";
+    public static final String CHANNEL_CVSW = "channelVolume#subwoofer";
+    public static final String CHANNEL_CVSW2 = "channelVolume#subwoofer2";
+    public static final String CHANNEL_CVSW3 = "channelVolume#subwoofer3";
+    public static final String CHANNEL_CVSW4 = "channelVolume#subwoofer4";
+
+    public static final String CHANNEL_CVSL = "channelVolume#surroundLeft";
+    public static final String CHANNEL_CVSR = "channelVolume#surroundRight";
+    public static final String CHANNEL_CVSBL = "channelVolume#surroundBackLeft";
+    public static final String CHANNEL_CVSBR = "channelVolume#surroundBackRight";
+    public static final String CHANNEL_CVSB = "channelVolume#surroundBack";
+
+    public static final String CHANNEL_CVFHL = "channelVolume#frontHeightLeft";
+    public static final String CHANNEL_CVFHR = "channelVolume#frontHeightRight";
+
+    public static final String CHANNEL_CVFWL = "channelVolume#frontWideLeft";
+    public static final String CHANNEL_CVFWR = "channelVolume#frontWideRight";
+
+    public static final String CHANNEL_CVTFL = "channelVolume#topFrontLeft";
+    public static final String CHANNEL_CVTFR = "channelVolume#topFrontRight";
+    public static final String CHANNEL_CVTML = "channelVolume#topMiddleLeft";
+    public static final String CHANNEL_CVTMR = "channelVolume#topMiddleRight";
+    public static final String CHANNEL_CVTRL = "channelVolume#topRearLeft";
+    public static final String CHANNEL_CVTRR = "channelVolume#topRearRight";
+
+    public static final String CHANNEL_CVRHL = "channelVolume#rearHeightLeft";
+    public static final String CHANNEL_CVRHR = "channelVolume#rearHeightRight";
+
+    public static final String CHANNEL_CVFDL = "channelVolume#frontDolbyLeft";
+    public static final String CHANNEL_CVFDR = "channelVolume#frontDolbyRight";
+    public static final String CHANNEL_CVSDL = "channelVolume#surroundDolbyLeft";
+    public static final String CHANNEL_CVSDR = "channelVolume#surroundDolbyRight";
+    public static final String CHANNEL_CVBDL = "channelVolume#backDolbyLeft";
+    public static final String CHANNEL_CVBDR = "channelVolume#backDolbyRight";
+
+    public static final String CHANNEL_CVSHL = "channelVolume#surroundHeightLeft";
+    public static final String CHANNEL_CVSHR = "channelVolume#surroundHeightRight";
+
+    public static final String CHANNEL_CVTS = "channelVolume#topSurround";
+    public static final String CHANNEL_CVCH = "channelVolume#centerHeight";
+
+    public static final String CHANNEL_CVTTR = "channelVolume#tactileTransducer";
+
+    public static final BigDecimal CHANNEL_VOLUME_DB_OFFSET = BigDecimal.valueOf(50);
 
     // Map of Zone2 Channel Type UIDs (to be added to Thing later when needed)
     public static final Map<String, ChannelTypeUID> ZONE2_CHANNEL_TYPES = Map.ofEntries(
