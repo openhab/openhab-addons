@@ -180,6 +180,7 @@ Follow openHAB null-annotation conventions:
 #### Markdown
 
 - Markdown files must comply with `.github/markdownlint.yaml`.
+- Align Markdown table columns in the raw source using spaces so the pipe delimiters line up across the header, separator, and data rows. Preserve alignment markers and cell contents. When adding or editing a table, align the entire table and verify the result after linting; the current lint configuration does not enforce column alignment.
 - Markdown linting requires Node.js and npm; run `npx markdownlint-cli2 --config .github/markdownlint.yaml --fix <files>` for changed Markdown files, then address any remaining violations manually.
 - Do not disable lint rules unless necessary; keep suppressions as narrowly scoped as possible.
 
