@@ -139,13 +139,19 @@ public class SlatTracker {
 
     /**
      * The motor angle stays at its end stop while the blind travels further in that direction, so its change misses
-     * that travel; the reported position still shows it. It is only taken from the position when it exceeds the
-     * rounding of the position to whole percents, and only in the direction of an end stop the angle was at.
+     * that travel; the reported position still shows it. It is only taken from the position in the direction of an
+     * end stop the angle was at, and, when the angle left or reached an end stop, only if it exceeds the rounding of
+     * the position to whole percents. While the angle stays at an end stop, each position change in its direction is
+     * taken completely: the travel is reported in steps of 1%, which would all be discarded as rounding.
      *
      * @return the travel in motor degrees that the change of the motor angle does not show, {@code 0} if none
      */
     private static int untrackedTravel(int oldAngle, int newAngle, int positionChange) {
         int untracked = positionChange - (newAngle - oldAngle);
+        boolean stayedAtEndStop = oldAngle == newAngle && (untracked < 0 ? newAngle <= 0 : newAngle >= MAX_ANGLE);
+        if (stayedAtEndStop) {
+            return untracked;
+        }
         if (Math.abs(untracked) <= MOTOR_ANGLE_PER_PERCENT) {
             return 0;
         }

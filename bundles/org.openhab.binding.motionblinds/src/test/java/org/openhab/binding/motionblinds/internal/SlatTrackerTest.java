@@ -107,6 +107,19 @@ public class SlatTrackerTest {
     }
 
     @Test
+    public void reversalAtMidHeightAfterRaisingFromBottomInSteps() {
+        tracker.update(100, 176);
+        tracker.update(94, 0);
+        // raised to mid-height with the motor angle at its end stop, reported in steps of 1%
+        for (int position = 93; position >= 50; position--) {
+            tracker.update(position, 0);
+        }
+        tracker.update(56, 180);
+        tracker.update(55, 151);
+        assertEquals(67, tracker.getTilt());
+    }
+
+    @Test
     public void descentWithMotorAngleAtEndStopReachesTheSill() {
         tracker.update(100, 176);
         tracker.update(94, 0);
