@@ -1,0 +1,24 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "fan.preset_only_limited_fan": {
+        "s": "off",
+        "a": {
+          "preset_modes": [
+            "auto",
+            "smart",
+            "sleep",
+            "on"
+          ],
+          "preset_mode": null,
+          "friendly_name": "Preset Only Limited Fan",
+          "supported_features": 56
+        },
+        "c": "01M3201RG86JZHFZR21JD37CZB",
+        "lc": 1789994787.336439
+      }
+    }
+  }
+}

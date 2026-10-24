@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "image.deebot_map": {
+        "s": "2026-09-22T13:34:41.687245+00:00",
+        "a": {
+          "access_token": "f2ec6e47bd10f9e05b66e43a16395e60b6a6eb151157e115777349a7ebb55925",
+          "map_name": "",
+          "entity_picture": "/api/image_proxy/image.deebot_map?token=f2ec6e47bd10f9e05b66e43a16395e60b6a6eb151157e115777349a7ebb55925",
+          "friendly_name": "Deebot Map"
+        }
+      }
+    }
+  }
+}

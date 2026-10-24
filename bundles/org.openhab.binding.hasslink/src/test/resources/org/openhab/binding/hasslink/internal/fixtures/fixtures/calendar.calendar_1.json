@@ -1,0 +1,39 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "calendar.calendar_1",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "calendar.calendar_1",
+        "state": "off",
+        "attributes": {
+          "message": "Future Event",
+          "all_day": false,
+          "start_time": "2026-09-21 23:16:27",
+          "end_time": "2026-09-22 00:16:27",
+          "location": "Future Location",
+          "description": "Future Description",
+          "friendly_name": "Calendar 1"
+        },
+        "last_changed": "2026-09-21T14:16:27.331104+00:00",
+        "last_reported": "2026-09-22T05:40:28.799632+00:00",
+        "last_updated": "2026-09-21T14:16:27.331104+00:00",
+        "context": {
+          "id": "01M3256HY3SJ4NKGATKNXVT4H7",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

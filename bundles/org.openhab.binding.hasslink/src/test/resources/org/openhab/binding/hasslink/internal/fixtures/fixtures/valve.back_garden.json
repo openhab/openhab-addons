@@ -1,0 +1,36 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "valve.back_garden",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "valve.back_garden",
+        "state": "open",
+        "attributes": {
+          "is_closed": false,
+          "current_position": 70,
+          "friendly_name": "Back Garden",
+          "supported_features": 15
+        },
+        "last_changed": "2026-09-21T12:46:27.361392+00:00",
+        "last_reported": "2026-09-21T12:46:27.374901+00:00",
+        "last_updated": "2026-09-21T12:46:27.361392+00:00",
+        "context": {
+          "id": "01M3201RH19M5JCQS4FXPQHBY9",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

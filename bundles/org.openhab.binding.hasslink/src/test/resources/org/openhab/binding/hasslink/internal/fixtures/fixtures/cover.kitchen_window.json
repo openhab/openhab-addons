@@ -1,0 +1,35 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "cover.kitchen_window",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "cover.kitchen_window",
+        "state": "closed",
+        "attributes": {
+          "is_closed": true,
+          "friendly_name": "Kitchen Window",
+          "supported_features": 11
+        },
+        "last_changed": "2026-09-21T12:46:27.332787+00:00",
+        "last_reported": "2026-09-21T12:46:27.372536+00:00",
+        "last_updated": "2026-09-21T12:46:27.332787+00:00",
+        "context": {
+          "id": "01M3201RG4AQBC532PCHM98R16",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}
