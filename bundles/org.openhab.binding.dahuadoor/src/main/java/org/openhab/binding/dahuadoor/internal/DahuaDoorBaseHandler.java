@@ -93,7 +93,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
     private final PlayStreamServlet playStreamServlet;
     private @Nullable Go2RtcManager go2rtcManager;
-    private @Nullable SipBackchannelRtpRelay sipBackchannelRelay;
     private @Nullable SipClient sipClient;
     private @Nullable Future<?> webRtcStartupJob;
     private @Nullable Future<?> sipStartupJob;
@@ -214,10 +213,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password,
                 localConfig.useHttps, this, this::errorInformer);
 
-        if (localConfig.enableWebRTC && localConfig.enableSip) {
-            startSipBackchannelRelay(localConfig);
-        }
-
         if (localConfig.enableWebRTC) {
             startWebRtc(localConfig);
         }
@@ -231,41 +226,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
         // Set status to UNKNOWN - will be set to ONLINE when first DHIP event is received
         updateStatus(ThingStatus.UNKNOWN);
-    }
-
-    private void startSipBackchannelRelay(DahuaDoorConfiguration cfg) {
-        if (parseSipExtensions(cfg.sipExtension).isEmpty()) {
-            return;
-        }
-        int listenPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET;
-        if (!isValidPort(listenPort)) {
-            logger.warn(
-                    "SIP backchannel relay port {} is outside valid range (go2rtcApiPort={}, offset={}) - relay disabled",
-                    listenPort, cfg.go2rtcApiPort, SIP_BACKCHANNEL_LISTEN_PORT_OFFSET);
-            return;
-        }
-        SipBackchannelRtpRelay relay = new SipBackchannelRtpRelay(getThing().getUID() + "/default", listenPort, 0);
-        try {
-            relay.start();
-            int sourcePort = relay.getSourcePort();
-            if (!isValidPort(sourcePort)) {
-                relay.stop();
-                logger.warn("SIP backchannel relay source port {} is outside valid range - relay disabled", sourcePort);
-                return;
-            }
-            sipBackchannelRelay = relay;
-        } catch (IOException e) {
-            sipBackchannelRelay = null;
-            logger.warn("Failed to start SIP backchannel RTP relay on 127.0.0.1:{}: {}", listenPort, e.getMessage(), e);
-        }
-    }
-
-    private void stopSipBackchannelRelay() {
-        SipBackchannelRtpRelay relay = sipBackchannelRelay;
-        sipBackchannelRelay = null;
-        if (relay != null) {
-            relay.stop();
-        }
     }
 
     /**
@@ -365,7 +325,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             }
             localManager.stop();
         }
-        stopSipBackchannelRelay();
     }
 
     public void saveSnapshot(byte @Nullable [] buffer) {
@@ -1476,7 +1435,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         outgoingRelays.values().forEach(SipBackchannelRtpRelay::stop);
         outgoingRelays.clear();
 
-        stopSipBackchannelRelay();
         configuredOutgoingExtensions = List.of();
         sessionToClientId.clear();
         backchannelSessionsByHttpSession.clear();
