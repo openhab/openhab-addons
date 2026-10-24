@@ -14,6 +14,7 @@
 			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -31,6 +32,7 @@
 			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -60,6 +62,7 @@
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -98,6 +101,7 @@
 			<channel-group id="meter5" typeId="meter"/>
 			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
