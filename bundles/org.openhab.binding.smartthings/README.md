@@ -1,161 +1,225 @@
----
-children:
-  - ["doc/SmartthingsInstallation", "Installation of Smartthings code"]
-  - ["doc/Troubleshooting", "Smartthings Binding Troubleshooting Guidelines"]
----
+# Samsung SmartThings Binding
 
-# Samsung Smartthings Binding
-
-This binding integrates the Samsung Smartthings Hub into openHAB.
+The Samsung SmartThings binding controls and monitors compatible Samsung appliances over the local network using authenticated CoAP over DTLS. It does not require a SmartThings Hub or cloud access.
 
 ## Supported Things
 
-This binding supports most of the SmartThings devices that are defined in the [SmartThings Capabilities list](https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference/).
-If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
+| Thing type | Thing Type UID | Description |
+|---|---|---|
+| Air conditioner | `smartthings:airconditioner` | Samsung air conditioner. |
+| Air purifier | `smartthings:airpurifier` | Samsung air purifier. |
+| Dehumidifier | `smartthings:dehumidifier` | Samsung dehumidifier. |
+| Dryer | `smartthings:dryer` | Samsung dryer. |
+| Washer | `smartthings:washer` | Samsung washer. |
+| Generic appliance | `smartthings:appliance` | Diagnostic Thing for unclassified devices; it is not a general-purpose fallback for unsupported appliances. |
+
+Compatibility depends on appliance model and firmware. Discovery chooses a concrete Thing when the appliance advertises a supported OCF device type. Unclassified devices are excluded unless enabled in the binding configuration.
 
 ## Discovery
 
-Discovery allows openHAB to examine a binding and automatically find the Things available on that binding.
-Discovery is supported by the SmartThings binding and is run automatically on startup.
+Start a **Samsung SmartThings** scan from the Inbox. Discovery does not run automatically or in the background. By default, it scans the private IPv4 subnet selected through **Settings → Network**. If that subnet cannot be used, configure `discoverySubnet` below. Scans cover at most 256 addresses and accept private IPv4 CIDR ranges from `/24` to `/32`.
 
-## SmartThings Configuration
+The appliance must be reachable from openHAB over UDP and advertise discovery information including its device UUID and secure CoAP port. Firewalls, guest-network isolation, VLANs, or firmware that omits discovery information may prevent automatic discovery; in that case, add the Thing manually.
 
-Prior to running the binding the SmartThings hub must have the required openHAB software installed. [Follow these instructions](doc/SmartthingsInstallation.md)
+## Binding Configuration
 
-**The binding will not work until this part has been completed, do not skip this part of the setup.**
+Configure these settings under **Settings → Bindings → Samsung SmartThings Binding**, or in `$OPENHAB_CONF/services/smartthings.cfg` (see [`cfg/smartthings.cfg`](cfg/smartthings.cfg)). They affect Inbox scans only; they do not initiate scans.
 
-## openHAB Configuration
+| Name | Type | Description | Default | Required |
+|---|---|---|---|---|
+| `discoverySubnet` | text | Optional private IPv4 subnet in CIDR notation (`/24`–`/32`). When empty, discovery uses the primary IPv4 interface's subnet from Network settings. | Empty | no |
+| `discoveryConcurrency` | integer | Maximum number of addresses probed simultaneously. Range: `1`–`32`. | `16` | no |
+| `discoverUnclassified` | boolean | Include devices that do not advertise a supported appliance family as generic diagnostic Things. This does not make them compatible. | `false` | no |
 
-This binding is an openHAB binding and uses the Bridge / Thing design with the SmartThings Hub being the Bridge and the controlled modules being the Things.
-The following definitions are specified in the .things file.
+Example override:
 
-### Bridge Configuration
-
-The bridge requires the IP address and port used to connect the openHAB server to the SmartThings Hub.
-
-```java
-Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthingsPort=39500 ] {
+```properties
+discoverySubnet=192.168.1.0/24
+discoveryConcurrency=16
 ```
 
-where:
+## Thing Configuration
 
-- **smartthings:smartthings:Home** identifies this is a SmartThings hub named Home.
-    The first two segments must be smartthings:smartthings.
-    You can choose any unique name for the last segment.
-    The last segment is used when you identify items connected to this hubthingTypeId.
-- **smartthingsIp** is the IP address of the SmartThings Hub.
-    Your router should be configured such that the SmartThings Hub is always assigned to this IP address.
-- **smartthingsPort** is the port the SmartThings hub listens on. 39500 is the port assigned by SmartThings so it should be used unless you have a good reason for using another port.
+Discovery creates Things with their address, secure CoAP port, and expected device UUID. To add a Thing manually, select the appliance family and enter its IP address or host name. The advanced `port` setting defaults to `0`, which discovers the secure port from that host.
 
-**Warning** This binding only supports one Bridge.
-If you try to configure a second bridge it will be ignored.
+The appliance must be reachable from openHAB over UDP. Enable its **Remote Control** setting when required for commands. By default, the binding creates and stores a client identity under `$OPENHAB_USERDATA/etc/smartthings/`. Some firmware may require credentials that have already been authorized; the binding does not pair appliances or provision credentials. Certificate and OwnerPSK settings are advanced options for users who already have suitable credentials. In certificate mode, the first valid server certificate is trusted on first use and saved only after the authenticated `/oic/d` identity matches the Thing. This first connection is not independently authenticated, so an attacker able to intercept it could be pinned; configure an independently obtained fingerprint to avoid that risk.
 
-### Thing Configuration
+All Thing types use the following configuration parameters:
 
-Each attached Thing must specify the type of device and its SmartThings device name. The format of the Thing description is:
+| Name | Type | Description | Default | Required | Advanced |
+|---|---|---|---|---|---|
+| `host` | text | Appliance IP address or host name. | — | yes | no |
+| `port` | integer | Secure CoAP/DTLS port (`0` discovers it from the appliance). Range: `0`–`65535`. | `0` | no | yes |
+| `clientPort` | integer | Local UDP port (`0` selects a stable port automatically). Specify an unused port if multiple Things conflict. Range: `0`–`65535`. | `0` | no | yes |
+| `refreshInterval` | integer | Interval in seconds for fallback polling when event subscriptions are unavailable. Minimum: `10`. | `60` | no | no |
+| `timeout` | integer | Maximum time in seconds for each discovery or authenticated CoAP request. Range: `1`–`60`. | `12` | no | yes |
+| `deviceId` | text | Expected appliance UUID. If omitted, the first authenticated UUID is remembered and checked on later connections. | — | no | yes |
+| `keyStore` | text | Absolute path to a PKCS12 key store containing an already-authorized client private key and certificate chain. Leave empty to use the generated identity. | — | no | yes |
+| `keyStorePassword` | password | Password for the imported key store and private key. | — | no | yes |
+| `serverFingerprint` | text | Optional SHA-256 fingerprint of the appliance's leaf certificate. Leave empty to trust and remember the first valid certificate after the authenticated appliance identity matches this Thing. The first connection is not independently authenticated; set a fingerprint to avoid the trust-on-first-use risk. | — | no | yes |
+| `ownerId` | text | Owner UUID associated with an imported `ownerPsk`; this is not the appliance UUID. | — | no | yes |
+| `ownerPsk` | password | Previously provisioned, authorized OwnerPSK: 16 or 32 bytes encoded as hexadecimal. Mutually exclusive with certificate authentication. | — | no | yes |
 
-```java
-Thing <thingTypeId> name [ smartthingsName="<deviceName>", {smartthingsTimeout=<timeout>} ]
-```
+Changing `host` does not authorize a different appliance. If `deviceId` is omitted, the first authenticated UUID is saved and enforced on subsequent connections. Family-specific Things also check that the authenticated OCF device type matches the selected family.
 
-where:
+## Channels
 
-- **[thingTypeId](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/)** corresponds to the "Preferences Reference" in the SmartThings Capabilities document but without the capability.prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
-- **name** is what you want to call this Thing and is used in defining the items that use this Thing.
-- **deviceName** is the name you assigned to the device when you discovered and connected to it in the SmartThings App
-- Optional: **timeout** is how long openHAB will wait for a response to the request before throwing a timeout exception. The default is 3 seconds.
+The tables list the channels declared by each concrete Thing. A declared channel is removed when the connected appliance does not support it. A `y` marks a read-only channel. An `n` marks a channel that accepts commands when supported; the appliance's current capabilities and Remote Control setting may limit write access. Consult the channel description for valid commands and limits. Reported units and command options are derived from live appliance capabilities when they are advertised; the dryer course channel is read-only because supported-course capabilities are not advertised.
 
-#### Example
+### Air conditioner (`smartthings:airconditioner`)
 
-```java
-Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthingsPort=39500 ] {
-    Thing switchLevel              KitchenLights           [ smartthingsName="Kitchen lights" ]
-    Thing contactSensor            MainGarageDoor          [ smartthingsName="Garage Door Open Sensor" ]
-    Thing temperatureMeasurement   MainGarageTemp          [ smartthingsName="Garage Door Open Sensor" ]
-    Thing battery                  MainGarageBattery       [ smartthingsName="Garage Door Open Sensor" ]
-    Thing switch                   OfficeLight             [ smartthingsName="Office Light", smartthingsTimeout=7 ]
-    Thing valve                    SimulatedValve          [ smartthingsName="Simulated Valve" ]
-}
-```
+| Channel | Item type | Read-only | Description |
+|---|---|---|---|
+| `power` | Switch | n | Switch the appliance on or off. |
+| `remote-control` | Switch | y | Whether remote control is enabled. |
+| `current-temperature` | Number:Temperature | y | Measured temperature. |
+| `target-temperature` | Number:Temperature | n | Desired temperature, subject to the reported range and increment. |
+| `mode` | String | n | Operating mode. |
+| `wind-strength` | String | n | Fan-strength setting. |
+| `wind-direction` | String | n | Airflow direction or swing setting. |
+| `mode-convenient` | String | n | Comfort setting. |
+| `power-consumption` | Number:Power | y | Instantaneous electrical power. |
+| `cumulative-energy` | Number:Energy | y | Cumulative energy in the unit reported by the appliance. |
 
-## Items
+### Air purifier (`smartthings:airpurifier`)
 
-These are specified in the .items file. This section describes the specifics related to this binding.
-Please see the [Items documentation](https://www.openhab.org/docs/configuration/items.html) for a full explanation of configuring items.
+| Channel | Item type | Read-only | Description |
+|---|---|---|---|
+| `power` | Switch | n | Switch the appliance on or off. |
+| `remote-control` | Switch | y | Whether remote control is enabled. |
+| `airflow` | Number | n | Fan speed. |
+| `mode` | String | n | Operating mode. |
+| `power-consumption` | Number:Power | y | Instantaneous electrical power. |
+| `cumulative-energy` | Number:Energy | y | Cumulative energy in the unit reported by the appliance. |
 
-The most important Thing is getting the **channel** specification correct. The general format is:
+### Dehumidifier (`smartthings:dehumidifier`)
 
-```java
-{ channel="smartthings:<thingTypeId>:<hubName>:<thingName>:<channelId>" }
-```
+| Channel | Item type | Read-only | Description |
+|---|---|---|---|
+| `power` | Switch | n | Switch the appliance on or off. |
+| `remote-control` | Switch | y | Whether remote control is enabled. |
+| `current-temperature` | Number:Temperature | y | Measured temperature. |
+| `target-temperature` | Number:Temperature | n | Desired temperature, subject to the reported range and increment. |
+| `mode` | String | n | Operating mode. |
+| `power-consumption` | Number:Power | y | Instantaneous electrical power. |
+| `cumulative-energy` | Number:Energy | y | Cumulative energy in the unit reported by the appliance. |
+| `water-consumption` | Number | y | Raw water-consumption reading; no unit is inferred. |
+| `kidslock` | String | y | Child-lock state. |
 
-The parts (separated by :) are defined as:
+### Dryer (`smartthings:dryer`)
 
-1. **smartthings** to specify this is a SmartThings device
-1. **thingTypeId** specifies the type of the Thing  you are connecting to. This is the same as described in the last section.
-1. **hubName** identifies the name of the hub specified above. This corresponds to the third segment in the **Bridge** definition.
-1. **thingName** identifies the Thing this is attached to and is the "name" you specified in the **Thing** definition.
-1. **channelId** corresponds to the attribute in the [SmartThings Capabilities list](https://docs.smartthings.com/en/latest/capabilities-reference.html). For switch it would be "switch".
+| Channel | Item type | Read-only | Description |
+|---|---|---|---|
+| `power` | Switch | n | Switch the appliance on or off. |
+| `remote-control` | Switch | y | Whether remote control is enabled. |
+| `power-consumption` | Number:Power | y | Instantaneous electrical power. |
+| `cumulative-energy` | Number:Energy | y | Cumulative energy in the unit reported by the appliance. |
+| `dryer-mode` | String | y | Current dryer course. Known course codes are displayed with readable names. |
+| `cycle-control` | String | n | Set the cycle to `Run`, `Pause`, or `Ready`. |
+| `delay-end-time` | Number:Time | n | Delay end in seconds, from 0 to 24 hours in 30-minute increments. |
+| `dry-level` | String | n | Select a live value from the dryer's `supportedDryLevel` list. |
+| `wrinkle-prevent` | String | n | Set wrinkle prevention to `On` or `Off`. |
+| `machine-state` | String | y | Current machine state. |
+| `job-state` | String | y | Current job state. |
+| `remaining-time` | Number:Time | y | Remaining cycle duration in seconds. |
+| `progress` | Number:Dimensionless | y | Cycle progress from 0 to 100%. |
+| `kidslock` | String | y | Child-lock state. |
 
-### Example
+### Washer (`smartthings:washer`)
 
-```java
-Dimmer  KitchenLights        "Kitchen lights level"     <slider>          { channel="smartthings:switchLevel:Home:KitchenLights:level" }
-Switch  KitchenLightSwitch   "Kitchen lights switch"    <light>           { channel="smartthings:switchLevel:Home:KitchenLights:switch" }
-Contact MainGarageDoor       "Garage door status [%s]" <garagedoor>       { channel="smartthings:contactSensor:Home:MainGarageDoor:contact" }
-Number  MainGarageTemp       "Garage temperature [%.0f]"  <temperature>   { channel="smartthings:temperatureMeasurement:Home:MainGarageTemp:temperature" }
-Number  MainGarageBattery    "Garage battery [%.0f]"  <battery>           { channel="smartthings:battery:Home:MainGarageBattery:battery" }
-Switch  OfficeLight          "Office light"    <light>                    { channel="smartthings:switch:Home:OfficeLight:switch" }
-String  SimulatedValve       "Simulated valve"                            { channel="smartthings:valve:Home:SimulatedValve:valve" }
-```
+| Channel | Item type | Read-only | Description |
+|---|---|---|---|
+| `power` | Switch | n | Switch the appliance on or off. |
+| `remote-control` | Switch | y | Whether remote control is enabled. |
+| `power-consumption` | Number:Power | y | Instantaneous electrical power. |
+| `cumulative-energy` | Number:Energy | y | Cumulative energy in the unit reported by the appliance. |
+| `machine-state` | String | y | Current machine state. |
+| `job-state` | String | y | Current job state. |
+| `remaining-time` | Number:Time | y | Remaining cycle duration in seconds. |
+| `progress` | Number:Dimensionless | y | Cycle progress from 0 to 100%. |
+| `water-consumption` | Number | y | Raw water-consumption reading; no unit is inferred. |
+| `kidslock` | String | y | Child-lock state. |
 
-**Special note about Valves**
-SmartThings includes a **valve** which can be Open or Closed but openHAB does not include a Valve item type.
-Therefore, the valve is defined as having an item type of String.
-And, therefore the item needs to be defined with an item type of string.
-It can be controlled in the sitemap by specifying the Element type of Switch and providing a mapping of: mappings=[open="Open", closed="Close"]. Such as:
-
-```java
-Switch item=SimulatedValve mappings=[open="Open", closed="Close"]
-```
-
-**RGB Bulb example**
-Here is a sample configuration for a RGB bulb, such as a Sengled model E11-N1EA bulb. Currently this binding does not have a RGB specific bulb therefore a Thing is required for each part of the bulb.
+The generic `smartthings:appliance` Thing is intended for diagnostics of unclassified devices; no channel list is provided for it.
 
 ## Full Example
 
-### Things File
+This example configures an air conditioner, dryer, and washer. Replace the addresses and omit Items for channels not provided by your appliance. The default secure-port discovery and client identity are used.
+
+### Thing Configuration
+
+`$OPENHAB_CONF/things/smartthings.things`:
 
 ```java
-colorControl            SengledColorControl         [ smartthingsName="Sengled Bulb"]
-colorTemperature        SengledColorTemperature     [ smartthingsName="Sengled Bulb"]
-switch                  SengledSwitch               [ smartthingsName="Sengled Bulb"]
-switchLevel             SengledSwitchLevel          [ smartthingsName="Sengled Bulb"]
+Thing smartthings:airconditioner:livingroom "Living Room Air Conditioner" [ host="192.168.1.50", port=0 ]
+Thing smartthings:dryer:laundry "Laundry Dryer" [ host="192.168.1.51", port=0 ]
+Thing smartthings:washer:utility "Utility Washer" [ host="192.168.1.52", port=0 ]
 ```
 
-### Items File
+### Item Configuration
+
+`$OPENHAB_CONF/items/smartthings.items`:
 
 ```java
-Color  SengledColorControl    "Sengled bulb color"   <colorpicker>   {channel="smartthings:colorControl:Home:SengledColorControl:color"}
-Number SengledTemperature     "Sengled bulb color temperature"       {channel="smartthings:colorTemperature:Home:SengledColorTemperature:colorTemperature"}
-Switch SengledSwitch          "Sengled bulb switch"   <switch>       {channel="smartthings:switch:Home:SengledSwitch:switch"}
-Dimmer SengledDimmer          "Sengled bulb dimmer"   <slider>       {channel="smartthings:switchLevel:Home:SengledSwitchLevel:level"}
+Switch LivingRoomAC_Power "Air Conditioner Power" { channel="smartthings:airconditioner:livingroom:power" }
+Number:Temperature LivingRoomAC_Current "Current Temperature [%.1f %unit%]" { channel="smartthings:airconditioner:livingroom:current-temperature" }
+Number:Temperature LivingRoomAC_Target "Target Temperature [%.1f %unit%]" { channel="smartthings:airconditioner:livingroom:target-temperature" }
+String LivingRoomAC_Mode "Mode [%s]" { channel="smartthings:airconditioner:livingroom:mode" }
+String LivingRoomAC_Fan "Fan Strength [%s]" { channel="smartthings:airconditioner:livingroom:wind-strength" }
+Number:Power LivingRoomAC_PowerConsumption "Power [%.0f %unit%]" { channel="smartthings:airconditioner:livingroom:power-consumption" }
+
+Switch LaundryDryer_Power "Dryer Power" { channel="smartthings:dryer:laundry:power" }
+String LaundryDryer_Mode "Dryer Program [%s]" { channel="smartthings:dryer:laundry:dryer-mode" }
+String LaundryDryer_Cycle "Dryer Cycle [%s]" { channel="smartthings:dryer:laundry:cycle-control" }
+Number:Time LaundryDryer_DelayEnd "Delay End [%d %unit%]" { channel="smartthings:dryer:laundry:delay-end-time" }
+String LaundryDryer_DryLevel "Dry Level [%s]" { channel="smartthings:dryer:laundry:dry-level" }
+String LaundryDryer_WrinklePrevent "Wrinkle Prevention [%s]" { channel="smartthings:dryer:laundry:wrinkle-prevent" }
+String LaundryDryer_MachineState "Dryer State [%s]" { channel="smartthings:dryer:laundry:machine-state" }
+String LaundryDryer_JobState "Dryer Job [%s]" { channel="smartthings:dryer:laundry:job-state" }
+Number:Time LaundryDryer_Remaining "Dryer Remaining [%d %unit%]" { channel="smartthings:dryer:laundry:remaining-time" }
+Number:Dimensionless LaundryDryer_Progress "Dryer Progress [%.0f %%]" { channel="smartthings:dryer:laundry:progress" }
+
+Switch LaundryWasher_Power "Washer Power" { channel="smartthings:washer:utility:power" }
+String LaundryWasher_MachineState "Machine State [%s]" { channel="smartthings:washer:utility:machine-state" }
+String LaundryWasher_JobState "Job State [%s]" { channel="smartthings:washer:utility:job-state" }
+Number:Time LaundryWasher_Remaining "Remaining Time [%d %unit%]" { channel="smartthings:washer:utility:remaining-time" }
+Number:Dimensionless LaundryWasher_Progress "Progress [%.0f %%]" { channel="smartthings:washer:utility:progress" }
 ```
 
-### Sitemap File
+### Sitemap Configuration
+
+`$OPENHAB_CONF/sitemaps/smartthings.sitemap`:
 
 ```perl
-Frame label="Sengled RGBW Bulb" {
-    Switch item=SengledSwitch label="Switch"
-    Slider  item=SengledDimmer label="Level [%d]"
-    Text item=SengledTemperature label="Color Temperature [%d]"
-    Colorpicker item=SengledColorControl label="Color [%s]"  icon="colorwheel"
+sitemap smartthings label="Samsung Appliances" {
+    Frame label="Living Room Air Conditioner" {
+        Switch item=LivingRoomAC_Power
+        Setpoint item=LivingRoomAC_Target minValue=16 maxValue=30 step=1
+        Text item=LivingRoomAC_Current
+        Text item=LivingRoomAC_Mode
+        Text item=LivingRoomAC_Fan
+        Text item=LivingRoomAC_PowerConsumption
+    }
+    Frame label="Laundry Dryer" {
+        Switch item=LaundryDryer_Power
+        Selection item=LaundryDryer_Mode
+        Selection item=LaundryDryer_Cycle
+        Setpoint item=LaundryDryer_DelayEnd minValue=0 maxValue=86400 step=1800
+        Selection item=LaundryDryer_DryLevel
+        Selection item=LaundryDryer_WrinklePrevent
+        Text item=LaundryDryer_MachineState
+        Text item=LaundryDryer_JobState
+        Text item=LaundryDryer_Remaining
+        Text item=LaundryDryer_Progress
+    }
+    Frame label="Utility Washer" {
+        Switch item=LaundryWasher_Power
+        Text item=LaundryWasher_MachineState
+        Text item=LaundryWasher_JobState
+        Text item=LaundryWasher_Remaining
+        Text item=LaundryWasher_Progress
+    }
 }
 ```
 
-## References
-
-1. [openHAB configuration documentation](https://openhab.org/docs/configuration/index.html)
-1. [SmartThings Capabilities Reference](https://docs.smartthings.com/en/latest/capabilities-reference.html)
-1. [SmartThings Developers Documentation](https://docs.smartthings.com/en/latest/index.html)
-1. [SmartThings Development Environment](https://graph.api.smartthings.com/)
+Use the target-temperature range and increment reported by the appliance when configuring a control; the sitemap values above are examples only. State changes use CoAP Observe when available and fall back to polling at `refreshInterval`. Sending `REFRESH` to a linked Item requests a resource refresh.
