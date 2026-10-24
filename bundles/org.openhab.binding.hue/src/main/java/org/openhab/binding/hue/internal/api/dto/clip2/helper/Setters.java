@@ -178,13 +178,14 @@ public class Setters {
      */
     public static Resource setGradientPointColorXy(Resource target, Command command, int index,
             @Nullable Resource source) {
-        if (command instanceof HSBType hsb && target.getGradient() instanceof Gradient gradient) {
+        if (command instanceof HSBType hsb && source.getGradient() instanceof Gradient sourceGradient) {
             hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             Gamut gamut = target.getGamut();
             gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(source) ? source.getGamut() : null;
             gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
-            gradient.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb, gamut)));
-
+            Gradient targetGradient = sourceGradient.copy();
+            targetGradient.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb, gamut)));
+            target.setGradient(targetGradient);
         }
         return target;
     }

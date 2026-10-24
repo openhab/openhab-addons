@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,5 +67,40 @@ public class Gradient {
             throw new IllegalStateException("'color' not initialized");
         }
         color.setXY(xy);
+    }
+
+    /**
+     * Creates a deep copy of the current Gradient object. Purges all null fields.
+     * 
+     * @return a new Gradient object with the same (non null) points
+     */
+    public Gradient copy() {
+        Gradient result = new Gradient();
+        List<Color2> points = this.points;
+        if (points != null) {
+            List<Color2> resultPoints = new ArrayList<>(points.size());
+            for (Color2 point : points) {
+                if (point == null) {
+                    continue;
+                }
+                ColorXy colorXy = point.getColorXy();
+                if (colorXy == null) {
+                    continue;
+                }
+                PairXy pairXy = colorXy.getXY();
+                if (pairXy == null) {
+                    continue;
+                }
+                double[] xy = pairXy.getXY();
+                if (xy.length != 2) {
+                    continue;
+                }
+                // deep copy
+                resultPoints.add(new Color2()
+                        .setColorXy(new ColorXy().setXY(new PairXy().setXY(new double[] { xy[0], xy[1] }))));
+            }
+            result.points = resultPoints;
+        }
+        return result;
     }
 }

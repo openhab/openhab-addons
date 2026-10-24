@@ -27,4 +27,9 @@ public class Color2 {
     public @Nullable ColorXy getColorXy() {
         return color;
     }
+
+    public Color2 setColorXy(ColorXy color) {
+        this.color = color;
+        return this;
+    }
 }

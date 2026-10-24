@@ -166,7 +166,7 @@ public class Resource {
         return switch (getType()) {
             // https://developers.meethue.com/develop/hue-api-v2/api-reference/#resource_light_get
             case LIGHT -> hasHSBField() || colorTemperature != null || dynamics != null || effects != null
-                    || timedEffects != null;
+                    || timedEffects != null || gradient != null;
             // https://developers.meethue.com/develop/hue-api-v2/api-reference/#resource_grouped_light_get
             case GROUPED_LIGHT -> on != null || dimming != null || alert != null;
             default -> throw new IllegalStateException(type + " is not supported by hasAnyRelevantField()");

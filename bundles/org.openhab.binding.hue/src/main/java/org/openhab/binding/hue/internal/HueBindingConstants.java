@@ -128,7 +128,6 @@ public class HueBindingConstants {
     public static final String PROPERTY_COLOR_TEMP_RANGE = "colorTemperatureRange";
     public static final String PROPERTY_COLOR_GAMUT = "colorGamut";
     public static final String PROPERTY_FIRMWARE_UPDATE_STATE = "firmwareUpdateState";
-    public static final String PROPERTY_GRADIENT_POINTS_CAPABLE = "gradientPointsCapable";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 
@@ -201,9 +200,10 @@ public class HueBindingConstants {
 
     // gradient channels
     private static final String CHANNEL_2_GRADIENT_PREFIX = "gradient-color-";
+    private static final String CHANNEL_2_GRADIENT_REGEX = "^" + CHANNEL_2_GRADIENT_PREFIX + "([1-5])$";
+
     public static final String CHANNEL_2_GRADIENT_FORMAT = CHANNEL_2_GRADIENT_PREFIX + "%d";
-    public static final Pattern CHANNEL_2_GRADIENT_PATTERN = Pattern
-            .compile("^" + CHANNEL_2_GRADIENT_PREFIX + "[1-5]$");
+    public static final Pattern CHANNEL_2_GRADIENT_PATTERN = Pattern.compile(CHANNEL_2_GRADIENT_REGEX);
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,

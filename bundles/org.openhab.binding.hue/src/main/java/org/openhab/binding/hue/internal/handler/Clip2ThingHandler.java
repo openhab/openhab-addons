@@ -635,13 +635,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         int index = Integer.parseInt(gradientChannelMatcher.group(1)) - 1;
                         putResource = new Resource(ResourceType.LIGHT);
                         putResource = Setters.setGradientPointColorXy(putResource, hsb, index, cache);
+                        break;
                     }
+                }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("{} -> handleCommand() channelUID:{} unknown", resourceId, channelUID);
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{} -> handleCommand() channelUID:{} unknown", resourceId, channelUID);
-                    } else {
-                        logger.warn("Command received for unknown channel '{}'.", channelUID);
-                    }
+                    logger.warn("Command received for unknown channel '{}'.", channelUID);
                 }
                 return;
         }
@@ -1841,12 +1841,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     legacyLightState = new LegacyLightState();
                     logger.debug("{} -> enabled operating mode work-around for {}", resourceId, modelId);
                 }
-            }
-
-            // gradient data
-            Gradient gradient = resource.getGradient();
-            if (gradient != null) {
-                thing.setProperty(PROPERTY_GRADIENT_POINTS_CAPABLE, String.valueOf(gradient.getXyPoints().size()));
             }
 
             thing.setProperties(props);
