@@ -22,6 +22,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -249,6 +250,28 @@ public enum VehicleChannel {
     TRIP_ANTICIPATION_RATING(GROUP_TRIP, "anticipation-rating",
             "vehicle.trip.segment.accumulated.chassis.brake.starsAverage", Kind.NUMBER, null);
 
+    /**
+     * The drive a channel needs to apply to a vehicle.
+     */
+    public enum Drive {
+        ANY,
+        // an electric motor with a high-voltage battery that can be charged: electric and plug-in hybrid vehicles
+        ELECTRIC,
+        // a combustion engine: combustion, mild hybrid and plug-in hybrid vehicles
+        COMBUSTION
+    }
+
+    private static final Set<VehicleChannel> ELECTRIC_ONLY = EnumSet.of(BATTERY_CAPACITY, BATTERY_ENERGY,
+            BATTERY_HEALTH, ENERGY_TO_FULL, GRID_ENERGY, AVG_CONSUMPTION, ELECTRIC_RANGE, ELECTRIC_RANGE_FORECAST, SOC,
+            TARGET_SOC, CHARGING_STATUS, PLUGGED, CHARGING_POWER, TIME_REMAINING, AC_CURRENT, AC_VOLTAGE, AC_LIMIT,
+            PHASES, CHARGING_METHOD, DC_PORT, PREDICTED_SOC, MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE,
+            CHARGING_END_REASON, LAST_CHARGING_RESULT, CABLE_LOCK, CHARGING_FLAP, TRIP_END_SOC, TRIP_RECUPERATION,
+            TRIP_COMFORT_ENERGY, TRIP_ELECTRIC_SHARE);
+
+    // lastRemainingRange is meant for vehicles with a combustion engine, according to BMW's catalogue
+    private static final Set<VehicleChannel> COMBUSTION_ONLY = EnumSet.of(FUEL_CONSUMED, FUEL_LEVEL, REMAINING_FUEL,
+            TOTAL_RANGE);
+
     enum Kind {
         QUANTITY,
         NUMBER,
@@ -334,6 +357,20 @@ public enum VehicleChannel {
     public @Nullable String getDetailChannelUid() {
         String channelUid = getChannelUid();
         return kind == Kind.OPENING && channelUid != null ? channelUid + "-state" : null;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    /**
+     * @return the drive the channel needs to apply to a vehicle
+     */
+    public Drive getDrive() {
+        if (ELECTRIC_ONLY.contains(this)) {
+            return Drive.ELECTRIC;
+        }
+        return COMBUSTION_ONLY.contains(this) ? Drive.COMBUSTION : Drive.ANY;
     }
 
     public static @Nullable VehicleChannel fromDescriptor(String descriptor) {

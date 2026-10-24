@@ -125,6 +125,16 @@ If it expires or is revoked, the bridge shows a new link and user code.
 All channels are read-only.
 A channel is only updated if the vehicle reports the corresponding data and, for streaming, if the data has been selected in the customer portal.
 
+When the static vehicle data is read, the channels that do not apply to the vehicle are removed:
+
+- For an electric vehicle, the fuel channels and the total range.
+- For a vehicle without electric drive, the charging, high-voltage battery and electric range channels.
+- The sunroof channels, if BMW reports the vehicle has no sunroof.
+- The navigation channels, including the location, if BMW reports the vehicle has no navigation system.
+
+Plug-in hybrids and vehicles whose drive is not recognized keep all channels.
+To get removed channels back, delete and recreate the Thing.
+
 | Channel                              | Type                     | Description                                                                   | Advanced |
 |--------------------------------------|--------------------------|-------------------------------------------------------------------------------|----------|
 | status#door-lock                     | String                   | Lock state of the doors                                                       | no       |

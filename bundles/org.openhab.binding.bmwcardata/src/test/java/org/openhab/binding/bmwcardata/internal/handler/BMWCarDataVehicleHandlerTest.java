@@ -19,6 +19,8 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants.*;
 
 import java.time.Instant;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -27,7 +29,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
+import org.openhab.binding.bmwcardata.internal.handler.VehicleChannel.Drive;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -197,6 +201,59 @@ class BMWCarDataVehicleHandlerTest {
         telematicValue.unit = unit;
         telematicValue.timestamp = timestamp;
         return telematicValue;
+    }
+
+    @Test
+    void electricVehicleLosesCombustionChannels() {
+        BasicData basicData = basicData("BEV", null, true, true);
+        assertEquals(EnumSet.of(Drive.ELECTRIC), BMWCarDataVehicleHandler.drives(basicData));
+        List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
+        assertTrue(ids.contains(GROUP_RANGE + "#fuel-level"));
+        assertTrue(ids.contains(GROUP_RANGE + "#total"));
+        assertFalse(ids.contains(GROUP_CHARGE + "#soc"));
+        assertFalse(ids.contains(GROUP_STATUS + "#sunroof"));
+        assertFalse(ids.contains(CHANNEL_GPS));
+    }
+
+    @Test
+    void combustionVehicleLosesElectricChannels() {
+        BasicData basicData = basicData(null, "CONV", true, true);
+        assertEquals(EnumSet.of(Drive.COMBUSTION), BMWCarDataVehicleHandler.drives(basicData));
+        List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
+        assertTrue(ids.contains(GROUP_CHARGE + "#soc"));
+        assertTrue(ids.contains(GROUP_RANGE + "#electric"));
+        assertFalse(ids.contains(GROUP_RANGE + "#fuel-level"));
+        assertFalse(ids.contains(GROUP_RANGE + "#mileage"));
+    }
+
+    @Test
+    void hybridAndUnknownDrivesKeepAllDriveChannels() {
+        assertEquals(List.of(), BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("PHEV", null, true, true)));
+        assertEquals(List.of(), BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("XYZ", null, null, null)));
+        assertEquals(List.of(), BMWCarDataVehicleHandler.irrelevantChannelIds(new BasicData()));
+        assertEquals(EnumSet.of(Drive.COMBUSTION),
+                BMWCarDataVehicleHandler.drives(basicData("MILD_HYBRID", null, null, null)));
+    }
+
+    @Test
+    void missingEquipmentLosesItsChannels() {
+        List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("PHEV", null, false, false));
+        assertTrue(ids.contains(GROUP_STATUS + "#sunroof"));
+        assertTrue(ids.contains(GROUP_STATUS + "#sunroof-state"));
+        assertTrue(ids.contains(CHANNEL_GPS));
+        assertTrue(ids.contains(GROUP_NAVIGATION + "#heading"));
+        assertTrue(ids.contains(GROUP_NAVIGATION + "#destination-distance"));
+        assertFalse(ids.contains(GROUP_STATUS + "#door-lock"));
+    }
+
+    private static BasicData basicData(@Nullable String driveTrain, @Nullable String propulsionType,
+            @Nullable Boolean hasSunRoof, @Nullable Boolean hasNavi) {
+        BasicData basicData = new BasicData();
+        basicData.driveTrain = driveTrain;
+        basicData.propulsionType = propulsionType;
+        basicData.hasSunRoof = hasSunRoof;
+        basicData.hasNavi = hasNavi;
+        return basicData;
     }
 
     private void verifyState(String channelId, State state) {

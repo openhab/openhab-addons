@@ -30,4 +30,6 @@ public class BasicData {
     public @Nullable String propulsionType;
     public @Nullable String colourDescription;
     public @Nullable String constructionDate;
+    public @Nullable Boolean hasSunRoof;
+    public @Nullable Boolean hasNavi;
 }

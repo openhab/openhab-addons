@@ -43,6 +43,8 @@ public class BMWCarDataBindingConstants {
     public static final String PROPERTY_PROPULSION_TYPE = "propulsionType";
     public static final String PROPERTY_COLOR = "color";
     public static final String PROPERTY_CONSTRUCTION_DATE = "constructionDate";
+    public static final String PROPERTY_HAS_SUNROOF = "hasSunroof";
+    public static final String PROPERTY_HAS_NAVIGATION = "hasNavigation";
 
     // Channel groups and derived channels; descriptor-backed channels are defined in VehicleChannel
     public static final String GROUP_STATUS = "status";

@@ -18,11 +18,14 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +37,7 @@ import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.binding.bmwcardata.internal.config.VehicleConfiguration;
+import org.openhab.binding.bmwcardata.internal.handler.VehicleChannel.Drive;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -352,7 +356,89 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         putIfPresent(properties, PROPERTY_PROPULSION_TYPE, basicData.propulsionType);
         putIfPresent(properties, PROPERTY_COLOR, basicData.colourDescription);
         putIfPresent(properties, PROPERTY_CONSTRUCTION_DATE, basicData.constructionDate);
+        putIfPresent(properties, PROPERTY_HAS_SUNROOF, Objects.toString(basicData.hasSunRoof, null));
+        putIfPresent(properties, PROPERTY_HAS_NAVIGATION, Objects.toString(basicData.hasNavi, null));
         updateProperties(properties);
+        removeIrrelevantChannels(basicData);
+    }
+
+    /**
+     * Removes the channels that do not apply to the vehicle: those of a drive it does not have, of the sunroof and of
+     * the navigation system, which provides the location. Equipment is only treated as missing when BMW explicitly
+     * reports so. The channels are removed once, together with retrieving the properties; recreate the Thing to get
+     * them back.
+     */
+    private void removeIrrelevantChannels(BasicData basicData) {
+        List<Channel> channels = irrelevantChannelIds(basicData).stream()
+                .map(id -> getThing().getChannel(new ChannelUID(getThing().getUID(), id))).filter(Objects::nonNull)
+                .map(Objects::requireNonNull).toList();
+        if (!channels.isEmpty()) {
+            logger.debug("Removing {} channels that do not apply to the vehicle", channels.size());
+            // dynamic channels may be created concurrently, see updateDynamicChannels
+            synchronized (dynamicChannelLock) {
+                updateThing(editThing().withoutChannels(channels).build());
+            }
+        }
+    }
+
+    /**
+     * @param basicData the basic data of the vehicle
+     * @return the ids of the channels that do not apply to the vehicle
+     */
+    static List<String> irrelevantChannelIds(BasicData basicData) {
+        boolean noSunroof = Boolean.FALSE.equals(basicData.hasSunRoof);
+        boolean noNavigation = Boolean.FALSE.equals(basicData.hasNavi);
+        Set<Drive> drives = drives(basicData);
+        List<String> ids = new ArrayList<>();
+        if (noNavigation) {
+            ids.add(CHANNEL_GPS);
+        }
+        for (VehicleChannel channel : VehicleChannel.values()) {
+            boolean irrelevant = (channel.getDrive() != Drive.ANY && !drives.contains(channel.getDrive()))
+                    || (noSunroof && channel == VehicleChannel.SUNROOF)
+                    || (noNavigation && GROUP_NAVIGATION.equals(channel.getGroupId()));
+            String channelUid = channel.getChannelUid();
+            if (irrelevant && channelUid != null) {
+                ids.add(channelUid);
+                String detailChannelUid = channel.getDetailChannelUid();
+                if (detailChannelUid != null) {
+                    ids.add(detailChannelUid);
+                }
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * Derives the drives of the vehicle from its basic data: the drive train, or the propulsion type when the drive
+     * train is not known. Only {@code BEV} and {@code EL} have been seen; other values are matched by the catalogue's
+     * abbreviations, and a value that is not recognized keeps all channels.
+     */
+    static Set<Drive> drives(BasicData basicData) {
+        Set<Drive> drives = drives(basicData.driveTrain);
+        if (drives == null) {
+            drives = drives(basicData.propulsionType);
+        }
+        return drives != null ? drives : EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
+    }
+
+    private static @Nullable Set<Drive> drives(@Nullable String type) {
+        if (type == null || type.isBlank()) {
+            return null;
+        }
+        String upperCase = type.strip().toUpperCase(Locale.ROOT);
+        if (upperCase.contains("PHEV") || upperCase.contains("PLUGIN") || upperCase.contains("PLUG_IN")) {
+            return EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
+        }
+        if ("BEV".equals(upperCase) || "EL".equals(upperCase) || "ELECTRIC".equals(upperCase)) {
+            return EnumSet.of(Drive.ELECTRIC);
+        }
+        if ("CE".equals(upperCase) || "ICE".equals(upperCase) || "COMBUSTION".equals(upperCase)
+                || upperCase.contains("MHEV") || upperCase.contains("MILD") || "HEV".equals(upperCase)
+                || "CONV".equals(upperCase) || "CONVENTIONAL".equals(upperCase)) {
+            return EnumSet.of(Drive.COMBUSTION);
+        }
+        return null;
     }
 
     private static void putIfPresent(Map<String, String> properties, String key, @Nullable String value) {
