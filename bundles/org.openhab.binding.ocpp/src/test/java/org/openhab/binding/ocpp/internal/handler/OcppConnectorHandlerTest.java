@@ -38,7 +38,9 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.ocpp.internal.transport.ChargerCapabilities;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -435,19 +437,18 @@ class OcppConnectorHandlerTest {
     }
 
     private void externalReading(String reading) {
-        command(CHANNEL_EXTERNAL_ENERGY, new org.openhab.core.library.types.QuantityType<>(reading));
+        command(CHANNEL_EXTERNAL_ENERGY, new QuantityType<>(reading));
     }
 
-    private static org.openhab.core.library.types.QuantityType<?> wattHours(double wh) {
-        return new org.openhab.core.library.types.QuantityType<>(wh, org.openhab.core.library.unit.Units.WATT_HOUR);
+    private static QuantityType<?> wattHours(double wh) {
+        return new QuantityType<>(wh, Units.WATT_HOUR);
     }
 
     @Test
     void externalReadingsConvertToWattHours() {
-        assertEquals(1500.0,
-                OcppConnectorHandler.toWattHours(new org.openhab.core.library.types.QuantityType<>("1.5 kWh")));
+        assertEquals(1500.0, OcppConnectorHandler.toWattHours(new QuantityType<>("1.5 kWh")));
         assertEquals(2000.0, OcppConnectorHandler.toWattHours(new DecimalType(2)));
-        assertEquals(null, OcppConnectorHandler.toWattHours(new org.openhab.core.library.types.QuantityType<>("7 kW")));
+        assertEquals(null, OcppConnectorHandler.toWattHours(new QuantityType<>("7 kW")));
     }
 
     /** A CHARX has no meter of its own; the PowerTag on its supply is what the session is sized from. */
