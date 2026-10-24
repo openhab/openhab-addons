@@ -94,7 +94,10 @@ public class BMWCarDataHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new BMWCarDataAccountHandler((Bridge) thing, httpClient, gson, storage, oAuthFactory);
+            // shared by all account things, as BMW counts the requests per client, not per thing
+            Storage<String> budgetStorage = storageService.getStorage(BINDING_ID + ".budget",
+                    String.class.getClassLoader());
+            return new BMWCarDataAccountHandler((Bridge) thing, httpClient, gson, storage, budgetStorage, oAuthFactory);
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
             return new BMWCarDataVehicleHandler(thing);
         }

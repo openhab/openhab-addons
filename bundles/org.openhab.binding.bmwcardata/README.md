@@ -99,7 +99,7 @@ The stream is not affected by this limit, so the binding uses the API only to co
   While the stream is connected, such a failure does not set the vehicle `OFFLINE`, as the stream keeps its values up to date.
 - The static vehicle data shown as Thing properties is read once per vehicle, and the binding sets up its own telematic data container named `openHAB` on first use, which costs a few requests.
 
-The binding counts its requests over a rolling 24 hours, also across restarts, and sends at most `requestBudget` requests.
+The binding counts its requests over a rolling 24 hours per client ID, also across restarts and when the account thing is recreated, and sends at most `requestBudget` requests.
 When the budget is used up, or BMW reports its limit as reached, the binding pauses its requests and shows this in the status description of the account; the stream keeps working.
 Keep a reserve below 50 if other tools use the same account.
 

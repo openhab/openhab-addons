@@ -97,6 +97,7 @@ class BMWCarDataAccountHandlerTest {
     private final List<Job> jobs = new ArrayList<>();
     private final List<Answer<ContentResponse>> responses = new ArrayList<>();
     private final MapStorage storage = new MapStorage();
+    private final MapStorage budgetStorage = new MapStorage();
     private @NonNullByDefault({}) HttpClient httpClient;
     private @NonNullByDefault({}) ThingHandlerCallback accountCallback;
     private @NonNullByDefault({}) ThingHandlerCallback vehicleCallback;
@@ -254,7 +255,8 @@ class BMWCarDataAccountHandlerTest {
 
         StreamSource streamSource = mock(StreamSource.class);
         when(streamSource.stop()).thenReturn(CompletableFuture.completedFuture(true));
-        handler = new BMWCarDataAccountHandler(bridge, httpClient, new Gson(), storage, oAuthFactory, scheduler()) {
+        handler = new BMWCarDataAccountHandler(bridge, httpClient, new Gson(), storage, budgetStorage, oAuthFactory,
+                scheduler()) {
             @Override
             StreamSource createStreamSource(Tokens tokens) {
                 return streamSource;
