@@ -64,8 +64,9 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     private final AtomicInteger lifecycleGeneration = new AtomicInteger();
     private volatile boolean disposed;
     /**
-     * Per-connection park gate for {@link #serialEvent}. Closing the port does not interrupt a sleeping provider
-     * thread, so each open arms a fresh latch and teardown counts it down before removeEventListener/close.
+     * Park gate for the currently published connection's {@link #serialEvent} callbacks. Published atomically with the
+     * port; abandoned opens never touch this field. Teardown counts down only this latch before
+     * removeEventListener/close.
      */
     private volatile @Nullable CountDownLatch serialEventPark;
 
@@ -156,16 +157,14 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
             InputStream in = Objects.requireNonNull(port.getInputStream(), "serial input stream");
             OutputStream out = Objects.requireNonNull(port.getOutputStream(), "serial output stream");
-            // Arm before addEventListener so the first callback parks on a live gate
-            armSerialEventWait();
-            port.addEventListener(this);
-            port.notifyOnDataAvailable(true);
-
+            // Latch is local until publish — abandoned opens must not arm/release the replacement's gate
+            CountDownLatch attemptPark = new CountDownLatch(1);
             SerialPortReader reader = new SerialPortReader(in, generation);
+            boolean listenerRejected = false;
 
             synchronized (this) {
                 if (!isLifecycleCurrent(generation) || serialPort != null) {
-                    // Superseded before publish — close only this attempt's resources
+                    // Superseded before publish — close only this attempt's resources (no latch/listener published)
                     closeLocalPort(port);
                     return;
                 }
@@ -173,19 +172,36 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 inputStream = in;
                 outputStream = out;
                 readerThread = reader;
-                // ONLINE before reader.start() so an immediate EOF/FD_SET OFFLINE is not overwritten
-                updateStatus(ThingStatus.ONLINE);
-                reader.start();
+                serialEventPark = attemptPark;
+                try {
+                    // Listener only after latch publish so callbacks park on this connection's gate
+                    port.addEventListener(this);
+                    port.notifyOnDataAvailable(true);
+                } catch (TooManyListenersException e) {
+                    readerThread = null;
+                    inputStream = null;
+                    outputStream = null;
+                    serialPort = null;
+                    serialEventPark = null;
+                    attemptPark.countDown();
+                    closeLocalPort(port);
+                    listenerRejected = true;
+                }
+                if (!listenerRejected) {
+                    // ONLINE before reader.start() so an immediate EOF/FD_SET OFFLINE is not overwritten
+                    updateStatus(ThingStatus.ONLINE);
+                    reader.start();
+                }
+            }
+            if (listenerRejected) {
+                if (publishOfflineIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Too many listeners to serial port.")) {
+                    scheduleReconnect(generation);
+                }
             }
         } catch (UnsupportedCommOperationException | IOException e) {
             closeLocalPort(port);
             if (publishOfflineIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error")) {
-                scheduleReconnect(generation);
-            }
-        } catch (TooManyListenersException e) {
-            closeLocalPort(port);
-            if (publishOfflineIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Too many listeners to serial port.")) {
                 scheduleReconnect(generation);
             }
         }
@@ -209,8 +225,6 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     }
 
     private void closeLocalPort(SerialPort port) {
-        // Wake any parked serialEvent callback before remove/close (nrjavaserial does not interrupt it)
-        releaseSerialEventWait();
         try {
             port.removeEventListener();
         } catch (Exception e) {
@@ -224,25 +238,12 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     }
 
     /**
-     * Prepare a fresh park gate for the next serial event callback. Any previous latch is counted down so a stale
-     * reconnect cycle cannot leave an old provider thread blocked forever.
+     * Unblock {@link #serialEvent} for the given park gate so the serial provider thread can exit before the listener
+     * is removed or the port is closed. Only the owning connection's latch may be passed here.
      */
-    private void armSerialEventWait() {
-        CountDownLatch previous = serialEventPark;
-        serialEventPark = new CountDownLatch(1);
-        if (previous != null) {
-            previous.countDown();
-        }
-    }
-
-    /**
-     * Unblock {@link #serialEvent} so the serial provider thread can exit before the listener is removed or the port
-     * is closed.
-     */
-    private void releaseSerialEventWait() {
-        CountDownLatch park = serialEventPark;
-        if (park != null) {
-            park.countDown();
+    private void releaseSerialEventWait(@Nullable CountDownLatch owned) {
+        if (owned != null) {
+            owned.countDown();
         }
     }
 
@@ -321,8 +322,10 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 logger.debug("Error while closing the output stream: {}", e.getMessage());
             }
         }
-        // Wake parked serialEvent before removeEventListener/close — otherwise provider threads accumulate
-        releaseSerialEventWait();
+        // Wake only this connection's park before removeEventListener/close — never a replacement's latch
+        CountDownLatch park = serialEventPark;
+        serialEventPark = null;
+        releaseSerialEventWait(park);
         SerialPort port = serialPort;
         if (port != null) {
             try {
@@ -389,7 +392,8 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
             Throttler.lock(config.port);
 
-            lastLineReceived = "";
+            // Response storage is connection-scoped so a superseded reader cannot satisfy a new request
+            reader.clearLastResponse();
             String request = commandAsString + "\r";
 
             try {
@@ -406,7 +410,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             }
 
             long timeStamp = System.currentTimeMillis();
-            while ("".equals(lastLineReceived)) {
+            while ("".equals(reader.getLastResponse())) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -420,7 +424,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     break;
                 }
             }
-            String response = lastLineReceived;
+            String response = reader.getLastResponse();
 
             Throttler.unlock(config.port);
 
@@ -455,6 +459,8 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         private volatile boolean stopping = false;
         private final InputStream inputStream;
         private final int connectionGeneration;
+        /** Connection-scoped response; superseded readers must not write the handler/shared field alone. */
+        private volatile String lastResponse = "";
         int index = 0;
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
@@ -468,6 +474,31 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
         int getConnectionGeneration() {
             return connectionGeneration;
+        }
+
+        void clearLastResponse() {
+            lastResponse = "";
+        }
+
+        String getLastResponse() {
+            return lastResponse;
+        }
+
+        /**
+         * Publish a completed line only while this reader is still the active connection. Prevents a late read after a
+         * bounded join timeout from satisfying a request on a replacement connection.
+         */
+        private void acceptResponse(String line) {
+            if (stopping) {
+                return;
+            }
+            synchronized (SerialOceanicThingHandler.this) {
+                if (stopping || !this.equals(readerThread) || !isLifecycleCurrent(connectionGeneration)) {
+                    return;
+                }
+                lastResponse = line;
+                lastLineReceived = line;
+            }
         }
 
         public void reset() {
@@ -554,7 +585,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                                     line = line.trim();
                                     index = 0;
 
-                                    lastLineReceived = line;
+                                    acceptResponse(line);
                                     break;
                                 }
                             }
