@@ -270,9 +270,11 @@ public class SOAPConnector {
             SOAPMessage soapResponse = doSOAPRequest(
                     new SOAPRequest(channelConfig.getService(), getAction.getName(), arguments));
             String argumentName = channelConfig.getChannelTypeDescription().getGetAction().getArgument();
-            // find all other channels with the same action that are already in cache, so we can update them
+            // find all other channels with the same action and the same parameter that are already in cache, so we
+            // can update them (channels with a different parameter, e.g. another MAC, are answered by another response)
             Map<ChannelUID, Tr064ChannelConfig> channelsInRequest = channelConfigMap.entrySet().stream()
                     .filter(map -> getAction.equals(map.getValue().getGetAction())
+                            && Objects.equals(parameter, map.getValue().getParameter())
                             && stateCache.containsKey(map.getKey())
                             && !argumentName
                                     .equals(map.getValue().getChannelTypeDescription().getGetAction().getArgument()))
