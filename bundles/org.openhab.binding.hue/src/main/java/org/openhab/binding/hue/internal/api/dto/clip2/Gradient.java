@@ -61,7 +61,10 @@ public class Gradient {
         if (index < 0 || index >= points.size()) {
             throw new IndexOutOfBoundsException("index:%d, size:%d".formatted(index, points.size()));
         }
-        Color2 color = points.get(index);
-        color.getColorXy().setXY(xy);
+        ColorXy color = points.get(index).getColorXy();
+        if (color == null) {
+            throw new IllegalStateException("'color' not initialized");
+        }
+        color.setXY(xy);
     }
 }
