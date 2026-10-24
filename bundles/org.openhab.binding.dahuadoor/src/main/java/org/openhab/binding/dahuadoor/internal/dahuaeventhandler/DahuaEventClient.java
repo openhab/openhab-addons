@@ -153,31 +153,6 @@ public class DahuaEventClient implements Runnable {
     }
 
     /**
-     * Applies the audio codec fix required for WebRTC compatibility.
-     * Sets the VTO audio encoding to G.711A / 8 kHz on both main and sub streams via the
-     * Dahua configManager CGI API. This setting resets on device reboot and must be
-     * re-applied after each {@code SIPRegisterResult} event.
-     *
-     * @return {@code true} if the CGI call succeeded (HTTP 200), {@code false} otherwise
-     */
-    public boolean fixAudioCodec() {
-        String path = "/cgi-bin/configManager.cgi?action=setConfig"
-                + "&Encode%5B0%5D.MainFormat%5B0%5D.Audio.Compression=G.711A"
-                + "&Encode%5B0%5D.MainFormat%5B0%5D.Audio.Frequency=8000"
-                + "&Encode%5B0%5D.ExtraFormat%5B0%5D.Audio.Compression=G.711A"
-                + "&Encode%5B0%5D.ExtraFormat%5B0%5D.Audio.Frequency=8000";
-        try {
-            sendAuthenticatedGetRequest(path, "Audio codec fix");
-            return true;
-        } catch (DahuaHttpRedirectException e) {
-            logger.warn("Audio codec fix redirected on {}: {}", host, e.getMessage());
-        } catch (IOException e) {
-            logger.warn("Audio codec fix failed on {}", host, e);
-        }
-        return false;
-    }
-
-    /**
      * Sends a snapshot request with Digest auth.
      * Uses HTTPS or HTTP based on the cached {@link #httpsAvailable} flag.
      * Step 1: open connection, get 401 + challenge, close connection.
@@ -266,11 +241,11 @@ public class DahuaEventClient implements Runnable {
 
     /**
      * Sends an authenticated GET request with Digest auth.
-     * Used for door open and audio codec fix requests.
+     * Used for door open requests.
      * Same sequential two-connection pattern as sendSnapshotRequest.
      *
      * @param path the CGI path to request
-     * @param actionName label used for logging (e.g. "Open Door", "Audio codec fix")
+     * @param actionName label used for logging (e.g. "Open Door")
      */
     private void sendAuthenticatedGetRequest(String path, String actionName)
             throws IOException, DahuaHttpRedirectException {

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dahuadoor.internal.media;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -20,6 +21,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -140,5 +142,90 @@ class SipBackchannelRtpRelayTest {
         assertEquals(0xA0, forwarded[7] & 0xFF);
         assertEquals(0xFF, forwarded[12] & 0xFF);
         assertEquals(0xFF, forwarded[13] & 0xFF);
+    }
+
+    private static SipBackchannelRtpRelay.RelayTarget target(String codec, int clockRate) {
+        return new SipBackchannelRtpRelay.RelayTarget(InetAddress.getLoopbackAddress(), 5004, 97, codec, clockRate);
+    }
+
+    private static byte @Nullable [] extract(byte[] packet, SipBackchannelRtpRelay.RelayTarget target) {
+        return SipBackchannelRtpRelay.extractIngestPayload(new DatagramPacket(packet, packet.length), target);
+    }
+
+    /** Builds an RTP v2 packet with a 12 byte header, the given payload and optional trailing bytes. */
+    private static byte[] rtpPacket(int firstByte, byte[] payload, byte... trailer) {
+        byte[] packet = new byte[12 + payload.length + trailer.length];
+        packet[0] = (byte) firstByte;
+        System.arraycopy(payload, 0, packet, 12, payload.length);
+        System.arraycopy(trailer, 0, packet, 12 + payload.length, trailer.length);
+        return packet;
+    }
+
+    @Test
+    void extractIngestPayloadStripsRtpHeader() {
+        byte[] payload = extract(rtpPacket(0x80, new byte[] { 1, 2, 3, 4 }), target("PCM", 16000));
+        assertNotNull(payload);
+        assertArrayEquals(new byte[] { 1, 2, 3, 4 }, payload);
+    }
+
+    @Test
+    void extractIngestPayloadRejectsInvalidPackets() {
+        SipBackchannelRtpRelay.RelayTarget pcm = target("PCM", 16000);
+        assertNull(extract(new byte[16], pcm));
+        assertNull(extract(rtpPacket(0x80, new byte[0]), pcm));
+        assertNull(extract(rtpPacket(0x80, new byte[] { 1, 2, 3 }), pcm));
+    }
+
+    @Test
+    void extractIngestPayloadRemovesRtpPadding() {
+        SipBackchannelRtpRelay.RelayTarget pcm = target("PCM", 16000);
+        byte[] samples = { 1, 2, 3, 4 };
+
+        assertArrayEquals(samples, extract(rtpPacket(0xA0, samples, (byte) 0, (byte) 0, (byte) 0, (byte) 4), pcm));
+        // An odd padding count must not discard valid samples
+        assertArrayEquals(samples, extract(rtpPacket(0xA0, samples, (byte) 0, (byte) 0, (byte) 3), pcm));
+    }
+
+    @Test
+    void extractIngestPayloadRejectsInvalidPadding() {
+        SipBackchannelRtpRelay.RelayTarget pcm = target("PCM", 16000);
+        byte[] samples = { 1, 2, 3, 4 };
+
+        assertNull(extract(rtpPacket(0xA0, samples, (byte) 0), pcm));
+        assertNull(extract(rtpPacket(0xA0, samples, (byte) 0, (byte) 0, (byte) 0, (byte) 5), pcm));
+        assertNull(extract(rtpPacket(0xA0, new byte[0], (byte) 0, (byte) 0, (byte) 2), pcm));
+    }
+
+    @Test
+    void extractIngestPayloadDecodesPcmaToPcm16k() {
+        // A-law 0xAA is the positive maximum (32256), 0xD5 is the smallest positive value (8)
+        byte[] payload = extract(rtpPacket(0x80, new byte[] { (byte) 0xAA, (byte) 0xD5 }), target("PCMA", 8000));
+        assertNotNull(payload);
+        // 32256, interpolated 16132, 8, 8 as 16 bit little endian
+        assertArrayEquals(new byte[] { 0x00, 0x7E, 0x04, 0x3F, 0x08, 0x00, 0x08, 0x00 }, payload);
+    }
+
+    @Test
+    void extractIngestPayloadDecodesPcmuToPcm16k() {
+        // mu-law 0x80 is the positive maximum (32124), 0xFF is zero
+        byte[] payload = extract(rtpPacket(0x80, new byte[] { (byte) 0x80, (byte) 0xFF }), target("PCMU", 8000));
+        assertNotNull(payload);
+        // 32124, interpolated 16062, 0, 0 as 16 bit little endian
+        assertArrayEquals(new byte[] { 0x7C, 0x7D, (byte) 0xBE, 0x3E, 0x00, 0x00, 0x00, 0x00 }, payload);
+    }
+
+    @Test
+    void extractIngestPayloadRemovesPaddingFromG711() {
+        byte[] payload = extract(rtpPacket(0xA0, new byte[] { (byte) 0xFF }, (byte) 0, (byte) 2), target("PCMU", 8000));
+        assertNotNull(payload);
+        assertEquals(4, payload.length);
+    }
+
+    @Test
+    void extractIngestPayloadRejectsUnsupportedCodecs() {
+        byte[] packet = rtpPacket(0x80, new byte[] { 1, 2, 3, 4 });
+        assertNull(extract(packet, target("PCMA", 16000)));
+        assertNull(extract(packet, target("PCM", 8000)));
+        assertNull(extract(packet, target("opus", 48000)));
     }
 }
