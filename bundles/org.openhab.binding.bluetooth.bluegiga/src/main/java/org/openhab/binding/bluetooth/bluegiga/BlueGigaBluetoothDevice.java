@@ -80,7 +80,9 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     private NavigableMap<Integer, BlueGigaBluetoothCharacteristic> handleToCharacteristic = new TreeMap<>();
 
     // BlueGiga needs to know the address type when connecting
-    private BluetoothAddressType addressType = BluetoothAddressType.UNKNOWN;
+    private volatile BluetoothAddressType addressType = BluetoothAddressType.UNKNOWN;
+    private BluetoothAddressType nextUnknownAddressType = BluetoothAddressType.GAP_ADDRESS_TYPE_PUBLIC;
+    private BluetoothAddressType connectionAttemptAddressType = BluetoothAddressType.UNKNOWN;
 
     // The dongle handler
     private final BlueGigaBridgeHandler bgHandler;
@@ -89,6 +91,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
 
     // The connection handle if the device is connected
     private int connection = -1;
+    private boolean disconnectOnConnect;
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
@@ -99,8 +102,10 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         @Override
         public void run() {
             if (connectionState == ConnectionState.CONNECTING) {
+                connectTimer = null;
                 logger.debug("Connection timeout for device {}", address);
                 connectionState = ConnectionState.DISCONNECTED;
+                bgHandler.connectionAttemptTimedOut(address);
             }
         }
     };
@@ -155,31 +160,80 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     }
 
     @Override
-    public boolean connect() {
-        if (connection != -1) {
-            // We're already connected
+    public synchronized boolean connect() {
+        if (connection != -1 || connectionState == ConnectionState.CONNECTING) {
             return true;
         }
 
         cancelTimer(connectTimer);
-        if (bgHandler.bgConnect(address, addressType)) {
-            connectionState = ConnectionState.CONNECTING;
-            connectTimer = startTimer(connectTimeoutTask, 10);
+        disconnectOnConnect = false;
+        connectionState = ConnectionState.CONNECTING;
+        connectionAttemptAddressType = addressType;
+        if (connectionAttemptAddressType == BluetoothAddressType.UNKNOWN) {
+            connectionAttemptAddressType = nextUnknownAddressType;
+            logger.debug("Address type for {} is unknown; trying {}", address, connectionAttemptAddressType);
+        }
+        if (bgHandler.bgConnect(address, connectionAttemptAddressType)) {
             return true;
-        } else {
-            connectionState = ConnectionState.DISCONNECTED;
-            return false;
+        }
+
+        connectionState = ConnectionState.DISCONNECTED;
+        return false;
+    }
+
+    public synchronized void connectionAttemptStarted() {
+        if (connectionState == ConnectionState.CONNECTING) {
+            cancelTimer(connectTimer);
+            connectTimer = startTimer(connectTimeoutTask, 10);
         }
     }
 
+    public synchronized void connectionAttemptFailed() {
+        cancelTimer(connectTimer);
+        if (addressType == BluetoothAddressType.UNKNOWN
+                && connectionAttemptAddressType != BluetoothAddressType.UNKNOWN) {
+            nextUnknownAddressType = alternateAddressType(connectionAttemptAddressType);
+        }
+        if (connectionState == ConnectionState.CONNECTING) {
+            connectionState = ConnectionState.DISCONNECTED;
+        }
+    }
+
+    public synchronized void connectionAttemptCancelled() {
+        cancelTimer(connectTimer);
+        if (connectionState == ConnectionState.CONNECTING) {
+            connectionState = ConnectionState.DISCONNECTED;
+        }
+    }
+
+    static BluetoothAddressType alternateAddressType(BluetoothAddressType addressType) {
+        return addressType == BluetoothAddressType.GAP_ADDRESS_TYPE_PUBLIC
+                ? BluetoothAddressType.GAP_ADDRESS_TYPE_RANDOM
+                : BluetoothAddressType.GAP_ADDRESS_TYPE_PUBLIC;
+    }
+
     @Override
-    public boolean disconnect() {
+    public synchronized boolean disconnect() {
         if (connection == -1) {
-            // We're already disconnected
+            if (connectionState == ConnectionState.CONNECTING) {
+                disconnectOnConnect = true;
+                if (!bgHandler.cancelConnectionAttempt(address)) {
+                    disconnectOnConnect = false;
+                }
+            }
             return true;
         }
 
         return bgHandler.bgDisconnect(connection);
+    }
+
+    public synchronized void adapterStopped() {
+        cancelTimer(connectTimer);
+        cancelTimer(procedureTimer);
+        disconnectOnConnect = false;
+        connection = -1;
+        connectionState = ConnectionState.DISCONNECTED;
+        currentProcedure = PROCEDURE_NONE;
     }
 
     @Override
@@ -650,21 +704,30 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
     }
 
-    private void handleConnectionStatusEvent(BlueGigaConnectionStatusEvent event) {
+    private synchronized void handleConnectionStatusEvent(BlueGigaConnectionStatusEvent event) {
         // Check if this is addressed to this device
         if (!address.equals(new BluetoothAddress(event.getAddress()))) {
             return;
         }
 
-        cancelTimer(connectTimer);
         updateLastSeenTime();
 
         // If we're connected, then remember the connection handle
         if (event.getFlags().contains(ConnectionStatusFlag.CONNECTION_CONNECTED)) {
+            cancelTimer(connectTimer);
+            BluetoothAddressType eventAddressType = event.getAddressType();
+            addressType = eventAddressType == BluetoothAddressType.UNKNOWN ? connectionAttemptAddressType
+                    : eventAddressType;
             connectionState = ConnectionState.CONNECTED;
             connection = event.getConnection();
-            notifyListeners(BluetoothEventType.CONNECTION_STATE,
-                    new BluetoothConnectionStatusNotification(connectionState));
+            if (disconnectOnConnect) {
+                disconnectOnConnect = false;
+                logger.debug("Disconnect device {} immediately after its pending connection completes", address);
+                bgHandler.bgDisconnect(connection);
+            } else {
+                notifyListeners(BluetoothEventType.CONNECTION_STATE,
+                        new BluetoothConnectionStatusNotification(connectionState));
+            }
         }
     }
 
