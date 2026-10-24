@@ -36,7 +36,9 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.ocpp.internal.transport.ChargerCapabilities;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -597,10 +599,8 @@ class OcppConnectorHandlerTest {
 
         endTransaction(7);
 
-        assertChannel(CHANNEL_METER_STOP,
-                new org.openhab.core.library.types.QuantityType<>(1600, org.openhab.core.library.unit.Units.WATT_HOUR));
-        assertChannel(CHANNEL_SESSION_ENERGY,
-                new org.openhab.core.library.types.QuantityType<>(1500, org.openhab.core.library.unit.Units.WATT_HOUR));
+        assertChannel(CHANNEL_METER_STOP, new QuantityType<>(1600, Units.WATT_HOUR));
+        assertChannel(CHANNEL_SESSION_ENERGY, new QuantityType<>(1500, Units.WATT_HOUR));
         verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_TIMESTAMP_STOP)), any());
     }
 
@@ -613,15 +613,13 @@ class OcppConnectorHandlerTest {
 
         endTransaction(7);
 
-        assertChannel(CHANNEL_METER_STOP,
-                new org.openhab.core.library.types.QuantityType<>(1600, org.openhab.core.library.unit.Units.WATT_HOUR));
+        assertChannel(CHANNEL_METER_STOP, new QuantityType<>(1600, Units.WATT_HOUR));
         verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_TRANSACTION_ID)), any());
         verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_SESSION_ENERGY)), any());
 
         endTransaction(8);
 
-        assertChannel(CHANNEL_SESSION_ENERGY,
-                new org.openhab.core.library.types.QuantityType<>(1500, org.openhab.core.library.unit.Units.WATT_HOUR));
+        assertChannel(CHANNEL_SESSION_ENERGY, new QuantityType<>(1500, Units.WATT_HOUR));
         assertChannel(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
     }
 }
