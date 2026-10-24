@@ -1008,8 +1008,8 @@ public class HeliosHandler221 extends BaseThingHandler {
                 }
             } catch (ProcessingException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                logger.trace("An underlying exception forced the Helios IP Vario to go offline : '{}'",
-                        e.getMessage(), e);
+                logger.trace("An underlying exception forced the Helios IP Vario to go offline : '{}'", e.getMessage(),
+                        e);
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
             } catch (Exception e) {
                 logger.error("An exception occurred while processing an event : '{}'", e.getMessage(), e);
