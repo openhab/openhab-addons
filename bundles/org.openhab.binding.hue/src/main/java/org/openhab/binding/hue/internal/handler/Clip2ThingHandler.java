@@ -1720,19 +1720,37 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             List<ResourceReference> lights = services.stream().filter(s -> ResourceType.LIGHT == s.getType()).toList();
             if (lights.size() > 1) {
+                int frontIndex = -1;
+                int backIndex = -1;
+
                 // resolve the Twilight front and back lights
-                for (ResourceReference light : lights) {
+                for (int i = 0; i < lights.size(); i++) {
+                    ResourceReference light = lights.get(i);
                     Archetype archetype = getLightArchetype(light);
                     if (BACK_ARCHETYPES.contains(archetype)) {
                         backId = light.getId();
+                        backIndex = i;
                     } else if (FRONT_ARCHETYPES.contains(archetype)) {
                         frontId = light.getId();
+                        frontIndex = i;
                     }
                 }
-                // fallback to the service declaration order
+                // fallback to the service declaration order for any unresolved light
                 if (frontId == null || backId == null) {
-                    frontId = lights.get(0).getId();
-                    backId = lights.get(1).getId();
+                    for (int i = 0; i < lights.size(); i++) {
+                        if (i == frontIndex || i == backIndex) {
+                            continue; // index already used
+                        }
+                        if (frontId == null) {
+                            frontId = lights.get(i).getId();
+                            frontIndex = i;
+                        } else if (backId == null) {
+                            backId = lights.get(i).getId();
+                            backIndex = i;
+                        } else {
+                            break;
+                        }
+                    }
                 }
             }
 
