@@ -23,8 +23,11 @@ import java.util.Objects;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.oceanic.internal.OceanicBindingConstants;
 import org.openhab.binding.oceanic.internal.SerialOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
@@ -49,25 +52,29 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Initial contribution
  * @author Karel Goderis - Harden serial reader against purejavacomm FD_SET failures
  */
+@NonNullByDefault
 public class SerialOceanicThingHandler extends OceanicThingHandler implements SerialPortEventListener {
 
     private static final long REQUEST_TIMEOUT = 10000;
     private static final int BAUD = 19200;
     /**
-     * macOS purejavacomm/jtermios uses a fixed {@code fd_set} of 32 bits for {@code select()}. File descriptors
-     * {@code >= 32} cause {@link ArrayIndexOutOfBoundsException} in {@code FD_SET} on every blocking read.
+     * macOS purejavacomm/jtermios {@code fd_set} is an array of 32 ints (1024 bits). Indexing uses {@code fd / 32}, so
+     * descriptors 0–1023 are valid; FD {@code >= 1024} throws {@link ArrayIndexOutOfBoundsException} in {@code FD_SET}.
      */
-    private static final int PUREJAVACOMM_FD_SETSIZE = 32;
+    private static final int PUREJAVACOMM_FD_SETSIZE = 1024;
     private static final int RECONNECT_INTERVAL_SECONDS = 15;
 
     private final Logger logger = LoggerFactory.getLogger(SerialOceanicThingHandler.class);
 
     private final SerialPortManager serialPortManager;
-    private SerialPort serialPort;
-    private InputStream inputStream;
-    private OutputStream outputStream;
-    private SerialPortReader readerThread;
-    private ScheduledFuture<?> reconnectJob;
+    private final AtomicInteger lifecycleGeneration = new AtomicInteger();
+    private volatile boolean disposed;
+
+    private @Nullable SerialPort serialPort;
+    private @Nullable InputStream inputStream;
+    private @Nullable OutputStream outputStream;
+    private @Nullable SerialPortReader readerThread;
+    private @Nullable ScheduledFuture<?> reconnectJob;
 
     public SerialOceanicThingHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
@@ -76,6 +83,8 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
     @Override
     public void initialize() {
+        disposed = false;
+        final int generation = lifecycleGeneration.incrementAndGet();
         super.initialize();
 
         SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
@@ -89,14 +98,17 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s",
                         config.port, availablePorts);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+                // Port may appear later (USB unplug/replug) — keep retrying while the handler is active
+                scheduleReconnect(generation);
                 return;
             }
 
             try {
                 logger.info("Connecting to the Oceanic water softener using {}.", config.port);
-                serialPort = portIdentifier.open(this.getThing().getUID().getBindingId(), 2000);
+                SerialPort port = portIdentifier.open(this.getThing().getUID().getBindingId(), 2000);
+                serialPort = port;
 
-                int nativeFd = getNativeFileDescriptor(serialPort);
+                int nativeFd = getNativeFileDescriptor(port);
                 if (nativeFd >= PUREJAVACOMM_FD_SETSIZE) {
                     String message = String.format(
                             "Serial port '%s' opened with file descriptor %d which is >= %d. "
@@ -108,53 +120,64 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     logger.error("{}", message);
                     closeSerialResources(false);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-                    scheduleReconnect();
+                    scheduleReconnect(generation);
                     return;
                 } else if (nativeFd >= 0) {
                     logger.debug("Opened serial port '{}' with native file descriptor {}", config.port, nativeFd);
                 }
 
-                serialPort.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                        SerialPort.PARITY_NONE);
-                serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-                serialPort.enableReceiveThreshold(1);
-                serialPort.disableReceiveTimeout();
+                port.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+                port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+                port.enableReceiveThreshold(1);
+                port.disableReceiveTimeout();
 
-                inputStream = serialPort.getInputStream();
-                outputStream = serialPort.getOutputStream();
+                InputStream in = Objects.requireNonNull(port.getInputStream(), "serial input stream");
+                OutputStream out = Objects.requireNonNull(port.getOutputStream(), "serial output stream");
+                inputStream = in;
+                outputStream = out;
 
-                serialPort.addEventListener(this);
-                serialPort.notifyOnDataAvailable(true);
+                port.addEventListener(this);
+                port.notifyOnDataAvailable(true);
 
-                readerThread = new SerialPortReader(inputStream);
-                readerThread.start();
+                SerialPortReader reader = new SerialPortReader(in);
+                readerThread = reader;
+                reader.start();
 
                 updateStatus(ThingStatus.ONLINE);
-
             } catch (PortInUseException portInUseException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
-                scheduleReconnect();
+                scheduleReconnect(generation);
             } catch (UnsupportedCommOperationException | IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
-                scheduleReconnect();
+                scheduleReconnect(generation);
             } catch (TooManyListenersException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Too many listeners to serial port.");
+                scheduleReconnect(generation);
             }
         }
     }
 
     @Override
     public void dispose() {
+        disposed = true;
+        lifecycleGeneration.incrementAndGet();
         cancelReconnect();
         closeSerialResources(true);
         super.dispose();
     }
 
-    private void scheduleReconnect() {
+    private boolean isLifecycleCurrent(int generation) {
+        return !disposed && lifecycleGeneration.get() == generation;
+    }
+
+    private void scheduleReconnect(int generation) {
+        if (!isLifecycleCurrent(generation)) {
+            return;
+        }
         cancelReconnect();
         logger.info("Scheduling Oceanic serial reconnect in {} seconds", RECONNECT_INTERVAL_SECONDS);
-        reconnectJob = scheduler.schedule(this::reconnect, RECONNECT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        reconnectJob = scheduler.schedule(() -> reconnect(generation), RECONNECT_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
     private void cancelReconnect() {
@@ -165,9 +188,17 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         }
     }
 
-    private void reconnect() {
+    private void reconnect(int generation) {
+        if (!isLifecycleCurrent(generation)) {
+            logger.debug("Skipping Oceanic serial reconnect; handler disposed or superseded");
+            return;
+        }
         logger.debug("Reconnecting Oceanic serial thing handler");
-        dispose();
+        // Soft reset only — do not call dispose()/super.dispose() or a later queued failure could revive us
+        closeSerialResources(true);
+        if (!isLifecycleCurrent(generation)) {
+            return;
+        }
         initialize();
     }
 
@@ -190,27 +221,30 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             }
         }
 
-        if (inputStream != null) {
+        InputStream in = inputStream;
+        if (in != null) {
             try {
-                inputStream.close();
+                in.close();
             } catch (IOException e) {
                 logger.debug("Error while closing the input stream: {}", e.getMessage());
             }
         }
-        if (outputStream != null) {
+        OutputStream out = outputStream;
+        if (out != null) {
             try {
-                outputStream.close();
+                out.close();
             } catch (IOException e) {
                 logger.debug("Error while closing the output stream: {}", e.getMessage());
             }
         }
-        if (serialPort != null) {
+        SerialPort port = serialPort;
+        if (port != null) {
             try {
-                serialPort.removeEventListener();
+                port.removeEventListener();
             } catch (Exception e) {
                 logger.debug("Error while removing serial event listener: {}", e.getMessage());
             }
-            serialPort.close();
+            port.close();
         }
 
         readerThread = null;
@@ -224,12 +258,34 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
      * Never continue reading after FD_SET / stream-closed style failures (avoids busy-loop CPU use).
      */
     private void handleReaderFailure(String reason) {
+        final int generation = lifecycleGeneration.get();
+        if (!isLifecycleCurrent(generation)) {
+            return;
+        }
         logger.warn("Oceanic serial reader failure: {}", reason);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         // Release resources from the scheduler so we never join the reader from itself
         scheduler.execute(() -> {
+            if (!isLifecycleCurrent(generation)) {
+                return;
+            }
             closeSerialResources(true);
-            scheduleReconnect();
+            scheduleReconnect(generation);
+        });
+    }
+
+    private void handleWriteFailure(String reason) {
+        final int generation = lifecycleGeneration.get();
+        if (!isLifecycleCurrent(generation)) {
+            return;
+        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        scheduler.execute(() -> {
+            if (!isLifecycleCurrent(generation)) {
+                return;
+            }
+            closeSerialResources(true);
+            scheduleReconnect(generation);
         });
     }
 
@@ -270,11 +326,12 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     }
 
     @Override
-    protected String requestResponse(String commandAsString) {
+    protected @Nullable String requestResponse(String commandAsString) {
         synchronized (this) {
             SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
 
-            if (outputStream == null || getThing().getStatus() != ThingStatus.ONLINE) {
+            OutputStream out = outputStream;
+            if (out == null || getThing().getStatus() != ThingStatus.ONLINE) {
                 return "";
             }
 
@@ -282,21 +339,16 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
             lastLineReceived = "";
             String request = commandAsString + "\r";
-            String response = null;
 
             try {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Requesting : {} ('{}')", request, request.getBytes());
                 }
-                outputStream.write(request.getBytes());
-                outputStream.flush();
+                out.write(request.getBytes());
+                out.flush();
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                handleWriteFailure(
                         "Error writing '" + request + "' to serial port " + config.port + " : " + e.getMessage());
-                scheduler.execute(() -> {
-                    closeSerialResources(true);
-                    scheduleReconnect();
-                });
                 Throttler.unlock(config.port);
                 return "";
             }
@@ -319,7 +371,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     break;
                 }
             }
-            response = lastLineReceived;
+            String response = lastLineReceived;
 
             Throttler.unlock(config.port);
 
@@ -344,7 +396,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     public class SerialPortReader extends Thread {
 
         private boolean interrupted = false;
-        private InputStream inputStream;
+        private final InputStream inputStream;
         int index = 0;
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
