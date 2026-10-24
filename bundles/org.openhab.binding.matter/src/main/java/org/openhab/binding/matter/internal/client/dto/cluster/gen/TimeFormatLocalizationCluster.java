@@ -119,7 +119,7 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * The Node can be configured to use different calendar formats when conveying values to a user.
+         * The Node can be configured to use different calendar formats when conveying values to a user
          */
         public boolean calendarFormat;
 

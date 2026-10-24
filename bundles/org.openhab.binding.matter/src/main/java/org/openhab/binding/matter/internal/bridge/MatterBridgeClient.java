@@ -39,8 +39,47 @@ public class MatterBridgeClient extends MatterWebsocketClient {
      * @return a future that completes when the endpoint is added
      */
     public CompletableFuture<String> addEndpoint(BridgedEndpoint be) {
-        CompletableFuture<JsonElement> future = sendMessage("bridge", "addEndpoint", new Object[] { be.deviceType,
-                be.id, be.nodeLabel, be.productName, be.productLabel, be.serialNumber, be.attributeMap });
+        return sendEndpoint("addEndpoint", be);
+    }
+
+    /**
+     * Replace an endpoint on a running bridge. An endpoint of the same device type keeps its identity.
+     *
+     * @param be the bridged endpoint
+     * @return a future that completes when the endpoint is replaced
+     */
+    public CompletableFuture<String> updateEndpoint(BridgedEndpoint be) {
+        return sendEndpoint("updateEndpoint", be);
+    }
+
+    /**
+     * Remove an endpoint from the bridge, does nothing if it does not exist.
+     *
+     * @param endpointId the endpoint id
+     * @return a future that completes when the endpoint is removed
+     */
+    public CompletableFuture<Void> removeEndpoint(String endpointId) {
+        CompletableFuture<JsonElement> future = sendMessage("bridge", "removeEndpoint", new Object[] { endpointId });
+        return future.thenAccept(obj -> {
+            // Do nothing, just to complete the future
+        });
+    }
+
+    /**
+     * Tell paired ecosystems that the bridge's devices changed.
+     *
+     * @return a future that completes when the configuration version is increased
+     */
+    public CompletableFuture<Void> increaseConfigurationVersion() {
+        CompletableFuture<JsonElement> future = sendMessage("bridge", "increaseConfigurationVersion", new Object[0]);
+        return future.thenAccept(obj -> {
+            // Do nothing, just to complete the future
+        });
+    }
+
+    private CompletableFuture<String> sendEndpoint(String functionName, BridgedEndpoint be) {
+        CompletableFuture<JsonElement> future = sendMessage("bridge", functionName, new Object[] { be.deviceType, be.id,
+                be.nodeLabel, be.productName, be.productLabel, be.serialNumber, be.attributeMap, be.reachable });
         return future.thenApply(obj -> obj.toString());
     }
 

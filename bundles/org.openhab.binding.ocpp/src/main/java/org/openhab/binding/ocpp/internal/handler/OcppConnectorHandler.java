@@ -15,8 +15,11 @@ package org.openhab.binding.ocpp.internal.handler;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -153,10 +156,16 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile double nominalVoltage = 230.0;
     private volatile int phases = 1;
     private volatile int remoteStartRetries;
+    private volatile double startLimit = -1;
 
     private volatile @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
     private volatile @Nullable Integer meterStart;
+    // A charger may report Available before it sends the stop, which still has to settle the session it ends.
+    private volatile @Nullable ForgottenTransaction forgotten;
+    // A meter-less charger can be sized from an energy item linked to external-energy instead.
+    private volatile @Nullable Double externalEnergyWh;
+    private volatile @Nullable Double externalStartWh;
     // NaN is no limit, which leaves the charger at its own maximum; 0 is a limit that stops the charge.
     private volatile double currentLimitAmps = Double.NaN;
     private volatile double powerLimitWatts = Double.NaN;
@@ -167,6 +176,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile boolean limitDeferred;
     // The unit the last profile went out in, checked again once the charger has said which units it takes.
     private volatile @Nullable ChargingRateUnitType lastWireUnit;
+    // Cleared once this run has accounted for a stop a previous run may have left on the charger.
+    private volatile boolean rememberedStopUnchecked = true;
     private volatile boolean smartChargingUnsupportedLogged;
     private volatile boolean phaseSwitchWarningLogged;
 
@@ -209,6 +220,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         nominalVoltage = config.nominalVoltage;
         phases = config.phases;
         remoteStartRetries = config.remoteStartRetries;
+        startLimit = config.startLimit;
         OcppChargePointHandler parent = chargePointHandler();
         if (parent == null) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
@@ -230,6 +242,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         startPolling();
         if (parent.isReady()) {
             requestStatus();
+            onChargePointReady();
         }
     }
 
@@ -242,6 +255,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 meterStart = start;
                 updateState(CHANNEL_METER_START, new QuantityType<>(start, Units.WATT_HOUR));
             }
+            externalStartWh = parent.recoverExternalStart(open);
             updateState(CHANNEL_TRANSACTION_ID, new DecimalType(open));
             logger.debug("Recovered open transaction {} on connector {} after restart", open, connectorId);
         }
@@ -304,7 +318,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         OcppChargePointHandler parent = chargePoint;
         if (parent != null) {
-            parent.unregisterConnector(connectorId);
+            parent.unregisterConnector(connectorId, this);
         }
         chargePoint = null;
     }
@@ -392,6 +406,12 @@ public class OcppConnectorHandler extends BaseThingHandler {
             case CHANNEL_HARDWARE_MAX_CURRENT:
                 changeHardwareMaxCurrent(command);
                 break;
+            case CHANNEL_EXTERNAL_ENERGY:
+                Double wattHours = toWattHours(command);
+                if (wattHours != null) {
+                    externalEnergyWh = wattHours;
+                }
+                break;
             default:
                 break;
         }
@@ -445,6 +465,75 @@ public class OcppConnectorHandler extends BaseThingHandler {
             limitDeferred = false;
             applyLimit();
         }
+        if (startLimit >= 0 && transactionId == null && !paused && Double.isNaN(currentLimitAmps)
+                && Double.isNaN(powerLimitWatts)) {
+            // Nothing of this run's own yet, so the charger starts out where every charge is meant to.
+            startAgainAtStartLimit();
+        }
+        dropRememberedStop();
+    }
+
+    /** A genuine BootNotification; a charger that only drops and reopens its socket does not reach here. */
+    public void onChargerBooted() {
+        rememberedStopUnchecked = true;
+    }
+
+    /**
+     * A 0 A profile stops a charge, and a TxDefaultProfile outlives the runtime that wrote it. So a session
+     * that ended stopped leaves the charger holding a stop, openHAB restarts knowing nothing about it, and
+     * every charge after that is suspended with nothing on screen to explain it. Whether what was left
+     * behind was a stop is kept in a Thing property, so the next run can tell a stop from a cap: a stop is
+     * dropped, a cap is left exactly where it is.
+     */
+    private void dropRememberedStop() {
+        if (!rememberedStopUnchecked || !isReadyToSend() || smartChargingUnsupported()) {
+            return;
+        }
+        rememberedStopUnchecked = false;
+        if (paused || !Double.isNaN(currentLimitAmps) || !Double.isNaN(powerLimitWatts)) {
+            // This run has an intent of its own, and sending it already overwrote whatever was there.
+            return;
+        }
+        if (!isRememberedStop()) {
+            return;
+        }
+        dispatch(ChargingProfileBuilder.clearDefaultLimit(connectorId), "ClearChargingProfile[remembered-stop]")
+                .whenComplete((confirmation, ex) -> {
+                    if (ex == null && isCleared(confirmation)) {
+                        logger.info("Connector {} released a 0 A charging profile left by an earlier run; "
+                                + "it would have suspended every charge", connectorId);
+                        rememberPersistedStop(false);
+                        // Items restored from persistence may still say paused; a rule that only writes on
+                        // change would then never send the pause it still wants.
+                        updateState(CHANNEL_CHARGE_LIMIT, UnDefType.UNDEF);
+                        updateState(CHANNEL_POWER_LIMIT, UnDefType.UNDEF);
+                        updateState(CHANNEL_PAUSE, OnOffType.OFF);
+                    } else if (ex != null) {
+                        // Worth another attempt on the next reconnect: until it lands the stop still binds.
+                        rememberedStopUnchecked = true;
+                    }
+                });
+    }
+
+    private boolean isRememberedStop() {
+        return Boolean.parseBoolean(getThing().getProperties().get(PROPERTY_PERSISTED_STOP));
+    }
+
+    /**
+     * Only whether a stop is persisted is worth remembering, not the value: a property update goes through
+     * the Thing registry, and on a connector that always writes the default profile every solar ramp step
+     * would too. A stop arrives and leaves rarely, so only the transition is written.
+     */
+    private void rememberPersistedStop(boolean stop) {
+        if (isRememberedStop() != stop) {
+            updateProperty(PROPERTY_PERSISTED_STOP, stop ? "true" : null);
+        }
+    }
+
+    private static boolean isCleared(eu.chargetime.ocpp.model.@Nullable Confirmation confirmation) {
+        return confirmation instanceof ClearChargingProfileConfirmation cleared
+                && (cleared.getStatus() == ClearChargingProfileStatus.Accepted
+                        || cleared.getStatus() == ClearChargingProfileStatus.Unknown);
     }
 
     private boolean isReadyToSend() {
@@ -545,6 +634,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void setProfile(ProfileClaim claim) {
+        // A TxProfile lapses with its transaction; anything else lands in the charger's persistent default.
+        boolean persists = forceTxDefaultProfile || transactionId == null;
         dispatch(ChargingProfileBuilder.limit(connectorId, claim.wireUnit(), claim.wireValue(), claim.numberPhases(),
                 forceTxDefaultProfile, transactionId), "SetChargingProfile").whenComplete((confirmation, ex) -> {
                     if (ex == null && confirmation instanceof SetChargingProfileConfirmation profile
@@ -552,6 +643,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
                         if (claimPublication(claim)) {
                             profileLanded();
                             publishAcceptedLimit(claim);
+                            if (persists) {
+                                rememberPersistedStop(claim.wireValue() == 0);
+                            }
                         } else {
                             logger.debug("Stale SetChargingProfile confirmation on connector {} ignored", connectorId);
                         }
@@ -612,14 +706,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private void clearProfile(ProfileClaim claim) {
         dispatch(ChargingProfileBuilder.clearLimit(connectorId), "ClearChargingProfile")
                 .whenComplete((confirmation, ex) -> {
-                    if (ex == null && confirmation instanceof ClearChargingProfileConfirmation cleared
-                            && (cleared.getStatus() == ClearChargingProfileStatus.Accepted
-                                    || cleared.getStatus() == ClearChargingProfileStatus.Unknown)) {
+                    if (ex == null && isCleared(confirmation)) {
                         if (claimPublication(claim)) {
                             profileLanded();
                             updateState(CHANNEL_CHARGE_LIMIT, UnDefType.UNDEF);
                             updateState(CHANNEL_POWER_LIMIT, UnDefType.UNDEF);
                             updateState(CHANNEL_PAUSE, OnOffType.OFF);
+                            rememberPersistedStop(false);
                         } else {
                             logger.debug("Stale ClearChargingProfile confirmation on connector {} ignored",
                                     connectorId);
@@ -838,8 +931,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 // Available means no active transaction.
                 Integer stale = transactionId;
                 if (stale != null) {
+                    forgotten = new ForgottenTransaction(stale, meterStart, externalStartWh);
                     transactionId = null;
                     meterStart = null;
+                    externalStartWh = null;
                     updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
                     OcppChargePointHandler cp = chargePoint;
                     if (cp != null) {
@@ -859,13 +954,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
         states.forEach(this::updateState);
         MeterValue[] meterValues = request.getMeterValue();
         if (meterValues != null && meterValues.length > 0) {
-            ZonedDateTime timestamp = null;
-            for (int i = meterValues.length - 1; i >= 0 && timestamp == null; i--) {
-                timestamp = meterValues[i].getTimestamp();
-            }
-            if (timestamp != null) {
-                updateState(CHANNEL_TIMESTAMP, new DateTimeType(timestamp));
-            }
+            Arrays.stream(meterValues).map(MeterValue::getTimestamp).filter(Objects::nonNull)
+                    .max(Comparator.naturalOrder())
+                    .ifPresent(timestamp -> updateState(CHANNEL_TIMESTAMP, new DateTimeType(timestamp)));
         }
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
@@ -918,35 +1009,92 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (timestamp != null) {
             updateState(CHANNEL_TIMESTAMP_START, new DateTimeType(timestamp));
         }
+        // Without a reading at the start the session falls back to the charger's own register.
+        Double external = isLinked(CHANNEL_EXTERNAL_ENERGY) ? externalEnergyWh : null;
+        externalStartWh = external;
+        OcppChargePointHandler cp = chargePoint;
+        if (external != null && cp != null) {
+            cp.rememberExternalStart(transactionId, external);
+        }
     }
 
     public void onTransactionStopped(StopTransactionRequest request) {
         Integer meterStop = request.getMeterStop();
+        Integer stopped = request.getTransactionId();
+        ForgottenTransaction late = forgotten;
+        if (late != null && stopped != null && late.transactionId() == stopped) {
+            forgotten = null;
+            if (meterStop != null) {
+                updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
+            }
+            if (transactionId == null) {
+                updateState(CHANNEL_SESSION_ENERGY, sessionEnergy(meterStop, late.meterStart(), late.externalStart()));
+            }
+            publishStopTimestamp(request);
+            return;
+        }
         Integer start = meterStart;
         if (meterStop != null) {
             updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
         }
-        if (meterStop != null && start != null) {
-            updateState(CHANNEL_SESSION_ENERGY, new QuantityType<>(meterStop - start, Units.WATT_HOUR));
-        } else {
-            updateState(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
-        }
+        updateState(CHANNEL_SESSION_ENERGY, sessionEnergy(meterStop, start, externalStartWh));
         meterStart = null;
-        ZonedDateTime timestamp = request.getTimestamp();
-        if (timestamp != null) {
-            updateState(CHANNEL_TIMESTAMP_STOP, new DateTimeType(timestamp));
-        }
+        externalStartWh = null;
+        publishStopTimestamp(request);
         this.transactionId = null;
         updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
         carryLimitPastTransaction();
     }
 
+    private void publishStopTimestamp(StopTransactionRequest request) {
+        ZonedDateTime timestamp = request.getTimestamp();
+        if (timestamp != null) {
+            updateState(CHANNEL_TIMESTAMP_STOP, new DateTimeType(timestamp));
+        }
+    }
+
+    /** A session started on the external meter is closed against it, never against the charger's register. */
+    private State sessionEnergy(@Nullable Integer meterStop, @Nullable Integer start, @Nullable Double externalStart) {
+        if (externalStart != null) {
+            Double externalStop = isLinked(CHANNEL_EXTERNAL_ENERGY) ? externalEnergyWh : null;
+            // A meter that was reset or replaced mid-session runs backwards.
+            return externalStop != null && externalStop >= externalStart
+                    ? new QuantityType<>(externalStop - externalStart, Units.WATT_HOUR)
+                    : UnDefType.UNDEF;
+        }
+        return meterStop != null && start != null ? new QuantityType<>(meterStop - start, Units.WATT_HOUR)
+                : UnDefType.UNDEF;
+    }
+
+    /** A plain number from an item without a unit is taken as kWh, the unit meters count in. */
+    static @Nullable Double toWattHours(Command command) {
+        if (command instanceof QuantityType<?> quantity) {
+            QuantityType<?> wattHours = quantity.toUnit(Units.WATT_HOUR);
+            return wattHours != null ? wattHours.doubleValue() : null;
+        }
+        if (command instanceof DecimalType number) {
+            return number.doubleValue() * 1000;
+        }
+        return null;
+    }
+
     /** With the transaction gone, a re-send lands as the TxDefaultProfile the next transaction starts under. */
     private void carryLimitPastTransaction() {
-        if (limitHeldByTxProfile) {
+        if (startLimit >= 0) {
+            limitHeldByTxProfile = false;
+            startAgainAtStartLimit();
+        } else if (limitHeldByTxProfile) {
             limitHeldByTxProfile = false;
             applyLimit();
         }
+    }
+
+    /** With a start limit set, every charge begins at it with pause off, whatever the last one ended on. */
+    private void startAgainAtStartLimit() {
+        paused = false;
+        currentLimitAmps = startLimit;
+        powerLimitWatts = Double.NaN;
+        applyLimit();
     }
 
     private void armStuckWatchdog(ChargePointStatus status) {
@@ -973,5 +1121,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (task != null) {
             task.cancel(false);
         }
+    }
+
+    private record ForgottenTransaction(int transactionId, @Nullable Integer meterStart,
+            @Nullable Double externalStart) {
     }
 }

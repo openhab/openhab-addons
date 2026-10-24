@@ -89,6 +89,20 @@ class OcppChargePointHandlerTest {
     }
 
     @Test
+    void removingADuplicateConnectorThingLeavesTheOtherRouted() {
+        OcppConnectorHandler first = mock(OcppConnectorHandler.class);
+        OcppConnectorHandler second = mock(OcppConnectorHandler.class);
+        handler.registerConnector(2, first);
+        handler.registerConnector(2, second);
+        handler.unregisterConnector(2, first);
+
+        handler.onStatusNotification(
+                new StatusNotificationRequest(2, ChargePointErrorCode.NoError, ChargePointStatus.Charging));
+
+        verify(second).onStatusNotification(any());
+    }
+
+    @Test
     void chargePointWideMessagesAreNotRoutedToAConnector() {
         // Connector 0 addresses the charge point itself, so there is no connector to hand it to.
         handler.onStatusNotification(
@@ -123,6 +137,16 @@ class OcppChargePointHandlerTest {
         verify(connector1, never()).onTransactionStopped(any());
 
         handler.onStopTransaction(stop(101));
+        verify(connector1).onTransactionStopped(any());
+    }
+
+    @Test
+    void aStopThatArrivesAfterTheConnectorReportedAvailableStillReachesIt() {
+        handler.onStartTransaction(start(1), 100);
+        handler.transactionCompleted(100);
+
+        handler.onStopTransaction(stop(100));
+
         verify(connector1).onTransactionStopped(any());
     }
 
@@ -183,6 +207,28 @@ class OcppChargePointHandlerTest {
         handler.onBootConfirmationSent(stale);
 
         assertFalse(handler.isReady(), "a confirmation from the previous session says nothing about this one");
+    }
+
+    @Test
+    void aBootNotificationTellsTheConnectorsTheChargerRestarted() {
+        handler.onConnected(UUID.randomUUID());
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        verify(connector1).onChargerBooted();
+        verify(connector2).onChargerBooted();
+    }
+
+    @Test
+    void aChargerThatOnlyReopensItsSocketDidNotRestart() {
+        // Readiness is reached by a reconnect, or here by a plain heartbeat, so it says nothing about a reboot.
+        handler.onConnected(UUID.randomUUID());
+
+        handler.onHeartbeat();
+
+        verify(connector1, org.mockito.Mockito.timeout(2000)).onChargePointReady();
+        verify(connector1, never()).onChargerBooted();
+        verify(connector2, never()).onChargerBooted();
     }
 
     @Test

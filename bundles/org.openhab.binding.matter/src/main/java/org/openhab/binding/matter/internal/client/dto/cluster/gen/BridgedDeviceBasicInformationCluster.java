@@ -140,7 +140,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     /**
      * This attribute shall specify a link to a product specific web page. The specified URL SHOULD resolve to a
      * maintained web page available for the lifetime of the product. The syntax of this attribute shall follow the
-     * syntax as specified in RFC 1738 and shall use the https scheme. The maximum length of this attribute is 256 ASCII
+     * syntax as specified in RFC1738 and shall use the https scheme. The maximum length of this attribute is 256 ASCII
      * characters.
      */
     public String productUrl; // 13 string R V

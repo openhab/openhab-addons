@@ -86,7 +86,6 @@ public class HeatingCircuitHandler extends BaseThingHandler {
          * Register poll task This is where we set up our regular poller
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
-            logger.debug("Setting up regular polling Address: {}", address);
 
             ModbusCommunicationInterface mycomms = HeatingCircuitHandler.this.comms;
             HeatingCircuitConfiguration myconfig = Objects.requireNonNull(HeatingCircuitHandler.this.config);
@@ -361,8 +360,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
                     handlePolledHeatingData(registers);
                 }
             };
-            // neu: poller.registerPollTask(baseadress, 8, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            poller.registerPollTask(baseadress, 7, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
+            poller.registerPollTask(baseadress, 8, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
             heatingcircuitPoller = poller;
         }
         if (heatingcircuitReg50Poller == null) {
@@ -491,8 +489,8 @@ public class HeatingCircuitHandler extends BaseThingHandler {
                 getScaled(block.heatingcircuitSetpointFlowLineTemperature, CELSIUS, -1.0));
         updateState(channelUID(GROUP_HEATING_CIRCUIT, CHANNEL_HEATING_CIRCUIT_OPERATING_MODE),
                 new DecimalType(block.heatingcircuitOperatingMode));
-        // neu: updateState(channelUID(GROUP_HEATING_CIRCUIT, CHANNEL_HEATING_CIRCUIT_TARGET_TEMPERATURE_FLOW_LINE),
-        // neu: getScaled(block.heatingcircuitTargetTemperatureFlowLine, CELSIUS, -1.0));
+        updateState(channelUID(GROUP_HEATING_CIRCUIT, CHANNEL_HEATING_CIRCUIT_TARGET_TEMPERATURE_FLOW_LINE),
+                getScaled(block.heatingcircuitTargetTemperatureFlowLine, CELSIUS, -1.0));
 
         resetCommunicationError();
     }

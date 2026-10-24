@@ -213,11 +213,11 @@ public class CommodityTariffCluster extends BaseCluster {
          * Meeting these constraints ensures that every day of the week during this week has specified day entries, and
          * no day of the week has more than one set of day entries.
          */
-        public List<Long> dayPatternIDs; // list
+        public List<Long> dayPatternIds; // list
 
-        public CalendarPeriodStruct(Long startDate, List<Long> dayPatternIDs) {
+        public CalendarPeriodStruct(Long startDate, List<Long> dayPatternIds) {
             this.startDate = startDate;
-            this.dayPatternIDs = dayPatternIDs;
+            this.dayPatternIds = dayPatternIds;
         }
     }
 
@@ -335,12 +335,12 @@ public class CommodityTariffCluster extends BaseCluster {
          * referenced by this list. In other words, day entries with a set duration can not overlap any other day
          * entries.
          */
-        public List<Long> dayEntryIDs; // list
+        public List<Long> dayEntryIds; // list
 
-        public DayStruct(Long date, DayTypeEnum dayType, List<Long> dayEntryIDs) {
+        public DayStruct(Long date, DayTypeEnum dayType, List<Long> dayEntryIds) {
             this.date = date;
             this.dayType = dayType;
-            this.dayEntryIDs = dayEntryIDs;
+            this.dayEntryIds = dayEntryIds;
         }
     }
 
@@ -366,12 +366,12 @@ public class CommodityTariffCluster extends BaseCluster {
          * This list shall NOT contain two DayEntryIDs for the DayEntryStructs with the same value of the StartTime
          * field.
          */
-        public List<Long> dayEntryIDs; // list
+        public List<Long> dayEntryIds; // list
 
-        public DayPatternStruct(Long dayPatternId, DayPatternDayOfWeekBitmap daysOfWeek, List<Long> dayEntryIDs) {
+        public DayPatternStruct(Long dayPatternId, DayPatternDayOfWeekBitmap daysOfWeek, List<Long> dayEntryIds) {
             this.dayPatternId = dayPatternId;
             this.daysOfWeek = daysOfWeek;
-            this.dayEntryIDs = dayEntryIDs;
+            this.dayEntryIds = dayEntryIds;
         }
     }
 
@@ -540,17 +540,17 @@ public class CommodityTariffCluster extends BaseCluster {
          * Each DayEntryID shall be included in at most one DayEntryIDs field. In other words, there shall be only one
          * TariffPeriodStruct for each DayEntryID.
          */
-        public List<Long> dayEntryIDs; // list
+        public List<Long> dayEntryIds; // list
         /**
          * This field shall indicate a list of TariffComponentIDs for the TariffComponentStructs active during the
          * specified day entries.
          */
-        public List<Long> tariffComponentIDs; // list
+        public List<Long> tariffComponentIds; // list
 
-        public TariffPeriodStruct(String label, List<Long> dayEntryIDs, List<Long> tariffComponentIDs) {
+        public TariffPeriodStruct(String label, List<Long> dayEntryIds, List<Long> tariffComponentIds) {
             this.label = label;
-            this.dayEntryIDs = dayEntryIDs;
-            this.tariffComponentIDs = tariffComponentIDs;
+            this.dayEntryIds = dayEntryIds;
+            this.tariffComponentIds = tariffComponentIds;
         }
     }
 

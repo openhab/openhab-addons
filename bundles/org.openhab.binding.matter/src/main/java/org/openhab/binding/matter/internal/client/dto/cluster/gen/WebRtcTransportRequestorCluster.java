@@ -55,7 +55,7 @@ public class WebRtcTransportRequestorCluster extends BaseCluster {
      * This command shall respond with a response status of NOT_FOUND if the WebRTCSessionID does not match an entry in
      * CurrentSessions, or if the matching entry's associated fabric and PeerNodeID do not match the accessing fabric
      * and the Peer Node ID entry stored in the Secure Session Context (see Chapter 4 Secure Channel, Secure Session
-     * Context section, in [[MatterCore]](#ref_MatterCore)) of the session this command was received on.
+     * Context section, in MatterCore) of the session this command was received on.
      */
     public static ClusterCommand offer(Integer webRtcSessionId, String sdp,
             List<WebRtcTransportDefinitionsCluster.ICEServerStruct> iceServers, String iceTransportPolicy) {
@@ -94,10 +94,10 @@ public class WebRtcTransportRequestorCluster extends BaseCluster {
     }
 
     /**
-     * This command allows for the object based ICE candidates generated after the initial Offer / Answer exchange, via
-     * a JSEP onicecandidate event, a DOM rtcpeerconnectioniceevent event, or other WebRTC compliant implementations, to
-     * be added to a session during the gathering phase. This is typically used for STUN or TURN discovered candidates,
-     * or to indicate the end of gathering state.
+     * This command allows for the object based ICE candidates RFC8839, Section 5.1, generated after the initial Offer /
+     * Answer exchange, via a JSEP onicecandidate event RFC9429, Section 4.1.20, a DOM rtcpeerconnectioniceevent event,
+     * or other WebRTC compliant implementations, to be added to a session during the gathering phase. This is typically
+     * used for STUN or TURN discovered candidates, or to indicate the end of gathering state.
      * This command shall respond with a response status of NOT_FOUND if the WebRTCSessionID does not match an entry in
      * CurrentSessions, or if the matching entry's associated fabric and PeerNodeID do not match the accessing fabric
      * and the Peer Node ID entry stored in the Secure Session Context of the session this command was received on.

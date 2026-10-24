@@ -279,7 +279,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         cancelScheduledWork();
         OcppServerBridgeHandler serverHandler = server;
         if (serverHandler != null) {
-            serverHandler.unregisterChargePoint(chargePointId);
+            serverHandler.unregisterChargePoint(chargePointId, this);
         }
         server = null;
         synchronized (stateLock) {
@@ -318,8 +318,8 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         connectors.put(connectorId, handler);
     }
 
-    public void unregisterConnector(int connectorId) {
-        connectors.remove(connectorId);
+    public void unregisterConnector(int connectorId, OcppConnectorHandler handler) {
+        connectors.remove(connectorId, handler);
     }
 
     public CompletionStage<Confirmation> send(Request request) {
@@ -585,6 +585,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         setProperty(Thing.PROPERTY_FIRMWARE_VERSION, request.getFirmwareVersion());
         setProperty(Thing.PROPERTY_SERIAL_NUMBER, request.getChargePointSerialNumber());
         recordActivity();
+        connectors.values().forEach(OcppConnectorHandler::onChargerBooted);
         UUID bootSession = session;
         if (bootSession == null) {
             return;
@@ -689,8 +690,20 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         return serverHandler != null ? serverHandler.meterStartOf(transactionId, chargePointId) : null;
     }
 
+    public void rememberExternalStart(int transactionId, double wattHours) {
+        OcppServerBridgeHandler serverHandler = server;
+        if (serverHandler != null) {
+            serverHandler.rememberExternalStart(transactionId, chargePointId, wattHours);
+        }
+    }
+
+    public @Nullable Double recoverExternalStart(int transactionId) {
+        OcppServerBridgeHandler serverHandler = server;
+        return serverHandler != null ? serverHandler.externalStartOf(transactionId, chargePointId) : null;
+    }
+
+    /** The route stays until the stop arrives or the connector starts another transaction. */
     public void transactionCompleted(int transactionId) {
-        transactions.remove(transactionId);
         OcppServerBridgeHandler serverHandler = server;
         if (serverHandler != null) {
             serverHandler.forgetTransaction(transactionId);

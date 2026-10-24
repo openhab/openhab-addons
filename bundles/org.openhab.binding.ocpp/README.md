@@ -42,6 +42,8 @@ The id is whatever path the charger appends to its backend URL — often its ser
 | requestTimeoutSeconds        | integer | Seconds before an unanswered request to a charger fails                                                                                           | 30      | no       | yes      |
 | authPassword                 | text    | HTTP Basic password chargers must present (username = charge point id), 16–20 visible ASCII characters. Empty disables authentication             | (empty) | no       | yes      |
 | whitelistTagIds              | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected                                                                     | (empty) | no       | yes      |
+| tlsKeystorePath              | text    | Path to a PKCS12 keystore with the server's TLS certificate and key. When set, the endpoint runs `wss://` (TLS) instead of `ws://`                | (empty) | no       | yes      |
+| tlsKeystorePassword          | text    | Password for the TLS keystore (store and key)                                                                                                     | (empty) | no       | yes      |
 | chargerIds                   | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected                                                       | (empty) | no       | yes      |
 
 These settings are pushed to a charger as ChangeConfiguration requests after it boots — or after it reconnects without booting, which is what happens when openHAB restarts — one at a time, and only until the charger has accepted them once for the configured values.
@@ -68,6 +70,7 @@ For the charger's own offline authorization cache, see the `chargepoint` `local-
 | connectorId           | integer | OCPP connector number (1..N)                                                                                                                                       | 1       | no       | no       |
 | forceTxDefaultProfile | boolean | Always send the charge limit as a TxDefaultProfile, even during a transaction. Needed for chargers that reject a TxProfile outside one                             | false   | no       | yes      |
 | profileMinIntervalMs  | integer | Minimum spacing (ms) between SetChargingProfile sends; rapid changes are coalesced. 0 disables                                                                     | 0       | no       | yes      |
+| startLimit            | decimal | Current (A) every new charge starts at: when a charge ends the connector goes back to it with pause off. Empty carries the last limit and pause over               | (empty) | no       | yes      |
 | hardwareMaxCurrentKey | text    | Vendor ChangeConfiguration key backing the `hardware-max-current` channel. Empty disables that channel                                                             | (empty) | no       | yes      |
 | remoteStartTag        | text    | idTag used when starting a transaction via the `charging` channel                                                                                                  | openhab | no       | yes      |
 | refreshInterval       | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling                                                                         | 0       | no       | yes      |
@@ -122,6 +125,7 @@ A charger that does not advertise the profile is left untouched.
 | power-offered           | Number:Power             | R          | Power offered to the vehicle                                                                    |
 | energy-active-import    | Number:Energy            | R          | Energy register (Energy.Active.Import.Register)                                                 |
 | session-energy          | Number:Energy            | R          | Energy of the last session (meter-stop − meter-start), published once at session end            |
+| external-energy         | Number:Energy            | W          | Energy counter of an external meter for a charger without one; sizes `session-energy` when linked |
 | charging                | Switch                   | RW         | ON while a transaction runs; command to remote start/stop                                       |
 | charge-limit            | Number:ElectricCurrent   | RW         | Charge current cap via SetChargingProfile; 0 stops the charge                                   |
 | power-limit             | Number:Power             | RW         | Charge power cap (watts) for power-only chargers; takes over from charge-limit until a later charge-limit clears it |
@@ -135,6 +139,8 @@ A charger that does not advertise the profile is left untouched.
 Beyond the channels above, the rest of the OCPP 1.6 SampledValue set is added to the connector the first time the charger reports it: `current-import`, `current-export`, `voltage`, `frequency`, `power-active-export`, `power-reactive-import`, `power-reactive-export`, `power-factor`, `energy-active-export`, `energy-active-import-interval`, `energy-active-export-interval`, `energy-reactive-import`, `energy-reactive-export`, `energy-reactive-import-interval`, `energy-reactive-export-interval`, `soc`, `rpm` and `temperature`.
 Every connector also carries the transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`) and the metering timestamps (`timestamp`, `timestamp-start`, `timestamp-stop`).
 A transaction that was open when openHAB restarted keeps its `transaction-id` and its `meter-start`, so `session-energy` is still sized when it stops.
+A charger without its own meter, such as a Phoenix CHARX, reports no usable `meter-start` or `meter-stop`. If its supply is metered elsewhere, link that meter's energy counter item to `external-energy` with the `follow` profile: `session-energy` is then the counter at the stop minus the counter at the start, and the start reading survives a restart too.
+A plain `Number` item is read as kWh. Without a reading at the start the session falls back to the charger's own values; with none at the stop, or a counter that went backwards, `session-energy` is UNDEF.
 At a stop, `meter-stop` and `session-energy` are published before `transaction-id` is cleared, so a rule triggered by `transaction-id` changing to UNDEF reads the settled total.
 
 For chargers that reject a TxProfile outside a transaction (e.g. Phoenix CHARX), set `forceTxDefaultProfile` on the connector so the charge limit is sent as a TxDefaultProfile.
@@ -157,6 +163,8 @@ For such a session, suspend the power with `pause` (a 0 A profile needs no trans
 Setting it to 0 stops the charge, as a 0 A limit does in OCPP, and `clear-limit` removes the cap, so the charger goes back to its own maximum.
 Unless `forceTxDefaultProfile` is set, the limit goes out during a transaction as a `TxProfile`, which the charger drops when that transaction ends, and outside one as the `TxDefaultProfile` the next transaction starts under.
 So when a transaction that got a `TxProfile` ends, the binding sends the current limit again as the `TxDefaultProfile`, and the next session starts at the last limit, or paused if it was paused.
+With the connector's `startLimit` set, a charge that ends sends that current instead, with pause off, so every new session starts at it whatever the last one ended on; `startLimit` 0 means every charge starts stopped.
+A `TxDefaultProfile` also outlives an openHAB restart, so a charge that ended paused or at 0 A would leave every later one suspended. The connector remembers in a Thing property when what it left in the charger was a stop, and releases that stop on the first connect after a restart unless something has already set a limit or a pause; a non-zero cap is left in place.
 Some chargers only accept a charge limit expressed in watts (their OCPP `ChargingScheduleAllowedChargingRateUnit` is `Power`, not `Current`); the binding learns this from the charger and converts `charge-limit` amps to watts with `nominalVoltage` and `phases`, so the same amps channel still works.
 Alternatively set `power-limit` (watts) directly — it is sent as-is, with no conversion, on any charger that accepts a power limit, and takes over from `charge-limit` while it is set.
 Commanding `charge-limit` again clears the power-limit and returns to amps, so the most recent command always wins.
@@ -295,3 +303,5 @@ Without `authPassword` the endpoint runs OCPP security profile 0: a plain-text W
 Anyone who can reach the port can connect under any charge point id, so restrict exposure by binding a specific interface (`host`) or with firewall rules.
 Setting `authPassword` enables HTTP Basic authentication (security profile 1): a charger must present the password with its charge point id as the username, and other connections are rejected before a session opens.
 The `authPassword` must be 16–20 visible ASCII characters (the OCPP profile-1 rule). A charger that sends a Basic-auth header when no `authPassword` is set is accepted whatever its password length, so chargers that always send one still connect.
+Setting `tlsKeystorePath` (a PKCS12 keystore holding the server's certificate and key) serves the endpoint over `wss://`: OCPP security profile 2 together with `authPassword`, or an encrypted profile 0 without.
+Client-certificate authentication (profile 3) is not supported.

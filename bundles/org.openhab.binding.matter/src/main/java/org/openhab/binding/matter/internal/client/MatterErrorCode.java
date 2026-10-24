@@ -36,7 +36,9 @@ public enum MatterErrorCode {
     NODE_ID_CONFLICT("node-id-conflict", "matterjs.error.node-id-conflict"),
     COMMISSIONABLE_DEVICE_DISCOVERY_FAILED("commissionable-device-discovery-failed",
             "matterjs.error.commissionable-device-discovery-failed"),
-    OPERATIVE_CONNECTION_FAILED("operative-connection-failed", "matterjs.error.operative-connection-failed");
+    OPERATIVE_CONNECTION_FAILED("operative-connection-failed", "matterjs.error.operative-connection-failed"),
+    PASSCODE_MISMATCH("passcode-mismatch", "matterjs.error.passcode-mismatch"),
+    FABRIC_OPERATION_IN_PROGRESS("fabric-operation-in-progress", "matterjs.error.fabric-operation-in-progress");
 
     private final String errorId;
     private final String translationKey;

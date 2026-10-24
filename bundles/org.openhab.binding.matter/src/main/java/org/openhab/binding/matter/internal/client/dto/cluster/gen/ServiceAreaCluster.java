@@ -220,8 +220,8 @@ public class ServiceAreaCluster extends BaseCluster {
      * For an area description to be meaningful, it shall have at least one of the following:
      * - a non-empty name (LocationInfo's LocationName field)
      * OR
-     * - some semantic data (one or more of these: FloorNumber, AreaType or LandmarkTag) The normative text from the
-     * remainder of this section describes these constraints.
+     * - some semantic data (one or more of these: FloorNumber, AreaType or LandmarkTag)
+     * The normative text from the remainder of this section describes these constraints.
      * If the LocationInfo field is null, the LandmarkInfo field shall NOT be null.
      * If the LandmarkInfo field is null, the LocationInfo field shall NOT be null.
      * If LocationInfo is not null, and its LocationName field is an empty string, at least one of the following shall

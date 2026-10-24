@@ -59,6 +59,4 @@ public interface CloudApi {
      * @return all properties of the device
      */
     SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn) throws SalusApiException, AuthSalusApiException;
-
-    boolean isReadOnly();
 }

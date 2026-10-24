@@ -259,9 +259,15 @@ function filterDep(e: AnyValueElement) {
     //remove fields flagged as depreciated or not used
     const children = e.children?.filter(field => {
         const f = field as FieldElement;
-        return f.conformance != "X" && f.conformance != "D";
+        return f.conformance != "X" && f.conformance != "D" && f.conformance != "Z";
     });
     e.children = children as AnyValueElement[];
+    return e;
+}
+
+function withoutEnumRanges(e: AnyValueElement) {
+    // manufacturer value ranges such as "128 to 191" have no id and are not Java enum constants
+    e.children = e.children?.filter(field => field.id !== undefined) as AnyValueElement[];
     return e;
 }
 
@@ -426,7 +432,9 @@ const clusters: ExtendedClusterElement[] =
             });
 
             const maps = (cluster.children || []).filter(c => c.type?.startsWith("map")) as AnyValueElement[];
-            const enums = (cluster.children || []).filter(c => c.type?.startsWith("enum")) as AnyValueElement[];
+            const enums = (cluster.children || [])
+                .filter(c => c.type?.startsWith("enum"))
+                .map(c => withoutEnumRanges(c as AnyValueElement));
             const structs = (cluster.children || [])
                 .filter(dt => dt.type === "struct" || dt.tag === "event")
                 .map(dt => typeMapper(typeMapping, dt as AnyValueElement));
@@ -586,7 +594,7 @@ const datatypes = {
     enums: [
         ...globalDataTypes?.filter(c => c.type?.startsWith("enum")),
         ...globalAttributes?.filter(c => c.type?.startsWith("enum")),
-    ],
+    ].map(e => withoutEnumRanges(e)),
     structs: [
         ...globalDataTypes?.filter(c => c.type?.startsWith("struct")),
         ...globalAttributes?.filter(c => c.type?.startsWith("struct")),

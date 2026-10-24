@@ -110,6 +110,7 @@ abstract class EnphaseDeviceHandler extends BaseThingHandler {
         refreshOperating(deviceDTO);
         refreshProperties(deviceDTO);
         refreshDeviceStatus(deviceDTO != null);
+        lastKnownDeviceState = deviceDTO;
     }
 
     public void refreshDeviceStatus(final boolean hasData) {

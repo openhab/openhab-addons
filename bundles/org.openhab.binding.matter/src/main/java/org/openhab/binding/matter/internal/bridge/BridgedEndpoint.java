@@ -30,9 +30,10 @@ public class BridgedEndpoint {
     public final String productLabel;
     public final String serialNumber;
     public final Map<String, Map<String, Object>> attributeMap;
+    public final boolean reachable;
 
     public BridgedEndpoint(String deviceType, String id, String nodeLabel, String productName, String productLabel,
-            String serialNumber, Map<String, Map<String, Object>> attributeMap) {
+            String serialNumber, Map<String, Map<String, Object>> attributeMap, boolean reachable) {
         this.deviceType = deviceType;
         this.id = id;
         this.nodeLabel = nodeLabel;
@@ -40,5 +41,6 @@ public class BridgedEndpoint {
         this.productLabel = productLabel;
         this.serialNumber = serialNumber;
         this.attributeMap = attributeMap;
+        this.reachable = reachable;
     }
 }

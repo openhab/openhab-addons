@@ -183,7 +183,7 @@ public class ChannelCluster extends BaseCluster {
         public String description; // string
         /**
          * This field shall indicate the audio language for the specific program. The value is a string containing one
-         * of the standard Tags for Identifying Languages RFC 5646. This field is optional but shall be provided if
+         * of the standard Tags for Identifying Languages RFC5646. This field is optional but shall be provided if
          * known.
          */
         public List<String> audioLanguages; // list
@@ -197,18 +197,18 @@ public class ChannelCluster extends BaseCluster {
         public List<String> ratings; // list
         /**
          * This field shall represent a URL of a thumbnail that clients can use to render an image for the program. The
-         * syntax of this field shall follow the syntax as specified in RFC 1738 and shall use the https scheme.
+         * syntax of this field shall follow the syntax as specified in RFC1738 and shall use the https scheme.
          */
         public String thumbnailUrl; // string
         /**
          * This field shall represent a URL of a poster that clients can use to render an image for the program on the
-         * detail view. The syntax of this field shall follow the syntax as specified in RFC 1738 and shall use the
-         * https scheme.
+         * detail view. The syntax of this field shall follow the syntax as specified in RFC1738 and shall use the https
+         * scheme.
          */
         public String posterArtUrl; // string
         /**
          * This field shall represent the DVB-I URL associated to the program. The syntax of this field shall follow the
-         * syntax as specified in RFC 1738 and shall use the https scheme.
+         * syntax as specified in RFC1738 and shall use the https scheme.
          */
         public String dvbiUrl; // string
         /**
@@ -471,22 +471,22 @@ public class ChannelCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * Provides list of available channels.
+         * Provides list of available channels
          */
         public boolean channelList;
         /**
          * 
-         * Provides lineup info, which is a reference to an external source of lineup information.
+         * Provides lineup info, which is a reference to an external source of lineup information
          */
         public boolean lineupInfo;
         /**
          * 
-         * Provides electronic program guide information.
+         * Provides electronic program guide information
          */
         public boolean electronicGuide;
         /**
          * 
-         * Provides ability to record program.
+         * Provides ability to record program
          */
         public boolean recordProgram;
 

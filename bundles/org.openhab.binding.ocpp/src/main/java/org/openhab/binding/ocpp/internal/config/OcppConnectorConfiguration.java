@@ -25,6 +25,7 @@ public class OcppConnectorConfiguration {
     public int connectorId = 1;
     public boolean forceTxDefaultProfile = false;
     public int profileMinIntervalMs = 0;
+    public double startLimit = -1;
     public String hardwareMaxCurrentKey = "";
     public String remoteStartTag = "openhab";
     public double nominalVoltage = 230.0;

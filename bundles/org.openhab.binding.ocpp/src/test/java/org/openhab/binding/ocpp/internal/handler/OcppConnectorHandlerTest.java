@@ -26,7 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,9 +37,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.ocpp.internal.transport.ChargerCapabilities;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -53,6 +59,7 @@ import eu.chargetime.ocpp.model.core.ChargePointErrorCode;
 import eu.chargetime.ocpp.model.core.ChargePointStatus;
 import eu.chargetime.ocpp.model.core.ChargingProfilePurposeType;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
+import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 import eu.chargetime.ocpp.model.smartcharging.ChargingProfileStatus;
 import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileConfirmation;
 import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileRequest;
@@ -133,6 +140,7 @@ class OcppConnectorHandlerTest {
         when(chargePoint.getChargePointId()).thenReturn("charger");
         when(chargePoint.recoverTransactionId(1)).thenReturn(7);
         when(chargePoint.recoverMeterStart(7)).thenReturn(1000);
+        when(chargePoint.recoverExternalStart(7)).thenReturn(null);
         Bridge bridge = mock(Bridge.class);
         when(bridge.getHandler()).thenReturn(chargePoint);
         when(callback.getBridge(chargePointUID)).thenReturn(bridge);
@@ -190,6 +198,7 @@ class OcppConnectorHandlerTest {
                 java.util.Map.of("remoteStartRetries", new java.math.BigDecimal(1))));
         OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
         when(chargePoint.isReady()).thenReturn(true);
+        when(chargePoint.getCapabilities()).thenReturn(ChargerCapabilities.unknown());
         when(chargePoint.getChargePointId()).thenReturn("charger");
         when(chargePoint.recoverTransactionId(org.mockito.ArgumentMatchers.anyInt())).thenReturn(null);
         when(chargePoint.send(any()))
@@ -215,6 +224,7 @@ class OcppConnectorHandlerTest {
                 java.util.Map.of("remoteStartRetries", new java.math.BigDecimal(1))));
         OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
         when(chargePoint.isReady()).thenReturn(true);
+        when(chargePoint.getCapabilities()).thenReturn(ChargerCapabilities.unknown());
         when(chargePoint.getChargePointId()).thenReturn("charger");
         when(chargePoint.recoverTransactionId(org.mockito.ArgumentMatchers.anyInt())).thenReturn(null);
         when(chargePoint.send(any()))
@@ -315,6 +325,31 @@ class OcppConnectorHandlerTest {
         handler.onMeterValues(request);
 
         assertChannel(CHANNEL_TIMESTAMP, new org.openhab.core.library.types.DateTimeType(newer));
+    }
+
+    @Test
+    void aNewestFirstMeterValuesPublishesTheNewestReadingAndTimestamp() {
+        java.time.ZonedDateTime older = java.time.ZonedDateTime.parse("2026-01-01T10:00:00Z");
+        java.time.ZonedDateTime newer = java.time.ZonedDateTime.parse("2026-01-01T10:05:00Z");
+        eu.chargetime.ocpp.model.core.SampledValue stale = new eu.chargetime.ocpp.model.core.SampledValue("10");
+        stale.setMeasurand("Energy.Active.Import.Register");
+        stale.setUnit("Wh");
+        eu.chargetime.ocpp.model.core.SampledValue fresh = new eu.chargetime.ocpp.model.core.SampledValue("20");
+        fresh.setMeasurand("Energy.Active.Import.Register");
+        fresh.setUnit("Wh");
+        eu.chargetime.ocpp.model.core.MeterValuesRequest request = new eu.chargetime.ocpp.model.core.MeterValuesRequest(
+                1);
+        request.setMeterValue(new eu.chargetime.ocpp.model.core.MeterValue[] {
+                new eu.chargetime.ocpp.model.core.MeterValue(newer,
+                        new eu.chargetime.ocpp.model.core.SampledValue[] { fresh }),
+                new eu.chargetime.ocpp.model.core.MeterValue(older,
+                        new eu.chargetime.ocpp.model.core.SampledValue[] { stale }) });
+
+        handler.onMeterValues(request);
+
+        assertChannel(CHANNEL_TIMESTAMP, new org.openhab.core.library.types.DateTimeType(newer));
+        assertChannel(CHANNEL_ENERGY_ACTIVE_IMPORT,
+                new org.openhab.core.library.types.QuantityType<>(20, org.openhab.core.library.unit.Units.WATT_HOUR));
     }
 
     @Test
@@ -424,6 +459,355 @@ class OcppConnectorHandlerTest {
         endTransaction(7);
 
         verify(chargePoint, never()).send(argThat(r -> r instanceof SetChargingProfileRequest));
+    }
+
+    private void rememberStop() {
+        when(thing.getProperties()).thenReturn(Map.of(PROPERTY_PERSISTED_STOP, "true"));
+    }
+
+    private static boolean isClear(Request request) {
+        return request instanceof ClearChargingProfileRequest;
+    }
+
+    /**
+     * The bug this guards. A session that ends stopped leaves 0 A in the charger's persistent default profile,
+     * which outlives the runtime that wrote it: openHAB restarts knowing no limit, the stop stands, and every
+     * charge after it is suspended with nothing on screen to say why. A rule that only writes on change never
+     * lifts it.
+     */
+    @Test
+    void aStopLeftByAnEarlierRunIsReleased() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        handler.onChargePointReady();
+
+        verify(chargePoint).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
+    @Test
+    void aReleasedStopShowsTheConnectorAsNoLongerPaused() {
+        rememberStop();
+        attachReadyChargePoint();
+
+        handler.onChargePointReady();
+
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_PAUSE)), eq(OnOffType.OFF));
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CHARGE_LIMIT)), eq(UnDefType.UNDEF));
+    }
+
+    /**
+     * The other half, and the reason this reads the remembered value instead of clearing on principle: a cap is
+     * somebody's fuse. Dropping it on every restart would trade a charge that never starts for one that draws
+     * more than the wiring allows.
+     */
+    @Test
+    void aCapLeftByAnEarlierRunIsLeftExactlyWhereItIs() {
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        handler.onChargePointReady();
+
+        verify(chargePoint, never()).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
+    /** This run's own pause is live intent, not residue, so releasing it would start a car somebody stopped. */
+    @Test
+    void aPauseThisRunSetIsNotMistakenForResidue() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        command(CHANNEL_PAUSE, OnOffType.ON);
+        clearInvocations(chargePoint);
+
+        handler.onChargePointReady();
+
+        verify(chargePoint, never()).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
+    /** The wallboxes reconnect all day; only the first readiness of a run has anything to account for. */
+    @Test
+    void aStopIsReleasedOnceNotOnEveryReconnect() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        handler.onChargePointReady();
+        handler.onChargePointReady();
+
+        verify(chargePoint, times(1)).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
+    /** A restart mid-session must not lift the transaction's own cap along with the old stop. */
+    @Test
+    void releasingAStopLeavesTheTransactionsOwnCap() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        handler.onChargePointReady();
+
+        verify(chargePoint).send(argThat(r -> r instanceof ClearChargingProfileRequest clear
+                && clear.getChargingProfilePurpose() == ChargingProfilePurposeType.TxDefaultProfile));
+    }
+
+    @Test
+    void aConnectorAddedToAConnectedChargerReleasesTheStop() {
+        rememberStop();
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        when(chargePoint.recoverTransactionId(1)).thenReturn(null);
+
+        handler.initialize();
+
+        verify(chargePoint).send(argThat(OcppConnectorHandlerTest::isClear));
+    }
+
+    /**
+     * Joins the two halves: the release above can only work if the run that persisted the stop wrote it down.
+     * A pause carried past its transaction is exactly how a charger ends up holding one.
+     */
+    @Test
+    void aPauseCarriedPastATransactionIsWrittenDown() {
+        attachReadyChargePoint();
+        startTransaction(7);
+        command(CHANNEL_PAUSE, OnOffType.ON);
+
+        endTransaction(7);
+
+        verify(thing).setProperty(PROPERTY_PERSISTED_STOP, "true");
+    }
+
+    /** Carrying a cap past a transaction overwrites the stop on the charger, so the note goes with it. */
+    @Test
+    void aCapCarriedPastATransactionForgetsAnEarlierStop() {
+        rememberStop();
+        attachReadyChargePoint();
+        startTransaction(7);
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(10));
+
+        endTransaction(7);
+
+        verify(thing).setProperty(PROPERTY_PERSISTED_STOP, null);
+    }
+
+    /**
+     * The churn guard. A connector that always writes the default profile does so on every solar ramp step, and
+     * a property update puts the Thing through the registry each time, so an unchanged state writes nothing.
+     */
+    @Test
+    void aRampingCapWritesNoPropertyWhenNoStopIsRemembered() {
+        attachReadyChargePoint();
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(10));
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(12));
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(14));
+
+        verify(thing, never()).setProperty(eq(PROPERTY_PERSISTED_STOP), any());
+    }
+
+    @Test
+    void aChargeEndingOnAnotherLimitStartsTheNextAtTheStartLimit() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        startTransaction(7);
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(16));
+        clearInvocations(chargePoint);
+
+        endTransaction(7);
+
+        SetChargingProfileRequest next = lastProfile(chargePoint);
+        assertEquals(ChargingProfilePurposeType.TxDefaultProfile,
+                next.getCsChargingProfiles().getChargingProfilePurpose());
+        assertEquals(8.0, sentLimit(next));
+    }
+
+    @Test
+    void aChargeEndingPausedStartsTheNextAtTheStartLimitUnpaused() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        startTransaction(7);
+        command(CHANNEL_PAUSE, OnOffType.ON);
+        clearInvocations(chargePoint, callback);
+
+        endTransaction(7);
+
+        assertEquals(8.0, sentLimit(lastProfile(chargePoint)));
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_PAUSE)), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void aChargeNobodyThrottledStillEndsAtTheStartLimit() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        startTransaction(7);
+        clearInvocations(chargePoint);
+
+        endTransaction(7);
+
+        assertEquals(8.0, sentLimit(lastProfile(chargePoint)));
+    }
+
+    @Test
+    void theStartLimitIsWhereAChargerStartsOutOnce() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        handler.onChargePointReady();
+        handler.onChargePointReady();
+
+        verify(chargePoint, times(1)).send(argThat(r -> r instanceof SetChargingProfileRequest));
+        verify(chargePoint).send(argThat(r -> r instanceof SetChargingProfileRequest && sentLimit(r) == 8.0));
+    }
+
+    @Test
+    void aConnectorAddedToAConnectedChargerStartsAtTheStartLimit() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+
+        verify(chargePoint).send(argThat(r -> r instanceof SetChargingProfileRequest && sentLimit(r) == 8.0));
+    }
+
+    @Test
+    void aLimitOfThisRunIsNotReplacedByTheStartLimit() {
+        OcppChargePointHandler chargePoint = attachWithStartLimit(8);
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(12));
+        clearInvocations(chargePoint);
+
+        handler.onChargePointReady();
+
+        verify(chargePoint, never()).send(argThat(r -> r instanceof SetChargingProfileRequest));
+    }
+
+    private OcppChargePointHandler attachWithStartLimit(double amps) {
+        when(thing.getConfiguration()).thenReturn(new Configuration(Map.of("startLimit", amps)));
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        when(chargePoint.recoverTransactionId(1)).thenReturn(null);
+        handler.initialize();
+        return chargePoint;
+    }
+
+    private void linkExternalMeter() {
+        when(callback.isChannelLinked(new ChannelUID(THING_UID, CHANNEL_EXTERNAL_ENERGY))).thenReturn(true);
+    }
+
+    private void externalReading(String reading) {
+        command(CHANNEL_EXTERNAL_ENERGY, new QuantityType<>(reading));
+    }
+
+    private static QuantityType<?> wattHours(double wh) {
+        return new QuantityType<>(wh, Units.WATT_HOUR);
+    }
+
+    @Test
+    void externalReadingsConvertToWattHours() {
+        assertEquals(1500.0, OcppConnectorHandler.toWattHours(new QuantityType<>("1.5 kWh")));
+        assertEquals(2000.0, OcppConnectorHandler.toWattHours(new DecimalType(2)));
+        assertEquals(null, OcppConnectorHandler.toWattHours(new QuantityType<>("7 kW")));
+    }
+
+    /** A CHARX has no meter of its own; the PowerTag on its supply is what the session is sized from. */
+    @Test
+    void aLinkedExternalMeterSizesTheSessionInsteadOfTheCharger() {
+        attachReadyChargePoint();
+        linkExternalMeter();
+        externalReading("1000 kWh");
+        startTransaction(7);
+        externalReading("1005 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(5000));
+    }
+
+    @Test
+    void theStartReadingIsKeptWithTheTransaction() {
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        linkExternalMeter();
+        externalReading("1000 kWh");
+
+        startTransaction(7);
+
+        verify(chargePoint).rememberExternalStart(7, 1_000_000.0);
+    }
+
+    @Test
+    void withoutAReadingAtTheStartTheChargerSizesTheSession() {
+        attachReadyChargePoint();
+        linkExternalMeter();
+        startTransaction(7);
+        externalReading("1005 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(1500));
+    }
+
+    @Test
+    void anUnlinkedExternalChannelIsIgnored() {
+        attachReadyChargePoint();
+        externalReading("1000 kWh");
+        startTransaction(7);
+        externalReading("1005 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(1500));
+    }
+
+    @Test
+    void aCounterThatWentBackwardsGivesNoSessionTotal() {
+        attachReadyChargePoint();
+        linkExternalMeter();
+        externalReading("1000 kWh");
+        startTransaction(7);
+        externalReading("3 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
+    }
+
+    @Test
+    void anExternalStartSurvivesARestart() {
+        ThingUID chargePointUID = new ThingUID(THING_TYPE_CHARGEPOINT, "server", "charger");
+        when(thing.getBridgeUID()).thenReturn(chargePointUID);
+        OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
+        when(chargePoint.getChargePointId()).thenReturn("charger");
+        when(chargePoint.recoverTransactionId(1)).thenReturn(7);
+        when(chargePoint.recoverExternalStart(7)).thenReturn(1_000_000.0);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(chargePoint);
+        when(callback.getBridge(chargePointUID)).thenReturn(bridge);
+        linkExternalMeter();
+        handler.initialize();
+        externalReading("1002 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(2000));
+    }
+
+    /** The link was removed mid-session; a meterless charger's registers must not size it instead. */
+    @Test
+    void anExternalStartIsRecoveredWithoutTheLink() {
+        ThingUID chargePointUID = new ThingUID(THING_TYPE_CHARGEPOINT, "server", "charger");
+        when(thing.getBridgeUID()).thenReturn(chargePointUID);
+        OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
+        when(chargePoint.getChargePointId()).thenReturn("charger");
+        when(chargePoint.recoverTransactionId(1)).thenReturn(7);
+        when(chargePoint.recoverMeterStart(7)).thenReturn(0);
+        when(chargePoint.recoverExternalStart(7)).thenReturn(1_000_000.0);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(chargePoint);
+        when(callback.getBridge(chargePointUID)).thenReturn(bridge);
+        handler.initialize();
+
+        handler.onTransactionStopped(new StopTransactionRequest(0, ZonedDateTime.now(ZoneOffset.UTC), 7));
+
+        assertChannel(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
+    }
+
+    @Test
+    void aStopAfterAvailableIsSizedFromTheExternalMeter() {
+        attachReadyChargePoint();
+        linkExternalMeter();
+        externalReading("1000 kWh");
+        startTransaction(7);
+        handler.onStatusNotification(status(ChargePointStatus.Available));
+        externalReading("1005 kWh");
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, wattHours(5000));
     }
 
     private void startTransaction(int transactionId) {
@@ -576,5 +960,48 @@ class OcppConnectorHandlerTest {
         assertTrue(unpause instanceof SetChargingProfileRequest,
                 "un-pausing with a set limit must restore it, not clear the cap");
         assertEquals(16.0, sentLimit(unpause), "un-pausing must restore the previous 16 A limit");
+    }
+
+    @Test
+    void anAvailableForgetsAnOpenSessionWithoutLoggingATotalForIt() {
+        startTransaction(7);
+        handler.onMeterValues(meterValues("Energy.Active.Import.Register", null, "kWh", "1.6"));
+
+        handler.onStatusNotification(status(ChargePointStatus.Available));
+
+        assertChannel(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_METER_STOP)), any());
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_SESSION_ENERGY)), any());
+    }
+
+    @Test
+    void aStopThatArrivesAfterAvailableStillLogsTheSessionTotal() {
+        startTransaction(7);
+        handler.onStatusNotification(status(ChargePointStatus.Available));
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_METER_STOP, new QuantityType<>(1600, Units.WATT_HOUR));
+        assertChannel(CHANNEL_SESSION_ENERGY, new QuantityType<>(1500, Units.WATT_HOUR));
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_TIMESTAMP_STOP)), any());
+    }
+
+    @Test
+    void aLateStopLeavesTheNextSessionRunning() {
+        startTransaction(7);
+        handler.onStatusNotification(status(ChargePointStatus.Available));
+        startTransaction(8);
+        clearInvocations(callback);
+
+        endTransaction(7);
+
+        assertChannel(CHANNEL_METER_STOP, new QuantityType<>(1600, Units.WATT_HOUR));
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_TRANSACTION_ID)), any());
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_SESSION_ENERGY)), any());
+
+        endTransaction(8);
+
+        assertChannel(CHANNEL_SESSION_ENERGY, new QuantityType<>(1500, Units.WATT_HOUR));
+        assertChannel(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
     }
 }

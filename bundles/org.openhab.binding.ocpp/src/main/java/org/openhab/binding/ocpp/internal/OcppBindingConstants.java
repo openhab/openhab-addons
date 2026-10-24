@@ -90,6 +90,7 @@ public class OcppBindingConstants {
     public static final String CHANNEL_METER_START = "meter-start";
     public static final String CHANNEL_METER_STOP = "meter-stop";
     public static final String CHANNEL_SESSION_ENERGY = "session-energy";
+    public static final String CHANNEL_EXTERNAL_ENERGY = "external-energy";
     public static final String CHANNEL_TIMESTAMP = "timestamp";
     public static final String CHANNEL_TIMESTAMP_START = "timestamp-start";
     public static final String CHANNEL_TIMESTAMP_STOP = "timestamp-stop";
@@ -100,6 +101,8 @@ public class OcppBindingConstants {
 
     // A connector id repeats across chargers, so the representation property carries the charge point id too.
     public static final String PROPERTY_UNIQUE_ID = "uniqueId";
+    // Set while the charger's persistent default profile is a 0 A stop, so a later run can release it.
+    public static final String PROPERTY_PERSISTED_STOP = "persistedStop";
 
     public static String uniqueConnectorId(String chargePointId, int connectorId) {
         return chargePointId + ":" + connectorId;

@@ -4,6 +4,25 @@ import { MessageType, Request } from "./MessageTypes";
 import { printError } from "./util/error";
 const logger = Logger.get("Controller");
 
+/**
+ * Returns the id of a MatterError, preferring the id of a wrapped error over a generic aggregate id
+ * such as "discovery-aggregate".
+ */
+function errorIdOf(error: unknown): string | undefined {
+    if (!(error instanceof Error)) {
+        return undefined;
+    }
+    if (error instanceof AggregateError) {
+        for (const inner of error.errors) {
+            const innerId = errorIdOf(inner);
+            if (innerId !== undefined) {
+                return innerId;
+            }
+        }
+    }
+    return "id" in error ? (error as any).id : undefined;
+}
+
 export abstract class Controller {
     constructor(
         protected ws: WebSocketSession,
@@ -52,12 +71,7 @@ export abstract class Controller {
         } catch (error) {
             if (error instanceof Error) {
                 printError(logger, error, functionName);
-                let errorId: string | undefined;
-                // instances of a MatterError has an id property
-                if ("id" in error) {
-                    errorId = (error as any).id;
-                }
-                this.ws.sendResponse(MessageType.ResultError, id, undefined, error.message, errorId);
+                this.ws.sendResponse(MessageType.ResultError, id, undefined, error.message, errorIdOf(error));
             } else {
                 logger.error(`Unexpected error executing function ${functionName}: ${error}`);
                 this.ws.sendResponse(MessageType.ResultError, id, undefined, String(error));

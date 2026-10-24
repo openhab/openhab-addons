@@ -128,9 +128,7 @@ public class GoveeHandler extends BaseThingHandler {
                 logger.info("Command task queue size:{} exceeds limit:20", taskQueue.size());
             }
             try {
-                if (taskQueue.remove(0).call()) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+                taskQueue.remove(0).call();
             } catch (IndexOutOfBoundsException e) {
                 logger.warn("Unexpected List.remove() exception:{}", e.getMessage());
             } catch (Exception e) {

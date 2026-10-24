@@ -150,7 +150,7 @@ public class IcdManagementCluster extends BaseCluster {
         /**
          * This field is deprecated. Use the RegisterClient command to set the ICDToken.
          */
-        public String key;
+        public OctetString key; // octstr
         /**
          * This field shall indicate the client's type to inform the ICD of the availability for communication of the
          * client.
@@ -158,7 +158,7 @@ public class IcdManagementCluster extends BaseCluster {
         public ClientTypeEnum clientType; // ClientTypeEnum
         public Integer fabricIndex; // FabricIndex
 
-        public MonitoringRegistrationStruct(BigInteger checkInNodeId, BigInteger monitoredSubject, String key,
+        public MonitoringRegistrationStruct(BigInteger checkInNodeId, BigInteger monitoredSubject, OctetString key,
                 ClientTypeEnum clientType, Integer fabricIndex) {
             this.checkInNodeId = checkInNodeId;
             this.monitoredSubject = monitoredSubject;
