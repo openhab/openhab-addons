@@ -15,10 +15,14 @@ package org.openhab.binding.oceanic.internal.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.TooManyListenersException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.openhab.binding.oceanic.internal.OceanicBindingConstants;
@@ -43,11 +47,18 @@ import org.slf4j.LoggerFactory;
  * directly connected to a serial port of the openHAB host
  *
  * @author Karel Goderis - Initial contribution
+ * @author Karel Goderis - Harden serial reader against purejavacomm FD_SET failures
  */
 public class SerialOceanicThingHandler extends OceanicThingHandler implements SerialPortEventListener {
 
     private static final long REQUEST_TIMEOUT = 10000;
     private static final int BAUD = 19200;
+    /**
+     * macOS purejavacomm/jtermios uses a fixed {@code fd_set} of 32 bits for {@code select()}. File descriptors
+     * {@code >= 32} cause {@link ArrayIndexOutOfBoundsException} in {@code FD_SET} on every blocking read.
+     */
+    private static final int PUREJAVACOMM_FD_SETSIZE = 32;
+    private static final int RECONNECT_INTERVAL_SECONDS = 15;
 
     private final Logger logger = LoggerFactory.getLogger(SerialOceanicThingHandler.class);
 
@@ -56,6 +67,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
     private InputStream inputStream;
     private OutputStream outputStream;
     private SerialPortReader readerThread;
+    private ScheduledFuture<?> reconnectJob;
 
     public SerialOceanicThingHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
@@ -84,6 +96,24 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 logger.info("Connecting to the Oceanic water softener using {}.", config.port);
                 serialPort = portIdentifier.open(this.getThing().getUID().getBindingId(), 2000);
 
+                int nativeFd = getNativeFileDescriptor(serialPort);
+                if (nativeFd >= PUREJAVACOMM_FD_SETSIZE) {
+                    String message = String.format(
+                            "Serial port '%s' opened with file descriptor %d which is >= %d. "
+                                    + "macOS purejavacomm/jtermios select() only supports FDs 0-%d; "
+                                    + "reads would fail with ArrayIndexOutOfBoundsException in FD_SET. "
+                                    + "Restart openHAB so the FD is lower, free unused file descriptors, "
+                                    + "or use a serial transport that supports poll()/higher FDs.",
+                            config.port, nativeFd, PUREJAVACOMM_FD_SETSIZE, PUREJAVACOMM_FD_SETSIZE - 1);
+                    logger.error("{}", message);
+                    closeSerialResources(false);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                    scheduleReconnect();
+                    return;
+                } else if (nativeFd >= 0) {
+                    logger.debug("Opened serial port '{}' with native file descriptor {}", config.port, nativeFd);
+                }
+
                 serialPort.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
                 serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
@@ -103,8 +133,10 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
             } catch (PortInUseException portInUseException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
+                scheduleReconnect();
             } catch (UnsupportedCommOperationException | IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
+                scheduleReconnect();
             } catch (TooManyListenersException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Too many listeners to serial port.");
@@ -114,13 +146,47 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
     @Override
     public void dispose() {
-        if (readerThread != null) {
+        cancelReconnect();
+        closeSerialResources(true);
+        super.dispose();
+    }
+
+    private void scheduleReconnect() {
+        cancelReconnect();
+        logger.info("Scheduling Oceanic serial reconnect in {} seconds", RECONNECT_INTERVAL_SECONDS);
+        reconnectJob = scheduler.schedule(this::reconnect, RECONNECT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void cancelReconnect() {
+        ScheduledFuture<?> reconnectJob = this.reconnectJob;
+        if (reconnectJob != null) {
+            reconnectJob.cancel(false);
+            this.reconnectJob = null;
+        }
+    }
+
+    private void reconnect() {
+        logger.debug("Reconnecting Oceanic serial thing handler");
+        dispose();
+        initialize();
+    }
+
+    /**
+     * Close the reader thread and serial resources.
+     *
+     * @param joinReader whether to join the reader thread (must be false when called from the reader itself)
+     */
+    private synchronized void closeSerialResources(boolean joinReader) {
+        SerialPortReader reader = readerThread;
+        if (reader != null) {
             try {
-                readerThread.interrupt();
-                readerThread.join();
+                reader.interrupt();
+                if (joinReader && reader != Thread.currentThread()) {
+                    reader.join(2000);
+                }
             } catch (InterruptedException e) {
-                logger.error("An exception occurred while interrupting the serial port reader thread : {}",
-                        e.getMessage(), e);
+                Thread.currentThread().interrupt();
+                logger.debug("Interrupted while joining the serial port reader thread: {}", e.getMessage());
             }
         }
 
@@ -139,6 +205,11 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             }
         }
         if (serialPort != null) {
+            try {
+                serialPort.removeEventListener();
+            } catch (Exception e) {
+                logger.debug("Error while removing serial event listener: {}", e.getMessage());
+            }
             serialPort.close();
         }
 
@@ -146,14 +217,66 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         inputStream = null;
         outputStream = null;
         serialPort = null;
+    }
 
-        super.dispose();
+    /**
+     * Stop the reader, mark the thing OFFLINE, release the port, and schedule a backoff reconnect.
+     * Never continue reading after FD_SET / stream-closed style failures (avoids busy-loop CPU use).
+     */
+    private void handleReaderFailure(String reason) {
+        logger.warn("Oceanic serial reader failure: {}", reason);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        // Release resources from the scheduler so we never join the reader from itself
+        scheduler.execute(() -> {
+            closeSerialResources(true);
+            scheduleReconnect();
+        });
+    }
+
+    /**
+     * Best-effort unwrap of the purejavacomm native file descriptor through the openHAB serial transport wrapper.
+     *
+     * @return native FD, or {@code -1} if it cannot be determined
+     */
+    private int getNativeFileDescriptor(SerialPort port) {
+        try {
+            Object pureJavaPort = port;
+            try {
+                Field spField = port.getClass().getDeclaredField("sp");
+                spField.setAccessible(true);
+                Object wrapped = spField.get(port);
+                if (wrapped != null) {
+                    pureJavaPort = wrapped;
+                }
+            } catch (NoSuchFieldException e) {
+                // Port may already be a purejavacomm SerialPort
+            }
+
+            try {
+                Method getter = pureJavaPort.getClass().getMethod("getNativeFileDescriptor");
+                Object value = getter.invoke(pureJavaPort);
+                if (value instanceof Integer fd) {
+                    return fd;
+                }
+            } catch (NoSuchMethodException e) {
+                Field fdField = pureJavaPort.getClass().getDeclaredField("m_FD");
+                fdField.setAccessible(true);
+                return fdField.getInt(pureJavaPort);
+            }
+        } catch (Exception e) {
+            logger.debug("Could not determine native file descriptor for serial port: {}", e.getMessage());
+        }
+        return -1;
     }
 
     @Override
     protected String requestResponse(String commandAsString) {
         synchronized (this) {
             SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
+
+            if (outputStream == null || getThing().getStatus() != ThingStatus.ONLINE) {
+                return "";
+            }
 
             Throttler.lock(config.port);
 
@@ -170,6 +293,12 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error writing '" + request + "' to serial port " + config.port + " : " + e.getMessage());
+                scheduler.execute(() -> {
+                    closeSerialResources(true);
+                    scheduleReconnect();
+                });
+                Throttler.unlock(config.port);
+                return "";
             }
 
             long timeStamp = System.currentTimeMillis();
@@ -177,11 +306,16 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
-                    logger.error("An exception occurred while putting the thread to sleep: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
+                    logger.debug("Interrupted while waiting for serial response: {}", e.getMessage());
+                    break;
                 }
                 if (System.currentTimeMillis() - timeStamp > REQUEST_TIMEOUT) {
                     logger.warn("A timeout occurred while requesting data from the water softener");
-                    readerThread.reset();
+                    SerialPortReader reader = readerThread;
+                    if (reader != null) {
+                        reader.reset();
+                    }
                     break;
                 }
             }
@@ -195,8 +329,15 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
     @Override
     public void serialEvent(SerialPortEvent serialPortEvent) {
-        if (logger.isTraceEnabled()) {
+        /*
+         * Put the serial event thread to sleep. Some serial providers (historically nrjavaserial; also relevant when a
+         * provider spins on select/FD_SET) drive a high-CPU event loop unless this callback blocks.
+         */
+        try {
             logger.trace("Received a serial port event : {}", serialPortEvent.getEventType());
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -245,7 +386,15 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 while (!interrupted) {
                     logger.trace("Reading the inputStream");
 
-                    if ((len = inputStream.read(tmpData)) > -1) {
+                    len = inputStream.read(tmpData);
+                    if (len < 0) {
+                        // EOF / stream closed — do not busy-loop on repeated read() calls
+                        interrupted = true;
+                        handleReaderFailure("Serial input stream closed");
+                        return;
+                    }
+
+                    if (len > 0) {
                         if (logger.isTraceEnabled()) {
                             StringBuilder sb = new StringBuilder();
                             for (int i = 0; i < len; i++) {
@@ -295,13 +444,25 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                     try {
                         Thread.sleep(sleep);
                     } catch (InterruptedException e) {
-                        // Move on silently
+                        interrupted = true;
+                        Thread.currentThread().interrupt();
+                        break;
                     }
                 }
             } catch (Exception e) {
-                logger.error("An exception occurred while reading serial port  : {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                if (!interrupted) {
+                    interrupted = true;
+                    logger.error("An exception occurred while reading serial port : {}", e.getMessage(), e);
+                    String reason = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+                    if (reason.contains("out of bounds") || reason.contains("FD_SET")
+                            || e instanceof ArrayIndexOutOfBoundsException) {
+                        reason = "purejavacomm FD_SET/select failure (file descriptor likely >= "
+                                + PUREJAVACOMM_FD_SETSIZE + "): " + reason;
+                    }
+                    handleReaderFailure(reason);
+                }
             }
+            logger.debug("Serial port reader for '{}' has stopped", getThing().getUID());
         }
     }
 }
