@@ -246,6 +246,9 @@ Textual configuration through a `.things` file is possible but, at present, stro
 
 If an advanced user is really motivated to define a textual configuration, it is suggested to perform an automatic scan through the user interface first in order to extract the required parameters (namely the different `uuid` of the needed subdevices).
 
+Each `uuid` must belong to a device of the matching type: a `subdeviceLan` Thing needs the `uuid` of the LAN device (`deviceType` `urn:dslforum-org:device:LANDevice:1`).
+If it belongs to another device, the Thing goes `OFFLINE` with a configuration error.
+
 The definition of the bridge and of the subdevices things is the following:
 
 ```java
