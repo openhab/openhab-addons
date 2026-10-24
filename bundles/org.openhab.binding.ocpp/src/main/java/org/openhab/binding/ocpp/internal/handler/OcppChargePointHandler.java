@@ -585,6 +585,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         setProperty(Thing.PROPERTY_FIRMWARE_VERSION, request.getFirmwareVersion());
         setProperty(Thing.PROPERTY_SERIAL_NUMBER, request.getChargePointSerialNumber());
         recordActivity();
+        connectors.values().forEach(OcppConnectorHandler::onChargerBooted);
         UUID bootSession = session;
         if (bootSession == null) {
             return;

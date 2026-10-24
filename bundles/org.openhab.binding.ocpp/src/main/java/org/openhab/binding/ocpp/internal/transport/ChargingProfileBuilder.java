@@ -68,6 +68,13 @@ public final class ChargingProfileBuilder {
         return request;
     }
 
+    /** Only the binding's TxDefaultProfile, so a transaction's own cap stays. */
+    public static ClearChargingProfileRequest clearDefaultLimit(int connectorId) {
+        ClearChargingProfileRequest request = clearLimit(connectorId);
+        request.setChargingProfilePurpose(ChargingProfilePurposeType.TxDefaultProfile);
+        return request;
+    }
+
     static int profileId(int connectorId, boolean txProfile) {
         return connectorId * PROFILE_ID_STRIDE + (txProfile ? TX_PROFILE_SUFFIX : TX_DEFAULT_SUFFIX);
     }

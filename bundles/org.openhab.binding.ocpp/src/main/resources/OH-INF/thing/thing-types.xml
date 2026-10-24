@@ -250,6 +250,12 @@
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="startLimit" type="decimal" min="0" unit="A">
+				<label>Start Limit</label>
+				<description>Current every new charge starts at. When a charge ends the connector goes back to it with pause off,
+					instead of carrying the last limit and pause over. Empty keeps carrying them over.</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="hardwareMaxCurrentKey" type="text">
 				<label>Hardware Max Current Key</label>
 				<description>Vendor ChangeConfiguration key backing the hardware maximum current channel. Empty disables that

@@ -200,6 +200,28 @@ class OcppChargePointHandlerTest {
     }
 
     @Test
+    void aBootNotificationTellsTheConnectorsTheChargerRestarted() {
+        handler.onConnected(UUID.randomUUID());
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        verify(connector1).onChargerBooted();
+        verify(connector2).onChargerBooted();
+    }
+
+    @Test
+    void aChargerThatOnlyReopensItsSocketDidNotRestart() {
+        // Readiness is reached by a reconnect, or here by a plain heartbeat, so it says nothing about a reboot.
+        handler.onConnected(UUID.randomUUID());
+
+        handler.onHeartbeat();
+
+        verify(connector1, org.mockito.Mockito.timeout(2000)).onChargePointReady();
+        verify(connector1, never()).onChargerBooted();
+        verify(connector2, never()).onChargerBooted();
+    }
+
+    @Test
     void becomingReadyReleasesConnectorsThatDeferredASend() {
         handler.onConnected(UUID.randomUUID());
         // A heartbeat also proves the charger booted (socket reopened, no fresh BootNotification); release is
