@@ -55,7 +55,6 @@ import com.google.gson.JsonObject;
 public class ChannelFactory {
     private final Logger logger = LoggerFactory.getLogger(ChannelFactory.class);
 
-    private static final String DECIMAL_VALIDATION_EXPRESSION = "-?[0-9]+(\\.[0-9]+)?";
     private final MyUplinkChannelTypeProvider channelTypeProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
 

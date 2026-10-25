@@ -178,4 +178,8 @@ public class MyUplinkBindingConstants {
     public static final String PARAMETER_NAME_WRITE_COMMAND = "writeCommand";
     public static final String PARAMETER_NAME_VALIDATION_REGEXP = "validationExpression";
     public static final String DEFAULT_VALIDATION_EXPRESSION = "-?[0-9]+";
+    public static final String DECIMAL_VALIDATION_EXPRESSION = "-?[0-9]+(\\.[0-9]+)?";
+    /** validation expressions written to channels by earlier versions, which did not allow negative values */
+    public static final String LEGACY_DEFAULT_VALIDATION_EXPRESSION = "[0-9]+";
+    public static final String LEGACY_DECIMAL_VALIDATION_EXPRESSION = "[0-9]+(\\.[0-9]+)?";
 }
