@@ -33,6 +33,7 @@ import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDataba
 import org.openhab.binding.hdpowerview.internal.dto.gen3.Shade;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
@@ -44,6 +45,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
@@ -260,7 +262,9 @@ public class ShadeThingHandler extends BaseThingHandler {
         updateState(CHANNEL_SHADE_SECONDARY_POSITION,
                 hasSecondary() ? shade.getPosition(SECONDARY_POSITION) : UnDefType.UNDEF);
         if (shade.hasFullState()) {
-            updateState(CHANNEL_SHADE_LOW_BATTERY, shade.getLowBattery());
+            State batteryLowState = shade.getLowBattery();
+            updateOnlineStatusDescription(batteryLowState);
+            updateState(CHANNEL_SHADE_LOW_BATTERY, batteryLowState);
             updateState(CHANNEL_SHADE_BATTERY_LEVEL, shade.getBatteryLevel());
             updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, shade.getSignalStrength());
         }
@@ -334,6 +338,33 @@ public class ShadeThingHandler extends BaseThingHandler {
     protected void updateState(String channelID, State state) {
         if (thing.getChannel(channelID) != null) {
             super.updateState(channelID, state);
+        }
+    }
+
+    /**
+     * Update thing status description based on the given battery low state. If the battery is low and the description
+     * is null, then the description is set to the respective battery low translatable text. If the battery is OK, and
+     * the description is the low battery translatable text, then the description message is cleared. If the thing is
+     * not ONLINE, or if it does not have a battery low channel then the description is not updated. NOTE: this method
+     * only updates the status description if the thing does not already have a status description for a different
+     * issue.
+     */
+    private void updateOnlineStatusDescription(State batteryLowState) {
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
+        if (statusInfo.getStatus() == ThingStatus.ONLINE && thing.getChannel(CHANNEL_SHADE_LOW_BATTERY) != null) {
+            String description = statusInfo.getDescription();
+
+            // if battery is OK and description is the low battery text then clear the description
+            if (OnOffType.OFF.equals(batteryLowState) && TEXT_ONLINE_BATTERY_LOW.equals(description)) {
+                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail());
+                return;
+            }
+
+            // if battery is low and description is null then apply the low battery text
+            if (OnOffType.ON.equals(batteryLowState) && (description == null || description.isBlank())) {
+                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), TEXT_ONLINE_BATTERY_LOW);
+                return;
+            }
         }
     }
 }
