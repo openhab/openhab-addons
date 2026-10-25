@@ -58,19 +58,26 @@ public class Gradient {
      * @throws IndexOutOfBoundsException if index is outside the light's point capacity
      */
     public void setPointXy(int index, PairXy pairXy) throws IndexOutOfBoundsException {
-        Integer pointsCapable = this.pointsCapable;
-        pointsCapable = pointsCapable != null ? pointsCapable : MAX_POINTS;
-        if (index < 0 || index >= pointsCapable) {
-            throw new IndexOutOfBoundsException("index:%d, capacity:%d".formatted(index, pointsCapable));
+        Integer capable = this.pointsCapable;
+        int capacity = capable != null ? capable : MAX_POINTS;
+        if (index < 0 || index >= capacity) {
+            throw new IndexOutOfBoundsException("index:%d, capacity:%d".formatted(index, capacity));
         }
-        List<Point> points = this.points;
-        points = points != null ? new ArrayList<>(points) : new ArrayList<>(pointsCapable);
         double[] xy = pairXy.getXY();
-        while (points.size() < pointsCapable) {
-            points.add(newPoint(xy));
+        List<Point> current = this.points;
+        int size = Math.max(capacity, current != null ? current.size() : 0);
+        List<Point> result = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            Point point = current != null && i < current.size() ? current.get(i) : null;
+            result.add(i != index && point != null && isValid(point) ? point : newPoint(xy));
         }
-        points.set(index, newPoint(xy));
-        this.points = points; // readers never see a half-updated list
+        this.points = result; // readers never see a half-updated list
+    }
+
+    private static boolean isValid(Point point) {
+        ColorXy colorXy = point.getColorXy();
+        PairXy pairXy = colorXy != null ? colorXy.getXY() : null;
+        return pairXy != null && pairXy.getXY().length == 2;
     }
 
     /**
@@ -84,9 +91,10 @@ public class Gradient {
     }
 
     /**
-     * Creates a deep copy of the current Gradient object.
-     * 
-     * @return a new Gradient object with the same (non null) points
+     * Creates a deep copy of the current Gradient object. The read-only 'points_capable' field is not copied.
+     *
+     * @return a new Gradient object with the same points
+     * @throws IllegalStateException if a point has no valid xy value
      */
     public Gradient copy() throws IllegalStateException {
         Gradient result = new Gradient();

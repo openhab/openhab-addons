@@ -245,16 +245,25 @@ class GradientCacheTest {
 
     @Test
     void mergeKeepsSeparateLightsApart() {
-        Resource front = new Resource(ResourceType.LIGHT).setId("front").setContentType(ContentType.UPDATE)
+        Resource front1 = new Resource(ResourceType.LIGHT).setId("front").setContentType(ContentType.UPDATE);
+        front1.setOnOff(OnOffType.ON);
+        Resource front2 = new Resource(ResourceType.LIGHT).setId("front").setContentType(ContentType.UPDATE)
                 .setGradient(createGradient(5, 5, 0.10));
-        Resource back = new Resource(ResourceType.LIGHT).setId("back").setContentType(ContentType.UPDATE)
+        front2.setColorXy(new ColorXy().setXY(new double[] { 0.3, 0.3 }));
+        Resource back1 = new Resource(ResourceType.LIGHT).setId("back").setContentType(ContentType.UPDATE);
+        back1.setOnOff(OnOffType.OFF);
+        Resource back2 = new Resource(ResourceType.LIGHT).setId("back").setContentType(ContentType.UPDATE)
                 .setGradient(createGradient(5, 5, 0.50));
+        back2.setColorXy(new ColorXy().setXY(new double[] { 0.4, 0.4 }));
 
-        Collection<Resource> merged = Setters.mergeLightResources(new ArrayList<>(List.of(front, back)));
+        Collection<Resource> merged = Setters
+                .mergeLightResources(new ArrayList<>(List.of(front1, back1, front2, back2)));
 
         assertEquals(2, merged.size());
-        assertEquals(0.10, x(gradientOf(front), 0), 0.0001);
-        assertEquals(0.50, x(gradientOf(back), 0), 0.0001);
+        assertEquals(0.10, x(gradientOf(front1), 0), 0.0001);
+        assertEquals(0.50, x(gradientOf(back1), 0), 0.0001);
+        assertNull(front2.getGradient());
+        assertNull(back2.getGradient());
     }
 
     @Test
@@ -278,13 +287,16 @@ class GradientCacheTest {
     }
 
     @Test
-    void setGradientPointColorXyWithInvalidCachedPointReturnsNull() {
+    void setGradientPointColorXyRepairsInvalidCachedPoint() {
         Gradient invalid = Objects.requireNonNull(GSON.fromJson(
                 "{\"points\":[{\"color\":{\"xy\":{\"x\":0.1,\"y\":0.5}}},{}],\"points_capable\":5}", Gradient.class));
         Resource cache = light(invalid);
 
-        // index 0 is valid, but the copy() of the full set hits the invalid second point
-        assertNull(Setters.setGradientPointColorXy(new Resource(ResourceType.LIGHT), new HSBType("120,100,100"), 0,
-                cache));
+        Resource result = Setters.setGradientPointColorXy(new Resource(ResourceType.LIGHT), new HSBType("120,100,100"),
+                0, cache);
+
+        assertNotNull(result);
+        assertEquals(5, gradientOf(Objects.requireNonNull(result)).getXyPoints().size());
+        assertEquals(5, gradientOf(cache).getXyPoints().size());
     }
 }
