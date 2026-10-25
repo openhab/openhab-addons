@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -84,6 +85,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected UpnpIOService upnpIOService;
 
     protected volatile @Nullable RemoteDevice device;
+    private @Nullable Function<@Nullable String, @Nullable RemoteDevice> deviceLookup;
 
     // The handlers can potentially create an important number of tasks, therefore put them in a separate thread pool
     protected ScheduledExecutorService upnpScheduler = ThreadPoolManager.getScheduledPool("binding-upnpcontrol");
@@ -148,6 +150,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     @Override
     public void initialize() {
         config = getConfigAs(UpnpControlConfiguration.class);
+
+        // e.g. after the UDN was changed in the configuration
+        RemoteDevice currentDevice = device;
+        Function<@Nullable String, @Nullable RemoteDevice> lookup = deviceLookup;
+        if (lookup != null && (currentDevice == null
+                || !currentDevice.getIdentity().getUdn().getIdentifierString().equals(config.udn))) {
+            device = lookup.apply(config.udn);
+        }
 
         upnpIOService.registerParticipant(this);
 
@@ -586,6 +596,13 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     @Override
     public @Nullable String getUDN() {
         return config.udn;
+    }
+
+    /**
+     * Sets the lookup used to find the device again when the UDN is changed in the configuration.
+     */
+    public void setDeviceLookup(Function<@Nullable String, @Nullable RemoteDevice> deviceLookup) {
+        this.deviceLookup = deviceLookup;
     }
 
     protected boolean checkForConnectionIds() {
