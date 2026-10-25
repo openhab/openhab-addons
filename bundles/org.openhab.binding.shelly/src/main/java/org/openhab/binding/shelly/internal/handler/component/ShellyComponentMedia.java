@@ -67,11 +67,12 @@ public class ShellyComponentMedia {
             .collect(Collectors.toUnmodifiableSet());
 
     /**
-     * A NotifyStatus only carries the components it reports, so only a full GetStatus may clear the media
-     * component, which in turn removes its channels.
+     * Only a full GetStatus is taken over: a NotifyStatus carries just the changed fields, which would clear the
+     * metadata or remove the channels when the poll thread publishes it, and the channels are only updated from
+     * the poll anyway.
      */
     public static void fillStatus(ShellySettingsStatus status, Shelly2DeviceStatusResult result, boolean fullStatus) {
-        if (fullStatus || result.media != null) {
+        if (fullStatus) {
             status.media = result.media;
         }
     }

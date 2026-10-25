@@ -29,8 +29,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
@@ -128,6 +130,20 @@ public class ShellyComponentMediaTest {
         ShellySettingsStatus withoutPlayback = new ShellySettingsStatus();
         withoutPlayback.media = new Shelly2DeviceStatusMedia();
         return Stream.of(Arguments.of(new ShellySettingsStatus()), Arguments.of(withoutPlayback));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void onlyFullStatusReplacesMedia(boolean fullStatus) {
+        Shelly2DeviceStatusMedia known = new Shelly2DeviceStatusMedia();
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.media = known;
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.media = new Shelly2DeviceStatusMedia();
+
+        ShellyComponentMedia.fillStatus(status, result, fullStatus);
+
+        assertEquals(fullStatus ? result.media : known, status.media);
     }
 
     @Test
