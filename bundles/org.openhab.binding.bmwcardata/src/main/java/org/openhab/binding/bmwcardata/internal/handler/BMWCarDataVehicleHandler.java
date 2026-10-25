@@ -69,17 +69,21 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     private String vin = "";
     private boolean dynamicChannels = true;
-    private final Object dynamicChannelLock = new Object();
+    // serializes accepting and publishing values: the REST refresh and the stream deliver data concurrently, and a
+    // value accepted as newer must not be published after a value that was accepted later; held while publishing, as
+    // the order of the state updates is what counts
+    private final Object dataLock = new Object();
     private @Nullable ScheduledFuture<?> propertiesJob;
     // states by channel id, to answer REFRESH commands without spending API requests
     private final Map<String, State> states = new ConcurrentHashMap<>();
-    // timestamps of the latest values by descriptor, to drop values older than already published ones
-    private final Map<String, Instant> descriptorTimestamps = new ConcurrentHashMap<>();
+    // timestamps of the latest values by descriptor, to drop values older than already published ones; guarded by
+    // dataLock
+    private final Map<String, Instant> descriptorTimestamps = new HashMap<>();
     // once the vehicle reports isPlugged, the plug state is no longer derived from the charging port status
     private volatile boolean pluggedReported;
     // a refresh or stream message of the account may still deliver data while the handler is disposed
     private volatile boolean disposed;
-    // guarded by this
+    // guarded by dataLock
     private @Nullable BigDecimal latitude;
     private @Nullable BigDecimal longitude;
     private @Nullable BigDecimal altitude;
@@ -124,9 +128,12 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            State state = states.get(channelUID.getId());
-            if (state != null) {
-                updateState(channelUID, state);
+            // a REFRESH must not publish a state that a concurrent update has just replaced
+            synchronized (dataLock) {
+                State state = states.get(channelUID.getId());
+                if (state != null) {
+                    updateState(channelUID, state);
+                }
             }
         }
         // all channels are read-only
@@ -139,6 +146,17 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         if (disposed) {
             return;
         }
+        synchronized (dataLock) {
+            publishTelematicData(data);
+        }
+        // data received from the stream proves the vehicle reachable again after a failed poll
+        if (getThing().getStatus() == ThingStatus.OFFLINE
+                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    private void publishTelematicData(Map<String, TelematicValue> data) {
         BigDecimal newLatitude = null;
         BigDecimal newLongitude = null;
         BigDecimal newAltitude = null;
@@ -210,47 +228,32 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             }
         }
 
-        State location = null;
-        State lastUpdateState = null;
-        synchronized (this) {
-            if (newAltitude != null) {
-                altitude = newAltitude;
+        if (newAltitude != null) {
+            altitude = newAltitude;
+        }
+        if (newLatitude != null || newLongitude != null) {
+            if (newLatitude != null) {
+                latitude = newLatitude;
             }
-            if (newLatitude != null || newLongitude != null) {
-                if (newLatitude != null) {
-                    latitude = newLatitude;
-                }
-                if (newLongitude != null) {
-                    longitude = newLongitude;
-                }
-                BigDecimal lat = latitude;
-                BigDecimal lon = longitude;
-                BigDecimal alt = altitude;
-                if (lat != null && lon != null) {
-                    location = alt != null
-                            ? new PointType(new DecimalType(lat), new DecimalType(lon), new DecimalType(alt))
-                            : new PointType(new DecimalType(lat), new DecimalType(lon));
-                }
+            if (newLongitude != null) {
+                longitude = newLongitude;
             }
-            Instant previous = lastUpdate;
-            if (newest != null && (previous == null || newest.isAfter(previous))) {
-                lastUpdate = newest;
-                lastUpdateState = new DateTimeType(newest);
+            BigDecimal lat = latitude;
+            BigDecimal lon = longitude;
+            BigDecimal alt = altitude;
+            if (lat != null && lon != null) {
+                publish(CHANNEL_GPS,
+                        alt != null ? new PointType(new DecimalType(lat), new DecimalType(lon), new DecimalType(alt))
+                                : new PointType(new DecimalType(lat), new DecimalType(lon)));
             }
         }
-        if (location != null) {
-            publish(CHANNEL_GPS, location);
-        }
-        if (lastUpdateState != null) {
-            publish(CHANNEL_LAST_UPDATE, lastUpdateState);
+        Instant previous = lastUpdate;
+        if (newest != null && (previous == null || newest.isAfter(previous))) {
+            lastUpdate = newest;
+            publish(CHANNEL_LAST_UPDATE, new DateTimeType(newest));
         }
         if (!dynamicValues.isEmpty()) {
             updateDynamicChannels(dynamicValues);
-        }
-        // data received from the stream proves the vehicle reachable again after a failed poll
-        if (getThing().getStatus() == ThingStatus.OFFLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -259,39 +262,37 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      */
     private void updateDynamicChannels(Map<String, TelematicValue> values) {
         Map<String, State> newStates = new LinkedHashMap<>();
-        // stream and poll may deliver data concurrently, the lock avoids that one thing update overwrites the other
-        synchronized (dynamicChannelLock) {
-            ThingBuilder builder = null;
-            List<String> newChannelIds = new ArrayList<>();
-            for (Map.Entry<String, TelematicValue> entry : values.entrySet()) {
-                String descriptor = entry.getKey();
-                String channelId = GROUP_OTHER + "#" + DynamicChannel.channelId(descriptor);
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
-                Channel channel = getThing().getChannel(channelUID);
-                if (channel != null) {
-                    State state = DynamicChannel.toState(entry.getValue(), channel.getAcceptedItemType());
-                    if (state != null) {
-                        newStates.put(channelId, state);
-                    }
-                    continue;
+        // runs under dataLock, so the thing updates of concurrent data do not overwrite each other
+        ThingBuilder builder = null;
+        List<String> newChannelIds = new ArrayList<>();
+        for (Map.Entry<String, TelematicValue> entry : values.entrySet()) {
+            String descriptor = entry.getKey();
+            String channelId = GROUP_OTHER + "#" + DynamicChannel.channelId(descriptor);
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+            Channel channel = getThing().getChannel(channelUID);
+            if (channel != null) {
+                State state = DynamicChannel.toState(entry.getValue(), channel.getAcceptedItemType());
+                if (state != null) {
+                    newStates.put(channelId, state);
                 }
-                DynamicChannel.Definition definition = DynamicChannel.define(entry.getValue());
-                if (definition == null) {
-                    continue;
-                }
-                if (builder == null) {
-                    builder = editThing();
-                }
-                builder.withChannel(ChannelBuilder.create(channelUID, definition.itemType())
-                        .withType(new ChannelTypeUID(BINDING_ID, definition.channelTypeId())).withLabel(descriptor)
-                        .build());
-                newChannelIds.add(channelId);
-                newStates.put(channelId, definition.state());
+                continue;
             }
-            if (builder != null) {
-                logger.debug("Creating dynamic channels {}", newChannelIds);
-                updateThing(builder.build());
+            DynamicChannel.Definition definition = DynamicChannel.define(entry.getValue());
+            if (definition == null) {
+                continue;
             }
+            if (builder == null) {
+                builder = editThing();
+            }
+            builder.withChannel(ChannelBuilder.create(channelUID, definition.itemType())
+                    .withType(new ChannelTypeUID(BINDING_ID, definition.channelTypeId())).withLabel(descriptor)
+                    .build());
+            newChannelIds.add(channelId);
+            newStates.put(channelId, definition.state());
+        }
+        if (builder != null) {
+            logger.debug("Creating dynamic channels {}", newChannelIds);
+            updateThing(builder.build());
         }
         newStates.forEach(this::publish);
     }
