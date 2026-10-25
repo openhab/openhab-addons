@@ -68,6 +68,7 @@ class VolvoCarsApiTest {
         http.respond(VEHICLE_URL, 200, resource("vehicle.json"));
         http.respond(VEHICLE_URL + "/doors", 200, resource("doors.json"));
         http.respond(VEHICLE_URL + "/fuel", 200, resource("fuel.json"));
+        http.respond(VEHICLE_URL + "/statistics", 200, resource("statistics.json"));
         http.respond(VEHICLE_URL + "/commands", 200, resource("commands.json"));
         http.respond(ENERGY_ENDPOINT + "/" + VIN + "/state", 200, resource("energy-state.json"));
         http.respond(ENERGY_ENDPOINT + "/" + VIN + "/capabilities", 200, resource("energy-capabilities.json"));
@@ -108,19 +109,37 @@ class VolvoCarsApiTest {
     }
 
     @Test
+    void statisticsSkipNullValues() throws VolvoCarsException {
+        Map<String, ValueField> statistics = api.getValues(VIN, "statistics");
+
+        assertFalse(statistics.containsKey("averageEnergyConsumptionAutomatic"));
+        assertEquals(new BigDecimal("1.2"), field(statistics, "averageFuelConsumptionAutomatic").getNumber());
+        assertEquals("l/100km", field(statistics, "averageFuelConsumptionAutomatic").unit);
+        assertEquals(new BigDecimal("510"), field(statistics, "distanceToEmptyTank").getNumber());
+    }
+
+    @Test
     void energyStateMarksUnsupportedValuesInvalid() throws VolvoCarsException {
         Map<String, ValueField> energy = api.getEnergyState(VIN);
 
         assertTrue(field(energy, "batteryChargeLevel").isValid());
-        assertEquals(new BigDecimal("53"), field(energy, "batteryChargeLevel").getNumber());
+        assertEquals(new BigDecimal("53.0"), field(energy, "batteryChargeLevel").getNumber());
+        assertEquals("IDLE", field(energy, "chargingStatus").getString());
+        // permanently unsupported
+        assertFalse(field(energy, "chargingCurrentLimit").isValid());
+        // temporarily without value, e.g. while not charging
         assertFalse(field(energy, "chargingPower").isValid());
+        // not part of the specification
+        assertFalse(field(energy, "transferLimit").isValid());
     }
 
     @Test
     void energyCapabilities() throws VolvoCarsException {
         Set<String> capabilities = api.getSupportedEnergyCapabilities(VIN);
 
-        assertEquals(Set.of("batteryChargeLevel", "electricRange", "chargingStatus"), capabilities);
+        assertEquals(Set.of("batteryChargeLevel", "electricRange", "chargerConnectionStatus", "chargingStatus",
+                "chargingType", "chargerPowerStatus", "estimatedChargingTimeToTargetBatteryChargeLevel",
+                "targetBatteryChargeLevel", "chargingPower"), capabilities);
     }
 
     @Test
