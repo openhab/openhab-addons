@@ -18,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.stream.StreamMessageParser.ParsedMessage;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -89,7 +90,7 @@ public class BridgeStreamSource implements StreamSource, MqttMessageSubscriber, 
 
         MqttBrokerConnection connection;
         try {
-            connection = settings.createConnection(clientId);
+            connection = createConnection();
         } catch (BMWCarDataException e) {
             publishState(e.getMessage());
             return;
@@ -109,6 +110,13 @@ public class BridgeStreamSource implements StreamSource, MqttMessageSubscriber, 
             connectionStateChanged(MqttConnectionState.DISCONNECTED, e);
             return false;
         });
+    }
+
+    /**
+     * Creates the connection to the local broker, replaced in tests so that they do not connect to a broker.
+     */
+    MqttBrokerConnection createConnection() throws BMWCarDataException {
+        return settings.createConnection(clientId);
     }
 
     @Override
@@ -146,6 +154,10 @@ public class BridgeStreamSource implements StreamSource, MqttMessageSubscriber, 
         if (stopped) {
             return;
         }
+        if (logger.isTraceEnabled()) {
+            logger.trace("Bridge message on {}: {}", LogRedaction.topic(topic),
+                    LogRedaction.payload(new String(payload, StandardCharsets.UTF_8)));
+        }
         if (topic.equals(settings.statusTopic())) {
             Boolean connected = parseStatus(payload);
             if (connected != null) {
@@ -159,8 +171,9 @@ public class BridgeStreamSource implements StreamSource, MqttMessageSubscriber, 
             logger.debug("Ignoring a message of the bridge that is not a CarData envelope with data");
             return;
         }
-        if (!Boolean.TRUE.equals(upstreamConnected)) {
-            // data is flowing, so the bridge is connected even if its status message was missed
+        if (upstreamConnected == null) {
+            // data is flowing, so the bridge is connected even if it publishes no status; an explicit disconnected
+            // status is kept, as a raw message may be an old retained one that the broker replays on subscribing
             upstreamConnected = true;
             publishState(null);
         }

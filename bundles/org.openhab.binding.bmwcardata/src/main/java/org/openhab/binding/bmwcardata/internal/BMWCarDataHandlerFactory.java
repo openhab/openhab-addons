@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.openhab.binding.bmwcardata.internal.handler.BMWCarDataAccountHandler;
 import org.openhab.binding.bmwcardata.internal.handler.BMWCarDataVehicleHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -35,10 +34,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -53,7 +49,6 @@ import com.google.gson.Gson;
         BMWCarDataHandlerFactory.class })
 public class BMWCarDataHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(BMWCarDataHandlerFactory.class);
     private final HttpClient httpClient;
     private final StorageService storageService;
     private final OAuthFactory oAuthFactory;
@@ -65,26 +60,8 @@ public class BMWCarDataHandlerFactory extends BaseThingHandlerFactory {
             @Reference StorageService storageService, @Reference OAuthFactory oAuthFactory) {
         this.storageService = storageService;
         this.oAuthFactory = oAuthFactory;
-        // a dedicated client is required, as BMW answers with 401 responses without WWW-Authenticate header, which
-        // the authentication protocol handler of the common client turns into a failure that hides the error code
-        HttpClient client = httpClientFactory.createHttpClient(BINDING_ID);
-        try {
-            client.start();
-        } catch (Exception e) {
-            // catching exception is necessary due to the signature of HttpClient.start()
-            throw new IllegalStateException("Could not start HttpClient", e);
-        }
-        client.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
-        this.httpClient = client;
-    }
-
-    @Deactivate
-    public void deactivate() {
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            logger.debug("Failed to stop HttpClient: {}", e.getMessage());
-        }
+        // BMW's 401 responses lack a WWW-Authenticate header, the clients read the status from the resulting failure
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -99,8 +76,11 @@ public class BMWCarDataHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
+            // shared by all account things, as BMW counts the requests per client, not per thing
+            Storage<String> budgetStorage = storageService.getStorage(BINDING_ID + ".budget",
+                    String.class.getClassLoader());
             BMWCarDataAccountHandler handler = new BMWCarDataAccountHandler((Bridge) thing, httpClient, gson, storage,
-                    oAuthFactory);
+                    budgetStorage, oAuthFactory);
             accountHandlers.add(handler);
             return handler;
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {

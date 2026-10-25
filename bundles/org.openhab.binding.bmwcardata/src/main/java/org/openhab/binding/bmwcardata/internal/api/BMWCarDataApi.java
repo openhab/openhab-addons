@@ -13,10 +13,10 @@
 package org.openhab.binding.bmwcardata.internal.api;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -30,6 +30,8 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.Container;
 import org.openhab.binding.bmwcardata.internal.api.dto.Container.ContainerList;
@@ -58,6 +60,8 @@ public class BMWCarDataApi {
 
     private static final String API_BASE_URL = "https://api-cardata.bmwgroup.com";
     private static final String API_VERSION = "v1";
+    // identifies a request towards BMW support
+    private static final String REQUEST_ID_HEADER = "x-amzn-RequestId";
     private static final int TIMEOUT_SECONDS = 30;
     private static final Pattern VIN_PATTERN = Pattern.compile("[A-HJ-NPR-Z0-9]{17}");
     private static final Pattern CONTAINER_ID_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
@@ -110,8 +114,14 @@ public class BMWCarDataApi {
             } else {
                 throw new BMWCarDataException("Unexpected vehicle mappings response");
             }
-            return items.asList().stream().map(item -> gson.fromJson(item, VehicleMapping.class))
-                    .filter(Objects::nonNull).toList();
+            List<VehicleMapping> mappings = new ArrayList<>();
+            for (JsonElement item : items) {
+                VehicleMapping mapping = gson.fromJson(item, VehicleMapping.class);
+                if (mapping != null) {
+                    mappings.add(mapping);
+                }
+            }
+            return mappings;
         } catch (JsonParseException | IllegalStateException e) {
             throw new BMWCarDataException("Malformed vehicle mappings response", e);
         }
@@ -173,8 +183,10 @@ public class BMWCarDataApi {
         if (!budget.tryAcquire()) {
             throw BMWCarDataException.budgetExhausted(budget.used(), budget.budget());
         }
-        logger.debug("BMW CarData request {} {} ({} of {} requests used in 24 hours)", method, redactVin(path),
-                budget.used(), budget.budget());
+        if (logger.isDebugEnabled()) {
+            logger.debug("BMW CarData request {} {} ({} of {} requests used in 24 hours)", method,
+                    LogRedaction.vins(path), budget.used(), budget.budget());
+        }
         Request request = httpClient.newRequest(baseUrl + path).method(method)
                 .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken).header(HttpHeader.ACCEPT, "application/json")
                 .header("x-version", API_VERSION).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -183,6 +195,10 @@ public class BMWCarDataApi {
         }
         if (jsonBody != null) {
             request.content(new StringContentProvider("application/json", jsonBody, StandardCharsets.UTF_8));
+            if (logger.isTraceEnabled()) {
+                logger.trace("BMW CarData request {} {} body: {}", method, LogRedaction.vins(path),
+                        LogRedaction.payload(jsonBody));
+            }
         }
         ContentResponse response;
         try {
@@ -191,18 +207,27 @@ public class BMWCarDataApi {
             Thread.currentThread().interrupt();
             throw new BMWCarDataException("Interrupted", e);
         } catch (ExecutionException e) {
+            if (HttpResponses.isUnauthorizedResponse(e)) {
+                throw new BMWCarDataAuthException("Access token rejected", 401);
+            }
             throw new BMWCarDataException("Request to BMW CarData failed: " + e.getMessage(), e);
         } catch (TimeoutException e) {
             throw new BMWCarDataException("Request to BMW CarData timed out", e);
         }
         int status = response.getStatus();
+        if (logger.isTraceEnabled()) {
+            logger.trace("BMW CarData response {} {} -> HTTP {}, request id {}, body: {}", method,
+                    LogRedaction.vins(path), status, response.getHeaders().get(REQUEST_ID_HEADER),
+                    LogRedaction.payload(response.getContentAsString()));
+        }
+        // a 401 with WWW-Authenticate header, e.g. Bearer error="invalid_token", is returned as a normal response
         if (status == 401) {
             throw new BMWCarDataAuthException("Access token rejected", status);
         }
         if (status < 200 || status >= 300) {
             String content = response.getContentAsString();
             BMWCarDataException exception = new BMWCarDataException("BMW CarData request " + method + " "
-                    + redactVin(path) + " failed with HTTP " + status + ": " + errorOf(content), status,
+                    + LogRedaction.vins(path) + " failed with HTTP " + status + ": " + errorOf(status, content), status,
                     errorIdOf(content));
             if (exception.isRateLimited()) {
                 // BMW counts requests the binding does not know of, e.g. those of other tools using the account
@@ -241,17 +266,17 @@ public class BMWCarDataApi {
         }
     }
 
-    private static String errorOf(@Nullable String content) {
+    private static String errorOf(int status, @Nullable String content) {
         if (content == null || content.isBlank()) {
             return "<no content>";
         }
+        // gateway errors come as HTML pages, which tell no more than the status
+        if (content.stripLeading().startsWith("<")) {
+            return HttpStatus.getMessage(status);
+        }
         // error responses are short structured messages, but must not flood the log
-        String excerpt = content.length() > 200 ? content.substring(0, 200) : content;
-        return redactVin(excerpt);
-    }
-
-    private static String redactVin(String text) {
-        return VIN_PATTERN.matcher(text).replaceAll(match -> match.group().substring(0, 3) + "***");
+        String redacted = LogRedaction.payload(content);
+        return redacted.length() > 200 ? redacted.substring(0, 200) : redacted;
     }
 
     private static String checkVin(String vin) throws BMWCarDataException {

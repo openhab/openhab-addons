@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Static vehicle data as returned by {@code /customers/vehicles/{vin}/basicData}. Only the fields used as Thing
- * properties are mapped.
+ * properties or in the logic are mapped.
  *
  * @author Michael Weger - Initial contribution
  */
@@ -30,4 +30,6 @@ public class BasicData {
     public @Nullable String propulsionType;
     public @Nullable String colourDescription;
     public @Nullable String constructionDate;
+    // not documented by BMW; read as no telematics only when explicitly false
+    public @Nullable Boolean isTelematicsCapable;
 }

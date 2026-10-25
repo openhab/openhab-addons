@@ -17,16 +17,20 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataApi;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthClient;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthClient.DeviceAuthorization;
@@ -67,6 +71,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link BMWCarDataAccountHandler} authorizes the binding for a BMW CarData client, keeps the tokens fresh,
@@ -80,7 +85,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private static final String CONTAINER_NAME = "openHAB";
     private static final String CONTAINER_PURPOSE_PREFIX = "openHAB BMW CarData binding";
     // bump the revision whenever the descriptors of VehicleChannel change, so that the container is replaced
-    private static final String CONTAINER_PURPOSE = CONTAINER_PURPOSE_PREFIX + " rev 6";
+    static final String CONTAINER_PURPOSE = CONTAINER_PURPOSE_PREFIX + " rev 6";
     private static final Duration REFRESH_MARGIN = Duration.ofMinutes(5);
     private static final long RETRY_DELAY_SECONDS = 60;
     private static final long STREAM_STOP_TIMEOUT_SECONDS = 10;
@@ -89,17 +94,25 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     // the stream does not replay values sent while it was down
     private static final Duration CATCH_UP_AFTER_OUTAGE = Duration.ofMinutes(5);
     private static final Duration CATCH_UP_MIN_SPACING = Duration.ofMinutes(30);
+    // a single retry after a failure on BMW's side, e.g. a 502 of its gateway, which is usually over by then
+    private static final Duration RETRY_AFTER_TRANSIENT_FAILURE = Duration.ofMinutes(15);
     // not secret: the client id the stored authorization belongs to, and the stream user name
     private static final String STORAGE_KEY_CLIENT_ID = "clientId";
     private static final String STORAGE_KEY_GCID = "gcid";
+    // the per-thing request budget of earlier versions, removed at start
     private static final String STORAGE_KEY_BUDGET = "budget";
     private static final String STORAGE_KEY_CONTAINER = "container";
+    // basic data by VIN; it does not change, so discovery and the vehicle Thing share one request
+    private static final String STORAGE_KEY_BASIC_DATA = "basicData.";
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataAccountHandler.class);
     private final HttpClient httpClient;
     private final Gson gson;
     private final Storage<String> storage;
+    // request budgets by client ID, so they survive recreating the account thing
+    private final Storage<String> budgetStorage;
     private final OAuthFactory oAuthFactory;
+    private final ScheduledExecutorService jobScheduler;
     private final AccessTokenRefreshListener refreshListener = this::onAccessTokenResponse;
     private final Object containerLock = new Object();
     // serializes telematic refreshes, so that concurrent triggers do not spend the request budget twice
@@ -110,6 +123,10 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private @Nullable BMWCarDataApi api;
     private @Nullable RequestBudget budget;
     private @Nullable ScheduledFuture<?> refreshJob;
+    // guarded by this
+    private @Nullable ScheduledFuture<?> retryJob;
+    // VINs of the vehicles to refresh again, dropped once a later refresh of the vehicle succeeds
+    private final Set<String> retryVins = ConcurrentHashMap.newKeySet();
     private volatile @Nullable Instant streamDownSince;
     private volatile @Nullable Instant lastCatchUp;
     // status description while the request budget is used up
@@ -129,16 +146,28 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private volatile @Nullable BMWCarDataVehicleDiscoveryService discoveryService;
     private @Nullable ScheduledFuture<?> authJob;
     private volatile boolean disposed;
+    // incremented when the handler stops, so that work started before cannot act on a re-initialized handler
+    private volatile int generation;
     // guarded by containerLock
     private @Nullable String containerId;
 
     public BMWCarDataAccountHandler(Bridge bridge, HttpClient httpClient, Gson gson, Storage<String> storage,
-            OAuthFactory oAuthFactory) {
+            Storage<String> budgetStorage, OAuthFactory oAuthFactory) {
+        this(bridge, httpClient, gson, storage, budgetStorage, oAuthFactory, null);
+    }
+
+    /**
+     * @param jobScheduler runs the jobs of the handler, {@code null} for the scheduler of the base class
+     */
+    BMWCarDataAccountHandler(Bridge bridge, HttpClient httpClient, Gson gson, Storage<String> storage,
+            Storage<String> budgetStorage, OAuthFactory oAuthFactory, @Nullable ScheduledExecutorService jobScheduler) {
         super(bridge);
         this.httpClient = httpClient;
         this.gson = gson;
         this.storage = storage;
+        this.budgetStorage = budgetStorage;
         this.oAuthFactory = oAuthFactory;
+        this.jobScheduler = jobScheduler != null ? jobScheduler : scheduler;
     }
 
     @Override
@@ -171,7 +200,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         oAuthService.addAccessTokenRefreshListener(refreshListener);
         this.oAuthService = oAuthService;
 
-        RequestBudget budget = new RequestBudget(storage, STORAGE_KEY_BUDGET, config.requestBudget, Clock.systemUTC());
+        // BMW counts the requests per client, also when the account thing is recreated with a new UID
+        storage.remove(STORAGE_KEY_BUDGET);
+        RequestBudget budget = new RequestBudget(budgetStorage, clientId, config.requestBudget, Clock.systemUTC());
         this.budget = budget;
         api = new BMWCarDataApi(httpClient, gson, this::getAccessToken, budget);
         disposed = false;
@@ -205,7 +236,12 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         stopAuthJob();
         deleteAuthorization();
         storage.remove(STORAGE_KEY_CONTAINER);
-        // the request budget is kept, as BMW keeps counting the requests of the account
+        for (String key : List.copyOf(storage.getKeys())) {
+            if (key.startsWith(STORAGE_KEY_BASIC_DATA)) {
+                storage.remove(key);
+            }
+        }
+        // the request budget is kept in the shared budget storage, as BMW keeps counting the requests of the client
         super.handleRemoval();
     }
 
@@ -243,6 +279,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
 
     private synchronized void stopAuthJob() {
         disposed = true;
+        generation++;
         ScheduledFuture<?> job = authJob;
         if (job != null) {
             job.cancel(true);
@@ -253,6 +290,12 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             refresh.cancel(true);
             refreshJob = null;
         }
+        ScheduledFuture<?> retry = retryJob;
+        if (retry != null) {
+            retry.cancel(true);
+            retryJob = null;
+        }
+        retryVins.clear();
     }
 
     @Override
@@ -277,11 +320,33 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     }
 
     /**
-     * Retrieves the static data of a vehicle. Costs one request of the daily quota.
+     * Retrieves the static data of a vehicle. Costs one request of the daily quota the first time; the data is kept,
+     * as it does not change, so discovery and the vehicle Thing share that request.
      */
     public BasicData fetchBasicData(String vin) throws BMWCarDataException {
+        @Nullable
+        BasicData cached = getCachedBasicData(vin);
+        if (cached != null) {
+            return cached;
+        }
         BMWCarDataApi api = requireApi();
-        return call(() -> api.getBasicData(vin));
+        BasicData basicData = call(() -> api.getBasicData(vin));
+        storage.put(STORAGE_KEY_BASIC_DATA + vin, gson.toJson(basicData));
+        return basicData;
+    }
+
+    private @Nullable BasicData getCachedBasicData(String vin) {
+        @Nullable
+        String cached = storage.get(STORAGE_KEY_BASIC_DATA + vin);
+        if (cached == null) {
+            return null;
+        }
+        try {
+            return gson.fromJson(cached, BasicData.class);
+        } catch (JsonParseException e) {
+            storage.remove(STORAGE_KEY_BASIC_DATA + vin);
+            return null;
+        }
     }
 
     /**
@@ -311,15 +376,24 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
      * request budget cannot cover all vehicles.
      */
     private void refreshTelematicData(String reason) {
+        refreshTelematicData(reason, getVehicles(), true);
+    }
+
+    private List<BMWCarDataVehicleHandler> getVehicles() {
+        return getThing().getThings().stream().map(Thing::getHandler).filter(BMWCarDataVehicleHandler.class::isInstance)
+                .map(BMWCarDataVehicleHandler.class::cast).filter(vehicle -> BMWCarDataApi.isValidVin(vehicle.getVin()))
+                .toList();
+    }
+
+    /**
+     * Reads the current values of the given vehicles. Vehicles whose refresh failed on BMW's side are refreshed once
+     * more after {@link #RETRY_AFTER_TRANSIENT_FAILURE}, if {@code retry} is set.
+     */
+    private void refreshTelematicData(String reason, List<BMWCarDataVehicleHandler> vehicles, boolean retry) {
+        int generation = this.generation;
         BMWCarDataApi api = this.api;
         RequestBudget budget = this.budget;
-        if (api == null || budget == null || disposed || tokens == null) {
-            return;
-        }
-        List<BMWCarDataVehicleHandler> vehicles = getThing().getThings().stream().map(Thing::getHandler)
-                .filter(BMWCarDataVehicleHandler.class::isInstance).map(BMWCarDataVehicleHandler.class::cast)
-                .filter(vehicle -> BMWCarDataApi.isValidVin(vehicle.getVin())).toList();
-        if (vehicles.isEmpty()) {
+        if (api == null || budget == null || isStale(generation) || tokens == null || vehicles.isEmpty()) {
             return;
         }
         synchronized (refreshLock) {
@@ -330,19 +404,83 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             }
             logger.debug("Refreshing telematic data of {} vehicle(s) ({})", vehicles.size(), reason);
             for (BMWCarDataVehicleHandler vehicle : vehicles) {
+                // also after waiting for the lock, so that a cancelled refresh does not spend the budget
+                if (isStale(generation)) {
+                    return;
+                }
                 try {
-                    vehicle.updateTelematicData(fetchTelematicData(api, vehicle.getVin()));
+                    Map<String, TelematicValue> data = fetchTelematicData(api, vehicle.getVin());
+                    retryVins.remove(vehicle.getVin());
+                    vehicle.updateTelematicData(data);
                     vehicle.refreshSucceeded();
                 } catch (BMWCarDataException e) {
+                    // disposing interrupts the request, which must not set the vehicles OFFLINE
+                    if (isStale(generation)) {
+                        return;
+                    }
                     if (e.isRateLimited()) {
                         reportBudgetExhausted(budget);
                         return;
                     }
-                    vehicle.refreshFailed(e.getMessage());
+                    if (!e.isTransient()) {
+                        vehicle.refreshFailed(e.getMessage());
+                        continue;
+                    }
+                    if (retry) {
+                        retryVins.add(vehicle.getVin());
+                    }
+                    if (isStreamConnected()) {
+                        // the stream keeps the vehicle up to date, a failed poll does not make it unreachable
+                        logger.debug("Refreshing telematic data failed, relying on the stream: {}", e.getMessage());
+                    } else {
+                        vehicle.refreshFailed(e.getMessage());
+                    }
                 }
             }
             clearBudgetExhausted();
         }
+        if (retry) {
+            scheduleRetry(generation);
+        }
+    }
+
+    /**
+     * @return whether work started in the given lifecycle belongs to a disposed or re-initialized handler
+     */
+    private boolean isStale(int generation) {
+        return disposed || generation != this.generation || Thread.currentThread().isInterrupted();
+    }
+
+    private boolean isStreamConnected() {
+        return config.streaming && streamState == StreamState.CONNECTED;
+    }
+
+    private synchronized void scheduleRetry(int generation) {
+        if (isStale(generation) || retryJob != null || retryVins.isEmpty()) {
+            return;
+        }
+        logger.debug("Retrying the refresh of {} vehicle(s) in {} minutes", retryVins.size(),
+                RETRY_AFTER_TRANSIENT_FAILURE.toMinutes());
+        retryJob = jobScheduler.schedule(() -> retryRefresh(generation), RETRY_AFTER_TRANSIENT_FAILURE.toSeconds(),
+                TimeUnit.SECONDS);
+    }
+
+    /**
+     * Refreshes the vehicles still waiting for a retry, resolved by VIN, as vehicle Things may have been removed in
+     * the meantime. A failure of the retry does not schedule another one.
+     */
+    private void retryRefresh(int generation) {
+        synchronized (this) {
+            if (isStale(generation)) {
+                return;
+            }
+            // failures of refreshes running from now on can schedule the next retry
+            retryJob = null;
+        }
+        Set<String> vins = new HashSet<>(retryVins);
+        retryVins.removeAll(vins);
+        refreshTelematicData("retry",
+                getVehicles().stream().filter(vehicle -> vins.contains(vehicle.getVin())).toList(), false);
     }
 
     private void scheduleRefresh() {
@@ -352,10 +490,11 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             }
             long initialDelay = INITIAL_REFRESH_DELAY.toSeconds();
             if (config.refreshInterval > 0) {
-                refreshJob = scheduler.scheduleWithFixedDelay(() -> refreshTelematicData("periodic"), initialDelay,
+                refreshJob = jobScheduler.scheduleWithFixedDelay(() -> refreshTelematicData("periodic"), initialDelay,
                         TimeUnit.HOURS.toSeconds(config.refreshInterval), TimeUnit.SECONDS);
             } else {
-                refreshJob = scheduler.schedule(() -> refreshTelematicData("startup"), initialDelay, TimeUnit.SECONDS);
+                refreshJob = jobScheduler.schedule(() -> refreshTelematicData("startup"), initialDelay,
+                        TimeUnit.SECONDS);
             }
         }
     }
@@ -409,7 +548,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                 return;
             }
         }
-        logger.trace("Ignoring stream data of a vehicle without thing");
+        if (logger.isTraceEnabled()) {
+            logger.trace("Ignoring stream data of vehicle {} without thing", LogRedaction.vin(vin));
+        }
     }
 
     @Override
@@ -428,7 +569,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             if (downSince != null && Duration.between(downSince, now).compareTo(CATCH_UP_AFTER_OUTAGE) >= 0
                     && (last == null || Duration.between(last, now).compareTo(CATCH_UP_MIN_SPACING) >= 0)) {
                 lastCatchUp = now;
-                scheduler.execute(() -> refreshTelematicData("stream outage"));
+                jobScheduler.execute(() -> refreshTelematicData("stream outage"));
             }
         } else if (streamDownSince == null) {
             streamDownSince = now;
@@ -539,7 +680,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         if (previousJob != null) {
             previousJob.cancel(false);
         }
-        authJob = scheduler.schedule(job, delaySeconds, TimeUnit.SECONDS);
+        authJob = jobScheduler.schedule(job, delaySeconds, TimeUnit.SECONDS);
     }
 
     /**
@@ -772,18 +913,11 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             streamDownSince = Instant.now();
         }
         StreamSource source;
-        if (config.isBridgeMode()) {
-            source = new BridgeStreamSource(config.brokerSettings(),
-                    "openhab-bmwcardata-" + getThing().getUID().getId(), scheduler, this);
-        } else {
-            try {
-                StreamMirror mirror = startMirror();
-                source = new BMWCarDataStreamClient(tokens, scheduler, this,
-                        mirror != null ? mirror::publishMessage : null);
-            } catch (BMWCarDataException e) {
-                logger.warn("Unable to start BMW CarData streaming: {}", e.getMessage());
-                return;
-            }
+        try {
+            source = createStreamSource(tokens);
+        } catch (BMWCarDataException e) {
+            logger.warn("Unable to start BMW CarData streaming: {}", e.getMessage());
+            return;
         }
         streamSource = source;
         // dispose() may have run concurrently before the source was assigned
@@ -806,13 +940,25 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         stopStream(false).orTimeout(STREAM_STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS).whenComplete((result, error) -> {
             // a later refresh or a dispose supersedes this restart
             if (!disposed && newTokens.equals(tokens)) {
-                scheduler.execute(() -> {
+                jobScheduler.execute(() -> {
                     if (!disposed && newTokens.equals(tokens) && streamSource == null) {
                         startStream(newTokens);
                     }
                 });
             }
         });
+    }
+
+    /**
+     * Creates the configured stream source, replaced in tests so that they do not connect to a broker.
+     */
+    StreamSource createStreamSource(Tokens tokens) throws BMWCarDataException {
+        if (config.isBridgeMode()) {
+            return new BridgeStreamSource(config.brokerSettings(), "openhab-bmwcardata-" + getThing().getUID().getId(),
+                    jobScheduler, this);
+        }
+        StreamMirror mirror = startMirror();
+        return new BMWCarDataStreamClient(tokens, jobScheduler, this, mirror != null ? mirror::publishMessage : null);
     }
 
     private CompletableFuture<Boolean> stopStream() {
@@ -846,7 +992,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         }
         try {
             StreamMirror newMirror = new StreamMirror(config.brokerSettings(),
-                    "openhab-bmwcardata-mirror-" + getThing().getUID().getId(), scheduler, this::onMirrorBrokerState);
+                    "openhab-bmwcardata-mirror-" + getThing().getUID().getId(), jobScheduler, config.mirrorRetain,
+                    this::onMirrorBrokerState);
             mirror = newMirror;
             newMirror.start();
             return newMirror;

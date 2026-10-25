@@ -31,8 +31,12 @@ import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
+import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.dto.DeviceCodeResponse;
 import org.openhab.binding.bmwcardata.internal.api.dto.TokenResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -103,6 +107,7 @@ public class BMWCarDataAuthClient {
     public record PollResult(PollStatus status, @Nullable Tokens tokens) {
     }
 
+    private final Logger logger = LoggerFactory.getLogger(BMWCarDataAuthClient.class);
     private final HttpClient httpClient;
     private final Gson gson;
     private final String clientId;
@@ -233,15 +238,44 @@ public class BMWCarDataAuthClient {
     }
 
     private ContentResponse post(String url, Fields fields) throws BMWCarDataException {
+        if (logger.isTraceEnabled()) {
+            logger.trace("BMW authorization request POST {} form: {}", url, redact(fields));
+        }
         try {
-            return httpClient.newRequest(url).method(HttpMethod.POST).header(HttpHeader.ACCEPT, "application/json")
-                    .content(new FormContentProvider(fields)).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+            ContentResponse response = httpClient.newRequest(url).method(HttpMethod.POST)
+                    .header(HttpHeader.ACCEPT, "application/json").content(new FormContentProvider(fields))
+                    .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+            if (logger.isTraceEnabled()) {
+                logger.trace("BMW authorization response POST {} -> HTTP {}, body: {}", url, response.getStatus(),
+                        LogRedaction.payload(response.getContentAsString()));
+            }
+            return response;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new BMWCarDataException("Interrupted", e);
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (ExecutionException e) {
+            if (HttpResponses.isUnauthorizedResponse(e)) {
+                // the error code in the body is lost, see HttpResponses.isUnauthorizedResponse: BMW answers an
+                // invalid client, an expired code and an account pending activation with 401, which cannot be told
+                // apart; while polling, the account handler starts a new authorization once the code has expired by
+                // its own clock
+                throw new BMWCarDataException("BMW authorization service rejected the request with HTTP 401", 401, e);
+            }
+            throw new BMWCarDataException("Request to BMW authorization service failed: " + e.getMessage(), e);
+        } catch (TimeoutException e) {
             throw new BMWCarDataException("Request to BMW authorization service failed: " + e.getMessage(), e);
         }
+    }
+
+    private static String redact(Fields fields) {
+        StringBuilder text = new StringBuilder();
+        for (Fields.Field field : fields) {
+            if (!text.isEmpty()) {
+                text.append('&');
+            }
+            text.append(field.getName()).append('=').append(LogRedaction.value(field.getName(), field.getValue()));
+        }
+        return text.toString();
     }
 
     private String createCodeVerifier() {

@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,8 +53,6 @@ class BMWCarDataApiTest {
     static void startServer() throws Exception {
         SERVER.start();
         HTTP_CLIENT.start();
-        // as configured by the handler factory
-        HTTP_CLIENT.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
 
     @AfterAll
@@ -106,9 +103,23 @@ class BMWCarDataApiTest {
         mappings = api.getVehicleMappings();
         assertEquals(1, mappings.size());
         assertEquals(VIN, mappings.get(0).vin);
+    }
+
+    @Test
+    void getVehicleMappingsSkipsNullAndRejectsMalformedResponses() throws Exception {
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("""
+                [null,{"vin":"%s","mappingType":"PRIMARY"}]""".formatted(VIN))));
+        List<VehicleMapping> mappings = api.getVehicleMappings();
+        assertEquals(1, mappings.size());
+        assertEquals(VIN, mappings.get(0).vin);
 
         SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("{\"unexpected\":true}")));
-        assertThrows(BMWCarDataException.class, () -> api.getVehicleMappings());
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getVehicleMappings());
+        assertEquals("Unexpected vehicle mappings response", e.getMessage());
+
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("[\"not a mapping\"]")));
+        e = assertThrows(BMWCarDataException.class, () -> api.getVehicleMappings());
+        assertEquals("Malformed vehicle mappings response", e.getMessage());
     }
 
     @Test
@@ -155,13 +166,48 @@ class BMWCarDataApiTest {
     @Test
     void errorResponsesAreClassified() {
         String path = "/customers/vehicles/" + VIN + "/basicData";
+        // without WWW-Authenticate header, the HTTP client fails the request
         SERVER.stubFor(get(path).willReturn(unauthorized()));
+        assertThrows(BMWCarDataAuthException.class, () -> api.getBasicData(VIN));
+
+        // with the header, the HTTP client returns the response
+        SERVER.stubFor(get(path).willReturn(
+                unauthorized().withHeader("WWW-Authenticate", "Bearer error=\"invalid_token\"").withBody("{}")));
         assertThrows(BMWCarDataAuthException.class, () -> api.getBasicData(VIN));
 
         SERVER.stubFor(get(path).willReturn(aResponse().withStatus(429).withBody("{\"exveErrorId\":\"CU-429\"}")));
         BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
         assertTrue(e.isRateLimited());
         assertFalse(e instanceof BMWCarDataAuthException);
+    }
+
+    @Test
+    void gatewayErrorPageIsNotQuoted() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(502)
+                .withBody("<html><head><title>502 Bad Gateway</title></head><body>nginx/1.31.3</body></html>")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertEquals("BMW CarData request GET /customers/vehicles/WBA***/basicData failed with HTTP 502: Bad Gateway",
+                e.getMessage());
+        assertEquals(502, e.getHttpStatus());
+        assertTrue(e.isTransient());
+    }
+
+    @Test
+    void onlyFailuresOnBmwSideAreTransient() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(404)));
+        assertFalse(assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN)).isTransient());
+
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(429).withBody("{\"exveErrorId\":\"CU-429\"}")));
+        assertFalse(assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN)).isTransient());
+        // withheld by the budget, not sent at all
+        assertFalse(assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN)).isTransient());
+
+        // connection refused
+        BMWCarDataApi unreachable = new BMWCarDataApi(HTTP_CLIENT, new Gson(), () -> "token",
+                new RequestBudget(new MapStorage(), "budget", 3, Clock.systemUTC()), "http://localhost:1");
+        assertTrue(assertThrows(BMWCarDataException.class, () -> unreachable.getBasicData(VIN)).isTransient());
     }
 
     @Test

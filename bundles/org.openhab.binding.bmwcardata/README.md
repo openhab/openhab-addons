@@ -35,6 +35,9 @@ If the account reports `Device authorization request failed: invalid_request`, B
 
 After the account has been authorized, the vehicles mapped to the account as primary user are discovered.
 A discovery scan costs one request of the daily API quota, so it only runs automatically after authorization while the account has no vehicle Things.
+Discovered vehicles are labeled with their brand and model, which costs one more request per vehicle once; a vehicle Thing created from the result reuses that data.
+If BMW explicitly reports a vehicle as not telematics capable, its label says so.
+BMW does not document this flag, so such a vehicle is still offered: it may not send any data.
 Further scans can be started manually from the Inbox.
 
 ## Thing Configuration
@@ -47,6 +50,7 @@ Further scans can be started manually from the Inbox.
 | streaming       | boolean | Receive the data pushed by the CarData streaming service                                                | true    | no       | no       |
 | streamMode      | text    | `direct` connects to BMW, `bridge` receives the stream from the bmw-mqtt-bridge                         | direct  | no       | no       |
 | mirrorToBroker  | boolean | Republish the direct stream to the local MQTT broker, see [Mirroring the Stream](#mirroring-the-stream) | false   | no       | yes      |
+| mirrorRetain    | boolean | Publish the mirrored stream messages retained, see [Mirroring the Stream](#mirroring-the-stream)        | false   | no       | yes      |
 | brokerHost      | text    | Host of the local MQTT broker, required in bridge mode and for mirroring                                | N/A     | no       | yes      |
 | brokerPort      | integer | Port of the local MQTT broker                                                                           | 1883    | no       | yes      |
 | brokerSecure    | boolean | Connect to the local MQTT broker with TLS                                                               | false   | no       | yes      |
@@ -75,10 +79,13 @@ In direct mode, openHAB holds the only stream connection of the account.
 With `mirrorToBroker=true`, the binding republishes the stream to the local MQTT broker configured by the broker parameters, so that other tools, e.g. evcc, can use it without running the bmw-mqtt-bridge.
 The topics are those of the bmw-mqtt-bridge, so existing consumers of the bridge, and this binding in bridge mode, can read the mirror unchanged:
 
-| Topic               | Payload                                                                                    | Retained |
-|---------------------|--------------------------------------------------------------------------------------------|----------|
-| `<prefix>raw/<VIN>` | Every stream message, unmodified as received from BMW                                      | yes      |
-| `<prefix>status`    | State of the BMW stream connection: `{"connected":true,"timestamp":<seconds since epoch>}` | yes      |
+| Topic               | Payload                                                                                    | Retained           |
+|---------------------|--------------------------------------------------------------------------------------------|--------------------|
+| `<prefix>raw/<VIN>` | Every stream message, unmodified as received from BMW                                      | if `mirrorRetain`  |
+| `<prefix>status`    | State of the BMW stream connection: `{"connected":true,"timestamp":<seconds since epoch>}` | yes                |
+
+Like the bmw-mqtt-bridge with its default `MQTT_RETAIN=0`, the stream messages are not retained by default.
+With `mirrorRetain=true`, a consumer receives the last message of each vehicle as soon as it subscribes, however old it is, e.g. after the vehicle has been parked for days.
 
 The last will of the mirror sets `<prefix>status` to `{"connected":false}`, so consumers notice when openHAB stops.
 The mirror reconnects to the local broker on its own; while the broker is not reachable, messages are dropped and the status description of the account shows this, but the stream and the channels are not affected.
@@ -95,9 +102,11 @@ The stream is not affected by this limit, so the binding uses the API only to co
 - Two minutes after the authorization, and then every `refreshInterval` hours, the current values of all vehicles are read, one request per vehicle.
 - When the stream was interrupted for five minutes or more, the values are read again after the reconnect, as the stream does not replay missed values.
   This catch-up runs at most every 30 minutes.
+- When a read fails on BMW's side (e.g. HTTP 502) or times out, it is repeated once after 15 minutes for the affected vehicles.
+  While the stream is connected, such a failure does not set the vehicle `OFFLINE`, as the stream keeps its values up to date.
 - The static vehicle data shown as Thing properties is read once per vehicle, and the binding sets up its own telematic data container named `openHAB` on first use, which costs a few requests.
 
-The binding counts its requests over a rolling 24 hours, also across restarts, and sends at most `requestBudget` requests.
+The binding counts its requests over a rolling 24 hours per client ID, also across restarts and when the account thing is recreated, and sends at most `requestBudget` requests.
 When the budget is used up, or BMW reports its limit as reached, the binding pauses its requests and shows this in the status description of the account; the stream keeps working.
 Keep a reserve below 50 if other tools use the same account.
 
@@ -166,7 +175,7 @@ A channel is only updated if the vehicle reports the corresponding data and, for
 | charge#soc                           | Number:Dimensionless     | State of charge of the high-voltage battery                                   | no       |
 | charge#target-soc                    | Number:Dimensionless     | State of charge at which charging stops                                       | no       |
 | charge#status                        | String                   | Charging state                                                                | no       |
-| charge#plugged                       | Switch                   | Whether a charging cable is plugged in                                        | no       |
+| charge#plugged                       | Switch                   | Whether a charging cable is plugged in (see below)                            | no       |
 | charge#power                         | Number:Power             | Current charging power                                                        | no       |
 | charge#time-remaining                | Number:Time              | Estimated time until charging is completed                                    | no       |
 | charge#ac-current                    | Number:ElectricCurrent   | Current AC charging current                                                   | yes      |
@@ -174,7 +183,7 @@ A channel is only updated if the vehicle reports the corresponding data and, for
 | charge#ac-limit                      | Number:ElectricCurrent   | Selected limit of the AC charging current                                     | yes      |
 | charge#phases                        | String                   | Number of phases used for charging                                            | yes      |
 | charge#method                        | String                   | Charging method and plug type                                                 | yes      |
-| charge#dc-port                       | String                   | Whether a DC charging plug is connected                                       | yes      |
+| charge#port                          | String                   | Whether a charging plug is connected to the charging port                     | yes      |
 | charge#predicted-soc                 | Number:Dimensionless     | Predicted state of charge at the end of charging                              | yes      |
 | charge#min-target-soc                | Number:Dimensionless     | Minimum state of charge requested for smart charging                          | yes      |
 | charge#time-to-full                  | Number:Time              | Estimated time until the battery is fully charged                             | yes      |
@@ -239,6 +248,7 @@ A channel is only updated if the vehicle reports the corresponding data and, for
 
 The String channels show the values as reported by the vehicle; the door lock state is normalized, e.g. `SELECTIVE-LOCKED` becomes `SELECTIVELOCKED`.
 Windows and the sunroof are `OPEN` also when they are only partly open or tilted; the advanced `-state` channels show the reported state.
+Not every vehicle reports whether a charging cable is plugged in; until it does, `charge#plugged` follows the charging port status (`CONNECTED` or `DISCONNECTED`).
 Values the vehicle reports as unavailable (e.g. `INVALID`, `-NA-` or `UNKNOWN`), and values that cannot be interpreted, set the channel to `UNDEF`.
 
 ### Dynamic Channels
@@ -252,6 +262,17 @@ If `dynamicChannels` is enabled, the binding adds a channel for every other data
 - The channel is created when the first value is received, so it does not exist before the vehicle reported the data.
 
 For Things defined in `.things` files, dynamic channels are not stored and are created again when the data is received after a restart.
+
+## Troubleshooting
+
+With the log level `TRACE` for `org.openhab.binding.bmwcardata`, the binding logs every request to BMW, every response and every stream message.
+These logs are redacted so they can be shared, e.g. in an issue:
+
+- A VIN is shortened to its first three and last four characters, e.g. `WBA…1234`.
+- Tokens, codes, the client ID, the customer ID (`gcid`) and the `entityId` are replaced by `***`.
+- The values of the location coordinates are replaced by `***`.
+
+Other values, like the mileage or state of charge, are logged as received.
 
 ## Full Example
 

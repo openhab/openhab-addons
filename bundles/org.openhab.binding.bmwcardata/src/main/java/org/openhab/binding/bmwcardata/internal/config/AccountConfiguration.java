@@ -33,6 +33,8 @@ public class AccountConfiguration {
     public String streamMode = STREAM_MODE_DIRECT;
     /** Republishes the direct stream to the local broker in the topic format of the bmw-mqtt-bridge. */
     public boolean mirrorToBroker = false;
+    /** Publishes the mirrored stream messages retained, like MQTT_RETAIN of the bridge, which is off by default. */
+    public boolean mirrorRetain = false;
 
     /** Local MQTT broker, used in bridge mode and for mirroring the direct stream. */
     public String brokerHost = "";
