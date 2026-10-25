@@ -963,7 +963,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         }
         try {
             StreamMirror newMirror = new StreamMirror(config.brokerSettings(),
-                    "openhab-bmwcardata-mirror-" + getThing().getUID().getId(), jobScheduler,
+                    "openhab-bmwcardata-mirror-" + getThing().getUID().getId(), jobScheduler, config.mirrorRetain,
                     this::onMirrorBrokerState);
             mirror = newMirror;
             newMirror.start();

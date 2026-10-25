@@ -106,9 +106,23 @@ class BMWCarDataApiTest {
         mappings = api.getVehicleMappings();
         assertEquals(1, mappings.size());
         assertEquals(VIN, mappings.get(0).vin);
+    }
+
+    @Test
+    void getVehicleMappingsSkipsNullAndRejectsMalformedResponses() throws Exception {
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("""
+                [null,{"vin":"%s","mappingType":"PRIMARY"}]""".formatted(VIN))));
+        List<VehicleMapping> mappings = api.getVehicleMappings();
+        assertEquals(1, mappings.size());
+        assertEquals(VIN, mappings.get(0).vin);
 
         SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("{\"unexpected\":true}")));
-        assertThrows(BMWCarDataException.class, () -> api.getVehicleMappings());
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getVehicleMappings());
+        assertEquals("Unexpected vehicle mappings response", e.getMessage());
+
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("[\"not a mapping\"]")));
+        e = assertThrows(BMWCarDataException.class, () -> api.getVehicleMappings());
+        assertEquals("Malformed vehicle mappings response", e.getMessage());
     }
 
     @Test

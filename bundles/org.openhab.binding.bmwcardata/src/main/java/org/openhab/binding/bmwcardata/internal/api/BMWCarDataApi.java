@@ -13,10 +13,10 @@
 package org.openhab.binding.bmwcardata.internal.api;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -111,8 +111,14 @@ public class BMWCarDataApi {
             } else {
                 throw new BMWCarDataException("Unexpected vehicle mappings response");
             }
-            return items.asList().stream().map(item -> gson.fromJson(item, VehicleMapping.class))
-                    .filter(Objects::nonNull).toList();
+            List<VehicleMapping> mappings = new ArrayList<>();
+            for (JsonElement item : items) {
+                VehicleMapping mapping = gson.fromJson(item, VehicleMapping.class);
+                if (mapping != null) {
+                    mappings.add(mapping);
+                }
+            }
+            return mappings;
         } catch (JsonParseException | IllegalStateException e) {
             throw new BMWCarDataException("Malformed vehicle mappings response", e);
         }

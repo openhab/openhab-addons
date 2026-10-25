@@ -55,6 +55,14 @@
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="mirrorRetain" type="boolean" groupName="stream">
+				<label>Retain Mirrored Messages</label>
+				<description>Publish the mirrored stream messages retained, so that a consumer receives the last message of each
+					vehicle when it connects, however old it is. Like MQTT_RETAIN of the bmw-mqtt-bridge. The connection state is
+					always retained.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="brokerHost" type="text" groupName="broker">
 				<context>network-address</context>
 				<label>Broker Host</label>
