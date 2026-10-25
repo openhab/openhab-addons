@@ -37,6 +37,8 @@ import org.openhab.binding.upnpcontrol.internal.handler.UpnpServerHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
@@ -78,6 +80,8 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     private final NetworkAddressService networkAddressService;
     private final UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     private final UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
 
     private String callbackUrl = "";
 
@@ -87,6 +91,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
             final @Reference NetworkAddressService networkAddressService,
             final @Reference UpnpDynamicStateDescriptionProvider dynamicStateDescriptionProvider,
             final @Reference UpnpDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
+            final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider,
             Map<String, Object> config) {
         this.upnpIOService = upnpIOService;
         this.upnpService = upnpService;
@@ -94,6 +99,8 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         this.networkAddressService = networkAddressService;
         this.upnpStateDescriptionProvider = dynamicStateDescriptionProvider;
         this.upnpCommandDescriptionProvider = dynamicCommandDescriptionProvider;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
 
         upnpService.getRegistry().addListener(this);
 
@@ -146,7 +153,8 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     private UpnpServerHandler addServer(Thing thing) {
         UpnpServerHandler handler = new UpnpServerHandler(thing, upnpIOService, upnpRenderers,
-                upnpStateDescriptionProvider, upnpCommandDescriptionProvider, configuration);
+                upnpStateDescriptionProvider, upnpCommandDescriptionProvider, configuration, translationProvider,
+                localeProvider);
         String key = thing.getUID().toString();
         upnpServers.put(key, handler);
         logger.debug("Media server handler created for {} with UID {}", thing.getLabel(), thing.getUID());
@@ -162,7 +170,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     private UpnpRendererHandler addRenderer(Thing thing) {
         callbackUrl = createCallbackUrl();
         UpnpRendererHandler handler = new UpnpRendererHandler(thing, upnpIOService, this, upnpStateDescriptionProvider,
-                upnpCommandDescriptionProvider, configuration);
+                upnpCommandDescriptionProvider, configuration, translationProvider, localeProvider);
         String key = thing.getUID().toString();
         upnpRenderers.put(key, handler);
         upnpServers.forEach((thingId, value) -> value.addRendererOption(key));
