@@ -16,6 +16,8 @@ import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -27,12 +29,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bmwcardata.internal.BMWCarDataHandlerFactory;
 import org.openhab.binding.bmwcardata.internal.handler.BMWCarDataAccountHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.osgi.framework.Bundle;
@@ -66,17 +68,16 @@ public class AuthorizationServlet extends HttpServlet {
     // the page embeds its style and the QR code as SVG, so it needs nothing else
     private static final String CONTENT_SECURITY_POLICY = "default-src 'none'; style-src 'unsafe-inline'";
 
-    private final transient BMWCarDataHandlerFactory handlerFactory;
+    private final transient ThingRegistry thingRegistry;
     private final transient TimeZoneProvider timeZoneProvider;
     private final transient TranslationProvider i18nProvider;
     private final transient LocaleProvider localeProvider;
     private final transient Bundle bundle;
 
     @Activate
-    public AuthorizationServlet(@Reference BMWCarDataHandlerFactory handlerFactory,
-            @Reference TimeZoneProvider timeZoneProvider, @Reference TranslationProvider i18nProvider,
-            @Reference LocaleProvider localeProvider) {
-        this.handlerFactory = handlerFactory;
+    public AuthorizationServlet(@Reference ThingRegistry thingRegistry, @Reference TimeZoneProvider timeZoneProvider,
+            @Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider) {
+        this.thingRegistry = thingRegistry;
         this.timeZoneProvider = timeZoneProvider;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
@@ -86,9 +87,7 @@ public class AuthorizationServlet extends HttpServlet {
     @Override
     protected void doGet(@NonNullByDefault({}) HttpServletRequest request,
             @NonNullByDefault({}) HttpServletResponse response) throws IOException {
-        List<AuthorizationPage.Account> accounts = handlerFactory.getAccountHandlers().stream()
-                .map(AuthorizationServlet::toAccount)
-                .sorted(Comparator.comparing(AuthorizationPage.Account::label, String.CASE_INSENSITIVE_ORDER)).toList();
+        List<AuthorizationPage.Account> accounts = accounts(thingRegistry.getAll());
         response.setContentType("text/html");
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setHeader("Cache-Control", "no-store");
@@ -104,6 +103,21 @@ public class AuthorizationServlet extends HttpServlet {
         @Nullable
         String text = i18nProvider.getText(bundle, key, null, locale, arguments);
         return text != null ? text : key;
+    }
+
+    /**
+     * @param things all Things, as provided by the {@link ThingRegistry}
+     * @return the CarData accounts with an initialized handler, sorted by label
+     */
+    static List<AuthorizationPage.Account> accounts(Collection<Thing> things) {
+        List<AuthorizationPage.Account> accounts = new ArrayList<>();
+        for (Thing thing : things) {
+            if (thing.getHandler() instanceof BMWCarDataAccountHandler handler) {
+                accounts.add(toAccount(handler));
+            }
+        }
+        accounts.sort(Comparator.comparing(AuthorizationPage.Account::label, String.CASE_INSENSITIVE_ORDER));
+        return accounts;
     }
 
     private static AuthorizationPage.Account toAccount(BMWCarDataAccountHandler handler) {

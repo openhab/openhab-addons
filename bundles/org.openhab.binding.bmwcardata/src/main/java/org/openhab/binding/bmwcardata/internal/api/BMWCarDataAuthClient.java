@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bmwcardata.internal.api;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -34,7 +36,6 @@ import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.dto.DeviceCodeResponse;
 import org.openhab.binding.bmwcardata.internal.api.dto.TokenResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,6 +129,19 @@ public class BMWCarDataAuthClient {
     /**
      * Starts a new device authorization.
      */
+    /**
+     * @return whether the URI is an absolute https URL; the verification link is offered to the user to open, so
+     *         nothing else, e.g. a {@code javascript:} URI, is accepted
+     */
+    private static boolean isHttpsUrl(String uri) {
+        try {
+            URI parsed = new URI(uri);
+            return "https".equalsIgnoreCase(parsed.getScheme()) && parsed.getHost() != null;
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
+
     public DeviceAuthorization requestDeviceCode() throws BMWCarDataException {
         String codeVerifier = createCodeVerifier();
         Fields fields = new Fields();
@@ -148,6 +162,9 @@ public class BMWCarDataAuthClient {
         String verificationUri = dto.verificationUri;
         if (deviceCode == null || userCode == null || verificationUri == null || dto.expiresIn <= 0) {
             throw new BMWCarDataException("Incomplete device authorization response");
+        }
+        if (!isHttpsUrl(verificationUri)) {
+            throw new BMWCarDataException("Device authorization response without an https verification link");
         }
         int interval = dto.interval > 0 ? dto.interval : DEFAULT_POLL_INTERVAL_SECONDS;
         return new DeviceAuthorization(deviceCode, userCode, verificationUri, Instant.now().plusSeconds(dto.expiresIn),
