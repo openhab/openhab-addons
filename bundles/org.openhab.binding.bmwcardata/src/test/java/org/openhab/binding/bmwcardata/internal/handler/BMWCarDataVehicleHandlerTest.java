@@ -13,8 +13,7 @@
 package org.openhab.binding.bmwcardata.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants.*;
 
@@ -145,6 +144,38 @@ class BMWCarDataVehicleHandlerTest {
 
         verifyState("range#mileage", QuantityType.valueOf("200 km"));
         verify(callback, never()).stateUpdated(channel("range#mileage"), QuantityType.valueOf("100 km"));
+    }
+
+    @Test
+    void publishesCopiesOnce() {
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        // the stream delivers many messages twice
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+
+        // a new reading with the same value, and another value with the same timestamp, are published
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:05:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, value(201, "km", "2026-10-01T10:05:00Z")));
+        verify(callback, times(2)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+        verifyState("range#mileage", QuantityType.valueOf("201 km"));
+    }
+
+    @Test
+    void publishesCopiesFromStreamAndApiOnce() {
+        // the stream sends numbers as JSON numbers, the REST API as strings
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200", "km", "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200.0", "km", "2026-10-01T10:00:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+
+        String plugged = "vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged";
+        handler.updateTelematicData(Map.of(plugged, value(true, null, "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(plugged, stringValue("true", null, "2026-10-01T10:00:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("charge#plugged"), OnOffType.ON);
+
+        // another unit is another value
+        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200", "mi", "2026-10-01T10:00:00Z")));
+        verifyState("range#mileage", QuantityType.valueOf("200 mi"));
     }
 
     @Test

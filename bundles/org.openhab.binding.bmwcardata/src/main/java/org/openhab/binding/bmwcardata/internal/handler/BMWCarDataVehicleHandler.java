@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,6 +57,9 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+
 /**
  * The {@link BMWCarDataVehicleHandler} publishes the telematic data of a vehicle, which is either pushed by the
  * stream of the account or polled from the REST API.
@@ -76,9 +80,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> propertiesJob;
     // states by channel id, to answer REFRESH commands without spending API requests
     private final Map<String, State> states = new ConcurrentHashMap<>();
-    // timestamps of the latest values by descriptor, to drop values older than already published ones; guarded by
-    // dataLock
-    private final Map<String, Instant> descriptorTimestamps = new HashMap<>();
+    // the latest readings by descriptor, to drop values older than already published ones or copies: the stream
+    // delivers many messages twice, and a refresh after the stream delivers the same values again
+    private final Map<String, Reading> readings = new ConcurrentHashMap<>();
     // once the vehicle reports isPlugged, the plug state is no longer derived from the charging port status
     private volatile boolean pluggedReported;
     // a refresh or stream message of the account may still deliver data while the handler is disposed
@@ -172,7 +176,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             }
             Instant timestamp = parseTimestamp(value.timestamp);
             if (timestamp != null) {
-                if (!isNewer(descriptor, timestamp)) {
+                if (!isNewer(descriptor, new Reading(timestamp, normalize(value.value), value.unit))) {
                     continue;
                 }
                 if (newest == null || timestamp.isAfter(newest)) {
@@ -297,10 +301,50 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         newStates.forEach(this::publish);
     }
 
-    private boolean isNewer(String descriptor, Instant timestamp) {
-        Instant latest = descriptorTimestamps.merge(descriptor, timestamp,
-                (previous, current) -> current.isBefore(previous) ? previous : current);
-        return timestamp.equals(latest);
+    /**
+     * The latest value of a descriptor, to drop older values and copies.
+     *
+     * @param timestamp when the vehicle reported the value
+     * @param value the value, normalized by {@link #normalize(JsonElement)}
+     * @param unit the unit, if any
+     */
+    private record Reading(Instant timestamp, @Nullable Object value, @Nullable String unit) {
+    }
+
+    /**
+     * Records the reading when it is newer than the last one of the descriptor. A reading with the same timestamp,
+     * value and unit as the last one is a copy, which the stream delivers for many messages and a refresh delivers
+     * after the stream, and is not published again.
+     */
+    private boolean isNewer(String descriptor, Reading reading) {
+        AtomicBoolean newer = new AtomicBoolean();
+        readings.compute(descriptor, (key, previous) -> {
+            // an older reading or a copy keeps the previous one, so it is not published
+            if (previous != null && (reading.timestamp().isBefore(previous.timestamp()) || reading.equals(previous))) {
+                return previous;
+            }
+            newer.set(true);
+            return reading;
+        });
+        return newer.get();
+    }
+
+    /**
+     * Normalizes a value for comparison: the REST API sends numbers and booleans as strings, e.g. {@code "200"}, the
+     * stream as JSON numbers and booleans, e.g. {@code 200}.
+     *
+     * @return a number as {@link BigDecimal} without trailing zeros, another primitive as its text, or the element
+     */
+    private static @Nullable Object normalize(@Nullable JsonElement value) {
+        if (value instanceof JsonPrimitive primitive) {
+            String text = primitive.getAsString().strip();
+            try {
+                return new BigDecimal(text).stripTrailingZeros();
+            } catch (NumberFormatException e) {
+                return text;
+            }
+        }
+        return value;
     }
 
     private void publish(String channelUid, State state) {
