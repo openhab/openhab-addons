@@ -187,7 +187,8 @@ class BMWCarDataApiTest {
         SERVER.stubFor(get(path).willReturn(aResponse().withStatus(502)
                 .withBody("<html><head><title>502 Bad Gateway</title></head><body>nginx/1.31.3</body></html>")));
         BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
-        assertEquals("BMW CarData request GET /customers/vehicles/WBA…1234/basicData failed with HTTP 502: Bad Gateway",
+        assertEquals(
+                "BMW CarData request GET /customers/vehicles/WBA***1234/basicData failed with HTTP 502: Bad Gateway",
                 e.getMessage());
         assertEquals(502, e.getHttpStatus());
         assertTrue(e.isTransient());

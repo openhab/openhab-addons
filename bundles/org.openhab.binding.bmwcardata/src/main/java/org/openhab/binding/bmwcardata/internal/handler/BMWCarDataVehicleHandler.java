@@ -18,11 +18,14 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +37,7 @@ import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.binding.bmwcardata.internal.config.VehicleConfiguration;
+import org.openhab.binding.bmwcardata.internal.handler.VehicleChannel.Drive;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -67,6 +71,9 @@ import com.google.gson.JsonPrimitive;
  */
 @NonNullByDefault
 public class BMWCarDataVehicleHandler extends BaseThingHandler {
+
+    // descriptors of the destination guidance, which needs a navigation system
+    private static final String DESTINATION_PREFIX = "vehicle.cabin.infotainment.navigation.destinationSet.";
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataVehicleHandler.class);
 
@@ -403,6 +410,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             logger.debug("Failed to retrieve basic vehicle data: {}", e.getMessage());
             return;
         }
+        if (disposed) {
+            return;
+        }
         Map<String, String> properties = new HashMap<>(editProperties());
         putIfPresent(properties, PROPERTY_BRAND, basicData.brand);
         String model = basicData.modelName != null ? basicData.modelName : basicData.series;
@@ -413,7 +423,79 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         putIfPresent(properties, PROPERTY_PROPULSION_TYPE, basicData.propulsionType);
         putIfPresent(properties, PROPERTY_COLOR, basicData.colourDescription);
         putIfPresent(properties, PROPERTY_CONSTRUCTION_DATE, basicData.constructionDate);
+        putIfPresent(properties, PROPERTY_HAS_SUNROOF, Objects.toString(basicData.hasSunRoof, null));
+        putIfPresent(properties, PROPERTY_HAS_NAVIGATION, Objects.toString(basicData.hasNavi, null));
         updateProperties(properties);
+        removeIrrelevantChannels(basicData);
+    }
+
+    /**
+     * Removes the channels that do not apply to the vehicle: those of a drive it does not have, of the sunroof and of
+     * the destination guidance of the navigation system. Equipment is only treated as missing when BMW explicitly
+     * reports so. The channels are removed once, together with retrieving the properties; recreate the Thing to get
+     * them back.
+     */
+    private void removeIrrelevantChannels(BasicData basicData) {
+        // BMW does not document the values, so that users can report the ones of their vehicles
+        logger.debug("Vehicle reports drive train {} and propulsion type {}", basicData.driveTrain,
+                basicData.propulsionType);
+        List<Channel> channels = irrelevantChannelIds(basicData).stream()
+                .map(id -> getThing().getChannel(new ChannelUID(getThing().getUID(), id))).filter(Objects::nonNull)
+                .map(Objects::requireNonNull).toList();
+        if (!channels.isEmpty() && !disposed) {
+            logger.debug("Removing {} channels that do not apply to the vehicle", channels.size());
+            // dynamic channels may be created concurrently, under the same lock
+            synchronized (dataLock) {
+                updateThing(editThing().withoutChannels(channels).build());
+            }
+        }
+    }
+
+    /**
+     * @param basicData the basic data of the vehicle
+     * @return the ids of the channels that do not apply to the vehicle
+     */
+    static List<String> irrelevantChannelIds(BasicData basicData) {
+        boolean noSunroof = Boolean.FALSE.equals(basicData.hasSunRoof);
+        boolean noNavigation = Boolean.FALSE.equals(basicData.hasNavi);
+        Set<Drive> drives = drives(basicData);
+        List<String> ids = new ArrayList<>();
+        for (VehicleChannel channel : VehicleChannel.values()) {
+            // the location comes from the telematics unit, which needs it for eCall, not from the navigation system
+            boolean irrelevant = (channel.getDrive() != Drive.ANY && !drives.contains(channel.getDrive()))
+                    || (noSunroof && channel == VehicleChannel.SUNROOF)
+                    || (noNavigation && channel.getDescriptor().startsWith(DESTINATION_PREFIX));
+            String channelUid = channel.getChannelUid();
+            if (irrelevant && channelUid != null) {
+                ids.add(channelUid);
+                String detailChannelUid = channel.getDetailChannelUid();
+                if (detailChannelUid != null) {
+                    ids.add(detailChannelUid);
+                }
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * Derives the drives of the vehicle from its basic data. BMW does not document the values, so only those seen on
+     * real vehicles are recognized: the drive trains {@code BEV}, {@code PHEV} and {@code CONV}, and the propulsion
+     * type {@code EL} when the drive train is missing. Any other value keeps all channels; the propulsion type of a
+     * combustion vehicle is its fuel, e.g. {@code BE}.
+     */
+    static Set<Drive> drives(BasicData basicData) {
+        return switch (normalize(basicData.driveTrain)) {
+            case "BEV" -> EnumSet.of(Drive.ELECTRIC);
+            case "PHEV" -> EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
+            case "CONV" -> EnumSet.of(Drive.COMBUSTION);
+            case "" -> "EL".equals(normalize(basicData.propulsionType)) ? EnumSet.of(Drive.ELECTRIC)
+                    : EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
+            default -> EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
+        };
+    }
+
+    private static String normalize(@Nullable String value) {
+        return value == null ? "" : value.strip().toUpperCase(Locale.ROOT);
     }
 
     private static void putIfPresent(Map<String, String> properties, String key, @Nullable String value) {

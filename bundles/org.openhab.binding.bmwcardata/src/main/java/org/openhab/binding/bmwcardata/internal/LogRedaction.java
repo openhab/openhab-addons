@@ -32,7 +32,7 @@ import com.google.gson.JsonPrimitive;
  * Redacts log output, so logs can be shared without identifying the vehicle, its owner or where it is, and without
  * leaking credentials.
  * <p>
- * A VIN is shown as its manufacturer prefix and its last four characters, e.g. {@code WBA…1234}: enough to tell the
+ * A VIN is shown as its manufacturer prefix and its last four characters, e.g. {@code WBA***1234}: enough to tell the
  * vehicles of an account apart, not enough to identify a vehicle. Tokens, codes, client and customer IDs are hidden
  * completely, as are coordinates.
  *
@@ -74,7 +74,7 @@ public final class LogRedaction {
         if (vin.length() != 17) {
             return vin;
         }
-        return vin.substring(0, 3) + "…" + vin.substring(13);
+        return vin.substring(0, 3) + "***" + vin.substring(13);
     }
 
     /**

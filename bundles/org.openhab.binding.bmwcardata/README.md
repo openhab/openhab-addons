@@ -138,6 +138,17 @@ If it expires or is revoked, the authorization page shows a new link and code.
 All channels are read-only.
 A channel is only updated if the vehicle reports the corresponding data and, for streaming, if the data has been selected in the customer portal.
 
+When the static vehicle data is read, the channels that do not apply to the vehicle are removed:
+
+- For an electric vehicle (drive train `BEV`), the fuel channels and the total range.
+- For a combustion vehicle (drive train `CONV`), the charging, high-voltage battery and electric range channels.
+- The sunroof channels, if BMW reports the vehicle has no sunroof.
+- The destination channels, if BMW reports the vehicle has no navigation system. The location is kept, as it is provided by the telematics unit.
+
+Plug-in hybrids (`PHEV`) and vehicles with another or no drive train keep all channels.
+BMW does not document the values, so the binding only acts on those seen on real vehicles; the reported values are shown as Thing properties.
+To get removed channels back, delete and recreate the Thing.
+
 | Channel                              | Type                     | Description                                                                   | Advanced |
 |--------------------------------------|--------------------------|-------------------------------------------------------------------------------|----------|
 | status#door-lock                     | String                   | Lock state of the doors                                                       | no       |
@@ -268,7 +279,7 @@ For Things defined in `.things` files, dynamic channels are not stored and are c
 With the log level `TRACE` for `org.openhab.binding.bmwcardata`, the binding logs every request to BMW, every response and every stream message.
 These logs are redacted so they can be shared, e.g. in an issue:
 
-- A VIN is shortened to its first three and last four characters, e.g. `WBA…1234`.
+- A VIN is shortened to its first three and last four characters, e.g. `WBA***1234`.
 - Tokens, codes, the client ID, the customer ID (`gcid`) and the `entityId` are replaced by `***`.
 - The values of the location coordinates are replaced by `***`.
 
