@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,8 +53,6 @@ class BMWCarDataApiTest {
     static void startServer() throws Exception {
         SERVER.start();
         HTTP_CLIENT.start();
-        // as configured by the handler factory
-        HTTP_CLIENT.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
 
     @AfterAll
@@ -169,7 +166,13 @@ class BMWCarDataApiTest {
     @Test
     void errorResponsesAreClassified() {
         String path = "/customers/vehicles/" + VIN + "/basicData";
+        // without WWW-Authenticate header, the HTTP client fails the request
         SERVER.stubFor(get(path).willReturn(unauthorized()));
+        assertThrows(BMWCarDataAuthException.class, () -> api.getBasicData(VIN));
+
+        // with the header, the HTTP client returns the response
+        SERVER.stubFor(get(path).willReturn(
+                unauthorized().withHeader("WWW-Authenticate", "Bearer error=\"invalid_token\"").withBody("{}")));
         assertThrows(BMWCarDataAuthException.class, () -> api.getBasicData(VIN));
 
         SERVER.stubFor(get(path).willReturn(aResponse().withStatus(429).withBody("{\"exveErrorId\":\"CU-429\"}")));
