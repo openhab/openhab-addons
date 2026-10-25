@@ -115,12 +115,16 @@ Keep a reserve below 50 if other tools use the same account.
 The binding is authorized with the OAuth device flow:
 
 1. Add the `account` bridge with the client ID.
-1. The bridge goes `OFFLINE (CONFIGURATION_PENDING)` and its status description shows a link and a user code.
-1. Open the link, log in with your BMW or MINI account and enter the user code.
+1. The bridge goes `OFFLINE (CONFIGURATION_PENDING)` and its status description links to the authorization page at `http(s)://<your openHAB>:<port>/bmwcardata`.
+1. The page shows, for every account waiting for authorization, a button to the BMW portal, the same link as a QR code to scan with your phone, and the code to confirm.
+1. Log in with your BMW or MINI account and confirm the code.
+   The BMW portal opens in the tab of the page, so you can close it once you have confirmed, and you are back where you opened the page.
 1. The bridge goes `ONLINE` within a few seconds.
 
+The page is shown in the language of the browser if the binding has a translation for it, and otherwise in the language of openHAB.
+
 The tokens are stored encrypted by openHAB's OAuth client service and renewed automatically.
-If it expires or is revoked, the bridge shows a new link and user code.
+If it expires or is revoked, the authorization page shows a new link and code.
 
 ### `vehicle` Thing Configuration
 
