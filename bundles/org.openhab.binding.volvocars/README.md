@@ -197,14 +197,15 @@ Except for `battery-level` and `distance-to-empty-battery`, the values require a
 
 ### Group `trip`
 
-| Channel                      | Type          | Read/Write | Description                                                           |
-|------------------------------|---------------|------------|-----------------------------------------------------------------------|
-| `average-speed`              | Number:Speed  | R          | Average speed since the manual trip meter was reset                   |
-| `average-speed-automatic`    | Number:Speed  | R          | Average speed since the automatic trip meter was reset                |
-| `trip-meter-manual`          | Number:Length | R          | Distance since the manual trip meter was reset                        |
-| `trip-meter-automatic`       | Number:Length | R          | Distance since the automatic trip meter was reset                     |
-| `average-fuel-consumption`   | Number        | R          | Average fuel consumption in l/100km (combustion engine only)          |
-| `average-energy-consumption` | Number        | R          | Average energy consumption in kWh/100km (electric and hybrid only)    |
+| Channel                              | Type          | Read/Write | Description                                                                                       |
+|--------------------------------------|---------------|------------|---------------------------------------------------------------------------------------------------|
+| `average-speed`                      | Number:Speed  | R          | Average speed since the manual trip meter was reset                                               |
+| `average-speed-automatic`            | Number:Speed  | R          | Average speed since the automatic trip meter was reset                                            |
+| `trip-meter-manual`                  | Number:Length | R          | Distance since the manual trip meter was reset                                                    |
+| `trip-meter-automatic`               | Number:Length | R          | Distance since the automatic trip meter was reset                                                 |
+| `average-fuel-consumption`           | Number        | R          | Average fuel consumption in l/100km (combustion engine only)                                      |
+| `average-fuel-consumption-automatic` | Number        | R          | Average fuel consumption in l/100km since the automatic trip meter was reset                      |
+| `average-energy-consumption`         | Number        | R          | Average energy consumption in kWh/100km (electric and hybrid only)                                |
 
 ### Group `location`
 

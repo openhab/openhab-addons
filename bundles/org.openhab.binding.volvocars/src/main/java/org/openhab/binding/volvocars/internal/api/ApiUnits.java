@@ -44,6 +44,8 @@ public final class ApiUnits {
             Map.entry("minutes", Units.MINUTE), //
             Map.entry("h", Units.HOUR), //
             Map.entry("hours", Units.HOUR), //
+            Map.entry("days", Units.DAY), //
+            Map.entry("weeks", Units.WEEK), //
             Map.entry("months", Units.MONTH), //
             Map.entry("km/h", SIUnits.KILOMETRE_PER_HOUR), //
             Map.entry("mph", ImperialUnits.MILES_PER_HOUR), //

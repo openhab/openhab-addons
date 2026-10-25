@@ -46,6 +46,10 @@ class VehicleHandlerTest {
                 VehicleHandler.toQuantity(field(new JsonPrimitive("58"), "percentage", null), Units.PERCENT));
         assertEquals(new QuantityType<>(250, KILOMETRE),
                 VehicleHandler.toQuantity(field(new JsonPrimitive("250"), "kilometers", null), KILOMETRE));
+        assertEquals(new QuantityType<>(9, Units.MONTH),
+                VehicleHandler.toQuantity(field(new JsonPrimitive(9), "months", null), Units.MONTH));
+        assertEquals(new QuantityType<>(270, Units.DAY),
+                VehicleHandler.toQuantity(field(new JsonPrimitive(270), "days", null), Units.MONTH));
     }
 
     @Test

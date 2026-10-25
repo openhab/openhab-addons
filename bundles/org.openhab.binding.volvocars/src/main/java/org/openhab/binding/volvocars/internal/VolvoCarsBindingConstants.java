@@ -109,6 +109,7 @@ public class VolvoCarsBindingConstants {
     public static final String CHANNEL_TRIP_METER_MANUAL = "trip-meter-manual";
     public static final String CHANNEL_TRIP_METER_AUTOMATIC = "trip-meter-automatic";
     public static final String CHANNEL_AVERAGE_FUEL_CONSUMPTION = "average-fuel-consumption";
+    public static final String CHANNEL_AVERAGE_FUEL_CONSUMPTION_AUTOMATIC = "average-fuel-consumption-automatic";
     public static final String CHANNEL_AVERAGE_ENERGY_CONSUMPTION = "average-energy-consumption";
 
     // Channels of group location

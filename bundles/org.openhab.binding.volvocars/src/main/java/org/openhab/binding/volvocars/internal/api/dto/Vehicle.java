@@ -50,15 +50,25 @@ public class Vehicle {
     public @Nullable Images images;
     public @Nullable Descriptions descriptions;
 
+    /**
+     * @return true if the vehicle has a high voltage battery, or if its fuel type is missing or unknown
+     */
     public boolean hasBattery() {
         String localFuelType = fuelType;
-        // Set.of() does not permit null lookups
-        return localFuelType != null && BATTERY_FUEL_TYPES.contains(localFuelType);
+        return !isKnownFuelType(localFuelType) || BATTERY_FUEL_TYPES.contains(localFuelType);
     }
 
+    /**
+     * @return true if the vehicle has a combustion engine, or if its fuel type is missing or unknown
+     */
     public boolean hasCombustionEngine() {
         String localFuelType = fuelType;
-        return localFuelType != null && COMBUSTION_FUEL_TYPES.contains(localFuelType);
+        return !isKnownFuelType(localFuelType) || COMBUSTION_FUEL_TYPES.contains(localFuelType);
+    }
+
+    private static boolean isKnownFuelType(@Nullable String fuelType) {
+        // Set.of() does not permit null lookups
+        return fuelType != null && (BATTERY_FUEL_TYPES.contains(fuelType) || COMBUSTION_FUEL_TYPES.contains(fuelType));
     }
 
     public @Nullable String getModel() {

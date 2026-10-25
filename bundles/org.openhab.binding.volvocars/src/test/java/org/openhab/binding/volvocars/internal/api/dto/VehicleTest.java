@@ -57,8 +57,9 @@ class VehicleTest {
     }
 
     @Test
-    void unknown() {
-        assertPowertrain(null, false, false);
+    void missingOrUnknownFuelTypeKeepsAllFeatures() {
+        assertPowertrain(null, true, true);
+        assertPowertrain("HYDROGEN", true, true);
     }
 
     private void assertPowertrain(@Nullable String fuelType, boolean battery, boolean combustionEngine) {

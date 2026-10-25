@@ -391,7 +391,9 @@ public class VehicleHandler extends BaseThingHandler {
             boolean supported = switch (group != null ? group : "") {
                 case GROUP_FUEL -> localVehicle.hasCombustionEngine();
                 case GROUP_BATTERY -> localVehicle.hasBattery();
-                case GROUP_TRIP -> !(CHANNEL_AVERAGE_FUEL_CONSUMPTION.equals(id) && !localVehicle.hasCombustionEngine())
+                case GROUP_TRIP -> !((CHANNEL_AVERAGE_FUEL_CONSUMPTION.equals(id)
+                        || CHANNEL_AVERAGE_FUEL_CONSUMPTION_AUTOMATIC.equals(id))
+                        && !localVehicle.hasCombustionEngine())
                         && !(CHANNEL_AVERAGE_ENERGY_CONSUMPTION.equals(id) && !localVehicle.hasBattery());
                 case GROUP_CONTROL -> commands == null || switch (id) {
                     case CHANNEL_CLIMATIZATION -> commands.contains("CLIMATIZATION_START");
@@ -526,6 +528,8 @@ public class VehicleHandler extends BaseThingHandler {
         updateState(GROUP_TRIP, CHANNEL_TRIP_METER_AUTOMATIC,
                 toQuantity(statistics.get("tripMeterAutomatic"), KILOMETRE));
         updateState(GROUP_TRIP, CHANNEL_AVERAGE_FUEL_CONSUMPTION, toDecimal(statistics.get("averageFuelConsumption")));
+        updateState(GROUP_TRIP, CHANNEL_AVERAGE_FUEL_CONSUMPTION_AUTOMATIC,
+                toDecimal(statistics.get("averageFuelConsumptionAutomatic")));
         updateState(GROUP_TRIP, CHANNEL_AVERAGE_ENERGY_CONSUMPTION,
                 toDecimal(statistics.get("averageEnergyConsumption")));
         updateState(GROUP_FUEL, CHANNEL_DISTANCE_TO_EMPTY_TANK,

@@ -239,8 +239,12 @@ public class VolvoCarsApi {
                 && supported.getAsBoolean();
     }
 
+    /**
+     * The responses are wrapped into a <code>data</code> object, but the specification documents some resources
+     * without it, so fall back to the response itself.
+     */
     private static JsonObject getDataObject(JsonObject response) {
-        return response.get("data") instanceof JsonObject data ? data : new JsonObject();
+        return response.get("data") instanceof JsonObject data ? data : response;
     }
 
     private static Iterable<JsonElement> getDataArray(JsonObject response) {

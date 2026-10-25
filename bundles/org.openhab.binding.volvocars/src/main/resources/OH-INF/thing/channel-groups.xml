@@ -125,6 +125,10 @@
 					hours.</description>
 			</channel>
 			<channel id="average-fuel-consumption" typeId="average-fuel-consumption"/>
+			<channel id="average-fuel-consumption-automatic" typeId="average-fuel-consumption">
+				<label>Average Fuel Consumption Automatic</label>
+				<description>Average fuel consumption in l/100km since the automatic trip meter was reset.</description>
+			</channel>
 			<channel id="average-energy-consumption" typeId="average-energy-consumption"/>
 		</channels>
 	</channel-group-type>

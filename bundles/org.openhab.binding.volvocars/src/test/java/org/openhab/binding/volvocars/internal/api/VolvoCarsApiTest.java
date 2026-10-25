@@ -155,7 +155,15 @@ class VolvoCarsApiTest {
 
         CommandResult result = api.executeCommand(VIN, "lock", null);
 
-        assertTrue(result.isCompleted());
+        assertEquals("COMPLETED", result.invokeStatus);
+    }
+
+    @Test
+    void responseWithoutDataWrapper() throws VolvoCarsException {
+        http.respond(VEHICLE_URL + "/odometer", 200,
+                "{\"odometer\": {\"value\": 12345, \"unit\": \"km\", \"timestamp\": \"2026-10-24T20:32:09Z\"}}");
+
+        assertEquals(new BigDecimal("12345"), field(api.getValues(VIN, "odometer"), "odometer").getNumber());
     }
 
     @Test

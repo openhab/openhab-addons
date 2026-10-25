@@ -20,12 +20,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Michael Weger - Initial contribution
  */
 public class CommandResult {
-    public static final String STATUS_COMPLETED = "COMPLETED";
-
     public @Nullable String invokeStatus;
     public @Nullable String message;
-
-    public boolean isCompleted() {
-        return STATUS_COMPLETED.equals(invokeStatus);
-    }
 }
