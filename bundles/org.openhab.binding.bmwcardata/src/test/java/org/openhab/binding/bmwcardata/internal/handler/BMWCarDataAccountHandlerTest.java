@@ -26,11 +26,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,6 +75,7 @@ class BMWCarDataAccountHandlerTest {
     private static final String VIN = "WBA12345678901234";
     private static final long PERIODIC_DELAY = 120;
     private static final long RETRY_DELAY = 900;
+    private static final int POLL_INTERVAL = 5;
     private static final String TELEMATIC_DATA = """
             {"telematicData":{"vehicle.vehicle.travelledDistance":
              {"value":12345,"unit":"km","timestamp":"2026-10-24T10:00:00Z"}}}""";
@@ -232,7 +237,58 @@ class BMWCarDataAccountHandlerTest {
         assertEquals(0, pendingJobs(RETRY_DELAY));
     }
 
+    @Test
+    void unauthorizedResponseWhilePollingKeepsPolling() throws Exception {
+        // BMW answers an expired code, an invalid client and an account pending activation with 401 without
+        // WWW-Authenticate header, so the HTTP client fails the request and the error code is lost
+        respond(status(200, deviceCode("USER-1", 600)), failure(new ExecutionException(unauthorizedResponse())));
+        startHandler(false, null);
+        verify(accountCallback).statusUpdated(any(), argThat(pendingWithCode("USER-1")));
+
+        runJobs(POLL_INTERVAL);
+
+        assertTrue(responses.isEmpty());
+        assertEquals(1, pendingJobs(POLL_INTERVAL));
+        verify(accountCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.CONFIGURATION_ERROR)));
+        verify(accountCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.COMMUNICATION_ERROR)));
+    }
+
+    @Test
+    void expiredCodeStartsANewAuthorization() throws Exception {
+        respond(status(200, deviceCode("USER-1", 1)));
+        startHandler(false, null);
+        Instant requested = Instant.now();
+        // the code expires by the handler's own clock, as a 401 of BMW does not tell why it was rejected
+        waitUntil(() -> Instant.now().isAfter(requested.plusSeconds(1)));
+        respond(status(200, deviceCode("USER-2", 600)));
+
+        runJobs(POLL_INTERVAL);
+
+        // a new code is requested instead of polling with the expired one
+        assertTrue(responses.isEmpty());
+        verify(accountCallback).statusUpdated(any(), argThat(pendingWithCode("USER-2")));
+    }
+
     private void authorize(boolean streaming) throws Exception {
+        AccessTokenResponse token = new AccessTokenResponse();
+        token.setAccessToken("access");
+        token.setRefreshToken("refresh");
+        token.setExpiresIn(3600);
+        token.setCreatedOn(Instant.now());
+        token.setExtraFields(Map.of("id_token", "id", "gcid", "gcid-1"));
+        startHandler(streaming, token);
+        if (streaming) {
+            handler.onStreamStateChanged(StreamState.CONNECTED, null);
+        }
+        assertEquals(1, pendingJobs(PERIODIC_DELAY));
+    }
+
+    /**
+     * Initializes the account handler and runs its first authentication.
+     *
+     * @param storedToken the token stored by the OAuth client service, {@code null} for a new device authorization
+     */
+    private void startHandler(boolean streaming, @Nullable AccessTokenResponse storedToken) throws Exception {
         Bridge bridge = mock(Bridge.class);
         when(bridge.getUID()).thenReturn(ACCOUNT_UID);
         when(bridge.getThingTypeUID()).thenReturn(THING_TYPE_ACCOUNT);
@@ -240,15 +296,11 @@ class BMWCarDataAccountHandlerTest {
                 Map.of("clientId", "client-1", "streaming", streaming, "refreshInterval", 6, "requestBudget", 40)));
         when(bridge.getThings()).thenReturn(List.of(vehicleThing));
 
-        AccessTokenResponse token = new AccessTokenResponse();
-        token.setAccessToken("access");
-        token.setRefreshToken("refresh");
-        token.setExpiresIn(3600);
-        token.setCreatedOn(Instant.now());
-        token.setExtraFields(Map.of("id_token", "id", "gcid", "gcid-1"));
         OAuthClientService oAuthService = mock(OAuthClientService.class);
-        when(oAuthService.getAccessTokenResponse()).thenReturn(token);
-        when(oAuthService.refreshToken()).thenReturn(token);
+        when(oAuthService.getAccessTokenResponse()).thenReturn(storedToken);
+        if (storedToken != null) {
+            when(oAuthService.refreshToken()).thenReturn(storedToken);
+        }
         OAuthFactory oAuthFactory = mock(OAuthFactory.class);
         when(oAuthFactory.createOAuthClientService(anyString(), anyString(), any(), anyString(), any(), any(), any()))
                 .thenReturn(oAuthService);
@@ -266,10 +318,6 @@ class BMWCarDataAccountHandlerTest {
         handler.setCallback(accountCallback);
         handler.initialize();
         runJobs(0);
-        if (streaming) {
-            handler.onStreamStateChanged(StreamState.CONNECTED, null);
-        }
-        assertEquals(1, pendingJobs(PERIODIC_DELAY));
     }
 
     private ScheduledExecutorService scheduler() {
@@ -366,5 +414,32 @@ class BMWCarDataAccountHandlerTest {
 
     private static ArgumentMatcher<ThingStatusInfo> offline(ThingStatusDetail detail) {
         return info -> info.getStatus() == ThingStatus.OFFLINE && info.getStatusDetail() == detail;
+    }
+
+    private static ArgumentMatcher<ThingStatusInfo> pendingWithCode(String userCode) {
+        return info -> offline(ThingStatusDetail.CONFIGURATION_PENDING).matches(info)
+                && String.valueOf(info.getDescription()).contains(userCode);
+    }
+
+    private static String deviceCode(String userCode, int expiresInSeconds) {
+        return """
+                {"device_code":"device-%s","user_code":"%s","verification_uri":"https://customer.bmwgroup.com/oneid/link",\
+                "expires_in":%d,"interval":%d}"""
+                .formatted(userCode, userCode, expiresInSeconds, POLL_INTERVAL);
+    }
+
+    private static HttpResponseException unauthorizedResponse() {
+        Response response = mock(Response.class);
+        when(response.getStatus()).thenReturn(401);
+        return new HttpResponseException("HTTP protocol violation: Authentication challenge without WWW-Authenticate",
+                response);
+    }
+
+    private static void waitUntil(BooleanSupplier condition) throws InterruptedException {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (!condition.getAsBoolean()) {
+            assertTrue(System.nanoTime() < deadline, "condition not reached within 10 seconds");
+            Thread.sleep(20);
+        }
     }
 }
