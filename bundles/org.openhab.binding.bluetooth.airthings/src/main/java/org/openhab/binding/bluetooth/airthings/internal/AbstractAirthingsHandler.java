@@ -127,7 +127,7 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
         }
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getStatusInfo().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         ConnectionState connectionState = device.getConnectionState();
@@ -239,15 +239,14 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
         try {
             Bridge bridge = getBridge();
             if (bridge == null || bridge.getStatusInfo().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
             }
             if (error != null || data == null) {
                 errorReadCounter++;
                 logger.debug("Read data from device {} failed {} times", address, errorReadCounter);
                 if (errorReadCounter >= 6) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Read data from device failed");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Read data from device failed");
                 }
                 return;
             }

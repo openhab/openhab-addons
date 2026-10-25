@@ -102,8 +102,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
         try {
             httpClient.start();
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not start HttpClient: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Could not start HttpClient: " + e.getMessage());
             return;
         }
         stopOrRestartPoll(true);

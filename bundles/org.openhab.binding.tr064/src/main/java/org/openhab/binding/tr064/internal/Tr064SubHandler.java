@@ -222,7 +222,7 @@ public class Tr064SubHandler extends BaseThingHandler {
             if (THING_TYPE_SUBDEVICE_LAN.equals(thing.getThingTypeUID()) && !DEVICE_TYPE_LAN.equals(deviceType)) {
                 // the LAN channels are only available on a LAN device, so a wrong uuid would silently yield a Thing
                 // without them
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "uuid " + config.uuid
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "uuid " + config.uuid
                         + " belongs to a device of type " + deviceType + ", expected " + DEVICE_TYPE_LAN);
                 return false;
             }

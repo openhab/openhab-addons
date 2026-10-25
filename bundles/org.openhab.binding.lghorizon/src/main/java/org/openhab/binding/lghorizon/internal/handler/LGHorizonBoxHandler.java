@@ -97,7 +97,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
 
         LGHorizonAccountHandler account = getAccountHandler();
         if (account == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            logger.debug("The bridge handler was unexpected null, for thing: {}", getThing().getUID());
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);

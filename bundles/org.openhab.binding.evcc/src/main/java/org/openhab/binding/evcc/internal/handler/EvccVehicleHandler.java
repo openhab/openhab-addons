@@ -127,7 +127,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             router.registerRoute(new HandlerRoute(JSON_KEY_VEHICLES,
                     new JsonPathExtraction("$." + getPropertyOrConfigValue(PROPERTY_VEHICLE_ID)), this,
                     JSON_KEY_VEHICLES));
-        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED));
+        }, () -> updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED));
     }
 
     @Override

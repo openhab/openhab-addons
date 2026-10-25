@@ -1483,7 +1483,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             if (!isValidPort(ingestBase) || !isValidPort(ingestMax)) {
                 String detail = String.format("Invalid audio ingest port range %d-%d (go2rtcApiPort=%d)", ingestBase,
                         ingestMax, cfg.go2rtcApiPort);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, detail);
                 logger.warn(detail);
                 return false;
             }

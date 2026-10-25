@@ -67,7 +67,7 @@ public class FetchDataService {
      */
     public void pollDevice() {
         Optional.ofNullable(ioTaWattClient).ifPresentOrElse(this::pollDevice,
-                () -> deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
+                () -> deviceHandlerCallback.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR));
     }
 
     private void pollDevice(IoTaWattClient client) {
@@ -80,7 +80,7 @@ public class FetchDataService {
                 deviceHandlerCallback.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (IoTaWattClientInterruptedException e) {
-            deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY);
+            deviceHandlerCallback.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         } catch (IoTaWattClientCommunicationException e) {
             deviceHandlerCallback.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         } catch (IoTaWattClientConfigurationException e) {

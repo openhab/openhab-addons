@@ -143,13 +143,13 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         logger.debug("Initializing {} handler.", getThing().getThingTypeUID());
         config = getConfigAs(MelCloudHomeUnitConfig.class);
         if (config.unitId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "unitId is required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "unitId is required");
             return;
         }
 
         Bridge bridge = getBridge();
         if (bridge == null || !(bridge.getHandler() instanceof MelCloudHomeAccountHandler accountHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not set");
             return;
         }
 
@@ -186,7 +186,7 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         } else {
             // Stop the telemetry calls this unit would otherwise keep issuing against an unreachable bridge.
             cancelTelemetryPoll();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -333,7 +333,7 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
     public void onAtwUnitMissing() {
         lastKnownUnit = null;
         sentCommands.clear();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Unit not found in the MELCloud Home account");
+        updateStatus(ThingStatusDetail.GONE, "Unit not found in the MELCloud Home account");
     }
 
     @Override

@@ -183,7 +183,7 @@ class FetchDataServiceTest {
         service.pollDevice();
 
         // then
-        verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        verify(deviceHandlerCallback).updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         verify(deviceHandlerCallback, never()).updateState(any(), any());
     }
 
@@ -227,8 +227,6 @@ class FetchDataServiceTest {
             } else {
                 verify(deviceHandlerCallback).updateStatus(thingStatusDetail, errorMessage);
             }
-        } else if (thingStatusDetail == ThingStatusDetail.NOT_YET_READY) {
-            verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, thingStatusDetail);
         } else {
             verify(deviceHandlerCallback).updateStatus(thingStatusDetail);
         }
@@ -236,7 +234,8 @@ class FetchDataServiceTest {
     }
 
     private static Stream<Arguments> provideParamsForThrowCases() {
-        return Stream.of(Arguments.of(IoTaWattClientInterruptedException.class, ThingStatusDetail.NOT_YET_READY, false),
+        return Stream.of(
+                Arguments.of(IoTaWattClientInterruptedException.class, ThingStatusDetail.COMMUNICATION_ERROR, false),
                 Arguments.of(IoTaWattClientCommunicationException.class, ThingStatusDetail.COMMUNICATION_ERROR, false),
                 Arguments.of(IoTaWattClientConfigurationException.class, ThingStatusDetail.CONFIGURATION_ERROR, true),
                 Arguments.of(IoTaWattClientException.class, ThingStatusDetail.NONE, true));
