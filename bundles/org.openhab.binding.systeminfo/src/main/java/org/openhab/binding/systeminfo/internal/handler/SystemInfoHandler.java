@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Wouter Born - Add null annotations
  * @author Mark Herwege - Add dynamic creation of extra channels
  * @author Mark Herwege - Processor frequency channels
+ * @author Leo Siepel - Guard asynchronous initialization during handler disposal
  */
 @NonNullByDefault
 public class SystemInfoHandler extends BaseThingHandler {
@@ -106,6 +107,10 @@ public class SystemInfoHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> highPriorityTasks;
     private @Nullable ScheduledFuture<?> mediumPriorityTasks;
+    private @Nullable ScheduledFuture<?> lowPriorityTask;
+    private @Nullable ScheduledFuture<?> initializationTask;
+    // Configuration updates reuse this handler, and cancelling its task does not stop an OSHI call in progress.
+    private volatile long initializationGeneration;
 
     /**
      * Caches for cpu process load and process load for a given pid. Using this cache limits the process load refresh
@@ -134,17 +139,56 @@ public class SystemInfoHandler extends BaseThingHandler {
                 thing.getThingTypeUID().getId());
         restoreChannelsConfig(); // After a thing type change, previous channel configs will have been stored, and will
                                  // be restored here.
-        if (instantiateSystemInfoLibrary() && isConfigurationValid() && updateProperties()) {
-            if (!addDynamicChannels()) { // If there are new channel groups, the thing will get recreated with a new
-                                         // thing type and this handler will be disposed. Therefore do not do anything
-                                         // further here.
-                groupChannelsByPriority();
-                scheduleUpdates();
-                updateStatus(ThingStatus.ONLINE);
+        synchronized (this) {
+            long generation = ++initializationGeneration;
+            ScheduledFuture<?> previousTask = initializationTask;
+            if (previousTask != null) {
+                previousTask.cancel(false);
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "@text/offline.cannot-initialize");
+            initializationTask = scheduler.schedule(() -> initializeSystemInfo(generation), 0, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private boolean isCurrentInitialization(long generation) {
+        return generation == initializationGeneration;
+    }
+
+    private void initializeSystemInfo(long generation) {
+        synchronized (systeminfo) {
+            if (!isCurrentInitialization(generation)) {
+                return;
+            }
+            boolean instantiated = instantiateSystemInfoLibrary();
+            if (!isCurrentInitialization(generation)) {
+                return;
+            }
+            if (instantiated && isConfigurationValid() && isCurrentInitialization(generation)
+                    && updateProperties(generation)) {
+                if (!isCurrentInitialization(generation)) {
+                    return;
+                }
+                if (!addDynamicChannels()) { // If there are new channel groups, the thing will get recreated with a
+                                             // new thing type and this handler will be disposed. Therefore do not do
+                                             // anything further here.
+                    if (!isCurrentInitialization(generation)) {
+                        return;
+                    }
+                    groupChannelsByPriority();
+                    scheduleUpdates(generation);
+                    synchronized (this) {
+                        if (isCurrentInitialization(generation)) {
+                            updateStatus(ThingStatus.ONLINE);
+                        }
+                    }
+                }
+            } else {
+                synchronized (this) {
+                    if (isCurrentInitialization(generation)) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                                "@text/offline.cannot-initialize");
+                    }
+                }
+            }
         }
     }
 
@@ -187,7 +231,7 @@ public class SystemInfoHandler extends BaseThingHandler {
         }
     }
 
-    private boolean updateProperties() {
+    private boolean updateProperties(long generation) {
         Map<String, String> properties = editProperties();
         try {
             properties.put(PROPERTY_CPU_LOGICAL_CORES, systeminfo.getCpuLogicalCores().toString());
@@ -196,7 +240,12 @@ public class SystemInfoHandler extends BaseThingHandler {
             properties.put(PROPERTY_OS_MANUFACTURER, systeminfo.getOsManufacturer().toString());
             properties.put(PROPERTY_OS_VERSION, systeminfo.getOsVersion().toString());
 
-            updateProperties(properties);
+            synchronized (this) {
+                if (!isCurrentInitialization(generation)) {
+                    return false;
+                }
+                updateProperties(properties);
+            }
             logger.debug("Properties updated!");
             return true;
         } catch (Exception e) {
@@ -354,20 +403,29 @@ public class SystemInfoHandler extends BaseThingHandler {
         }
     }
 
-    private void scheduleUpdates() {
+    private synchronized void scheduleUpdates(long generation) {
+        if (!isCurrentInitialization(generation)) {
+            return;
+        }
         logger.debug("Schedule high priority tasks at fixed rate {} s", refreshIntervalHighPriority);
         highPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
-            publishData(highPriorityChannels);
+            if (isCurrentInitialization(generation)) {
+                publishData(highPriorityChannels);
+            }
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalHighPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule medium priority tasks at fixed rate {} s", refreshIntervalMediumPriority);
         mediumPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
-            publishData(mediumPriorityChannels);
+            if (isCurrentInitialization(generation)) {
+                publishData(mediumPriorityChannels);
+            }
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalMediumPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule one time update for low priority tasks");
-        scheduler.schedule(() -> {
-            publishData(lowPriorityChannels);
+        lowPriorityTask = scheduler.schedule(() -> {
+            if (isCurrentInitialization(generation)) {
+                publishData(lowPriorityChannels);
+            }
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, TimeUnit.SECONDS);
     }
 
@@ -786,20 +844,34 @@ public class SystemInfoHandler extends BaseThingHandler {
 
     private void stopScheduledUpdates() {
         ScheduledFuture<?> localHighPriorityTasks = highPriorityTasks;
+        highPriorityTasks = null;
         if (localHighPriorityTasks != null) {
             logger.debug("High prioriy tasks will not be run anymore!");
             localHighPriorityTasks.cancel(true);
         }
 
         ScheduledFuture<?> localMediumPriorityTasks = mediumPriorityTasks;
+        mediumPriorityTasks = null;
         if (localMediumPriorityTasks != null) {
             logger.debug("Medium prioriy tasks will not be run anymore!");
             localMediumPriorityTasks.cancel(true);
         }
+
+        ScheduledFuture<?> localLowPriorityTask = lowPriorityTask;
+        lowPriorityTask = null;
+        if (localLowPriorityTask != null) {
+            localLowPriorityTask.cancel(true);
+        }
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
+        initializationGeneration++;
+        ScheduledFuture<?> localInitializationTask = initializationTask;
+        initializationTask = null;
+        if (localInitializationTask != null) {
+            localInitializationTask.cancel(false);
+        }
         stopScheduledUpdates();
     }
 }
