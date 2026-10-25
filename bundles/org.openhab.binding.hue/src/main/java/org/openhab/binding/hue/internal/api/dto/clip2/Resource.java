@@ -1030,7 +1030,7 @@ public class Resource {
         return this;
     }
 
-    public Resource setGradient(Gradient gradient) {
+    public Resource setGradient(@Nullable Gradient gradient) {
         this.gradient = gradient;
         return this;
     }

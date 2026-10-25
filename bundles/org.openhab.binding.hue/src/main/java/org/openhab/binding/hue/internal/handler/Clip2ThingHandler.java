@@ -1347,6 +1347,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Create the gradient channel UID for the given index.
+     *
+     * @param isBackLight if true, create a back light gradient channel UID, otherwise create a main gradient channel
+     *            UID.
+     * @param index the gradient index (0-based).
+     * @return the gradient channel UID.
+     */
+    private ChannelUID gradientUID(boolean isBackLight, int index) {
+        String id = CHANNEL_2_GRADIENT_FORMAT.formatted(index + 1);
+        return isBackLight ? backUID(id) : mainUID(id);
+    }
+
+    /**
      * Update the state of the existing main channels.
      *
      * @param resource the Resource containing the new channel state.
@@ -2288,34 +2301,33 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Update the gradient channel states based on the given resource's gradient points. Initalizes unused
-     * channels to 'NULL' if the light does not support gradients at all, or does not support the maximum
-     * number of points.
+     * Update the gradient channel states based on the given resource's gradient points.
+     * - Channels beyond the light's point capability are set to 'NULL' (=> removed from the thing).
+     * - Channels within capability but with no current point (solid color mode) are set to 'UNDEF' so that
+     * they are registered as supported and are kept in the thing.
      *
      * @param isBackLight true if the gradient channels are for the back light, false for the main light.
      * @param resource the resource containing the gradient points.
-     * @param fullUpdate if true always update the channel, otherwise only update if state is not 'UNDEF'.
+     * @param fullUpdate if true always update the channel, otherwise only update if state is not 'NULL'.
      * @throws CriticalFieldMissingException if a critical field is missing in the resource.
      */
     private void updateGradientStates(boolean isBackLight, Resource resource, boolean fullUpdate)
             throws CriticalFieldMissingException {
         Gradient gradient = resource.getGradient();
+        int pointsCurrent = gradient == null ? 0 : gradient.getXyPoints().size();
+        int pointsCapable = gradient == null ? 0 : gradient.getPointsCapable();
         if (fullUpdate) {
-            // eliminate any gradient channels that are not supported by the light
-            int startIndex = gradient == null ? 0 : gradient.getPointsCapable();
-            for (int i = startIndex; i < Gradient.MAX_POINTS; i++) {
-                ChannelUID channelUID = isBackLight ? backUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i + 1))
-                        : mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i + 1));
-                updateState(channelUID, UnDefType.NULL, true);
+            // unsupported channels => NULL
+            for (int i = pointsCapable; i < Gradient.MAX_POINTS; i++) {
+                updateState(gradientUID(isBackLight, i), UnDefType.NULL, true);
+            }
+            // supported, but no point currently reported (solid color mode) => UNDEF
+            for (int i = pointsCurrent; i < pointsCapable; i++) {
+                updateState(gradientUID(isBackLight, i), UnDefType.UNDEF, true);
             }
         }
-        if (gradient == null) {
-            return;
-        }
-        for (int i = 0; i < gradient.getXyPoints().size(); i++) {
-            ChannelUID channelUID = isBackLight ? backUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i + 1))
-                    : mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(i + 1));
-            updateState(channelUID, resource.getGradientState(i), fullUpdate);
+        for (int i = 0; i < pointsCurrent; i++) {
+            updateState(gradientUID(isBackLight, i), resource.getGradientState(i), fullUpdate);
         }
     }
 }

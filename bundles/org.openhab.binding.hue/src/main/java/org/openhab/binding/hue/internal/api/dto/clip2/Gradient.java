@@ -32,7 +32,7 @@ public class Gradient {
     public static final int MAX_POINTS = 5;
 
     private @Nullable List<Point> points;
-    private @SerializedName("points_capable") int pointsCapable;
+    private @Nullable @SerializedName("points_capable") Integer pointsCapable;
 
     /**
      * Gets the points of the gradient.
@@ -49,26 +49,38 @@ public class Gradient {
     }
 
     /**
-     * Sets the points of the gradient.
-     * 
+     * Sets the color of the point at the given index. If the gradient has no points yet (e.g. the light is
+     * in solid color mode), or has fewer points than the capacity, the missing points are first filled with
+     * copies of the new color so that a complete palette can be sent to the bridge.
+     *
      * @param index the index of the point to be set
-     * @param xy the new color co-ordinate value to set for the point at the specified index
-     * @throws IllegalStateException
-     * @throws IndexOutOfBoundsException
+     * @param pairXy the new color co-ordinate value to set for the point at the specified index
+     * @throws IndexOutOfBoundsException if index is outside the light's point capacity
      */
-    public void setPointXy(int index, PairXy xy) throws IllegalStateException, IndexOutOfBoundsException {
+    public void setPointXy(int index, PairXy pairXy) throws IndexOutOfBoundsException {
+        Integer pointsCapable = this.pointsCapable;
+        pointsCapable = pointsCapable != null ? pointsCapable : MAX_POINTS;
+        if (index < 0 || index >= pointsCapable) {
+            throw new IndexOutOfBoundsException("index:%d, capacity:%d".formatted(index, pointsCapable));
+        }
         List<Point> points = this.points;
-        if (points == null) {
-            throw new IllegalStateException("'points' not initialized");
+        points = points != null ? points : new ArrayList<>(pointsCapable);
+        double[] xy = pairXy.getXY();
+        while (points.size() < pointsCapable) {
+            points.add(newPoint(xy));
         }
-        if (index < 0 || index >= points.size()) {
-            throw new IndexOutOfBoundsException("index:%d, size:%d".formatted(index, points.size()));
-        }
-        ColorXy color = points.get(index).getColorXy();
-        if (color == null) {
-            throw new IllegalStateException("'color' not initialized");
-        }
-        color.setXY(xy);
+        points.set(index, newPoint(xy));
+        this.points = points;
+    }
+
+    /**
+     * Creates a new {@link Point} object with the specified color co-ordinate values.
+     *
+     * @param xy an array containing the x and y color co-ordinate values
+     * @return a new {@link Point} object with the specified color co-ordinate values
+     */
+    private static Point newPoint(double[] xy) {
+        return new Point().setColorXy(new ColorXy().setXY(new PairXy().setXY(new double[] { xy[0], xy[1] })));
     }
 
     /**
@@ -83,27 +95,37 @@ public class Gradient {
             List<Point> resultPoints = new ArrayList<>(points.size());
             for (Point point : points) {
                 ColorXy colorXy = point.getColorXy();
-                if (colorXy == null) {
-                    continue;
+                PairXy pairXy = colorXy != null ? colorXy.getXY() : null;
+                double[] xy = pairXy != null ? pairXy.getXY() : null;
+                if (xy == null || xy.length != 2) {
+                    throw new IllegalStateException("gradient point has no valid xy value");
                 }
-                PairXy pairXy = colorXy.getXY();
-                if (pairXy == null) {
-                    continue;
-                }
-                double[] xy = pairXy.getXY();
-                if (xy.length != 2) {
-                    continue;
-                }
-                // deep copy
-                resultPoints.add(
-                        new Point().setColorXy(new ColorXy().setXY(new PairXy().setXY(new double[] { xy[0], xy[1] }))));
+                resultPoints.add(newPoint(xy));
             }
             result.points = resultPoints;
         }
         return result;
     }
 
+    /**
+     * Takes over any missing fields from the other gradient. Capacity is taken over if this one has none. The
+     * points are taken over (as a private deep copy) only if this one has none; if this one has points then
+     * they are newer, so they are kept.
+     *
+     * @param other the (cached) gradient to take missing fields from
+     */
+    public void takeOverMissingFields(Gradient other) {
+        if (pointsCapable == null && other.pointsCapable != null) {
+            pointsCapable = other.pointsCapable;
+        }
+        List<Point> mine = this.points;
+        if ((mine == null || mine.isEmpty()) && other.points instanceof List<Point> theirs && !theirs.isEmpty()) {
+            this.points = other.copy().points;
+        }
+    }
+
     public int getPointsCapable() {
-        return pointsCapable;
+        Integer pointsCapable = this.pointsCapable;
+        return pointsCapable != null ? pointsCapable : 0;
     }
 }

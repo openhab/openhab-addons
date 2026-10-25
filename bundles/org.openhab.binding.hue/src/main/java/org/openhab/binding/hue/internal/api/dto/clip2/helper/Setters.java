@@ -181,8 +181,12 @@ public class Setters {
             HSBType hsb2 = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             Gamut gamut = cache.getGamut();
             gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
-            gradient.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut)));
-            target.setGradient(gradient);
+            try {
+                gradient.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut)));
+                target.setGradient(gradient.copy());
+            } catch (IndexOutOfBoundsException e) {
+                return null; // channel index beyond light capability => 'not supported' log in caller
+            }
             return target;
         }
         return null;
@@ -330,8 +334,14 @@ public class Setters {
         // gradient
         Gradient targetGradient = target.getGradient();
         Gradient sourceGradient = source.getGradient();
-        if (Objects.isNull(targetGradient) && Objects.nonNull(sourceGradient)) {
-            target.setGradient(sourceGradient);
+        if (Objects.nonNull(sourceGradient)) {
+            if (Objects.isNull(targetGradient)) {
+                Gradient newGradient = sourceGradient.copy();
+                newGradient.takeOverMissingFields(sourceGradient); // adds the capacity, which copy() omits
+                target.setGradient(newGradient);
+            } else {
+                targetGradient.takeOverMissingFields(sourceGradient);
+            }
         }
 
         return target;
@@ -377,6 +387,11 @@ public class Setters {
             if (colorXy != null) {
                 indexedResource.setColorXy(colorXy);
                 resource.setColorXy(null);
+            }
+            Gradient gradient = resource.getGradient();
+            if (gradient != null) {
+                indexedResource.setGradient(gradient);
+                resource.setGradient(null);
             }
 
             if (!resource.hasAnyRelevantField()) {
