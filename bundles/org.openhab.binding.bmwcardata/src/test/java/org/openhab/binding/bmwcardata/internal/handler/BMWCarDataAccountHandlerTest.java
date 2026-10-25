@@ -64,10 +64,9 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import com.google.gson.Gson;
 
 /**
- * Tests the refresh and retry handling of the {@link BMWCarDataAccountHandler}. The jobs of the handler run on a
- * scheduler controlled by the test, the HTTP client and the OAuth service are mocked.
- * Tests the refresh and retry handling and the basic data cache of the {@link BMWCarDataAccountHandler}. The jobs of
- * the handler run on a scheduler controlled by the test, the HTTP client and the OAuth service are mocked.
+ * Tests the refresh and retry handling, the device authorization and the basic data cache of the
+ * {@link BMWCarDataAccountHandler}. The jobs of the handler run on a scheduler controlled by the test, the HTTP client
+ * and the OAuth service are mocked.
  *
  * @author Michael Weger - Initial contribution
  */

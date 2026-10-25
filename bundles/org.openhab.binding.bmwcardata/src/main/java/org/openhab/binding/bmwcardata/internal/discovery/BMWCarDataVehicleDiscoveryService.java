@@ -125,18 +125,18 @@ public class BMWCarDataVehicleDiscoveryService extends AbstractThingHandlerDisco
         String label = "";
         boolean telematicsCapable = true; // assume true, as the vehicle is primary and should be telematics capable
         if (basicData != null) {
-            if (basicData.brand != null && !basicData.brand.isBlank()) {
-                label += basicData.brand;
+            String brand = basicData.brand;
+            if (brand != null && !brand.isBlank()) {
+                label += brand;
             }
-            if (basicData.modelName != null && !basicData.modelName.isBlank()) {
+            String model = basicData.modelName;
+            if (model != null && !model.isBlank()) {
                 if (!label.isEmpty()) {
                     label += " ";
                 }
-                label += basicData.modelName;
+                label += model;
             }
-            if (basicData.isTelematicsCapable != null) {
-                telematicsCapable = basicData.isTelematicsCapable;
-            }
+            telematicsCapable = !Boolean.FALSE.equals(basicData.isTelematicsCapable);
         }
         if (!label.isEmpty()) {
             label += " (" + vin + ")";
