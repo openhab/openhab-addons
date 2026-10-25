@@ -16,7 +16,6 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.transit.internal.TransitBindingConstants;
 import org.openhab.binding.transit.internal.handler.TransitStopHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -67,12 +66,9 @@ public class TransitActions implements ThingActions {
         if (currentHandler instanceof TransitStopHandler stopHandler) {
             try {
                 var bridgeHandler = stopHandler.getTransitBridgeHandler();
-                if (bridgeHandler != null) {
-                    Object stopIdObj = stopHandler.getThing().getConfiguration()
-                            .get(TransitBindingConstants.CONFIG_GLOBAL_STOP_ID);
-                    if (stopIdObj instanceof String stopId && !stopId.isBlank()) {
-                        return bridgeHandler.fetchStopDeparturesRaw(stopId);
-                    }
+                String stopIds = stopHandler.getGlobalStopIds();
+                if (bridgeHandler != null && !stopIds.isEmpty()) {
+                    return bridgeHandler.fetchStopDeparturesRaw(stopIds);
                 }
             } catch (IOException e) {
                 logger.debug("Failed to fetch stop departures: {}", e.getMessage());

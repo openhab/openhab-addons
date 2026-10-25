@@ -19,38 +19,26 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * The {@link RouteDetailsResult} is the response of the {@code route_details} endpoint.
+ *
+ * @author Michael - Initial contribution
+ */
 @NonNullByDefault
 public class RouteDetailsResult {
     public @Nullable Route route;
 
-    @SerializedName("route_long_name")
-    public @Nullable String routeLongNameFlat;
-    @SerializedName("route_short_name")
-    public @Nullable String routeShortNameFlat;
-    @SerializedName("route_color")
-    public @Nullable String routeColorFlat;
-
     public static class Route {
-        public @Nullable List<Object> alerts;
+        public @Nullable List<ServiceAlert> alerts;
         @SerializedName("route_long_name")
         public @Nullable String routeLongName;
         @SerializedName("route_short_name")
         public @Nullable String routeShortName;
         @SerializedName("route_color")
         public @Nullable String routeColor;
-    }
-
-    public @Nullable Route getEffectiveRoute() {
-        if (route != null) {
-            return route;
-        }
-        if (routeLongNameFlat == null && routeShortNameFlat == null && routeColorFlat == null) {
-            return null;
-        }
-        Route r = new Route();
-        r.routeLongName = routeLongNameFlat;
-        r.routeShortName = routeShortNameFlat;
-        r.routeColor = routeColorFlat;
-        return r;
+        @SerializedName("mode_key")
+        public @Nullable String modeKey;
+        @SerializedName("route_network_id")
+        public @Nullable String routeNetworkId;
     }
 }

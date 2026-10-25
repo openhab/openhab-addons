@@ -42,6 +42,23 @@ public class StopDeparturesResult {
         @SerializedName("merged_itineraries")
         private @Nullable List<MergedItinerary> mergedItineraries;
 
+        @SerializedName("global_stop_id")
+        private @Nullable String globalStopId;
+
+        @SerializedName("global_route_id")
+        private @Nullable String globalRouteId;
+
+        @SerializedName("route_color")
+        private @Nullable String routeColor;
+
+        @SerializedName("mode_key")
+        private @Nullable String modeKey;
+
+        @SerializedName("route_network_id")
+        private @Nullable String routeNetworkId;
+
+        private @Nullable List<ServiceAlert> alerts;
+
         public @Nullable String getRouteShortName() {
             return routeShortName;
         }
@@ -52,6 +69,31 @@ public class StopDeparturesResult {
 
         public List<MergedItinerary> getMergedItineraries() {
             List<MergedItinerary> list = mergedItineraries;
+            return list != null ? list : Collections.emptyList();
+        }
+
+        public @Nullable String getGlobalStopId() {
+            return globalStopId;
+        }
+
+        public @Nullable String getGlobalRouteId() {
+            return globalRouteId;
+        }
+
+        public @Nullable String getRouteColor() {
+            return routeColor;
+        }
+
+        public @Nullable String getModeKey() {
+            return modeKey;
+        }
+
+        public @Nullable String getRouteNetworkId() {
+            return routeNetworkId;
+        }
+
+        public List<ServiceAlert> getAlerts() {
+            List<ServiceAlert> list = alerts;
             return list != null ? list : Collections.emptyList();
         }
     }
@@ -71,6 +113,19 @@ public class StopDeparturesResult {
         public List<ScheduleItem> getScheduleItems() {
             List<ScheduleItem> list = scheduleItems;
             return list != null ? list : Collections.emptyList();
+        }
+
+        /**
+         * Returns the headsign of the itinerary the given schedule item belongs to, or {@code null} if unknown.
+         */
+        public @Nullable String getHeadsign(ScheduleItem scheduleItem) {
+            String itineraryId = scheduleItem.getInternalItineraryId();
+            for (Itinerary itinerary : getItineraries()) {
+                if (itineraryId == null || itineraryId.equals(itinerary.getInternalItineraryId())) {
+                    return itinerary.getHeadsign();
+                }
+            }
+            return null;
         }
     }
 
@@ -108,6 +163,9 @@ public class StopDeparturesResult {
 
         @SerializedName("is_real_time")
         private @Nullable Boolean isRealTime;
+
+        @SerializedName("is_last")
+        private @Nullable Boolean isLast;
 
         @SerializedName("rt_trip_id")
         private @Nullable String rtTripId;
@@ -149,6 +207,11 @@ public class StopDeparturesResult {
         // Return the real-time status or null if unknown
         public @Nullable Boolean getIsRealTime() {
             return isRealTime;
+        }
+
+        // Return whether this is the last departure of the day for this itinerary or null if unknown
+        public @Nullable Boolean getIsLast() {
+            return isLast;
         }
 
         public @Nullable String getRtTripId() {
