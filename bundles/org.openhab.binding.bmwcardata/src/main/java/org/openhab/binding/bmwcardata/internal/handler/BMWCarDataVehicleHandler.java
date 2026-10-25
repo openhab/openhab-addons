@@ -72,6 +72,9 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
+    // descriptors of the destination guidance, which needs a navigation system
+    private static final String DESTINATION_PREFIX = "vehicle.cabin.infotainment.navigation.destinationSet.";
+
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataVehicleHandler.class);
 
     private String vin = "";
@@ -407,6 +410,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             logger.debug("Failed to retrieve basic vehicle data: {}", e.getMessage());
             return;
         }
+        if (disposed) {
+            return;
+        }
         Map<String, String> properties = new HashMap<>(editProperties());
         putIfPresent(properties, PROPERTY_BRAND, basicData.brand);
         String model = basicData.modelName != null ? basicData.modelName : basicData.series;
@@ -425,18 +431,21 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     /**
      * Removes the channels that do not apply to the vehicle: those of a drive it does not have, of the sunroof and of
-     * the navigation system, which provides the location. Equipment is only treated as missing when BMW explicitly
+     * the destination guidance of the navigation system. Equipment is only treated as missing when BMW explicitly
      * reports so. The channels are removed once, together with retrieving the properties; recreate the Thing to get
      * them back.
      */
     private void removeIrrelevantChannels(BasicData basicData) {
+        // BMW does not document the values, so that users can report the ones of their vehicles
+        logger.debug("Vehicle reports drive train {} and propulsion type {}", basicData.driveTrain,
+                basicData.propulsionType);
         List<Channel> channels = irrelevantChannelIds(basicData).stream()
                 .map(id -> getThing().getChannel(new ChannelUID(getThing().getUID(), id))).filter(Objects::nonNull)
                 .map(Objects::requireNonNull).toList();
-        if (!channels.isEmpty()) {
+        if (!channels.isEmpty() && !disposed) {
             logger.debug("Removing {} channels that do not apply to the vehicle", channels.size());
-            // dynamic channels may be created concurrently, see updateDynamicChannels
-            synchronized (dynamicChannelLock) {
+            // dynamic channels may be created concurrently, under the same lock
+            synchronized (dataLock) {
                 updateThing(editThing().withoutChannels(channels).build());
             }
         }
@@ -451,13 +460,11 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         boolean noNavigation = Boolean.FALSE.equals(basicData.hasNavi);
         Set<Drive> drives = drives(basicData);
         List<String> ids = new ArrayList<>();
-        if (noNavigation) {
-            ids.add(CHANNEL_GPS);
-        }
         for (VehicleChannel channel : VehicleChannel.values()) {
+            // the location comes from the telematics unit, which needs it for eCall, not from the navigation system
             boolean irrelevant = (channel.getDrive() != Drive.ANY && !drives.contains(channel.getDrive()))
                     || (noSunroof && channel == VehicleChannel.SUNROOF)
-                    || (noNavigation && GROUP_NAVIGATION.equals(channel.getGroupId()));
+                    || (noNavigation && channel.getDescriptor().startsWith(DESTINATION_PREFIX));
             String channelUid = channel.getChannelUid();
             if (irrelevant && channelUid != null) {
                 ids.add(channelUid);
@@ -471,35 +478,28 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * Derives the drives of the vehicle from its basic data: the drive train, or the propulsion type when the drive
-     * train is not known. Only {@code BEV} and {@code EL} have been seen; other values are matched by the catalogue's
-     * abbreviations, and a value that is not recognized keeps all channels.
+     * Derives the drives of the vehicle from its basic data. BMW does not document the values, so only those seen on
+     * real vehicles are recognized: the drive trains {@code BEV}, {@code PHEV} and {@code CONV}, and the propulsion
+     * type {@code EL} when the drive train is missing. Any other value keeps all channels; the propulsion type of a
+     * combustion vehicle is its fuel, e.g. {@code BE}.
      */
     static Set<Drive> drives(BasicData basicData) {
-        Set<Drive> drives = drives(basicData.driveTrain);
-        if (drives == null) {
-            drives = drives(basicData.propulsionType);
+        String driveTrain = normalize(basicData.driveTrain);
+        @Nullable
+        Set<Drive> drives = switch (driveTrain) {
+            case "BEV" -> EnumSet.of(Drive.ELECTRIC);
+            case "PHEV" -> EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
+            case "CONV" -> EnumSet.of(Drive.COMBUSTION);
+            default -> null;
+        };
+        if (drives == null && driveTrain.isEmpty() && "EL".equals(normalize(basicData.propulsionType))) {
+            drives = EnumSet.of(Drive.ELECTRIC);
         }
         return drives != null ? drives : EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
     }
 
-    private static @Nullable Set<Drive> drives(@Nullable String type) {
-        if (type == null || type.isBlank()) {
-            return null;
-        }
-        String upperCase = type.strip().toUpperCase(Locale.ROOT);
-        if (upperCase.contains("PHEV") || upperCase.contains("PLUGIN") || upperCase.contains("PLUG_IN")) {
-            return EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
-        }
-        if ("BEV".equals(upperCase) || "EL".equals(upperCase) || "ELECTRIC".equals(upperCase)) {
-            return EnumSet.of(Drive.ELECTRIC);
-        }
-        if ("CE".equals(upperCase) || "ICE".equals(upperCase) || "COMBUSTION".equals(upperCase)
-                || upperCase.contains("MHEV") || upperCase.contains("MILD") || "HEV".equals(upperCase)
-                || "CONV".equals(upperCase) || "CONVENTIONAL".equals(upperCase)) {
-            return EnumSet.of(Drive.COMBUSTION);
-        }
-        return null;
+    private static String normalize(@Nullable String value) {
+        return value == null ? "" : value.strip().toUpperCase(Locale.ROOT);
     }
 
     private static void putIfPresent(Map<String, String> properties, String key, @Nullable String value) {

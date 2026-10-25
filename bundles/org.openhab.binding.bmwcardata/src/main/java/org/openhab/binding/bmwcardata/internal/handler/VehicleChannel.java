@@ -253,7 +253,7 @@ public enum VehicleChannel {
     /**
      * The drive a channel needs to apply to a vehicle.
      */
-    public enum Drive {
+    enum Drive {
         ANY,
         // an electric motor with a high-voltage battery that can be charged: electric and plug-in hybrid vehicles
         ELECTRIC,
@@ -264,7 +264,7 @@ public enum VehicleChannel {
     private static final Set<VehicleChannel> ELECTRIC_ONLY = EnumSet.of(BATTERY_CAPACITY, BATTERY_ENERGY,
             BATTERY_HEALTH, ENERGY_TO_FULL, GRID_ENERGY, AVG_CONSUMPTION, ELECTRIC_RANGE, ELECTRIC_RANGE_FORECAST, SOC,
             TARGET_SOC, CHARGING_STATUS, PLUGGED, CHARGING_POWER, TIME_REMAINING, AC_CURRENT, AC_VOLTAGE, AC_LIMIT,
-            PHASES, CHARGING_METHOD, DC_PORT, PREDICTED_SOC, MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE,
+            PHASES, CHARGING_METHOD, PORT, PREDICTED_SOC, MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE,
             CHARGING_END_REASON, LAST_CHARGING_RESULT, CABLE_LOCK, CHARGING_FLAP, TRIP_END_SOC, TRIP_RECUPERATION,
             TRIP_COMFORT_ENERGY, TRIP_ELECTRIC_SHARE);
 
@@ -359,14 +359,10 @@ public enum VehicleChannel {
         return kind == Kind.OPENING && channelUid != null ? channelUid + "-state" : null;
     }
 
-    public String getGroupId() {
-        return groupId;
-    }
-
     /**
      * @return the drive the channel needs to apply to a vehicle
      */
-    public Drive getDrive() {
+    Drive getDrive() {
         if (ELECTRIC_ONLY.contains(this)) {
             return Drive.ELECTRIC;
         }

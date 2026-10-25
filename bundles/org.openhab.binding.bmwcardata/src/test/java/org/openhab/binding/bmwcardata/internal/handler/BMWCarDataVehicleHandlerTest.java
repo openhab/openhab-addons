@@ -35,6 +35,7 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.binding.bmwcardata.internal.handler.VehicleChannel.Drive;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -42,11 +43,14 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -64,6 +68,8 @@ import com.google.gson.JsonPrimitive;
 class BMWCarDataVehicleHandlerTest {
 
     private static final ThingUID THING_UID = new ThingUID(THING_TYPE_VEHICLE, "car");
+    private static final ThingUID BRIDGE_UID = new ThingUID(THING_TYPE_ACCOUNT, "account");
+    private static final String VIN = "WBY11CF020CM00000";
     private static final String MILEAGE = "vehicle.vehicle.travelledDistance";
     private static final String LATITUDE = "vehicle.cabin.infotainment.navigation.currentLocation.latitude";
     private static final String LONGITUDE = "vehicle.cabin.infotainment.navigation.currentLocation.longitude";
@@ -331,7 +337,7 @@ class BMWCarDataVehicleHandlerTest {
 
     @Test
     void combustionVehicleLosesElectricChannels() {
-        BasicData basicData = basicData(null, "CONV", true, true);
+        BasicData basicData = basicData("CONV", "BE", true, true);
         assertEquals(EnumSet.of(Drive.COMBUSTION), BMWCarDataVehicleHandler.drives(basicData));
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
         assertTrue(ids.contains(GROUP_CHARGE + "#soc"));
@@ -345,8 +351,15 @@ class BMWCarDataVehicleHandlerTest {
         assertEquals(List.of(), BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("PHEV", null, true, true)));
         assertEquals(List.of(), BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("XYZ", null, null, null)));
         assertEquals(List.of(), BMWCarDataVehicleHandler.irrelevantChannelIds(new BasicData()));
-        assertEquals(EnumSet.of(Drive.COMBUSTION),
-                BMWCarDataVehicleHandler.drives(basicData("MILD_HYBRID", null, null, null)));
+        // values not seen on real vehicles are not guessed
+        for (String driveTrain : List.of("MHEV", "HEV", "CE", "ICE")) {
+            assertEquals(EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION),
+                    BMWCarDataVehicleHandler.drives(basicData(driveTrain, null, null, null)));
+        }
+        // the propulsion type of a combustion vehicle is its fuel
+        assertEquals(EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION),
+                BMWCarDataVehicleHandler.drives(basicData(null, "BE", null, null)));
+        assertEquals(EnumSet.of(Drive.ELECTRIC), BMWCarDataVehicleHandler.drives(basicData(null, "EL", null, null)));
     }
 
     @Test
@@ -354,10 +367,80 @@ class BMWCarDataVehicleHandlerTest {
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("PHEV", null, false, false));
         assertTrue(ids.contains(GROUP_STATUS + "#sunroof"));
         assertTrue(ids.contains(GROUP_STATUS + "#sunroof-state"));
-        assertTrue(ids.contains(CHANNEL_GPS));
-        assertTrue(ids.contains(GROUP_NAVIGATION + "#heading"));
         assertTrue(ids.contains(GROUP_NAVIGATION + "#destination-distance"));
+        assertTrue(ids.contains(GROUP_NAVIGATION + "#arrival-time"));
+        // the location comes from the telematics unit
+        assertFalse(ids.contains(CHANNEL_GPS));
+        assertFalse(ids.contains(GROUP_NAVIGATION + "#heading"));
         assertFalse(ids.contains(GROUP_STATUS + "#door-lock"));
+    }
+
+    @Test
+    void retrievingThePropertiesRemovesTheChannels() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchBasicData(VIN)).thenReturn(basicData("CONV", "BE", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()));
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        // the properties, then the channels
+        ArgumentCaptor<Thing> updated = ArgumentCaptor.forClass(Thing.class);
+        verify(vehicleCallback, timeout(5000).times(2)).thingUpdated(updated.capture());
+        Thing thing = updated.getValue();
+        assertEquals("CONV", thing.getProperties().get(PROPERTY_DRIVE_TRAIN));
+        assertNull(thing.getChannel(GROUP_CHARGE + "#soc"));
+        assertNotNull(thing.getChannel(GROUP_RANGE + "#fuel-level"));
+        vehicle.dispose();
+    }
+
+    @Test
+    void thingWithRetrievedPropertiesIsLeftAlone() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(
+                vehicleThing(Map.of(PROPERTY_MODEL, "JCW Countryman ALL4", PROPERTY_DRIVE_TRAIN, "CONV")));
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        verify(account, after(500).never()).fetchBasicData(anyString());
+        verify(vehicleCallback, never()).thingUpdated(any());
+        vehicle.dispose();
+    }
+
+    @Test
+    void disposedHandlerDoesNotUpdateTheThing() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()));
+        vehicle.setCallback(vehicleCallback);
+        // the Thing is disposed while the basic data is retrieved
+        when(account.fetchBasicData(VIN)).thenAnswer(invocation -> {
+            vehicle.dispose();
+            return basicData("CONV", "BE", true, true);
+        });
+        vehicle.initialize();
+
+        verify(account, timeout(5000)).fetchBasicData(VIN);
+        verify(vehicleCallback, after(500).never()).thingUpdated(any());
+    }
+
+    private static Thing vehicleThing(Map<String, String> properties) {
+        ThingUID uid = new ThingUID(THING_TYPE_VEHICLE, BRIDGE_UID, "car");
+        return ThingBuilder.create(THING_TYPE_VEHICLE, uid).withBridge(BRIDGE_UID)
+                .withConfiguration(new Configuration(Map.of(CONFIG_VIN, VIN)))
+                .withChannels(ChannelBuilder.create(new ChannelUID(uid, GROUP_CHARGE + "#soc")).build(),
+                        ChannelBuilder.create(new ChannelUID(uid, GROUP_RANGE + "#fuel-level")).build())
+                .withProperties(properties).build();
+    }
+
+    private static ThingHandlerCallback callbackWithBridge(BMWCarDataAccountHandler account) {
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        when(bridge.getHandler()).thenReturn(account);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        when(callback.getBridge(BRIDGE_UID)).thenReturn(bridge);
+        return callback;
     }
 
     private static BasicData basicData(@Nullable String driveTrain, @Nullable String propulsionType,

@@ -136,12 +136,13 @@ A channel is only updated if the vehicle reports the corresponding data and, for
 
 When the static vehicle data is read, the channels that do not apply to the vehicle are removed:
 
-- For an electric vehicle, the fuel channels and the total range.
-- For a vehicle without electric drive, the charging, high-voltage battery and electric range channels.
+- For an electric vehicle (drive train `BEV`), the fuel channels and the total range.
+- For a combustion vehicle (drive train `CONV`), the charging, high-voltage battery and electric range channels.
 - The sunroof channels, if BMW reports the vehicle has no sunroof.
-- The navigation channels, including the location, if BMW reports the vehicle has no navigation system.
+- The destination channels, if BMW reports the vehicle has no navigation system. The location is kept, as it is provided by the telematics unit.
 
-Plug-in hybrids and vehicles whose drive is not recognized keep all channels.
+Plug-in hybrids (`PHEV`) and vehicles with another or no drive train keep all channels.
+BMW does not document the values, so the binding only acts on those seen on real vehicles; the reported values are shown as Thing properties.
 To get removed channels back, delete and recreate the Thing.
 
 | Channel                              | Type                     | Description                                                                   | Advanced |
