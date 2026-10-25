@@ -72,7 +72,8 @@
 			<tag>Status</tag>
 			<tag>OpenState</tag>
 		</tags>
-		<config-description-ref uri="thing-type:mqtt:switch_channel"></config-description-ref>
+		<state readOnly="true"/>
+		<config-description-ref uri="thing-type:mqtt:contact_channel"/>
 	</channel-type>
 
 	<channel-type id="rollershutter">
