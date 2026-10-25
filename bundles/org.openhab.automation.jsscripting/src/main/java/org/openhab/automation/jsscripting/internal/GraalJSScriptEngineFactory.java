@@ -95,21 +95,21 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         if (configuration.isDebuggerEnabled()) {
             Engine.Builder engineBuilder = createEngineBuilder();
             engineBuilder //
-                    .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
+                    .option("inspect", String.valueOf(configuration.getDebuggerPort())) //
                     .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
-                    .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
-                                                             // attach
-                    .option("inspect.Secure", "false"); // Disable TLS
+                    .option("inspect.WaitAttached", "false"); // Don't block code execution waiting for debugger to
+                                                              // attach
             Engine engine;
             try {
                 engine = engineBuilder.build();
+                logger.info("Debugger support is enabled for JavaScript Scripting on port {}.",
+                        configuration.getDebuggerPort());
             } catch (RuntimeException e) {
                 logger.error(
                         "Failed to initialize Graal JavaScript engine with debugger support. Continuing without debugger support.",
                         e);
                 engine = createEngineBuilder().build();
             }
-            logger.info("Debugger support is enabled for JavaScript Scripting.");
             this.engine = engine;
         } else {
             this.engine = createEngineBuilder().build();
