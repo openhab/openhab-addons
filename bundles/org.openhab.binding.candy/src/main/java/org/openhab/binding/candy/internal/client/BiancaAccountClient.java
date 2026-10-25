@@ -121,25 +121,23 @@ public class BiancaAccountClient {
             try {
                 result.complete(resolve(login, operation));
             } catch (InterruptedException e) {
-                logger.debug("Account key lookup interrupted");
+                logger.debug("Account key lookup interrupted", e);
                 Thread.currentThread().interrupt();
                 result.cancel(false);
             } catch (CandyProtocolException e) {
-                logger.debug("Account key lookup failed ({})", e.getClass().getSimpleName());
+                logger.debug("Account key lookup failed", e);
                 result.completeExceptionally(e);
             } catch (TimeoutException e) {
-                logger.debug("Account key lookup timed out");
+                logger.debug("Account key lookup timed out", e);
                 result.completeExceptionally(new CandyProtocolException("@text/account-error-timeout", e));
             } catch (ExecutionException e) {
-                Throwable cause = e.getCause();
-                logger.debug("Account HTTP transport failed ({})",
-                        cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName());
+                logger.debug("Account HTTP transport failed", e);
                 result.completeExceptionally(new CandyProtocolException("@text/account-error-transport", e));
             } catch (RuntimeException e) {
-                logger.debug("Unexpected failure during account key lookup ({})", e.getClass().getSimpleName());
+                logger.debug("Unexpected failure during account key lookup", e);
                 result.completeExceptionally(e);
             } catch (Exception e) {
-                logger.debug("Account HTTP client unavailable ({})", e.getClass().getSimpleName());
+                logger.debug("Account HTTP client unavailable", e);
                 result.completeExceptionally(new CandyProtocolException("@text/account-error-client", e));
             }
         });
@@ -171,9 +169,9 @@ public class BiancaAccountClient {
                 httpClient.stop();
             } catch (InterruptedException e) {
                 interrupted = true;
-                logger.warn("Candy account HTTP client shutdown was interrupted");
+                logger.warn("Candy account HTTP client shutdown was interrupted", e);
             } catch (Exception e) {
-                logger.warn("Could not stop the Candy account HTTP client ({})", e.getClass().getSimpleName());
+                logger.warn("Could not stop the Candy account HTTP client", e);
             } finally {
                 if (interrupted) {
                     Thread.currentThread().interrupt();
@@ -230,13 +228,12 @@ public class BiancaAccountClient {
                     } catch (CandyAuthenticationException e) {
                         throw e;
                     } catch (CandyProtocolException e) {
-                        logger.debug("Optional appliance metadata could not be read ({})",
-                                e.getClass().getSimpleName());
+                        logger.debug("Optional appliance metadata could not be read", e);
                         if (!applianceId.isEmpty()) {
                             throw e;
                         }
                     } catch (ExecutionException | TimeoutException e) {
-                        logger.debug("Optional appliance metadata request failed ({})", e.getClass().getSimpleName());
+                        logger.debug("Optional appliance metadata request failed", e);
                         // A partial inventory can still contain the key for the local washer.
                     }
                 }
@@ -318,14 +315,14 @@ public class BiancaAccountClient {
                         if (!applianceId.isEmpty() || matchedKey.equals(candidateKey)) {
                             throw e;
                         }
-                        logger.debug("Skipping optional catalog metadata for an unmatched appliance ({})",
-                                e.getClass().getSimpleName());
+                        logger.debug("Skipping optional catalog metadata for an unmatched appliance", e);
                         continue;
                     } catch (ExecutionException | TimeoutException e) {
                         if (!applianceId.isEmpty() || matchedKey.equals(candidateKey)) {
                             throw e;
                         }
-                        logger.debug("Skipping an unavailable catalog enrichment request for an unmatched appliance");
+                        logger.debug("Skipping an unavailable catalog enrichment request for an unmatched appliance",
+                                e);
                         continue;
                     }
                 }

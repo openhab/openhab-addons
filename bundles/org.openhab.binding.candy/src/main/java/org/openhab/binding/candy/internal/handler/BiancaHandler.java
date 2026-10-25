@@ -316,7 +316,7 @@ public class BiancaHandler extends BaseThingHandler {
             } else {
                 current.failures = Math.min(6, current.failures + 1);
                 logger.debug("Status read for {} failed (consecutive failures: {})", getThing().getUID(),
-                        current.failures);
+                        current.failures, failure);
                 invalidateChannels(current);
                 if (current.intent != null && current.confirmationTimer == null) {
                     current.intent = null;
@@ -378,8 +378,7 @@ public class BiancaHandler extends BaseThingHandler {
         request.whenComplete((programs, failure) -> execute(current, () -> {
             current.catalogRequest = null;
             if (failure != null) {
-                logger.debug("Program catalog request failed for {} ({})", getThing().getUID(),
-                        failure.getClass().getSimpleName());
+                logger.debug("Program catalog request failed for {}", getThing().getUID(), failure);
                 catalogStatus(current, "FAILED");
                 return;
             }
@@ -618,15 +617,14 @@ public class BiancaHandler extends BaseThingHandler {
             boolean configurationError = exception instanceof CandyInvalidHostException
                     || exception instanceof CandyAuthenticationException
                     || exception instanceof CandyApplianceSelectionException;
-            logger.debug("Setting {} offline after {} (automatic retry: {})", getThing().getUID(),
-                    exception.getClass().getSimpleName(), !configurationError);
+            logger.debug("Setting {} offline (automatic retry: {})", getThing().getUID(), !configurationError,
+                    exception);
             updateOfflineStatus(
                     configurationError ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
                     Objects.requireNonNull(exception.getMessage()));
             return !configurationError;
         }
-        logger.warn("Unexpected Candy status read failure for {} ({})", getThing().getUID(),
-                failure.getClass().getSimpleName());
+        logger.warn("Unexpected Candy status read failure for {}", getThing().getUID(), failure);
         updateOfflineStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/communication-error");
         return true;
     }
@@ -702,7 +700,7 @@ public class BiancaHandler extends BaseThingHandler {
                 return true;
             } catch (RejectedExecutionException e) {
                 if (isCurrent(current)) {
-                    logger.warn("Candy state executor rejected work for active Thing {}", getThing().getUID());
+                    logger.warn("Candy state executor rejected work for active Thing {}", getThing().getUID(), e);
                     throw e;
                 }
             }
@@ -769,10 +767,10 @@ public class BiancaHandler extends BaseThingHandler {
                     previous.executor.submit(() -> cancelWork(previous)).get(5, TimeUnit.SECONDS);
                 }
             } catch (InterruptedException e) {
-                logger.debug("Candy session cleanup interrupted for {}", getThing().getUID());
+                logger.debug("Candy session cleanup interrupted for {}", getThing().getUID(), e);
                 Thread.currentThread().interrupt();
             } catch (ExecutionException | TimeoutException e) {
-                logger.warn("Could not finish Candy state delivery during disposal of {}", getThing().getUID());
+                logger.warn("Could not finish Candy state delivery during disposal of {}", getThing().getUID(), e);
             } finally {
                 previous.executor.shutdown();
             }

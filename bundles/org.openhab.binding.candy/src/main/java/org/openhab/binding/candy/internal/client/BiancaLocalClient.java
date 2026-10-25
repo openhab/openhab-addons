@@ -73,7 +73,7 @@ public class BiancaLocalClient {
             request = httpClient.newRequest(statusUri.get()).param("encrypted", "1").followRedirects(false)
                     .timeout(configuration.requestTimeout, TimeUnit.SECONDS);
         } catch (IllegalStateException e) {
-            logger.debug("Cannot create local status request: HTTP client unavailable");
+            logger.debug("Cannot create local status request: HTTP client unavailable", e);
             return CompletableFuture.failedFuture(new CandyProtocolException(CLIENT_UNAVAILABLE, e));
         }
         future.whenComplete((snapshot, failure) -> {
@@ -97,8 +97,7 @@ public class BiancaLocalClient {
                     } else {
                         message = failure instanceof TimeoutException ? TIMEOUT : TRANSPORT;
                     }
-                    logger.debug("Local status request for {} failed: {} ({})", host, message,
-                            failure.getClass().getSimpleName());
+                    logger.debug("Local status request for {} failed: {}", host, message, failure);
                     future.completeExceptionally(new CandyProtocolException(message, failure));
                 } else if (result.getResponse().getStatus() != 200) {
                     logger.debug("Local status request for {} returned HTTP {}", host,
@@ -137,7 +136,7 @@ public class BiancaLocalClient {
                                 host);
                         future.completeExceptionally(new CandyProtocolException("@text/account-error-key-match"));
                     } catch (CandyProtocolException e) {
-                        logger.debug("Rejected local status from {} ({})", host, e.getClass().getSimpleName());
+                        logger.debug("Rejected local status from {}", host, e);
                         future.completeExceptionally(e);
                     }
                 }
@@ -146,7 +145,7 @@ public class BiancaLocalClient {
         try {
             request.send(listener);
         } catch (IllegalStateException e) {
-            logger.debug("Cannot send local status request for {}: HTTP client unavailable", host);
+            logger.debug("Cannot send local status request for {}: HTTP client unavailable", host, e);
             future.completeExceptionally(new CandyProtocolException(CLIENT_UNAVAILABLE, e));
         }
         return future;
