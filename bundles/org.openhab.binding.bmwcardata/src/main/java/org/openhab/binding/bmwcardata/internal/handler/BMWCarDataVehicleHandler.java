@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -81,8 +80,8 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     // states by channel id, to answer REFRESH commands without spending API requests
     private final Map<String, State> states = new ConcurrentHashMap<>();
     // the latest readings by descriptor, to drop values older than already published ones or copies: the stream
-    // delivers many messages twice, and a refresh after the stream delivers the same values again
-    private final Map<String, Reading> readings = new ConcurrentHashMap<>();
+    // delivers many messages twice, and a refresh after the stream delivers the same values again; guarded by dataLock
+    private final Map<String, Reading> readings = new HashMap<>();
     // once the vehicle reports isPlugged, the plug state is no longer derived from the charging port status
     private volatile boolean pluggedReported;
     // a refresh or stream message of the account may still deliver data while the handler is disposed
@@ -317,16 +316,13 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      * after the stream, and is not published again.
      */
     private boolean isNewer(String descriptor, Reading reading) {
-        AtomicBoolean newer = new AtomicBoolean();
-        readings.compute(descriptor, (key, previous) -> {
-            // an older reading or a copy keeps the previous one, so it is not published
-            if (previous != null && (reading.timestamp().isBefore(previous.timestamp()) || reading.equals(previous))) {
-                return previous;
-            }
-            newer.set(true);
-            return reading;
-        });
-        return newer.get();
+        Reading previous = readings.get(descriptor);
+        // an older reading or a copy keeps the previous one, so it is not published
+        if (previous != null && (reading.timestamp().isBefore(previous.timestamp()) || reading.equals(previous))) {
+            return false;
+        }
+        readings.put(descriptor, reading);
+        return true;
     }
 
     /**
