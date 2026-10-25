@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.UpnpService;
 import org.jupnp.model.meta.LocalDevice;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.types.UDN;
 import org.jupnp.registry.Registry;
 import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSink;
@@ -70,7 +71,6 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     private ConcurrentMap<String, UpnpRendererHandler> upnpRenderers = new ConcurrentHashMap<>();
     private ConcurrentMap<String, UpnpServerHandler> upnpServers = new ConcurrentHashMap<>();
     private ConcurrentMap<String, UpnpHandler> handlers = new ConcurrentHashMap<>();
-    private ConcurrentMap<String, RemoteDevice> devices = new ConcurrentHashMap<>();
 
     private final UpnpIOService upnpIOService;
     private final UpnpService upnpService;
@@ -153,8 +153,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
         String udn = handler.getUDN();
         if (udn != null) {
-            handlers.put(udn, handler);
-            remoteDeviceUpdated(null, devices.get(udn));
+            addHandler(udn, handler);
         }
 
         return handler;
@@ -171,11 +170,23 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
         String udn = handler.getUDN();
         if (udn != null) {
-            handlers.put(udn, handler);
-            remoteDeviceUpdated(null, devices.get(udn));
+            addHandler(udn, handler);
         }
 
         return handler;
+    }
+
+    /**
+     * Registers the handler for device updates and configures it from the device, if it is already known. The
+     * registry lookup also finds embedded devices and devices discovered before this factory was started.
+     */
+    void addHandler(String udn, UpnpHandler handler) {
+        handlers.put(udn, handler);
+
+        RemoteDevice device = upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
+        if (device != null) {
+            handler.updateDeviceConfig(device);
+        }
     }
 
     private void removeServer(String key) {
@@ -271,39 +282,35 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     @Override
     public void remoteDeviceAdded(@Nullable Registry registry, @Nullable RemoteDevice device) {
-        if (device == null) {
-            return;
-        }
-
-        String udn = device.getIdentity().getUdn().getIdentifierString();
-        if ("MediaServer".equals(device.getType().getType()) || "MediaRenderer".equals(device.getType().getType())) {
-            devices.put(udn, device);
-        }
-
-        if (handlers.containsKey(udn)) {
-            remoteDeviceUpdated(registry, device);
+        if (device != null) {
+            updateDeviceConfig(device);
         }
     }
 
     @Override
     public void remoteDeviceUpdated(@Nullable Registry registry, @Nullable RemoteDevice device) {
-        if (device == null) {
-            return;
-        }
-
-        String udn = device.getIdentity().getUdn().getIdentifierString();
-        UpnpHandler handler = handlers.get(udn);
-        if (handler != null) {
-            handler.updateDeviceConfig(device);
+        if (device != null) {
+            updateDeviceConfig(device);
         }
     }
 
     @Override
     public void remoteDeviceRemoved(@Nullable Registry registry, @Nullable RemoteDevice device) {
-        if (device == null) {
-            return;
+    }
+
+    /**
+     * Updates the handlers of the device and of its embedded devices. Registry events are only reported for root
+     * devices, while media servers and renderers are often embedded devices (e.g. in AV receivers).
+     */
+    private void updateDeviceConfig(RemoteDevice device) {
+        UpnpHandler handler = handlers.get(device.getIdentity().getUdn().getIdentifierString());
+        if (handler != null) {
+            handler.updateDeviceConfig(device);
         }
-        devices.remove(device.getIdentity().getUdn().getIdentifierString());
+
+        for (RemoteDevice embeddedDevice : device.getEmbeddedDevices()) {
+            updateDeviceConfig(embeddedDevice);
+        }
     }
 
     @Override
@@ -316,7 +323,6 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     @Override
     public void beforeShutdown(@Nullable Registry registry) {
-        devices = new ConcurrentHashMap<>();
     }
 
     @Override
