@@ -35,7 +35,8 @@ import org.slf4j.LoggerFactory;
  * <a href="https://github.com/dj0abr/bmw-mqtt-bridge">bmw-mqtt-bridge</a>, so that other tools, and this binding in
  * bridge mode, can share the single stream connection BMW allows per account:
  * <ul>
- * <li>every stream message unmodified and retained on {@code <prefix>raw/<vin>}</li>
+ * <li>every stream message unmodified on {@code <prefix>raw/<vin>}, retained only if configured, like
+ * {@code MQTT_RETAIN} of the bridge</li>
  * <li>the state of the BMW connection as retained JSON {@code {"connected":true|false,"timestamp":<epoch seconds>}} on
  * {@code <prefix>status}, with the last will {@code {"connected":false}}</li>
  * </ul>
@@ -61,6 +62,8 @@ public class StreamMirror implements MqttConnectionObserver {
     private final MqttBrokerConnection connection;
     private final Clock clock;
     private final Consumer<Boolean> brokerStateListener;
+    // a retained message is replayed to every new subscriber, however old it is
+    private final boolean retainMessages;
 
     // last known state of the BMW connection, published again after each reconnect to the local broker
     private volatile boolean streamConnected;
@@ -69,21 +72,23 @@ public class StreamMirror implements MqttConnectionObserver {
      * @param settings the local broker
      * @param clientId MQTT client id to use
      * @param scheduler scheduler for connection timeouts
+     * @param retainMessages whether the stream messages are published retained; the status always is
      * @param brokerStateListener informed whether the local broker is connected
      */
     public StreamMirror(BrokerSettings settings, String clientId, ScheduledExecutorService scheduler,
-            Consumer<Boolean> brokerStateListener) throws BMWCarDataException {
-        this(settings, settings.createConnection(clientId), Clock.systemUTC(), brokerStateListener);
+            boolean retainMessages, Consumer<Boolean> brokerStateListener) throws BMWCarDataException {
+        this(settings, settings.createConnection(clientId), Clock.systemUTC(), retainMessages, brokerStateListener);
         connection.setTimeoutExecutor(scheduler, CONNECT_TIMEOUT_MILLIS);
         connection
                 .setReconnectStrategy(new PeriodicReconnectStrategy(RECONNECT_INTERVAL_MILLIS, FIRST_RECONNECT_MILLIS));
     }
 
-    StreamMirror(BrokerSettings settings, MqttBrokerConnection connection, Clock clock,
+    StreamMirror(BrokerSettings settings, MqttBrokerConnection connection, Clock clock, boolean retainMessages,
             Consumer<Boolean> brokerStateListener) {
         this.settings = settings;
         this.connection = connection;
         this.clock = clock;
+        this.retainMessages = retainMessages;
         this.brokerStateListener = brokerStateListener;
         // consumers notice when openHAB disappears without stopping the mirror
         connection.setLastWill(new MqttWillAndTestament(settings.statusTopic(), DISCONNECTED_PAYLOAD, QOS, true));
@@ -126,7 +131,7 @@ public class StreamMirror implements MqttConnectionObserver {
         // like the bridge: the gcid level is replaced by <prefix>raw
         int slash = streamTopic.indexOf('/');
         String topic = settings.topicPrefix() + "raw" + (slash >= 0 ? streamTopic.substring(slash) : "");
-        connection.publish(topic, payload, QOS, true).exceptionally(e -> {
+        connection.publish(topic, payload, QOS, retainMessages).exceptionally(e -> {
             logger.debug("Mirroring a stream message failed: {}", e.getMessage());
             return false;
         });
