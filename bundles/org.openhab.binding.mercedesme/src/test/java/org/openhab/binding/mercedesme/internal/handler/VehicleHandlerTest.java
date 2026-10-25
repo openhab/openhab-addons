@@ -401,6 +401,27 @@ class VehicleHandlerTest {
     }
 
     @Test
+    public void testBEVChargeEndtimeMbOsCapture() {
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        // capture of a GLC EQ taken during an active AC charging session at 78 % of a max SoC of 80 %
+        String raw = loadRaw("src/test/resources/vehiclestatusupdates/GLC EQ.raw");
+        VehicleStatusAttributes update = ProtoConverter.raw2Proto(raw, true);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
+        assertEquals(Utils.getDateTimeType(1792252144L * 1000).format(DATE_TIME_FORMAT),
+                ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time")).format(DATE_TIME_FORMAT),
+                "End of Charge Time");
+        assertEquals("78 %", updateListener.getResponse("test::bev:range#soc").toFullString(), "SoC");
+    }
+
+    @Test
     public void testBEVChargeEndtimeLegacyKeepsPrecedence() {
         Map<String, Object> instances = createBEV();
         ThingCallbackListener updateListener = (ThingCallbackListener) instances
