@@ -63,7 +63,6 @@ Import-Package: \
 	org.objenesis;version='[3.3.0,3.3.1)',\
 	xstream;version='[1.4.21,1.4.22)',\
 	javax.measure.unit-api;version='[2.2.0,2.2.1)',\
-	tech.units.indriya;version='[2.2.3,2.2.4)',\
 	uom-lib-common;version='[2.2.0,2.2.1)',\
 	io.methvin.directory-watcher;version='[0.19.1,0.19.2)',\
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.9,2.3.10)',\
@@ -142,10 +141,11 @@ Import-Package: \
 	org.graalvm.truffle.truffle-nfi;version='[25.0.1,25.0.2)',\
 	org.graalvm.truffle.truffle-runtime;version='[25.0.1,25.0.2)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.22.0,2.22.1)',\
-	com.fasterxml.jackson.core.jackson-core;version='[2.22.2,2.22.3)',\
-	com.fasterxml.jackson.core.jackson-databind;version='[2.22.2,2.22.3)',\
 	org.graalvm.python.python-language;version='[25.0.1,25.0.2)',\
 	org.graalvm.python.python-resources;version='[25.0.1,25.0.2)',\
 	org.apache.commons.commons-codec;version='[1.17.1,1.17.2)',\
-	ch.qos.logback.classic;version='[1.5.38,1.5.39)',\
-	ch.qos.logback.core;version='[1.5.38,1.5.39)'
+	ch.qos.logback.classic;version='[1.6.5,1.6.6)',\
+	ch.qos.logback.core;version='[1.6.5,1.6.6)',\
+	com.fasterxml.jackson.core.jackson-core;version='[2.22.4,2.22.5)',\
+	com.fasterxml.jackson.core.jackson-databind;version='[2.22.4,2.22.5)',\
+	tech.units.indriya;version='[2.2.4,2.2.5)'
