@@ -127,7 +127,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             router.registerRoute(new HandlerRoute(JSON_KEY_VEHICLES,
                     new JsonPathExtraction("$." + getPropertyOrConfigValue(PROPERTY_VEHICLE_ID)), this,
                     JSON_KEY_VEHICLES));
-        }, () -> updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED));
+        }, () -> logger.debug("The bridge handler was unexpected null, for thing: {}", getThing().getUID()));
     }
 
     @Override

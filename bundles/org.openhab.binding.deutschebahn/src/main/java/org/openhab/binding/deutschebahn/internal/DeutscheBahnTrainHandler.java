@@ -108,7 +108,6 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
             return;
         }
 
-        this.updateStatus(ThingStatus.UNKNOWN);
         this.createChannelMapping();
         this.updateStatus(ThingStatus.ONLINE);
     }

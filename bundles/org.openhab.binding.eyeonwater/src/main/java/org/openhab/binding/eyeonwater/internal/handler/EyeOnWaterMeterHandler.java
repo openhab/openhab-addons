@@ -81,7 +81,7 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
             eoHandler.registerMeterHandler(this);
         } else {
-           logger.debug("The bridge handler was unexpected null, for thing: {}", getThing().getUID());
+            logger.debug("The bridge handler was unexpected null, for thing: {}", getThing().getUID());
         }
     }
 
