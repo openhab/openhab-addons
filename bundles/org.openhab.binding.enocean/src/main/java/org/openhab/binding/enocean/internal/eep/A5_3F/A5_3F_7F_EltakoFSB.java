@@ -15,6 +15,7 @@ package org.openhab.binding.enocean.internal.eep.A5_3F;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -64,6 +65,12 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
     // The FAM14 forwards feedback in its polling cycle (about 5.7 s observed), so allow for more than two cycles.
     static final long FEEDBACK_MARGIN_MS = 15000;
+
+    // A run of the actuator that ends earlier than requested, beyond this tolerance (100 ms units), was interrupted.
+    static final int INTERRUPTION_TOLERANCE = 10;
+
+    // The run time at the actuator is unknown to the binding and a wall switch runs until it elapses.
+    static final long MANUAL_MOVEMENT_TIMEOUT_MS = 300000;
 
     public A5_3F_7F_EltakoFSB() {
     }
@@ -133,6 +140,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
             if (duration != 0) {
                 setData(duration_msb, duration_lsb, direction_b, (CMD_100MSEC));
+                stm.startMovement(duration);
 
                 if (direction) {
                     stm.apply(BlindAction.POSITION_REQUEST_UP);
@@ -160,9 +168,11 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                 case IDLE:
                     if (percentCommand.intValue() == PercentType.ZERO.intValue()) {
                         setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
+                        stm.startMovement(fullTravelRuntime(shutTimeByte));
                         stm.apply(BlindAction.POSITION_REQUEST_UP);
                     } else if (percentCommand.intValue() == PercentType.HUNDRED.intValue()) {
                         setData(ZERO, shutTimeByte, MOVE_DOWN, TEACHIN_BIT); // => move completely down
+                        stm.startMovement(fullTravelRuntime(shutTimeByte));
                         stm.apply(BlindAction.POSITION_REQUEST_DOWN);
                     } else {
                         convertPosition(percentCommand, config, getCurrentStateFunc, stm);
@@ -208,6 +218,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                 if (upDownCommand == UpDownType.UP) {
                     setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => 0 percent
                     if (stm.getState() == BlindState.IDLE) {
+                        stm.startMovement(fullTravelRuntime(shutTimeByte));
                         stm.apply(BlindAction.POSITION_REQUEST_UP);
                     } else {
                         stm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
@@ -217,6 +228,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                 } else if (upDownCommand == UpDownType.DOWN) {
                     setData(ZERO, shutTimeByte, MOVE_DOWN, TEACHIN_BIT); // => 100 percent
                     if (stm.getState() == BlindState.IDLE) {
+                        stm.startMovement(fullTravelRuntime(shutTimeByte));
                         stm.apply(BlindAction.POSITION_REQUEST_DOWN);
                     } else {
                         stm.apply(BlindAction.CALIBRATION_REQUEST_DOWN);
@@ -241,6 +253,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                 setData(ZERO, (byte) 0xFF, STOP, TEACHIN_BIT);
                 // a request that waited for the calibration must not run after a later calibration
                 stm.clearStoredCommand();
+                stm.requestStop();
                 stm.apply(BlindAction.INVALID_REQUEST);
             } else if (stopMoveCommand == StopMoveType.MOVE) {
                 if (stm.getState() == BlindState.POSITION_REACHED) {
@@ -300,8 +313,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                             }
                         }
                         break;
-                    case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN, MOVEMENT_CALIBRATION_UP,
-                            MOVEMENT_CALIBRATION_DOWN, POSITION_REACHED, INVALID:
+                    case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN, MOVEMENT_MANUAL_UP, MOVEMENT_MANUAL_DOWN,
+                            MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN, POSITION_REACHED, INVALID:
                         // we avoid update during MOVEMENT_SLATS, all other cases are allowed.
                         if (thing.getHandler() instanceof EnOceanBaseActuatorHandler myHandler) {
                             channel = thing.getChannel(CHANNEL_DIMMER);
@@ -351,8 +364,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         if (CHANNEL_ROLLERSHUTTER.equals(channelId)) {
             State currentState = getCurrentStateFunc.apply(channelId);
             if (currentState != null) {
-                int duration = ((getDB3Value() << 8) + getDB2Value()) / 10; // => Time in DB3 and DB2 is given
-                                                                            // in ms
+                int runtime = (getDB3Value() << 8) + getDB2Value(); // => time in 100 ms
+                int duration = runtime / 10; // => time in s
                 EnOceanChannelRollershutterConfig c = config.as(EnOceanChannelRollershutterConfig.class);
                 boolean move_up = getDB1() == MOVE_UP;
                 if (duration == c.shutTime) {
@@ -367,6 +380,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                         blindStm.apply(BlindAction.POSITION_DONE);// will launch new command for adjustment of slats
                         blindStm.apply(BlindAction.CALIBRATION_DONE); // will launch new command for setting the
                                                                       // position
+                        blindStm.apply(BlindAction.MANUAL_DONE);
                     }
                     return move_up ? PercentType.ZERO : PercentType.HUNDRED;
                 } else {
@@ -377,22 +391,30 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
                     int direction = getDB1() == MOVE_UP ? -1 : 1;
                     if (current != null && c.shutTime != -1 && c.shutTime != 0) {
+                        PercentType newPosition = new PercentType(Math.min(100, (Math.max(0, current.intValue()
+                                + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
                         if (blindStm != null) {
                             switch (blindStm.getState()) {
                                 case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN:
+                                    if (isInterruptedByUser(blindStm, runtime)) {
+                                        // e.g. wall switch: do not adjust the slats, the user is in control
+                                        blindStm.apply(BlindAction.POSITION_INTERRUPTED);
+                                        return newPosition;
+                                    }
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     blindStm.apply(BlindAction.POSITION_DONE); // will execute MOVE command, when we use
                                     // blinds
-                                    return new PercentType(Math.min(100, (Math.max(0, current.intValue() + direction
-                                            * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
+                                    return newPosition;
+                                case MOVEMENT_MANUAL_UP, MOVEMENT_MANUAL_DOWN:
+                                    blindStm.apply(BlindAction.MANUAL_DONE);
+                                    return newPosition;
                                 case MOVEMENT_SLATS:
                                     blindStm.apply(BlindAction.SLATS_POS_DONE);
                                     return new PercentType(current.intValue()); // do not change the position
                                 default:
                             }
                         } else { // Legacy
-                            return new PercentType(Math.min(100, (Math.max(0, current.intValue()
-                                    + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
+                            return newPosition;
                         }
                     }
                 }
@@ -400,6 +422,15 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
             return UnDefType.UNDEF;
         }
         return UnDefType.UNDEF;
+    }
+
+    private static int fullTravelRuntime(byte shutTimeByte) {
+        return (shutTimeByte & 0xFF) * 10;
+    }
+
+    private static boolean isInterruptedByUser(STMStateMachine<BlindAction, BlindState> stm, int runtime) {
+        int expectedRuntime = stm.getExpectedRuntime();
+        return !stm.isStopRequested() && expectedRuntime > 0 && runtime < expectedRuntime - INTERRUPTION_TOLERANCE;
     }
 
     // StateMachineProvider interface implementation
@@ -444,18 +475,21 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
     }
 
     @Override
-    public @Nullable STMWatchdog<BlindAction, BlindState> getWatchdog(Thing thing) {
+    public List<STMWatchdog<BlindAction, BlindState>> getWatchdogs(Thing thing) {
         Channel channel = thing.getChannel(CHANNEL_ROLLERSHUTTER);
         ConfigMode mode = getConfigMode(thing);
         if (channel == null || mode == null || mode == ConfigMode.LEGACY) {
-            return null;
+            return List.of();
         }
         EnOceanChannelRollershutterConfig c = channel.getConfiguration().as(EnOceanChannelRollershutterConfig.class);
         long slatsTimeMs = mode == ConfigMode.BLINDS ? Math.max(0, c.swapTime) * 100L : 0;
         long timeoutMs = Math.max(0, c.shutTime) * 1000L + slatsTimeMs + FEEDBACK_MARGIN_MS;
-        return new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_POSITION_UP, BlindState.MOVEMENT_POSITION_DOWN,
-                BlindState.MOVEMENT_SLATS, BlindState.MOVEMENT_CALIBRATION_UP, BlindState.MOVEMENT_CALIBRATION_DOWN),
-                BlindAction.MOVEMENT_TIMEOUT, timeoutMs);
+        return List.of(
+                new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_POSITION_UP, BlindState.MOVEMENT_POSITION_DOWN,
+                        BlindState.MOVEMENT_SLATS, BlindState.MOVEMENT_CALIBRATION_UP,
+                        BlindState.MOVEMENT_CALIBRATION_DOWN), BlindAction.MOVEMENT_TIMEOUT, timeoutMs),
+                new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_MANUAL_UP, BlindState.MOVEMENT_MANUAL_DOWN),
+                        BlindAction.MOVEMENT_TIMEOUT, MANUAL_MOVEMENT_TIMEOUT_MS));
     }
 
     @Override
