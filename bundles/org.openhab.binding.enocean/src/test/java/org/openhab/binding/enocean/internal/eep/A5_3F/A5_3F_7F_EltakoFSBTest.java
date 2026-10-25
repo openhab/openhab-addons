@@ -152,13 +152,33 @@ public class A5_3F_7F_EltakoFSBTest {
     void manualMovementEndsWithPartialFeedbackAndTracksPosition() {
         STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_DOWN);
 
-        // 11.0 s down from 20 %: 20 + 11 * 100 / 27 = 60 %
+        // 11.0 s down from 20 %: 20 + 110 * 100 / 270 = 61 %
         State result = feedback("A5006E020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "",
                 id -> new PercentType(20), new Configuration(BLINDS_CONFIG), stm);
 
         assertThat(stm.getState(), is(BlindState.IDLE));
-        assertThat(result, is(new PercentType(60)));
+        assertThat(result, is(new PercentType(61)));
         assertThat(stm.getStoredCommand(), is(nullValue()));
+    }
+
+    @Test
+    void positionUsesRuntimeInTenthsOfSeconds() {
+        // 8.1 s of 27 s are 30 %, 6.5 s are 24 %
+        assertThat(positionAfter("A50051020A000000DE20", 0), is(new PercentType(30)));
+        assertThat(positionAfter("A50041020A000000DE20", 0), is(new PercentType(24)));
+    }
+
+    @Test
+    void positionIsLimitedToValidRange() {
+        // 8.1 s up from 20 % would be below 0 %
+        assertThat(positionAfter("A50051010A000000DE20", 20), is(PercentType.ZERO));
+        assertThat(positionAfter("A50051020A000000DE20", 90), is(PercentType.HUNDRED));
+    }
+
+    private State positionAfter(String feedbackHex, int startPosition) {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_DOWN);
+        return feedback(feedbackHex).convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> new PercentType(startPosition),
+                new Configuration(BLINDS_CONFIG), stm);
     }
 
     @Test
