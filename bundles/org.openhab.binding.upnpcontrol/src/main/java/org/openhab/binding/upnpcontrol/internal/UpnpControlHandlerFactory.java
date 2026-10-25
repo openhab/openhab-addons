@@ -159,10 +159,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         upnpServers.put(key, handler);
         logger.debug("Media server handler created for {} with UID {}", thing.getLabel(), thing.getUID());
 
-        String udn = handler.getUDN();
-        if (udn != null) {
-            addHandler(udn, handler);
-        }
+        addHandler(key, handler);
 
         return handler;
     }
@@ -176,10 +173,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         upnpServers.forEach((thingId, value) -> value.addRendererOption(key));
         logger.debug("Media renderer handler created for {} with UID {}", thing.getLabel(), thing.getUID());
 
-        String udn = handler.getUDN();
-        if (udn != null) {
-            addHandler(udn, handler);
-        }
+        addHandler(key, handler);
 
         return handler;
     }
@@ -188,13 +182,19 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
      * Registers the handler for device updates and configures it from the device, if it is already known. The
      * registry lookup also finds embedded devices and devices discovered before this factory was started.
      */
-    void addHandler(String udn, UpnpHandler handler) {
-        handlers.put(udn, handler);
+    void addHandler(String key, UpnpHandler handler) {
+        handlers.put(key, handler);
+        // the handler looks its device up again when its UDN is changed
+        handler.setDeviceLookup(this::getRemoteDevice);
 
-        RemoteDevice device = upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
+        RemoteDevice device = getRemoteDevice(handler.getUDN());
         if (device != null) {
             handler.updateDeviceConfig(device);
         }
+    }
+
+    private @Nullable RemoteDevice getRemoteDevice(@Nullable String udn) {
+        return udn == null ? null : upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
     }
 
     private void removeServer(String key) {
@@ -204,12 +204,12 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         }
         logger.debug("Removing media server handler for {} with UID {}", handler.getThing().getLabel(),
                 handler.getThing().getUID());
-        handlers.remove(handler.getUDN());
+        handlers.remove(key);
         upnpServers.remove(key);
     }
 
     private void removeRenderer(String key) {
-        UpnpHandler handler = upnpServers.get(key);
+        UpnpHandler handler = upnpRenderers.get(key);
         if (handler == null) {
             return;
         }
@@ -236,7 +236,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         }
 
         upnpServers.forEach((thingId, value) -> value.removeRendererOption(key));
-        handlers.remove(handler.getUDN());
+        handlers.remove(key);
         upnpRenderers.remove(key);
     }
 
@@ -311,9 +311,12 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
      * devices, while media servers and renderers are often embedded devices (e.g. in AV receivers).
      */
     private void updateDeviceConfig(RemoteDevice device) {
-        UpnpHandler handler = handlers.get(device.getIdentity().getUdn().getIdentifierString());
-        if (handler != null) {
-            handler.updateDeviceConfig(device);
+        String udn = device.getIdentity().getUdn().getIdentifierString();
+        for (UpnpHandler handler : handlers.values()) {
+            // match the current UDN, it can be changed in the thing configuration
+            if (udn.equals(handler.getUDN())) {
+                handler.updateDeviceConfig(device);
+            }
         }
 
         for (RemoteDevice embeddedDevice : device.getEmbeddedDevices()) {
