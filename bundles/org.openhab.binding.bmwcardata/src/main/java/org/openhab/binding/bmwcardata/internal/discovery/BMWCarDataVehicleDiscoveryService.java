@@ -125,18 +125,18 @@ public class BMWCarDataVehicleDiscoveryService extends AbstractThingHandlerDisco
         String label = "";
         boolean telematicsCapable = true; // assume true, as the vehicle is primary and should be telematics capable
         if (basicData != null) {
-            String brand = basicData.brand;
-            if (brand != null && !brand.isBlank()) {
-                label += brand;
+            if (basicData.brand != null && !basicData.brand.isBlank()) {
+                label += basicData.brand;
             }
-            String model = basicData.modelName;
-            if (model != null && !model.isBlank()) {
+            if (basicData.modelName != null && !basicData.modelName.isBlank()) {
                 if (!label.isEmpty()) {
                     label += " ";
                 }
-                label += model;
+                label += basicData.modelName;
             }
-            telematicsCapable = Boolean.TRUE.equals(basicData.isTelematicsCapable);
+            if (basicData.isTelematicsCapable != null) {
+                telematicsCapable = basicData.isTelematicsCapable;
+            }
         }
         if (!label.isEmpty()) {
             label += " (" + vin + ")";
@@ -144,7 +144,7 @@ public class BMWCarDataVehicleDiscoveryService extends AbstractThingHandlerDisco
             label = vin;
         }
         if (!telematicsCapable) {
-            logger.info("Discovered vehicle {} is not capable to send data", vin);
+            logger.debug("Discovered vehicle {} is not capable to send data", vin);
             label = "@text/discovery.vehicle.no-telematics.label [\"" + label + "\"]";
         }
         return label;
