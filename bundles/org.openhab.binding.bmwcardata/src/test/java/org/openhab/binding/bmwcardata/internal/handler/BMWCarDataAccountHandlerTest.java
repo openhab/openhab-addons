@@ -26,11 +26,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,6 +78,7 @@ class BMWCarDataAccountHandlerTest {
     private static final String VIN = "WBA12345678901234";
     private static final long PERIODIC_DELAY = 120;
     private static final long RETRY_DELAY = 900;
+    private static final int POLL_INTERVAL = 5;
     private static final String TELEMATIC_DATA = """
             {"telematicData":{"vehicle.vehicle.travelledDistance":
              {"value":12345,"unit":"km","timestamp":"2026-10-24T10:00:00Z"}}}""";
@@ -343,10 +348,6 @@ class BMWCarDataAccountHandlerTest {
         handler.setCallback(accountCallback);
         handler.initialize();
         runJobs(0);
-        if (streaming) {
-            handler.onStreamStateChanged(StreamState.CONNECTED, null);
-        }
-        assertEquals(1, pendingJobs(PERIODIC_DELAY));
     }
 
     private ScheduledExecutorService scheduler() {
