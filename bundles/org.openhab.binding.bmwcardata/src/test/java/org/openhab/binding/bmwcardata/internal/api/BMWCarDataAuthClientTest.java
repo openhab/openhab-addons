@@ -119,6 +119,19 @@ class BMWCarDataAuthClientTest {
     }
 
     @Test
+    void requestDeviceCodeRejectsVerificationLinksOtherThanHttps() {
+        // the link is offered to the user to open, on the authorization page and in the status
+        for (String uri : List.of("javascript:alert(1)", "http://example.com/link", "https://", "not a link")) {
+            SERVER.stubFor(post(DEVICE_CODE_PATH).willReturn(okJson("""
+                    {"device_code":"dc","user_code":"UC-1","verification_uri":"%s","expires_in":600}"""
+                    .formatted(uri))));
+
+            BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> client.requestDeviceCode(), uri);
+            assertEquals("Device authorization response without an https verification link", e.getMessage(), uri);
+        }
+    }
+
+    @Test
     void pollDeviceTokenMapsOAuthErrors() throws Exception {
         DeviceAuthorization authorization = new DeviceAuthorization("dc", "UC", "https://example.com",
                 Instant.now().plusSeconds(300), 5, "verifier");

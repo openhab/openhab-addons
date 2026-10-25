@@ -56,7 +56,8 @@ public final class LogRedaction {
 
     /** JSON members and form fields whose value is hidden completely, in lower case */
     private static final Set<String> SECRETS = Set.of("access_token", "refresh_token", "id_token", "device_code",
-            "code_verifier", "code_challenge", "client_id", "client_secret", "password", "gcid", "entityid");
+            "user_code", "code_verifier", "code_challenge", "client_id", "client_secret", "password", "gcid",
+            "entityid");
 
     private LogRedaction() {
         // utility class

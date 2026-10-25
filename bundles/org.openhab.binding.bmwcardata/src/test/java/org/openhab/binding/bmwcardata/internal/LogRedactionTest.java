@@ -69,6 +69,16 @@ class LogRedactionTest {
     }
 
     @Test
+    void hidesCodesInDeviceCodeResponse() {
+        String payload = "{\"device_code\":\"abc\",\"user_code\":\"ABCD-EFGH\","
+                + "\"verification_uri\":\"https://customer.bmwgroup.com/oneid/link\",\"expires_in\":600}";
+        assertEquals(
+                "{\"device_code\":\"***\",\"user_code\":\"***\","
+                        + "\"verification_uri\":\"https://customer.bmwgroup.com/oneid/link\",\"expires_in\":600}",
+                LogRedaction.payload(payload));
+    }
+
+    @Test
     void redactsStreamMessage() {
         String payload = "{\"vin\":\"" + VIN + "\",\"entityId\":\"8291cb2d-de60-425d-97d3-83b440b80308\","
                 + "\"topic\":\"" + VIN + "\",\"data\":{" + "\"" + LOCATION

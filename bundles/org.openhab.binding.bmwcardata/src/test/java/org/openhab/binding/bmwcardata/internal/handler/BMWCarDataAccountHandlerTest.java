@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -42,6 +43,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openhab.binding.bmwcardata.internal.MapStorage;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthClient.DeviceAuthorization;
 import org.openhab.binding.bmwcardata.internal.api.Tokens;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.stream.StreamSource;
@@ -272,12 +274,14 @@ class BMWCarDataAccountHandlerTest {
         // WWW-Authenticate header, so the HTTP client fails the request and the error code is lost
         respond(status(200, deviceCode("USER-1", 600)), failure(new ExecutionException(unauthorizedResponse())));
         startHandler(false, null);
-        verify(accountCallback).statusUpdated(any(), argThat(pendingWithCode("USER-1")));
+        verify(accountCallback).statusUpdated(any(), argThat(offline(ThingStatusDetail.CONFIGURATION_PENDING)));
+        assertEquals("USER-1", pendingUserCode());
 
         runJobs(POLL_INTERVAL);
 
         assertTrue(responses.isEmpty());
         assertEquals(1, pendingJobs(POLL_INTERVAL));
+        assertEquals("USER-1", pendingUserCode());
         verify(accountCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.CONFIGURATION_ERROR)));
         verify(accountCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
@@ -295,7 +299,7 @@ class BMWCarDataAccountHandlerTest {
 
         // a new code is requested instead of polling with the expired one
         assertTrue(responses.isEmpty());
-        verify(accountCallback).statusUpdated(any(), argThat(pendingWithCode("USER-2")));
+        assertEquals("USER-2", pendingUserCode());
     }
 
     private void authorize(boolean streaming) throws Exception {
@@ -449,9 +453,10 @@ class BMWCarDataAccountHandlerTest {
         return info -> info.getStatus() == ThingStatus.OFFLINE && info.getStatusDetail() == detail;
     }
 
-    private static ArgumentMatcher<ThingStatusInfo> pendingWithCode(String userCode) {
-        return info -> offline(ThingStatusDetail.CONFIGURATION_PENDING).matches(info)
-                && String.valueOf(info.getDescription()).contains(userCode);
+    private String pendingUserCode() {
+        DeviceAuthorization authorization = handler.getPendingAuthorization();
+        assertNotNull(authorization);
+        return Objects.requireNonNull(authorization).userCode();
     }
 
     private static String deviceCode(String userCode, int expiresInSeconds) {
