@@ -31,7 +31,7 @@ public class Gradient {
 
     public static final int MAX_POINTS = 5;
 
-    private @Nullable List<Color2> points;
+    private @Nullable List<Point> points;
     private @SerializedName("points_capable") int pointsCapable;
 
     /**
@@ -40,11 +40,11 @@ public class Gradient {
      * @return a list of {@link PairXy} representing the points of the gradient
      */
     public List<PairXy> getXyPoints() {
-        List<Color2> points = this.points;
+        List<Point> points = this.points;
         if (points == null) {
             return List.of();
         }
-        return points.stream().map(Color2::getColorXy).filter(Objects::nonNull).map(ColorXy::getXY)
+        return points.stream().map(Point::getColorXy).filter(Objects::nonNull).map(ColorXy::getXY)
                 .filter(Objects::nonNull).map(xy -> (PairXy) xy).toList();
     }
 
@@ -57,7 +57,7 @@ public class Gradient {
      * @throws IndexOutOfBoundsException
      */
     public void setPointXy(int index, PairXy xy) throws IllegalStateException, IndexOutOfBoundsException {
-        List<Color2> points = this.points;
+        List<Point> points = this.points;
         if (points == null) {
             throw new IllegalStateException("'points' not initialized");
         }
@@ -78,10 +78,10 @@ public class Gradient {
      */
     public Gradient copy() {
         Gradient result = new Gradient();
-        List<Color2> points = this.points;
+        List<Point> points = this.points;
         if (points != null) {
-            List<Color2> resultPoints = new ArrayList<>(points.size());
-            for (Color2 point : points) {
+            List<Point> resultPoints = new ArrayList<>(points.size());
+            for (Point point : points) {
                 ColorXy colorXy = point.getColorXy();
                 if (colorXy == null) {
                     continue;
@@ -95,8 +95,8 @@ public class Gradient {
                     continue;
                 }
                 // deep copy
-                resultPoints.add(new Color2()
-                        .setColorXy(new ColorXy().setXY(new PairXy().setXY(new double[] { xy[0], xy[1] }))));
+                resultPoints.add(
+                        new Point().setColorXy(new ColorXy().setXY(new PairXy().setXY(new double[] { xy[0], xy[1] }))));
             }
             result.points = resultPoints;
         }

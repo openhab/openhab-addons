@@ -21,14 +21,14 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class Color2 {
+public class Point {
     private @Nullable ColorXy color;
 
     public @Nullable ColorXy getColorXy() {
         return color;
     }
 
-    public Color2 setColorXy(ColorXy color) {
+    public Point setColorXy(ColorXy color) {
         this.color = color;
         return this;
     }
