@@ -31,6 +31,7 @@ import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shel
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -122,7 +123,9 @@ public class ShellyComponentThermostat {
                 request.params.config.enable = command == OnOffType.ON;
                 break;
             case CHANNEL_CONTROL_SETTEMP:
-                request.params.config.targetC = getNumber(command).doubleValue();
+                request.params.config.targetC = command instanceof QuantityType<?> quantity
+                        && quantity.toUnit(SIUnits.CELSIUS) instanceof QuantityType<?> celsius ? celsius.doubleValue()
+                                : getNumber(command).doubleValue();
                 break;
             default:
                 return;

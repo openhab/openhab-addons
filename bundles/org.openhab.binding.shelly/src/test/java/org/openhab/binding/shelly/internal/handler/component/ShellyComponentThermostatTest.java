@@ -43,11 +43,14 @@ import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.types.Command;
 
 /**
  * @author Markus Michels - Initial contribution
@@ -126,19 +129,27 @@ public class ShellyComponentThermostatTest {
         assertEquals(fullStatus, status.thermostat == null);
     }
 
-    @Test
-    void targetTempCommandSetsThermostatConfig() throws Exception {
+    static Stream<Arguments> targetTempCommands() {
+        return Stream.of(Arguments.of(new DecimalType(21.5)), Arguments.of(new QuantityType<>(21.5, SIUnits.CELSIUS)),
+                Arguments.of(new QuantityType<>(70.7, ImperialUnits.FAHRENHEIT)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("targetTempCommands")
+    void targetTempCommandSetsThermostatConfigInCelsius(Command command) throws Exception {
         Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
         ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
         when(handler.getApi()).thenReturn(api);
 
-        ShellyComponentThermostat.handleCommand(handler, CHANNEL_CONTROL_SETTEMP, new DecimalType(21.5));
+        ShellyComponentThermostat.handleCommand(handler, CHANNEL_CONTROL_SETTEMP, command);
 
         ArgumentCaptor<Shelly2RpcRequest> request = ArgumentCaptor.forClass(Shelly2RpcRequest.class);
         verify(api).apiRequest(request.capture());
         assertEquals(SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG, request.getValue().method);
         assertEquals(0, request.getValue().params.id);
-        assertEquals(21.5, request.getValue().params.config.targetC);
+        Double targetC = request.getValue().params.config.targetC;
+        assertNotNull(targetC);
+        assertEquals(21.5, targetC, 0.01);
         assertNull(request.getValue().params.config.enable);
     }
 }
