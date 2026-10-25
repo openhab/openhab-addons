@@ -484,18 +484,14 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      * combustion vehicle is its fuel, e.g. {@code BE}.
      */
     static Set<Drive> drives(BasicData basicData) {
-        String driveTrain = normalize(basicData.driveTrain);
-        @Nullable
-        Set<Drive> drives = switch (driveTrain) {
+        return switch (normalize(basicData.driveTrain)) {
             case "BEV" -> EnumSet.of(Drive.ELECTRIC);
             case "PHEV" -> EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
             case "CONV" -> EnumSet.of(Drive.COMBUSTION);
-            default -> null;
+            case "" -> "EL".equals(normalize(basicData.propulsionType)) ? EnumSet.of(Drive.ELECTRIC)
+                    : EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
+            default -> EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
         };
-        if (drives == null && driveTrain.isEmpty() && "EL".equals(normalize(basicData.propulsionType))) {
-            drives = EnumSet.of(Drive.ELECTRIC);
-        }
-        return drives != null ? drives : EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION);
     }
 
     private static String normalize(@Nullable String value) {
