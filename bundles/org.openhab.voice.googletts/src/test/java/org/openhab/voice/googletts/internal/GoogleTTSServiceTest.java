@@ -19,7 +19,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.voice.TTSCache;
+import org.openhab.core.voice.tts.TTSCache;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
