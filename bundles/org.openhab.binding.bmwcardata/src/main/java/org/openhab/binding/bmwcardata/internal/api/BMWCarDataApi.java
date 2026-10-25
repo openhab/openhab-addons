@@ -13,10 +13,10 @@
 package org.openhab.binding.bmwcardata.internal.api;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -114,8 +114,14 @@ public class BMWCarDataApi {
             } else {
                 throw new BMWCarDataException("Unexpected vehicle mappings response");
             }
-            return items.asList().stream().map(item -> gson.fromJson(item, VehicleMapping.class))
-                    .filter(Objects::nonNull).toList();
+            List<VehicleMapping> mappings = new ArrayList<>();
+            for (JsonElement item : items) {
+                VehicleMapping mapping = gson.fromJson(item, VehicleMapping.class);
+                if (mapping != null) {
+                    mappings.add(mapping);
+                }
+            }
+            return mappings;
         } catch (JsonParseException | IllegalStateException e) {
             throw new BMWCarDataException("Malformed vehicle mappings response", e);
         }
@@ -201,6 +207,9 @@ public class BMWCarDataApi {
             Thread.currentThread().interrupt();
             throw new BMWCarDataException("Interrupted", e);
         } catch (ExecutionException e) {
+            if (HttpResponses.isUnauthorizedResponse(e)) {
+                throw new BMWCarDataAuthException("Access token rejected", 401);
+            }
             throw new BMWCarDataException("Request to BMW CarData failed: " + e.getMessage(), e);
         } catch (TimeoutException e) {
             throw new BMWCarDataException("Request to BMW CarData timed out", e);
@@ -211,6 +220,7 @@ public class BMWCarDataApi {
                     LogRedaction.vins(path), status, response.getHeaders().get(REQUEST_ID_HEADER),
                     LogRedaction.payload(response.getContentAsString()));
         }
+        // a 401 with WWW-Authenticate header, e.g. Bearer error="invalid_token", is returned as a normal response
         if (status == 401) {
             throw new BMWCarDataAuthException("Access token rejected", status);
         }

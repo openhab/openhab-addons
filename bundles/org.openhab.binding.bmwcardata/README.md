@@ -35,6 +35,9 @@ If the account reports `Device authorization request failed: invalid_request`, B
 
 After the account has been authorized, the vehicles mapped to the account as primary user are discovered.
 A discovery scan costs one request of the daily API quota, so it only runs automatically after authorization while the account has no vehicle Things.
+Discovered vehicles are labeled with their brand and model, which costs one more request per vehicle once; a vehicle Thing created from the result reuses that data.
+If BMW explicitly reports a vehicle as not telematics capable, its label says so.
+BMW does not document this flag, so such a vehicle is still offered: it may not send any data.
 Further scans can be started manually from the Inbox.
 
 ## Thing Configuration
@@ -47,6 +50,7 @@ Further scans can be started manually from the Inbox.
 | streaming       | boolean | Receive the data pushed by the CarData streaming service                                                | true    | no       | no       |
 | streamMode      | text    | `direct` connects to BMW, `bridge` receives the stream from the bmw-mqtt-bridge                         | direct  | no       | no       |
 | mirrorToBroker  | boolean | Republish the direct stream to the local MQTT broker, see [Mirroring the Stream](#mirroring-the-stream) | false   | no       | yes      |
+| mirrorRetain    | boolean | Publish the mirrored stream messages retained, see [Mirroring the Stream](#mirroring-the-stream)        | false   | no       | yes      |
 | brokerHost      | text    | Host of the local MQTT broker, required in bridge mode and for mirroring                                | N/A     | no       | yes      |
 | brokerPort      | integer | Port of the local MQTT broker                                                                           | 1883    | no       | yes      |
 | brokerSecure    | boolean | Connect to the local MQTT broker with TLS                                                               | false   | no       | yes      |
@@ -75,10 +79,13 @@ In direct mode, openHAB holds the only stream connection of the account.
 With `mirrorToBroker=true`, the binding republishes the stream to the local MQTT broker configured by the broker parameters, so that other tools, e.g. evcc, can use it without running the bmw-mqtt-bridge.
 The topics are those of the bmw-mqtt-bridge, so existing consumers of the bridge, and this binding in bridge mode, can read the mirror unchanged:
 
-| Topic               | Payload                                                                                    | Retained |
-|---------------------|--------------------------------------------------------------------------------------------|----------|
-| `<prefix>raw/<VIN>` | Every stream message, unmodified as received from BMW                                      | yes      |
-| `<prefix>status`    | State of the BMW stream connection: `{"connected":true,"timestamp":<seconds since epoch>}` | yes      |
+| Topic               | Payload                                                                                    | Retained           |
+|---------------------|--------------------------------------------------------------------------------------------|--------------------|
+| `<prefix>raw/<VIN>` | Every stream message, unmodified as received from BMW                                      | if `mirrorRetain`  |
+| `<prefix>status`    | State of the BMW stream connection: `{"connected":true,"timestamp":<seconds since epoch>}` | yes                |
+
+Like the bmw-mqtt-bridge with its default `MQTT_RETAIN=0`, the stream messages are not retained by default.
+With `mirrorRetain=true`, a consumer receives the last message of each vehicle as soon as it subscribes, however old it is, e.g. after the vehicle has been parked for days.
 
 The last will of the mirror sets `<prefix>status` to `{"connected":false}`, so consumers notice when openHAB stops.
 The mirror reconnects to the local broker on its own; while the broker is not reachable, messages are dropped and the status description of the account shows this, but the stream and the channels are not affected.
