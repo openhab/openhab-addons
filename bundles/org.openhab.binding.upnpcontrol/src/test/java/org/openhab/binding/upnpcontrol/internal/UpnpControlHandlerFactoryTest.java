@@ -32,6 +32,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.upnpcontrol.internal.handler.UpnpHandler;
 import org.openhab.core.audio.AudioHTTPServer;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.net.NetworkAddressService;
 
@@ -56,6 +58,8 @@ public class UpnpControlHandlerFactoryTest {
     private @NonNullByDefault({}) @Mock NetworkAddressService networkAddressService;
     private @NonNullByDefault({}) @Mock UpnpDynamicStateDescriptionProvider stateDescriptionProvider;
     private @NonNullByDefault({}) @Mock UpnpDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private @NonNullByDefault({}) @Mock TranslationProvider translationProvider;
+    private @NonNullByDefault({}) @Mock LocaleProvider localeProvider;
     private @NonNullByDefault({}) @Mock UpnpHandler handler;
 
     private @NonNullByDefault({}) UpnpControlHandlerFactory factory;
@@ -66,7 +70,7 @@ public class UpnpControlHandlerFactoryTest {
     public void setUp() {
         when(upnpService.getRegistry()).thenReturn(registry);
         factory = new UpnpControlHandlerFactory(upnpIOService, upnpService, audioHTTPServer, networkAddressService,
-                stateDescriptionProvider, commandDescriptionProvider, Map.of());
+                stateDescriptionProvider, commandDescriptionProvider, translationProvider, localeProvider, Map.of());
 
         // like an AV receiver: a root device without services, with an embedded media renderer
         renderer = device(RENDERER_UDN);
