@@ -46,6 +46,9 @@ public class PTM200Message extends _RPSMessage {
     static final byte SWITCH_OFF = 0x50;
     static final byte UP = 0x70;
     static final byte DOWN = 0x50;
+    // sent by the FSB14 when its relay starts, independent of who triggered the movement
+    static final byte START_UP = 0x01;
+    static final byte START_DOWN = 0x02;
     static final byte OPEN = (byte) 0xE0;
     static final byte CLOSED = (byte) 0xF0;
 
@@ -89,6 +92,9 @@ public class PTM200Message extends _RPSMessage {
                                     // StopMoveType.MOVE is used as command for adjustment of slats
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     break;
+                                case MOVEMENT_MANUAL_UP:
+                                    blindStm.apply(BlindAction.MANUAL_DONE);
+                                    break;
                                 default:
                                     break;
                             }
@@ -111,6 +117,9 @@ public class PTM200Message extends _RPSMessage {
                                     // StopMoveType.MOVE is used as command for adjustment of slats
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     break;
+                                case MOVEMENT_MANUAL_DOWN:
+                                    blindStm.apply(BlindAction.MANUAL_DONE);
+                                    break;
                                 default:
                                     break;
                             }
@@ -118,6 +127,16 @@ public class PTM200Message extends _RPSMessage {
                             blindStm.apply(BlindAction.POSITION_DONE);
                         }
                         return PercentType.HUNDRED;
+                    case START_UP:
+                    case START_DOWN:
+                        if (stm != null) {
+                            @SuppressWarnings("unchecked")
+                            STMStateMachine<BlindAction, BlindState> blindStm = (STMStateMachine<BlindAction, BlindState>) stm;
+                            // only has an effect when idle: movements requested by openHAB are already tracked
+                            blindStm.apply(
+                                    bytes[0] == START_UP ? BlindAction.MANUAL_START_UP : BlindAction.MANUAL_START_DOWN);
+                        }
+                        return UnDefType.UNDEF;
                     default:
                         return UnDefType.UNDEF;
                 }

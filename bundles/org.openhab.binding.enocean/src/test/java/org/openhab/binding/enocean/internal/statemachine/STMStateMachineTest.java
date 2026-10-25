@@ -158,7 +158,8 @@ public class STMStateMachineTest {
     @Test
     void timeoutLeadsToInvalidFromAllMovementStates() {
         List<BlindState> blindsStates = List.of(BlindState.MOVEMENT_POSITION_UP, BlindState.MOVEMENT_POSITION_DOWN,
-                BlindState.MOVEMENT_SLATS, BlindState.MOVEMENT_CALIBRATION_UP, BlindState.MOVEMENT_CALIBRATION_DOWN);
+                BlindState.MOVEMENT_SLATS, BlindState.MOVEMENT_CALIBRATION_UP, BlindState.MOVEMENT_CALIBRATION_DOWN,
+                BlindState.MOVEMENT_MANUAL_UP, BlindState.MOVEMENT_MANUAL_DOWN);
         for (BlindState initialState : blindsStates) {
             STMStateMachine<BlindAction, BlindState> stm = STMStateMachine
                     .build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, initialState, scheduler, null);
@@ -168,12 +169,85 @@ public class STMStateMachineTest {
 
         List<BlindState> rollershutterStates = List.of(BlindState.MOVEMENT_POSITION_UP,
                 BlindState.MOVEMENT_POSITION_DOWN, BlindState.MOVEMENT_CALIBRATION_UP,
-                BlindState.MOVEMENT_CALIBRATION_DOWN);
+                BlindState.MOVEMENT_CALIBRATION_DOWN, BlindState.MOVEMENT_MANUAL_UP, BlindState.MOVEMENT_MANUAL_DOWN);
         for (BlindState initialState : rollershutterStates) {
             STMStateMachine<BlindAction, BlindState> stm = STMStateMachine.build(
                     STMTransitionConfiguration.BlindTransitions.FSB14_ROLLERSHUTTER, initialState, scheduler, null);
             stm.apply(BlindAction.MOVEMENT_TIMEOUT);
             assertThat("FSB14_ROLLERSHUTTER from " + initialState, stm.getState(), is(BlindState.INVALID));
         }
+    }
+
+    @Test
+    void eachWatchdogUsesItsOwnTimeout() {
+        STMStateMachine<BlindAction, BlindState> stm = build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS,
+                BlindState.IDLE);
+        stm.registerWatchdog(
+                new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_MANUAL_UP), BlindAction.MOVEMENT_TIMEOUT, 5000),
+                timedOutStates::add);
+
+        stm.apply(BlindAction.POSITION_REQUEST_UP);
+        verify(scheduler).schedule(any(Runnable.class), eq(1000L), eq(TimeUnit.MILLISECONDS));
+
+        stm.apply(BlindAction.POSITION_INTERRUPTED);
+        stm.apply(BlindAction.MANUAL_START_UP);
+        verify(scheduler).schedule(any(Runnable.class), eq(5000L), eq(TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    void manualMovementIsTrackedFromIdle() {
+        for (STMTransitionConfiguration<BlindAction, BlindState> config : List.of(
+                STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS,
+                STMTransitionConfiguration.BlindTransitions.FSB14_ROLLERSHUTTER)) {
+            STMStateMachine<BlindAction, BlindState> stm = STMStateMachine.build(config, BlindState.IDLE, scheduler,
+                    null);
+            stm.apply(BlindAction.MANUAL_START_UP);
+            assertThat(stm.getState(), is(BlindState.MOVEMENT_MANUAL_UP));
+            stm.apply(BlindAction.MANUAL_DONE);
+            assertThat(stm.getState(), is(BlindState.IDLE));
+
+            stm.apply(BlindAction.MANUAL_START_DOWN);
+            assertThat(stm.getState(), is(BlindState.MOVEMENT_MANUAL_DOWN));
+            stm.apply(BlindAction.MANUAL_DONE);
+            assertThat(stm.getState(), is(BlindState.IDLE));
+        }
+    }
+
+    @Test
+    void manualMovementIsNotStartedWhileBusyOrUncalibrated() {
+        for (BlindState busyState : List.of(BlindState.INVALID, BlindState.MOVEMENT_POSITION_UP,
+                BlindState.MOVEMENT_SLATS, BlindState.POSITION_REACHED, BlindState.MOVEMENT_CALIBRATION_DOWN)) {
+            STMStateMachine<BlindAction, BlindState> stm = STMStateMachine
+                    .build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, busyState, scheduler, null);
+            stm.apply(BlindAction.MANUAL_START_DOWN);
+            assertThat("from " + busyState, stm.getState(), is(busyState));
+        }
+    }
+
+    @Test
+    void interruptedPositionMovementReturnsToIdle() {
+        STMStateMachine<BlindAction, BlindState> stm = STMStateMachine.build(
+                STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, BlindState.MOVEMENT_POSITION_UP, scheduler,
+                null);
+
+        stm.apply(BlindAction.POSITION_INTERRUPTED);
+
+        assertThat(stm.getState(), is(BlindState.IDLE));
+    }
+
+    @Test
+    void movementContextIsReplacedByNextMovement() {
+        STMStateMachine<BlindAction, BlindState> stm = STMStateMachine
+                .build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, BlindState.IDLE, scheduler, null);
+        assertThat(stm.getExpectedRuntime(), is(0));
+
+        stm.startMovement(81);
+        stm.requestStop();
+        assertThat(stm.getExpectedRuntime(), is(81));
+        assertThat(stm.isStopRequested(), is(true));
+
+        stm.startMovement(270);
+        assertThat(stm.getExpectedRuntime(), is(270));
+        assertThat(stm.isStopRequested(), is(false));
     }
 }
