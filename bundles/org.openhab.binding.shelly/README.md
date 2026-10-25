@@ -129,6 +129,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusduobulb    | Shelly Duo Bulb E27 Gen3                                 | S3BL-D010009AEU                                                           |
 | shellypluscolorbulb  | Shelly Multicolor Bulb E27 Gen3                          | S3BL-C010007AEU                                                           |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
+| shellywalldisplay    | Shelly Wall Display X1i, X2, X2i, XL                     | SAWD-6A1XX10EU0, SAWD-2A1XX10EU1, SAWD-5A1XX10EU0, SAWD-3A1XE10EU2        |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
 | shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
 
