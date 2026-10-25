@@ -34,6 +34,8 @@ import org.openhab.binding.webthing.internal.client.ConsumedThingFactory;
 import org.openhab.binding.webthing.internal.link.ChannelToPropertyLink;
 import org.openhab.binding.webthing.internal.link.PropertyToChannelLink;
 import org.openhab.binding.webthing.internal.link.UnknownPropertyException;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -262,6 +264,10 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State stateCommand) {
+            var channel = getThing().getChannel(channelUID);
+            if (channel != null && CoreItemFactory.CONTACT.equals(channel.getAcceptedItemType())) {
+                return;
+            }
             itemChangedListenerMap.getOrDefault(channelUID, EMPTY_ITEM_CHANGED_LISTENER).onItemStateChanged(channelUID,
                     stateCommand);
         } else if (command instanceof RefreshType) {
@@ -277,9 +283,13 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     }
 
     @Override
-    public void updateItemState(ChannelUID channelUID, Command command) {
+    public void updateItemState(ChannelUID channelUID, State state) {
         if (isActivated.get()) {
-            postCommand(channelUID, command);
+            if (state instanceof Command command && !(state instanceof OpenClosedType)) {
+                postCommand(channelUID, command);
+            } else {
+                updateState(channelUID, state);
+            }
         }
     }
     //
