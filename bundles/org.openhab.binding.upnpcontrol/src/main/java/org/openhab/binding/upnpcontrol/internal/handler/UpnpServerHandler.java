@@ -41,6 +41,8 @@ import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntryQueue;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpControlUtil;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpProtocolMatcher;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpXMLParser;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -104,8 +106,10 @@ public class UpnpServerHandler extends UpnpHandler {
             ConcurrentMap<String, UpnpRendererHandler> upnpRenderers,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+            UpnpControlBindingConfiguration configuration, TranslationProvider translationProvider,
+            LocaleProvider localeProvider) {
+        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider,
+                translationProvider, localeProvider);
         this.upnpRenderers = upnpRenderers;
 
         // put root as highest level in parent map
