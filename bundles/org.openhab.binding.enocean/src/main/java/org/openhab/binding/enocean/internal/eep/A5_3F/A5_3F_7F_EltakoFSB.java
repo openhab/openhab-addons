@@ -391,8 +391,11 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
                     int direction = getDB1() == MOVE_UP ? -1 : 1;
                     if (current != null && c.shutTime != -1 && c.shutTime != 0) {
-                        PercentType newPosition = new PercentType(Math.min(100, (Math.max(0, current.intValue()
-                                + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
+                        // runtime is given in 100 ms, shutTime in s
+                        int travelled = Math
+                                .round(runtime * (float) PercentType.HUNDRED.intValue() / (c.shutTime * 10));
+                        PercentType newPosition = new PercentType(
+                                Math.min(100, Math.max(0, current.intValue() + direction * travelled)));
                         if (blindStm != null) {
                             switch (blindStm.getState()) {
                                 case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN:
