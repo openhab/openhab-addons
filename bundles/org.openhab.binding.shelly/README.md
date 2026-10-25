@@ -2675,19 +2675,35 @@ end
 
 ## Shelly Wall Displays
 
-| Group   | Channel     | Type     | read-only | Description                                                                       |
-| ------- | ----------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay   | output      | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|         | outputName  | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|         | input       | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|         | autoOn      | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
-|         | autoOff     | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
-|         | timerActive | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|         | button      | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| sensors | temperature | Number   | yes       | Temperature reported by the integrated sensor                                     |
-|         | humidity    | Number   | yes       | Relative Humidity in percent reported by the integrated sensor                    |
-|         | lux         | Number   | yes       | Brightness in Lux reported by the integrated sensor                               |
-|         | lastUpdate  | DateTime | yes       | Timestamp of the last update (any sensor value changed)                           |
+| Group   | Channel            | Type     | read-only | Description                                                                       |
+| ------- | ------------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay   | output             | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|         | outputName         | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|         | input              | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|         | autoOn             | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff            | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
+|         | timerActive        | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|         | button             | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| sensors | temperature        | Number   | yes       | Temperature reported by the integrated sensor                                     |
+|         | humidity           | Number   | yes       | Relative Humidity in percent reported by the integrated sensor                    |
+|         | lux                | Number   | yes       | Brightness in Lux reported by the integrated sensor                               |
+|         | lastUpdate         | DateTime | yes       | Timestamp of the last update (any sensor value changed)                           |
+| device  | relayInThermostat  | Switch   | yes       | ON: The relay output is used by a thermostat/climate profile                      |
+|         | sensorInThermostat | Switch   | yes       | ON: The temperature sensor input is used by a thermostat/climate profile          |
+| control | thermostatEnable   | Switch   | r/w       | Enable or disable the Wall Display thermostat                                     |
+|         | targetTemp         | Number   | r/w       | Thermostat target temperature in °C                                               |
+
+The `control` group is labeled `Thermostat Control` on the Wall Display.
+Its `thermostatEnable`/`targetTemp` channels are only
+available on devices reporting a Thermostat RPC component (e.g. Wall Display
+when a virtual thermostat is configured in the Shelly app). The thermostat's
+current temperature and controlled output are already reflected by the
+existing `sensors#temperature` and `relay#output` channels.
+
+The `control` channels are added as soon as the thermostat component shows
+up in the device status, so enabling the thermostat in the Shelly app makes
+the channels appear on the next status update - the Thing does not need to
+be deleted and re-discovered.
 
 ## Full Example
 

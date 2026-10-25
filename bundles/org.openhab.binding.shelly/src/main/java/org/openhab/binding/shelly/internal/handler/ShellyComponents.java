@@ -59,6 +59,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.handler.LightModelAccessor.LightModels;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel.Mode;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -133,6 +134,7 @@ public class ShellyComponents {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CALIBRATED,
                     getOnOff(profile.settings.calibrated));
         }
+        ShellyComponentThermostat.updateChannels(thingHandler, status);
 
         return false; // device status never triggers update
     }
