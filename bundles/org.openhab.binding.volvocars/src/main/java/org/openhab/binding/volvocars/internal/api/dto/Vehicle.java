@@ -24,8 +24,10 @@ import com.google.gson.annotations.SerializedName;
  * @author Michael Weger - Initial contribution
  */
 public class Vehicle {
-    private static final Set<String> BATTERY_FUEL_TYPES = Set.of("ELECTRIC", "PETROL/ELECTRIC", "NONE");
-    private static final Set<String> COMBUSTION_FUEL_TYPES = Set.of("DIESEL", "PETROL", "PETROL/ELECTRIC");
+    private static final Set<String> BATTERY_FUEL_TYPES = Set.of("ELECTRIC", "PETROL/ELECTRIC", "DIESEL/ELECTRIC",
+            "NONE");
+    private static final Set<String> COMBUSTION_FUEL_TYPES = Set.of("DIESEL", "PETROL", "PETROL/ELECTRIC",
+            "DIESEL/ELECTRIC");
 
     public static class Images {
         public @Nullable String exteriorImageUrl;
@@ -49,11 +51,14 @@ public class Vehicle {
     public @Nullable Descriptions descriptions;
 
     public boolean hasBattery() {
-        return BATTERY_FUEL_TYPES.contains(fuelType);
+        String localFuelType = fuelType;
+        // Set.of() does not permit null lookups
+        return localFuelType != null && BATTERY_FUEL_TYPES.contains(localFuelType);
     }
 
     public boolean hasCombustionEngine() {
-        return COMBUSTION_FUEL_TYPES.contains(fuelType);
+        String localFuelType = fuelType;
+        return localFuelType != null && COMBUSTION_FUEL_TYPES.contains(localFuelType);
     }
 
     public @Nullable String getModel() {
