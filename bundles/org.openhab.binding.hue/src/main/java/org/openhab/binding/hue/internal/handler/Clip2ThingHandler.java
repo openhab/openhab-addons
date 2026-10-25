@@ -2315,7 +2315,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             throws CriticalFieldMissingException {
         Gradient gradient = resource.getGradient();
         int pointsCurrent = gradient == null ? 0 : gradient.getXyPoints().size();
-        int pointsCapable = gradient == null ? 0 : gradient.getPointsCapable();
+        int pointsCapable = gradient == null ? 0 : Math.max(gradient.getPointsCapable(), pointsCurrent);
         if (fullUpdate) {
             // unsupported channels => NULL
             for (int i = pointsCapable; i < Gradient.MAX_POINTS; i++) {

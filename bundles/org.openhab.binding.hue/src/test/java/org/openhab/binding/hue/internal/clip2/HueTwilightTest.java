@@ -32,10 +32,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.hue.internal.api.dto.clip2.Gradient;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
@@ -601,5 +603,68 @@ class HueTwilightTest {
         updateLookups(f);
 
         assertFrontBackResolvedAndRouted(f);
+    }
+
+    private static Gradient solidGradient(int capable) {
+        return Objects.requireNonNull(GSON.fromJson("{\"points_capable\":" + capable + "}", Gradient.class));
+    }
+
+    private static List<String> gradientIds() {
+        return List.of(CHANNEL_2_GRADIENT_FORMAT.formatted(1), CHANNEL_2_GRADIENT_FORMAT.formatted(2),
+                CHANNEL_2_GRADIENT_FORMAT.formatted(3), CHANNEL_2_GRADIENT_FORMAT.formatted(4),
+                CHANNEL_2_GRADIENT_FORMAT.formatted(5));
+    }
+
+    private static List<ChannelUID> updatedChannelUIDs(Fixture f) {
+        assertEquals(1, f.handler.updatedThings.size());
+        return f.handler.updatedThings.get(0).getChannels().stream().map(Channel::getUID).toList();
+    }
+
+    @Test
+    void solidModeGradientKeepsAllCapableGradientChannels() throws Exception {
+        Fixture f = new Fixture(gradientIds(), List.of());
+        f.setBackLightId(null);
+        Resource front = new Resource(ResourceType.LIGHT).setId(FRONT_ID).setGradient(solidGradient(5))
+                .setContentType(ContentType.FULL_STATE);
+
+        updateChannels(f.handler, front);
+        f.updateChannelList();
+
+        // all five are supported although the gradient has no points
+        for (String id : gradientIds()) {
+            assertTrue(f.supportedUIDs().contains(mainUID(id)), id);
+        }
+        // nothing was removed, so the thing was not updated
+        assertTrue(f.handler.updatedThings.isEmpty());
+    }
+
+    @Test
+    void solidModeGradientRemovesChannelsBeyondCapacity() throws Exception {
+        Fixture f = new Fixture(gradientIds(), List.of());
+        f.setBackLightId(null);
+        Resource front = new Resource(ResourceType.LIGHT).setId(FRONT_ID).setGradient(solidGradient(3))
+                .setContentType(ContentType.FULL_STATE);
+
+        updateChannels(f.handler, front);
+        f.updateChannelList();
+
+        List<ChannelUID> uids = updatedChannelUIDs(f);
+        assertEquals(3, uids.size());
+        assertTrue(uids.contains(mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(1))));
+        assertTrue(uids.contains(mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(3))));
+        assertFalse(uids.contains(mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(4))));
+        assertFalse(uids.contains(mainUID(CHANNEL_2_GRADIENT_FORMAT.formatted(5))));
+    }
+
+    @Test
+    void lightWithoutGradientRemovesAllGradientChannels() throws Exception {
+        Fixture f = new Fixture(gradientIds(), List.of());
+        f.setBackLightId(null);
+        Resource front = new Resource(ResourceType.LIGHT).setId(FRONT_ID).setContentType(ContentType.FULL_STATE);
+
+        updateChannels(f.handler, front);
+        f.updateChannelList();
+
+        assertTrue(updatedChannelUIDs(f).isEmpty());
     }
 }

@@ -14,18 +14,23 @@ package org.openhab.binding.hue.internal.clip2;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.hue.internal.api.dto.clip2.ColorXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Gradient;
 import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
 
 import com.google.gson.Gson;
 
@@ -218,5 +223,68 @@ class GradientCacheTest {
         assertNotEquals(0.11, x(gradientOf(cache), 1));
         assertEquals(0.10, x(gradientOf(cache), 0), 0.0001);
         assertEquals(0.12, x(gradientOf(cache), 2), 0.0001);
+    }
+
+    @Test
+    void mergeMovesGradientIntoFirstResource() {
+        Gradient gradient = createGradient(5, 5, 0.10);
+        Resource first = new Resource(ResourceType.LIGHT).setId("light-id").setContentType(ContentType.UPDATE);
+        first.setOnOff(OnOffType.ON);
+        Resource second = new Resource(ResourceType.LIGHT).setId("light-id").setContentType(ContentType.UPDATE)
+                .setGradient(gradient);
+        second.setColorXy(new ColorXy().setXY(new double[] { 0.3, 0.3 }));
+
+        List<Resource> resources = new ArrayList<>(List.of(first, second));
+        Collection<Resource> merged = Setters.mergeLightResources(resources);
+
+        assertEquals(1, merged.size());
+        assertSame(gradient, first.getGradient());
+        assertNull(second.getGradient());
+        assertNotNull(first.getColorXy());
+    }
+
+    @Test
+    void mergeKeepsSeparateLightsApart() {
+        Resource front = new Resource(ResourceType.LIGHT).setId("front").setContentType(ContentType.UPDATE)
+                .setGradient(createGradient(5, 5, 0.10));
+        Resource back = new Resource(ResourceType.LIGHT).setId("back").setContentType(ContentType.UPDATE)
+                .setGradient(createGradient(5, 5, 0.50));
+
+        Collection<Resource> merged = Setters.mergeLightResources(new ArrayList<>(List.of(front, back)));
+
+        assertEquals(2, merged.size());
+        assertEquals(0.10, x(gradientOf(front), 0), 0.0001);
+        assertEquals(0.50, x(gradientOf(back), 0), 0.0001);
+    }
+
+    @Test
+    void setResourceWithInvalidCachedPointDoesNotThrow() {
+        // second point has no color => copy() throws IllegalStateException
+        Gradient invalid = Objects.requireNonNull(GSON.fromJson(
+                "{\"points\":[{\"color\":{\"xy\":{\"x\":0.1,\"y\":0.5}}},{}],\"points_capable\":5}", Gradient.class));
+        Resource cached = light(invalid);
+
+        // incoming without any gradient
+        Resource incomingNone = new Resource(ResourceType.LIGHT).setId("light-id");
+        assertDoesNotThrow(() -> Setters.setResource(incomingNone, cached));
+        assertEquals(5, gradientOf(incomingNone).getPointsCapable());
+        assertTrue(gradientOf(incomingNone).getXyPoints().isEmpty());
+
+        // incoming with a sparse gradient (no points)
+        Resource incomingSparse = light(createGradient(-1, null, 0));
+        assertDoesNotThrow(() -> Setters.setResource(incomingSparse, cached));
+        assertEquals(5, gradientOf(incomingSparse).getPointsCapable());
+        assertTrue(gradientOf(incomingSparse).getXyPoints().isEmpty());
+    }
+
+    @Test
+    void setGradientPointColorXyWithInvalidCachedPointReturnsNull() {
+        Gradient invalid = Objects.requireNonNull(GSON.fromJson(
+                "{\"points\":[{\"color\":{\"xy\":{\"x\":0.1,\"y\":0.5}}},{}],\"points_capable\":5}", Gradient.class));
+        Resource cache = light(invalid);
+
+        // index 0 is valid, but the copy() of the full set hits the invalid second point
+        assertNull(Setters.setGradientPointColorXy(new Resource(ResourceType.LIGHT), new HSBType("120,100,100"), 0,
+                cache));
     }
 }

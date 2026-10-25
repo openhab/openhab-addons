@@ -184,8 +184,8 @@ public class Setters {
             try {
                 gradient.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut)));
                 target.setGradient(gradient.copy());
-            } catch (IndexOutOfBoundsException e) {
-                return null; // channel index beyond light capability => 'not supported' log in caller
+            } catch (IndexOutOfBoundsException | IllegalStateException e) {
+                return null; // beyond light capability or invalid cached point
             }
             return target;
         }
@@ -336,8 +336,13 @@ public class Setters {
         Gradient sourceGradient = source.getGradient();
         if (Objects.nonNull(sourceGradient)) {
             if (Objects.isNull(targetGradient)) {
-                Gradient newGradient = sourceGradient.copy();
-                newGradient.takeOverMissingFields(sourceGradient); // adds the capacity, which copy() omits
+                Gradient newGradient;
+                try {
+                    newGradient = sourceGradient.copy();
+                } catch (IllegalStateException e) {
+                    newGradient = new Gradient(); // invalid cached point: take over capacity only
+                }
+                newGradient.takeOverMissingFields(sourceGradient);
                 target.setGradient(newGradient);
             } else {
                 targetGradient.takeOverMissingFields(sourceGradient);

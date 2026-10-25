@@ -64,13 +64,13 @@ public class Gradient {
             throw new IndexOutOfBoundsException("index:%d, capacity:%d".formatted(index, pointsCapable));
         }
         List<Point> points = this.points;
-        points = points != null ? points : new ArrayList<>(pointsCapable);
+        points = points != null ? new ArrayList<>(points) : new ArrayList<>(pointsCapable);
         double[] xy = pairXy.getXY();
         while (points.size() < pointsCapable) {
             points.add(newPoint(xy));
         }
         points.set(index, newPoint(xy));
-        this.points = points;
+        this.points = points; // readers never see a half-updated list
     }
 
     /**
@@ -84,11 +84,11 @@ public class Gradient {
     }
 
     /**
-     * Creates a deep copy of the current Gradient object. Purges all null fields.
+     * Creates a deep copy of the current Gradient object.
      * 
      * @return a new Gradient object with the same (non null) points
      */
-    public Gradient copy() {
+    public Gradient copy() throws IllegalStateException {
         Gradient result = new Gradient();
         List<Point> points = this.points;
         if (points != null) {
@@ -120,7 +120,11 @@ public class Gradient {
         }
         List<Point> mine = this.points;
         if ((mine == null || mine.isEmpty()) && other.points instanceof List<Point> theirs && !theirs.isEmpty()) {
-            this.points = other.copy().points;
+            try {
+                this.points = other.copy().points;
+            } catch (IllegalStateException e) {
+                // invalid cached point: leave the points unset
+            }
         }
     }
 
