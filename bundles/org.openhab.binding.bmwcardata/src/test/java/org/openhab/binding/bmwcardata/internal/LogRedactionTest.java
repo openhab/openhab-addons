@@ -30,24 +30,24 @@ class LogRedactionTest {
 
     @Test
     void shortensVin() {
-        assertEquals("WBA…2345", LogRedaction.vin(VIN));
+        assertEquals("WBA***2345", LogRedaction.vin(VIN));
         assertEquals("short", LogRedaction.vin("short"));
         assertEquals("null", LogRedaction.vin(null));
     }
 
     @Test
     void shortensVinsInText() {
-        assertEquals("/customers/vehicles/WBA…2345/telematicData?containerId=abc1234567890",
+        assertEquals("/customers/vehicles/WBA***2345/telematicData?containerId=abc1234567890",
                 LogRedaction.vins("/customers/vehicles/" + VIN + "/telematicData?containerId=abc1234567890"));
-        assertEquals("bmw/raw/WBA…2345", LogRedaction.vins("bmw/raw/" + VIN));
-        assertEquals("WBA…2345 and WBA…2345", LogRedaction.vins(VIN + " and " + VIN));
+        assertEquals("bmw/raw/WBA***2345", LogRedaction.vins("bmw/raw/" + VIN));
+        assertEquals("WBA***2345 and WBA***2345", LogRedaction.vins(VIN + " and " + VIN));
     }
 
     @Test
     void hidesCustomerIdInStreamTopic() {
         // the direct stream subscribes to <gcid>/+, so every message topic is <gcid>/<VIN>
-        assertEquals("***/WBA…2345", LogRedaction.topic("6f1a2b3c-0000-1111-2222-333344445555/" + VIN));
-        assertEquals("bmw/raw/WBA…2345", LogRedaction.topic("bmw/raw/" + VIN));
+        assertEquals("***/WBA***2345", LogRedaction.topic("6f1a2b3c-0000-1111-2222-333344445555/" + VIN));
+        assertEquals("bmw/raw/WBA***2345", LogRedaction.topic("bmw/raw/" + VIN));
         assertEquals("bmw/status", LogRedaction.topic("bmw/status"));
     }
 
@@ -76,22 +76,22 @@ class LogRedactionTest {
                 + "\"" + LOCATION + ".longitude\":{\"value\":4.35},"
                 + "\"vehicle.vehicle.travelledDistance\":{\"value\":12345,\"unit\":\"km\"}}}";
         String redacted = LogRedaction.payload(payload);
-        assertEquals("{\"vin\":\"WBA…2345\",\"entityId\":\"***\",\"topic\":\"WBA…2345\",\"data\":{" + "\"" + LOCATION
-                + ".latitude\":{\"value\":\"***\",\"unit\":\"degrees\"}," //
+        assertEquals("{\"vin\":\"WBA***2345\",\"entityId\":\"***\",\"topic\":\"WBA***2345\",\"data\":{" + "\""
+                + LOCATION + ".latitude\":{\"value\":\"***\",\"unit\":\"degrees\"}," //
                 + "\"" + LOCATION + ".longitude\":{\"value\":\"***\"},"
                 + "\"vehicle.vehicle.travelledDistance\":{\"value\":12345,\"unit\":\"km\"}}}", redacted);
     }
 
     @Test
     void redactsVinsInArraysAndMemberNames() {
-        assertEquals("[{\"vin\":\"WBA…2345\"},{\"WBA…2345\":true}]",
+        assertEquals("[{\"vin\":\"WBA***2345\"},{\"WBA***2345\":true}]",
                 LogRedaction.payload("[{\"vin\":\"" + VIN + "\"},{\"" + VIN + "\":true}]"));
     }
 
     @Test
     void redactsTextThatIsNotJson() {
         String redacted = LogRedaction.payload("Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ4In0.c2ln for " + VIN + " {");
-        assertEquals("Bearer *** for WBA…2345 {", redacted);
+        assertEquals("Bearer *** for WBA***2345 {", redacted);
         assertEquals("", LogRedaction.payload(""));
         assertEquals("null", LogRedaction.payload(null));
     }

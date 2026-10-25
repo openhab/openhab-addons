@@ -33,7 +33,6 @@ import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.dto.DeviceCodeResponse;
 import org.openhab.binding.bmwcardata.internal.api.dto.TokenResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

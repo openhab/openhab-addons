@@ -275,7 +275,7 @@ For Things defined in `.things` files, dynamic channels are not stored and are c
 With the log level `TRACE` for `org.openhab.binding.bmwcardata`, the binding logs every request to BMW, every response and every stream message.
 These logs are redacted so they can be shared, e.g. in an issue:
 
-- A VIN is shortened to its first three and last four characters, e.g. `WBA…1234`.
+- A VIN is shortened to its first three and last four characters, e.g. `WBA***1234`.
 - Tokens, codes, the client ID, the customer ID (`gcid`) and the `entityId` are replaced by `***`.
 - The values of the location coordinates are replaced by `***`.
 
