@@ -43,6 +43,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openhab.binding.bmwcardata.internal.MapStorage;
 import org.openhab.binding.bmwcardata.internal.api.Tokens;
+import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.stream.StreamSource;
 import org.openhab.binding.bmwcardata.internal.stream.StreamState;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -65,6 +66,8 @@ import com.google.gson.Gson;
 /**
  * Tests the refresh and retry handling of the {@link BMWCarDataAccountHandler}. The jobs of the handler run on a
  * scheduler controlled by the test, the HTTP client and the OAuth service are mocked.
+ * Tests the refresh and retry handling and the basic data cache of the {@link BMWCarDataAccountHandler}. The jobs of
+ * the handler run on a scheduler controlled by the test, the HTTP client and the OAuth service are mocked.
  *
  * @author Michael Weger - Initial contribution
  */
@@ -79,6 +82,8 @@ class BMWCarDataAccountHandlerTest {
     private static final String TELEMATIC_DATA = """
             {"telematicData":{"vehicle.vehicle.travelledDistance":
              {"value":12345,"unit":"km","timestamp":"2026-10-24T10:00:00Z"}}}""";
+    private static final String BASIC_DATA = """
+            {"brand":"BMW","modelName":"iX xDrive40","isTelematicsCapable":false}""";
 
     /** A job submitted to the scheduler, run by the test. */
     private static class Job {
@@ -235,6 +240,31 @@ class BMWCarDataAccountHandlerTest {
 
         verify(vehicleCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.COMMUNICATION_ERROR)));
         assertEquals(0, pendingJobs(RETRY_DELAY));
+    }
+
+    @Test
+    void basicDataIsFetchedOnceAndThenServedFromTheCache() throws Exception {
+        authorize(false);
+        respond(status(200, BASIC_DATA));
+
+        assertEquals("iX xDrive40", handler.fetchBasicData(VIN).modelName);
+        BasicData cached = handler.fetchBasicData(VIN);
+
+        assertEquals("iX xDrive40", cached.modelName);
+        assertEquals(Boolean.FALSE, cached.isTelematicsCapable);
+        assertEquals(1, requests("/basicData"));
+    }
+
+    @Test
+    void corruptBasicDataInTheCacheFallsBackToTheApi() throws Exception {
+        authorize(false);
+        storage.put("basicData." + VIN, "{not json");
+        respond(status(200, BASIC_DATA));
+
+        assertEquals("iX xDrive40", handler.fetchBasicData(VIN).modelName);
+        // the entry is replaced, so the next fetch needs no request
+        assertEquals("iX xDrive40", handler.fetchBasicData(VIN).modelName);
+        assertEquals(1, requests("/basicData"));
     }
 
     @Test
@@ -396,9 +426,13 @@ class BMWCarDataAccountHandlerTest {
     }
 
     private int telematicRequests() {
+        return requests("/telematicData");
+    }
+
+    private int requests(String pathSuffix) {
         return (int) mockingDetails(httpClient).getInvocations().stream()
                 .filter(invocation -> invocation.getMethod().getName().equals("newRequest")
-                        && invocation.getArgument(0).toString().endsWith("/telematicData"))
+                        && invocation.getArgument(0).toString().endsWith(pathSuffix))
                 .count();
     }
 
