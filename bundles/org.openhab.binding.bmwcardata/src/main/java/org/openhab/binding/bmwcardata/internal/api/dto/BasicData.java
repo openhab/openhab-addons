@@ -32,4 +32,6 @@ public class BasicData {
     public @Nullable String constructionDate;
     public @Nullable Boolean hasSunRoof;
     public @Nullable Boolean hasNavi;
+    // not documented by BMW; read as no telematics only when explicitly false
+    public @Nullable Boolean isTelematicsCapable;
 }

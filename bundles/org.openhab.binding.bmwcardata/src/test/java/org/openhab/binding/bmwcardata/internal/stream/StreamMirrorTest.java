@@ -65,7 +65,7 @@ class StreamMirrorTest {
                 .thenReturn(CompletableFuture.completedFuture(true));
         when(connection.stop()).thenReturn(CompletableFuture.completedFuture(true));
         brokerStateListener = mock(Consumer.class);
-        mirror = new StreamMirror(SETTINGS, connection, Clock.fixed(NOW, ZoneOffset.UTC), brokerStateListener);
+        mirror = new StreamMirror(SETTINGS, connection, Clock.fixed(NOW, ZoneOffset.UTC), false, brokerStateListener);
     }
 
     @Test
@@ -80,13 +80,28 @@ class StreamMirrorTest {
     }
 
     @Test
-    void publishesStreamMessagesUnmodifiedAndRetained() {
+    void publishesStreamMessagesUnmodifiedAndNotRetainedByDefault() {
         when(connection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
 
         mirror.publishMessage("gcid-1/" + VIN, MESSAGE);
 
         // the same bytes as received, not re-serialized
         verify(connection).publish(eq("bmw/raw/" + VIN), ArgumentMatchers.same(MESSAGE), eq(StreamMirror.QOS),
+                eq(false));
+    }
+
+    @Test
+    void publishesStreamMessagesRetainedIfConfigured() {
+        MqttBrokerConnection retainingConnection = mock(MqttBrokerConnection.class);
+        when(retainingConnection.publish(anyString(), any(byte[].class), anyInt(), anyBoolean()))
+                .thenReturn(CompletableFuture.completedFuture(true));
+        when(retainingConnection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
+        StreamMirror retainingMirror = new StreamMirror(SETTINGS, retainingConnection, Clock.fixed(NOW, ZoneOffset.UTC),
+                true, brokerStateListener);
+
+        retainingMirror.publishMessage("gcid-1/" + VIN, MESSAGE);
+
+        verify(retainingConnection).publish(eq("bmw/raw/" + VIN), ArgumentMatchers.same(MESSAGE), eq(StreamMirror.QOS),
                 eq(true));
     }
 

@@ -13,16 +13,19 @@
 package org.openhab.binding.bmwcardata.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants.*;
 
 import java.time.Instant;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -109,12 +112,74 @@ class BMWCarDataVehicleHandlerTest {
     }
 
     @Test
+    void ignoresDataAndRefreshResultsAfterDispose() {
+        handler.dispose();
+
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        handler.refreshSucceeded();
+        handler.refreshFailed("late failure");
+
+        verifyNoInteractions(callback);
+    }
+
+    @Test
+    void derivesPluggedFromChargingPortUntilVehicleReportsIt() {
+        String port = "vehicle.body.chargingPort.status";
+        handler.updateTelematicData(Map.of(port, stringValue("Connected", null, "2026-10-01T10:00:00Z")));
+        verifyState("charge#plugged", OnOffType.ON);
+
+        handler.updateTelematicData(Map.of(port, stringValue("DISCONNECTED", null, "2026-10-01T10:01:00Z")));
+        verifyState("charge#plugged", OnOffType.OFF);
+
+        // other values leave the plug state as it is
+        handler.updateTelematicData(Map.of(port, stringValue("INVALID", null, "2026-10-01T10:02:00Z")));
+        verify(callback, never()).stateUpdated(channel("charge#plugged"), UnDefType.UNDEF);
+
+        handler.updateTelematicData(Map.of("vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged",
+                value(false, null, "2026-10-01T10:03:00Z")));
+        handler.updateTelematicData(Map.of(port, stringValue("CONNECTED", null, "2026-10-01T10:04:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("charge#plugged"), OnOffType.ON);
+    }
+
+    @Test
     void ignoresValuesOlderThanPublishedOnes() {
         handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
         handler.updateTelematicData(Map.of(MILEAGE, value(100, "km", "2026-10-01T09:00:00Z")));
 
         verifyState("range#mileage", QuantityType.valueOf("200 km"));
         verify(callback, never()).stateUpdated(channel("range#mileage"), QuantityType.valueOf("100 km"));
+    }
+
+    @Test
+    void publishesCopiesOnce() {
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        // the stream delivers many messages twice
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+
+        // a new reading with the same value, and another value with the same timestamp, are published
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:05:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, value(201, "km", "2026-10-01T10:05:00Z")));
+        verify(callback, times(2)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+        verifyState("range#mileage", QuantityType.valueOf("201 km"));
+    }
+
+    @Test
+    void publishesCopiesFromStreamAndApiOnce() {
+        // the stream sends numbers as JSON numbers, the REST API as strings
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200", "km", "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200.0", "km", "2026-10-01T10:00:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+
+        String plugged = "vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged";
+        handler.updateTelematicData(Map.of(plugged, value(true, null, "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(plugged, stringValue("true", null, "2026-10-01T10:00:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("charge#plugged"), OnOffType.ON);
+
+        // another unit is another value
+        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200", "mi", "2026-10-01T10:00:00Z")));
+        verifyState("range#mileage", QuantityType.valueOf("200 mi"));
     }
 
     @Test
@@ -130,6 +195,55 @@ class BMWCarDataVehicleHandlerTest {
                 value(520, "m", "2026-10-01T10:05:00Z")));
         verifyState("navigation#altitude", QuantityType.valueOf("520 m"));
         verifyState(CHANNEL_GPS, PointType.valueOf("48.18,11.56,520"));
+    }
+
+    @Test
+    void olderRefreshDoesNotOverwriteNewerStreamDataPublishedMeanwhile() throws Exception {
+        // the refresh is held while publishing its mileage: it has accepted its position, but not published it yet
+        CountDownLatch refreshPublishing = new CountDownLatch(1);
+        CountDownLatch releaseRefresh = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            refreshPublishing.countDown();
+            releaseRefresh.await(10, TimeUnit.SECONDS);
+            return null;
+        }).when(callback).stateUpdated(channel("range#mileage"), QuantityType.valueOf("100 km"));
+        Map<String, TelematicValue> refresh = new LinkedHashMap<>();
+        refresh.put(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z"));
+        refresh.put(LONGITUDE, value(11.56, null, "2026-10-01T10:00:00Z"));
+        refresh.put(MILEAGE, value(100, "km", "2026-10-01T10:00:00Z"));
+        Thread refreshThread = new Thread(() -> handler.updateTelematicData(refresh));
+        Thread streamThread = new Thread(() -> handler.updateTelematicData(Map.of(LATITUDE,
+                value(48.18, null, "2026-10-01T10:05:00Z"), LONGITUDE, value(11.57, null, "2026-10-01T10:05:00Z"))));
+        refreshThread.setDaemon(true);
+        streamThread.setDaemon(true);
+        try {
+            refreshThread.start();
+            assertTrue(refreshPublishing.await(10, TimeUnit.SECONDS));
+            streamThread.start();
+            // the newer stream data has to wait for the refresh; unserialized, it would be published right away
+            waitUntil(() -> streamThread.getState() == Thread.State.BLOCKED || !streamThread.isAlive());
+        } finally {
+            releaseRefresh.countDown();
+        }
+        refreshThread.join(10_000);
+        streamThread.join(10_000);
+        assertFalse(refreshThread.isAlive());
+        assertFalse(streamThread.isAlive());
+
+        ArgumentCaptor<State> location = ArgumentCaptor.forClass(State.class);
+        verify(callback, atLeastOnce()).stateUpdated(eq(channel(CHANNEL_GPS)), location.capture());
+        assertEquals(PointType.valueOf("48.18,11.57"), location.getValue());
+        // the REFRESH cache holds the newer position as well
+        handler.handleCommand(channel(CHANNEL_GPS), RefreshType.REFRESH);
+        verify(callback, times(2)).stateUpdated(channel(CHANNEL_GPS), PointType.valueOf("48.18,11.57"));
+    }
+
+    private static void waitUntil(BooleanSupplier condition) throws InterruptedException {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (!condition.getAsBoolean()) {
+            assertTrue(System.nanoTime() < deadline, "condition not reached within 10 seconds");
+            Thread.sleep(5);
+        }
     }
 
     @Test

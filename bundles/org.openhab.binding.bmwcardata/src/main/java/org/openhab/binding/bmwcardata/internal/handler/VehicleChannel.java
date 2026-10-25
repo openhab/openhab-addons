@@ -152,7 +152,7 @@ public enum VehicleChannel {
             Units.AMPERE),
     PHASES(GROUP_CHARGE, "phases", "vehicle.drivetrain.electricEngine.charging.phaseNumber", Kind.STRING, null),
     CHARGING_METHOD(GROUP_CHARGE, "method", "vehicle.drivetrain.electricEngine.charging.method", Kind.STRING, null),
-    DC_PORT(GROUP_CHARGE, "dc-port", "vehicle.body.chargingPort.status", Kind.STRING, null),
+    PORT(GROUP_CHARGE, "port", "vehicle.body.chargingPort.status", Kind.STRING, null),
     PREDICTED_SOC(GROUP_CHARGE, "predicted-soc", "vehicle.drivetrain.electricEngine.charging.level", Kind.QUANTITY,
             Units.PERCENT),
     MIN_TARGET_SOC(GROUP_CHARGE, "min-target-soc", "vehicle.powertrain.electric.battery.stateOfCharge.targetMin",
@@ -431,6 +431,23 @@ public enum VehicleChannel {
             return null;
         }
         return isUndefined(primitive) ? UnDefType.UNDEF : new StringType(primitive.getAsString().strip());
+    }
+
+    /**
+     * Derives the state of {@link #PLUGGED} from the charging port status, for vehicles that report only the latter.
+     *
+     * @return {@code ON} for {@code CONNECTED}, {@code OFF} for {@code DISCONNECTED}, or {@code null} for other values
+     */
+    static @Nullable State toPluggedState(TelematicValue telematicValue) {
+        JsonPrimitive primitive = toPrimitive(telematicValue);
+        String word = primitive != null ? word(primitive) : null;
+        if ("CONNECTED".equals(word)) {
+            return OnOffType.ON;
+        }
+        if ("DISCONNECTED".equals(word)) {
+            return OnOffType.OFF;
+        }
+        return null;
     }
 
     private @Nullable State toQuantity(JsonPrimitive primitive, @Nullable String unitSymbol) {

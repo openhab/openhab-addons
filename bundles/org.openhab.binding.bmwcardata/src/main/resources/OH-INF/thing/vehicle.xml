@@ -163,7 +163,7 @@
 			</channel>
 			<channel id="phases" typeId="charging-phases"/>
 			<channel id="method" typeId="charging-method"/>
-			<channel id="dc-port" typeId="dc-port"/>
+			<channel id="port" typeId="port"/>
 			<channel id="predicted-soc" typeId="predicted-soc"/>
 			<channel id="min-target-soc" typeId="min-target-soc"/>
 			<channel id="time-to-full" typeId="time-to-full"/>
@@ -741,10 +741,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="dc-port" advanced="true">
+	<channel-type id="port" advanced="true">
 		<item-type>String</item-type>
-		<label>DC Charging Port</label>
-		<description>Whether a DC charging plug is connected</description>
+		<label>Charging Port</label>
+		<description>Whether a charging plug is connected to the charging port</description>
 		<category>PowerOutlet</category>
 		<tags>
 			<tag>Status</tag>
