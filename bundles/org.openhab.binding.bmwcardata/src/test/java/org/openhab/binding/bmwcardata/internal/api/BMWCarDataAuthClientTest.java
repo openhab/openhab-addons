@@ -21,11 +21,11 @@ import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,8 +61,6 @@ class BMWCarDataAuthClientTest {
     static void startServer() throws Exception {
         SERVER.start();
         HTTP_CLIENT.start();
-        // as configured by the handler factory
-        HTTP_CLIENT.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
 
     @AfterAll
@@ -127,11 +125,22 @@ class BMWCarDataAuthClientTest {
 
         assertEquals(PollStatus.PENDING, pollWithError(authorization, 403, "authorization_pending").status());
         assertEquals(PollStatus.SLOW_DOWN, pollWithError(authorization, 400, "slow_down").status());
-        assertEquals(PollStatus.EXPIRED, pollWithError(authorization, 401, "expired_token").status());
         assertEquals(PollStatus.DENIED, pollWithError(authorization, 403, "access_denied").status());
 
-        SERVER.stubFor(post(TOKEN_PATH).willReturn(unauthorized().withBody("{\"error\":\"invalid_client\"}")));
-        assertThrows(BMWCarDataException.class, () -> client.pollDeviceToken(authorization));
+        // BMW answers an expired code, an invalid client and an account pending activation with 401. Without
+        // WWW-Authenticate header, the HTTP client keeps only the status, so the error code is lost: the account
+        // handler polls again and starts a new authorization once the code has expired by its own clock.
+        for (String error : List.of("expired_token", "invalid_client")) {
+            BMWCarDataException e = assertThrows(BMWCarDataException.class,
+                    () -> pollWithError(authorization, 401, error));
+            assertEquals(401, e.getHttpStatus());
+            assertFalse(e instanceof BMWCarDataAuthException);
+        }
+
+        // with the header, the HTTP client returns the response and its error code
+        SERVER.stubFor(post(TOKEN_PATH).willReturn(
+                unauthorized().withHeader("WWW-Authenticate", "Bearer").withBody("{\"error\":\"expired_token\"}")));
+        assertEquals(PollStatus.EXPIRED, client.pollDeviceToken(authorization).status());
     }
 
     @Test

@@ -198,11 +198,15 @@ public class BMWCarDataApi {
             Thread.currentThread().interrupt();
             throw new BMWCarDataException("Interrupted", e);
         } catch (ExecutionException e) {
+            if (HttpResponses.isUnauthorizedResponse(e)) {
+                throw new BMWCarDataAuthException("Access token rejected", 401);
+            }
             throw new BMWCarDataException("Request to BMW CarData failed: " + e.getMessage(), e);
         } catch (TimeoutException e) {
             throw new BMWCarDataException("Request to BMW CarData timed out", e);
         }
         int status = response.getStatus();
+        // a 401 with WWW-Authenticate header, e.g. Bearer error="invalid_token", is returned as a normal response
         if (status == 401) {
             throw new BMWCarDataAuthException("Access token rejected", status);
         }
