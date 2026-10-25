@@ -381,7 +381,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         String password = this.password;
 
         if ((username.isEmpty()) || (password.isEmpty())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.AUTHORIZATION_PENDING,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "offline.pairing-is-not-configured-yet");
             return;
         }
