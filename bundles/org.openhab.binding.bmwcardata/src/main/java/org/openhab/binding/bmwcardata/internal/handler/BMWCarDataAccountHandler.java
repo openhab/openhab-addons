@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataApi;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthClient;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthClient.DeviceAuthorization;
@@ -526,7 +527,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                 return;
             }
         }
-        logger.trace("Ignoring stream data of a vehicle without thing");
+        if (logger.isTraceEnabled()) {
+            logger.trace("Ignoring stream data of vehicle {} without thing", LogRedaction.vin(vin));
+        }
     }
 
     @Override
