@@ -177,5 +177,5 @@ public class MyUplinkBindingConstants {
 
     public static final String PARAMETER_NAME_WRITE_COMMAND = "writeCommand";
     public static final String PARAMETER_NAME_VALIDATION_REGEXP = "validationExpression";
-    public static final String DEFAULT_VALIDATION_EXPRESSION = "[0-9]+";
+    public static final String DEFAULT_VALIDATION_EXPRESSION = "-?[0-9]+";
 }
