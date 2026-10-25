@@ -454,8 +454,8 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                                 if (octets[0] == (byte) 0x9f && octets[1] == 0x78 && octets[2] == 0x04) {
                                     // floating point value
                                     Unit<?> channelUnit = channelConfig.unit;
-                                    float floatValue = Float.intBitsToFloat(
-                                            octets[3] << 24 | octets[4] << 16 | octets[5] << 8 | octets[6]);
+                                    float floatValue = Float.intBitsToFloat((octets[3] & 0xFF) << 24
+                                            | (octets[4] & 0xFF) << 16 | (octets[5] & 0xFF) << 8 | (octets[6] & 0xFF));
                                     state = channelUnit == null ? new DecimalType(floatValue)
                                             : new QuantityType<>(floatValue, channelUnit);
                                 } else {

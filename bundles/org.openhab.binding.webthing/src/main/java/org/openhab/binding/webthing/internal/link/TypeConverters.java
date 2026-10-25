@@ -24,7 +24,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
@@ -74,7 +73,7 @@ class TypeConverters {
     private static final class ColorTypeConverter implements TypeConverter {
 
         @Override
-        public Command toStateCommand(Object propertyValue) {
+        public State toState(Object propertyValue) {
             var value = propertyValue.toString();
             if (!value.contains("#")) {
                 value = "#" + value;
@@ -101,7 +100,7 @@ class TypeConverters {
     private static final class SwitchTypeConverter implements TypeConverter {
 
         @Override
-        public Command toStateCommand(Object propertyValue) {
+        public State toState(Object propertyValue) {
             return OnOffType.from(toBoolean(propertyValue));
         }
 
@@ -114,7 +113,7 @@ class TypeConverters {
     private static final class ContactTypeConverter implements TypeConverter {
 
         @Override
-        public Command toStateCommand(Object propertyValue) {
+        public State toState(Object propertyValue) {
             return toBoolean(propertyValue) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
         }
 
@@ -127,7 +126,7 @@ class TypeConverters {
     private static final class DimmerTypeConverter implements TypeConverter {
 
         @Override
-        public Command toStateCommand(Object propertyValue) {
+        public State toState(Object propertyValue) {
             return new PercentType(toDecimal(propertyValue));
         }
 
@@ -140,7 +139,7 @@ class TypeConverters {
     private static final class NumberTypeConverter implements TypeConverter {
 
         @Override
-        public Command toStateCommand(Object propertyValue) {
+        public State toState(Object propertyValue) {
             return new DecimalType(toDecimal(propertyValue));
         }
 
@@ -153,7 +152,7 @@ class TypeConverters {
     private static final class IntegerTypeConverter implements TypeConverter {
 
         @Override
-        public Command toStateCommand(Object propertyValue) {
+        public State toState(Object propertyValue) {
             return new DecimalType(toDecimal(propertyValue));
         }
 
@@ -167,7 +166,7 @@ class TypeConverters {
 
         @SuppressWarnings("unchecked")
         @Override
-        public Command toStateCommand(Object propertyValue) {
+        public State toState(Object propertyValue) {
             String textValue = propertyValue.toString();
             if (propertyValue instanceof Collection collection) {
                 textValue = collection.stream()

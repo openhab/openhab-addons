@@ -74,8 +74,9 @@
 		</parameter>
 		<parameter name="postCommand" type="boolean">
 			<label>Is Command</label>
-			<description>If the received MQTT value should not only update the state of linked items, but command them, enable
-				this option.</description>
+			<description>Process the received MQTT value as a command instead of a state update. Profiles that react only to
+				state updates, such as timestamp-update and timestamp-change, do not process incoming values when this option is
+				enabled.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -91,14 +92,14 @@
 		</parameter>
 
 		<parameter name="on" type="text">
-			<label>Custom On/Open Value</label>
-			<description>A number (like 1, 10) or a string (like "enabled") that is additionally recognised as on/open state. You
-				can use this parameter for a second keyword, next to ON (OPEN respectively on a Contact).</description>
+			<label>Custom On Value</label>
+			<description>A number (like 1, 10) or a string (like "enabled") that is additionally recognised as on state. You can
+				use this parameter for a second keyword, next to ON.</description>
 		</parameter>
 		<parameter name="off" type="text">
-			<label>Custom Off/Closed Value</label>
-			<description>A number (like 0, -10) or a string (like "disabled") that is additionally recognised as off/closed
-				state. You can use this parameter for a second keyword, next to OFF (CLOSED respectively on a Contact).</description>
+			<label>Custom Off Value</label>
+			<description>A number (like 0, -10) or a string (like "disabled") that is additionally recognised as off state. You
+				can use this parameter for a second keyword, next to OFF.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

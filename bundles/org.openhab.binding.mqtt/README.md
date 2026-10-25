@@ -67,7 +67,9 @@ Additionally the following parameters can be set:
 - **protocol**: The protocol used for communicating with the broker (TCP, WEBSOCKETS). Defaults to TCP.
 - **webSocketPath**: WebSocket path for the broker, e.g. /mqtt. Defaults to root. This only applies when protocol is WEBSOCKETS.
 - **mqttVersion**: The MQTT version used for communicating with the broker (V3, V5). Defaults to V3.
-- **qos**: Quality of Service. Can be 0, 1 or 2. Please read the MQTT specification for details. Defaults to 0.
+- **qos**: Quality of Service requested for subscriptions and used as the default for messages published through this broker connection.
+  Generic channels can override it for messages they publish.
+  Can be 0, 1 or 2. Please read the MQTT specification for details. Defaults to 0.
 - **clientID**: Use a fixed client ID. Defaults to empty which means a client ID is generated for this connection.
 - **cleanSessionStart**: Clear the old session at connection start. Defaults to true. False only makes sense with a fixed client ID.
 
@@ -157,20 +159,24 @@ You can add the following channels:
 - **image**: This channel handles binary images in common java supported formats (bmp,jpg,png).
 - **datetime**: This channel handles date/time values.
 - **rollershutter**: This channel is for rollershutters.
+- **player**: This channel is for media players. Each command (play/pause, next/previous, rewind/fastforward) can be mapped to an individual string.
 - **trigger**: This channel emits the received MQTT payload as a channel event without updating an Item state.
 
 ## Channel Configuration
 
-- **stateTopic**: The MQTT topic that represents the state of the Thing. This can be empty, the Thing channel will be a state-less trigger then. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics.
+- **stateTopic**: The MQTT topic that represents the state of the Thing. This is required for Contact and trigger channels. Other channel types can omit it when a command topic is configured. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics.
 - **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
 - **transformationPatternOut**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
-- **commandTopic**: The MQTT topic that commands are send to. This can be empty, the Thing channel will be read-only then. Transformations are not applied for sending data.
+- **commandTopic**: The MQTT topic that commands are sent to. If empty, the channel is read-only. Contact channels ignore this option.
 - **formatBeforePublish**: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported. Note that this format does not apply to the special on/off command values for dimmer channels, or up/down/stop command values for rollershutter channels.
-- **postCommand**: If `true`, the received MQTT value will not only update the state of linked items, but command it.
+- **postCommand**: If `true`, the received MQTT value is processed as a command instead of a state update.
+  Profiles that react only to state updates, such as `timestamp-update` and `timestamp-change`, do not process incoming values when this option is enabled.
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor.
 - **retained**: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time.
-- **qos**: QoS of this channel. Overrides the connection QoS (defined in broker connection).
+- **qos**: QoS used when publishing messages from this channel to its `commandTopic`.
+  It does not affect the subscription to the `stateTopic`, which uses the broker connection QoS.
+  Defaults to the broker connection QoS.
 - **trigger**: If `true`, a received MQTT value that is valid for the selected channel type triggers a channel event instead of updating a state.
   This typed trigger behavior remains supported, but for untyped trigger events the dedicated `trigger` channel type is preferred.
   Image channels always remain state channels because their payload is binary.
@@ -229,12 +235,10 @@ You can connect this channel to a Rollershutter or Dimmer item.
 - **on**: An optional number (like 1, 10) or a string (like "ON"/"Open") that is recognized as on/open state.
 - **off**: An optional number (like 0, -10) or a string (like "OFF"/"Close") that is recognized as off/closed state.
 
-The contact channel by default recognizes `"OPEN"` and `"CLOSED"`. You can connect this channel to a Contact item.
+The contact channel by default recognizes `"OPEN"` and `"CLOSED"`. You can connect this channel to a Contact item. It only reports states; `commandTopic` and `postCommand` have no effect.
 The switch channel by default recognizes `"ON"` and `"OFF"`. You can connect this channel to a Switch item.
 
-If **on** and **off** are not configured it publishes the strings mentioned before respectively.
-
-You can connect this channel to a Contact or Switch item.
+If **on** and **off** are not configured, the switch channel publishes `"ON"` and `"OFF"` by default.
 
 ### Channel Type "color"
 
@@ -306,6 +310,33 @@ If **on**, **off**, or **stop** are not defined, an explicit 0 or 100 will be se
 Note that **formatBeforePublish** will be ignored for these values, in case your device uses a vastly different format for these special commands than it does for number values.
 
 You can connect this channel to a Rollershutter or Dimmer item.
+
+### Channel Type "player"
+
+You can connect this channel to a Player item.
+
+- **play**: An optional string (like "Start") that is sent for the `PLAY` command and recognised as the `PLAY` state when received. Defaults to `PLAY`.
+- **pause**: An optional string (like "Halt") that is sent for the `PAUSE` command and recognised as the `PAUSE` state when received. Defaults to `PAUSE`.
+- **next**: An optional string (like "Skip") that is sent for the `NEXT` command and recognised as the `NEXT` command when received. Defaults to `NEXT`.
+- **previous**: An optional string (like "Back") that is sent for the `PREVIOUS` command and recognised as the `PREVIOUS` command when received. Defaults to `PREVIOUS`.
+- **rewind**: An optional string (like "RW") that is sent for the `REWIND` command and recognised as the `REWIND` state when received. Defaults to `REWIND`.
+- **fastforward**: An optional string (like "FF") that is sent for the `FASTFORWARD` command and recognised as the `FASTFORWARD` state when received. Defaults to `FASTFORWARD`.
+
+Note that **formatBeforePublish** will be ignored for these values.
+Since `NEXT` and `PREVIOUS` are commands without a state, a received `NEXT`/`PREVIOUS` message is sent as a command to the linked item instead of updating its state.
+
+Example (the BLE remote from [openhab-core#4972](https://github.com/openhab/openhab-core/issues/4972)):
+
+```java
+Thing mqtt:topic:bleremote "BLE Remote" (mqtt:broker:mybroker) {
+    Channels:
+        Type player : control "Control" [ commandTopic="ble/remote/set", play="PLAY", pause="PAUSE", next="NEXT", previous="PREV" ]
+}
+```
+
+```java
+Player BLERemoteControl "BLE Remote" { channel="mqtt:topic:bleremote:control" }
+```
 
 ## Rule Actions
 
@@ -452,7 +483,6 @@ Default pattern applied for each type:
 | **string**        | String                             | "%s"                                        |                                                                                                                        |
 | **number**        | BigDecimal                         | "%f"                                        | The default will remove trailing zeros after the decimal point.                                                        |
 | **dimmer**        | BigDecimal                         | "%f"                                        | The default will remove trailing zeros after the decimal point.                                                        |
-| **contact**       | String                             | --                                          | No pattern supported. Always **on** and **off** strings.                                                               |
 | **switch**        | String                             | --                                          | No pattern supported. Always **on** and **off** strings.                                                               |
 | **colorRGB**      | BigDecimal, BigDecimal, BigDecimal | "%1$d,%2$d,%3$d"                            | Parameters are **red**, **green** and **blue** components.                                                             |
 | **colorHSB**      | BigDecimal, BigDecimal, BigDecimal | "%1$d,%2$d,%3$d"                            | Parameters are **hue**, **saturation** and **brightness** components.                                                  |
@@ -460,6 +490,7 @@ Default pattern applied for each type:
 | **image**         | --                                 | --                                          | No publishing supported.                                                                                               |
 | **datetime**      | ZonedDateTime                      | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.                                                                         |
 | **rollershutter** | String                             | "%s"                                        | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.                               |
+| **player**        | String                             | --                                          | No pattern supported. Always the **play**, **pause**, **next**, **previous**, **rewind** and **fastforward** strings.  |
 
 Any outgoing value transformation will **always** result in a **string** value.
 

@@ -153,10 +153,12 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
             final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
             ChannelBuilder channelBuilder = null;
 
-            boolean triggerChannel = channelConfig.trigger
-                    || MqttBindingConstants.TRIGGER.equals(channelTypeUID.getId());
-            if (channelConfig.stateTopic.isBlank() && (triggerChannel || channelConfig.commandTopic.isBlank())) {
-                String requiredTopics = triggerChannel ? "stateTopic" : "stateTopic or commandTopic";
+            String channelTypeId = channelTypeUID.getId();
+            boolean contactChannel = MqttBindingConstants.CONTACT.equals(channelTypeId);
+            boolean triggerChannel = channelConfig.trigger || MqttBindingConstants.TRIGGER.equals(channelTypeId);
+            if (channelConfig.stateTopic.isBlank()
+                    && (triggerChannel || contactChannel || channelConfig.commandTopic.isBlank())) {
+                String requiredTopics = triggerChannel || contactChannel ? "stateTopic" : "stateTopic or commandTopic";
                 logger.warn("Channel '{}' must define {}", channel.getUID(), requiredTopics);
                 configErrors.add(channel.getUID());
                 continue;
@@ -183,9 +185,9 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 }
             }
 
-            String channelTypeId = channelTypeUID.getId();
-            boolean shouldBeTrigger = MqttBindingConstants.TRIGGER.equals(channelTypeId) || (channelConfig.trigger
-                    && channelConfig.commandTopic.isBlank() && !MqttBindingConstants.IMAGE.equals(channelTypeId));
+            boolean shouldBeTrigger = MqttBindingConstants.TRIGGER.equals(channelTypeId)
+                    || (channelConfig.trigger && (contactChannel || channelConfig.commandTopic.isBlank())
+                            && !MqttBindingConstants.IMAGE.equals(channelTypeId));
             ChannelKind expectedKind = shouldBeTrigger ? ChannelKind.TRIGGER : ChannelKind.STATE;
             if (channelBuilder == null && channel.getKind() != expectedKind) {
                 channelBuilder = ChannelBuilder.create(channel);
@@ -201,8 +203,8 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 Value value = ValueFactory.createValueState(channelConfig, channelTypeUID.getId());
                 ChannelState channelState = createChannelState(channelConfig, channel.getUID(), value);
                 channelStateByChannelUID.put(channel.getUID(), channelState);
-                StateDescription description = value.createStateDescription(channelConfig.commandTopic.isBlank())
-                        .build().toStateDescription();
+                StateDescription description = value.createStateDescription(channelState.isReadOnly()).build()
+                        .toStateDescription();
                 if (description != null) {
                     stateDescProvider.setDescription(channel.getUID(), description);
                 }
