@@ -818,8 +818,7 @@ class BiancaHandlerTest {
     void catalogFailureDoesNotInterruptLocalMonitoringAndRefreshIsRateLimited() throws Exception {
         handler.thingUpdated(controlThing());
         nextRead().complete(controlSnapshot(1, 1));
-        var request = catalogReads.poll(10, TimeUnit.SECONDS);
-        assertNotNull(request);
+        var request = nextCatalogRead();
         request.completeExceptionally(new CandyProtocolException(TRANSPORT));
         flush();
         assertEquals(ThingStatus.ONLINE, status.get().getStatus());
@@ -923,8 +922,7 @@ class BiancaHandlerTest {
         handler.refreshPrograms();
         flush();
         assertEquals("LOADING", handler.getCatalogStatus());
-        var request = catalogReads.poll(10, TimeUnit.SECONDS);
-        assertNotNull(request);
+        var request = nextCatalogRead();
         request.completeExceptionally(new CandyProtocolException(TRANSPORT));
         flush();
         assertEquals("FAILED", handler.getCatalogStatus());
@@ -950,8 +948,7 @@ class BiancaHandlerTest {
     private void prepareControls() throws Exception {
         handler.thingUpdated(controlThing());
         nextRead().complete(controlSnapshot(1, 1));
-        var request = catalogReads.poll(10, TimeUnit.SECONDS);
-        assertNotNull(request);
+        var request = nextCatalogRead();
         Map<String, String> parameters = Map.of("selector_position", "1", "pr_code", "65", "default_temperature", "60",
                 "default_spin_speed", "1000", "minimum_soil_level", "1", "maximum_soil_level", "3",
                 "default_soil_level", "3", "steam", "5", "dry", "0");
@@ -1009,6 +1006,13 @@ class BiancaHandlerTest {
 
     private CompletableFuture<List<String>> nextAccountRead() throws Exception {
         var request = accountReads.poll(10, TimeUnit.SECONDS);
+        assertNotNull(request);
+        flush();
+        return request;
+    }
+
+    private CompletableFuture<List<Program>> nextCatalogRead() throws Exception {
+        var request = catalogReads.poll(10, TimeUnit.SECONDS);
         assertNotNull(request);
         flush();
         return request;
