@@ -48,7 +48,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
-import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
 import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.test.java.JavaTest;
 
@@ -102,7 +101,7 @@ class AwattarApiTest extends JavaTest {
     }
 
     @Test
-    void testDeUrl() throws AwattarApiException {
+    void testDeUrl() throws MarketPriceApiException {
         api.getData();
 
         verify(httpClientMock, times(1))
@@ -110,7 +109,7 @@ class AwattarApiTest extends JavaTest {
     }
 
     @Test
-    void testAtUrl() throws AwattarApiException {
+    void testAtUrl() throws MarketPriceApiException {
         config.country = "AT";
         api = new AwattarApi(httpClientMock, timeProviderMock, config);
 
@@ -130,7 +129,7 @@ class AwattarApiTest extends JavaTest {
     }
 
     @Test
-    void testPricesRetrieval() throws AwattarApiException {
+    void testPricesRetrieval() throws MarketPriceApiException {
         SortedSet<AwattarPrice> prices = api.getData();
 
         assertThat(prices, hasSize(72));
@@ -147,7 +146,7 @@ class AwattarApiTest extends JavaTest {
         when(contentResponseMock.getContentAsString()).thenReturn(null);
         when(contentResponseMock.getStatus()).thenReturn(HttpStatus.OK_200);
 
-        AwattarApiException thrown = assertThrows(AwattarApiException.class, () -> api.getData());
+        MarketPriceApiException thrown = assertThrows(MarketPriceApiException.class, () -> api.getData());
         assertThat(thrown.getMessage(), is("@text/error.empty.data"));
     }
 
@@ -155,7 +154,7 @@ class AwattarApiTest extends JavaTest {
     void testPricesReturnNot200() {
         when(contentResponseMock.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
 
-        AwattarApiException thrown = assertThrows(AwattarApiException.class, () -> api.getData());
-        assertThat(thrown.getMessage(), is("@text/warn.awattar.statuscode400"));
+        MarketPriceApiException thrown = assertThrows(MarketPriceApiException.class, () -> api.getData());
+        assertThat(thrown.getMessage(), is("@text/warn.awattar.statuscode [\"400\"]"));
     }
 }
