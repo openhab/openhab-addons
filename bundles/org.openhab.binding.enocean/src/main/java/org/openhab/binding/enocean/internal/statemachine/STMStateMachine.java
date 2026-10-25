@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.statemachine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -48,11 +49,14 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
     private S prevState;
     private @Nullable String storedChannel;
     private @Nullable Command storedCommand;
+    private int expectedRuntime;
+    private boolean stopRequested;
 
-    private @Nullable STMWatchdog<A, S> watchdog;
+    private final List<STMWatchdog<A, S>> watchdogs = new ArrayList<>();
     private @Nullable Consumer<S> watchdogTimeoutCallback;
     private @Nullable ScheduledFuture<?> watchdogFuture;
     private long stateGeneration;
+    private boolean disposed;
 
     protected @Nullable ScheduledFuture<?> responseFuture = null;
 
@@ -97,13 +101,15 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
 
     /**
      * Registers a watchdog that applies a timeout action when a supervised state is not left in time.
+     * <p>
+     * If several watchdogs supervise the same state, the first registered one is used.
      *
      * @param watchdog the supervised states, the timeout action and the timeout
      * @param onTimeout invoked right before the timeout action is applied, with the state that timed out
      * @return this state machine for fluent configuration
      */
     public synchronized STMStateMachine<A, S> registerWatchdog(STMWatchdog<A, S> watchdog, Consumer<S> onTimeout) {
-        this.watchdog = watchdog;
+        this.watchdogs.add(watchdog);
         this.watchdogTimeoutCallback = onTimeout;
         return this;
     }
@@ -112,7 +118,8 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
      * Cancels a pending watchdog. The state machine must not be used afterwards.
      */
     public synchronized void dispose() {
-        this.watchdog = null;
+        this.disposed = true;
+        this.watchdogs.clear();
         cancelWatchdog();
     }
 
@@ -200,19 +207,21 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
     private void armWatchdog() {
         cancelWatchdog();
         stateGeneration++;
-        STMWatchdog<A, S> localWatchdog = watchdog;
-        if (localWatchdog != null && localWatchdog.states().contains(state)) {
-            S watchedState = state;
-            long generation = stateGeneration;
-            watchdogFuture = scheduler.schedule(() -> watchdogExpired(watchedState, generation),
-                    localWatchdog.timeoutMs(), TimeUnit.MILLISECONDS);
+        for (STMWatchdog<A, S> candidate : watchdogs) {
+            if (candidate.states().contains(state)) {
+                S watchedState = state;
+                long generation = stateGeneration;
+                watchdogFuture = scheduler.schedule(
+                        () -> watchdogExpired(watchedState, generation, candidate.timeoutAction()),
+                        candidate.timeoutMs(), TimeUnit.MILLISECONDS);
+                return;
+            }
         }
     }
 
-    private synchronized void watchdogExpired(S watchedState, long generation) {
-        STMWatchdog<A, S> localWatchdog = watchdog;
+    private synchronized void watchdogExpired(S watchedState, long generation, A timeoutAction) {
         // a timer that fired while the state was being left must not reset the new state
-        if (localWatchdog == null || state != watchedState || generation != stateGeneration) {
+        if (disposed || state != watchedState || generation != stateGeneration) {
             return;
         }
         Consumer<S> callback = watchdogTimeoutCallback;
@@ -221,7 +230,7 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
         }
         // the abandoned movement must not leave a request that a later calibration would execute
         clearStoredCommand();
-        apply(localWatchdog.timeoutAction());
+        apply(timeoutAction);
     }
 
     /**
@@ -278,5 +287,38 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
     public synchronized void clearStoredCommand() {
         this.storedChannel = null;
         this.storedCommand = null;
+    }
+
+    /**
+     * Remembers the movement requested from the device and forgets an earlier stop request.
+     *
+     * @param expectedRuntime the runtime the device is expected to report, in the unit of the device feedback
+     */
+    public synchronized void startMovement(int expectedRuntime) {
+        this.expectedRuntime = expectedRuntime;
+        this.stopRequested = false;
+    }
+
+    /**
+     * Remembers that the running movement was stopped on purpose.
+     */
+    public synchronized void requestStop() {
+        this.stopRequested = true;
+    }
+
+    /**
+     * Gets the runtime of the movement requested last.
+     *
+     * @return the expected runtime, or 0 if unknown
+     */
+    public synchronized int getExpectedRuntime() {
+        return expectedRuntime;
+    }
+
+    /**
+     * Tells whether the movement requested last was stopped on purpose.
+     */
+    public synchronized boolean isStopRequested() {
+        return stopRequested;
     }
 }

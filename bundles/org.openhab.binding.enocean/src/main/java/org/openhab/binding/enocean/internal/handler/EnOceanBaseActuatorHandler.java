@@ -449,9 +449,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         for (Object action : smProvider.getRequiredCallbackActions(getThing())) {
             stm.register((Enum) action, this::processStoredCommand);
         }
-        STMWatchdog watchdog = smProvider.getWatchdog(getThing());
-        if (watchdog != null) {
-            stm.registerWatchdog(watchdog, this::onWatchdogTimeout);
+        for (Object watchdog : smProvider.getWatchdogs(getThing())) {
+            stm.registerWatchdog((STMWatchdog) watchdog, this::onWatchdogTimeout);
         }
         return stm;
     }

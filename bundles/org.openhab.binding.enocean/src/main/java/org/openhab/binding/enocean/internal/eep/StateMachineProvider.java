@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -82,12 +83,12 @@ public interface StateMachineProvider<A extends Enum<A>, S extends Enum<S>> {
     S getStateOnStartup(@Nullable S persistedState);
 
     /**
-     * Gets the watchdog that supervises states in which the state machine waits for feedback from the device.
+     * Gets the watchdogs that supervise states in which the state machine waits for feedback from the device.
      *
      * @param thing the Thing to read configuration from
-     * @return the watchdog, or null if no state needs supervision
+     * @return the watchdogs, empty if no state needs supervision
      */
-    default @Nullable STMWatchdog<A, S> getWatchdog(Thing thing) {
-        return null;
+    default List<STMWatchdog<A, S>> getWatchdogs(Thing thing) {
+        return List.of();
     }
 }

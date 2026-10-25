@@ -594,6 +594,21 @@ Any other state, for example a movement that was running at shutdown, is replace
 Configure the FAM14 with the PCT14 tool: add the FSB14 to the feedback list and set the operating mode to 7.
 For FSB14 addresses > 126, a bus connection (FAM14/FGW14-USB) is required as feedback is not sent via radio.
 
+### Operation with Wall Switches
+
+A wall switch acts directly on the FSB14 and is not seen by the binding.
+The binding follows such a movement through the feedback of the FSB14: it reports every start, every stop with the driven time and the reaching of an end position.
+The position channel is updated from the reported driven time, and the state machine is in the state MOVEMENT_MANUAL_UP or MOVEMENT_MANUAL_DOWN while the FSB14 is moving and no openHAB command is active.
+openHAB commands are ignored in this state, like in any other moving state.
+
+The slats are not adjusted automatically after a movement started or interrupted with a wall switch, and the value of the dimmer channel is not changed.
+This also applies when a movement requested by openHAB is interrupted with a wall switch.
+A movement stopped with a STOP command from openHAB is still followed by the slat adjustment.
+
+The FSB14 reports the end position only after the run time set at the device has elapsed.
+A movement started with a wall switch therefore stays in MOVEMENT_MANUAL_* until then, and for at most five minutes.
+After that time without feedback, the state machine is set to INVALID.
+
 ### Missing Feedback
 
 The state machine waits for the feedback of the FSB14 during every movement started by openHAB.
