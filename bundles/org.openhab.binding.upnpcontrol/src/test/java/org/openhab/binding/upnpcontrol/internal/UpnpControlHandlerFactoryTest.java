@@ -50,6 +50,7 @@ public class UpnpControlHandlerFactoryTest {
 
     private static final String ROOT_UDN = "a765b19b-059b-1a35-0080-000678efac3f";
     private static final String RENDERER_UDN = "7502937b-e137-1685-0080-000678efac3f";
+    private static final String THING_KEY = "upnpcontrol:upnprenderer:test";
 
     private @NonNullByDefault({}) @Mock UpnpIOService upnpIOService;
     private @NonNullByDefault({}) @Mock UpnpService upnpService;
@@ -75,27 +76,28 @@ public class UpnpControlHandlerFactoryTest {
         // like an AV receiver: a root device without services, with an embedded media renderer
         renderer = device(RENDERER_UDN);
         root = device(ROOT_UDN, renderer);
+        when(handler.getUDN()).thenReturn(RENDERER_UDN);
     }
 
     @Test
     public void handlerIsConfiguredFromEmbeddedDeviceKnownToTheRegistry() {
         when(registry.getRemoteDevice(new UDN(RENDERER_UDN), false)).thenReturn(renderer);
 
-        factory.addHandler(RENDERER_UDN, handler);
+        factory.addHandler(THING_KEY, handler);
 
         verify(handler).updateDeviceConfig(renderer);
     }
 
     @Test
     public void handlerForUnknownDeviceIsNotConfigured() {
-        factory.addHandler(RENDERER_UDN, handler);
+        factory.addHandler(THING_KEY, handler);
 
         verify(handler, never()).updateDeviceConfig(any());
     }
 
     @Test
     public void addedRootDeviceConfiguresHandlerOfEmbeddedDeviceOnce() {
-        factory.addHandler(RENDERER_UDN, handler);
+        factory.addHandler(THING_KEY, handler);
 
         factory.remoteDeviceAdded(registry, root);
 
@@ -104,11 +106,30 @@ public class UpnpControlHandlerFactoryTest {
 
     @Test
     public void updatedRootDeviceConfiguresHandlerOfEmbeddedDeviceOnce() {
-        factory.addHandler(RENDERER_UDN, handler);
+        factory.addHandler(THING_KEY, handler);
 
         factory.remoteDeviceUpdated(registry, root);
 
         verify(handler, times(1)).updateDeviceConfig(renderer);
+    }
+
+    @Test
+    public void registryEventsMatchTheCurrentUdnOfTheHandler() {
+        when(handler.getUDN()).thenReturn("wrong-udn");
+        factory.addHandler(THING_KEY, handler);
+
+        // the UDN is corrected in the thing configuration
+        when(handler.getUDN()).thenReturn(RENDERER_UDN);
+        factory.remoteDeviceUpdated(registry, root);
+
+        verify(handler, times(1)).updateDeviceConfig(renderer);
+    }
+
+    @Test
+    public void handlerGetsDeviceLookupForLaterUdnChanges() {
+        factory.addHandler(THING_KEY, handler);
+
+        verify(handler).setDeviceLookup(any());
     }
 
     private static RemoteDevice device(String udn, RemoteDevice... embeddedDevices) {
