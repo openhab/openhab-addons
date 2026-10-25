@@ -30,7 +30,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.api.AwattarApi;
-import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
+import org.openhab.binding.awattar.internal.api.EnergyChartsApi;
+import org.openhab.binding.awattar.internal.api.MarketPriceApi;
+import org.openhab.binding.awattar.internal.api.MarketPriceApiException;
 import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.CurrencyUnits;
@@ -47,8 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AwattarBridgeHandler} is responsible for retrieving data from the
- * aWATTar API via the {@link AwattarApi}.
+ * The {@link AwattarBridgeHandler} retrieves data through the selected {@link MarketPriceApi}.
  *
  * The API provides hourly prices for the current day and, starting from 14:00,
  * hourly prices for the next day.
@@ -72,7 +73,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     // This cache stores price data for up to two days
     private @Nullable SortedSet<AwattarPrice> prices;
 
-    private @Nullable AwattarApi awattarApi;
+    private @Nullable MarketPriceApi priceApi;
 
     public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, AwattarTimeProvider timeProvider) {
         super(thing);
@@ -86,12 +87,17 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         AwattarBridgeConfiguration config = getConfigAs(AwattarBridgeConfiguration.class);
 
         try {
-            awattarApi = new AwattarApi(httpClient, timeProvider, config);
+            priceApi = switch (config.provider) {
+                case "awattar" -> new AwattarApi(httpClient, timeProvider, config);
+                case "energy-charts" -> new EnergyChartsApi(httpClient, timeProvider, config);
+                default -> throw new IllegalArgumentException("Unsupported provider");
+            };
 
             dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, DATA_REFRESH_INTERVAL * 1000L,
                     TimeUnit.MILLISECONDS);
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.unsupported.country");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.unsupported.provider.or.country");
         }
     }
 
@@ -120,14 +126,19 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         try {
             // Method is private and only called when dataRefresher is initialized.
             // DataRefresher is initialized after successful creation of AwattarApi.
-            prices = awattarApi.getData();
+            MarketPriceApi localPriceApi = priceApi;
+            if (localPriceApi == null) {
+                return;
+            }
+            SortedSet<AwattarPrice> refreshedPrices = localPriceApi.getData();
+            prices = refreshedPrices;
 
             TimeSeries netMarketSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
             TimeSeries netTotalSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
 
             Unit<?> priceUnit = getPriceUnit();
 
-            for (AwattarPrice price : prices) {
+            for (AwattarPrice price : refreshedPrices) {
                 Instant timestamp = Instant.ofEpochMilli(price.timerange().start());
 
                 netMarketSeries.add(timestamp, new QuantityType<>(price.netPrice() / 100.0, priceUnit));
@@ -139,7 +150,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
             sendTimeSeries(CHANNEL_TOTAL_NET, netTotalSeries);
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (AwattarApiException e) {
+        } catch (MarketPriceApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
