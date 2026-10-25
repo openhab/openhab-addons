@@ -169,7 +169,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     private boolean configure() {
         if (config.ipAddress.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "text/offline.config-error-missing-host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-missing-host");
             return false;
         }
         if (!supportedApiVersions.contains(config.apiVersion)) {
@@ -191,7 +191,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             httpClient.setConnectTimeout(30000);
             httpClient.start();
         } catch (Exception ex) { // No specific exception is thrown by the start method
-            updateStatus(ThingStatus.OFFLINE, "@text/offline.comm-error-device-offline");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-device-offline");
             logger.debug("Unable to reach device", ex);
             return false;
         }
@@ -259,8 +259,9 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
             return true;
-        } catch (JsonSyntaxException | CommunicationException ex) {
-            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, "@text/offline.comm-error-device-offline");
+        } catch (JsonSyntaxException | SecurityException | CommunicationException ex) {
+            updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);
             return false;
         }
@@ -277,7 +278,8 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         try {
             deviceInformation = getDeviceInformationData();
         } catch (SecurityException | CommunicationException ex) {
-            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, "@text/offline.comm-error-device-offline");
+            updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get device information", ex);
             return false;
         }
@@ -290,16 +292,18 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
 
         if (payload == null) {
-            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, "@text/offline.comm-error-no-data");
+            updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-no-data");
             return false;
         } else {
             if ("".equals(payload.getProductType())) {
-                updateStatusIfCurrent(generation, ThingStatus.OFFLINE, "@text/offline.comm-error-no-data");
+                updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-no-data");
                 return false;
             }
 
             if (!supportedTypes.contains(payload.getProductType().toLowerCase(Locale.ROOT))) {
-                updateStatusIfCurrent(generation, ThingStatus.OFFLINE,
+                updateStatusIfCurrent(generation, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "@text/offline.comm-error-device-not-compatible");
                 return false;
             }
@@ -320,10 +324,10 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
     }
 
-    protected final void updateStatusIfCurrent(long generation, ThingStatus status, String description) {
+    protected final void updateStatusIfCurrent(long generation, ThingStatusDetail statusDetail, String description) {
         synchronized (this) {
             if (generation == lifecycleGeneration.get()) {
-                updateStatus(status, description);
+                updateStatus(statusDetail, description);
             }
         }
     }
@@ -516,7 +520,8 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     /**
      * @return json response from the device information api or an empty string if no data is available
-     * @throws SecurityException
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
      */
     public String getDeviceInformationData() throws SecurityException, CommunicationException {
         return getContentFrom(apiURL);
@@ -524,10 +529,11 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     /**
      * @return json response from the system api
+     * @throws SecurityException when the bearer token is invalid
      * @throws CommunicationException when no data is available
      *
      */
-    public String getSystemData() throws CommunicationException {
+    public String getSystemData() throws SecurityException, CommunicationException {
         return getContentFrom(getApiUrl() + SYSTEM_URL);
     }
 
@@ -543,9 +549,11 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     /**
      * @return json response from the measurement api or an empty string if no data is available
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
      * 
      */
-    public String getMeasurementData() throws CommunicationException {
+    public String getMeasurementData() throws SecurityException, CommunicationException {
         var url = getApiUrl();
         if (config.isUsingApiVersion2()) {
             url += "measurement";
@@ -557,9 +565,11 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     /**
      * @return json response from the batteries api or an empty string if no data is available
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
      * 
      */
-    public String getBatteriesData() throws CommunicationException {
+    public String getBatteriesData() throws SecurityException, CommunicationException {
         return getContentFrom(getApiUrl() + BATTERIES_URL);
     }
 

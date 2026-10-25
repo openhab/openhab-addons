@@ -25,7 +25,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -70,7 +70,8 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
             }
             return true;
         } catch (JsonSyntaxException | CommunicationException ex) {
-            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, "@text/offline.comm-error-device-offline");
+            updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-device-offline");
             return false;
         }
     }
@@ -178,9 +179,11 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
 
     /**
      * @return json response from the state api
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
      * 
      */
-    public String getStateData() throws CommunicationException {
+    public String getStateData() throws SecurityException, CommunicationException {
         return getContentFrom(getApiUrl() + STATE_URL);
     }
 
