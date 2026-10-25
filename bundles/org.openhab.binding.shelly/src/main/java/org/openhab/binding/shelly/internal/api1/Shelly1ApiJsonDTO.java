@@ -1200,6 +1200,7 @@ public class Shelly1ApiJsonDTO {
         public ShellySensorLux lux;
         public ShellySensorAccel accel;
         public ShellySensorBat bat;
+        public ShellySensorBat bat1; // 2nd power source, e.g. devicepower:1
         @SerializedName("sensor")
         public ShellySensorState sensor;
         public Boolean smoke; // SHelly Smoke

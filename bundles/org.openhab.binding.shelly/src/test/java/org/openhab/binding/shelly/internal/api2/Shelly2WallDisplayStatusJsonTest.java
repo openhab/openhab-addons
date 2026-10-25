@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -22,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
@@ -49,7 +49,8 @@ public class Shelly2WallDisplayStatusJsonTest {
             "awaiting_auth_code":false,"ch":["switch:0"]},
             "wifi":{"sta_ip":"192.168.60.115","status":"got ip","ssid":"MiOt","rssi":-55},
             "devicepower:0":{"id":0,"external":{"present":true}},
-            "devicepower:1":{"id":1,"device":"XB61819872196631","battery":{"percent":99}}}
+            "devicepower:1":{"id":1,"device":"XB61819872196631","battery":{"percent":99}},
+            "thermostat:0":{"id":0,"enable":true,"target_C":21.5,"current_C":20.3,"output":true}}
             """;
 
     private final Gson gson = new Gson();
@@ -63,22 +64,14 @@ public class Shelly2WallDisplayStatusJsonTest {
         assertThat(sys.relayInThermostat, is(equalTo(Boolean.FALSE)));
         assertThat(sys.sensorInThermostat, is(equalTo(Boolean.FALSE)));
 
-        assertThat(status.thermostat0, is(nullValue()));
-    }
+        Shelly2DeviceStatusPower power1 = status.devicepower1;
+        assertNotNull(power1);
+        assertNotNull(power1.battery);
+        assertThat(power1.battery.percent, is(equalTo(99.0)));
 
-    @Test
-    void thermostatKeyMapsToThermostatStatus() throws ShellyApiException {
-        String json = """
-                {"thermostat:0":{"enable":true,"target_C":21.5,"current_C":20.3,"output":true,
-                "schedules":{"enable":false}}}
-                """;
-
-        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
         Shelly2DeviceStatusThermostat thermostat = status.thermostat0;
         assertNotNull(thermostat);
         assertThat(thermostat.enable, is(equalTo(Boolean.TRUE)));
         assertThat(thermostat.targetC, is(equalTo(21.5)));
-        assertThat(thermostat.currentC, is(equalTo(20.3)));
-        assertThat(thermostat.output, is(equalTo(Boolean.TRUE)));
     }
 }

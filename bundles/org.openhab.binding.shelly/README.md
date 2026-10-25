@@ -519,6 +519,10 @@ The accumulated channels are only available for devices with more than 1 meter.
 The LED channels are available for the Plug-S with firmware 1.6x and for various other devices with firmware 1.8 or newer.
 The binding detects them automatically.
 
+Mains-powered devices with an attached battery-operated sensor (e.g. the Wall Display with an external H&T sensor) also report the battery of that sensor.
+In this case the binding adds the channels `batteryLevel` (Number, battery level in percent) and `lowBattery` (Switch, ON when the battery is low) to the `sensors` group.
+Those channels only appear while the device actually reports a battery for the attached sensor.
+
 ## Events
 
 ### Generation 1: Action URLs vs. CoIoT
@@ -2688,22 +2692,20 @@ end
 |         | humidity           | Number   | yes       | Relative Humidity in percent reported by the integrated sensor                    |
 |         | lux                | Number   | yes       | Brightness in Lux reported by the integrated sensor                               |
 |         | lastUpdate         | DateTime | yes       | Timestamp of the last update (any sensor value changed)                           |
+|         | batteryLevel       | Number   | yes       | Battery level of an attached battery-operated sensor in percent                   |
+|         | lowBattery         | Switch   | yes       | ON: Battery of the attached sensor is low                                         |
 | device  | relayInThermostat  | Switch   | yes       | ON: The relay output is used by a thermostat/climate profile                      |
 |         | sensorInThermostat | Switch   | yes       | ON: The temperature sensor input is used by a thermostat/climate profile          |
 | control | thermostatEnable   | Switch   | r/w       | Enable or disable the Wall Display thermostat                                     |
 |         | targetTemp         | Number   | r/w       | Thermostat target temperature in °C                                               |
 
 The `control` group is labeled `Thermostat Control` on the Wall Display.
-Its `thermostatEnable`/`targetTemp` channels are only
-available on devices reporting a Thermostat RPC component (e.g. Wall Display
-when a virtual thermostat is configured in the Shelly app). The thermostat's
-current temperature and controlled output are already reflected by the
-existing `sensors#temperature` and `relay#output` channels.
+Its `thermostatEnable` and `targetTemp` channels are only available while the thermostat is enabled in the Shelly app.
+The thermostat's current temperature and controlled output are shown by the existing `sensors#temperature` and `relay#output` channels.
+Enabling or disabling the thermostat in the Shelly app adds or removes these channels with the next status update, so the Thing doesn't need to be re-created.
 
-The `control` channels are added as soon as the thermostat component shows
-up in the device status, so enabling the thermostat in the Shelly app makes
-the channels appear on the next status update - the Thing does not need to
-be deleted and re-discovered.
+The `sensors` group's `batteryLevel` and `lowBattery` channels are only available while a battery-operated sensor is attached to the Wall Display.
+Pairing a sensor after the Thing was created adds them with the next status update, unpairing the sensor removes them again.
 
 ## Full Example
 
