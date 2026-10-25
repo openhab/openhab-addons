@@ -13,6 +13,9 @@
 package org.openhab.binding.volvocars.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.*;
+
+import java.util.Set;
 
 import javax.measure.Unit;
 
@@ -50,6 +53,23 @@ class VehicleHandlerTest {
                 VehicleHandler.toQuantity(field(new JsonPrimitive(9), "months", null), Units.MONTH));
         assertEquals(new QuantityType<>(270, Units.DAY),
                 VehicleHandler.toQuantity(field(new JsonPrimitive(270), "days", null), Units.MONTH));
+        assertEquals(new QuantityType<>(11, MetricPrefix.KILO(Units.WATT)),
+                VehicleHandler.toQuantity(field(new JsonPrimitive(11), "kW", null), Units.WATT));
+    }
+
+    @Test
+    void energyChannelsFollowCapabilities() {
+        // capabilities unknown, e.g. because the scope was not granted
+        assertTrue(VehicleHandler.isBatteryChannelSupported(CHANNEL_CHARGING_POWER, null));
+        // Energy API not supported: the battery level is read from the fuel status
+        assertTrue(VehicleHandler.isBatteryChannelSupported(CHANNEL_BATTERY_LEVEL, Set.of()));
+        assertFalse(VehicleHandler.isBatteryChannelSupported(CHANNEL_CHARGING_STATUS, Set.of()));
+        // Energy API supported
+        Set<String> capabilities = Set.of("batteryChargeLevel", "chargingStatus");
+        assertTrue(VehicleHandler.isBatteryChannelSupported(CHANNEL_CHARGING_STATUS, capabilities));
+        assertFalse(VehicleHandler.isBatteryChannelSupported(CHANNEL_CHARGING_POWER, capabilities));
+        // not provided by the Energy API
+        assertTrue(VehicleHandler.isBatteryChannelSupported(CHANNEL_DISTANCE_TO_EMPTY_BATTERY, Set.of()));
     }
 
     @Test

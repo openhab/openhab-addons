@@ -50,7 +50,10 @@ public final class ApiUnits {
             Map.entry("km/h", SIUnits.KILOMETRE_PER_HOUR), //
             Map.entry("mph", ImperialUnits.MILES_PER_HOUR), //
             Map.entry("ampere", Units.AMPERE), //
+            Map.entry("w", Units.WATT), //
             Map.entry("watts", Units.WATT), //
+            Map.entry("kw", MetricPrefix.KILO(Units.WATT)), //
+            Map.entry("kilowatts", MetricPrefix.KILO(Units.WATT)), //
             Map.entry("kwh", Units.KILOWATT_HOUR));
 
     private ApiUnits() {

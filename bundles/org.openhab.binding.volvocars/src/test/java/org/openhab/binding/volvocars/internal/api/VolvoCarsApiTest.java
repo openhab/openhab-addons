@@ -180,6 +180,18 @@ class VolvoCarsApiTest {
     }
 
     @Test
+    void energyErrorResponseContainsCode() {
+        http.respond(ENERGY_ENDPOINT + "/" + VIN + "/state", 404, """
+                {"error": {"code": "VEHICLE_NOT_FOUND", "message": "Vehicle not found", "details": []}}
+                """);
+
+        VolvoCarsException e = assertThrows(VolvoCarsException.class, () -> api.getEnergyState(VIN));
+
+        assertEquals(404, e.getHttpStatus());
+        assertTrue(Objects.requireNonNull(e.getMessage()).endsWith(": VEHICLE_NOT_FOUND Vehicle not found"));
+    }
+
+    @Test
     void unknownResourceReturns404() {
         VolvoCarsException e = assertThrows(VolvoCarsException.class, () -> api.getValues(VIN, "unknown"));
 

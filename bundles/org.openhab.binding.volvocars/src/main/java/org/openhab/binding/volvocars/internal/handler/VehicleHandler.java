@@ -88,6 +88,13 @@ public class VehicleHandler extends BaseThingHandler {
             CHANNEL_TYRE_FRONT_RIGHT, "rearLeft", CHANNEL_TYRE_REAR_LEFT, "rearRight", CHANNEL_TYRE_REAR_RIGHT);
     private static final Map<String, String> HONK_FLASH_COMMANDS = Map.of("HONK", "honk", "FLASH", "flash",
             "HONK_AND_FLASH", "honk-flash");
+    /** Battery channels provided by the Energy API, mapped to the name of their energy state value. */
+    private static final Map<String, String> ENERGY_CHANNELS = Map.of(CHANNEL_BATTERY_LEVEL, "batteryChargeLevel",
+            CHANNEL_ELECTRIC_RANGE, "electricRange", CHANNEL_CHARGER_CONNECTION_STATUS, "chargerConnectionStatus",
+            CHANNEL_CHARGING_STATUS, "chargingStatus", CHANNEL_CHARGING_TYPE, "chargingType",
+            CHANNEL_CHARGER_POWER_STATUS, "chargerPowerStatus", CHANNEL_ESTIMATED_CHARGING_TIME,
+            "estimatedChargingTimeToTargetBatteryChargeLevel", CHANNEL_TARGET_BATTERY_LEVEL, "targetBatteryChargeLevel",
+            CHANNEL_CHARGING_CURRENT_LIMIT, "chargingCurrentLimit", CHANNEL_CHARGING_POWER, "chargingPower");
 
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
     private final Object pollLock = new Object();
@@ -347,7 +354,7 @@ public class VehicleHandler extends BaseThingHandler {
             return null;
         }
         updateProperties(localVehicle);
-        removeUnsupportedChannels(localVehicle, commands);
+        removeUnsupportedChannels(localVehicle, capabilities, commands);
         pollSession.energyCapabilities = capabilities != null ? capabilities : Set.of();
         pollSession.vehicle = localVehicle;
         return localVehicle;
@@ -380,9 +387,11 @@ public class VehicleHandler extends BaseThingHandler {
     /**
      * Removes the channels of features the vehicle does not have, e.g. fuel channels of an electric car.
      *
+     * @param energyCapabilities see {@link #isBatteryChannelSupported(String, Set)}
      * @param commands the commands supported by the vehicle, or null if they are unknown
      */
-    private void removeUnsupportedChannels(Vehicle localVehicle, @Nullable Set<String> commands) {
+    private void removeUnsupportedChannels(Vehicle localVehicle, @Nullable Set<String> energyCapabilities,
+            @Nullable Set<String> commands) {
         List<Channel> unsupported = new ArrayList<>();
         for (Channel channel : getThing().getChannels()) {
             ChannelUID uid = channel.getUID();
@@ -390,7 +399,7 @@ public class VehicleHandler extends BaseThingHandler {
             String id = uid.getIdWithoutGroup();
             boolean supported = switch (group != null ? group : "") {
                 case GROUP_FUEL -> localVehicle.hasCombustionEngine();
-                case GROUP_BATTERY -> localVehicle.hasBattery();
+                case GROUP_BATTERY -> localVehicle.hasBattery() && isBatteryChannelSupported(id, energyCapabilities);
                 case GROUP_TRIP -> !((CHANNEL_AVERAGE_FUEL_CONSUMPTION.equals(id)
                         || CHANNEL_AVERAGE_FUEL_CONSUMPTION_AUTOMATIC.equals(id))
                         && !localVehicle.hasCombustionEngine())
@@ -413,6 +422,22 @@ public class VehicleHandler extends BaseThingHandler {
             logger.debug("Removing {} channels not supported by vehicle {}", unsupported.size(), getThing().getUID());
             updateThing(editThing().withoutChannels(unsupported).build());
         }
+    }
+
+    /**
+     * @param energyCapabilities the energy state values the vehicle supports, empty if the vehicle does not support
+     *            the Energy API, or null if they are unknown
+     */
+    static boolean isBatteryChannelSupported(String channel, @Nullable Set<String> energyCapabilities) {
+        String value = ENERGY_CHANNELS.get(channel);
+        if (value == null || energyCapabilities == null) {
+            return true;
+        }
+        if (energyCapabilities.isEmpty()) {
+            // without the Energy API the battery level is read from the fuel status
+            return CHANNEL_BATTERY_LEVEL.equals(channel);
+        }
+        return energyCapabilities.contains(value);
     }
 
     private void refreshFast(VolvoCarsApi api, Session pollSession, Vehicle localVehicle) throws VolvoCarsException {

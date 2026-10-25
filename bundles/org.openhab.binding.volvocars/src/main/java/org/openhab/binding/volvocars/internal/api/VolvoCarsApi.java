@@ -199,7 +199,8 @@ public class VolvoCarsApi {
             if (JsonParser.parseString(content) instanceof JsonObject response
                     && response.get("error") instanceof JsonObject error) {
                 StringBuilder details = new StringBuilder();
-                for (String key : List.of("message", "description")) {
+                // the Energy API reports a code instead of a description
+                for (String key : List.of("code", "message", "description")) {
                     if (error.get(key) instanceof JsonElement value && value.isJsonPrimitive()) {
                         details.append(details.isEmpty() ? ": " : " ").append(value.getAsString());
                     }

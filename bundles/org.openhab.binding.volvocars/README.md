@@ -180,6 +180,7 @@ Only available for cars with a combustion engine.
 
 Only available for electric and plug-in hybrid cars.
 Except for `battery-level` and `distance-to-empty-battery`, the values require a car supporting the Energy API.
+Channels for values the car does not report according to the Energy API are removed.
 
 | Channel                     | Type                   | Read/Write | Description                                                             |
 |-----------------------------|------------------------|------------|-------------------------------------------------------------------------|
