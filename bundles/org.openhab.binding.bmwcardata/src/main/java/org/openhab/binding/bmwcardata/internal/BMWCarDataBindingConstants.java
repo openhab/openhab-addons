@@ -45,6 +45,21 @@ public class BMWCarDataBindingConstants {
     public static final String PROPERTY_CONSTRUCTION_DATE = "constructionDate";
     public static final String PROPERTY_HAS_SUNROOF = "hasSunroof";
     public static final String PROPERTY_HAS_NAVIGATION = "hasNavigation";
+    // further basic data; BMW does not document all of them, so the less obvious ones keep BMW's names
+    public static final String PROPERTY_TELEMATICS_CAPABLE = "telematicsCapable";
+    public static final String PROPERTY_MODEL_KEY = "modelKey";
+    public static final String PROPERTY_SERIES_DEVT = "seriesDevt";
+    public static final String PROPERTY_BODY_TYPE = "bodyType";
+    public static final String PROPERTY_NUMBER_OF_DOORS = "numberOfDoors";
+    public static final String PROPERTY_STEERING = "steering";
+    public static final String PROPERTY_ENGINE = "engine";
+    public static final String PROPERTY_HEAD_UNIT = "headUnit";
+    public static final String PROPERTY_PU_STEP = "puStep";
+    public static final String PROPERTY_CHARGING_MODES = "chargingModes";
+    public static final String PROPERTY_HVS_MAX_ENERGY = "hvsMaxEnergyAbsolute";
+    public static final String PROPERTY_REESS_CAPACITY = "reessNominalCapacityGross";
+    public static final String PROPERTY_SIM_STATUS = "simStatus";
+    public static final String PROPERTY_COUNTRY_CODE = "countryCode";
 
     // Channel groups and derived channels; descriptor-backed channels are defined in VehicleChannel
     public static final String GROUP_STATUS = "status";

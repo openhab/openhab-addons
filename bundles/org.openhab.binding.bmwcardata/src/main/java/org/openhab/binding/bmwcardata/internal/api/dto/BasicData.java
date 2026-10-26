@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.bmwcardata.internal.api.dto;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Static vehicle data as returned by {@code /customers/vehicles/{vin}/basicData}. Only the fields used as Thing
- * properties are mapped.
+ * properties or in the binding logic are mapped.
  *
  * @author Michael Weger - Initial contribution
  */
@@ -34,4 +36,18 @@ public class BasicData {
     public @Nullable Boolean hasNavi;
     // not documented by BMW; read as no telematics only when explicitly false
     public @Nullable Boolean isTelematicsCapable;
+    // shown as properties, e.g. to decide later which channels apply to the vehicle
+    public @Nullable String modelKey;
+    public @Nullable String seriesDevt;
+    public @Nullable String bodyType;
+    public @Nullable Integer numberOfDoors;
+    public @Nullable String steering;
+    public @Nullable String engine;
+    public @Nullable String headUnit;
+    public @Nullable String puStep;
+    public @Nullable List<String> chargingModes;
+    public @Nullable String hvsMaxEnergyAbsolute;
+    public @Nullable String reessNominalCapacityGross;
+    public @Nullable String simStatus;
+    public @Nullable String countryCode;
 }

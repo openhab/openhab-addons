@@ -55,6 +55,7 @@ import com.google.gson.JsonPrimitive;
  * quota of the customer, so callers have to use it sparingly.
  *
  * @author Michael Weger - Initial contribution
+ * @author Mark Herwege - Common HTTP client and log redaction
  */
 @NonNullByDefault
 public class BMWCarDataApi {

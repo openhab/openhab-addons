@@ -47,6 +47,7 @@ import com.google.gson.JsonParseException;
  * the BMW customer identity service (GCDM). The resulting tokens are refreshed by openHAB's OAuth client service.
  *
  * @author Michael Weger - Initial contribution
+ * @author Mark Herwege - Common HTTP client, link for the authorization page and log redaction
  */
 @NonNullByDefault
 public class BMWCarDataAuthClient {
@@ -127,9 +128,6 @@ public class BMWCarDataAuthClient {
     }
 
     /**
-     * Starts a new device authorization.
-     */
-    /**
      * @return whether the URI is an absolute https URL; the verification link is offered to the user to open, so
      *         nothing else, e.g. a {@code javascript:} URI, is accepted
      */
@@ -142,6 +140,9 @@ public class BMWCarDataAuthClient {
         }
     }
 
+    /**
+     * Starts a new device authorization.
+     */
     public DeviceAuthorization requestDeviceCode() throws BMWCarDataException {
         String codeVerifier = createCodeVerifier();
         Fields fields = new Fields();

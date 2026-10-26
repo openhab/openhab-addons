@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -69,12 +70,15 @@ import com.google.gson.JsonPrimitive;
  * stream of the account or polled from the REST API.
  *
  * @author Michael Weger - Initial contribution
+ * @author Mark Herwege - Filtering of copies and removal of channels that do not apply
  */
 @NonNullByDefault
 public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     // descriptors of the destination guidance, which needs a navigation system
     private static final String DESTINATION_PREFIX = "vehicle.cabin.infotainment.navigation.destinationSet.";
+    // like a failed refresh of the account, e.g. while the request budget is used up
+    private static final long PROPERTIES_RETRY_SECONDS = 15 * 60;
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataVehicleHandler.class);
 
@@ -84,6 +88,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     // value accepted as newer must not be published after a value that was accepted later; held while publishing, as
     // the order of the state updates is what counts
     private final Object dataLock = new Object();
+    private final ScheduledExecutorService jobScheduler;
     private @Nullable ScheduledFuture<?> propertiesJob;
     private @Nullable ScheduledFuture<?> imageJob;
     // states by channel id, to answer REFRESH commands without spending API requests
@@ -102,7 +107,15 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private @Nullable Instant lastUpdate;
 
     public BMWCarDataVehicleHandler(Thing thing) {
+        this(thing, null);
+    }
+
+    /**
+     * @param jobScheduler runs the jobs of the handler, {@code null} for the scheduler of the base class
+     */
+    BMWCarDataVehicleHandler(Thing thing, @Nullable ScheduledExecutorService jobScheduler) {
         super(thing);
+        this.jobScheduler = jobScheduler != null ? jobScheduler : scheduler;
     }
 
     public String getVin() {
@@ -169,7 +182,8 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         }
         // data received from the stream proves the vehicle reachable again after a failed poll
         if (getThing().getStatus() == ThingStatus.OFFLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
+                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR
+                && hasProperties()) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -365,8 +379,13 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     private void updateBridgeStatus(ThingStatus bridgeStatus) {
         if (bridgeStatus == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-            scheduleProperties();
+            if (hasProperties()) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                // the vehicle goes online once its basic data is known, which usually comes from the account's cache
+                updateStatus(ThingStatus.UNKNOWN);
+                scheduleProperties(0);
+            }
             scheduleImage();
         } else {
             cancelProperties();
@@ -379,7 +398,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      * Called by the account after the telematic data of this vehicle was refreshed via the REST API.
      */
     void refreshSucceeded() {
-        if (!disposed && getThing().getStatus() != ThingStatus.ONLINE) {
+        if (!disposed && getThing().getStatus() != ThingStatus.ONLINE && hasProperties()) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -387,16 +406,42 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     /**
      * Called by the account if the telematic data of this vehicle could not be refreshed via the REST API.
      */
-    void refreshFailed(@Nullable String reason) {
-        if (!disposed) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+    void refreshFailed(BMWCarDataException e) {
+        if (disposed) {
+            return;
+        }
+        if (e.isVinNotPermitted()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.vin-not-permitted");
+        } else if (BMWCarDataException.ERROR_CONTAINER_LIMIT.equals(e.getErrorId())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.container-limit");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.refresh-failed [\"" + e.getShortDescription() + "\"]");
         }
     }
 
-    private synchronized void scheduleProperties() {
+    /**
+     * @return whether the basic data of the vehicle has been retrieved; the model property marks it
+     */
+    private boolean hasProperties() {
+        return getThing().getProperties().containsKey(PROPERTY_MODEL);
+    }
+
+    private synchronized void scheduleProperties(long delaySeconds) {
         ScheduledFuture<?> job = propertiesJob;
-        if ((job == null || job.isDone()) && !getThing().getProperties().containsKey(PROPERTY_MODEL)) {
-            propertiesJob = scheduler.schedule(this::retrieveProperties, 0, TimeUnit.SECONDS);
+        if ((job == null || job.isDone()) && !hasProperties()) {
+            propertiesJob = jobScheduler.schedule(this::retrieveProperties, delaySeconds, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Retrieves the basic data again later; called by the running job, which is therefore replaced.
+     */
+    private synchronized void schedulePropertiesRetry() {
+        if (!disposed) {
+            propertiesJob = jobScheduler.schedule(this::retrieveProperties, PROPERTIES_RETRY_SECONDS, TimeUnit.SECONDS);
         }
     }
 
@@ -415,7 +460,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private synchronized void scheduleImage() {
         ScheduledFuture<?> job = imageJob;
         if ((job == null || job.isDone()) && !states.containsKey(CHANNEL_IMAGE) && isLinked(CHANNEL_IMAGE)) {
-            imageJob = scheduler.schedule(this::retrieveImage, 0, TimeUnit.SECONDS);
+            imageJob = jobScheduler.schedule(this::retrieveImage, 0, TimeUnit.SECONDS);
         }
     }
 
@@ -449,7 +494,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     private void retrieveProperties() {
         BMWCarDataAccountHandler account = getAccountHandler();
-        if (account == null || getThing().getProperties().containsKey(PROPERTY_MODEL)) {
+        if (account == null || hasProperties()) {
             return;
         }
         BasicData basicData;
@@ -457,6 +502,18 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             basicData = account.fetchBasicData(vin);
         } catch (BMWCarDataException e) {
             logger.debug("Failed to retrieve basic vehicle data: {}", e.getMessage());
+            if (disposed) {
+                return;
+            }
+            if (e.isVinNotPermitted()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error.vin-not-permitted");
+                return;
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    e.isRateLimited() ? "@text/offline.comm-error.basic-data-budget"
+                            : "@text/offline.comm-error.basic-data-failed [\"" + e.getShortDescription() + "\"]");
+            schedulePropertiesRetry();
             return;
         }
         if (disposed) {
@@ -474,8 +531,28 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         putIfPresent(properties, PROPERTY_CONSTRUCTION_DATE, basicData.constructionDate);
         putIfPresent(properties, PROPERTY_HAS_SUNROOF, Objects.toString(basicData.hasSunRoof, null));
         putIfPresent(properties, PROPERTY_HAS_NAVIGATION, Objects.toString(basicData.hasNavi, null));
+        putIfPresent(properties, PROPERTY_TELEMATICS_CAPABLE, Objects.toString(basicData.isTelematicsCapable, null));
+        putIfPresent(properties, PROPERTY_MODEL_KEY, basicData.modelKey);
+        putIfPresent(properties, PROPERTY_SERIES_DEVT, basicData.seriesDevt);
+        putIfPresent(properties, PROPERTY_BODY_TYPE, basicData.bodyType);
+        putIfPresent(properties, PROPERTY_NUMBER_OF_DOORS, Objects.toString(basicData.numberOfDoors, null));
+        putIfPresent(properties, PROPERTY_STEERING, basicData.steering);
+        putIfPresent(properties, PROPERTY_ENGINE, basicData.engine);
+        putIfPresent(properties, PROPERTY_HEAD_UNIT, basicData.headUnit);
+        putIfPresent(properties, PROPERTY_PU_STEP, basicData.puStep);
+        List<String> chargingModes = basicData.chargingModes;
+        putIfPresent(properties, PROPERTY_CHARGING_MODES,
+                chargingModes != null ? String.join(", ", chargingModes) : null);
+        putIfPresent(properties, PROPERTY_HVS_MAX_ENERGY, basicData.hvsMaxEnergyAbsolute);
+        putIfPresent(properties, PROPERTY_REESS_CAPACITY, basicData.reessNominalCapacityGross);
+        putIfPresent(properties, PROPERTY_SIM_STATUS, basicData.simStatus);
+        putIfPresent(properties, PROPERTY_COUNTRY_CODE, basicData.countryCode);
         updateProperties(properties);
         removeIrrelevantChannels(basicData);
+        Bridge bridge = getBridge();
+        if (!disposed && bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     /**

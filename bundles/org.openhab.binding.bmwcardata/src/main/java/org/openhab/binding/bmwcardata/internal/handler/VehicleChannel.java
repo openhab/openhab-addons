@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,8 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
@@ -272,6 +275,10 @@ public enum VehicleChannel {
     private static final Set<VehicleChannel> COMBUSTION_ONLY = EnumSet.of(FUEL_CONSUMED, FUEL_LEVEL, REMAINING_FUEL,
             TOTAL_RANGE);
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(VehicleChannel.class);
+    // the default unit is assumed for every value of a data point, so each assumption is logged once, not per value
+    private static final Set<String> LOGGED_DEFAULT_UNITS = ConcurrentHashMap.newKeySet();
+
     enum Kind {
         QUANTITY,
         NUMBER,
@@ -454,12 +461,34 @@ public enum VehicleChannel {
         Unit<?> defaultUnit = this.defaultUnit;
         Unit<?> unit = parseUnit(unitSymbol);
         if (unit == null) {
-            return defaultUnit == null ? null : new QuantityType<>(number, defaultUnit);
+            if (defaultUnit == null) {
+                return null;
+            }
+            logDefaultUnit(unitSymbol, defaultUnit);
+            return new QuantityType<>(number, defaultUnit);
         }
         if (defaultUnit != null && !unit.isCompatible(defaultUnit)) {
             return null;
         }
         return new QuantityType<>(number, unit);
+    }
+
+    /**
+     * Logs once per data point and unit symbol that the default unit is assumed. A unit the binding does not know is a
+     * guess, which a warning asks to report; a missing unit is not, as BMW's API does not require one and the default
+     * unit is the one of the telematics data catalogue.
+     */
+    private void logDefaultUnit(@Nullable String unitSymbol, Unit<?> defaultUnit) {
+        boolean missing = unitSymbol == null || unitSymbol.isBlank();
+        if (!LOGGED_DEFAULT_UNITS.add(descriptor + "|" + (missing ? "" : unitSymbol))) {
+            return;
+        }
+        if (missing) {
+            LOGGER.debug("{} has no unit, assuming {}", descriptor, defaultUnit);
+        } else {
+            LOGGER.warn("{} has the unknown unit '{}', assuming {}; please report the unit to extend the binding",
+                    descriptor, unitSymbol, defaultUnit);
+        }
     }
 
     private static @Nullable State toContact(JsonPrimitive primitive) {

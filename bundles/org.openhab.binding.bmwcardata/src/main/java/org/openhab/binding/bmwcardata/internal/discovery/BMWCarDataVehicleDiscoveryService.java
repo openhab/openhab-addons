@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bmwcardata.internal.LogRedaction;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataApi;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * without vehicles.
  *
  * @author Michael Weger - Initial contribution
+ * @author Mark Herwege - Labels of the discovered vehicles
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = BMWCarDataVehicleDiscoveryService.class)
 @NonNullByDefault
@@ -144,7 +146,7 @@ public class BMWCarDataVehicleDiscoveryService extends AbstractThingHandlerDisco
             label = vin;
         }
         if (!telematicsCapable) {
-            logger.debug("Discovered vehicle {} is not capable to send data", vin);
+            logger.debug("Discovered vehicle {} is not capable to send data", LogRedaction.vin(vin));
             label = "@text/discovery.vehicle.no-telematics.label [\"" + label + "\"]";
         }
         return label;

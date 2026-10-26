@@ -29,7 +29,9 @@ Before the binding can be used, a CarData client has to be created in the custom
 1. In the streaming configuration of the portal, select the data that shall be streamed.
    Only the data selected there is pushed by the stream.
 
-If the account reports `Device authorization request failed: invalid_request`, BMW does not accept the client ID: check the client ID and that both subscriptions are active.
+If the account goes `OFFLINE (CONFIGURATION_ERROR)` because BMW does not accept the client ID, check the client ID and that both subscriptions are active.
+The binding then stops trying; changing the configuration, or disabling and enabling the account, starts a new authorization.
+The DEBUG log shows BMW's error, e.g. `invalid_request`.
 
 ## Discovery
 
@@ -88,6 +90,8 @@ Like the bmw-mqtt-bridge with its default `MQTT_RETAIN=0`, the stream messages a
 With `mirrorRetain=true`, a consumer receives the last message of each vehicle as soon as it subscribes, however old it is, e.g. after the vehicle has been parked for days.
 
 The last will of the mirror sets `<prefix>status` to `{"connected":false}`, so consumers notice when openHAB stops.
+Like the bmw-mqtt-bridge with its default `STATUS_STABLE_DELAY`, a disconnect from BMW is only published once it lasts for five seconds, so short drops, e.g. the reconnect after each token refresh, do not let the state flap.
+After openHAB starts, the state is published once the state of the stream is known.
 The mirror reconnects to the local broker on its own; while the broker is not reachable, messages are dropped and the status description of the account shows this, but the stream and the channels are not affected.
 Mirroring is ignored in bridge mode, as the bridge already publishes the stream.
 
@@ -96,7 +100,7 @@ If other tools need the stream independent of openHAB, run the bmw-mqtt-bridge a
 
 #### API Requests
 
-BMW allows 50 requests to the CarData API per account in 24 hours, shared by all vehicles and all tools using the account.
+BMW allows 50 requests to the CarData API per account and day, reset at midnight UTC, shared by all vehicles and all tools using the account (see BMW's [additional information on the CarData API](https://bmw-cardata.bmwgroup.com/customer/public/api-documentation/Id-CarData-API_Additional-information)).
 The stream is not affected by this limit, so the binding uses the API only to complete the stream data:
 
 - Two minutes after the authorization, and then every `refreshInterval` hours, the current values of all vehicles are read, one request per vehicle.
@@ -105,10 +109,15 @@ The stream is not affected by this limit, so the binding uses the API only to co
 - When a read fails on BMW's side (e.g. HTTP 502) or times out, it is repeated once after 15 minutes for the affected vehicles.
   While the stream is connected, such a failure does not set the vehicle `OFFLINE`, as the stream keeps its values up to date.
 - The static vehicle data shown as Thing properties is read once per vehicle, and the binding sets up its own telematic data container named `openHAB` on first use, which costs a few requests.
+  A vehicle goes `ONLINE` once its static data is known; if it cannot be read, e.g. while the request budget is used up, the vehicle stays `OFFLINE` and the binding tries again after 15 minutes.
+  If BMW no longer accepts the container, e.g. because it was deleted, the binding sets up a new one at the next read.
+  BMW allows 10 containers per customer; if all are used by other tools, the vehicles report this, and one has to be deleted.
 - The vehicle image is read once per vehicle, and only when an item is linked to the `status#image` channel.
   Like the static data, it is kept, so it costs no further requests after a restart.
+- If BMW does not provide the data of a vehicle to the client, e.g. because it is not mapped to the account as primary user, the vehicle goes `OFFLINE (CONFIGURATION_ERROR)` and is no longer read; disable and enable the Thing once this is fixed.
 
 The binding counts its requests over a rolling 24 hours per client ID, also across restarts and when the account thing is recreated, and sends at most `requestBudget` requests.
+Counting over a rolling 24 hours is stricter than BMW's daily reset, so the binding slows down before BMW's limit is reached and does not use up the whole quota right after midnight UTC.
 When the budget is used up, or BMW reports its limit as reached, the binding pauses its requests and shows this in the status description of the account; the stream keeps working.
 Keep a reserve below 50 if other tools use the same account.
 

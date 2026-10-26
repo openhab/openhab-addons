@@ -89,6 +89,9 @@ class VehicleChannelTest {
         // the catalogue documents the charging power in W
         assertEquals(QuantityType.valueOf("11 W"),
                 VehicleChannel.CHARGING_POWER.toState(value(new JsonPrimitive(11), null)));
+        // a unit the binding does not know is a guess, which is logged as a warning once
+        assertEquals(QuantityType.valueOf("12345 km"),
+                VehicleChannel.MILEAGE.toState(value(new JsonPrimitive(12345), "unknownUnit")));
     }
 
     @Test

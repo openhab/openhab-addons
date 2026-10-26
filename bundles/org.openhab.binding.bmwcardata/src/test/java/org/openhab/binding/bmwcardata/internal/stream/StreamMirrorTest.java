@@ -20,10 +20,14 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,6 +60,9 @@ class StreamMirrorTest {
     private @NonNullByDefault({}) MqttBrokerConnection connection;
     private @NonNullByDefault({}) Consumer<Boolean> brokerStateListener;
     private @NonNullByDefault({}) StreamMirror mirror;
+    private @NonNullByDefault({}) ScheduledExecutorService scheduler;
+    // delayed jobs of the mirror, which the tests run themselves
+    private final List<Runnable> jobs = new ArrayList<>();
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -65,7 +72,14 @@ class StreamMirrorTest {
                 .thenReturn(CompletableFuture.completedFuture(true));
         when(connection.stop()).thenReturn(CompletableFuture.completedFuture(true));
         brokerStateListener = mock(Consumer.class);
-        mirror = new StreamMirror(SETTINGS, connection, Clock.fixed(NOW, ZoneOffset.UTC), false, brokerStateListener);
+        scheduler = mock(ScheduledExecutorService.class);
+        when(scheduler.schedule(any(Runnable.class), anyLong(), any(TimeUnit.class))).thenAnswer(invocation -> {
+            assertEquals(StreamMirror.DISCONNECT_DELAY_SECONDS, (long) invocation.getArgument(1));
+            jobs.add(invocation.getArgument(0));
+            return mock(ScheduledFuture.class);
+        });
+        mirror = new StreamMirror(SETTINGS, connection, Clock.fixed(NOW, ZoneOffset.UTC), scheduler, false,
+                brokerStateListener);
     }
 
     @Test
@@ -97,7 +111,7 @@ class StreamMirrorTest {
                 .thenReturn(CompletableFuture.completedFuture(true));
         when(retainingConnection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
         StreamMirror retainingMirror = new StreamMirror(SETTINGS, retainingConnection, Clock.fixed(NOW, ZoneOffset.UTC),
-                true, brokerStateListener);
+                scheduler, true, brokerStateListener);
 
         retainingMirror.publishMessage("gcid-1/" + VIN, MESSAGE);
 
@@ -109,13 +123,54 @@ class StreamMirrorTest {
     void publishesStreamStateRetained() {
         when(connection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
 
-        // the last will of a previous connection is replaced on connect
+        // while the state of the stream is not known, the retained disconnected state of the last will stays
         mirror.connectionStateChanged(MqttConnectionState.CONNECTED, null);
-        verify(connection).publish("bmw/status", statusPayload(false), StreamMirror.QOS, true);
+        verify(connection, never()).publish(eq("bmw/status"), any(byte[].class), anyInt(), anyBoolean());
         verify(brokerStateListener).accept(true);
 
         mirror.publishStreamState(true);
         verify(connection).publish("bmw/status", statusPayload(true), StreamMirror.QOS, true);
+    }
+
+    @Test
+    void publishesADisconnectOnlyOnceItLasts() {
+        when(connection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
+        mirror.publishStreamState(true);
+
+        mirror.publishStreamState(false);
+        verify(connection, never()).publish("bmw/status", statusPayload(false), StreamMirror.QOS, true);
+        assertEquals(1, jobs.size());
+
+        jobs.get(0).run();
+        verify(connection).publish("bmw/status", statusPayload(false), StreamMirror.QOS, true);
+    }
+
+    @Test
+    void shortDropIsNotPublished() {
+        when(connection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
+        mirror.publishStreamState(true);
+
+        // e.g. the reconnect with a new id token
+        mirror.publishStreamState(false);
+        mirror.publishStreamState(true);
+        // even if the delayed job was already running when it was cancelled
+        jobs.get(0).run();
+
+        verify(connection, never()).publish("bmw/status", statusPayload(false), StreamMirror.QOS, true);
+        // and the unchanged connected state is not published again
+        verify(connection, times(1)).publish("bmw/status", statusPayload(true), StreamMirror.QOS, true);
+    }
+
+    @Test
+    void knownStateIsPublishedAgainAfterBrokerReconnect() {
+        when(connection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
+        mirror.publishStreamState(true);
+
+        // the broker published the last will meanwhile
+        mirror.connectionStateChanged(MqttConnectionState.DISCONNECTED, null);
+        mirror.connectionStateChanged(MqttConnectionState.CONNECTED, null);
+
+        verify(connection, times(2)).publish("bmw/status", statusPayload(true), StreamMirror.QOS, true);
     }
 
     @Test

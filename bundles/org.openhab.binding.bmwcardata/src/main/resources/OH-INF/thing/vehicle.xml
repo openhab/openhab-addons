@@ -135,7 +135,7 @@
 				<label>Electric Range</label>
 				<description>Remaining electric range</description>
 			</channel>
-			<channel id="electric-charging-forecast" typeId="range">
+			<channel id="electric-charging-forecast" typeId="range-forecast">
 				<label>Electric Range Forecast</label>
 				<description>Predicted electric range during charging</description>
 			</channel>
@@ -258,7 +258,10 @@
 	<channel-group-type id="navigation-group">
 		<label>Navigation</label>
 		<channels>
-			<channel id="gps" typeId="gps"/>
+			<channel id="gps" typeId="system.location">
+				<label>GPS Location</label>
+				<description>Current location of the vehicle</description>
+			</channel>
 			<channel id="heading" typeId="heading"/>
 			<channel id="altitude" typeId="altitude"/>
 			<channel id="gps-fix" typeId="gps-fix"/>
@@ -508,6 +511,15 @@
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
+	<channel-type id="range-forecast" advanced="true">
+		<item-type unitHint="km,mi">Number:Length</item-type>
+		<label>Range Forecast</label>
+		<category>Line</category>
+		<tags>
+			<tag>Forecast</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
 
 	<channel-type id="fuel-level">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -616,16 +628,6 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="gps">
-		<item-type>Location</item-type>
-		<label>GPS Location</label>
-		<description>Current location of the vehicle</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
-		</tags>
-		<state readOnly="true"/>
-	</channel-type>
 
 	<channel-type id="heading" advanced="true">
 		<item-type>Number:Angle</item-type>

@@ -199,6 +199,17 @@ class BMWCarDataApiTest {
         BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
         assertTrue(e.isRateLimited());
         assertFalse(e instanceof BMWCarDataAuthException);
+        assertEquals("HTTP 429 CU-429", e.getShortDescription());
+    }
+
+    @Test
+    void shortDescriptionOnlyTakesAnErrorIdInBmwsFormat() {
+        // the short description becomes an argument of a status description, which commas and quotes would break
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(400)
+                .withBody("{\"exveErrorId\":\"CU-1, [\\\"injected\\\"]\",\"exveErrorMsg\":\"Bad request\"}")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertEquals("HTTP 400", e.getShortDescription());
     }
 
     @Test

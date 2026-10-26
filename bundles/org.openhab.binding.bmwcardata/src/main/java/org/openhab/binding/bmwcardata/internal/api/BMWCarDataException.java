@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.bmwcardata.internal.api;
 
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,6 +32,20 @@ public class BMWCarDataException extends Exception {
 
     /** BMW's error id for an exhausted daily request quota. */
     public static final String ERROR_RATE_LIMIT = "CU-429";
+    /**
+     * BMW's error id for a VIN the client has no permission for, e.g. as it is not mapped to the customer as primary
+     * user or the vehicle cannot send data.
+     */
+    public static final String ERROR_VIN_NOT_PERMITTED = "CU-104";
+    /** BMW's error id when the customer has reached the maximum of 10 telematic data containers. */
+    public static final String ERROR_CONTAINER_LIMIT = "CU-124";
+    /**
+     * BMW's error ids for a container id that cannot be used: no permission (not allocated to the customer or not
+     * existing), invalid format, or already set for deletion. BMW does not document the HTTP status they come with.
+     */
+    private static final Set<String> ERRORS_UNUSABLE_CONTAINER = Set.of("CU-105", "CU-121", "CU-122");
+    // the format of BMW's error ids, so that only such an id from the response ends up in a status description
+    private static final Pattern ERROR_ID_FORMAT = Pattern.compile("[A-Z]{2,4}-\\d{3}");
 
     /** HTTP status code of the failed request, or 0 if no response was received. */
     private final int httpStatus;
@@ -98,6 +114,34 @@ public class BMWCarDataException extends Exception {
         }
         Throwable cause = getCause();
         return httpStatus == 0 && (cause instanceof TimeoutException || cause instanceof ExecutionException);
+    }
+
+    /**
+     * @return a short description of the failure as argument of a translated status description, e.g.
+     *         {@code HTTP 403 CU-104}; it contains no comma, bracket or quote, which separate the arguments there
+     */
+    public String getShortDescription() {
+        if (httpStatus > 0) {
+            String id = errorId;
+            return id != null && ERROR_ID_FORMAT.matcher(id).matches() ? "HTTP " + httpStatus + " " + id
+                    : "HTTP " + httpStatus;
+        }
+        return getCause() instanceof TimeoutException ? "timeout" : "no response";
+    }
+
+    /**
+     * @return whether the client has no permission for the VIN, which retrying does not change
+     */
+    public boolean isVinNotPermitted() {
+        return ERROR_VIN_NOT_PERMITTED.equals(errorId);
+    }
+
+    /**
+     * @return whether the container id of the request cannot be used anymore, e.g. as the container was deleted
+     */
+    public boolean isContainerUnusable() {
+        String id = errorId;
+        return httpStatus == 404 || (id != null && ERRORS_UNUSABLE_CONTAINER.contains(id));
     }
 
     /**

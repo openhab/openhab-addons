@@ -18,12 +18,15 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -32,6 +35,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.binding.bmwcardata.internal.handler.VehicleChannel.Drive;
@@ -127,7 +131,7 @@ class BMWCarDataVehicleHandlerTest {
 
         handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
         handler.refreshSucceeded();
-        handler.refreshFailed("late failure");
+        handler.refreshFailed(new BMWCarDataException("late failure", 503));
 
         verifyNoInteractions(callback);
     }
@@ -399,15 +403,45 @@ class BMWCarDataVehicleHandlerTest {
     }
 
     @Test
+    void furtherBasicDataIsShownAsProperties() throws Exception {
+        BasicData basicData = basicData("PHEV", "BE", true, true);
+        basicData.bodyType = "SAV";
+        basicData.numberOfDoors = 5;
+        basicData.chargingModes = List.of("AC_LOW", "AC_HIGH");
+        basicData.isTelematicsCapable = true;
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchBasicData(VIN)).thenReturn(basicData);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()), jobs.scheduler);
+        vehicle.setCallback(callbackWithBridge(account));
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        Map<String, String> properties = vehicle.getThing().getProperties();
+        assertEquals("SAV", properties.get(PROPERTY_BODY_TYPE));
+        assertEquals("5", properties.get(PROPERTY_NUMBER_OF_DOORS));
+        assertEquals("AC_LOW, AC_HIGH", properties.get(PROPERTY_CHARGING_MODES));
+        assertEquals("true", properties.get(PROPERTY_TELEMATICS_CAPABLE));
+        // fields BMW did not send are left out
+        assertFalse(properties.containsKey(PROPERTY_ENGINE));
+        vehicle.dispose();
+    }
+
+    @Test
     void thingWithRetrievedPropertiesIsLeftAlone() throws Exception {
         BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
         ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        Jobs jobs = new Jobs();
         BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(
-                vehicleThing(Map.of(PROPERTY_MODEL, "JCW Countryman ALL4", PROPERTY_DRIVE_TRAIN, "CONV")));
+                vehicleThing(Map.of(PROPERTY_MODEL, "JCW Countryman ALL4", PROPERTY_DRIVE_TRAIN, "CONV")),
+                jobs.scheduler);
         vehicle.setCallback(vehicleCallback);
         vehicle.initialize();
 
-        verify(account, after(500).never()).fetchBasicData(anyString());
+        // no job retrieves the basic data, so nothing can update the Thing later either
+        assertTrue(jobs.tasks.isEmpty());
+        verify(account, never()).fetchBasicData(anyString());
         verify(vehicleCallback, never()).thingUpdated(any());
         vehicle.dispose();
     }
@@ -416,7 +450,8 @@ class BMWCarDataVehicleHandlerTest {
     void disposedHandlerDoesNotUpdateTheThing() throws Exception {
         BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
         ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
-        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()));
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()), jobs.scheduler);
         vehicle.setCallback(vehicleCallback);
         // the Thing is disposed while the basic data is retrieved
         when(account.fetchBasicData(VIN)).thenAnswer(invocation -> {
@@ -425,8 +460,61 @@ class BMWCarDataVehicleHandlerTest {
         });
         vehicle.initialize();
 
-        verify(account, timeout(5000)).fetchBasicData(VIN);
-        verify(vehicleCallback, after(500).never()).thingUpdated(any());
+        jobs.tasks.get(0).run();
+
+        verify(account).fetchBasicData(VIN);
+        verify(vehicleCallback, never()).thingUpdated(any());
+    }
+
+    @Test
+    void vehicleGoesOnlineOnlyWithItsBasicData() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchBasicData(VIN)).thenThrow(new BMWCarDataException("Request budget used up"))
+                .thenReturn(basicData("BEV", "EL", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        doAnswer(invocation -> {
+            ((Thing) invocation.getArgument(0)).setStatusInfo(invocation.getArgument(1));
+            return null;
+        }).when(vehicleCallback).statusUpdated(any(), any());
+        Jobs jobs = new Jobs();
+        Thing thing = vehicleThing(Map.of());
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(thing, jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        assertEquals(ThingStatus.UNKNOWN, thing.getStatus());
+
+        // e.g. the request budget is used up
+        jobs.tasks.get(0).run();
+        assertEquals(ThingStatus.OFFLINE, thing.getStatus());
+        assertEquals(List.of(0L, 15 * 60L), jobs.delays);
+        // neither stream data nor a successful refresh make the vehicle online without its basic data
+        vehicle.updateTelematicData(Map.of(MILEAGE, value(100, "km", "2026-10-01T10:00:00Z")));
+        vehicle.refreshSucceeded();
+        assertEquals(ThingStatus.OFFLINE, thing.getStatus());
+
+        jobs.tasks.get(1).run();
+        // removing the fuel channels of the electric vehicle replaced the Thing
+        assertEquals(ThingStatus.ONLINE, vehicle.getThing().getStatus());
+        assertEquals("BEV", vehicle.getThing().getProperties().get(PROPERTY_DRIVE_TRAIN));
+        vehicle.dispose();
+    }
+
+    /**
+     * A scheduler that only records the jobs of the handler, which the test then runs itself, so that it does not
+     * depend on timing.
+     */
+    private static class Jobs {
+        final List<Runnable> tasks = new ArrayList<>();
+        final List<Long> delays = new ArrayList<>();
+        final ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+
+        Jobs() {
+            when(scheduler.schedule(any(Runnable.class), anyLong(), any(TimeUnit.class))).thenAnswer(invocation -> {
+                tasks.add(invocation.getArgument(0));
+                delays.add(invocation.getArgument(1));
+                return mock(ScheduledFuture.class);
+            });
+        }
     }
 
     @Test

@@ -82,6 +82,7 @@ class BMWCarDataAccountHandlerTest {
     private static final long PERIODIC_DELAY = 120;
     private static final long RETRY_DELAY = 900;
     private static final int POLL_INTERVAL = 5;
+    private static final long AUTH_RETRY_DELAY = 60;
     private static final String TELEMATIC_DATA = """
             {"telematicData":{"vehicle.vehicle.travelledDistance":
              {"value":12345,"unit":"km","timestamp":"2026-10-24T10:00:00Z"}}}""";
@@ -125,7 +126,9 @@ class BMWCarDataAccountHandlerTest {
         storage.put("container", "container-1|" + BMWCarDataAccountHandler.CONTAINER_PURPOSE);
         setUpHttpClient();
         vehicleThing = ThingBuilder.create(THING_TYPE_VEHICLE, new ThingUID(THING_TYPE_VEHICLE, ACCOUNT_UID, "car"))
-                .withBridge(ACCOUNT_UID).withConfiguration(new Configuration(Map.of(CONFIG_VIN, VIN))).build();
+                .withBridge(ACCOUNT_UID).withConfiguration(new Configuration(Map.of(CONFIG_VIN, VIN)))
+                // the basic data is known, so the vehicle goes online without retrieving it
+                .withProperties(Map.of(PROPERTY_MODEL, "iX xDrive40")).build();
         vehicleCallback = statusTrackingCallback();
         vehicle = new BMWCarDataVehicleHandler(vehicleThing);
         vehicle.setCallback(vehicleCallback);
@@ -163,9 +166,59 @@ class BMWCarDataAccountHandlerTest {
 
         runJobs(PERIODIC_DELAY);
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, vehicleThing.getStatusInfo().getStatusDetail());
+        // translated, with only a short detail, as the raw response is not meant for the user
+        assertEquals("@text/offline.comm-error.refresh-failed [\"HTTP 502\"]",
+                vehicleThing.getStatusInfo().getDescription());
 
         runJobs(RETRY_DELAY);
         assertEquals(ThingStatus.ONLINE, vehicleThing.getStatus());
+    }
+
+    @Test
+    void unusableContainerIsReplacedAtTheNextRefresh() throws Exception {
+        authorize(false);
+        // BMW reports a container that is not allocated to the customer or does not exist with CU-105, not only 404
+        respond(status(403,
+                "{\"exveErrorId\":\"CU-105\",\"exveErrorMsg\":\"No permission for specified containerId\"}"));
+
+        runJobs(PERIODIC_DELAY);
+        assertNull(storage.get("container"));
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, vehicleThing.getStatusInfo().getStatusDetail());
+
+        respond(status(200, "{\"containers\":[]}"), status(200, "{\"containerId\":\"container-2\"}"),
+                status(200, TELEMATIC_DATA));
+        runJobs(PERIODIC_DELAY);
+        assertEquals("container-2|" + BMWCarDataAccountHandler.CONTAINER_PURPOSE, storage.get("container"));
+        assertEquals(ThingStatus.ONLINE, vehicleThing.getStatus());
+        assertTrue(responses.isEmpty());
+    }
+
+    @Test
+    void containerLimitIsReportedClearly() throws Exception {
+        storage.remove("container");
+        authorize(false);
+        respond(status(200, "{\"containers\":[]}"),
+                status(403, "{\"exveErrorId\":\"CU-124\",\"exveErrorMsg\":\"Maximum number of containers reached\"}"));
+
+        runJobs(PERIODIC_DELAY);
+
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, vehicleThing.getStatusInfo().getStatusDetail());
+        assertEquals("@text/offline.comm-error.container-limit", vehicleThing.getStatusInfo().getDescription());
+        assertNull(storage.get("container"));
+    }
+
+    @Test
+    void vinWithoutPermissionIsAConfigurationErrorAndNotRefreshedAgain() throws Exception {
+        authorize(false);
+        // e.g. the vehicle is not mapped to the customer as primary user
+        respond(status(403, "{\"exveErrorId\":\"CU-104\",\"exveErrorMsg\":\"No permission for specified VIN\"}"));
+
+        runJobs(PERIODIC_DELAY);
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, vehicleThing.getStatusInfo().getStatusDetail());
+        assertEquals("@text/offline.conf-error.vin-not-permitted", vehicleThing.getStatusInfo().getDescription());
+
+        runJobs(PERIODIC_DELAY);
+        assertEquals(1, telematicRequests());
     }
 
     @Test
@@ -263,7 +316,7 @@ class BMWCarDataAccountHandlerTest {
     @Test
     void corruptBasicDataInTheCacheFallsBackToTheApi() throws Exception {
         authorize(false);
-        storage.put("basicData." + VIN, "{not json");
+        storage.put("basicData.v2." + VIN, "{not json");
         respond(status(200, BASIC_DATA));
 
         assertEquals("iX xDrive40", handler.fetchBasicData(VIN).modelName);
@@ -303,6 +356,40 @@ class BMWCarDataAccountHandlerTest {
 
         assertThrows(BMWCarDataException.class, () -> handler.fetchVehicleImage(VIN));
         assertNull(storage.get("image." + VIN));
+    }
+
+    @Test
+    void basicDataCachedByAnEarlierVersionIsReadAgain() throws Exception {
+        authorize(false);
+        // an earlier version cached only the fields it mapped, so the new ones would be missing
+        storage.put("basicData." + VIN, "{\"brand\":\"BMW\",\"modelName\":\"iX xDrive40\"}");
+        respond(status(200, "{\"brand\":\"BMW\",\"modelName\":\"iX xDrive40\",\"bodyType\":\"SAV\"}"));
+
+        assertEquals("SAV", handler.fetchBasicData(VIN).bodyType);
+        assertEquals(1, requests("/basicData"));
+    }
+
+    @Test
+    void rejectedClientIdIsAConfigurationErrorWithoutRetry() throws Exception {
+        // BMW answers an unknown client ID or inactive subscriptions with 400
+        respond(status(400, "{\"error\":\"invalid_request\",\"error_description\":\"invalid client\"}"));
+        startHandler(false, null);
+
+        verify(accountCallback).statusUpdated(any(), argThat(offline(ThingStatusDetail.CONFIGURATION_ERROR)));
+        verify(accountCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.COMMUNICATION_ERROR)));
+        assertEquals(0, pendingJobs(AUTH_RETRY_DELAY));
+    }
+
+    @Test
+    void failingDeviceAuthorizationRequestIsRetried() throws Exception {
+        respond(status(503, ""));
+        startHandler(false, null);
+
+        verify(accountCallback).statusUpdated(any(),
+                argThat(info -> offline(ThingStatusDetail.COMMUNICATION_ERROR).matches(info)
+                        && "@text/offline.comm-error.authorization-request-failed [\"HTTP 503\"]"
+                                .equals(info.getDescription())));
+        assertEquals(1, pendingJobs(AUTH_RETRY_DELAY));
     }
 
     @Test

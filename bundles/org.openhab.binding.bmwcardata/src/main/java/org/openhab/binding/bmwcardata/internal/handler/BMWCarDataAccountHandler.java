@@ -79,6 +79,7 @@ import com.google.gson.JsonParseException;
  * receives the data stream of all vehicles and provides REST API access to the vehicle handlers.
  *
  * @author Michael Weger - Initial contribution
+ * @author Mark Herwege - Refresh scheduling, request budget, basic data cache and authorization page
  */
 @NonNullByDefault
 public class BMWCarDataAccountHandler extends BaseBridgeHandler implements StreamListener {
@@ -104,7 +105,10 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private static final String STORAGE_KEY_BUDGET = "budget";
     private static final String STORAGE_KEY_CONTAINER = "container";
     // basic data by VIN; it does not change, so discovery and the vehicle Thing share one request
-    private static final String STORAGE_KEY_BASIC_DATA = "basicData.";
+    private static final String STORAGE_KEY_BASIC_DATA = "basicData.v2.";
+    // the cached basic data holds only the fields the binding maps, so the version above changes with them; removing
+    // the account also removes entries of earlier versions
+    private static final String STORAGE_KEY_BASIC_DATA_ANY_VERSION = "basicData.";
     // vehicle image by VIN as data URI; like the basic data it does not change
     private static final String STORAGE_KEY_IMAGE = "image.";
 
@@ -240,7 +244,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         deleteAuthorization();
         storage.remove(STORAGE_KEY_CONTAINER);
         for (String key : List.copyOf(storage.getKeys())) {
-            if (key.startsWith(STORAGE_KEY_BASIC_DATA) || key.startsWith(STORAGE_KEY_IMAGE)) {
+            if (key.startsWith(STORAGE_KEY_BASIC_DATA_ANY_VERSION) || key.startsWith(STORAGE_KEY_IMAGE)) {
                 storage.remove(key);
             }
         }
@@ -391,8 +395,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         try {
             return call(() -> api.getTelematicData(vin, containerId));
         } catch (BMWCarDataException e) {
-            if (e.getHttpStatus() == 404) {
-                // the container may have been deleted in the CarData portal
+            if (e.isContainerUnusable()) {
+                // the container may have been deleted, e.g. by another tool; the next refresh sets up a new one
                 synchronized (containerLock) {
                     if (containerId.equals(this.containerId)) {
                         this.containerId = null;
@@ -415,6 +419,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private List<BMWCarDataVehicleHandler> getVehicles() {
         return getThing().getThings().stream().map(Thing::getHandler).filter(BMWCarDataVehicleHandler.class::isInstance)
                 .map(BMWCarDataVehicleHandler.class::cast).filter(vehicle -> BMWCarDataApi.isValidVin(vehicle.getVin()))
+                // e.g. a VIN the client has no permission for, which retrying does not change until re-enabled
+                .filter(vehicle -> vehicle.getThing().getStatusInfo()
+                        .getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR)
                 .toList();
     }
 
@@ -456,7 +463,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                         return;
                     }
                     if (!e.isTransient()) {
-                        vehicle.refreshFailed(e.getMessage());
+                        logger.debug("Refreshing telematic data failed: {}", e.getMessage());
+                        vehicle.refreshFailed(e);
                         continue;
                     }
                     if (retry) {
@@ -466,7 +474,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                         // the stream keeps the vehicle up to date, a failed poll does not make it unreachable
                         logger.debug("Refreshing telematic data failed, relying on the stream: {}", e.getMessage());
                     } else {
-                        vehicle.refreshFailed(e.getMessage());
+                        logger.debug("Refreshing telematic data failed: {}", e.getMessage());
+                        vehicle.refreshFailed(e);
                     }
                 }
             }
@@ -761,7 +770,17 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             scheduleAuthJob(() -> pollDeviceAuthorization(authorization, authorization.interval()),
                     authorization.interval());
         } catch (BMWCarDataException e) {
-            updateOfflineIfActive(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (e.getHttpStatus() == 400) {
+                // the request is always the same, so BMW rejects the client ID, e.g. with invalid_request; retrying
+                // does not help until the configuration or the subscriptions of the client are fixed
+                logger.debug("Device authorization rejected: {}", e.getMessage());
+                updateOfflineIfActive(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error.client-rejected");
+                return;
+            }
+            logger.debug("Device authorization request failed: {}", e.getMessage());
+            updateOfflineIfActive(ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.authorization-request-failed [\"" + e.getShortDescription() + "\"]");
             scheduleAuthJob(this::startDeviceAuthorization, RETRY_DELAY_SECONDS);
         }
     }
@@ -923,7 +942,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         logger.debug("Token refresh failed: {}", e.getMessage());
         Tokens current = tokens;
         if (current == null || current.isExpired(Instant.now())) {
-            updateOfflineIfActive(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateOfflineIfActive(ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.token-refresh-failed [\"" + e.getShortDescription() + "\"]");
         }
         scheduleAuthJob(retry, RETRY_DELAY_SECONDS);
     }
