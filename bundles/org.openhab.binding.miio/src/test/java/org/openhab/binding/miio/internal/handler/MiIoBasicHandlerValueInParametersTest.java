@@ -26,6 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -41,7 +43,9 @@ import org.openhab.binding.miio.internal.miot.MiotParser;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -355,5 +359,52 @@ public class MiIoBasicHandlerValueInParametersTest {
                 handler.send("actions", new StringType("vacuum-start-mop-wash")));
         assertEquals(List.of("action{\"did\":\"actions\",\"siid\":4,\"aiid\":2,\"in\":[]}"),
                 handler.send("actions", new StringType("vacuum-extend-stop-clean")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "yeelink.light.ceila-miot.json", "yeelink.light.ceilb-miot.json",
+            "yeelink.light.ceil34-miot.json", "yeelink.light.fancl2-miot.json", "yeelink.light.stripb-miot.json" })
+    public void miotDimmerAlsoSwitchesThePowerProperty(String fileName) throws IOException {
+        handler.loadDatabase(fileName);
+        String powerOff = "set_properties[{\"did\":\"on\",\"siid\":2,\"piid\":1,\"value\":false}]";
+        String powerOn = "set_properties[{\"did\":\"on\",\"siid\":2,\"piid\":1,\"value\":true}]";
+
+        assertEquals(List.of(powerOff), handler.send("brightness", OnOffType.OFF));
+        assertEquals(List.of(powerOff), handler.send("brightness", PercentType.ZERO));
+        assertEquals(List.of(powerOn), handler.send("brightness", OnOffType.ON));
+        assertEquals(List.of("set_properties[{\"did\":\"brightness\",\"siid\":2,\"piid\":3,\"value\":50}]", powerOn),
+                handler.send("brightness", new PercentType(50)));
+    }
+
+    @Test
+    public void miotColorAlsoSetsBrightnessAndPower() throws IOException {
+        handler.loadDatabase("yeelink.light.ceilb-miot.json");
+        String powerOff = "set_properties[{\"did\":\"on1\",\"siid\":3,\"piid\":1,\"value\":false}]";
+        String powerOn = "set_properties[{\"did\":\"on1\",\"siid\":3,\"piid\":1,\"value\":true}]";
+        String bright50 = "set_properties[{\"did\":\"brightness1\",\"siid\":3,\"piid\":3,\"value\":50}]";
+
+        assertEquals(
+                List.of("set_properties[{\"did\":\"color\",\"siid\":3,\"piid\":5,\"value\":128}]", bright50, powerOn),
+                handler.send("color", new HSBType("240,100,50")));
+        assertEquals(List.of(bright50, powerOn), handler.send("color", new PercentType(50)));
+        assertEquals(List.of(powerOff), handler.send("color", OnOffType.OFF));
+        // the color itself is also sent, converted with the HSB brightness (black), see the COLOR conversion
+        List<String> sent = handler.send("color", new HSBType("240,100,0"));
+        assertEquals(powerOff, sent.get(sent.size() - 1));
+        assertEquals(List.of(powerOff), handler.send("brightness1", OnOffType.OFF));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "yeelink.light.bslamp2.json", "yeelink.light.ceil43.json", "yeelink.light.ceiling.json",
+            "yeelink.light.ceiling4.json" })
+    public void nightLightDimmerSwitchesThePower(String fileName) throws IOException {
+        handler.loadDatabase(fileName);
+        String powerOff = "set_power[\"off\",\"smooth\",500]";
+
+        assertEquals(List.of(powerOff), handler.send("nightlightBrightness", OnOffType.OFF));
+        assertEquals(List.of(powerOff), handler.send("nightlightBrightness", PercentType.ZERO));
+        assertEquals(List.of("set_power[\"on\",\"smooth\",500,5]"), handler.send("nightlightBrightness", OnOffType.ON));
+        assertEquals(List.of("set_scene[\"nightlight\",50]"),
+                handler.send("nightlightBrightness", new PercentType(50)));
     }
 }

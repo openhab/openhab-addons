@@ -161,6 +161,31 @@
 						"condition": {
 							"name": "BrightnessExisting"
 						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "on",
+								"siid": 2,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
+						}
 					}
 				],
 				"category": "light",
@@ -183,6 +208,46 @@
 						"parameterType": "COLOR",
 						"condition": {
 							"name": "HSBOnly"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "brightness",
+								"siid": 2,
+								"piid": 3,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "on",
+								"siid": 2,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
 						}
 					}
 				],

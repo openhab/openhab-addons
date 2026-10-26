@@ -143,6 +143,31 @@
 						"condition": {
 							"name": "BrightnessExisting"
 						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "on",
+								"siid": 2,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
+						}
 					}
 				],
 				"category": "light",

@@ -905,6 +905,43 @@
 						"condition": {
 							"name": "BrightnessExisting"
 						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|0(\\.0*)?",
+									"returnValue": "off"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500,
+							5
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": "on"
+								}
+							]
+						}
 					}
 				],
 				"category": "light",
