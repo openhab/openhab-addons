@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -31,7 +32,11 @@ import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
  */
 @NonNullByDefault
 public class WaitForTopicValue {
-    private final CompletableFuture<String> composeFuture;
+    /**
+     * Single future owning the lifecycle of this instance. Every terminal path (message received, timeout,
+     * {@link #stop()}, interruption, failed subscription) completes it, which triggers the unsubscription exactly once.
+     */
+    private final CompletableFuture<String> result = new CompletableFuture<>();
 
     /**
      * Creates an instance.
@@ -40,22 +45,25 @@ public class WaitForTopicValue {
      * @param topic The topic
      */
     public WaitForTopicValue(MqttBrokerConnection connection, String topic) {
-        final CompletableFuture<String> future = new CompletableFuture<>();
         final MqttMessageSubscriber mqttMessageSubscriber = (t, payload) -> {
-            future.complete(new String(payload, StandardCharsets.UTF_8));
+            result.complete(new String(payload, StandardCharsets.UTF_8));
         };
-        future.whenComplete((r, e) -> {
-            connection.unsubscribe(topic, mqttMessageSubscriber);
+        // Runs exactly once, regardless of how the future is completed.
+        result.whenComplete((r, e) -> connection.unsubscribe(topic, mqttMessageSubscriber));
+        connection.subscribe(topic, mqttMessageSubscriber).whenComplete((success, e) -> {
+            if (e != null) {
+                result.completeExceptionally(e);
+            } else if (!Boolean.TRUE.equals(success)) {
+                result.completeExceptionally(new IllegalStateException("Subscription to " + topic + " failed"));
+            }
         });
-
-        composeFuture = connection.subscribe(topic, mqttMessageSubscriber).thenCompose(b -> future);
     }
 
     /**
      * Free any resources
      */
     public void stop() {
-        composeFuture.completeExceptionally(new Exception("Stopped"));
+        result.completeExceptionally(new Exception("Stopped"));
     }
 
     /**
@@ -66,16 +74,21 @@ public class WaitForTopicValue {
      */
     public @Nullable String waitForTopicValue(int timeoutInMS) {
         try {
-            return composeFuture.get(timeoutInMS, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            return result.get(timeoutInMS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            stop();
+            return null;
+        } catch (TimeoutException e) {
+            timeout();
+            return null;
+        } catch (ExecutionException e) {
             return null;
         }
     }
 
     private void timeout() {
-        if (!composeFuture.isDone()) {
-            composeFuture.completeExceptionally(new TimeoutException());
-        }
+        result.completeExceptionally(new TimeoutException());
     }
 
     /**
@@ -86,7 +99,8 @@ public class WaitForTopicValue {
      * @return The future
      */
     public CompletableFuture<String> waitForTopicValueAsync(ScheduledExecutorService scheduler, int timeoutInMS) {
-        scheduler.schedule(this::timeout, timeoutInMS, TimeUnit.MILLISECONDS);
-        return composeFuture;
+        final ScheduledFuture<?> timer = scheduler.schedule(this::timeout, timeoutInMS, TimeUnit.MILLISECONDS);
+        result.whenComplete((r, e) -> timer.cancel(false));
+        return result;
     }
 }
