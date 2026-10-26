@@ -399,7 +399,12 @@ class WebSocketArt extends WebSocketBase {
             }
             // remove returns and white space for ART_JSON channel
             valueReceived(ART_JSON, new StringType(msg.trim().replaceAll("\\n|\\\\n", "").replaceAll("\\s{2,}", " ")));
-            switch (data.getEvent()) {
+            String event = data.getEvent();
+            if (event.isEmpty() && data.getRotationStatus() > 0) {
+                // art API 2.03 (2021) replies to get_current_rotation without an event
+                event = "get_current_rotation";
+            }
+            switch (event) {
                 case "error":
                     logger.debug("{}: ERROR event: {}", host, msg);
                     break;
@@ -414,6 +419,8 @@ class WebSocketArt extends WebSocketBase {
                 case "send_image":
                 case "image_deleted":
                 case "set_artmode_status":
+                case "set_slideshow_status":
+                case "set_auto_rotation_status":
                 case "get_content_list":
                 case "recently_set_updated":
                 case "preview_started":
