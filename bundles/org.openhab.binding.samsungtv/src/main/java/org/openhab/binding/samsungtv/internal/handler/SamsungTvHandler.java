@@ -322,7 +322,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public void updateSettings(TVProperties properties) {
         setPowerState("on".equals(properties.getPowerState()));
         setModelName(properties.getModelName());
-        int year = Integer.parseInt(properties.getModel().substring(0, 2));
+        int year = properties.getModelYear();
         if (properties.getFrameTVSupport() && year >= 22) {
             logger.warn("{}: Art Mode MAY NOT BE SUPPORTED on Frame TV's after 2021 model year", host);
             setArtMode2022(true);
