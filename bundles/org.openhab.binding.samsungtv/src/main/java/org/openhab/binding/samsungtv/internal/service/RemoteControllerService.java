@@ -573,19 +573,22 @@ public class RemoteControllerService implements SamsungTvService {
     }
 
     /**
-     * Fetching the power state blocks on HTTP, so it is kept off the caller's thread, which is often the websocket
-     * receive thread. Updates run one at a time, in the order they were reported.
+     * {@link #powerUpdated(boolean, boolean)} for callers on the websocket receive thread. Fetching the power state
+     * blocks on HTTP, so it runs on the scheduler instead, one update at a time in the order they were reported.
      */
-    public synchronized void powerUpdated(boolean on, boolean artMode) {
+    public synchronized void powerUpdatedAsync(boolean on, boolean artMode) {
         ScheduledExecutorService scheduler = getScheduler();
         if (scheduler == null) {
-            updatePower(on, artMode);
+            powerUpdated(on, artMode);
             return;
         }
-        powerUpdate = powerUpdate.thenRunAsync(() -> updatePower(on, artMode), scheduler);
+        powerUpdate = powerUpdate.thenRunAsync(() -> powerUpdated(on, artMode), scheduler).exceptionally(e -> {
+            logger.debug("{}: Power update failed: {}", host, e.getMessage());
+            return null;
+        });
     }
 
-    private void updatePower(boolean on, boolean artMode) {
+    public void powerUpdated(boolean on, boolean artMode) {
         String powerState = fetchPowerState();
         if (artMode && "standby".equals(powerState) && handler.getModelYear() >= 25) {
             // 2025 and later Frame TV's report PowerState standby in art mode, 2022 to 2024 report on
