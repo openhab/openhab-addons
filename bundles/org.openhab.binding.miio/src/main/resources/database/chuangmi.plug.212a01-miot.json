@@ -11,7 +11,7 @@
 				"siid": 2,
 				"piid": 1,
 				"friendlyName": "Power",
-				"channel": "on",
+				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -20,9 +20,10 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "poweroutlet",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -34,9 +35,6 @@
 				"type": "Number:Temperature",
 				"unit": "celsius",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 255,
-					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
@@ -53,25 +51,27 @@
 				"siid": 2,
 				"piid": 7,
 				"friendlyName": "Working Time",
-				"channel": "working-time",
+				"channel": "working_time",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 300,
-					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "on1",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Indicator Light - Switch Status",
-				"channel": "on1",
+				"friendlyName": "Indicator Light",
+				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -80,23 +80,21 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "light",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Light"
 				]
 			},
 			{
 				"property": "power-consumption",
 				"siid": 5,
 				"piid": 1,
-				"friendlyName": "Daily Power Consumption",
-				"channel": "power-consumption",
+				"friendlyName": "Energy Consumption",
+				"channel": "power_consumption",
 				"type": "Number:Energy",
-				"unit": "kWH",
+				"unit": "kwh",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 6.5535E+7,
-					"step": 1,
 					"pattern": "%.2f %unit%",
 					"readOnly": true
 				},
@@ -113,14 +111,11 @@
 				"property": "electric-current",
 				"siid": 5,
 				"piid": 2,
-				"friendlyName": "Power Consumption - Electric Current",
-				"channel": "electric-current",
+				"friendlyName": "Current",
+				"channel": "electric_current",
 				"type": "Number:ElectricCurrent",
 				"unit": "mA",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 65535,
-					"step": 1,
 					"pattern": "%.1f %unit%",
 					"readOnly": true
 				},
@@ -136,14 +131,11 @@
 				"property": "voltage",
 				"siid": 5,
 				"piid": 3,
-				"friendlyName": "Power Consumption - Voltage",
+				"friendlyName": "Voltage",
 				"channel": "voltage",
 				"type": "Number:ElectricPotential",
 				"unit": "volt",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 65535,
-					"step": 1,
 					"pattern": "%.1f %unit%",
 					"readOnly": true
 				},
@@ -159,18 +151,16 @@
 				"property": "electric-power",
 				"siid": 5,
 				"piid": 6,
-				"friendlyName": "Current Power Consumption - Electric Power",
-				"channel": "electric-power",
+				"friendlyName": "Active Power",
+				"channel": "electric_power",
 				"type": "Number:Power",
 				"unit": "watt",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 6553500,
-					"step": 1,
-					"pattern": "%.0f %unit%",
+					"pattern": "%.2f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
+				"transformation": "/100",
 				"actions": [],
 				"category": "energy",
 				"tags": [
@@ -182,8 +172,8 @@
 				"property": "on-duration",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Imilab Timer - On Duration",
-				"channel": "on-duration",
+				"friendlyName": "Loop On Duration",
+				"channel": "on_duration",
 				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
@@ -196,17 +186,21 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
 			},
 			{
 				"property": "off-duration",
 				"siid": 4,
 				"piid": 2,
-				"friendlyName": "Imilab Timer - Off Duration",
-				"channel": "off-duration",
+				"friendlyName": "Loop Off Duration",
+				"channel": "off_duration",
 				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
@@ -219,16 +213,20 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
 			},
 			{
 				"property": "countdown",
 				"siid": 4,
 				"piid": 3,
-				"friendlyName": "Imilab Timer - Countdown",
+				"friendlyName": "Countdown",
 				"channel": "countdown",
 				"type": "Number:Time",
 				"unit": "seconds",
@@ -242,17 +240,21 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
 			},
 			{
 				"property": "task-switch",
 				"siid": 4,
 				"piid": 4,
-				"friendlyName": "Imilab Timer - Task Switch",
-				"channel": "task-switch",
+				"friendlyName": "Loop Task",
+				"channel": "loop_task",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -260,20 +262,79 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "When on, the plug switches itself on and off by the set durations. Set Loop On Duration and Loop Off Duration first."
 			},
 			{
 				"property": "countdown-info",
 				"siid": 4,
 				"piid": 5,
-				"friendlyName": "Imilab Timer - Countdown Info",
-				"channel": "countdown-info",
+				"friendlyName": "Countdown Active",
+				"channel": "countdown_active",
 				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "power-enable",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Max Power Limit",
+				"channel": "max_power_limit",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "When on, the plug switches itself off when the power is greater than Max Power. Firmware 2.1.8_0028 or newer."
+			},
+			{
+				"property": "over-power",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "Max Power",
+				"channel": "max_power",
+				"type": "Number:Power",
+				"unit": "watt",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2500,
+					"step": 100,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "energy",
+				"tags": [
+					"Setpoint",
+					"Power"
+				],
+				"readmeComment": "Firmware 2.1.8_0036 or newer."
 			},
 			{
 				"property": "",
