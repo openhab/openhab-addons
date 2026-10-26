@@ -399,7 +399,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         if (Arrays.asList(ART_COLOR_TEMPERATURE, ART_IMAGE).contains(channelUID.getId())) {
             // refresh channel as it's not polled
             services.stream().filter(a -> a.getServiceName().equals(RemoteControllerService.SERVICE_NAME))
-                    .map(a -> a.handleCommand(channelUID.getId(), RefreshType.REFRESH));
+                    .forEach(a -> a.handleCommand(channelUID.getId(), RefreshType.REFRESH));
         }
     }
 
