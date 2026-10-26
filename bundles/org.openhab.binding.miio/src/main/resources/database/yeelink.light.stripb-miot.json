@@ -1,0 +1,306 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yeelink.light.stripb"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Toggle"
+						},
+						{
+							"value": "colorful-light-fx-next",
+							"label": "Next Effect"
+						},
+						{
+							"value": "yeelight-brightness-up",
+							"label": "Brightness Up"
+						},
+						{
+							"value": "yeelight-brightness-down",
+							"label": "Brightness Down"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "colorful-light-fx-next"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yeelight-brightness-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "yeelight-brightness-down"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Toggle\",\"colorful-light-fx-next\"\u003d\"Next Effect\",\"yeelight-brightness-up\"\u003d\"Brightness Up\",\"yeelight-brightness-down\"\u003d\"Brightness Down\"]`"
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Music"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Music\"]`"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Color",
+				"channel": "color",
+				"type": "Color",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "COLOR",
+						"condition": {
+							"name": "HSBOnly"
+						}
+					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"Color"
+				]
+			},
+			{
+				"property": "init-power-opt",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Power-On State",
+				"channel": "init_power_opt",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "On"
+						},
+						{
+							"value": "2",
+							"label": "Off"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Power"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"On\",\"2\"\u003d\"Off\"]`"
+			},
+			{
+				"property": "save-state",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Remember Last State",
+				"channel": "save_state",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Disable"
+						},
+						{
+							"value": "1",
+							"label": "Enable"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Enabled"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]`"
+			},
+			{
+				"property": "strip-lenth",
+				"siid": 4,
+				"piid": 8,
+				"friendlyName": "Strip Length",
+				"channel": "strip_length",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 40,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "length-detected",
+				"siid": 4,
+				"piid": 9,
+				"friendlyName": "Length Detected",
+				"channel": "length_detected",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "light",
+				"tags": [
+					"Status"
+				]
+			}
+		],
+		"experimental": true
+	}
+}
