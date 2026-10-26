@@ -12,13 +12,20 @@
  */
 package org.openhab.binding.mqtt.handler;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +41,8 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttWillAndTestament;
 import org.openhab.core.io.transport.mqtt.reconnect.PeriodicReconnectStrategy;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,6 +205,32 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     }
 
     /**
+     * Loads the client certificate and private key from the configured keystore and assigns them to the
+     * {@link MqttBrokerConnection}, enabling TLS client authentication (mutual TLS).
+     * Does nothing if no keystore is configured or the connection is not secure.
+     *
+     * @throws IllegalArgumentException if the keystore cannot be loaded
+     */
+    protected void assignClientCertificate(BrokerHandlerConfig config, MqttBrokerConnection connection)
+            throws IllegalArgumentException {
+        if (!config.secure || config.clientKeystore.isBlank()) {
+            return;
+        }
+        final char[] keystorePassword = config.clientKeystorePassword.toCharArray();
+        try (InputStream in = Files.newInputStream(Path.of(config.clientKeystore))) {
+            KeyStore keyStore = KeyStore.getInstance(config.clientKeystoreType);
+            keyStore.load(in, keystorePassword);
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory
+                    .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(keyStore, keystorePassword);
+            connection.setKeyManagerFactory(keyManagerFactory);
+        } catch (GeneralSecurityException | IOException e) {
+            throw new IllegalArgumentException(
+                    "Unable to load client keystore '" + config.clientKeystore + "': " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Creates a broker connection based on the configuration of {@link #config}.
      *
      * @return Returns a valid MqttBrokerConnection
@@ -250,6 +285,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         config = getConfigAs(BrokerHandlerConfig.class);
         final MqttBrokerConnection connection = createBrokerConnection();
         assignSSLContextProvider(config, connection, this);
+        try {
+            assignClientCertificate(config, connection);
+        } catch (IllegalArgumentException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
         this.connection = connection;
 
         super.initialize();
