@@ -156,7 +156,8 @@ When the static vehicle data is read, the channels that do not apply to the vehi
 - For an electric vehicle (drive train `BEV`), the fuel channels and the total range.
 - For a combustion vehicle (drive train `CONV`), the charging, high-voltage battery and electric range channels.
 - The sunroof channels, if BMW reports the vehicle has no sunroof.
-- The destination channels, if BMW reports the vehicle has no navigation system. The location is kept, as it is provided by the telematics unit.
+
+The navigation channels are always kept: the location comes from the telematics unit, and BMW's `hasNavi` flag, shown as the `hasNavigation` property, is also reported as `false` for vehicles with a navigation system.
 
 Plug-in hybrids (`PHEV`) and vehicles with another or no drive train keep all channels.
 BMW does not document the values, so the binding only acts on those seen on real vehicles; the reported values are shown as Thing properties.

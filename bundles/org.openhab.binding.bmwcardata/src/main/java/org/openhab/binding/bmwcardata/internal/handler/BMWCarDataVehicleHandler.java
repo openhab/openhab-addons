@@ -75,8 +75,6 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
-    // descriptors of the destination guidance, which needs a navigation system
-    private static final String DESTINATION_PREFIX = "vehicle.cabin.infotainment.navigation.destinationSet.";
     // retry of the basic data and the image, like a failed refresh of the account, e.g. while the budget is used up
     private static final long RETRY_SECONDS = 15 * 60;
 
@@ -577,10 +575,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * Removes the channels that do not apply to the vehicle: those of a drive it does not have, of the sunroof and of
-     * the destination guidance of the navigation system. Equipment is only treated as missing when BMW explicitly
-     * reports so. The channels are removed once, together with retrieving the properties; recreate the Thing to get
-     * them back.
+     * Removes the channels that do not apply to the vehicle: those of a drive it does not have and of the sunroof.
+     * Equipment is only treated as missing when BMW explicitly reports so. The channels are removed once, together with
+     * retrieving the properties; recreate the Thing to get them back.
      */
     private void removeIrrelevantChannels(BasicData basicData) {
         // BMW does not document the values, so that users can report the ones of their vehicles
@@ -604,14 +601,12 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      */
     static List<String> irrelevantChannelIds(BasicData basicData) {
         boolean noSunroof = Boolean.FALSE.equals(basicData.hasSunRoof);
-        boolean noNavigation = Boolean.FALSE.equals(basicData.hasNavi);
+        // hasNavi is not used: vehicles with a navigation system were seen reporting false
         Set<Drive> drives = drives(basicData);
         List<String> ids = new ArrayList<>();
         for (VehicleChannel channel : VehicleChannel.values()) {
-            // the location comes from the telematics unit, which needs it for eCall, not from the navigation system
             boolean irrelevant = (channel.getDrive() != Drive.ANY && !drives.contains(channel.getDrive()))
-                    || (noSunroof && channel == VehicleChannel.SUNROOF)
-                    || (noNavigation && channel.getDescriptor().startsWith(DESTINATION_PREFIX));
+                    || (noSunroof && channel == VehicleChannel.SUNROOF);
             String channelUid = channel.getChannelUid();
             if (irrelevant && channelUid != null) {
                 ids.add(channelUid);

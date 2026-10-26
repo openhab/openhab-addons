@@ -375,9 +375,9 @@ class BMWCarDataVehicleHandlerTest {
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("PHEV", null, false, false));
         assertTrue(ids.contains(GROUP_STATUS + "#sunroof"));
         assertTrue(ids.contains(GROUP_STATUS + "#sunroof-state"));
-        assertTrue(ids.contains(GROUP_NAVIGATION + "#destination-distance"));
-        assertTrue(ids.contains(GROUP_NAVIGATION + "#arrival-time"));
-        // the location comes from the telematics unit
+        // hasNavi is not trusted, as vehicles with a navigation system report false
+        assertFalse(ids.contains(GROUP_NAVIGATION + "#destination-distance"));
+        assertFalse(ids.contains(GROUP_NAVIGATION + "#arrival-time"));
         assertFalse(ids.contains(CHANNEL_GPS));
         assertFalse(ids.contains(GROUP_NAVIGATION + "#heading"));
         assertFalse(ids.contains(GROUP_STATUS + "#door-lock"));
