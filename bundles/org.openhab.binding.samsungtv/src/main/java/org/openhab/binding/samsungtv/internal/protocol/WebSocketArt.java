@@ -472,10 +472,10 @@ class WebSocketArt extends WebSocketBase {
                 case "artmode_status":
                     logger.debug("{}: {}: {}", host, data.getEvent(), data.getValue());
                     if ("off".equals(data.getValue())) {
-                        remoteControllerWebSocket.callback.powerUpdated(true, false);
+                        remoteControllerWebSocket.callback.powerUpdatedAsync(true, false);
                         remoteControllerWebSocket.callback.currentAppUpdated("");
                     } else {
-                        remoteControllerWebSocket.callback.powerUpdated(false, true);
+                        remoteControllerWebSocket.callback.powerUpdatedAsync(false, true);
                     }
                     if (!remoteControllerWebSocket.noApps()) {
                         remoteControllerWebSocket.updateCurrentApp();
@@ -548,7 +548,7 @@ class WebSocketArt extends WebSocketBase {
                     break;
                 case "go_to_standby":
                     logger.debug("{}: go_to_standby", host);
-                    remoteControllerWebSocket.callback.powerUpdated(false, false);
+                    remoteControllerWebSocket.callback.powerUpdatedAsync(false, false);
                     remoteControllerWebSocket.callback.setOffline();
                     stateMap.clear();
                     break;
