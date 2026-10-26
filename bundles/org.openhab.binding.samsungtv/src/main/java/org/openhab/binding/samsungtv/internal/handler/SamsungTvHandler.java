@@ -335,8 +335,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     public void showConfiguration() {
-        logger.debug("{}: Configuration: {}, port: {}, token: {}, MAC: {}, subscription: {}", host,
-                configuration.getProtocol(), configuration.getPort(), configuration.getWebsocketToken(),
+        logger.debug("{}: Configuration: {}, port: {}, token set: {}, MAC: {}, subscription: {}", host,
+                configuration.getProtocol(), configuration.getPort(), !configuration.getWebsocketToken().isBlank(),
                 configuration.getMacAddress(), configuration.getSubscription());
         if (configuration.isWebsocketProtocol()) {
             if (configuration.getSmartThingsApiKey().isBlank()) {

@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class WebSocketBase extends WebSocketAdapter {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
+    private static final Pattern TOKEN = Pattern.compile("(\"token\"\\s*:\\s*\")[^\"]*");
     final RemoteControllerWebSocket remoteControllerWebSocket;
     final int bufferSize = 1048576; // 1 Mb
 
@@ -109,7 +111,9 @@ class WebSocketBase extends WebSocketAdapter {
             logger.trace("{}: {} already connecting or connected", host, className);
             return;
         }
-        logger.debug("{}: {} connecting to: {}", host, className, uri);
+        // the query holds the websocket token, so leave it out
+        logger.debug("{}: {} connecting to: {}://{}{}", host, className, uri.getScheme(), uri.getAuthority(),
+                uri.getPath());
         this.uri = Optional.of(uri);
         try {
             sessionFuture = Optional.of(remoteControllerWebSocket.client.connect(this, uri));
@@ -191,7 +195,9 @@ class WebSocketBase extends WebSocketAdapter {
 
     @Override
     public void onWebSocketText(@Nullable String str) {
-        logger.trace("{}: {}: onWebSocketText: {}", host, className, str);
+        if (logger.isTraceEnabled() && str != null) {
+            logger.trace("{}: {}: onWebSocketText: {}", host, className, TOKEN.matcher(str).replaceAll("$1***"));
+        }
     }
 
     @Override
