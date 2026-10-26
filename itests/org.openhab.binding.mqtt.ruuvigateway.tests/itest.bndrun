@@ -52,7 +52,6 @@ Import-Package: \
 	org.objenesis;version='[3.3.0,3.3.1)',\
 	org.mockito.junit-jupiter;version='[5.23.0,5.23.1)',\
 	javax.measure.unit-api;version='[2.2.0,2.2.1)',\
-	tech.units.indriya;version='[2.2.3,2.2.4)',\
 	uom-lib-common;version='[2.2.0,2.2.1)',\
 	io.methvin.directory-watcher;version='[0.19.1,0.19.2)',\
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.9,2.3.10)',\
@@ -115,5 +114,6 @@ Import-Package: \
 	jakarta.inject.jakarta.inject-api;version='[1.0.5,1.0.6)',\
 	org.openhab.core.semantics;version='[5.3.0,5.3.1)',\
 	org.apache.commons.commons-codec;version='[1.17.1,1.17.2)',\
-	ch.qos.logback.classic;version='[1.5.38,1.5.39)',\
-	ch.qos.logback.core;version='[1.5.38,1.5.39)'
+	ch.qos.logback.classic;version='[1.6.5,1.6.6)',\
+	ch.qos.logback.core;version='[1.6.5,1.6.6)',\
+	tech.units.indriya;version='[2.2.4,2.2.5)'
