@@ -17,6 +17,7 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transit.internal.handler.TransitBridgeHandler;
+import org.openhab.binding.transit.internal.net.TransitPlace;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
@@ -65,6 +66,70 @@ public class TransitBridgeActions implements ThingActions {
             }
         }
         logger.debug("Action getNearbyStops called, but handler is not ready or not a Bridge handler");
+        return null;
+    }
+
+    @RuleAction(label = "@text/action.searchStops.label", description = "@text/action.searchStops.description")
+    public @Nullable String searchStops(@ActionInput(name = "lat") double lat, @ActionInput(name = "lon") double lon,
+            @ActionInput(name = "query") String query) {
+        TransitBridgeHandler bridgeHandler = getBridgeHandler("searchStops");
+        if (bridgeHandler == null) {
+            return null;
+        }
+        try {
+            return bridgeHandler.fetchSearchStops(lat, lon, query);
+        } catch (IOException e) {
+            logger.debug("Failed to search stops: {}", e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return null;
+    }
+
+    @RuleAction(label = "@text/action.getTripPlan.label", description = "@text/action.getTripPlan.description")
+    public @Nullable String getTripPlan(@ActionInput(name = "fromLat") double fromLat,
+            @ActionInput(name = "fromLon") double fromLon, @ActionInput(name = "toLat") double toLat,
+            @ActionInput(name = "toLon") double toLon) {
+        TransitBridgeHandler bridgeHandler = getBridgeHandler("getTripPlan");
+        if (bridgeHandler == null) {
+            return null;
+        }
+        try {
+            return bridgeHandler.fetchPlan(TransitPlace.ofLocation(fromLat, fromLon),
+                    TransitPlace.ofLocation(toLat, toLon));
+        } catch (IOException e) {
+            logger.debug("Failed to get trip plan: {}", e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return null;
+    }
+
+    @RuleAction(label = "@text/action.estimatePlanDuration.label", description = "@text/action.estimatePlanDuration.description")
+    public @Nullable Long estimatePlanDuration(@ActionInput(name = "fromLat") double fromLat,
+            @ActionInput(name = "fromLon") double fromLon, @ActionInput(name = "toLat") double toLat,
+            @ActionInput(name = "toLon") double toLon) {
+        TransitBridgeHandler bridgeHandler = getBridgeHandler("estimatePlanDuration");
+        if (bridgeHandler == null) {
+            return null;
+        }
+        try {
+            Double duration = bridgeHandler.getEstimatePlanDuration(TransitPlace.ofLocation(fromLat, fromLon),
+                    TransitPlace.ofLocation(toLat, toLon)).getDuration();
+            return duration != null ? Math.round(duration) : null;
+        } catch (IOException e) {
+            logger.debug("Failed to estimate plan duration: {}", e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return null;
+    }
+
+    private @Nullable TransitBridgeHandler getBridgeHandler(String action) {
+        if (this.handler instanceof TransitBridgeHandler bridgeHandler) {
+            return bridgeHandler;
+        }
+        logger.debug("Action {} called, but handler is not ready or not a Bridge handler", action);
         return null;
     }
 }
