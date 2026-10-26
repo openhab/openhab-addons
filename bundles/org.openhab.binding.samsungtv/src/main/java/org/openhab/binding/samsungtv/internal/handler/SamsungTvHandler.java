@@ -806,7 +806,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             Configuration config = editConfiguration();
             config.put(key, value);
             updateConfiguration(config);
-            logger.debug("{}: Updated Configuration {}:{}", host, key, value);
+            logger.debug("{}: Updated Configuration {}:{}", host, key, Utils.loggableConfigValue(key, value));
             configuration = getConfigAs(SamsungTvConfiguration.class);
         }
     }
