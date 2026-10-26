@@ -160,6 +160,7 @@ public class RemoteControllerService implements SamsungTvService {
      */
     @Override
     public void clearCache() {
+        retryCount = 0;
         start();
     }
 
@@ -175,7 +176,7 @@ public class RemoteControllerService implements SamsungTvService {
         boolean result = false;
         if (!checkConnection() && !SET_ART_MODE.equals(channel)) {
             logger.debug("{}: RemoteController is not connected", host);
-            if (getArtMode2022() && retryCount < 4) {
+            if (retryCount < 4) {
                 retryCount += 1;
                 logger.debug("{}: Reconnecting RemoteController, retry: {}", host, retryCount);
                 start();

@@ -63,8 +63,8 @@ class WebSocketBase extends WebSocketAdapter {
             // timeout
             reconnect();
         }
-        if (statusCode == 1006) {
-            // Disconnected
+        if (statusCode == 1002 || statusCode == 1006) {
+            // Disconnected, 1002 when the TV closes with an invalid close code after a channel timeout
             reconnect();
         }
     }
