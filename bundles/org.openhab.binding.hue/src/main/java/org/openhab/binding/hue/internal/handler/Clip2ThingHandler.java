@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -236,6 +237,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private final List<ChannelUID> legacyLinkedChannelUIDs = new CopyOnWriteArrayList<>();
 
+    // groupId -> light resource ID, for every light except the primary (front) light
+    private final Map<String, String> auxiliaryLightGroups = new ConcurrentHashMap<>();
+
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
@@ -256,7 +260,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updateDependenciesDone;
 
     private @Nullable LegacyLightState legacyLightState;
-    private volatile @Nullable String backLightResourceId;
 
     private final Map<ChannelUID, Future<?>> alertResetTasks = new ConcurrentHashMap<>();
     private final Map<ChannelUID, Future<?>> dynamicsResetTasks = new ConcurrentHashMap<>();
@@ -308,14 +311,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
             }
             if (DYNAMIC_CHANNELS.contains(channelUID.getIdWithoutGroup())) {
-                boolean isBackLightChannel = BACK_LIGHT_GROUP_ID.equals(channelUID.getGroupId());
-                clearDynamicsChannel(isBackLightChannel ? backUID(CHANNEL_2_DYNAMICS) : mainUID(CHANNEL_2_DYNAMICS));
+                // dynamics channel is in the same group (or ungrouped) as the channel being added
+                clearDynamicsChannel(uid(channelUID.getGroupId(), CHANNEL_2_DYNAMICS));
             }
         }
     }
 
     private void addSupportedChannel(String channelID) {
-        addSupportedChannel(mainUID(channelID));
+        addSupportedChannel(uid(null, channelID));
     }
 
     /**
@@ -353,7 +356,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         dynamicsResetTasks.clear();
         updateDependenciesTask = null;
         updateServiceContributorsTask = null;
-        backLightResourceId = null;
+        auxiliaryLightGroups.clear();
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
         sceneResourceEntries.clear();
@@ -447,9 +450,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
         String putResourceId = null;
         Command command = commandParam;
         String channelId = channelUID.getIdWithoutGroup();
-        String backLightId = backLightResourceId;
-        boolean isBackLight = backLightId != null && BACK_LIGHT_GROUP_ID.equals(channelUID.getGroupId());
-        Resource cache = isBackLight ? serviceContributorsCache.get(backLightId) : getCachedResource(lightResourceType);
+        String channelGroupId = channelUID.getGroupId();
+        String auxLightId = channelGroupId == null ? null : auxiliaryLightGroups.get(channelGroupId);
+        if (channelGroupId != null && auxLightId == null) {
+            logger.warn("Command received for unknown channel group '{}'.", channelUID);
+            return;
+        }
+        boolean isAuxLight = auxLightId != null;
+        Resource cache = isAuxLight ? serviceContributorsCache.get(auxLightId) : getCachedResource(lightResourceType);
 
         ChimeType chimeType = null;
         QuantityType<?> alarmDuration = null;
@@ -512,8 +520,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 putResource.setOnOff(command);
-                applyOffTransitionWorkAround(isBackLight, command, putResource);
-                applyColorTemperatureWorkAround(isBackLight, command, putResource);
+                applyOffTransitionWorkAround(isAuxLight, command, putResource);
+                applyColorTemperatureWorkAround(isAuxLight, command, putResource);
                 break;
 
             case CHANNEL_2_COLOR_XY_ONLY:
@@ -526,7 +534,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_ON_OFF_ONLY:
                 putResource = new Resource(lightResourceType).setOnOff(command);
-                applyOffTransitionWorkAround(isBackLight, command, putResource);
+                applyOffTransitionWorkAround(isAuxLight, command, putResource);
                 break;
 
             case CHANNEL_2_TEMPERATURE_ENABLED:
@@ -656,7 +664,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
 
         if (putResourceId == null) {
-            putResourceId = isBackLight ? backLightId : commandResourceIds.get(putResource.getType());
+            putResourceId = isAuxLight ? auxLightId : commandResourceIds.get(putResource.getType());
         }
 
         if (putResourceId == null) {
@@ -672,7 +680,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
 
         if (DYNAMIC_CHANNELS.contains(channelId)) {
-            ChannelUID dynamicsUID = isBackLight ? backUID(CHANNEL_2_DYNAMICS) : mainUID(CHANNEL_2_DYNAMICS);
+            ChannelUID dynamicsUID = uid(channelGroupId, CHANNEL_2_DYNAMICS);
             Duration dynamicsDuration = dynamicsDurations.getOrDefault(dynamicsUID, Duration.ZERO);
             Instant dynamicsExpireTime = dynamicsExpireTimes.getOrDefault(dynamicsUID, Instant.MIN);
             if (Instant.now().isBefore(dynamicsExpireTime) && !dynamicsDuration.isZero()
@@ -793,7 +801,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
         try {
             if (command == OnOffType.OFF && getBridgeHandler().requiresOffTransitionWorkAround(resourceId)) {
-                Duration dynamicsDuration = dynamicsDurations.getOrDefault(mainUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
+                Duration dynamicsDuration = dynamicsDurations.getOrDefault(uid(null, CHANNEL_2_DYNAMICS),
+                        Duration.ZERO);
                 putResource.setDynamicsDuration(dynamicsDuration);
                 logger.debug("{} -> applyOffTransitionWorkAround() command={} dynamics.duration={}", resourceId,
                         command, dynamicsDuration);
@@ -832,17 +841,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Handle a 'dynamics' command for the given channel ID for the given dynamics duration.
      *
-     * @param channelId the ID of the target channel; either 'some-channel' or 'back-light#some-channel'.
+     * @param channelId the ID of the target channel; either 'some-channel' or 'lightN#some-channel'.
      * @param command the new target state.
      * @param duration the transition duration.
      */
     public synchronized void handleDynamicsCommand(String channelId, Command command, QuantityType<?> duration) {
         String[] parts = channelId.split(ChannelUID.CHANNEL_GROUP_SEPARATOR);
+        String groupId = parts.length == 2 ? parts[0] : null;
         String normalizedChannelId = parts.length == 2 ? parts[1] : parts[0];
         if (DYNAMIC_CHANNELS.contains(normalizedChannelId)) {
-            boolean isBackLight = parts.length == 2 && BACK_LIGHT_GROUP_ID.equals(parts[0]);
-            ChannelUID dynamicsUID = isBackLight ? backUID(CHANNEL_2_DYNAMICS) : mainUID(CHANNEL_2_DYNAMICS);
-            ChannelUID targetUID = isBackLight ? backUID(normalizedChannelId) : mainUID(normalizedChannelId);
+            ChannelUID dynamicsUID = uid(groupId, CHANNEL_2_DYNAMICS);
+            ChannelUID targetUID = uid(groupId, normalizedChannelId);
             Channel dynamicsChannel = thing.getChannel(dynamicsUID);
             Channel targetChannel = thing.getChannel(targetUID);
             if (Objects.nonNull(dynamicsChannel) && Objects.nonNull(targetChannel)) {
@@ -874,8 +883,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateThingFromLegacy();
         updateStatus(ThingStatus.UNKNOWN);
 
-        dynamicsDurations.put(mainUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
-        dynamicsExpireTimes.put(mainUID(CHANNEL_2_DYNAMICS), Instant.MIN);
+        dynamicsDurations.put(uid(null, CHANNEL_2_DYNAMICS), Duration.ZERO);
+        dynamicsExpireTimes.put(uid(null, CHANNEL_2_DYNAMICS), Instant.MIN);
 
         disposing = false;
         hasConnectivityIssue = false;
@@ -1060,7 +1069,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     private void updateAlertChannel(String channelID, Resource resource) {
-        updateAlertChannel(mainUID(channelID), resource);
+        updateAlertChannel(uid(null, channelID), resource);
     }
 
     /**
@@ -1099,8 +1108,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * The full initial list of main channels is initially created from the thing XML declaration. And if
-     * there is a back light then additional channels are added to the list dynamically by cloning the main
-     * channels and applying a 'back-light' prefix.
+     * there is an auxiliary light then additional channels are added to the list dynamically by cloning the main
+     * channels and applying a 'lightN' prefix.
      *
      * By this time the {@link #supportedChannelUIDs} set has been populated from the initial poll based on
      * the actual capabilities of the light; specifically the set contains only those channels which returned
@@ -1119,14 +1128,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             addRemoveCorrelatedChannelUIDs();
 
-            List<Channel> backChannels = buildBackLightChannels();
+            List<Channel> auxChannels = buildAuxiliaryLightChannels();
             List<Channel> fullChannels = new ArrayList<>(thing.getChannels());
-            fullChannels.addAll(backChannels);
+            fullChannels.addAll(auxChannels);
 
             List<Channel> keepChannels = fullChannels.stream().filter(c -> supportedChannelUIDs.contains(c.getUID()))
                     .toList();
 
-            if (!backChannels.isEmpty() || keepChannels.size() != thing.getChannels().size()) {
+            if (!auxChannels.isEmpty() || keepChannels.size() != thing.getChannels().size()) {
                 if (logger.isDebugEnabled()) {
                     Set<ChannelUID> keepUIDs = keepChannels.stream().map(c -> c.getUID()).collect(Collectors.toSet());
                     thing.getChannels().stream().map(c -> c.getUID()).filter(uid -> !keepUIDs.contains(uid))
@@ -1135,11 +1144,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 updateThing(editThing().withChannels(keepChannels).build());
 
-                // back- light channels did not exist when the state arrived, so push cached state now
-                String backId = backLightResourceId;
-                Resource cached = backId == null ? null : serviceContributorsCache.get(backId);
-                if (!backChannels.isEmpty() && cached != null) {
-                    updateChannels(cached);
+                // auxiliary light channels did not exist when the state arrived, so push cached state now
+                if (!auxChannels.isEmpty()) {
+                    auxiliaryLightGroups.values().stream().map(serviceContributorsCache::get).filter(Objects::nonNull)
+                            .forEach(this::updateChannels);
                 }
             }
 
@@ -1170,85 +1178,79 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * yet advanced users can use them nevertheless.
      */
     private void addRemoveCorrelatedChannelUIDs() {
-        // main channels
-        if (supportedChannelUIDs.contains(mainUID(CHANNEL_2_COLOR))) {
-            supportedChannelUIDs.add(mainUID(CHANNEL_2_COLOR_XY_ONLY));
-            supportedChannelUIDs.remove(mainUID(CHANNEL_2_BRIGHTNESS));
-            supportedChannelUIDs.add(mainUID(CHANNEL_2_DIMMING_ONLY));
-            supportedChannelUIDs.remove(mainUID(CHANNEL_2_SWITCH));
-            supportedChannelUIDs.add(mainUID(CHANNEL_2_ON_OFF_ONLY));
-        }
-        if (supportedChannelUIDs.contains(mainUID(CHANNEL_2_BRIGHTNESS))) {
-            supportedChannelUIDs.add(mainUID(CHANNEL_2_DIMMING_ONLY));
-            supportedChannelUIDs.remove(mainUID(CHANNEL_2_SWITCH));
-            supportedChannelUIDs.add(mainUID(CHANNEL_2_ON_OFF_ONLY));
-        }
-        if (supportedChannelUIDs.contains(mainUID(CHANNEL_2_SWITCH))) {
-            supportedChannelUIDs.add(mainUID(CHANNEL_2_ON_OFF_ONLY));
-        }
+        List<@Nullable String> groups = new ArrayList<>();
+        groups.add(null); // main channels
+        groups.addAll(auxiliaryLightGroups.keySet());
 
-        // back- light channels
-        if (supportedChannelUIDs.contains(backUID(CHANNEL_2_COLOR))) {
-            supportedChannelUIDs.add(backUID(CHANNEL_2_COLOR_XY_ONLY));
-            supportedChannelUIDs.remove(backUID(CHANNEL_2_BRIGHTNESS));
-            supportedChannelUIDs.add(backUID(CHANNEL_2_DIMMING_ONLY));
-            supportedChannelUIDs.remove(backUID(CHANNEL_2_SWITCH));
-            supportedChannelUIDs.add(backUID(CHANNEL_2_ON_OFF_ONLY));
-        }
-        if (supportedChannelUIDs.contains(backUID(CHANNEL_2_BRIGHTNESS))) {
-            supportedChannelUIDs.add(backUID(CHANNEL_2_DIMMING_ONLY));
-            supportedChannelUIDs.remove(backUID(CHANNEL_2_SWITCH));
-            supportedChannelUIDs.add(backUID(CHANNEL_2_ON_OFF_ONLY));
-        }
-        if (supportedChannelUIDs.contains(backUID(CHANNEL_2_SWITCH))) {
-            supportedChannelUIDs.add(backUID(CHANNEL_2_ON_OFF_ONLY));
+        for (String group : groups) {
+            // main channels
+            if (supportedChannelUIDs.contains(uid(group, CHANNEL_2_COLOR))) {
+                supportedChannelUIDs.add(uid(group, CHANNEL_2_COLOR_XY_ONLY));
+                supportedChannelUIDs.remove(uid(group, CHANNEL_2_BRIGHTNESS));
+                supportedChannelUIDs.add(uid(group, CHANNEL_2_DIMMING_ONLY));
+                supportedChannelUIDs.remove(uid(group, CHANNEL_2_SWITCH));
+                supportedChannelUIDs.add(uid(group, CHANNEL_2_ON_OFF_ONLY));
+            }
+            if (supportedChannelUIDs.contains(uid(group, CHANNEL_2_BRIGHTNESS))) {
+                supportedChannelUIDs.add(uid(group, CHANNEL_2_DIMMING_ONLY));
+                supportedChannelUIDs.remove(uid(group, CHANNEL_2_SWITCH));
+                supportedChannelUIDs.add(uid(group, CHANNEL_2_ON_OFF_ONLY));
+            }
+            if (supportedChannelUIDs.contains(uid(group, CHANNEL_2_SWITCH))) {
+                supportedChannelUIDs.add(uid(group, CHANNEL_2_ON_OFF_ONLY));
+            }
         }
     }
 
     /**
-     * Build a list of the back- light channels. The back light channels are created based on the main
+     * Build a list of the auxiliary light channels. These are created based on the main
      * (front) channels but with their channel UID containing a group ID.
      *
      * @throws AssetNotLoadedException if the bridge handler is not yet loaded
      */
-    private List<Channel> buildBackLightChannels() throws AssetNotLoadedException {
-        String resId = backLightResourceId;
-        if (disposing || resId == null) {
+    private List<Channel> buildAuxiliaryLightChannels() throws AssetNotLoadedException {
+        if (disposing || auxiliaryLightGroups.isEmpty()) {
             return List.of();
         }
-
-        String labelPrefix = getBridgeHandler().getLocalizedText("back-light.channel.label.prefix");
-        List<Channel> backLightChannels = new ArrayList<>();
-        for (Channel mainChannel : thing.getChannels()) {
-            if (mainChannel.getUID().getGroupId() != null) {
-                continue; // skip non main channels
+        String labelPrefix = getBridgeHandler().getLocalizedText("auxiliary.channel.label.prefix");
+        List<Channel> result = new ArrayList<>();
+        for (String groupId : auxiliaryLightGroups.keySet()) {
+            Matcher matcher = LIGHT_GROUP_PATTERN.matcher(groupId);
+            if (!matcher.matches()) {
+                logger.warn("{} -> buildAuxiliaryLightChannels() invalid groupId '{}'", resourceId, groupId);
+                continue;
             }
-            ChannelTypeUID mainChannelTypeUID = mainChannel.getChannelTypeUID();
-            if (mainChannelTypeUID == null) {
-                continue; // skip untyped channels
+            String labelPrefix2 = labelPrefix + matcher.group(1) + " ";
+            for (Channel mainChannel : thing.getChannels()) {
+                if (mainChannel.getUID().getGroupId() != null) {
+                    continue; // skip non main channels
+                }
+                ChannelTypeUID typeUID = mainChannel.getChannelTypeUID();
+                if (typeUID == null) {
+                    continue;
+                }
+                ChannelUID groupUID = uid(groupId, mainChannel.getUID().getIdWithoutGroup());
+                if (thing.getChannel(groupUID) != null || !supportedChannelUIDs.contains(groupUID)) {
+                    continue; // already exists, or not supported
+                }
+                ChannelBuilder builder = ChannelBuilder.create(groupUID, mainChannel.getAcceptedItemType())
+                        .withType(typeUID).withKind(mainChannel.getKind()).withDefaultTags(mainChannel.getDefaultTags())
+                        .withProperties(mainChannel.getProperties())
+                        .withAutoUpdatePolicy(mainChannel.getAutoUpdatePolicy())
+                        .withConfiguration(mainChannel.getConfiguration());
+                String label = mainChannel.getLabel();
+                if (label != null) {
+                    builder.withLabel(labelPrefix2 + label);
+                }
+                String description = mainChannel.getDescription();
+                if (description != null) {
+                    builder.withDescription(description);
+                }
+                result.add(builder.build());
+                logger.debug("{} -> buildAuxiliaryLightChannels() adding channel '{}'", resourceId, groupUID);
             }
-            ChannelUID backUID = backUID(mainChannel.getUID().getIdWithoutGroup());
-            if (thing.getChannel(backUID) != null || !supportedChannelUIDs.contains(backUID)) {
-                continue; // already exists, or not supported
-            }
-            ChannelBuilder builder = ChannelBuilder.create(backUID, mainChannel.getAcceptedItemType())
-                    .withType(mainChannelTypeUID).withKind(mainChannel.getKind())
-                    .withDefaultTags(mainChannel.getDefaultTags()).withProperties(mainChannel.getProperties())
-                    .withAutoUpdatePolicy(mainChannel.getAutoUpdatePolicy())
-                    .withConfiguration(mainChannel.getConfiguration());
-            // when this method gets called the label and description are already localized
-            String label = mainChannel.getLabel();
-            if (label != null) {
-                builder.withLabel("%s %s".formatted(labelPrefix, label));
-            }
-            String description = mainChannel.getDescription();
-            if (description != null) {
-                builder.withDescription(description);
-            }
-            backLightChannels.add(builder.build());
-            logger.debug("{} -> buildBackLightChannels() adding channel '{}'", resourceId, backUID);
         }
-        return backLightChannels;
+        return result;
     }
 
     /**
@@ -1259,8 +1261,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     boolean updateChannels(Resource resource) {
         try {
-            if (isBackLightResource(resource)) {
-                return updateBackLightChannels(resource);
+            String groupId = ResourceType.LIGHT == resource.getType() ? groupIdOf(resource.getId()) : null;
+            if (groupId != null) {
+                return updateAuxiliaryLightChannels(groupId, resource);
             }
             if (isUnresolvedLightResource(resource)) {
                 logger.debug("{} -> updateChannels() ignored not yet resolved light resource {}", resourceId, resource);
@@ -1275,19 +1278,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns true if the resource is a LIGHT that is the back light.
-     */
-    private boolean isBackLightResource(Resource resource) {
-        return ResourceType.LIGHT == resource.getType() && resource.getId().equals(backLightResourceId);
-    }
-
-    /**
      * Returns true if the resource is a LIGHT that cannot yet be attributed to this thing's lights, i.e. it is
-     * neither the back light nor the main light. This includes the period before updateLookups() has succeeded,
-     * when neither the main light ID nor the back light ID is known.
+     * neither a group light nor the main light. This includes the period before updateLookups() has succeeded,
+     * when neither the main light ID nor the group light ID is known.
      */
     private boolean isUnresolvedLightResource(Resource resource) {
-        if (ResourceType.LIGHT != resource.getType() || backLightResourceId != null) {
+        if (ResourceType.LIGHT != resource.getType() || !auxiliaryLightGroups.isEmpty()) {
             return false;
         }
         String mainLightId = commandResourceIds.get(ResourceType.LIGHT);
@@ -1295,55 +1291,56 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Update the state of the back light channels if existing.
+     * Update the state of the auxiliary light channels if existing.
      *
      * @param resource the Resource containing the new channel state.
      * @return true if the channel was found and updated.
      */
-    private boolean updateBackLightChannels(Resource resource) throws CriticalFieldMissingException {
-        logger.debug("{} -> updateBackLightChannels() from resource {}", resourceId, resource);
+    private boolean updateAuxiliaryLightChannels(String groupId, Resource resource)
+            throws CriticalFieldMissingException {
+        logger.debug("{} -> updateAuxiliaryLightChannels() group {} from resource {}", resourceId, groupId, resource);
         boolean fullUpdate = resource.hasFullState();
         if (fullUpdate) {
-            updateBackLightCacheRequiredFields(resource);
-            updateEffectChannel(backUID(CHANNEL_2_EFFECT), resource);
-            updateColorTemperatureAbsoluteChannel(backUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource);
-            updateAlertChannel(backUID(CHANNEL_2_ALERT), resource);
+            updateAuxiliaryLightCacheRequiredFields(resource);
+            updateEffectChannel(uid(groupId, CHANNEL_2_EFFECT), resource);
+            updateColorTemperatureAbsoluteChannel(uid(groupId, CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource);
+            updateAlertChannel(uid(groupId, CHANNEL_2_ALERT), resource);
         }
-        updateState(backUID(CHANNEL_2_COLOR), resource.getColorState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_COLOR_XY_ONLY), resource.getColorXyState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_COLOR_TEMP_PERCENT), resource.getColorTemperaturePercentState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource.getColorTemperatureAbsoluteState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_BRIGHTNESS), resource.getBrightnessState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_DIMMING_ONLY), resource.getDimmingState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_SWITCH), resource.getSwitchState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_ON_OFF_ONLY), resource.getOnOffState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_EFFECT), resource.getEffectState(), fullUpdate);
-        updateState(backUID(CHANNEL_2_ALERT), resource.getAlertState(), fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_COLOR), resource.getColorState(), fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_COLOR_XY_ONLY), resource.getColorXyState(), fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_COLOR_TEMP_PERCENT), resource.getColorTemperaturePercentState(), fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_COLOR_TEMP_ABSOLUTE), resource.getColorTemperatureAbsoluteState(),
+                fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_BRIGHTNESS), resource.getBrightnessState(), fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_DIMMING_ONLY), resource.getDimmingState(), fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_SWITCH), resource.getSwitchState(), fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_ON_OFF_ONLY), resource.getOnOffState(), fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_EFFECT), resource.getEffectState(), fullUpdate);
+        updateState(uid(groupId, CHANNEL_2_ALERT), resource.getAlertState(), fullUpdate);
         if (thisResource.getType() == ResourceType.DEVICE) {
             updateState(CHANNEL_2_LAST_UPDATED, new DateTimeType(), fullUpdate);
         }
-        updateGradientStates(true, resource, fullUpdate); // true: update back light gradient states
+        updateGradientStates(groupId, resource, fullUpdate);
         return true;
     }
 
     /**
-     * Create the main channel UID for the given channel ID.
+     * Returns the group ID of the given light resource ID, or null if not found.
+     */
+    private @Nullable String groupIdOf(String lightResourceId) {
+        return auxiliaryLightGroups.entrySet().stream().filter(e -> e.getValue().equals(lightResourceId))
+                .map(Map.Entry::getKey).findFirst().orElse(null);
+    }
+
+    /**
+     * Create the channel UID for the given channel channel and ID.
      *
      * @param channelId the channel ID.
      * @return the main channel UID.
      */
-    private ChannelUID mainUID(String channelId) {
-        return new ChannelUID(thing.getUID(), channelId);
-    }
-
-    /**
-     * Create the back light channel UID for the given channel ID.
-     *
-     * @param channelId the channel ID.
-     * @return the back light channel UID.
-     */
-    private ChannelUID backUID(String channelId) {
-        return new ChannelUID(thing.getUID(), BACK_LIGHT_GROUP_ID, channelId);
+    private ChannelUID uid(@Nullable String groupId, String channelId) {
+        return groupId == null ? new ChannelUID(thing.getUID(), channelId)
+                : new ChannelUID(thing.getUID(), groupId, channelId);
     }
 
     /**
@@ -1354,9 +1351,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param index the gradient index (0-based).
      * @return the gradient channel UID.
      */
-    private ChannelUID gradientUID(boolean isBackLight, int index) {
-        String id = CHANNEL_2_GRADIENT_FORMAT.formatted(index + 1);
-        return isBackLight ? backUID(id) : mainUID(id);
+    private ChannelUID gradientUID(@Nullable String groupId, int index) {
+        return uid(groupId, CHANNEL_2_GRADIENT_FORMAT.formatted(index + 1));
     }
 
     /**
@@ -1445,7 +1441,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTempState, fullUpdate);
                 updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTempAbsState, fullUpdate);
                 updateState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
-                updateGradientStates(false, resource, fullUpdate); // false: update front light gradient states
+                updateGradientStates(null, resource, fullUpdate); // update main light gradient states
                 // fall through for dimming and on/off related channels
 
             case GROUPED_LIGHT:
@@ -1665,7 +1661,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     public void updateEffectChannel(String channelID, Resource resource) {
-        updateEffectChannel(mainUID(channelID), resource);
+        updateEffectChannel(uid(null, channelID), resource);
     }
 
     /**
@@ -1687,7 +1683,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     private void updateColorTemperatureAbsoluteChannel(String channelID, Resource resource) {
-        updateColorTemperatureAbsoluteChannel(mainUID(channelID), resource);
+        updateColorTemperatureAbsoluteChannel(uid(null, channelID), resource);
     }
 
     /**
@@ -1727,43 +1723,43 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             // get supported services
             List<ResourceReference> services = thisResource.getServiceReferences();
-
-            String frontId = null;
-            String backId = null;
-
             List<ResourceReference> lights = services.stream().filter(s -> ResourceType.LIGHT == s.getType()).toList();
-            if (lights.size() > 1) {
-                int frontIndex = -1;
-                int backIndex = -1;
 
-                // resolve the Twilight front and back lights
-                for (int i = 0; i < lights.size(); i++) {
-                    ResourceReference light = lights.get(i);
+            String mainId = null;
+            Map<String, String> auxiliaryGroups = new LinkedHashMap<>();
+
+            if (lights.size() > 1) {
+                List<ResourceReference> backs = new ArrayList<>();
+                List<ResourceReference> remaining = new ArrayList<>(lights);
+
+                // 1. resolve by archetype (Twilight / Up-and-Down)
+                for (ResourceReference light : lights) {
                     Archetype archetype = getLightArchetype(light);
-                    if (BACK_ARCHETYPES.contains(archetype)) {
-                        backId = light.getId();
-                        backIndex = i;
-                    } else if (FRONT_ARCHETYPES.contains(archetype)) {
-                        frontId = light.getId();
-                        frontIndex = i;
+                    if (FRONT_ARCHETYPES.contains(archetype)) {
+                        mainId = light.getId();
+                        remaining.remove(light);
+                    } else if (BACK_ARCHETYPES.contains(archetype)) {
+                        backs.add(light);
+                        remaining.remove(light);
                     }
                 }
-                // fallback to the service declaration order for any unresolved light
-                if (frontId == null || backId == null) {
-                    for (int i = 0; i < lights.size(); i++) {
-                        if (i == frontIndex || i == backIndex) {
-                            continue; // index already used
-                        }
-                        if (frontId == null) {
-                            frontId = lights.get(i).getId();
-                            frontIndex = i;
-                        } else if (backId == null) {
-                            backId = lights.get(i).getId();
-                            backIndex = i;
-                        } else {
-                            break;
-                        }
+
+                // 2. fallback: first unresolved light is the primary light
+                if (mainId == null && !remaining.isEmpty()) {
+                    mainId = remaining.remove(0).getId();
+                }
+
+                // 3. back lights first, then all others in service order => light-2 .. light-5
+                List<ResourceReference> others = new ArrayList<>(backs);
+                others.addAll(remaining);
+                int number = 2;
+                for (ResourceReference light : others) {
+                    if (number > MAX_LIGHTS) {
+                        logger.debug("{} -> updateLookups() ignoring light {}; max {} lights", resourceId,
+                                light.getId(), MAX_LIGHTS);
+                        break;
                     }
+                    auxiliaryGroups.put(LIGHT_GROUP_FORMAT.formatted(number++), Objects.requireNonNull(light.getId()));
                 }
             }
 
@@ -1777,16 +1773,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
 
-            backLightResourceId = backId;
-            if (backId != null) {
-                dynamicsDurations.put(backUID(CHANNEL_2_DYNAMICS), Duration.ZERO);
-                dynamicsExpireTimes.put(backUID(CHANNEL_2_DYNAMICS), Instant.MIN);
-                if (frontId != null) {
-                    // enforce that the primary light is the front light
-                    commandResourceIds.put(ResourceType.LIGHT, frontId);
-                }
-                logger.debug("{} -> updateLookups() front light {}, back light {}", resourceId, frontId, backId);
+            auxiliaryLightGroups.clear();
+            auxiliaryLightGroups.putAll(auxiliaryGroups);
+            if (mainId != null && !auxiliaryGroups.isEmpty()) {
+                commandResourceIds.put(ResourceType.LIGHT, mainId);
             }
+            auxiliaryGroups.keySet().forEach(g -> {
+                dynamicsDurations.put(uid(g, CHANNEL_2_DYNAMICS), Duration.ZERO);
+                dynamicsExpireTimes.put(uid(g, CHANNEL_2_DYNAMICS), Instant.MIN);
+            });
+            logger.debug("{} -> updateLookups() main light {}, groups {}", resourceId, mainId, auxiliaryGroups);
         }
     }
 
@@ -2041,7 +2037,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     private void updateState(String channelID, State state, boolean fullUpdate) {
-        updateState(mainUID(channelID), state, fullUpdate);
+        updateState(uid(null, channelID), state, fullUpdate);
     }
 
     /**
@@ -2278,13 +2274,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Ensure that the light service resource for the back light in the serviceContributorsCache has a
+     * Ensure that the light service resource for the group light in the serviceContributorsCache has a
      * complete DTO for it to yield valid channel state values. Check if the given (cached) light service
      * has a {@link MirekSchema} field, and a {@link Gamut} field. If any is missing, use the binding
      * default values. This ensures that the back light's channels always have a valid color temperature
      * range and gamut.
      */
-    private void updateBackLightCacheRequiredFields(Resource resource) {
+    private void updateAuxiliaryLightCacheRequiredFields(Resource resource) {
         if (resource.getColorTemperature() instanceof ColorTemperature ct) {
             MirekSchema mirekSchema = ct.getMirekSchema();
             if (mirekSchema == null || mirekSchema.invalid()) {
@@ -2306,12 +2302,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * - Channels within capability but with no current point (solid color mode) are set to 'UNDEF' so that
      * they are registered as supported and are kept in the thing.
      *
-     * @param isBackLight true if the gradient channels are for the back light, false for the main light.
+     * @param groupId the group ID of the light, or null for the main light.
      * @param resource the resource containing the gradient points.
      * @param fullUpdate if true always update the channel, otherwise only update if state is not 'NULL'.
      * @throws CriticalFieldMissingException if a critical field is missing in the resource.
      */
-    private void updateGradientStates(boolean isBackLight, Resource resource, boolean fullUpdate)
+    private void updateGradientStates(@Nullable String groupId, Resource resource, boolean fullUpdate)
             throws CriticalFieldMissingException {
         Gradient gradient = resource.getGradient();
         int pointsCurrent = gradient == null ? 0 : Math.min(gradient.getXyPoints().size(), Gradient.MAX_POINTS);
@@ -2320,15 +2316,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (fullUpdate) {
             // unsupported channels => NULL
             for (int i = pointsCapable; i < Gradient.MAX_POINTS; i++) {
-                updateState(gradientUID(isBackLight, i), UnDefType.NULL, true);
+                updateState(gradientUID(groupId, i), UnDefType.NULL, true);
             }
             // supported, but no point currently reported (solid color mode) => UNDEF
             for (int i = pointsCurrent; i < pointsCapable; i++) {
-                updateState(gradientUID(isBackLight, i), UnDefType.UNDEF, true);
+                updateState(gradientUID(groupId, i), UnDefType.UNDEF, true);
             }
         }
         for (int i = 0; i < pointsCurrent; i++) {
-            updateState(gradientUID(isBackLight, i), resource.getGradientState(i), fullUpdate);
+            updateState(gradientUID(groupId, i), resource.getGradientState(i), fullUpdate);
         }
     }
 }

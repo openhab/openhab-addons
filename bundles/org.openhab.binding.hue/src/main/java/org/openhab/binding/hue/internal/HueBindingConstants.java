@@ -236,5 +236,11 @@ public class HueBindingConstants {
 
     public static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
 
-    public static final String BACK_LIGHT_GROUP_ID = "back-light";
+    public static final int MAX_LIGHTS = 5;
+
+    private static final String LIGHT_GROUP = "light";
+    private static final String LIGHT_GROUP_REGEX = "^" + LIGHT_GROUP + "([2-5])$"; // 2-5 auxiliary lights max
+
+    public static final String LIGHT_GROUP_FORMAT = LIGHT_GROUP + "%d";
+    public static final Pattern LIGHT_GROUP_PATTERN = Pattern.compile(LIGHT_GROUP_REGEX);
 }

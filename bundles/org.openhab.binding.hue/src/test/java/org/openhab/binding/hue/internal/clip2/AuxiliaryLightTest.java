@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -66,13 +67,13 @@ import org.openhab.core.types.State;
 import com.google.gson.Gson;
 
 /**
- * Tests for the back light handling of {@link Clip2ThingHandler}, as used by Hue Twilight devices.
+ * Tests for the back light handling of {@link Clip2ThingHandler}, as used by devices with auxiliary lights.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings("null")
-class HueTwilightTest {
+class AuxiliaryLightTest {
 
     /**
      * Invokes the private updateChannels() method of the handler.
@@ -93,7 +94,7 @@ class HueTwilightTest {
         final List<Thing> updatedThings = new ArrayList<>();
         final List<Map.Entry<ChannelUID, Command>> commands = new ArrayList<>();
         boolean recordCommands;
-        java.util.function.Consumer<Thing> onUpdateThing = t -> {
+        Consumer<Thing> onUpdateThing = t -> {
         };
 
         TestHandler(Thing thing, Clip2StateDescriptionProvider provider, ThingRegistry registry,
@@ -126,14 +127,19 @@ class HueTwilightTest {
     private static final ThingUID BRIDGE_UID = new ThingUID(THING_TYPE_BRIDGE_API2, "bridge");
     private static final ChannelTypeUID TYPE_UID = new ChannelTypeUID(BINDING_ID, "test-type");
     private static final String FRONT_ID = "front-light-id";
-    private static final String BACK_ID = "back-light-id";
+    private static final String AUX_ID = "aux-light-id";
+    private static final String AUX_GROUP = LIGHT_GROUP_FORMAT.formatted(2); // "light2"
 
     private static ChannelUID mainUID(String id) {
         return new ChannelUID(THING_UID, id);
     }
 
-    private static ChannelUID backUID(String id) {
-        return new ChannelUID(THING_UID, BACK_LIGHT_GROUP_ID, id);
+    private static ChannelUID auxUID(String id) {
+        return auxUID(AUX_GROUP, id);
+    }
+
+    private static ChannelUID auxUID(String groupId, String id) {
+        return new ChannelUID(THING_UID, groupId, id);
     }
 
     /**
@@ -148,10 +154,10 @@ class HueTwilightTest {
         final Thing thing;
         final TestHandler handler;
 
-        Fixture(List<String> mainChannelIds, List<String> backChannelIds) throws Exception {
+        Fixture(List<String> mainChannelIds, List<String> auxChannelIds) throws Exception {
             thing = spy(ThingBuilder.create(THING_TYPE_DEVICE, THING_UID).withBridge(BRIDGE_UID).build());
             mainChannelIds.forEach(id -> channels.add(channel(mainUID(id))));
-            backChannelIds.forEach(id -> channels.add(channel(backUID(id))));
+            auxChannelIds.forEach(id -> channels.add(channel(auxUID(id))));
             doAnswer(i -> List.copyOf(channels)).when(thing).getChannels();
             doAnswer(i -> find(i.getArgument(0))).when(thing).getChannel(any(ChannelUID.class));
             doAnswer(i -> find(new ChannelUID(THING_UID, i.getArgument(0)))).when(thing).getChannel(anyString());
@@ -170,11 +176,8 @@ class HueTwilightTest {
 
             setField(Clip2ThingHandler.class, handler, "resourceId", "device-id");
             setField(Clip2ThingHandler.class, handler, "thisResource", new Resource(ResourceType.DEVICE));
-            setBackLightId(BACK_ID);
+            setAuxiliaryLight(AUX_GROUP, AUX_ID);
             commandIds().put(ResourceType.LIGHT, FRONT_ID);
-
-            when(scheduler.schedule(any(Runnable.class), anyLong(), any(TimeUnit.class)))
-                    .thenAnswer(i -> mock(ScheduledFuture.class));
         }
 
         private static void setInheritedField(Object target, String name, @Nullable Object value) throws Exception {
@@ -201,8 +204,19 @@ class HueTwilightTest {
             return channels.stream().filter(c -> c.getUID().equals(uid)).findFirst().orElse(null);
         }
 
-        void setBackLightId(@Nullable String id) throws Exception {
-            setField(Clip2ThingHandler.class, handler, "backLightResourceId", id);
+        /**
+         * Replaces the auxiliary light groups with a single entry, or with none if the id is null.
+         */
+        void setAuxiliaryLight(String groupId, @Nullable String lightId) throws Exception {
+            auxiliaryLightGroups().clear();
+            if (lightId != null) {
+                auxiliaryLightGroups().put(groupId, lightId);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> auxiliaryLightGroups() throws Exception {
+            return (Map<String, String>) getField("auxiliaryLightGroups");
         }
 
         @SuppressWarnings("unchecked")
@@ -263,12 +277,12 @@ class HueTwilightTest {
     }
 
     @Test
-    void backLightCommandTargetsBackLightResourceId() throws Exception {
+    void auxiliaryLightCommandTargetsAuxiliaryLightResourceId() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH), List.of(CHANNEL_2_SWITCH));
 
-        Resource put = f.putCapture(backUID(CHANNEL_2_SWITCH), OnOffType.ON);
+        Resource put = f.putCapture(auxUID(CHANNEL_2_SWITCH), OnOffType.ON);
 
-        assertEquals(BACK_ID, put.getId());
+        assertEquals(AUX_ID, put.getId());
     }
 
     @Test
@@ -278,33 +292,33 @@ class HueTwilightTest {
         Resource put = f.putCapture(mainUID(CHANNEL_2_SWITCH), OnOffType.ON);
 
         assertEquals(FRONT_ID, put.getId());
-        assertNotEquals(BACK_ID, put.getId());
+        assertNotEquals(AUX_ID, put.getId());
     }
 
     @Test
-    void backLightCommandUsesBackLightCache() throws Exception {
+    void auxiliaryLightCommandUsesAuxiliaryLightCache() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_BRIGHTNESS), List.of(CHANNEL_2_BRIGHTNESS));
         f.contributors().put(FRONT_ID, lightWithBrightness(FRONT_ID, 80));
-        f.contributors().put(BACK_ID, lightWithBrightness(BACK_ID, 20));
+        f.contributors().put(AUX_ID, lightWithBrightness(AUX_ID, 20));
 
         when(f.bridgeHandler.getResources(any(ResourceReference.class))).thenAnswer(i -> {
             ResourceReference ref = i.getArgument(0);
-            int percent = BACK_ID.equals(ref.getId()) ? 20 : 80;
+            int percent = AUX_ID.equals(ref.getId()) ? 20 : 80;
             Resources resources = new Resources();
             resources.getResources().add(lightWithBrightness(Objects.requireNonNull(ref.getId()), percent));
             return resources;
         });
 
-        Resource backPut = f.putCapture(backUID(CHANNEL_2_BRIGHTNESS), IncreaseDecreaseType.INCREASE);
+        Resource auxPut = f.putCapture(auxUID(CHANNEL_2_BRIGHTNESS), IncreaseDecreaseType.INCREASE);
         Resource frontPut = f.putCapture(mainUID(CHANNEL_2_BRIGHTNESS), IncreaseDecreaseType.INCREASE);
 
-        assertEquals(BACK_ID, backPut.getId());
+        assertEquals(AUX_ID, auxPut.getId());
         assertEquals(FRONT_ID, frontPut.getId());
 
         // each increase is relative to its own light's brightness
-        double backBrightness = ((PercentType) backPut.getBrightnessState()).doubleValue();
+        double auxBrightness = ((PercentType) auxPut.getBrightnessState()).doubleValue();
         double frontBrightness = ((PercentType) frontPut.getBrightnessState()).doubleValue();
-        assertTrue(backBrightness > 20 && backBrightness < 50, "back light must start from 20%");
+        assertTrue(auxBrightness > 20 && auxBrightness < 50, "auxiliary light must start from 20%");
         assertTrue(frontBrightness > 80, "front light must start from 80%");
     }
 
@@ -315,19 +329,18 @@ class HueTwilightTest {
     }
 
     @Test
-    void backLightResourceUpdatesBackChannelsOnly() throws Exception {
+    void auxiliaryLightResourceUpdatesAuxiliaryChannelsOnly() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH, CHANNEL_2_BRIGHTNESS),
                 List.of(CHANNEL_2_SWITCH, CHANNEL_2_BRIGHTNESS));
 
-        updateChannels(f.handler, light(BACK_ID, true, 50));
+        updateChannels(f.handler, light(AUX_ID, true, 50));
 
-        verify(f.callback, atLeastOnce()).stateUpdated(eq(backUID(CHANNEL_2_SWITCH)), any(State.class));
-        verify(f.callback, atLeastOnce()).stateUpdated(eq(backUID(CHANNEL_2_BRIGHTNESS)), any(State.class));
+        verify(f.callback, atLeastOnce()).stateUpdated(eq(auxUID(CHANNEL_2_SWITCH)), any(State.class));
+        verify(f.callback, atLeastOnce()).stateUpdated(eq(auxUID(CHANNEL_2_BRIGHTNESS)), any(State.class));
         verify(f.callback, never()).stateUpdated(eq(mainUID(CHANNEL_2_SWITCH)), any(State.class));
         verify(f.callback, never()).stateUpdated(eq(mainUID(CHANNEL_2_BRIGHTNESS)), any(State.class));
     }
 
-    // 6
     @Test
     void frontLightResourceUpdatesMainChannelsOnly() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH, CHANNEL_2_BRIGHTNESS),
@@ -336,34 +349,34 @@ class HueTwilightTest {
         updateChannels(f.handler, light(FRONT_ID, true, 50));
 
         verify(f.callback, atLeastOnce()).stateUpdated(eq(mainUID(CHANNEL_2_SWITCH)), any(State.class));
-        verify(f.callback, never()).stateUpdated(eq(backUID(CHANNEL_2_SWITCH)), any(State.class));
-        verify(f.callback, never()).stateUpdated(eq(backUID(CHANNEL_2_BRIGHTNESS)), any(State.class));
+        verify(f.callback, never()).stateUpdated(eq(auxUID(CHANNEL_2_SWITCH)), any(State.class));
+        verify(f.callback, never()).stateUpdated(eq(auxUID(CHANNEL_2_BRIGHTNESS)), any(State.class));
     }
 
     @Test
-    void backChannelsAreCreatedFromMainChannelTemplate() throws Exception {
+    void auxiliaryChannelsAreCreatedFromMainChannelTemplate() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH, CHANNEL_2_EFFECT), List.of());
         f.supportedUIDs().addAll(Set.of(mainUID(CHANNEL_2_SWITCH), mainUID(CHANNEL_2_EFFECT)));
-        f.supportedUIDs().addAll(Set.of(backUID(CHANNEL_2_SWITCH), backUID(CHANNEL_2_EFFECT)));
+        f.supportedUIDs().addAll(Set.of(auxUID(CHANNEL_2_SWITCH), auxUID(CHANNEL_2_EFFECT)));
 
         f.updateChannelList();
 
         assertEquals(1, f.handler.updatedThings.size());
         List<Channel> created = f.handler.updatedThings.get(0).getChannels();
-        Channel backSwitch = created.stream().filter(c -> c.getUID().equals(backUID(CHANNEL_2_SWITCH))).findFirst()
+        Channel auxSwitch = created.stream().filter(c -> c.getUID().equals(auxUID(CHANNEL_2_SWITCH))).findFirst()
                 .orElse(null);
-        assertNotNull(backSwitch);
-        assertEquals(TYPE_UID, backSwitch.getChannelTypeUID());
-        assertTrue(created.stream().anyMatch(c -> c.getUID().equals(backUID(CHANNEL_2_EFFECT))));
+        assertNotNull(auxSwitch);
+        assertEquals(TYPE_UID, auxSwitch.getChannelTypeUID());
+        assertTrue(created.stream().anyMatch(c -> c.getUID().equals(auxUID(CHANNEL_2_EFFECT))));
         assertTrue(created.stream().anyMatch(c -> c.getUID().equals(mainUID(CHANNEL_2_SWITCH))));
     }
 
     @Test
-    void newBackChannelsPushCachedState() throws Exception {
+    void newAuxiliaryChannelsPushCachedState() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH), List.of());
-        f.supportedUIDs().add(backUID(CHANNEL_2_SWITCH));
+        f.supportedUIDs().add(auxUID(CHANNEL_2_SWITCH));
         f.supportedUIDs().add(mainUID(CHANNEL_2_SWITCH));
-        f.contributors().put(BACK_ID, light(BACK_ID, true, 40));
+        f.contributors().put(AUX_ID, light(AUX_ID, true, 40));
         // make updateThing() take effect on the fake channel list, as the framework would
         f.handler.onUpdateThing = updated -> {
             f.channels.clear();
@@ -372,22 +385,22 @@ class HueTwilightTest {
 
         f.updateChannelList();
 
-        verify(f.callback, atLeastOnce()).stateUpdated(eq(backUID(CHANNEL_2_SWITCH)), any(State.class));
+        verify(f.callback, atLeastOnce()).stateUpdated(eq(auxUID(CHANNEL_2_SWITCH)), any(State.class));
     }
 
     @Test
-    void unusedBackChannelsAreRemoved() throws Exception {
+    void unusedAuxiliaryChannelsAreRemoved() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH, CHANNEL_2_BRIGHTNESS),
                 List.of(CHANNEL_2_SWITCH, CHANNEL_2_BRIGHTNESS));
         f.supportedUIDs().addAll(Set.of(mainUID(CHANNEL_2_SWITCH), mainUID(CHANNEL_2_BRIGHTNESS)));
-        f.supportedUIDs().add(backUID(CHANNEL_2_SWITCH)); // back brightness is NOT supported
+        f.supportedUIDs().add(auxUID(CHANNEL_2_SWITCH)); // auxiliary brightness is NOT supported
 
         f.updateChannelList();
 
         assertEquals(1, f.handler.updatedThings.size());
         List<ChannelUID> uids = f.handler.updatedThings.get(0).getChannels().stream().map(Channel::getUID).toList();
-        assertTrue(uids.contains(backUID(CHANNEL_2_SWITCH)));
-        assertFalse(uids.contains(backUID(CHANNEL_2_BRIGHTNESS)));
+        assertTrue(uids.contains(auxUID(CHANNEL_2_SWITCH)));
+        assertFalse(uids.contains(auxUID(CHANNEL_2_BRIGHTNESS)));
         assertTrue(uids.contains(mainUID(CHANNEL_2_BRIGHTNESS)));
     }
 
@@ -395,17 +408,16 @@ class HueTwilightTest {
     void alertResetTasksAreIndependentPerLight() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_ALERT), List.of(CHANNEL_2_ALERT));
         ScheduledFuture<?> frontReset = mock(ScheduledFuture.class);
-        ScheduledFuture<?> backReset = mock(ScheduledFuture.class);
+        ScheduledFuture<?> auxReset = mock(ScheduledFuture.class);
         when(f.scheduler.schedule(any(Runnable.class), eq(10L), eq(TimeUnit.SECONDS))).thenAnswer(i -> frontReset)
-                .thenAnswer(i -> backReset);
+                .thenAnswer(i -> auxReset);
         when(f.bridgeHandler.putResource(any(Resource.class))).thenReturn(new Resources());
 
         f.handler.handleCommandInner(mainUID(CHANNEL_2_ALERT),
                 new org.openhab.core.library.types.StringType("BREATHE"));
-        f.handler.handleCommandInner(backUID(CHANNEL_2_ALERT),
-                new org.openhab.core.library.types.StringType("BREATHE"));
+        f.handler.handleCommandInner(auxUID(CHANNEL_2_ALERT), new org.openhab.core.library.types.StringType("BREATHE"));
 
-        // the back light alert must not cancel the front light's pending reset
+        // the auxiliary light alert must not cancel the front light's pending reset
         verify(frontReset, never()).cancel(anyBoolean());
         verify(f.scheduler, times(2)).schedule(any(Runnable.class), eq(10L), eq(TimeUnit.SECONDS));
 
@@ -415,7 +427,7 @@ class HueTwilightTest {
         f.handler.handleCommandInner(mainUID(CHANNEL_2_ALERT),
                 new org.openhab.core.library.types.StringType("BREATHE"));
         verify(frontReset).cancel(false);
-        verify(backReset, never()).cancel(anyBoolean());
+        verify(auxReset, never()).cancel(anyBoolean());
     }
 
     @Test
@@ -423,33 +435,33 @@ class HueTwilightTest {
         Fixture f = new Fixture(List.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_DYNAMICS),
                 List.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_DYNAMICS));
         f.contributors().put(FRONT_ID, new Resource(ResourceType.LIGHT).setId(FRONT_ID));
-        f.contributors().put(BACK_ID, new Resource(ResourceType.LIGHT).setId(BACK_ID));
+        f.contributors().put(AUX_ID, new Resource(ResourceType.LIGHT).setId(AUX_ID));
 
-        // set a 2 second dynamics duration for the back light only
-        f.handler.handleCommandInner(backUID(CHANNEL_2_DYNAMICS),
+        // set a 2 second dynamics duration for the auxiliary light only
+        f.handler.handleCommandInner(auxUID(CHANNEL_2_DYNAMICS),
                 new QuantityType<>(2000, MetricPrefix.MILLI(Units.SECOND)));
 
-        Resource backPut = f.putCapture(backUID(CHANNEL_2_BRIGHTNESS), new PercentType(50));
+        Resource auxPut = f.putCapture(auxUID(CHANNEL_2_BRIGHTNESS), new PercentType(50));
         Resource frontPut = f.putCapture(mainUID(CHANNEL_2_BRIGHTNESS), new PercentType(50));
 
-        assertNotNull(backPut.getDynamics(), "back light command must carry the back light dynamics");
-        assertNull(frontPut.getDynamics(), "front light command must not carry the back light dynamics");
+        assertNotNull(auxPut.getDynamics(), "auxiliary light command must carry the auxiliary light dynamics");
+        assertNull(frontPut.getDynamics(), "front light command must not carry the auxiliary light dynamics");
     }
 
     @Test
-    void handleDynamicsCommandNormalizesBackLightIds() throws Exception {
+    void handleDynamicsCommandNormalizesAuxiliaryLightIds() throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_DYNAMICS),
                 List.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_DYNAMICS));
         QuantityType<?> duration = new QuantityType<>(1500, MetricPrefix.MILLI(Units.SECOND));
         PercentType target = new PercentType(70);
         f.handler.recordCommands = true;
 
-        f.handler.handleDynamicsCommand(BACK_LIGHT_GROUP_ID + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_2_BRIGHTNESS,
-                target, duration);
+        f.handler.handleDynamicsCommand(AUX_GROUP + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_2_BRIGHTNESS, target,
+                duration);
 
-        // the dynamics command comes first, then the target command, both on the back light channels
-        assertEquals(List.of(Map.entry(backUID(CHANNEL_2_DYNAMICS), (Command) duration),
-                Map.entry(backUID(CHANNEL_2_BRIGHTNESS), (Command) target)), f.handler.commands);
+        // the dynamics command comes first, then the target command, both on the auxiliary light channels
+        assertEquals(List.of(Map.entry(auxUID(CHANNEL_2_DYNAMICS), (Command) duration),
+                Map.entry(auxUID(CHANNEL_2_BRIGHTNESS), (Command) target)), f.handler.commands);
     }
 
     private static final Gson GSON = new Gson();
@@ -495,11 +507,11 @@ class HueTwilightTest {
     }
 
     /**
-     * A Fixture whose front/back light IDs are NOT pre-injected, so they must be discovered by updateLookups().
+     * A Fixture whose front/auxiliary light IDs are NOT pre-injected, so they must be discovered by updateLookups().
      */
     private static Fixture unresolvedFixture(Resource device) throws Exception {
         Fixture f = new Fixture(List.of(CHANNEL_2_SWITCH), List.of());
-        f.setBackLightId(null);
+        f.setAuxiliaryLight(AUX_GROUP, null);
         f.commandIds().clear();
         f.contributors().clear();
         setField(Clip2ThingHandler.class, f.handler, "thisResource", device);
@@ -519,90 +531,104 @@ class HueTwilightTest {
         }
     }
 
-    private static @Nullable Object backLightId(Fixture f) throws Exception {
-        Field field = Clip2ThingHandler.class.getDeclaredField("backLightResourceId");
-        field.setAccessible(true);
-        return field.get(f.handler);
-    }
-
     /**
      * Asserts discovery results, then channel creation and command routing based on the discovered IDs.
      */
-    private static void assertFrontBackResolvedAndRouted(Fixture f) throws Exception {
+    private static void assertFrontAuxiliaryResolvedAndRouted(Fixture f) throws Exception {
         // lookups
-        assertEquals(BACK_ID, backLightId(f));
+        assertEquals(Map.of(AUX_GROUP, AUX_ID), f.auxiliaryLightGroups());
         assertEquals(FRONT_ID, f.commandIds().get(ResourceType.LIGHT));
         assertTrue(f.contributors().containsKey(FRONT_ID));
-        assertTrue(f.contributors().containsKey(BACK_ID));
+        assertTrue(f.contributors().containsKey(AUX_ID));
 
-        // channel creation: back channels are built from the main channel template
+        // channel creation: auxiliary channels are built from the main channel template
         f.supportedUIDs().add(mainUID(CHANNEL_2_SWITCH));
-        f.supportedUIDs().add(backUID(CHANNEL_2_SWITCH));
+        f.supportedUIDs().add(auxUID(CHANNEL_2_SWITCH));
         f.updateChannelList();
         assertEquals(1, f.handler.updatedThings.size());
         List<ChannelUID> uids = f.handler.updatedThings.get(0).getChannels().stream().map(Channel::getUID).toList();
         assertTrue(uids.contains(mainUID(CHANNEL_2_SWITCH)));
-        assertTrue(uids.contains(backUID(CHANNEL_2_SWITCH)));
+        assertTrue(uids.contains(auxUID(CHANNEL_2_SWITCH)));
 
         // command routing
-        assertEquals(BACK_ID, f.putCapture(backUID(CHANNEL_2_SWITCH), OnOffType.ON).getId());
+        assertEquals(AUX_ID, f.putCapture(auxUID(CHANNEL_2_SWITCH), OnOffType.ON).getId());
         assertEquals(FRONT_ID, f.putCapture(mainUID(CHANNEL_2_SWITCH), OnOffType.ON).getId());
     }
 
     @Test
     void lookupsFrontThenBackServiceOrder() throws Exception {
-        Fixture f = unresolvedFixture(deviceWithLights(FRONT_ID, BACK_ID));
-        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "twilight_front"), BACK_ID,
-                lightWithArchetype(BACK_ID, "twilight_back")));
+        Fixture f = unresolvedFixture(deviceWithLights(FRONT_ID, AUX_ID));
+        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "twilight_front"), AUX_ID,
+                lightWithArchetype(AUX_ID, "twilight_back")));
 
         updateLookups(f);
 
-        assertFrontBackResolvedAndRouted(f);
+        assertFrontAuxiliaryResolvedAndRouted(f);
     }
 
     @Test
     void lookupsBackThenFrontServiceOrder() throws Exception {
-        Fixture f = unresolvedFixture(deviceWithLights(BACK_ID, FRONT_ID));
-        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "twilight_front"), BACK_ID,
-                lightWithArchetype(BACK_ID, "twilight_back")));
+        Fixture f = unresolvedFixture(deviceWithLights(AUX_ID, FRONT_ID));
+        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "twilight_front"), AUX_ID,
+                lightWithArchetype(AUX_ID, "twilight_back")));
 
         updateLookups(f);
 
         // the front light must be the primary light even though the back light is listed first
-        assertFrontBackResolvedAndRouted(f);
+        assertFrontAuxiliaryResolvedAndRouted(f);
     }
 
     @Test
-    void lookupsWithoutTwilightArchetypesHaveNoBackLight() throws Exception {
+    void lookupsFiveLightsWithoutArchetypesUseServiceOrder() throws Exception {
+        String[] ids = { "l1", "l2", "l3", "l4", "l5" };
+        Fixture f = unresolvedFixture(deviceWithLights(ids));
+        stubLights(f, Map.of("l1", lightWithArchetype("l1", "centris_ceiling"), "l2",
+                lightWithArchetype("l2", "centris_ceiling"), "l3", lightWithArchetype("l3", "centris_ceiling"), "l4",
+                lightWithArchetype("l4", "centris_ceiling"), "l5", lightWithArchetype("l5", "centris_ceiling")));
+
+        updateLookups(f);
+
+        // first light is the primary light, the others are light2 .. light5 in service order
+        assertEquals("l1", f.commandIds().get(ResourceType.LIGHT));
+        assertEquals(
+                Map.of(LIGHT_GROUP_FORMAT.formatted(2), "l2", LIGHT_GROUP_FORMAT.formatted(3), "l3",
+                        LIGHT_GROUP_FORMAT.formatted(4), "l4", LIGHT_GROUP_FORMAT.formatted(5), "l5"),
+                f.auxiliaryLightGroups());
+        assertEquals("l4",
+                f.putCapture(auxUID(LIGHT_GROUP_FORMAT.formatted(4), CHANNEL_2_SWITCH), OnOffType.ON).getId());
+    }
+
+    @Test
+    void lookupsWithoutTwilightArchetypesHaveNoAuxiliaryLight() throws Exception {
         Fixture f = unresolvedFixture(deviceWithLights(FRONT_ID));
         stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "classic_bulb")));
 
         updateLookups(f);
 
-        assertNull(backLightId(f));
+        assertTrue(f.auxiliaryLightGroups().isEmpty());
         assertEquals(FRONT_ID, f.commandIds().get(ResourceType.LIGHT));
         assertEquals(FRONT_ID, f.putCapture(mainUID(CHANNEL_2_SWITCH), OnOffType.ON).getId());
     }
 
     @Test
     void lookupFailureLeavesStateUntouchedAndRecovers() throws Exception {
-        Fixture f = unresolvedFixture(deviceWithLights(FRONT_ID, BACK_ID));
+        Fixture f = unresolvedFixture(deviceWithLights(FRONT_ID, AUX_ID));
 
         // first attempt: the bridge fails
         when(f.bridgeHandler.getResources(any(ResourceReference.class))).thenThrow(new ApiException("fail"));
         assertThrows(ApiException.class, () -> updateLookups(f));
 
         // nothing was half-applied
-        assertNull(backLightId(f));
+        assertTrue(f.auxiliaryLightGroups().isEmpty());
         assertTrue(f.commandIds().isEmpty());
         assertTrue(f.contributors().isEmpty());
 
         // second attempt: the bridge recovers
-        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "twilight_front"), BACK_ID,
-                lightWithArchetype(BACK_ID, "twilight_back")));
+        stubLights(f, Map.of(FRONT_ID, lightWithArchetype(FRONT_ID, "twilight_front"), AUX_ID,
+                lightWithArchetype(AUX_ID, "twilight_back")));
         updateLookups(f);
 
-        assertFrontBackResolvedAndRouted(f);
+        assertFrontAuxiliaryResolvedAndRouted(f);
     }
 
     private static Gradient solidGradient(int capable) {
@@ -623,7 +649,7 @@ class HueTwilightTest {
     @Test
     void solidModeGradientKeepsAllCapableGradientChannels() throws Exception {
         Fixture f = new Fixture(gradientIds(), List.of());
-        f.setBackLightId(null);
+        f.setAuxiliaryLight(AUX_GROUP, null);
         Resource front = new Resource(ResourceType.LIGHT).setId(FRONT_ID).setGradient(solidGradient(5))
                 .setContentType(ContentType.FULL_STATE);
 
@@ -641,7 +667,7 @@ class HueTwilightTest {
     @Test
     void solidModeGradientRemovesChannelsBeyondCapacity() throws Exception {
         Fixture f = new Fixture(gradientIds(), List.of());
-        f.setBackLightId(null);
+        f.setAuxiliaryLight(AUX_GROUP, null);
         Resource front = new Resource(ResourceType.LIGHT).setId(FRONT_ID).setGradient(solidGradient(3))
                 .setContentType(ContentType.FULL_STATE);
 
@@ -659,7 +685,7 @@ class HueTwilightTest {
     @Test
     void lightWithoutGradientRemovesAllGradientChannels() throws Exception {
         Fixture f = new Fixture(gradientIds(), List.of());
-        f.setBackLightId(null);
+        f.setAuxiliaryLight(AUX_GROUP, null);
         Resource front = new Resource(ResourceType.LIGHT).setId(FRONT_ID).setContentType(ContentType.FULL_STATE);
 
         updateChannels(f.handler, front);
