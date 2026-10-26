@@ -17,6 +17,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,6 +41,7 @@ class WebSocketBase extends WebSocketAdapter {
     final int bufferSize = 1048576; // 1 Mb
 
     private Optional<Future<?>> sessionFuture = Optional.empty();
+    private volatile Optional<ScheduledFuture<?>> pingJob = Optional.empty();
 
     private String host = "";
     private String className = "";
@@ -59,6 +61,7 @@ class WebSocketBase extends WebSocketAdapter {
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
         logger.debug("{}: {} connection closed: {} - {}", host, className, statusCode, reason);
         super.onWebSocketClose(statusCode, reason);
+        stopPing();
         if (statusCode == 1001) {
             // timeout
             reconnect();
@@ -84,7 +87,7 @@ class WebSocketBase extends WebSocketAdapter {
                         remoteControllerWebSocket.callback.handler.getScheduler().schedule(() -> {
                             reconnect();
                         }, 2000, TimeUnit.MILLISECONDS);
-                        connect(u);
+                        openSession(u);
                     } catch (RemoteControllerException e) {
                         logger.warn("{} Reconnect Failed {} : {}", host, className, e.getMessage());
                     }
@@ -97,6 +100,11 @@ class WebSocketBase extends WebSocketAdapter {
 
     void connect(URI uri) throws RemoteControllerException {
         count = 0;
+        openSession(uri);
+    }
+
+    // does not reset the reconnect count, so reconnect() gives up after its retries
+    private void openSession(URI uri) throws RemoteControllerException {
         if (isConnected() || sessionFuture.map(sf -> !sf.isDone()).orElse(false)) {
             logger.trace("{}: {} already connecting or connected", host, className);
             return;
@@ -122,21 +130,29 @@ class WebSocketBase extends WebSocketAdapter {
             logger.trace("{}: {} Buffer Size set to {} Mb", host, className,
                     Math.round((bufferSize / 1048576.0) * 100.0) / 100.0);
             // avoid 5 minute idle timeout
-            remoteControllerWebSocket.callback.handler.getScheduler().scheduleWithFixedDelay(() -> {
-                try {
-                    String data = "Ping";
-                    ByteBuffer payload = ByteBuffer.wrap(data.getBytes());
-                    session.getRemote().sendPing(payload);
-                } catch (IOException e) {
-                    logger.warn("{} problem starting periodic Ping {} : {}", host, className, e.getMessage());
-                }
-            }, 4, 4, TimeUnit.MINUTES);
+            stopPing();
+            pingJob = Optional.of(remoteControllerWebSocket.callback.handler.getScheduler()
+                    .scheduleWithFixedDelay(() -> sendPing(session), 4, 4, TimeUnit.MINUTES));
         }
         super.onWebSocketConnect(session);
         count = 0;
     }
 
+    private void sendPing(Session session) {
+        try {
+            session.getRemote().sendPing(ByteBuffer.wrap("Ping".getBytes()));
+        } catch (IOException e) {
+            logger.warn("{} problem starting periodic Ping {} : {}", host, className, e.getMessage());
+        }
+    }
+
+    private void stopPing() {
+        pingJob.ifPresent(job -> job.cancel(true));
+        pingJob = Optional.empty();
+    }
+
     void close() {
+        stopPing();
         this.sessionFuture.ifPresent(sf -> {
             if (!sf.isDone()) {
                 logger.trace("{}: Cancelling session Future: {}", host, sf);
