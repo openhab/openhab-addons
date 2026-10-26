@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -55,6 +56,8 @@ public class IpControl {
     private static final int REQUEST_TIMEOUT_S = 3;
     // the user has to press Allow on the TV
     private static final int PAIRING_TIMEOUT_S = 30;
+
+    private static final Pattern ACCESS_TOKEN = Pattern.compile("(\"AccessToken\"\\s*:\\s*\")[^\"]*");
 
     private static final int ERROR_UNAUTHORIZED = -32010;
     // returned for a token the TV no longer knows
@@ -150,8 +153,17 @@ public class IpControl {
                 throw new IpControlException(method + ": no answer", e);
             }
         }
-        logger.trace("{}: IP Control {} -> {}", host, method, response);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}: IP Control {} -> {}", host, method, redactToken(response));
+        }
         return parseResult(method, response);
+    }
+
+    /**
+     * The createAccessToken reply contains the token, which must not be logged
+     */
+    static String redactToken(String response) {
+        return ACCESS_TOKEN.matcher(response).replaceAll("$1***");
     }
 
     /**

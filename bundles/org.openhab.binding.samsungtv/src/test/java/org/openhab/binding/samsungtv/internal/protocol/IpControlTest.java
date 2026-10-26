@@ -42,6 +42,14 @@ public class IpControlTest {
     }
 
     @Test
+    public void redactsAccessToken() {
+        String redacted = IpControl
+                .redactToken("{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"result\":{\"AccessToken\": \"abc123\"}}");
+        assertFalse(redacted.contains("abc123"));
+        assertTrue(redacted.contains("\"AccessToken\": \"***\""));
+    }
+
+    @Test
     public void missingResultIsEmpty() throws IpControlException {
         assertEquals(0, IpControl.parseResult("powerControl", "{\"jsonrpc\":\"2.0\",\"id\":\"1\"}").size());
     }
