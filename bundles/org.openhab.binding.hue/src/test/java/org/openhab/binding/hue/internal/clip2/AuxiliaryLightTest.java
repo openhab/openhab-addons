@@ -67,7 +67,7 @@ import org.openhab.core.types.State;
 import com.google.gson.Gson;
 
 /**
- * Tests for the back light handling of {@link Clip2ThingHandler}, as used by devices with auxiliary lights.
+ * Tests for the auxiliary light handling of {@link Clip2ThingHandler}.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

@@ -175,8 +175,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final int MIN_MIREK_DELTA = 10;
 
     // light service archetypes for dual light devices
-    private final Set<Archetype> FRONT_ARCHETYPES = Set.of(Archetype.TWILIGHT_FRONT, Archetype.UP_AND_DOWN_DOWN);
-    private final Set<Archetype> BACK_ARCHETYPES = Set.of(Archetype.TWILIGHT_BACK, Archetype.UP_AND_DOWN_UP);
+    private static final Set<Archetype> FRONT_ARCHETYPES = Set.of(Archetype.TWILIGHT_FRONT, Archetype.UP_AND_DOWN_DOWN);
+    private static final Set<Archetype> BACK_ARCHETYPES = Set.of(Archetype.TWILIGHT_BACK, Archetype.UP_AND_DOWN_UP);
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -448,12 +448,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         Resource putResource = null;
         String putResourceId = null;
+
         Command command = commandParam;
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         String auxLightId = channelGroupId == null ? null : auxiliaryLightGroups.get(channelGroupId);
-        if (channelGroupId != null && auxLightId == null) {
-            logger.warn("Command received for unknown channel group '{}'.", channelUID);
+        if (auxLightId == null && channelGroupId != null && LIGHT_GROUP_PATTERN.matcher(channelGroupId).matches()) {
+            logger.warn("Command received for unknown light channel group '{}'.", channelUID);
             return;
         }
         boolean isAuxLight = auxLightId != null;
@@ -791,12 +792,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Apply the off transition work-around for the given command to the given resource.
      * 
-     * @param isBackLight if true, the command is for the back light channel, and no workaround is applied.
+     * @param isAuxiliaryLight the command is for an auxiliary light channel so no workaround is applied.
      * @param command the handled command.
      * @param putResource the resource that will be adjusted if needed.
      */
-    private void applyOffTransitionWorkAround(boolean isBackLight, Command command, Resource putResource) {
-        if (isBackLight) {
+    private void applyOffTransitionWorkAround(boolean isAuxiliaryLight, Command command, Resource putResource) {
+        if (isAuxiliaryLight) {
             return;
         }
         try {
@@ -816,12 +817,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Some legacy lights have a bi-stable operating mode which makes them forget color temperature
      * commands when they are in soft-off state. This method re-applies the lost color temperature.
      * 
-     * @param isBackLight if true, the command is for the back light channel, and no workaround is applied.
+     * @param isAuxiliaryLight the command is for an auxiliary light channel so no workaround is applied.
      * @param command the handled command.
      * @param putResource the resource that will be adjusted if needed.
      */
-    private void applyColorTemperatureWorkAround(boolean isBackLight, Command command, Resource putResource) {
-        if (isBackLight) {
+    private void applyColorTemperatureWorkAround(boolean isAuxiliaryLight, Command command, Resource putResource) {
+        if (isAuxiliaryLight) {
             return;
         }
         LegacyLightState legacyState = legacyLightState;
@@ -1178,28 +1179,27 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * yet advanced users can use them nevertheless.
      */
     private void addRemoveCorrelatedChannelUIDs() {
-        List<@Nullable String> groups = new ArrayList<>();
-        groups.add(null); // main channels
-        groups.addAll(auxiliaryLightGroups.keySet());
+        List<@Nullable String> groupIds = new ArrayList<>();
+        groupIds.add(null); // main channels
+        groupIds.addAll(auxiliaryLightGroups.keySet());
 
-        for (String group : groups) {
-            // main channels
-            if (supportedChannelUIDs.contains(uid(group, CHANNEL_2_COLOR))) {
-                supportedChannelUIDs.add(uid(group, CHANNEL_2_COLOR_XY_ONLY));
-                supportedChannelUIDs.remove(uid(group, CHANNEL_2_BRIGHTNESS));
-                supportedChannelUIDs.add(uid(group, CHANNEL_2_DIMMING_ONLY));
-                supportedChannelUIDs.remove(uid(group, CHANNEL_2_SWITCH));
-                supportedChannelUIDs.add(uid(group, CHANNEL_2_ON_OFF_ONLY));
+        groupIds.stream().forEach(groupId -> {
+            if (supportedChannelUIDs.contains(uid(groupId, CHANNEL_2_COLOR))) {
+                supportedChannelUIDs.add(uid(groupId, CHANNEL_2_COLOR_XY_ONLY));
+                supportedChannelUIDs.remove(uid(groupId, CHANNEL_2_BRIGHTNESS));
+                supportedChannelUIDs.add(uid(groupId, CHANNEL_2_DIMMING_ONLY));
+                supportedChannelUIDs.remove(uid(groupId, CHANNEL_2_SWITCH));
+                supportedChannelUIDs.add(uid(groupId, CHANNEL_2_ON_OFF_ONLY));
             }
-            if (supportedChannelUIDs.contains(uid(group, CHANNEL_2_BRIGHTNESS))) {
-                supportedChannelUIDs.add(uid(group, CHANNEL_2_DIMMING_ONLY));
-                supportedChannelUIDs.remove(uid(group, CHANNEL_2_SWITCH));
-                supportedChannelUIDs.add(uid(group, CHANNEL_2_ON_OFF_ONLY));
+            if (supportedChannelUIDs.contains(uid(groupId, CHANNEL_2_BRIGHTNESS))) {
+                supportedChannelUIDs.add(uid(groupId, CHANNEL_2_DIMMING_ONLY));
+                supportedChannelUIDs.remove(uid(groupId, CHANNEL_2_SWITCH));
+                supportedChannelUIDs.add(uid(groupId, CHANNEL_2_ON_OFF_ONLY));
             }
-            if (supportedChannelUIDs.contains(uid(group, CHANNEL_2_SWITCH))) {
-                supportedChannelUIDs.add(uid(group, CHANNEL_2_ON_OFF_ONLY));
+            if (supportedChannelUIDs.contains(uid(groupId, CHANNEL_2_SWITCH))) {
+                supportedChannelUIDs.add(uid(groupId, CHANNEL_2_ON_OFF_ONLY));
             }
-        }
+        });
     }
 
     /**
@@ -1220,7 +1220,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 logger.warn("{} -> buildAuxiliaryLightChannels() invalid groupId '{}'", resourceId, groupId);
                 continue;
             }
-            String labelPrefix2 = labelPrefix + matcher.group(1) + " ";
+            String labelPrefix2 = labelPrefix + " " + matcher.group(1) + " ";
             for (Channel mainChannel : thing.getChannels()) {
                 if (mainChannel.getUID().getGroupId() != null) {
                     continue; // skip non main channels
@@ -1279,8 +1279,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Returns true if the resource is a LIGHT that cannot yet be attributed to this thing's lights, i.e. it is
-     * neither a group light nor the main light. This includes the period before updateLookups() has succeeded,
-     * when neither the main light ID nor the group light ID is known.
+     * neither an auxiliary light nor the main light. This includes the period before updateLookups() has succeeded,
+     * when neither the main light ID nor the auxiliary light ID is known.
      */
     private boolean isUnresolvedLightResource(Resource resource) {
         if (ResourceType.LIGHT != resource.getType() || !auxiliaryLightGroups.isEmpty()) {
@@ -1346,8 +1346,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Create the gradient channel UID for the given index.
      *
-     * @param isBackLight if true, create a back light gradient channel UID, otherwise create a main gradient channel
-     *            UID.
+     * @param groupId the group ID of the auxiliary light, or null for the main light.
      * @param index the gradient index (0-based).
      * @return the gradient channel UID.
      */
@@ -1729,37 +1728,38 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Map<String, String> auxiliaryGroups = new LinkedHashMap<>();
 
             if (lights.size() > 1) {
-                List<ResourceReference> backs = new ArrayList<>();
-                List<ResourceReference> remaining = new ArrayList<>(lights);
+                List<ResourceReference> auxiliaries = new ArrayList<>();
+                List<ResourceReference> unprocessed = new ArrayList<>(lights);
 
-                // 1. resolve by archetype (Twilight / Up-and-Down)
+                // first resolve by archetype (Twilight / Up-and-Down)
                 for (ResourceReference light : lights) {
                     Archetype archetype = getLightArchetype(light);
-                    if (FRONT_ARCHETYPES.contains(archetype)) {
+                    if (FRONT_ARCHETYPES.contains(archetype) && mainId == null) {
                         mainId = light.getId();
-                        remaining.remove(light);
+                        unprocessed.remove(light);
                     } else if (BACK_ARCHETYPES.contains(archetype)) {
-                        backs.add(light);
-                        remaining.remove(light);
+                        auxiliaries.add(light);
+                        unprocessed.remove(light);
                     }
                 }
 
-                // 2. fallback: first unresolved light is the primary light
-                if (mainId == null && !remaining.isEmpty()) {
-                    mainId = remaining.remove(0).getId();
+                // fallback: first unresolved light is the main light
+                if (mainId == null && !unprocessed.isEmpty()) {
+                    mainId = unprocessed.remove(0).getId();
                 }
 
-                // 3. back lights first, then all others in service order => light-2 .. light-5
-                List<ResourceReference> others = new ArrayList<>(backs);
-                others.addAll(remaining);
-                int number = 2;
-                for (ResourceReference light : others) {
-                    if (number > MAX_LIGHTS) {
-                        logger.debug("{} -> updateLookups() ignoring light {}; max {} lights", resourceId,
-                                light.getId(), MAX_LIGHTS);
+                // all other light services must also be auxiliary lights
+                auxiliaries.addAll(unprocessed);
+
+                int groupSuffix = 2;
+                for (ResourceReference auxiliary : auxiliaries) {
+                    if (groupSuffix > MAX_LIGHTS) {
+                        logger.debug("{} -> updateLookups() ignoring auxiliary light {}; max {} lights", resourceId,
+                                auxiliary.getId(), MAX_LIGHTS);
                         break;
                     }
-                    auxiliaryGroups.put(LIGHT_GROUP_FORMAT.formatted(number++), Objects.requireNonNull(light.getId()));
+                    auxiliaryGroups.put(LIGHT_GROUP_FORMAT.formatted(groupSuffix++),
+                            Objects.requireNonNull(auxiliary.getId()));
                 }
             }
 
@@ -1773,23 +1773,25 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
 
-            auxiliaryLightGroups.clear();
-            auxiliaryLightGroups.putAll(auxiliaryGroups);
+            // force main light in commandResourceIds if it exists and there are auxiliary lights
             if (mainId != null && !auxiliaryGroups.isEmpty()) {
                 commandResourceIds.put(ResourceType.LIGHT, mainId);
             }
+
+            auxiliaryLightGroups.clear();
+            auxiliaryLightGroups.putAll(auxiliaryGroups);
+
             auxiliaryGroups.keySet().forEach(g -> {
                 dynamicsDurations.put(uid(g, CHANNEL_2_DYNAMICS), Duration.ZERO);
                 dynamicsExpireTimes.put(uid(g, CHANNEL_2_DYNAMICS), Instant.MIN);
             });
+
             logger.debug("{} -> updateLookups() main light {}, groups {}", resourceId, mainId, auxiliaryGroups);
         }
     }
 
     /**
      * Get the metadata archetype of the light resource referenced by the given service.
-     * Apparently not all lights have a correct metadata {@link Archetype} so we also check
-     * the metadata name for the string "front" or "back".
      *
      * @return the archetype, or {@link Archetype#UNKNOWN_ARCHETYPE} if the light has no metadata.
      * @throws ApiException if a communication error occurred.
@@ -2277,8 +2279,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Ensure that the light service resource for the group light in the serviceContributorsCache has a
      * complete DTO for it to yield valid channel state values. Check if the given (cached) light service
      * has a {@link MirekSchema} field, and a {@link Gamut} field. If any is missing, use the binding
-     * default values. This ensures that the back light's channels always have a valid color temperature
-     * range and gamut.
+     * default values. This ensures that theauxiliary back light's channels always have a valid color
+     * temperature range and gamut.
      */
     private void updateAuxiliaryLightCacheRequiredFields(Resource resource) {
         if (resource.getColorTemperature() instanceof ColorTemperature ct) {

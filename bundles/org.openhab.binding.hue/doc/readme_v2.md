@@ -156,15 +156,15 @@ The `rotary-steps` channel is a trigger channel.
 When the dial is turned, the channel receives a number corresponding to the number of steps of the last movement of a rotary dial.
 A positive number means the dial was rotated clock-wise, whereas a negative number means it was rotated counter-clockwise.
 
-### Channels for Devices with Two Lights (Hue Twilight)
+### Channels for Devices with Multiple (Auxiliary) Lights
 
-Some devices, such as the Hue Twilight, contain two independent lights: a front light and a back light.
-The binding detects these devices automatically from the `twilight front` and `twilight back` archetypes reported by the bridge.
-The front light uses the normal channels of the thing, e.g. `brightness` or `color-temperature`, as shown above.
-The back light is exposed in an additional channel group called `back-light`, which provides its own set of channels, e.g. `back-light#color`.
-The back light channels are created dynamically, so only the channels that the back light actually supports are shown.
-Commands sent to a `back-light` channel control only the back light, and commands sent to the normal channels control only the front light.
-The `dynamics` channel is also available per light: use `dynamics` for the front light and `back-light#dynamics` for the back light.
+Some devices, such as the Hue Twilight or Hue Centris, contain two or more independent lights: a main light and one or more auxiliary lights.
+The binding detects these devices automatically.
+The main light uses the normal channels of the thing, e.g. `brightness` or `color-temperature`, as shown above.
+The auxiliary lights are exposed in an additional channel group called `lightN`, where `N` identifies the auxiliary light id, which provides its own set of channels, e.g. `light2#color`.
+The auxiliary light channels are created dynamically, so only the channels that the auxiliary light actually supports are shown.
+Commands sent to a `lightN` channel control only the auxiliary light, and commands sent to the normal channels control only the main light.
+The `dynamics` channel is also available per light: use `dynamics` for the front light and `lightN#dynamics` for the auxiliary light.
 
 ### Channels for Rooms and Zones
 
