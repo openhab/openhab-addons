@@ -135,8 +135,12 @@ class WebSocketArt extends WebSocketBase {
                 return Optional.ofNullable(value).orElse(getStatus());
             }
 
-            public int getIntValue() {
-                return Optional.of(Integer.valueOf(getValue())).orElse(0);
+            public Optional<Integer> getIntValue() {
+                try {
+                    return Optional.of(Integer.valueOf(getValue()));
+                } catch (NumberFormatException e) {
+                    return Optional.empty();
+                }
             }
 
             public String getCategoryId() {
@@ -152,7 +156,7 @@ class WebSocketArt extends WebSocketBase {
             }
 
             public int getRotationStatus() {
-                return Optional.ofNullable(Integer.valueOf(current_rotation_status)).orElse(0);
+                return current_rotation_status;
             }
 
             public String getType() {
@@ -456,12 +460,12 @@ class WebSocketArt extends WebSocketBase {
                 case "set_brightness":
                 case "brightness_changed":
                 case "brightness":
-                    valueReceived(ART_BRIGHTNESS, new PercentType(data.getIntValue() * 10));
+                    data.getIntValue().ifPresent(v -> valueReceived(ART_BRIGHTNESS, new PercentType(v * 10)));
                     break;
                 case "set_color_temperature":
                 case "color_temperature_changed":
                 case "color_temperature":
-                    valueReceived(ART_COLOR_TEMPERATURE, new DecimalType(data.getIntValue()));
+                    data.getIntValue().ifPresent(v -> valueReceived(ART_COLOR_TEMPERATURE, new DecimalType(v)));
                     break;
                 case "get_artmode_status":
                 case "art_mode_changed":
