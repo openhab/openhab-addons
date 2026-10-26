@@ -145,6 +145,16 @@ public class RemoteControllerService implements SamsungTvService {
         previousApp = "";
     }
 
+    /**
+     * Check the websockets when the TV comes online. A TV that restarted does not close them, and they would otherwise
+     * only be found dead at the next write or periodic ping.
+     */
+    public void pingConnections() {
+        if (remoteController instanceof RemoteControllerWebSocket webSocket) {
+            webSocket.ping();
+        }
+    }
+
     @Override
     public void stop() {
         try {

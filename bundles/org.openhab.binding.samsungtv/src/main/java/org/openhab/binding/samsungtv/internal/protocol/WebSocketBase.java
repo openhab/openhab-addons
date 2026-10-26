@@ -138,11 +138,21 @@ class WebSocketBase extends WebSocketAdapter {
         count = 0;
     }
 
+    /**
+     * Ping now, so a session left half-open by a TV restart fails and is reconnected
+     */
+    void ping() {
+        Session session = getSession();
+        if (session != null && isConnected()) {
+            sendPing(session);
+        }
+    }
+
     private void sendPing(Session session) {
         try {
             session.getRemote().sendPing(ByteBuffer.wrap("Ping".getBytes()));
         } catch (IOException e) {
-            logger.warn("{} problem starting periodic Ping {} : {}", host, className, e.getMessage());
+            logger.debug("{}: {} ping failed: {}", host, className, e.getMessage());
         }
     }
 
