@@ -121,7 +121,6 @@ public class DeutscheBahnTrainHandlerTest {
         final DeutscheBahnTrainHandler handler = createAndInitHandler(callback, thing);
 
         try {
-            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback, timeout(1000)).statusUpdated(eq(thing),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
@@ -176,7 +175,6 @@ public class DeutscheBahnTrainHandlerTest {
         final DeutscheBahnTrainHandler handler = createAndInitHandler(callback, thing);
 
         try {
-            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback, timeout(1000)).statusUpdated(eq(thing),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
