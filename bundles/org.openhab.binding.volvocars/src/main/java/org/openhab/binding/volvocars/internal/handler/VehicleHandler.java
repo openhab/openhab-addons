@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -100,24 +101,47 @@ public class VehicleHandler extends BaseThingHandler {
     private final Object pollLock = new Object();
     private final Object refreshJobLock = new Object();
 
-    private VehicleConfiguration config = new VehicleConfiguration();
     private @Nullable ScheduledFuture<?> pollJob;
     private @Nullable ScheduledFuture<?> refreshJob;
 
     /**
-     * Identifies the current initialization so that tasks scheduled before a dispose do not publish stale state.
+     * Identifies the current initialization so that tasks scheduled before a dispose do not publish stale state or
+     * send commands for a previous configuration.
      */
     private volatile @Nullable Session session;
 
     /**
-     * Vehicle information determined once per initialization. Kept per session so that a poll still running from a
-     * previous initialization cannot leak its state into the current one. Only accessed from poll().
+     * Configuration and vehicle information of one initialization. Kept per session so that a poll or command still
+     * running from a previous initialization cannot leak its state into the current one, or use the current
+     * configuration. The vehicle information is only accessed from poll().
      */
     private static class Session {
+        private final VehicleConfiguration config;
+        private final List<Future<?>> commandJobs = new ArrayList<>();
         private @Nullable Vehicle vehicle;
-        private Set<String> energyCapabilities = Set.of();
+        /** null if unknown, e.g. because the energy scope was not granted; empty if the Energy API is unsupported */
+        private @Nullable Set<String> energyCapabilities;
         private boolean locationSupported = true;
         private Instant nextSlowRefresh = Instant.MIN;
+
+        private Session(VehicleConfiguration config) {
+            this.config = config;
+        }
+
+        private void addCommandJob(Future<?> job) {
+            synchronized (commandJobs) {
+                commandJobs.removeIf(Future::isDone);
+                commandJobs.add(job);
+            }
+        }
+
+        private void cancelCommandJobs() {
+            synchronized (commandJobs) {
+                // a command that is already being sent is not interrupted, its result is just no longer published
+                commandJobs.forEach(job -> job.cancel(false));
+                commandJobs.clear();
+            }
+        }
     }
 
     public VehicleHandler(Thing thing) {
@@ -126,7 +150,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(VehicleConfiguration.class);
+        VehicleConfiguration config = getConfigAs(VehicleConfiguration.class);
         if (config.vin.isBlank()) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-vin");
             return;
@@ -135,7 +159,7 @@ public class VehicleHandler extends BaseThingHandler {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.invalid-refresh-interval");
             return;
         }
-        Session currentSession = new Session();
+        Session currentSession = new Session(config);
         session = currentSession;
         updateStatus(ThingStatus.UNKNOWN);
         pollJob = scheduler.scheduleWithFixedDelay(() -> poll(currentSession), 0, config.refreshInterval,
@@ -144,7 +168,11 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        Session oldSession = session;
         session = null;
+        if (oldSession != null) {
+            oldSession.cancelCommandJobs();
+        }
         ScheduledFuture<?> job = pollJob;
         if (job != null) {
             job.cancel(true);
@@ -185,9 +213,10 @@ public class VehicleHandler extends BaseThingHandler {
                     }
                 }
                 case CHANNEL_ENGINE_REMOTE_START -> {
-                    if (command == OnOffType.ON) {
+                    Session currentSession = session;
+                    if (command == OnOffType.ON && currentSession != null) {
                         JsonObject body = new JsonObject();
-                        body.addProperty("runtimeMinutes", config.engineRunTime);
+                        body.addProperty("runtimeMinutes", currentSession.config.engineRunTime);
                         executeCommand("engine-start", body, CHANNEL_ENGINE_REMOTE_START);
                     } else if (command == OnOffType.OFF) {
                         executeCommand("engine-stop", null, null);
@@ -222,16 +251,20 @@ public class VehicleHandler extends BaseThingHandler {
         if (currentSession == null) {
             return;
         }
-        scheduler.execute(() -> {
+        currentSession.addCommandJob(scheduler.submit(() -> {
             VolvoCarsApi api = getApi();
             if (api == null) {
                 logger.debug("Unable to execute {}, account is not available", apiCommand);
                 return;
             }
+            if (!currentSession.equals(session)) {
+                logger.debug("Discarding command {}, the Thing was disposed or reconfigured", apiCommand);
+                return;
+            }
             String status;
             boolean sent;
             try {
-                CommandResult result = api.executeCommand(config.vin, apiCommand, body);
+                CommandResult result = api.executeCommand(currentSession.config.vin, apiCommand, body);
                 String message = result.message;
                 status = String.valueOf(result.invokeStatus)
                         + (message != null && !message.isBlank() ? ": " + message : "");
@@ -250,7 +283,7 @@ public class VehicleHandler extends BaseThingHandler {
                 // the vehicle needs some time until the command is reflected in its reported state
                 scheduleRefresh(REFRESH_AFTER_COMMAND_SECONDS);
             }
-        });
+        }));
     }
 
     private void scheduleRefresh(int delaySeconds) {
@@ -311,11 +344,15 @@ public class VehicleHandler extends BaseThingHandler {
                 if (localVehicle == null) {
                     return;
                 }
+            } else if (localVehicle.hasBattery() && pollSession.energyCapabilities == null) {
+                // retry, e.g. because the account was authorized again with the energy scope in the meantime
+                loadEnergyCapabilities(api, pollSession, localVehicle);
             }
             refreshFast(api, pollSession, localVehicle);
             if (!Instant.now().isBefore(pollSession.nextSlowRefresh)) {
                 refreshSlow(api, pollSession);
-                pollSession.nextSlowRefresh = Instant.now().plusSeconds(config.slowRefreshInterval * 60L - 30);
+                pollSession.nextSlowRefresh = Instant.now()
+                        .plusSeconds(pollSession.config.slowRefreshInterval * 60L - 30);
             }
             if (pollSession.equals(session)) {
                 updateStatus(ThingStatus.ONLINE);
@@ -336,9 +373,10 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private @Nullable Vehicle loadVehicle(VolvoCarsApi api, Session pollSession) throws VolvoCarsException {
+        String vin = pollSession.config.vin;
         Vehicle localVehicle;
         try {
-            localVehicle = api.getVehicle(config.vin);
+            localVehicle = api.getVehicle(vin);
         } catch (VolvoCarsException e) {
             if (e.getHttpStatus() == HttpStatus.NOT_FOUND_404 || e.getHttpStatus() == HttpStatus.FORBIDDEN_403) {
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.unknown-vin");
@@ -346,23 +384,41 @@ public class VehicleHandler extends BaseThingHandler {
             }
             throw e;
         }
-        Set<String> capabilities = localVehicle.hasBattery()
-                ? optional(() -> api.getSupportedEnergyCapabilities(config.vin))
+        Set<String> capabilities = localVehicle.hasBattery() ? optional(() -> api.getSupportedEnergyCapabilities(vin))
                 : null;
-        Set<String> commands = optional(() -> api.getAvailableCommands(config.vin));
+        Set<String> commands = optional(() -> api.getAvailableCommands(vin));
         if (!pollSession.equals(session)) {
             return null;
         }
-        updateProperties(localVehicle);
+        updateProperties(localVehicle, vin);
         removeUnsupportedChannels(localVehicle, capabilities, commands);
-        pollSession.energyCapabilities = capabilities != null ? capabilities : Set.of();
+        pollSession.energyCapabilities = capabilities;
         pollSession.vehicle = localVehicle;
         return localVehicle;
     }
 
-    private void updateProperties(Vehicle localVehicle) {
+    private void loadEnergyCapabilities(VolvoCarsApi api, Session pollSession, Vehicle localVehicle)
+            throws VolvoCarsException {
+        Set<String> capabilities;
+        try {
+            capabilities = optional(() -> api.getSupportedEnergyCapabilities(pollSession.config.vin));
+        } catch (VolvoCarsException e) {
+            if (e.isAuthorizationRequired()) {
+                throw e;
+            }
+            // the capabilities are optional, so a failed retry must not fail the whole refresh
+            logger.debug("Energy capabilities of {} are not available: {}", getThing().getUID(), e.getMessage());
+            return;
+        }
+        if (capabilities != null && pollSession.equals(session)) {
+            removeUnsupportedChannels(localVehicle, capabilities, null);
+            pollSession.energyCapabilities = capabilities;
+        }
+    }
+
+    private void updateProperties(Vehicle localVehicle, String vin) {
         Map<String, String> properties = editProperties();
-        properties.put(PROPERTY_VIN, config.vin);
+        properties.put(PROPERTY_VIN, vin);
         putProperty(properties, PROPERTY_MODEL, localVehicle.getModel());
         putProperty(properties, PROPERTY_MODEL_YEAR,
                 localVehicle.modelYear > 0 ? Integer.toString(localVehicle.modelYear) : null);
@@ -441,8 +497,10 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void refreshFast(VolvoCarsApi api, Session pollSession, Vehicle localVehicle) throws VolvoCarsException {
+        String vin = pollSession.config.vin;
         Set<String> energyCapabilities = pollSession.energyCapabilities;
-        Map<String, ValueField> doors = getValues(api, "doors");
+        boolean energyApiSupported = energyCapabilities != null && !energyCapabilities.isEmpty();
+        Map<String, ValueField> doors = getValues(api, vin, "doors");
         if (doors != null) {
             ValueField centralLock = doors.get("centralLock");
             updateState(GROUP_DOORS, CHANNEL_LOCK,
@@ -453,59 +511,60 @@ public class VehicleHandler extends BaseThingHandler {
                     });
             DOORS.forEach((key, channel) -> updateState(GROUP_DOORS, channel, toOpenClosed(doors.get(key))));
         }
-        Map<String, ValueField> windows = getValues(api, "windows");
+        Map<String, ValueField> windows = getValues(api, vin, "windows");
         if (windows != null) {
             WINDOWS.forEach((key, channel) -> updateState(GROUP_WINDOWS, channel, toOpenClosed(windows.get(key))));
         }
-        Map<String, ValueField> engine = getValues(api, "engine-status");
+        Map<String, ValueField> engine = getValues(api, vin, "engine-status");
         if (engine != null) {
             ValueField engineStatus = engine.get("engineStatus");
             updateState(GROUP_STATUS, CHANNEL_ENGINE_RUNNING,
                     engineStatus == null || "UNSPECIFIED".equals(engineStatus.getString()) ? UnDefType.UNDEF
                             : OnOffType.from("RUNNING".equals(engineStatus.getString())));
         }
-        Map<String, ValueField> odometer = getValues(api, "odometer");
+        Map<String, ValueField> odometer = getValues(api, vin, "odometer");
         if (odometer != null) {
             updateState(GROUP_STATUS, CHANNEL_ODOMETER, toQuantity(odometer.get("odometer"), KILOMETRE));
         }
-        Map<String, ValueField> accessibility = getValues(api, "command-accessibility");
+        Map<String, ValueField> accessibility = getValues(api, vin, "command-accessibility");
         if (accessibility != null) {
             ValueField availability = accessibility.get("availabilityStatus");
             String reason = availability != null ? availability.unavailableReason : null;
             updateState(GROUP_STATUS, CHANNEL_AVAILABILITY,
                     reason != null && !reason.isBlank() ? new StringType(reason) : toString(availability));
         }
-        Map<String, ValueField> statistics = getValues(api, "statistics");
+        Map<String, ValueField> statistics = getValues(api, vin, "statistics");
         if (statistics != null) {
             updateStatistics(statistics);
         }
-        if (localVehicle.hasCombustionEngine() || (localVehicle.hasBattery() && energyCapabilities.isEmpty())) {
-            Map<String, ValueField> fuel = getValues(api, "fuel");
+        if (localVehicle.hasCombustionEngine() || (localVehicle.hasBattery() && !energyApiSupported)) {
+            Map<String, ValueField> fuel = getValues(api, vin, "fuel");
             if (fuel != null) {
                 updateState(GROUP_FUEL, CHANNEL_FUEL_AMOUNT, toQuantity(fuel.get("fuelAmount"), Units.LITRE));
-                if (energyCapabilities.isEmpty()) {
-                    // vehicles without Energy API support report the battery level as part of the fuel status
+                if (!energyApiSupported) {
+                    // the fuel status also reports the battery level, used if the Energy API is not available
                     updateState(GROUP_BATTERY, CHANNEL_BATTERY_LEVEL,
                             toQuantity(fuel.get("batteryChargeLevel"), Units.PERCENT));
                 }
             }
         }
-        if (!energyCapabilities.isEmpty()) {
-            Map<String, ValueField> energy = getEnergyState(api);
+        if (energyApiSupported) {
+            Map<String, ValueField> energy = getEnergyState(api, vin);
             if (energy != null) {
                 updateEnergy(energy);
             }
         }
         if (pollSession.locationSupported) {
-            pollSession.locationSupported = updateLocation(api);
+            pollSession.locationSupported = updateLocation(api, vin);
         }
     }
 
     private void refreshSlow(VolvoCarsApi api, Session pollSession) throws VolvoCarsException {
+        String vin = pollSession.config.vin;
         // retry the location in case it was temporarily unavailable
         pollSession.locationSupported = true;
 
-        Map<String, ValueField> diagnostics = getValues(api, "diagnostics");
+        Map<String, ValueField> diagnostics = getValues(api, vin, "diagnostics");
         if (diagnostics != null) {
             updateState(GROUP_MAINTENANCE, CHANNEL_SERVICE_WARNING, toString(diagnostics.get("serviceWarning")));
             updateState(GROUP_MAINTENANCE, CHANNEL_DISTANCE_TO_SERVICE,
@@ -517,21 +576,21 @@ public class VehicleHandler extends BaseThingHandler {
             updateState(GROUP_MAINTENANCE, CHANNEL_WASHER_FLUID_WARNING,
                     toString(diagnostics.get("washerFluidLevelWarning")));
         }
-        Map<String, ValueField> brakes = getValues(api, "brakes");
+        Map<String, ValueField> brakes = getValues(api, vin, "brakes");
         if (brakes != null) {
             updateState(GROUP_MAINTENANCE, CHANNEL_BRAKE_FLUID_WARNING, toString(brakes.get("brakeFluidLevelWarning")));
         }
-        Map<String, ValueField> engineWarnings = getValues(api, "engine");
+        Map<String, ValueField> engineWarnings = getValues(api, vin, "engine");
         if (engineWarnings != null) {
             updateState(GROUP_MAINTENANCE, CHANNEL_OIL_LEVEL_WARNING, toString(engineWarnings.get("oilLevelWarning")));
             updateState(GROUP_MAINTENANCE, CHANNEL_COOLANT_LEVEL_WARNING,
                     toString(engineWarnings.get("engineCoolantLevelWarning")));
         }
-        Map<String, ValueField> tyres = getValues(api, "tyres");
+        Map<String, ValueField> tyres = getValues(api, vin, "tyres");
         if (tyres != null) {
             TYRES.forEach((key, channel) -> updateState(GROUP_MAINTENANCE, channel, toString(tyres.get(key))));
         }
-        Map<String, ValueField> warnings = getValues(api, "warnings");
+        Map<String, ValueField> warnings = getValues(api, vin, "warnings");
         if (warnings != null) {
             Set<String> failures = new TreeSet<>();
             warnings.forEach((key, field) -> {
@@ -582,10 +641,10 @@ public class VehicleHandler extends BaseThingHandler {
     /**
      * @return false if the location is not available for the vehicle or authorization
      */
-    private boolean updateLocation(VolvoCarsApi api) throws VolvoCarsException {
+    private boolean updateLocation(VolvoCarsApi api, String vin) throws VolvoCarsException {
         Location location;
         try {
-            location = api.getLocation(config.vin);
+            location = api.getLocation(vin);
         } catch (VolvoCarsException e) {
             // Volvo answers with 403 if the location scope was not granted or the vehicle's region is not supported
             if (e.getHttpStatus() == HttpStatus.FORBIDDEN_403 || e.getHttpStatus() == HttpStatus.NOT_FOUND_404) {
@@ -636,12 +695,13 @@ public class VehicleHandler extends BaseThingHandler {
      *
      * @return the values, or null if the vehicle does not provide the resource or the scope was not granted
      */
-    private @Nullable Map<String, ValueField> getValues(VolvoCarsApi api, String resource) throws VolvoCarsException {
-        return optional(() -> api.getValues(config.vin, resource));
+    private @Nullable Map<String, ValueField> getValues(VolvoCarsApi api, String vin, String resource)
+            throws VolvoCarsException {
+        return optional(() -> api.getValues(vin, resource));
     }
 
-    private @Nullable Map<String, ValueField> getEnergyState(VolvoCarsApi api) throws VolvoCarsException {
-        return optional(() -> api.getEnergyState(config.vin));
+    private @Nullable Map<String, ValueField> getEnergyState(VolvoCarsApi api, String vin) throws VolvoCarsException {
+        return optional(() -> api.getEnergyState(vin));
     }
 
     @FunctionalInterface
