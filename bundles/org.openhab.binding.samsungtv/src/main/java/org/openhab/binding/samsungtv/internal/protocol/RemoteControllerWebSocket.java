@@ -194,6 +194,15 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         return sslContextFactory;
     }
 
+    /**
+     * Ping all websockets, so sessions left half-open by a TV restart are detected and reconnected
+     */
+    public void ping() {
+        webSocketRemote.ping();
+        webSocketArt.ping();
+        webSocketV2.ping();
+    }
+
     public boolean isConnected() {
         if (callback.getArtModeSupported()) {
             return webSocketRemote.isConnected() && webSocketArt.isConnected();

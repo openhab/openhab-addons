@@ -533,6 +533,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public synchronized void putOnline() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
+            findServiceInstance(RemoteControllerService.SERVICE_NAME)
+                    .ifPresent(s -> ((RemoteControllerService) s).pingConnections());
             startPolling();
             if (!getArtModeSupported()) {
                 if (getArtMode2022()) {
