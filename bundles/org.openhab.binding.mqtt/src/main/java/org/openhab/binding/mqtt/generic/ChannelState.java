@@ -213,7 +213,15 @@ public class ChannelState implements MqttMessageSubscriber {
         } else if (parsedType instanceof State parsedState) {
             cachedValue.update(parsedState);
         } else {
-            // things that are only Commands _must_ be posted as a command (like STOP)
+            // things that are only Commands _must_ be posted as a command (like STOP),
+            // except when this is just the echo of our own command on a shared topic:
+            // posting it would make the item send it again, which loops forever
+            if (topic.equals(config.commandTopic) || topic.equals(config.stopCommandTopic)) {
+                logger.debug("Ignoring echo of command '{}' received on command topic '{}' of channel {}", parsedType,
+                        topic, channelUID);
+                receivedOrTimeout();
+                return;
+            }
             channelStateUpdateListener.postChannelCommand(channelUID, (Command) parsedType);
             receivedOrTimeout();
             return;

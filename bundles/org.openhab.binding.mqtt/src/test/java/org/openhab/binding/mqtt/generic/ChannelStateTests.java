@@ -167,6 +167,33 @@ public class ChannelStateTests {
     }
 
     @Test
+    public void receiveStopOnSharedCommandTopicIsIgnoredTest() throws Exception {
+        // state and command topic are identical: the broker echoes our own STOP back to us
+        ChannelConfig config = ChannelConfigBuilder.create("shutter", "shutter").build();
+        config.stop = "STOP";
+        RollershutterValue value = new RollershutterValue("UP", "DOWN", "STOP", null, null, false, false);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
+
+        c.processMessage("shutter", "STOP".getBytes(StandardCharsets.UTF_8));
+
+        verify(channelStateUpdateListenerMock, never()).postChannelCommand(any(), any());
+    }
+
+    @Test
+    public void receiveStopOnSeparateStateTopicIsPostedTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "command").build();
+        config.stop = "STOP";
+        RollershutterValue value = new RollershutterValue("UP", "DOWN", "STOP", null, null, false, false);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
+
+        c.processMessage("state", "STOP".getBytes(StandardCharsets.UTF_8));
+
+        verify(channelStateUpdateListenerMock).postChannelCommand(eq(channelUIDMock), eq(StopMoveType.STOP));
+    }
+
+    @Test
     public void publishStopSeparateTopicTest() throws Exception {
         ChannelConfig config = ChannelConfigBuilder.create("state", "command").withStopCommandTopic("stopCommand")
                 .build();
