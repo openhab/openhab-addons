@@ -1,0 +1,963 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="awtrixng"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="clock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="broker" bindingId="mqtt"/>
+		</supported-bridge-type-refs>
+		<label>AWTRIX NG Clock</label>
+		<description>Clock running the AWTRIX NG firmware</description>
+		<category>screen</category>
+		<channels>
+			<channel id="app" typeId="active-app"/>
+			<channel id="auto-brightness" typeId="auto-brightness"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="battery-voltage" typeId="battery-voltage"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="button-left" typeId="system.rawbutton">
+				<label>Button Left</label>
+				<description>Left button pressed or released</description>
+			</channel>
+			<channel id="button-right" typeId="system.rawbutton">
+				<label>Button Right</label>
+				<description>Right button pressed or released</description>
+			</channel>
+			<channel id="button-select" typeId="system.rawbutton">
+				<label>Button Select</label>
+				<description>Select button pressed or released</description>
+			</channel>
+			<channel id="display" typeId="system.power">
+				<label>Display Power</label>
+				<description>Switches the display ON or OFF</description>
+				<autoUpdatePolicy>recommend</autoUpdatePolicy>
+			</channel>
+			<channel id="error" typeId="error"/>
+			<channel id="fps" typeId="fps"/>
+			<channel id="free-heap" typeId="free-heap"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="indicator-1" typeId="indicator">
+				<label>Indicator 1</label>
+			</channel>
+			<channel id="indicator-2" typeId="indicator">
+				<label>Indicator 2</label>
+			</channel>
+			<channel id="indicator-3" typeId="indicator">
+				<label>Indicator 3</label>
+			</channel>
+			<channel id="ip-address" typeId="ip-address"/>
+			<channel id="light-level" typeId="light-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="auto-transition" typeId="switch">
+				<label>Automatic App Rotation</label>
+				<description>Rotate through the apps automatically</description>
+			</channel>
+			<channel id="transition-effect" typeId="transition-effect">
+				<label>Transition Effect</label>
+				<description>Animation between apps</description>
+			</channel>
+			<channel id="transition-direction" typeId="transition-direction">
+				<label>Transition Direction</label>
+				<description>Reverses directional transitions</description>
+			</channel>
+			<channel id="transition-duration" typeId="duration">
+				<label>Transition Duration</label>
+				<description>Length of the animation between apps, 0 for instant</description>
+			</channel>
+			<channel id="app-duration" typeId="duration">
+				<label>App Duration</label>
+				<description>Display time per app and default duration of a notification</description>
+			</channel>
+			<channel id="block-navigation" typeId="switch">
+				<label>Block Button Navigation</label>
+				<description>Disable app switching, display toggle and menu with the buttons. Button events are still reported.</description>
+			</channel>
+			<channel id="volume" typeId="percent">
+				<label>Master Volume</label>
+				<description>Master volume, 0 silences everything</description>
+			</channel>
+			<channel id="app-volume" typeId="percent">
+				<label>App Volume</label>
+				<description>Share of the master volume for the sounds of scripts</description>
+			</channel>
+			<channel id="alert-volume" typeId="percent">
+				<label>Alert Volume</label>
+				<description>Share of the master volume for notifications and alerts</description>
+			</channel>
+			<channel id="time-mode" typeId="time-mode">
+				<label>Clock Style</label>
+				<description>Layout of the clock app</description>
+			</channel>
+			<channel id="time-24h" typeId="switch">
+				<label>24 Hour Clock</label>
+				<description>24 hour format, otherwise 12 hour</description>
+			</channel>
+			<channel id="time-leading-zero" typeId="switch">
+				<label>Leading Zero</label>
+				<description>Show the hour with two digits</description>
+			</channel>
+			<channel id="time-show-seconds" typeId="switch">
+				<label>Show Seconds</label>
+				<description>Show the seconds in the clock</description>
+			</channel>
+			<channel id="time-show-ampm" typeId="switch">
+				<label>Show AM/PM</label>
+				<description>Show AM or PM, needs the 12 hour format and hidden when seconds are shown</description>
+			</channel>
+			<channel id="time-separator" typeId="time-separator">
+				<label>Clock Separator</label>
+				<description>Behavior of the colon of the clock</description>
+			</channel>
+			<channel id="date-order" typeId="date-order">
+				<label>Date Order</label>
+				<description>Order of day, month and year</description>
+			</channel>
+			<channel id="date-separator" typeId="date-separator">
+				<label>Date Separator</label>
+				<description>Character between the parts of the date</description>
+			</channel>
+			<channel id="date-year-mode" typeId="date-year-mode">
+				<label>Date Year</label>
+				<description>How the year is shown</description>
+			</channel>
+			<channel id="date-show-weekday" typeId="switch">
+				<label>Date Weekday</label>
+				<description>Prepend the weekday to the date</description>
+			</channel>
+			<channel id="date-month-names" typeId="switch">
+				<label>Date Month Names</label>
+				<description>Use three letter month names instead of numbers</description>
+			</channel>
+			<channel id="use-celsius" typeId="switch">
+				<label>Use Celsius</label>
+				<description>Show the temperature in Celsius, otherwise in Fahrenheit</description>
+			</channel>
+			<channel id="uppercase" typeId="switch">
+				<label>Uppercase</label>
+				<description>Show pushed apps and notifications in capitals</description>
+			</channel>
+			<channel id="text-color" typeId="color">
+				<label>Text Color</label>
+				<description>Default text color</description>
+			</channel>
+			<channel id="time-color" typeId="color">
+				<label>Clock Color</label>
+				<description>Text color of the clock</description>
+			</channel>
+			<channel id="date-color" typeId="color">
+				<label>Date Color</label>
+				<description>Text color of the date</description>
+			</channel>
+			<channel id="temperature-color" typeId="color">
+				<label>Temperature Color</label>
+				<description>Text color of the temperature app</description>
+			</channel>
+			<channel id="humidity-color" typeId="color">
+				<label>Humidity Color</label>
+				<description>Text color of the humidity app</description>
+			</channel>
+			<channel id="battery-color" typeId="color">
+				<label>Battery Color</label>
+				<description>Text color of the battery app</description>
+			</channel>
+			<channel id="calendar-header-color" typeId="color">
+				<label>Calendar Header Color</label>
+				<description>Top bar of the calendar box</description>
+			</channel>
+			<channel id="calendar-text-color" typeId="color">
+				<label>Calendar Text Color</label>
+				<description>Day number of the calendar box</description>
+			</channel>
+			<channel id="calendar-body-color" typeId="color">
+				<label>Calendar Body Color</label>
+				<description>Background of the calendar box</description>
+			</channel>
+			<channel id="weekday-bar-show" typeId="switch">
+				<label>Weekday Bar</label>
+				<description>Show the weekday bar of the clock app</description>
+			</channel>
+			<channel id="weekday-bar-start-on-monday" typeId="switch">
+				<label>Week Starts on Monday</label>
+				<description>The weekday bar starts on Monday, otherwise on Sunday</description>
+			</channel>
+			<channel id="weekday-bar-active-color" typeId="color">
+				<label>Weekday Bar Active Color</label>
+				<description>Color of the current day if it is a workday</description>
+			</channel>
+			<channel id="weekday-bar-inactive-color" typeId="color">
+				<label>Weekday Bar Inactive Color</label>
+				<description>Color of the other workdays</description>
+			</channel>
+			<channel id="moodlight" typeId="moodlight"/>
+			<channel id="overlay" typeId="overlay"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="rtttl" typeId="rtttl"/>
+			<channel id="screen" typeId="screen"/>
+			<channel id="sound" typeId="sound"/>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="uptime" typeId="uptime"/>
+		</channels>
+		<properties>
+			<property name="firmware"></property>
+			<property name="uniqueId"></property>
+			<property name="boardType"></property>
+			<property name="macAddress"></property>
+			<property name="hostname"></property>
+		</properties>
+		<representation-property>uniqueId</representation-property>
+		<config-description-ref uri="thing-type:awtrixng:clock"/>
+	</bridge-type>
+
+	<thing-type id="app">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="clock"/>
+		</supported-bridge-type-refs>
+		<label>AWTRIX NG App</label>
+		<description>A pushed app of an AWTRIX NG clock</description>
+		<category>screen</category>
+		<channels>
+			<channel id="text" typeId="app-text">
+				<label>Text</label>
+				<description><![CDATA[Text of the app. Parts between &lt;font color="#RRGGBB"&gt; and &lt;/font&gt; are colored, text outside of the tags is white.]]></description>
+			</channel>
+			<channel id="text-case" typeId="text-case">
+				<label>Text Case</label>
+				<description>Upper or lower case of the text. inherit follows the uppercase setting of the clock.</description>
+			</channel>
+			<channel id="font" typeId="font">
+				<label>Font</label>
+				<description>Font of the text</description>
+			</channel>
+			<channel id="text-color" typeId="app-color">
+				<label>Text Color</label>
+				<description>Color of the text. Setting it switches the text palette off.</description>
+			</channel>
+			<channel id="text-palette" typeId="switch">
+				<label>Text Palette</label>
+				<description>Color the text from the palette of the app. Setting a text color switches it off.</description>
+			</channel>
+			<channel id="text-blink" typeId="duration">
+				<label>Text Blink</label>
+				<description>Blink period of the text, 0 for off</description>
+			</channel>
+			<channel id="text-fade" typeId="duration">
+				<label>Text Fade</label>
+				<description>Period of a smooth fade in and out of the text, 0 for off</description>
+			</channel>
+			<channel id="text-align" typeId="text-align">
+				<label>Text Alignment</label>
+				<description>Where text that fits the display sits</description>
+			</channel>
+			<channel id="text-offset-x" typeId="number">
+				<label>Text Offset</label>
+				<description>Moves the text left or right, in pixels</description>
+			</channel>
+			<channel id="text-in-front" typeId="switch">
+				<label>Text In Front</label>
+				<description>Draw the text on top of charts and drawings</description>
+			</channel>
+			<channel id="scroll-mode" typeId="scroll-mode">
+				<label>Scroll Mode</label>
+				<description>How the text moves</description>
+			</channel>
+			<channel id="scroll-direction" typeId="scroll-direction">
+				<label>Scroll Direction</label>
+				<description>Direction the text travels</description>
+			</channel>
+			<channel id="scroll-entry" typeId="scroll-entry">
+				<label>Scroll Entry</label>
+				<description>Where the text starts, inline or offscreen</description>
+			</channel>
+			<channel id="scroll-when-fits" typeId="scroll-when-fits">
+				<label>Scroll When Fits</label>
+				<description>Whether text that fits the display still moves</description>
+			</channel>
+			<channel id="scroll-speed" typeId="app-scroll-speed">
+				<label>Scroll Speed</label>
+				<description>Scroll speed in percent of the base speed</description>
+			</channel>
+			<channel id="scroll-gap" typeId="number">
+				<label>Scroll Gap</label>
+				<description>Gap between the repetitions of a looping text, in pixels</description>
+			</channel>
+			<channel id="scroll-hold" typeId="duration">
+				<label>Scroll Hold</label>
+				<description>Pause before and between the movements of the text</description>
+			</channel>
+			<channel id="icon" typeId="app-icon">
+				<label>Icon</label>
+				<description>ID of an icon, or an image as a data URL (data:image/gif;base64,... or data:image/jpeg;base64,...)</description>
+			</channel>
+			<channel id="icon-mode" typeId="icon-mode">
+				<label>Icon Mode</label>
+				<description>Whether the icon stays or moves with the text</description>
+			</channel>
+			<channel id="icon-offset-x" typeId="number">
+				<label>Icon Offset</label>
+				<description>Moves the icon left or right, in pixels</description>
+			</channel>
+			<channel id="icon-gap" typeId="number">
+				<label>Icon Gap</label>
+				<description>Space between the icon and the text, in pixels</description>
+			</channel>
+			<channel id="icons" typeId="string">
+				<label>Extra Icons</label>
+				<description>JSON array of at most 4 extra icons, e.g. [{"icon":"1234","x":0,"y":0}]</description>
+			</channel>
+			<channel id="duration" typeId="app-duration">
+				<label>Duration</label>
+				<description>How long the app is shown, 0 for the default of the clock</description>
+			</channel>
+			<channel id="lifetime" typeId="app-duration">
+				<label>Lifetime</label>
+				<description>How long the app lives without an update, 0 for forever</description>
+			</channel>
+			<channel id="lifetime-expiry" typeId="lifetime-expiry">
+				<label>Lifetime Expiry</label>
+				<description>Whether an expired app is removed or only marked</description>
+			</channel>
+			<channel id="repeat" typeId="number">
+				<label>Repeat</label>
+				<description>Number of scroll cycles, 0 for off</description>
+			</channel>
+			<channel id="bar-chart" typeId="app-chart">
+				<label>Bar Chart</label>
+				<description>Comma separated values of a bar chart, at most the newest 16</description>
+			</channel>
+			<channel id="line-chart" typeId="app-chart">
+				<label>Line Chart</label>
+				<description>Comma separated values of a line chart, at most the newest 16</description>
+			</channel>
+			<channel id="chart-autoscale" typeId="switch">
+				<label>Chart Autoscale</label>
+				<description>Scale the chart to its values instead of a fixed range</description>
+			</channel>
+			<channel id="chart-color" typeId="color">
+				<label>Chart Color</label>
+				<description>Color of the chart, the text color if not set</description>
+			</channel>
+			<channel id="progress" typeId="app-progress">
+				<label>Progress</label>
+				<description>Progress bar in percent, -1 switches it off</description>
+			</channel>
+			<channel id="progress-color" typeId="color">
+				<label>Progress Color</label>
+				<description>Color of the filled part of the progress bar</description>
+			</channel>
+			<channel id="progress-track-color" typeId="color">
+				<label>Progress Track Color</label>
+				<description>Color of the empty part of the progress bar</description>
+			</channel>
+			<channel id="background-color" typeId="color">
+				<label>Background Color</label>
+				<description>Color of the background</description>
+			</channel>
+			<channel id="effect" typeId="app-effect">
+				<label>Background Effect</label>
+				<description>Animated background of the app</description>
+			</channel>
+			<channel id="effect-speed" typeId="decimal">
+				<label>Effect Speed</label>
+				<description>Speed of the effect, from 0.1 to 10</description>
+			</channel>
+			<channel id="palette" typeId="string">
+				<label>Palette</label>
+				<description>Name of a built-in palette, or colors separated by commas (#RRGGBB,#RRGGBB)</description>
+			</channel>
+			<channel id="palette-blend" typeId="switch">
+				<label>Palette Blend</label>
+				<description>Smooth instead of hard transitions between the colors of the palette</description>
+			</channel>
+			<channel id="palette-span" typeId="number">
+				<label>Palette Span</label>
+				<description>Pixels after which the palette repeats, 0 to stretch it over the text</description>
+			</channel>
+			<channel id="palette-speed" typeId="decimal">
+				<label>Palette Speed</label>
+				<description>Speed of the palette animation, 0 for none</description>
+			</channel>
+			<channel id="overlay" typeId="overlay">
+				<label>Weather Overlay</label>
+				<description>Weather effect over the app</description>
+			</channel>
+			<channel id="draw" typeId="string">
+				<label>Draw Commands</label>
+				<description>JSON array of draw commands, e.g. [["pixel",1,2,"#FF0000"]]</description>
+			</channel>
+			<channel id="active" typeId="app-active">
+				<label>Active</label>
+				<description>The app is shown on the clock right now</description>
+			</channel>
+			<channel id="enabled" typeId="app-enabled">
+				<label>Enabled</label>
+				<description>Switches the app in the rotation of the clock on or off</description>
+			</channel>
+			<channel id="reset" typeId="app-reset">
+				<label>Reset</label>
+				<description>Sets the app back to its defaults</description>
+			</channel>
+			<channel id="button-left" typeId="system.rawbutton">
+				<label>Button Left</label>
+				<description>Left button pressed or released while the app is locked for button control</description>
+			</channel>
+			<channel id="button-right" typeId="system.rawbutton">
+				<label>Button Right</label>
+				<description>Right button pressed or released while the app is locked for button control</description>
+			</channel>
+			<channel id="button-select" typeId="system.rawbutton">
+				<label>Button Select</label>
+				<description>Select button pressed or released while the app is locked for button control</description>
+			</channel>
+		</channels>
+		<properties>
+			<property name="appid"></property>
+		</properties>
+		<representation-property>appid</representation-property>
+		<config-description-ref uri="thing-type:awtrixng:app"/>
+	</thing-type>
+
+	<channel-type id="active-app">
+		<item-type>String</item-type>
+		<label>Active App</label>
+		<description>App currently shown on the screen. A command switches to the app with that name.</description>
+		<category>screen</category>
+	</channel-type>
+
+	<channel-type id="auto-brightness">
+		<item-type>Switch</item-type>
+		<label>Automatic Brightness</label>
+		<description>Let the clock set the brightness automatically based on its light sensor</description>
+		<category>screen</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="battery-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Battery voltage calculated from the battery pin</description>
+		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="brightness">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Display Brightness</label>
+		<description>Screen brightness in percent. Setting it switches the automatic brightness off.</description>
+		<category>screen</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+		<state min="0" max="100" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="error" advanced="true">
+		<kind>trigger</kind>
+		<label>Command Error</label>
+		<description>Triggered with the JSON reported by the clock when it rejected a command</description>
+	</channel-type>
+
+	<channel-type id="fps" advanced="true">
+		<item-type>Number</item-type>
+		<label>Frame Rate</label>
+		<description>Actual display refresh rate in frames per second</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="free-heap" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Free Memory</label>
+		<description>Free heap memory of the clock</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="indicator">
+		<item-type>Color</item-type>
+		<label>Indicator</label>
+		<description>Color of the indicator dot. ON uses green, OFF or black switches the indicator off.</description>
+		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="ip-address" advanced="true">
+		<item-type>String</item-type>
+		<label>IP Address</label>
+		<description>Network address of the clock</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="light-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Light Level</label>
+		<description>Ambient light as a relative percentage (not lux)</description>
+		<category>sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rssi">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>WiFi Signal</label>
+		<description>RSSI value of the WiFi signal</description>
+		<category>qualityofservice</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rtttl">
+		<item-type>String</item-type>
+		<label>Play RTTTL</label>
+		<description>Plays a melody in RTTTL notation, e.g. "two:d=4,o=5,b=200:c,e"</description>
+		<category>soundvolume</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="screen">
+		<item-type>Image</item-type>
+		<label>Screen Mirror</label>
+		<description>Image of the screen of the clock. It is refreshed when the app changes, or on a REFRESH command.</description>
+		<category>screen</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sound">
+		<item-type>String</item-type>
+		<label>Play Sound</label>
+		<description>Plays the stored sound with the given name</description>
+		<category>soundvolume</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Uptime</label>
+		<description>Time since the last start of the clock</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="switch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch setting</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="color" advanced="true">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color setting</description>
+		<category>colorpicker</category>
+	</channel-type>
+
+	<channel-type id="percent" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Percentage</label>
+		<description>Percentage setting</description>
+		<category>soundvolume</category>
+		<state min="0" max="100" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration in milliseconds. A command without a unit is taken as milliseconds.</description>
+		<state min="0" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="transition-effect" advanced="true">
+		<item-type>String</item-type>
+		<label>Transition Effect</label>
+		<description>Animation between apps</description>
+		<state>
+			<options>
+				<option value="Random">Random</option>
+				<option value="Slide">Slide</option>
+				<option value="Dim">Dim</option>
+				<option value="Zoom">Zoom</option>
+				<option value="Rotate">Rotate</option>
+				<option value="Pixelate">Pixelate</option>
+				<option value="Curtain">Curtain</option>
+				<option value="Ripple">Ripple</option>
+				<option value="Blink">Blink</option>
+				<option value="Reload">Reload</option>
+				<option value="Fade">Fade</option>
+				<option value="Cover">Cover</option>
+				<option value="Uncover">Uncover</option>
+				<option value="Split">Split</option>
+				<option value="Blinds">Blinds</option>
+				<option value="Blocks">Blocks</option>
+				<option value="Flash">Flash</option>
+				<option value="Diamond">Diamond</option>
+				<option value="Wave">Wave</option>
+				<option value="Rain">Rain</option>
+				<option value="Melt">Melt</option>
+				<option value="Interlace">Interlace</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="transition-direction" advanced="true">
+		<item-type>String</item-type>
+		<label>Transition Direction</label>
+		<description>Direction of directional transitions</description>
+		<state>
+			<options>
+				<option value="normal">Normal</option>
+				<option value="reverse">Reverse</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="time-mode" advanced="true">
+		<item-type>Number</item-type>
+		<label>Clock Style</label>
+		<description>Layout of the clock app</description>
+		<state>
+			<options>
+				<option value="0">Time centered, weekday bar full width</option>
+				<option value="1">Calendar box, time right, weekday bar bottom</option>
+				<option value="2">Calendar box, time right, weekday bar top</option>
+				<option value="3">Notched calendar box, weekday bar bottom</option>
+				<option value="4">Notched calendar box, weekday bar top</option>
+				<option value="5">Large digits on colored background</option>
+				<option value="6">Binary clock</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="time-separator" advanced="true">
+		<item-type>String</item-type>
+		<label>Clock Separator</label>
+		<description>Behavior of the colon of the clock</description>
+		<state>
+			<options>
+				<option value="steady">Steady</option>
+				<option value="blink">Blink</option>
+				<option value="pulse">Pulse</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="date-order" advanced="true">
+		<item-type>String</item-type>
+		<label>Date Order</label>
+		<description>Order of day, month and year</description>
+		<state>
+			<options>
+				<option value="dayMonthYear">Day Month Year</option>
+				<option value="monthDayYear">Month Day Year</option>
+				<option value="yearMonthDay">Year Month Day</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="date-separator" advanced="true">
+		<item-type>String</item-type>
+		<label>Date Separator</label>
+		<description>Character between the parts of the date</description>
+		<state>
+			<options>
+				<option value="dot">Dot</option>
+				<option value="slash">Slash</option>
+				<option value="dash">Dash</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="date-year-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Date Year</label>
+		<description>How the year is shown</description>
+		<state>
+			<options>
+				<option value="none">None</option>
+				<option value="twoDigit">Two digits</option>
+				<option value="fourDigit">Four digits</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="moodlight">
+		<item-type>Color</item-type>
+		<label>Mood Light</label>
+		<description>Fills the display with a color. ON uses white, OFF or black switches the mood light off. The clock does
+			not report its state.</description>
+		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="overlay">
+		<item-type>String</item-type>
+		<label>Weather Overlay</label>
+		<description>Weather effect over the whole display. An empty command clears it. The clock does not report its state.</description>
+		<state>
+			<options>
+				<option value="rain">rain</option>
+				<option value="snow">snow</option>
+				<option value="drizzle">drizzle</option>
+				<option value="storm">storm</option>
+				<option value="thunder">thunder</option>
+				<option value="frost">frost</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="number" advanced="true">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>Whole number</description>
+		<state pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="decimal" advanced="true">
+		<item-type>Number</item-type>
+		<label>Decimal</label>
+		<description>Decimal number</description>
+		<state pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="string" advanced="true">
+		<item-type>String</item-type>
+		<label>Text</label>
+		<description>Text</description>
+	</channel-type>
+
+	<channel-type id="app-text">
+		<item-type>String</item-type>
+		<label>Text</label>
+		<description>Text of the app</description>
+		<category>text</category>
+	</channel-type>
+
+	<channel-type id="app-icon">
+		<item-type>String</item-type>
+		<label>Icon</label>
+		<description>Icon of the app</description>
+		<category>screen</category>
+	</channel-type>
+
+	<channel-type id="app-color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color</description>
+		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="app-duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration in milliseconds. A command without a unit is taken as milliseconds.</description>
+		<state min="0" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="app-progress">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Progress</label>
+		<description>Progress bar in percent, -1 switches the bar off</description>
+		<state min="-1" max="100" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="app-scroll-speed" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Scroll Speed</label>
+		<description>Scroll speed in percent of the base speed, without an upper limit</description>
+		<state min="0" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="app-chart">
+		<item-type>String</item-type>
+		<label>Chart</label>
+		<description>Comma separated values</description>
+	</channel-type>
+
+	<channel-type id="app-effect">
+		<item-type>String</item-type>
+		<label>Background Effect</label>
+		<description>Animated background of the app</description>
+		<state>
+			<options>
+				<option value="Plasma">Plasma</option>
+				<option value="TheaterChase">TheaterChase</option>
+				<option value="Fade">Fade</option>
+				<option value="MovingLine">MovingLine</option>
+				<option value="BrickBreaker">BrickBreaker</option>
+				<option value="PingPong">PingPong</option>
+				<option value="Radar">Radar</option>
+				<option value="Checkerboard">Checkerboard</option>
+				<option value="Fireworks">Fireworks</option>
+				<option value="PlasmaCloud">PlasmaCloud</option>
+				<option value="Ripple">Ripple</option>
+				<option value="Snake">Snake</option>
+				<option value="Pacifica">Pacifica</option>
+				<option value="Matrix">Matrix</option>
+				<option value="SwirlIn">SwirlIn</option>
+				<option value="SwirlOut">SwirlOut</option>
+				<option value="LookingEyes">LookingEyes</option>
+				<option value="TwinklingStars">TwinklingStars</option>
+				<option value="ColorWaves">ColorWaves</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="app-active">
+		<item-type>Switch</item-type>
+		<label>Active</label>
+		<description>The app is shown on the clock right now</description>
+		<category>screen</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="app-enabled">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>Switches the app in the rotation of the clock on or off. The clock does not report its state.</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="app-reset">
+		<item-type>Switch</item-type>
+		<label>Reset</label>
+		<description>Sets the app back to its defaults</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="text-case" advanced="true">
+		<item-type>String</item-type>
+		<label>Text Case</label>
+		<description>Upper or lower case of the text</description>
+		<state>
+			<options>
+				<option value="inherit">Inherit</option>
+				<option value="upper">Upper case</option>
+				<option value="asTyped">As typed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="font" advanced="true">
+		<item-type>String</item-type>
+		<label>Font</label>
+		<description>Font of the text</description>
+		<state>
+			<options>
+				<option value="small">Small</option>
+				<option value="large">Large</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="text-align" advanced="true">
+		<item-type>String</item-type>
+		<label>Text Alignment</label>
+		<description>Where text that fits the display sits</description>
+		<state>
+			<options>
+				<option value="start">Start</option>
+				<option value="center">Center</option>
+				<option value="end">End</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scroll-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Scroll Mode</label>
+		<description>How the text moves</description>
+		<state>
+			<options>
+				<option value="static">Static</option>
+				<option value="wrap">Wrap</option>
+				<option value="loop">Loop</option>
+				<option value="bounce">Bounce</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scroll-direction" advanced="true">
+		<item-type>String</item-type>
+		<label>Scroll Direction</label>
+		<description>Direction the text travels</description>
+		<state>
+			<options>
+				<option value="left">Left</option>
+				<option value="right">Right</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scroll-entry" advanced="true">
+		<item-type>String</item-type>
+		<label>Scroll Entry</label>
+		<description>Where the text starts</description>
+		<state>
+			<options>
+				<option value="inline">Inline</option>
+				<option value="offscreen">Offscreen</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scroll-when-fits" advanced="true">
+		<item-type>String</item-type>
+		<label>Scroll When Fits</label>
+		<description>Whether text that fits the display still moves</description>
+		<state>
+			<options>
+				<option value="static">Static</option>
+				<option value="scroll">Scroll</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="icon-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Icon Mode</label>
+		<description>Whether the icon stays or moves with the text</description>
+		<state>
+			<options>
+				<option value="fixed">Fixed</option>
+				<option value="pushOnce">Push once</option>
+				<option value="push">Push</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lifetime-expiry" advanced="true">
+		<item-type>String</item-type>
+		<label>Lifetime Expiry</label>
+		<description>Whether an expired app is removed or only marked</description>
+		<state>
+			<options>
+				<option value="remove">Remove</option>
+				<option value="mark">Mark</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

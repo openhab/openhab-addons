@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:awtrixng:clock">
+		<parameter name="basetopic" type="text" required="true">
+			<label>Base Topic</label>
+			<description>MQTT prefix of the clock, as shown in its MQTT settings. By default this is the 12 character MAC
+				address
+				of the clock.</description>
+		</parameter>
+		<parameter name="appLockTimeout" type="integer" min="1" unit="s">
+			<label>App Selection Timeout</label>
+			<description>Timeout until a selected app returns control and the app rotation continues.</description>
+			<default>10</default>
+		</parameter>
+		<parameter name="discoverDefaultApps" type="boolean">
+			<label>Discover Built-in Apps</label>
+			<description>Also offer the built-in apps of the clock (Time, Date, Temperature, Humidity, Battery). Their look is
+				set with the settings channels of the clock, and an app created for one of them would be pushed under the same name.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:awtrixng:app">
+		<parameter name="appname" type="text" required="true" pattern="[A-Za-z0-9_-]{1,32}">
+			<label>App Name</label>
+			<description>Name of the app on the clock, 1 to 32 letters, digits, - or _.</description>
+		</parameter>
+		<parameter name="useButtons" type="boolean">
+			<label>Button Controlled</label>
+			<description><![CDATA[
+				Activate if the user can control the app with the buttons of the clock.
+				The select button locks the clock on the app, and the app then reports the buttons until the app selection timeout
+				of the clock thing has passed. Every button press restarts the timeout.
+				]]></description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

@@ -4,6 +4,9 @@ This binding allows you to control Awtrix 3 (formerly Awtrix Light) LED matrix d
 Awtrix 3 is a firmware for a 32x8 LED matrix display that can show various information like time, weather, notifications and custom text/graphics.
 The most popular choice for a device that supports the Awtrix 3 firmware is the Ulanzi tc0001 clock.
 
+AWTRIX 3 has been succeeded by AWTRIX NG, which uses different MQTT topics and payloads.
+Clocks that run AWTRIX NG need the [AWTRIX NG binding](https://www.openhab.org/addons/bindings/awtrixng/) instead of this one.
+
 ## Supported Things
 
 This binding supports two types of things:
