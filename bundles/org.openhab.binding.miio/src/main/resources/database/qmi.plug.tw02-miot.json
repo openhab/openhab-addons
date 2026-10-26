@@ -1,0 +1,387 @@
+{
+	"deviceMapping": {
+		"id": [
+			"qmi.plug.tw02"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"experimental": true,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "switch-toggle",
+							"label": "Toggle"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "switch-toggle"
+								}
+							]
+						}
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Control",
+					"Power"
+				],
+				"readmeComment": "Value mapping `[\"switch-toggle\"\u003d\"Toggle\"]`"
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "poweroutlet",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "on1",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Indicator Light",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "power-consumption",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Energy Consumption",
+				"channel": "power_consumption",
+				"type": "Number:Energy",
+				"unit": "kwh",
+				"stateDescription": {
+					"pattern": "%.2f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Energy"
+				]
+			},
+			{
+				"property": "electric-power",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Active Power",
+				"channel": "electric_power",
+				"type": "Number:Power",
+				"unit": "watt",
+				"stateDescription": {
+					"pattern": "%.2f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Power"
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "loop-enable",
+				"siid": 6,
+				"piid": 4,
+				"friendlyName": "Loop Task",
+				"channel": "loop_task",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "When on, the plug switches itself on and off by the set durations. Set Loop On Duration and Loop Off Duration first."
+			},
+			{
+				"property": "loop-relay-close-tm",
+				"siid": 6,
+				"piid": 5,
+				"friendlyName": "Loop On Duration",
+				"channel": "on_duration",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 86400,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "loop-relay-break-tm",
+				"siid": 6,
+				"piid": 6,
+				"friendlyName": "Loop Off Duration",
+				"channel": "off_duration",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 86400,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "local-cd-enable",
+				"siid": 6,
+				"piid": 10,
+				"friendlyName": "Countdown",
+				"channel": "countdown_enable",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "local-cd-set-time",
+				"siid": 6,
+				"piid": 11,
+				"friendlyName": "Countdown Time",
+				"channel": "countdown_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 86400,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "local-cd-remain-time",
+				"siid": 6,
+				"piid": 12,
+				"friendlyName": "Countdown Remaining Time",
+				"channel": "countdown_remaining_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "local-cd-action",
+				"siid": 6,
+				"piid": 13,
+				"friendlyName": "Countdown End State",
+				"channel": "countdown_end_state",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Setpoint",
+					"Power"
+				],
+				"readmeComment": "Power state set when the countdown ends."
+			},
+			{
+				"property": "lowerpower-enable",
+				"siid": 7,
+				"piid": 3,
+				"friendlyName": "Charging Protection",
+				"channel": "charging_protection",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "When on, the plug switches itself off when the power stays below Charging Protection Threshold for Charging Protection Duration."
+			},
+			{
+				"property": "lowerpower-threshold",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Charging Protection Threshold",
+				"channel": "charging_protection_power",
+				"type": "Number:Power",
+				"unit": "watt",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "energy",
+				"tags": [
+					"Setpoint",
+					"Power"
+				]
+			},
+			{
+				"property": "lowpower-time",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "Charging Protection Duration",
+				"channel": "charging_protection_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 86400,
+					"step": 60,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			}
+		]
+	}
+}

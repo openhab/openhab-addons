@@ -289,6 +289,7 @@ public enum MiIoDevices {
     PHILIPS_LIGHT_ZYCEILING("philips.light.zyceiling", "Philips ZhiYi Ceiling lamp", THING_TYPE_BASIC),
     PHILIPS_LIGHT_ZYSREAD("philips.light.zysread", "Philips ZhiYi Desk Lamp", THING_TYPE_BASIC),
     PHILIPS_LIGHT_ZYSTRIP("philips.light.zystrip", "Philips ZhiYi Strip", THING_TYPE_BASIC),
+    QMI_PLUG_TW02("qmi.plug.tw02", "Xiaomi Smart Plug 2", THING_TYPE_BASIC),
     QMI_POWERSTRIP_V1("qmi.powerstrip.v1", "CHINGMI Smart Power Strip v1", THING_TYPE_BASIC),
     ROBOROCK_SWEEPER_E2V2("roborock.sweeper.e2v2", "Rockrobo Xiaowa Sweeper v2", THING_TYPE_UNSUPPORTED),
     ROBOROCK_SWEEPER_E2V3("roborock.sweeper.e2v3", "Rockrobo Xiaowa Sweeper v3", THING_TYPE_UNSUPPORTED),
