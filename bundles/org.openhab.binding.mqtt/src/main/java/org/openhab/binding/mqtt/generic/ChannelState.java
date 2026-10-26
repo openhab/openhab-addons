@@ -31,6 +31,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
@@ -372,6 +373,9 @@ public class ChannelState implements MqttMessageSubscriber {
         }
 
         Command mqttCommandValue = cachedValue.parseCommand(command);
+        // UP/DOWN stay UpDownType only if an up/down command string is configured, otherwise they were
+        // converted to a percentage (0/100) and belong on the regular command topic.
+        final boolean upDownCommand = mqttCommandValue instanceof UpDownType;
         Value mqttFormatter = cachedValue;
 
         // Outgoing transformations
@@ -418,6 +422,8 @@ public class ChannelState implements MqttMessageSubscriber {
         String commandTopic;
         if (command.equals(StopMoveType.STOP) && !config.stopCommandTopic.isEmpty()) {
             commandTopic = config.stopCommandTopic;
+        } else if (upDownCommand && !config.upDownCommandTopic.isEmpty()) {
+            commandTopic = config.upDownCommandTopic;
         } else {
             commandTopic = config.commandTopic;
         }
