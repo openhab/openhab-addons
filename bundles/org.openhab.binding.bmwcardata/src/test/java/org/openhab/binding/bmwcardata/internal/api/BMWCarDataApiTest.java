@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwcardata.internal.MapStorage;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.binding.bmwcardata.internal.api.dto.VehicleMapping;
+import org.openhab.core.library.types.RawType;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -120,6 +121,25 @@ class BMWCarDataApiTest {
         SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("[\"not a mapping\"]")));
         e = assertThrows(BMWCarDataException.class, () -> api.getVehicleMappings());
         assertEquals("Malformed vehicle mappings response", e.getMessage());
+    }
+
+    @Test
+    void getVehicleImageRequestsAnImage() throws Exception {
+        byte[] png = { (byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n' };
+        String path = "/customers/vehicles/" + VIN + "/image";
+        SERVER.stubFor(get(path).willReturn(aResponse().withHeader("Content-Type", "image/png").withBody(png)));
+
+        RawType image = api.getVehicleImage(VIN);
+
+        assertEquals("image/png", image.getMimeType());
+        assertArrayEquals(png, image.getBytes());
+        SERVER.verify(getRequestedFor(urlEqualTo(path)).withHeader("Accept", equalTo("image/*")));
+
+        // CU-126: BMW has no image of the vehicle; the HTTP status of this error is not documented
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json")
+                .withBody("{\"exveErrorId\":\"CU-126\"}")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getVehicleImage(VIN));
+        assertEquals("CU-126", e.getErrorId());
     }
 
     @Test

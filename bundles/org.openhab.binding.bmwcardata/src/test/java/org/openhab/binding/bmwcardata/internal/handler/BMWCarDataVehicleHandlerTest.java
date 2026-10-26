@@ -42,6 +42,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -70,6 +71,9 @@ class BMWCarDataVehicleHandlerTest {
     private static final ThingUID THING_UID = new ThingUID(THING_TYPE_VEHICLE, "car");
     private static final ThingUID BRIDGE_UID = new ThingUID(THING_TYPE_ACCOUNT, "account");
     private static final String VIN = "WBY11CF020CM00000";
+    // the properties are read already, so that the tests of the image do not depend on the basic data
+    private static final Map<String, String> RETRIEVED_PROPERTIES = Map.of(PROPERTY_MODEL, "iX xDrive40");
+    private static final RawType IMAGE = new RawType(new byte[] { (byte) 0x89, 'P', 'N', 'G' }, "image/png");
     private static final String MILEAGE = "vehicle.vehicle.travelledDistance";
     private static final String LATITUDE = "vehicle.cabin.infotainment.navigation.currentLocation.latitude";
     private static final String LONGITUDE = "vehicle.cabin.infotainment.navigation.currentLocation.longitude";
@@ -423,6 +427,57 @@ class BMWCarDataVehicleHandlerTest {
 
         verify(account, timeout(5000)).fetchBasicData(VIN);
         verify(vehicleCallback, after(500).never()).thingUpdated(any());
+    }
+
+    @Test
+    void imageIsNotRetrievedWithoutLinkedItem() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES));
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        verify(vehicleCallback).isChannelLinked(imageChannel());
+        verify(account, after(500).never()).fetchVehicleImage(anyString());
+        vehicle.dispose();
+    }
+
+    @Test
+    void linkedImageIsRetrievedWhenTheBridgeIsOnline() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN)).thenReturn(IMAGE);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES));
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        verify(vehicleCallback, timeout(5000)).stateUpdated(imageChannel(), IMAGE);
+        vehicle.dispose();
+    }
+
+    @Test
+    void linkingTheImageChannelRetrievesTheImageOnce() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN)).thenReturn(IMAGE);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES));
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        vehicle.channelLinked(imageChannel());
+        verify(vehicleCallback, timeout(5000)).stateUpdated(imageChannel(), IMAGE);
+
+        // a second item, or a REFRESH, is served from the published state
+        vehicle.channelLinked(imageChannel());
+        verify(vehicleCallback, times(2)).stateUpdated(imageChannel(), IMAGE);
+        verify(account, times(1)).fetchVehicleImage(VIN);
+        vehicle.dispose();
+    }
+
+    private static ChannelUID imageChannel() {
+        return new ChannelUID(new ThingUID(THING_TYPE_VEHICLE, BRIDGE_UID, "car"), CHANNEL_IMAGE);
     }
 
     private static Thing vehicleThing(Map<String, String> properties) {

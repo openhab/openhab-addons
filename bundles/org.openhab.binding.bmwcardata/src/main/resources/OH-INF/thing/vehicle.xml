@@ -118,6 +118,7 @@
 			<channel id="battery-voltage" typeId="battery-voltage"/>
 			<channel id="battery-soc" typeId="battery-soc"/>
 			<channel id="last-update" typeId="last-update"/>
+			<channel id="image" typeId="image"/>
 		</channels>
 	</channel-group-type>
 
@@ -466,6 +467,13 @@
 			<tag>Voltage</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Vehicle Image</label>
+		<description>Picture of the vehicle provided by BMW, retrieved only while an item is linked</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="last-update">

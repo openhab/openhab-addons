@@ -61,4 +61,5 @@ public class BMWCarDataBindingConstants {
     public static final String GROUP_OTHER = "other";
     public static final String CHANNEL_LAST_UPDATE = GROUP_STATUS + "#last-update";
     public static final String CHANNEL_GPS = GROUP_NAVIGATION + "#gps";
+    public static final String CHANNEL_IMAGE = GROUP_STATUS + "#image";
 }

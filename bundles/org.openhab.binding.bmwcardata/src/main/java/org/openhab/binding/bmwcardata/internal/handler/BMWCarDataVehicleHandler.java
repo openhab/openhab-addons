@@ -42,6 +42,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -84,6 +85,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     // the order of the state updates is what counts
     private final Object dataLock = new Object();
     private @Nullable ScheduledFuture<?> propertiesJob;
+    private @Nullable ScheduledFuture<?> imageJob;
     // states by channel id, to answer REFRESH commands without spending API requests
     private final Map<String, State> states = new ConcurrentHashMap<>();
     // the latest readings by descriptor, to drop values older than already published ones or copies: the stream
@@ -125,6 +127,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     public void dispose() {
         disposed = true;
         cancelProperties();
+        cancelImage();
         super.dispose();
     }
 
@@ -143,7 +146,12 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                 State state = states.get(channelUID.getId());
                 if (state != null) {
                     updateState(channelUID, state);
+                    return;
                 }
+            }
+            // also sent when an item is linked to the channel
+            if (CHANNEL_IMAGE.equals(channelUID.getId())) {
+                scheduleImage();
             }
         }
         // all channels are read-only
@@ -359,8 +367,10 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         if (bridgeStatus == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
             scheduleProperties();
+            scheduleImage();
         } else {
             cancelProperties();
+            cancelImage();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
@@ -395,6 +405,45 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         if (job != null) {
             job.cancel(true);
             propertiesJob = null;
+        }
+    }
+
+    /**
+     * Retrieves the image of the vehicle, if an item is linked to its channel: the request counts towards the daily
+     * quota the first time, the account keeps the image afterwards.
+     */
+    private synchronized void scheduleImage() {
+        ScheduledFuture<?> job = imageJob;
+        if ((job == null || job.isDone()) && !states.containsKey(CHANNEL_IMAGE) && isLinked(CHANNEL_IMAGE)) {
+            imageJob = scheduler.schedule(this::retrieveImage, 0, TimeUnit.SECONDS);
+        }
+    }
+
+    private synchronized void cancelImage() {
+        ScheduledFuture<?> job = imageJob;
+        if (job != null) {
+            job.cancel(true);
+            imageJob = null;
+        }
+    }
+
+    private void retrieveImage() {
+        BMWCarDataAccountHandler account = getAccountHandler();
+        if (account == null) {
+            return;
+        }
+        RawType image;
+        try {
+            image = account.fetchVehicleImage(vin);
+        } catch (BMWCarDataException e) {
+            logger.debug("Failed to retrieve the vehicle image: {}", e.getMessage());
+            return;
+        }
+        if (disposed) {
+            return;
+        }
+        synchronized (dataLock) {
+            publish(CHANNEL_IMAGE, image);
         }
     }
 

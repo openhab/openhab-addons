@@ -58,6 +58,7 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -104,6 +105,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private static final String STORAGE_KEY_CONTAINER = "container";
     // basic data by VIN; it does not change, so discovery and the vehicle Thing share one request
     private static final String STORAGE_KEY_BASIC_DATA = "basicData.";
+    // vehicle image by VIN as data URI; like the basic data it does not change
+    private static final String STORAGE_KEY_IMAGE = "image.";
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataAccountHandler.class);
     private final HttpClient httpClient;
@@ -237,7 +240,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         deleteAuthorization();
         storage.remove(STORAGE_KEY_CONTAINER);
         for (String key : List.copyOf(storage.getKeys())) {
-            if (key.startsWith(STORAGE_KEY_BASIC_DATA)) {
+            if (key.startsWith(STORAGE_KEY_BASIC_DATA) || key.startsWith(STORAGE_KEY_IMAGE)) {
                 storage.remove(key);
             }
         }
@@ -345,6 +348,36 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             return gson.fromJson(cached, BasicData.class);
         } catch (JsonParseException e) {
             storage.remove(STORAGE_KEY_BASIC_DATA + vin);
+            return null;
+        }
+    }
+
+    /**
+     * Retrieves the picture of a vehicle. Costs one request of the daily quota the first time; the picture is kept, as
+     * it does not change.
+     */
+    public RawType fetchVehicleImage(String vin) throws BMWCarDataException {
+        @Nullable
+        RawType cached = getCachedImage(vin);
+        if (cached != null) {
+            return cached;
+        }
+        BMWCarDataApi api = requireApi();
+        RawType image = call(() -> api.getVehicleImage(vin));
+        storage.put(STORAGE_KEY_IMAGE + vin, image.toFullString());
+        return image;
+    }
+
+    private @Nullable RawType getCachedImage(String vin) {
+        @Nullable
+        String cached = storage.get(STORAGE_KEY_IMAGE + vin);
+        if (cached == null) {
+            return null;
+        }
+        try {
+            return RawType.valueOf(cached);
+        } catch (IllegalArgumentException e) {
+            storage.remove(STORAGE_KEY_IMAGE + vin);
             return null;
         }
     }

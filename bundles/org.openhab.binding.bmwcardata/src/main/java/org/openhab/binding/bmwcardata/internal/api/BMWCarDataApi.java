@@ -38,6 +38,7 @@ import org.openhab.binding.bmwcardata.internal.api.dto.Container.ContainerList;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue.TelematicDataResponse;
 import org.openhab.binding.bmwcardata.internal.api.dto.VehicleMapping;
+import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,8 @@ public class BMWCarDataApi {
 
     private static final String API_BASE_URL = "https://api-cardata.bmwgroup.com";
     private static final String API_VERSION = "v1";
+    private static final String ACCEPT_JSON = "application/json";
+    private static final String ACCEPT_IMAGE = "image/*";
     // identifies a request towards BMW support
     private static final String REQUEST_ID_HEADER = "x-amzn-RequestId";
     private static final int TIMEOUT_SECONDS = 30;
@@ -132,6 +135,20 @@ public class BMWCarDataApi {
                 BasicData.class);
     }
 
+    /**
+     * Retrieves the picture of a vehicle, a PNG of 1000 x 600 pixels.
+     */
+    public RawType getVehicleImage(String vin) throws BMWCarDataException {
+        ContentResponse response = exchange(HttpMethod.GET, "/customers/vehicles/" + checkVin(vin) + "/image", null,
+                null, ACCEPT_IMAGE);
+        byte[] content = response.getContent();
+        String mimeType = response.getMediaType();
+        if (content == null || content.length == 0 || mimeType == null || !mimeType.startsWith("image/")) {
+            throw new BMWCarDataException("Vehicle image response without image");
+        }
+        return new RawType(content, mimeType);
+    }
+
     public List<Container> getContainers() throws BMWCarDataException {
         List<Container> containers = parse(send(HttpMethod.GET, "/customers/containers", null, null),
                 ContainerList.class).containers;
@@ -178,6 +195,16 @@ public class BMWCarDataApi {
 
     private String send(HttpMethod method, String path, @Nullable String containerId, @Nullable String jsonBody)
             throws BMWCarDataException {
+        return exchange(method, path, containerId, jsonBody, ACCEPT_JSON).getContentAsString();
+    }
+
+    /**
+     * Sends a request and checks its status.
+     *
+     * @return the successful response
+     */
+    private ContentResponse exchange(HttpMethod method, String path, @Nullable String containerId,
+            @Nullable String jsonBody, String accept) throws BMWCarDataException {
         String accessToken = tokenProvider.getAccessToken();
         // counted only once the request can actually be sent
         if (!budget.tryAcquire()) {
@@ -188,7 +215,7 @@ public class BMWCarDataApi {
                     LogRedaction.vins(path), budget.used(), budget.budget());
         }
         Request request = httpClient.newRequest(baseUrl + path).method(method)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken).header(HttpHeader.ACCEPT, "application/json")
+                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken).header(HttpHeader.ACCEPT, accept)
                 .header("x-version", API_VERSION).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         if (containerId != null) {
             request.param("containerId", containerId);
@@ -216,9 +243,13 @@ public class BMWCarDataApi {
         }
         int status = response.getStatus();
         if (logger.isTraceEnabled()) {
+            // an image is not logged, only its size
+            String mediaType = response.getMediaType();
             logger.trace("BMW CarData response {} {} -> HTTP {}, request id {}, body: {}", method,
                     LogRedaction.vins(path), status, response.getHeaders().get(REQUEST_ID_HEADER),
-                    LogRedaction.payload(response.getContentAsString()));
+                    mediaType != null && mediaType.startsWith("image/")
+                            ? mediaType + ", " + response.getContent().length + " bytes"
+                            : LogRedaction.payload(response.getContentAsString()));
         }
         // a 401 with WWW-Authenticate header, e.g. Bearer error="invalid_token", is returned as a normal response
         if (status == 401) {
@@ -235,7 +266,7 @@ public class BMWCarDataApi {
             }
             throw exception;
         }
-        return response.getContentAsString();
+        return response;
     }
 
     private static @Nullable String errorIdOf(@Nullable String content) {

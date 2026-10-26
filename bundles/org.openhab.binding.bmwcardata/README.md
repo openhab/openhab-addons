@@ -105,6 +105,8 @@ The stream is not affected by this limit, so the binding uses the API only to co
 - When a read fails on BMW's side (e.g. HTTP 502) or times out, it is repeated once after 15 minutes for the affected vehicles.
   While the stream is connected, such a failure does not set the vehicle `OFFLINE`, as the stream keeps its values up to date.
 - The static vehicle data shown as Thing properties is read once per vehicle, and the binding sets up its own telematic data container named `openHAB` on first use, which costs a few requests.
+- The vehicle image is read once per vehicle, and only when an item is linked to the `status#image` channel.
+  Like the static data, it is kept, so it costs no further requests after a restart.
 
 The binding counts its requests over a rolling 24 hours per client ID, also across restarts and when the account thing is recreated, and sends at most `requestBudget` requests.
 When the budget is used up, or BMW reports its limit as reached, the binding pauses its requests and shows this in the status description of the account; the stream keeps working.
@@ -177,6 +179,7 @@ To get removed channels back, delete and recreate the Thing.
 | status#battery-voltage               | Number:ElectricPotential | Voltage of the 12V battery                                                    | yes      |
 | status#battery-soc                   | Number:Dimensionless     | State of charge of the 12V battery                                            | yes      |
 | status#last-update                   | DateTime                 | Time of the most recent data of the vehicle                                   | no       |
+| status#image                         | Image                    | Picture of the vehicle, retrieved only while an item is linked                | no       |
 | range#mileage                        | Number:Length            | Total distance travelled                                                      | no       |
 | range#total                          | Number:Length            | Total remaining range                                                         | no       |
 | range#electric                       | Number:Length            | Remaining electric range                                                      | no       |

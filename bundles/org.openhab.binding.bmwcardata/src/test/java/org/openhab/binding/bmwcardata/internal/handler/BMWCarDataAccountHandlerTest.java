@@ -44,6 +44,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openhab.binding.bmwcardata.internal.MapStorage;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthClient.DeviceAuthorization;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.api.Tokens;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.stream.StreamSource;
@@ -53,6 +54,7 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -83,6 +85,8 @@ class BMWCarDataAccountHandlerTest {
     private static final String TELEMATIC_DATA = """
             {"telematicData":{"vehicle.vehicle.travelledDistance":
              {"value":12345,"unit":"km","timestamp":"2026-10-24T10:00:00Z"}}}""";
+    // the PNG signature, enough to tell the bytes apart
+    private static final byte[] IMAGE = { (byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n' };
     private static final String BASIC_DATA = """
             {"brand":"BMW","modelName":"iX xDrive40","isTelematicsCapable":false}""";
 
@@ -269,6 +273,39 @@ class BMWCarDataAccountHandlerTest {
     }
 
     @Test
+    void vehicleImageIsFetchedOnceAndThenServedFromTheCache() throws Exception {
+        authorize(false);
+        respond(image(IMAGE));
+
+        RawType image = handler.fetchVehicleImage(VIN);
+        assertEquals("image/png", image.getMimeType());
+        assertArrayEquals(IMAGE, image.getBytes());
+        assertArrayEquals(IMAGE, handler.fetchVehicleImage(VIN).getBytes());
+        assertEquals(1, requests("/image"));
+    }
+
+    @Test
+    void corruptVehicleImageInTheCacheFallsBackToTheApi() throws Exception {
+        authorize(false);
+        storage.put("image." + VIN, "not a data URI");
+        respond(image(IMAGE));
+
+        assertArrayEquals(IMAGE, handler.fetchVehicleImage(VIN).getBytes());
+        // the entry is replaced, so the next fetch needs no request
+        assertArrayEquals(IMAGE, handler.fetchVehicleImage(VIN).getBytes());
+        assertEquals(1, requests("/image"));
+    }
+
+    @Test
+    void responseWithoutImageIsAnErrorAndNotCached() throws Exception {
+        authorize(false);
+        respond(status(200, "{}"));
+
+        assertThrows(BMWCarDataException.class, () -> handler.fetchVehicleImage(VIN));
+        assertNull(storage.get("image." + VIN));
+    }
+
+    @Test
     void unauthorizedResponseWhilePollingKeepsPolling() throws Exception {
         // BMW answers an expired code, an invalid client and an account pending activation with 401 without
         // WWW-Authenticate header, so the HTTP client fails the request and the error code is lost
@@ -418,6 +455,16 @@ class BMWCarDataAccountHandlerTest {
             ContentResponse response = mock(ContentResponse.class);
             when(response.getStatus()).thenReturn(status);
             when(response.getContentAsString()).thenReturn(content);
+            return response;
+        };
+    }
+
+    private static Answer<ContentResponse> image(byte[] content) {
+        return invocation -> {
+            ContentResponse response = mock(ContentResponse.class);
+            when(response.getStatus()).thenReturn(200);
+            when(response.getContent()).thenReturn(content);
+            when(response.getMediaType()).thenReturn("image/png");
             return response;
         };
     }
