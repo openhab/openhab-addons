@@ -34,6 +34,7 @@ public class ChannelConfig {
     public String stateTopic = "";
     public String commandTopic = "";
     public String stopCommandTopic = "";
+    public String upDownCommandTopic = "";
 
     /**
      * If true, the channel state is not updated on a new message.
