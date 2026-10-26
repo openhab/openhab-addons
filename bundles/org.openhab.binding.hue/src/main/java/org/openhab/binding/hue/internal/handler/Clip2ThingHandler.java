@@ -443,6 +443,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 : ResourceType.GROUPED_LIGHT;
 
         Resource putResource = null;
+        Resource gradientResource = null;
         String putResourceId = null;
 
         Command command = commandParam;
@@ -639,6 +640,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     int index = Integer.parseInt(gradientChannelMatcher.group(1)) - 1;
                     putResource = new Resource(ResourceType.LIGHT);
                     putResource = Setters.setGradientPointColorXy(putResource, command, index, cache);
+                    gradientResource = putResource;
                     break;
                 }
 
@@ -705,6 +707,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         .allMatch(e -> ErrorType.ATTRIBUTE_MAY_HAVE_NO_EFFECT == e.getErrorType())) {
                     loopBackNotify(putResource);
                 }
+            }
+
+            // immediately update cache entry in order to be ready for an immediate next point command
+            if (gradientResource != null) {
+                Setters.setResource(gradientResource, cache);
+                serviceContributorsCache.put(gradientResource.getId(), gradientResource);
+                gradientResource = null;
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {

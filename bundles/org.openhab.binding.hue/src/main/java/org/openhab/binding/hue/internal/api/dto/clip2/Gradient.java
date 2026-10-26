@@ -57,7 +57,7 @@ public class Gradient {
      * @param pairXy the new color co-ordinate value to set for the point at the specified index
      * @throws IndexOutOfBoundsException if index is outside the light's point capacity
      */
-    public void setPointXy(int index, PairXy pairXy) throws IndexOutOfBoundsException {
+    public Gradient setPointXy(int index, PairXy pairXy) throws IndexOutOfBoundsException {
         Integer capable = this.pointsCapable;
         int capacity = capable != null ? capable : MAX_POINTS;
         if (index < 0 || index >= capacity) {
@@ -72,6 +72,7 @@ public class Gradient {
             result.add(i != index && point != null && isValid(point) ? point : newPoint(xy));
         }
         this.points = result; // readers never see a half-updated list
+        return this;
     }
 
     private static boolean isValid(Point point) {
@@ -127,7 +128,7 @@ public class Gradient {
             pointsCapable = other.pointsCapable;
         }
         List<Point> mine = this.points;
-        if ((mine == null || mine.isEmpty()) && other.points instanceof List<Point> theirs && !theirs.isEmpty()) {
+        if (mine == null && other.points instanceof List<Point> theirs && !theirs.isEmpty()) {
             try {
                 this.points = other.copy().points;
             } catch (IllegalStateException e) {

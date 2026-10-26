@@ -177,13 +177,13 @@ public class Setters {
      */
     public static @Nullable Resource setGradientPointColorXy(Resource target, Command command, int index,
             @Nullable Resource cache) {
-        if (command instanceof HSBType hsb && cache != null && cache.getGradient() instanceof Gradient gradient) {
+        if (command instanceof HSBType hsb && cache != null && cache.getGradient() instanceof Gradient cacheGradient) {
             HSBType hsb2 = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             Gamut gamut = cache.getGamut();
             gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
+            Gradient copy = cacheGradient.copy();
             try {
-                gradient.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut)));
-                target.setGradient(gradient.copy());
+                target.setGradient(copy.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut))));
             } catch (IndexOutOfBoundsException | IllegalStateException e) {
                 return null; // beyond light capability or invalid cached point
             }

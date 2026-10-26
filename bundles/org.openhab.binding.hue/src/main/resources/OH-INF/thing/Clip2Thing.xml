@@ -111,23 +111,23 @@
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="duration" typeId="duration"/>
-			<channel id="gradient-color-1" typeId="system.color">
+			<channel id="gradient-color-1" typeId="gradient-color">
 				<label>Gradient Color 1</label>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="gradient-color-2" typeId="system.color">
+			<channel id="gradient-color-2" typeId="gradient-color">
 				<label>Gradient Color 2</label>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="gradient-color-3" typeId="system.color">
+			<channel id="gradient-color-3" typeId="gradient-color">
 				<label>Gradient Color 3</label>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="gradient-color-4" typeId="system.color">
+			<channel id="gradient-color-4" typeId="gradient-color">
 				<label>Gradient Color 4</label>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="gradient-color-5" typeId="system.color">
+			<channel id="gradient-color-5" typeId="gradient-color">
 				<label>Gradient Color 5</label>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
