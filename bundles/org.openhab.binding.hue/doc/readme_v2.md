@@ -162,9 +162,10 @@ Some devices, such as the Hue Twilight or Hue Centris, contain two or more indep
 The binding detects these devices automatically.
 The main light uses the normal channels of the thing, e.g. `brightness` or `color-temperature`, as shown above.
 The auxiliary lights are exposed in an additional channel group called `lightN`, where `N` identifies the auxiliary light id, which provides its own set of channels, e.g. `light2#color`.
+For a Hue Twilight, the back light is `light2`.
 The auxiliary light channels are created dynamically, so only the channels that the auxiliary light actually supports are shown.
 Commands sent to a `lightN` channel control only the auxiliary light, and commands sent to the normal channels control only the main light.
-The `dynamics` channel is also available per light: use `dynamics` for the front light and `lightN#dynamics` for the auxiliary light.
+The `dynamics` channel is also available per light: use `dynamics` for the main light and `lightN#dynamics` for the auxiliary light.
 
 ### Channels for Rooms and Zones
 

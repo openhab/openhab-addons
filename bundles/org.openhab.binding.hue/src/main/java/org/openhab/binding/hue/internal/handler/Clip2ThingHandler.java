@@ -2279,7 +2279,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Ensure that the light service resource for the group light in the serviceContributorsCache has a
      * complete DTO for it to yield valid channel state values. Check if the given (cached) light service
      * has a {@link MirekSchema} field, and a {@link Gamut} field. If any is missing, use the binding
-     * default values. This ensures that theauxiliary back light's channels always have a valid color
+     * default values. This ensures that the auxiliary light's channels always have a valid color
      * temperature range and gamut.
      */
     private void updateAuxiliaryLightCacheRequiredFields(Resource resource) {
