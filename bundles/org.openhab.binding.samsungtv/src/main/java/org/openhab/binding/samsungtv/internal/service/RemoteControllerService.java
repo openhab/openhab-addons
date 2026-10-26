@@ -17,6 +17,7 @@ import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -75,6 +76,7 @@ public class RemoteControllerService implements SamsungTvService {
     private final int keyTiming = 300;
 
     private long busyUntil = System.currentTimeMillis();
+    private CompletableFuture<@Nullable Void> powerUpdate = CompletableFuture.completedFuture(null);
 
     public boolean artMode = false;
     public boolean justStarted = true;
@@ -570,7 +572,20 @@ public class RemoteControllerService implements SamsungTvService {
         }
     }
 
-    public void powerUpdated(boolean on, boolean artMode) {
+    /**
+     * Fetching the power state blocks on HTTP, so it is kept off the caller's thread, which is often the websocket
+     * receive thread. Updates run one at a time, in the order they were reported.
+     */
+    public synchronized void powerUpdated(boolean on, boolean artMode) {
+        ScheduledExecutorService scheduler = getScheduler();
+        if (scheduler == null) {
+            updatePower(on, artMode);
+            return;
+        }
+        powerUpdate = powerUpdate.thenRunAsync(() -> updatePower(on, artMode), scheduler);
+    }
+
+    private void updatePower(boolean on, boolean artMode) {
         String powerState = fetchPowerState();
         if (artMode && "standby".equals(powerState) && handler.getModelYear() >= 25) {
             // 2025 and later Frame TV's report PowerState standby in art mode, 2022 to 2024 report on
