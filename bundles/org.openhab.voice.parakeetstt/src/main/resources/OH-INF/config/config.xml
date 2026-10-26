@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:parakeetstt">
+		<parameter-group name="model">
+			<label>Model</label>
+			<description>Select the Parakeet model and configure model loading behavior.</description>
+		</parameter-group>
+		<parameter-group name="transcription">
+			<label>Transcription Behavior</label>
+			<description>Configure transcription mode, decoder, language, and utterance handling.</description>
+			<advanced>true</advanced>
+		</parameter-group>
+		<parameter-group name="recognition">
+			<label>Audio Stream &amp; Stopping Limits</label>
+			<description>Configure audio chunking and silence or duration timeouts for the audio stream.</description>
+			<advanced>true</advanced>
+		</parameter-group>
+		<parameter-group name="vad">
+			<label>Voice Activity Detection</label>
+			<description>Configure the Silero Voice Activity Detector used to detect and segment speech.</description>
+			<advanced>true</advanced>
+		</parameter-group>
+		<parameter-group name="performance">
+			<label>CPU Performance</label>
+			<description>Configure CPU threading and backend concurrency for model inference.</description>
+			<advanced>true</advanced>
+		</parameter-group>
+
+		<parameter name="modelName" type="text" groupName="model" required="true">
+			<label>Model Name</label>
+			<description><![CDATA[ASR model or bundle GGUF file inside <code>$OPENHAB_USERDATA/parakeet/</code>]]></description>
+			<limitToOptions>false</limitToOptions>
+		</parameter>
+		<parameter name="preloadModel" type="boolean" groupName="model">
+			<label>Preload Model</label>
+			<description>Keep the ASR and VAD models loaded in memory. When enabled, models are only reloaded on configuration
+				changes. When disabled, models are loaded and unloaded on each recognition run.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="mode" type="text" groupName="transcription">
+			<label>Transcription Mode</label>
+			<description>Select the transcription mode. Automatic uses streaming when supported by the model and falls back to
+				offline VAD-segmented batch transcription otherwise.</description>
+			<default>AUTO</default>
+			<options>
+				<option value="AUTO">Automatic</option>
+				<option value="OFFLINE">Offline (VAD + Batch)</option>
+				<option value="STREAMING">Streaming</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="decoder" type="text" groupName="transcription">
+			<label>Decoder</label>
+			<description>Decoder used for offline transcription. Leave at Default unless overriding a hybrid model.</description>
+			<default>DEFAULT</default>
+			<options>
+				<option value="DEFAULT">Default</option>
+				<option value="CTC">CTC</option>
+				<option value="TRANSDUCER">Transducer (RNNT / TDT)</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="language" type="text" groupName="transcription">
+			<label>Language</label>
+			<description>Target language code (for example, 'en', 'de', 'es', 'fr') for multilingual models that support language
+				selection. Defaults to the recognition locale if empty.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="singleUtteranceMode" type="boolean" groupName="transcription">
+			<label>Single Utterance Mode</label>
+			<description>When enabled, recognition stops listening after the first utterance completes.</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="stepSeconds" type="decimal" min="0.05" max="1.0" step="0.05" unit="s"
+			groupName="recognition">
+			<label>Audio Step</label>
+			<description>Audio chunk duration read from the stream in each processing step.</description>
+			<default>0.1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="maxSeconds" type="integer" min="1" max="60" unit="s" groupName="recognition">
+			<label>Max Transcription Seconds</label>
+			<description>Maximum duration of audio processed in a single recognition session.</description>
+			<default>10</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="initSilenceSeconds" type="decimal" min="0.1" max="60.0" step="0.1" unit="s"
+			groupName="recognition">
+			<label>Initial Silence Seconds</label>
+			<description>Maximum initial seconds of silence before aborting recognition when no speech has started.</description>
+			<default>5.0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="maxSilenceSeconds" type="decimal" min="0.1" max="30.0" step="0.1" unit="s"
+			groupName="recognition">
+			<label>Max Silence Seconds</label>
+			<description>Seconds of silence after speech that mark the end of an utterance.</description>
+			<default>1.0</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="vadModelName" type="text" groupName="vad">
+			<label>VAD Model Name</label>
+			<description><![CDATA[Standalone Silero VAD GGUF file inside <code>$OPENHAB_USERDATA/parakeet/</code>. Optional if the main model is a
+				bundle GGUF containing a 'vad' component or when using streaming mode without VAD.]]></description>
+			<limitToOptions>false</limitToOptions>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="vadThreshold" type="decimal" min="0.05" max="0.95" step="0.05" groupName="vad">
+			<label>VAD Threshold</label>
+			<description>Speech probability threshold (0.05-0.95) for Silero VAD.</description>
+			<default>0.5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="minSpeechSeconds" type="decimal" min="0.05" max="5.0" step="0.05" unit="s" groupName="vad">
+			<label>Min Speech Seconds</label>
+			<description>Minimum duration of speech required to trigger a VAD speech start event.</description>
+			<default>0.25</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="speechPadSeconds" type="decimal" min="0.0" max="2.0" step="0.01" unit="s" groupName="vad">
+			<label>Speech Padding Seconds</label>
+			<description>Padding added around speech segments detected by VAD.</description>
+			<default>0.03</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="threads" type="integer" min="0" groupName="performance">
+			<label>Threads per Backend</label>
+			<description>Number of CPU threads per backend instance (0 uses the library default).</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="backends" type="integer" min="1" groupName="performance">
+			<label>Backends</label>
+			<description>Number of parallel CPU backend instances configured on the model.</description>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
