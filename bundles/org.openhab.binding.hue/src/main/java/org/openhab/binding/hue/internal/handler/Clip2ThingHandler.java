@@ -174,10 +174,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final int INCREASE_DECREASE_PERCENT = 10;
     private static final int MIN_MIREK_DELTA = 10;
 
-    // light service archetypes for dual light devices
-    private static final Set<Archetype> FRONT_ARCHETYPES = Set.of(Archetype.TWILIGHT_FRONT, Archetype.UP_AND_DOWN_DOWN);
-    private static final Set<Archetype> BACK_ARCHETYPES = Set.of(Archetype.TWILIGHT_BACK, Archetype.UP_AND_DOWN_UP);
-
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
      * resource ID (string) and a Resource object containing the last known state. e.g. a DEVICE thing may support a
@@ -1212,7 +1208,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (disposing || auxiliaryLightGroups.isEmpty()) {
             return List.of();
         }
-        String labelPrefix = getBridgeHandler().getLocalizedText("auxiliary.channel.label.prefix");
+        String labelPrefix = getBridgeHandler().getLocalizedText(AUX_CHANNEL_PREFIX_KEY);
         List<Channel> result = new ArrayList<>();
         for (String groupId : auxiliaryLightGroups.keySet()) {
             Matcher matcher = LIGHT_GROUP_PATTERN.matcher(groupId);

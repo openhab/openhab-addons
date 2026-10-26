@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
@@ -230,6 +231,7 @@ public class HueBindingConstants {
             Map.entry(CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED));
 
     public static final String ALL_LIGHTS_KEY = "discovery.group.all-lights.label";
+    public static final String AUX_CHANNEL_PREFIX_KEY = "auxiliary.channel.label.prefix";
 
     public static final String CHANNEL_GROUP_AUTOMATION = "automation";
     public static final ChannelTypeUID CHANNEL_TYPE_AUTOMATION = new ChannelTypeUID(BINDING_ID, "automation-enable");
@@ -243,4 +245,9 @@ public class HueBindingConstants {
 
     public static final String LIGHT_GROUP_FORMAT = LIGHT_GROUP + "%d";
     public static final Pattern LIGHT_GROUP_PATTERN = Pattern.compile(LIGHT_GROUP_REGEX);
+
+    // light service archetypes for dual light devices
+    public static final Set<Archetype> BACK_ARCHETYPES = Set.of(Archetype.TWILIGHT_BACK, Archetype.UP_AND_DOWN_UP);
+    public static final Set<Archetype> FRONT_ARCHETYPES = Set.of(Archetype.TWILIGHT, Archetype.TWILIGHT_FRONT,
+            Archetype.UP_AND_DOWN_DOWN, Archetype.HUE_CENTRIS);
 }
