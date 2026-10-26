@@ -17,6 +17,7 @@ import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfigurati
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,6 +69,9 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     // refresh limit for current app update (in seconds)
     private static final long UPDATE_CURRENT_APP_REFRESH_SECONDS = 10;
     private Instant previousUpdateCurrentApp = Instant.MIN;
+    // known app ids the TV reported as not installed are dropped, so check them again daily for newly installed apps
+    private static final long KNOWN_APPS_RECHECK_HOURS = 24;
+    private Instant knownAppsAdded = Instant.MIN;
 
     // JSON parser class. Also used by WebSocket handlers.
     public final Gson gson = new Gson();
@@ -308,6 +312,10 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         if (updateCount >= 1 && noApps() && !samsungTvAppWatchService.getStarted()) {
             samsungTvAppWatchService.start();
         }
+        if (noApps() && samsungTvAppWatchService.getStarted()
+                && Instant.now().isAfter(knownAppsAdded.plus(KNOWN_APPS_RECHECK_HOURS, ChronoUnit.HOURS))) {
+            addKnownAppIds();
+        }
         // list apps
         if (updateCount++ == 2) {
             listApps();
@@ -344,6 +352,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
      * Add all know app id's to manApps
      */
     public void addKnownAppIds() {
+        knownAppsAdded = Instant.now();
         KnownAppId.stream().filter(id -> !manApps.values().stream().anyMatch(a -> a.getAppId().equals(id)))
                 .forEach(id -> {
                     previousUpdateCurrentApp = Instant.now();
