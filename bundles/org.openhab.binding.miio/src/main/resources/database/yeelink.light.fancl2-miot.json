@@ -234,6 +234,10 @@
 						}
 					}
 				],
+				"category": "light",
+				"tags": [
+					"Control"
+				],
 				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"fan-toggle\"\u003d\"Fan Toggle\",\"yl-light-brightness-cycle\"\u003d\"Light Brightness Cycle\",\"yl-light-ct-cycle\"\u003d\"Light Color Temperature Cycle\",\"yl-light-fan-gears-cycle\"\u003d\"Fan Level Cycle (Light Service)\",\"yl-light-birghtness-increase\"\u003d\"Light Brightness Increase\",\"yl-light-brightness-decrease\"\u003d\"Light Brightness Decrease\",\"yl-light-ct-increase\"\u003d\"Light Color Temperature Increase\",\"yl-light-ct-decrease\"\u003d\"Light Color Temperature Decrease\",\"yl-light-on-or-bright-cycle\"\u003d\"Light On Or Brightness Cycle\",\"yl-light-on-or-ct-cycle\"\u003d\"Light On Or Color Temperature Cycle\",\"yl-fan-fan-gears-cycle\"\u003d\"Fan Level Cycle\"]`"
 			},
 			{
@@ -250,11 +254,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "light",
-				"tags": [
-					"Switch",
-					"Light"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "mode",
@@ -271,7 +271,7 @@
 						},
 						{
 							"value": "1",
-							"label": "Night"
+							"label": "Night Light"
 						}
 					]
 				},
@@ -282,10 +282,12 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "light",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Day\",\"1\"\u003d\"Night\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Day\",\"1\"\u003d\"Night Light\"]`"
 			},
 			{
 				"property": "brightness",
@@ -294,23 +296,20 @@
 				"friendlyName": "Light - Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
-				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f %unit%"
-				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
 					}
 				],
 				"category": "light",
 				"tags": [
-					"Setpoint",
-					"Light"
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -325,20 +324,16 @@
 					"minimum": 2700,
 					"maximum": 6500,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"category": "colorlight",
-				"tags": [
-					"Setpoint",
-					"ColorTemperature"
-				]
+				"category": "colorlight"
 			},
 			{
 				"property": "flow",
@@ -362,13 +357,17 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "light",
+				"tags": [
+					"Status"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\"]`"
 			},
 			{
 				"property": "off-delay-time",
 				"siid": 2,
 				"piid": 7,
-				"friendlyName": "Light - Power Off Delay Time",
+				"friendlyName": "Light - Off Delay",
 				"channel": "off_delay_time",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -382,19 +381,20 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
 				"category": "time",
 				"tags": [
-					"Setpoint"
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
 				"property": "left-time",
 				"siid": 2,
 				"piid": 8,
-				"friendlyName": "Light - Left Time",
+				"friendlyName": "Light - Remaining Off Delay",
 				"channel": "left_time",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -407,7 +407,11 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
 			},
 			{
 				"property": "on1",
@@ -425,7 +429,8 @@
 				],
 				"category": "fan",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -464,7 +469,8 @@
 				],
 				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Speed"
 				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Level 1\",\"1\"\u003d\"Level 2\",\"2\"\u003d\"Level 3\",\"3\"\u003d\"Level 4\"]`"
 			},
@@ -512,7 +518,8 @@
 				],
 				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal Wind\",\"1\"\u003d\"Natural Wind\",\"2\"\u003d\"Reverse Wind\",\"3\"\u003d\"Strong Wind\",\"4\"\u003d\"Gentle Wind\",\"5\"\u003d\"Sleep Wind\"]`"
 			},
@@ -538,7 +545,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"category": "status",
+				"category": "fan",
 				"tags": [
 					"Status"
 				],
@@ -564,7 +571,7 @@
 				"actions": [],
 				"category": "error",
 				"tags": [
-					"Status"
+					"Alarm"
 				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\"]`"
 			},
@@ -572,7 +579,7 @@
 				"property": "off-delay-time1",
 				"siid": 3,
 				"piid": 11,
-				"friendlyName": "Fan - Power Off Delay Time",
+				"friendlyName": "Fan - Off Delay",
 				"channel": "off_delay_time1",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -586,19 +593,20 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
 				"category": "time",
 				"tags": [
-					"Setpoint"
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
 				"property": "left-time1",
 				"siid": 3,
 				"piid": 12,
-				"friendlyName": "Fan - Left Time",
+				"friendlyName": "Fan - Remaining Off Delay",
 				"channel": "left_time1",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -611,7 +619,11 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
 			},
 			{
 				"property": "init-power-opt",
@@ -639,6 +651,11 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Power"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"On\",\"2\"\u003d\"Off\"]`"
 			},
 			{
@@ -654,6 +671,11 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -698,6 +720,11 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Mi Band Control Off\",\"1\"\u003d\"Turn Off Light When Asleep\",\"2\"\u003d\"Turn Off Fan When Asleep\",\"3\"\u003d\"Turn Off Light And Fan When Asleep\",\"4\"\u003d\"Sleep Wind Mode When Asleep\",\"5\"\u003d\"Turn Off Light And Sleep Wind Mode When Asleep\"]`"
 			},
 			{
@@ -726,6 +753,11 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Power"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
 			},
 			{
@@ -741,6 +773,11 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -766,7 +803,8 @@
 				],
 				"category": "fan",
 				"tags": [
-					"Setpoint"
+					"Control",
+					"Speed"
 				]
 			},
 			{
@@ -787,11 +825,16 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
 			}
-		]
+		],
+		"experimental": true
 	}
 }
