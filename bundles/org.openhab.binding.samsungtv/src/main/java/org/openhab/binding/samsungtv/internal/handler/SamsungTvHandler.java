@@ -78,6 +78,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Arjan Mels - Remove RegistryListener, manually create RemoteService in all circumstances, add sending of WOL
  *         package to power on TV
  * @author Nick Waterton - Improve Frame TV handling and some refactoring
+ * @author Nick Waterton - Keep art mode when 2025 Frame TV's report standby
  */
 @NonNullByDefault
 public class SamsungTvHandler extends BaseThingHandler implements RegistryListener {
@@ -98,6 +99,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     public String host = "";
     private String modelName = "";
+    private int modelYear = 0;
     public int artApiVersion = 0;
 
     /* Samsung TV services */
@@ -171,6 +173,13 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
         public String getModelName() {
             return Optional.ofNullable(device).map(a -> a.modelName).orElse("");
+        }
+
+        /**
+         * @return model year, eg model "22_PONTUSM_FTV" is 22, 0 if unknown
+         */
+        public int getModelYear() {
+            return Utils.getModelYear(getModel());
         }
     }
 
@@ -313,7 +322,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public void updateSettings(TVProperties properties) {
         setPowerState("on".equals(properties.getPowerState()));
         setModelName(properties.getModelName());
-        int year = Integer.parseInt(properties.getModel().substring(0, 2));
+        int year = properties.getModelYear();
         if (properties.getFrameTVSupport() && year >= 22) {
             logger.warn("{}: Art Mode MAY NOT BE SUPPORTED on Frame TV's after 2021 model year", host);
             setArtMode2022(true);
@@ -348,6 +357,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         logger.trace("{}: fetching TV Power State", host);
         TVProperties properties = fetchTVProperties(0, 2);
         String powerState = properties.getPowerState();
+        if (properties.getModelYear() > 0) {
+            modelYear = properties.getModelYear();
+        }
         setPowerState("on".equals(powerState));
         logger.debug("{}: PowerState is: {}", host, powerState);
         return powerState;
@@ -411,6 +423,13 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     public String getModelName() {
         return modelName;
+    }
+
+    /**
+     * @return model year from the last REST reply, eg 22 for 2022, 0 if unknown
+     */
+    public int getModelYear() {
+        return modelYear;
     }
 
     public synchronized void setPowerState(boolean state) {

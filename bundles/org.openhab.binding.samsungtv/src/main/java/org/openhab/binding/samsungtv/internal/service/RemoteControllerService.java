@@ -561,6 +561,11 @@ public class RemoteControllerService implements SamsungTvService {
 
     public void powerUpdated(boolean on, boolean artMode) {
         String powerState = fetchPowerState();
+        if (artMode && "standby".equals(powerState) && handler.getModelYear() >= 25) {
+            // 2025 and later Frame TV's report PowerState standby in art mode, 2022 to 2024 report on
+            logger.debug("{}: PowerState standby in art mode, treating as art mode", host);
+            powerState = "on";
+        }
         if (!getArtMode2022()) {
             setArtModeSupported(true);
         }
