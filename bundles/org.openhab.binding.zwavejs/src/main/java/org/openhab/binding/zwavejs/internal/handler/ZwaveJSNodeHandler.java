@@ -71,14 +71,17 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -766,7 +769,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     @Override
     public void onNodeRemoved(Event event) {
         logger.trace("Node {}. Removed", config.id);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.conf-error.node-removed");
+        synchronized (nodeDefinitionUpdateLock) {
+            nodeDefinitionUpdateGeneration++;
+            updateStatusAfterNodeDefinitionChange = false;
+            cancelPendingNodeDefinitionUpdate();
+            updateStatus(ThingStatus.OFFLINE, "@text/offline.conf-error.node-removed");
+        }
     }
 
     @Override
@@ -788,13 +796,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     @Override
     public void onNodeDefinitionChanged(Node node) {
         logger.debug("Node {}. Definition changed, reconciling channels and configuration", config.id);
-        executorService.execute(() -> {
-            if (node.nodeId != config.id || !node.ready) {
-                logger.debug("Node {}. Ignoring invalid definition update for node {}", config.id, node.nodeId);
-                return;
-            }
-            scheduleNodeDefinitionUpdate(node, NODE_DEFINITION_DEBOUNCE_MILLIS, false);
-        });
+        if (node.nodeId != config.id || !node.ready) {
+            logger.debug("Node {}. Ignoring invalid definition update for node {}", config.id, node.nodeId);
+            return;
+        }
+        scheduleNodeDefinitionUpdate(node, NODE_DEFINITION_DEBOUNCE_MILLIS, false);
     }
 
     @Override
@@ -1008,6 +1014,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         Map<String, Channel> existingChannelEntries = thing.getChannels().stream()
                 .collect(Collectors.toMap(channel -> channel.getUID().getId(), channel -> channel));
         boolean changed = false;
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            changed = addMissingStatisticsChannels(builder, existingChannelEntries, callback);
+        }
+
         // remove channels that are no longer part of the thing
         for (Map.Entry<String, Channel> existingEntry : existingChannelEntries.entrySet()) {
             if (!CHANNEL_GROUP_STATISTICS.equals(existingEntry.getValue().getUID().getGroupId())
@@ -1050,6 +1061,21 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         return new ChannelUpdate(builder, changed);
     }
 
+    private boolean addMissingStatisticsChannels(ThingBuilder builder, Map<String, Channel> existingChannelEntries,
+            ThingHandlerCallback callback) {
+        boolean changed = false;
+        ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_STATISTICS);
+        ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, CHANNEL_GROUP_STATISTICS);
+        for (ChannelBuilder channelBuilder : callback.createChannelBuilders(groupUID, groupTypeUID)) {
+            Channel channel = channelBuilder.build();
+            if (!existingChannelEntries.containsKey(channel.getUID().getId())) {
+                builder.withChannel(channel);
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
     private Channel preserveUserConfiguration(Channel existingChannel, Channel generatedChannel) {
         Configuration configuration = new Configuration(existingChannel.getConfiguration());
         Configuration generatedConfiguration = generatedChannel.getConfiguration();
@@ -1062,6 +1088,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         return ChannelBuilder.create(generatedChannel).withConfiguration(configuration).build();
+    }
+
+    private record ChannelUpdate(ThingBuilder builder, boolean changed) {
     }
 
     private void initializeChannelAndConfigState(Node node, ZwaveJSTypeGeneratorResult result) {

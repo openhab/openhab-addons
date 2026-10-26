@@ -247,6 +247,113 @@ public class ZwaveJSNodeHandlerTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void testNodeRemovalInvalidatesPendingReconciliation(boolean readyEvent) throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        final ScheduledFuture<?> pendingFuture = mock(ScheduledFuture.class);
+        doReturn(pendingFuture).when(executor).schedule(any(Runnable.class), anyLong(), eq(TimeUnit.MILLISECONDS));
+        handler.setExecutorService(executor);
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value targetValue = node.values.stream()
+                    .filter(value -> handler.getThing().getChannel(new ChannelMetadata(node.nodeId, value).id) != null)
+                    .findFirst().orElseThrow();
+            targetValue.metadata.label = "updated after removal";
+            clearInvocations(handler, callback);
+
+            if (readyEvent) {
+                handler.onNodeReady(node);
+            } else {
+                handler.onNodeDefinitionChanged(node);
+            }
+            ArgumentCaptor<Runnable> task = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(task.capture(), anyLong(), eq(TimeUnit.MILLISECONDS));
+
+            Event removedEvent = new Event();
+            removedEvent.nodeId = node.nodeId;
+            removedEvent.event = "node removed";
+            handler.onNodeRemoved(removedEvent);
+
+            verify(pendingFuture).cancel(false);
+            task.getValue().run();
+            verify(handler, never()).updateThing(any());
+            verify(callback, never()).stateUpdated(any(), any());
+            verify(callback).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)));
+            verify(callback, never()).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+
+            handler.onNodeReady(node);
+            ArgumentCaptor<Runnable> recoveryTasks = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor, times(2)).schedule(recoveryTasks.capture(), anyLong(), eq(TimeUnit.MILLISECONDS));
+            recoveryTasks.getAllValues().get(1).run();
+            verify(handler).updateThing(any());
+            verify(callback).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNodeRemovalInvalidatesRunningReconciliation() throws Exception {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        final ScheduledFuture<?> pendingFuture = mock(ScheduledFuture.class);
+        doReturn(pendingFuture).when(executor).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.MILLISECONDS));
+        handler.setExecutorService(executor);
+        CountDownLatch setupStarted = new CountDownLatch(1);
+        CountDownLatch releaseSetup = new CountDownLatch(1);
+        Thread reconciliationThread = null;
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            node.values = List.of();
+            doAnswer(invocation -> {
+                setupStarted.countDown();
+                assertTrue(releaseSetup.await(5, TimeUnit.SECONDS));
+                return invocation.callRealMethod();
+            }).when(handler).getBridge();
+            clearInvocations(handler, callback);
+            handler.onNodeReady(node);
+            ArgumentCaptor<Runnable> task = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(task.capture(), eq(0L), eq(TimeUnit.MILLISECONDS));
+            FutureTask<Boolean> reconciliation = new FutureTask<>(task.getValue(), Boolean.TRUE);
+            reconciliationThread = Thread.ofPlatform().daemon().start(reconciliation);
+            assertTrue(setupStarted.await(5, TimeUnit.SECONDS));
+
+            Event removedEvent = new Event();
+            removedEvent.nodeId = node.nodeId;
+            removedEvent.event = "node removed";
+            handler.onNodeRemoved(removedEvent);
+            verify(pendingFuture).cancel(false);
+            releaseSetup.countDown();
+            reconciliation.get(5, TimeUnit.SECONDS);
+
+            verify(handler, never()).updateThing(any());
+            verify(callback, never()).stateUpdated(any(), any());
+            verify(callback).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)));
+            verify(callback, never()).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+        } finally {
+            releaseSetup.countDown();
+            if (reconciliationThread != null) {
+                reconciliationThread.join(Duration.ofSeconds(5));
+            }
+            handler.dispose();
+        }
+    }
+
     @Test
     public void testDefinitionPublicationCompletesBeforeNewGenerationIsAccepted() throws Exception {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
@@ -433,6 +540,38 @@ public class ZwaveJSNodeHandlerTest {
 
             handler.initialize();
 
+            assertEquals(STATISTICS_CHANNEL_IDS.size(),
+                    handler.getThing().getChannelsOfGroup(CHANNEL_GROUP_STATISTICS).size());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testStatisticsOnlyChannelChangeIsPublished() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_STATISTICS);
+            ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, CHANNEL_GROUP_STATISTICS);
+            List<ChannelBuilder> channelBuilders = STATISTICS_CHANNEL_IDS.stream()
+                    .map(channelId -> ChannelBuilder.create(statisticsChannelUID(thing, channelId))).toList();
+            when(callback.createChannelBuilders(groupUID, groupTypeUID)).thenReturn(channelBuilders);
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            clearInvocations(handler);
+
+            handler.onNodeDefinitionChanged(node);
+
+            assertEquals(STATISTICS_CHANNEL_IDS.size(),
+                    handler.getThing().getChannelsOfGroup(CHANNEL_GROUP_STATISTICS).size());
+            verify(handler).updateThing(any());
+
+            handler.onNodeDefinitionChanged(node);
+
+            verify(handler, times(1)).updateThing(any());
             assertEquals(STATISTICS_CHANNEL_IDS.size(),
                     handler.getThing().getChannelsOfGroup(CHANNEL_GROUP_STATISTICS).size());
         } finally {
