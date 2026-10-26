@@ -310,7 +310,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         }
         previousUpdateCurrentApp = Instant.now();
         if (webSocketV2.isNotConnected()) {
-            logger.warn("{}: Cannot retrieve current app webSocketV2 is not connected", host);
+            logger.debug("{}: Cannot retrieve current app webSocketV2 is not connected", host);
             return;
         }
         // if noapps by this point, start file app service

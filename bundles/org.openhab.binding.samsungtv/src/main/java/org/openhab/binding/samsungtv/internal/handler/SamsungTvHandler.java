@@ -324,7 +324,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         setModelName(properties.getModelName());
         int year = properties.getModelYear();
         if (properties.getFrameTVSupport() && year >= 22) {
-            logger.warn("{}: Art Mode MAY NOT BE SUPPORTED on Frame TV's after 2021 model year", host);
+            logger.debug("{}: Art Mode MAY NOT BE SUPPORTED on Frame TV's after 2021 model year", host);
             setArtMode2022(true);
             artApiVersion = 1;
         }
@@ -538,7 +538,12 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             startPolling();
             if (!getArtModeSupported()) {
                 if (getArtMode2022()) {
-                    handleCommand(SET_ART_MODE, OnOffType.ON, 4000);
+                    // TV's with the art API restored clear artMode2022 once the art websocket answers
+                    scheduler.schedule(() -> {
+                        if (getArtMode2022()) {
+                            handleCommand(SET_ART_MODE, OnOffType.ON);
+                        }
+                    }, 4000, TimeUnit.MILLISECONDS);
                 } else if (configuration.isWebsocketProtocol()) {
                     // if TV is registered to SmartThings it wakes up regularly (every 5 minutes or so), even if it's in
                     // standby, so check the power state locally to see if it's actually on

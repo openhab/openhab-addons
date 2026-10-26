@@ -182,7 +182,7 @@ class WebSocketBase extends WebSocketAdapter {
                 getRemote().sendString(cmd);
                 logger.trace("{}: {}: sendCommand: {}", host, className, cmd);
             } else {
-                logger.warn("{}: {} not connected: {}", host, className, cmd);
+                logger.debug("{}: {} not connected: {}", host, className, cmd);
             }
         } catch (IOException e) {
             logger.warn("{}: {}: cannot send command: {}", host, className, e.getMessage());
