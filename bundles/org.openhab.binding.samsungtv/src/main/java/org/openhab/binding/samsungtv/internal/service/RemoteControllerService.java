@@ -306,8 +306,8 @@ public class RemoteControllerService implements SamsungTvService {
                             if (!artMode) {
                                 sendKeys(KeyCode.KEY_POWER);
                             }
-                        } else if (artMode) {
-                            // really switch off (long press of power)
+                        } else if (artMode && !handler.ipControlPowerOff()) {
+                            // really switch off (long press of power), newer Frame TV's ignore this
                             sendKeys(KeyCode.KEY_POWER, 4000);
                         }
                     } else {
@@ -624,6 +624,10 @@ public class RemoteControllerService implements SamsungTvService {
         }
         setPowerState(on);
         this.artMode = artMode;
+        if (on && !artMode) {
+            // IP Control pairing only works when the TV is on and not in art mode
+            handler.pairIpControl();
+        }
         // order of state updates is important to prevent extraneous transitions in overall state
         if (on) {
             handler.valueReceived(POWER, OnOffType.from(on));

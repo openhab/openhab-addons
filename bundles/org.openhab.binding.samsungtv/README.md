@@ -28,6 +28,8 @@ The binding has the following configuration options, which can be set for "bindi
 | subscription            | Subscribe to UPNP        | Reduces polling on UPNP devices, default false         | no       |
 | orientationKey          | Orientation Key          | Key press to send to rotate auto-rotation mount        | no       |
 | legacyCipherSuites      | Legacy Cipher Suites     | Legacy TLS suites for older TVs, default true          | no       |
+| ipControl               | Use IP Control           | Use IP Control for power state, default false          | no       |
+| ipControlToken          | IP Control Token         | Security token for IP Control                          | no       |
 | smartThingsApiKey       | Smartthings PAT          | Smartthings Personal Access Token                      | no       |
 | smartThingsDeviceId     | Smartthings Device ID    | Smartthings Device ID for this TV                      | no       |
 | smartThingsSubscription | Smartthings Subscription | Reduces polling on Smartthings channels, default true  | no       |
@@ -66,6 +68,18 @@ Under `advanced`, you can enter a Smartthings PAT, and Device Id. This enables m
 Also under `advanced`, you have the ability to turn on _"Subscribe to UPnP events"_. This is off by default. This option reduces (but does not eliminate) the polling of UPnP services. You can enable it if you want to test it out. If you disable this setting (after testing), you should power cycle your TV to remove the old subscriptions.
 
 Also under `advanced`, _"Legacy Cipher Suites"_ is on by default. It keeps the secure websocket on a client that accepts any certificate and allows every TLS cipher suite the runtime knows, including the ones Jetty excludes as weak, which is what older TVs may need. Each connection then logs ten Jetty warnings. Turning it off keeps Jetty's exclusions and removes the warnings. It does not validate the TV certificate either: openHAB accepts any certificate whose common name is `SmartViewSDK`, so that is what the TV has to present. Without that common name the TLS handshake fails and you have to turn the setting back on.
+
+Also under `advanced`, _"Use IP Control"_ is off by default.
+Samsung IP Control is a local interface on port 1516, available on 2020 and later TVs.
+When it is on, the binding asks the TV for its power state over IP Control instead of the REST interface.
+Commanding `artMode` OFF then switches the TV to standby over IP Control, instead of sending a long press of the power key, which newer Frame TVs ignore.
+When the TV is offline, commanding `power` or `artMode` ON wakes it over IP Control as well as with WOL, as some TVs ignore WOL in network standby.
+To use it, enable _IP Remote_ on the TV (Settings, General, Network, Expert Settings) and turn on _"Use IP Control"_.
+The next time the TV is on and not in art mode, the TV asks you to accept the connection from openHAB.
+You have 30 seconds to accept it, and the returned token is stored in _"IP Control Token"_.
+If you miss the request, the binding asks again the next time the TV is on, at most every 5 minutes.
+If you define the Thing in a `.things` file, copy the token from the Thing's configuration in the UI into `ipControlToken` in the file, otherwise the TV asks again after openHAB restarts.
+If IP Control does not answer, the binding falls back to the REST interface.
 
 For >2019 TV's, there is an app workaround, see [App Discovery](#app-discovery) for details.
 
@@ -174,6 +188,7 @@ Frame TV's have additional channels.
 ### artMode
 
 `artMode` is a Switch channel. When `power` is ON, `artMode` will be OFF. If the `artMode` channel is commanded `OFF`, then the TV will power down to standby/off mode (this takes 4 seconds).
+If _"Use IP Control"_ is enabled, the TV is switched to standby over IP Control instead, which also works on newer Frame TVs that ignore the long press of the power key.
 Commanding ON to `artMode` will try to power up the TV in art mode, and commanding ON to `power` will try to power the TV up in ON mode, but see WOL limitations.
 
 To determine the ON/ART/OFF state of your TV, you have to read both `power` and `artMode`.
