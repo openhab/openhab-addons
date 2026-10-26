@@ -166,7 +166,18 @@ public class RollershutterValue extends Value {
 
     @Override
     public String getMQTTpublishValue(Command command, @Nullable String pattern) {
-        return getMQTTpublishValue(command, transformExtentsToString);
+        String value = getMQTTpublishValue(command, transformExtentsToString);
+        if (pattern == null) {
+            return value;
+        }
+        Object argument = value;
+        try {
+            // numeric positions are passed as integers, so that both %s and %d work
+            argument = Integer.valueOf(value);
+        } catch (NumberFormatException e) {
+            // keep the string (e.g. a custom UP/DOWN/STOP command)
+        }
+        return String.format(pattern, argument);
     }
 
     public String getMQTTpublishValue(Command command, boolean transformExtentsToString) {
