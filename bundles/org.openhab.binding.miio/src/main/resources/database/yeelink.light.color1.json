@@ -6,13 +6,14 @@
 			"yeelink.light.color3",
 			"yeelink.light.color4",
 			"yeelink.light.color5",
+			"yeelink.light.colora",
+			"yeelink.light.colorb",
+			"yeelink.light.colorc",
 			"yeelink.light.strip1",
 			"yeelink.light.strip2",
-			"yeelink.light.bslamp1",
-			"yeelink.light.bslamp2",
-			"yeelink.light.bslamp3",
-			"yeelink.light.colora",
-			"yeelink.light.colorb"
+			"yeelink.light.strip6",
+			"yeelink.light.stripa",
+			"yeelink.light.virtual"
 		],
 		"maxProperties": 7,
 		"channels": [
@@ -25,13 +26,15 @@
 				"actions": [
 					{
 						"command": "set_power",
-						"parameterType": "ONOFF"
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -43,6 +46,11 @@
 					{
 						"command": "set_bright",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessExisting"
 						}
@@ -50,6 +58,11 @@
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessOnOff"
 						}
@@ -57,8 +70,8 @@
 				],
 				"category": "light",
 				"tags": [
-					"Setpoint",
-					"Light"
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -91,7 +104,8 @@
 				"property": "ct",
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
 				"stateDescription": {
 					"minimum": 1700,
 					"maximum": 6500,
@@ -110,11 +124,7 @@
 						]
 					}
 				],
-				"category": "colorlight",
-				"tags": [
-					"Setpoint",
-					"Temperature"
-				]
+				"category": "colorlight"
 			},
 			{
 				"property": "rgb",
@@ -123,7 +133,6 @@
 				"type": "Color",
 				"refresh": true,
 				"transformation": "addBrightToHSVPower",
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_rgb",
@@ -140,6 +149,11 @@
 					{
 						"command": "set_bright",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessExisting"
 						}
@@ -147,15 +161,20 @@
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessOnOff"
 						}
 					}
 				],
-				"category": "colorpicker",
+				"category": "colorlight",
 				"tags": [
 					"Control",
-					"Light"
+					"Color"
 				]
 			},
 			{
@@ -197,46 +216,35 @@
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_rgb",
-						"parameterType": "NONE",
+						"command": "set_power",
+						"parameterType": "NUMBER",
 						"parameters": [
-							"$rgb$",
+							"on",
 							"smooth",
-							500
+							500,
+							"$value$"
 						],
 						"condition": {
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "1"
-								}
-							]
-						}
-					},
-					{
-						"command": "set_ct_abx",
-						"parameterType": "NONE",
-						"parameters": [
-							"$ct$",
-							"smooth",
-							500
-						],
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
+									"matchValue": "1",
+									"returnValue": 2
+								},
 								{
-									"matchValue": "2"
+									"matchValue": "2",
+									"returnValue": 1
 								}
 							]
 						}
 					}
 				],
-				"category": "settings",
+				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Mode"
 				],
-				"readmeComment": "Note, currently only supporting switching to RGB or CT mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
+				"readmeComment": "Only RGB mode and CT mode can be set. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
 			},
 			{
 				"property": "flowing",
@@ -276,7 +284,7 @@
 						}
 					}
 				],
-				"category": "switch",
+				"category": "colorlight",
 				"tags": [
 					"Switch"
 				]
@@ -733,9 +741,10 @@
 						}
 					}
 				],
+				"category": "colorlight",
 				"tags": [
 					"Control",
-					"Light"
+					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"sunrise\"\u003d\"Sunrise\",\"sunset\"\u003d\"Sunset\",\"home\"\u003d\"Home\",\"tea_time\"\u003d\"Tea Time\",\"date_night\"\u003d\"Date Night\",\"movie\"\u003d\"Movie\",\"romance\"\u003d\"Romance\",\"night_mode\"\u003d\"Night Mode\",\"candle_flicker\"\u003d\"Candle Flicker\",\"happy_birthday\"\u003d\"Happy Birthday\",\"christmas\"\u003d\"Christmas\",\"disco\"\u003d\"Disco\",\"rgb\"\u003d\"RGB\",\"lsd\"\u003d\"Psychedelic\",\"temp\"\u003d\"Color Temperature Cycle\",\"strobe\"\u003d\"Strobe\",\"strobe_color\"\u003d\"Color Strobe\",\"alarm\"\u003d\"Alarm\",\"police\"\u003d\"Police\",\"police2\"\u003d\"Police 2\"]`"
 			},
@@ -753,6 +762,8 @@
 				],
 				"category": "text"
 			}
-		]
+		],
+		"experimental": false,
+		"readmeComment": "The color temperature range is 2700-6500 K for color1, colorc, strip1, stripa and virtual. Other scenes can be sent with the `commands` channel, for example `set_scene[\"ct\",3000,50]` or `set_scene[\"auto_delay_off\",50,10]` (brightness 50%, off after 10 minutes)"
 	}
 }
