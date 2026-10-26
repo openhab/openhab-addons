@@ -130,6 +130,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     private Optional<ScheduledFuture<?>> pollingJob = Optional.empty();
     private WolSend wolTask = new WolSend(this);
+    private final ModeOnWake modeOnWake = new ModeOnWake();
 
     /** Description of the json returned for the information endpoint */
     @NonNullByDefault({})
@@ -517,6 +518,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public void handleCommand(String channel, Command command) {
         logger.trace("{}: Received: {}, command: {}", host, channel, Utils.truncCmd(command));
 
+        if (OnOffType.OFF.equals(command) && (ART_MODE.equals(channel) || POWER.equals(channel))) {
+            // a later OFF command overrides the mode requested by an ON command that is still waking the TV
+            clearModeOnWake();
+        }
         // Delegate command to correct service
         for (SamsungTvService service : services) {
             for (String s : service.getSupportedChannelNames(command == RefreshType.REFRESH)) {
@@ -526,6 +531,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                     }
                 }
             }
+        }
+        if (OnOffType.ON.equals(command) && (ART_MODE.equals(channel) || POWER.equals(channel))) {
+            setModeOnWake(ART_MODE.equals(channel));
         }
         // if power on/artmode on command failed, try IP Control and WOL (WOL also resends the command):
         boolean ipControlWoke = (POWER.equals(channel) || ART_MODE.equals(channel)) && OnOffType.ON.equals(command)
@@ -585,6 +593,26 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     public boolean getArtMode2022() {
         return artMode2022;
+    }
+
+    /**
+     * Remember that a power or artMode ON command is waking the TV, see {@link ModeOnWake}
+     *
+     * @param artMode true for an artMode ON command, false for a power ON command
+     */
+    public void setModeOnWake(boolean artMode) {
+        modeOnWake.set(artMode);
+    }
+
+    public void clearModeOnWake() {
+        modeOnWake.clear();
+    }
+
+    /**
+     * Called with each art mode report, see {@link ModeOnWake#take(boolean)}
+     */
+    public boolean takeModeOnWake(boolean artMode) {
+        return modeOnWake.take(artMode);
     }
 
     public boolean getArtModeSupported() {
