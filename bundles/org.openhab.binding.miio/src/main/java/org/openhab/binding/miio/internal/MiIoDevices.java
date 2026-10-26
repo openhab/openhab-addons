@@ -52,6 +52,7 @@ public enum MiIoDevices {
     CHUNMI_COOKER_PRESS1("chunmi.cooker.press1", "Mi IH Pressure Rice Cooker", THING_TYPE_UNSUPPORTED),
     CHUNMI_COOKER_PRESS2("chunmi.cooker.press2", "Mi IH Pressure Rice Cooker", THING_TYPE_UNSUPPORTED),
     CUCO_PLUG_CP1("cuco.plug.cp1", "Gosund Smart Plug", THING_TYPE_BASIC),
+    CUCO_PLUG_CP1D("cuco.plug.cp1d", "Gosund Smart Plug CP1", THING_TYPE_BASIC),
     CUCO_PLUG_V2EUR("cuco.plug.v2eur", "Xiaomi Smart Plug 2 (Wi-Fi)", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ("deerma.humidifier.jsq", "Mi Smart Antibacterial Humidifier", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ1("deerma.humidifier.jsq1", "Mi Smart Humidifier S", THING_TYPE_BASIC),
