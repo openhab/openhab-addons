@@ -32,6 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -107,7 +108,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             .registerTypeAdapter(OctetString.class, new OctetStringDeserializer())
             .registerTypeAdapter(OctetString.class, new OctetStringSerializer()).create();
 
-    protected final WebSocketClient client = new WebSocketClient();
+    private final AtomicReference<@Nullable WebSocketClient> webSocketClient = new AtomicReference<>();
     protected final ConcurrentHashMap<String, CompletableFuture<JsonElement>> pendingRequests = new ConcurrentHashMap<>();
     protected final CopyOnWriteArrayList<MatterClientListener> clientListeners = new CopyOnWriteArrayList<>();
 
@@ -154,11 +155,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         } catch (IOException e) {
             logger.debug("Error trying to disconnect", e);
         } finally {
-            try {
-                client.stop();
-            } catch (Exception e) {
-                logger.debug("Error closing Web Socket", e);
-            }
+            stopWebSocketClient(webSocketClient.getAndSet(null));
             MatterWebsocketService wss = this.wss;
             if (wss != null) {
                 wss.removeProcessListener(this);
@@ -503,9 +500,23 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         logger.debug("Connecting {}", dest);
         WebSocketClient client = new WebSocketClient();
         client.setMaxIdleTimeout(Long.MAX_VALUE);
+        // stop the existing client and atomically swap in the new one
+        stopWebSocketClient(webSocketClient.getAndSet(client));
         client.start();
         URI uri = new URI(dest);
         client.connect(this, uri, new ClientUpgradeRequest()).get();
+    }
+
+    private void stopWebSocketClient(@Nullable WebSocketClient client) {
+        if (client != null) {
+            scheduler.execute(() -> {
+                try {
+                    client.stop();
+                } catch (Exception e) {
+                    logger.debug("Error closing Web Socket", e);
+                }
+            });
+        }
     }
 
     @NonNullByDefault({})

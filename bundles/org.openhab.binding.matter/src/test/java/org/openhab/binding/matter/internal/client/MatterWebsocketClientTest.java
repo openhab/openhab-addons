@@ -17,20 +17,35 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
+import java.net.ServerSocket;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
@@ -401,6 +416,90 @@ class MatterWebsocketClientTest {
         // A timeout <= 0 must fall back to the default, so the request stays pending well beyond 2s.
         CompletableFuture<JsonElement> future = client.sendMessage("nodes", "listNodes", new Object[0], 0);
         assertThrows(TimeoutException.class, () -> future.get(2, TimeUnit.SECONDS));
+    }
+
+    @Test
+    void testFailedConnectionsReleaseTheirThreads() throws Exception {
+        int port;
+        try (ServerSocket socket = new ServerSocket(0)) {
+            port = socket.getLocalPort();
+        }
+        long threadsBefore = webSocketClientThreads();
+
+        for (int i = 0; i < 3; i++) {
+            client.onNodeReady(port);
+        }
+
+        assertThreadsReleased(threadsBefore);
+    }
+
+    @Test
+    void testConnectionsClosedByTheServerReleaseTheirThreads() throws Exception {
+        Server server = new Server();
+        ServerConnector connector = new ServerConnector(server);
+        server.addConnector(connector);
+        ServletContextHandler context = new ServletContextHandler();
+        context.addServlet(new ServletHolder(new ClosingServlet()), "/");
+        server.setHandler(context);
+        server.start();
+        try {
+            long threadsBefore = webSocketClientThreads();
+            // Handlers disconnect from within onDisconnect, which runs on a Jetty client thread
+            AtomicLong slowestDisconnectMillis = new AtomicLong();
+            MatterClientListener listener = mock(MatterClientListener.class);
+            doAnswer(invocation -> {
+                long start = System.nanoTime();
+                client.disconnect();
+                slowestDisconnectMillis.accumulateAndGet(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start),
+                        Math::max);
+                return null;
+            }).when(listener).onDisconnect(anyString());
+            client.addListener(listener);
+
+            for (int i = 0; i < 3; i++) {
+                client.onNodeReady(connector.getLocalPort());
+                verify(listener, timeout(10000).atLeast(i + 1)).onDisconnect(anyString());
+            }
+
+            assertTrue(slowestDisconnectMillis.get() < 5000,
+                    "disconnect took " + slowestDisconnectMillis.get() + " ms");
+            assertThreadsReleased(threadsBefore);
+        } finally {
+            server.stop();
+        }
+    }
+
+    /**
+     * Closes every connection right away, like the Matter server does when the controller fails to start
+     */
+    public static class ClosingServlet extends WebSocketServlet {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void configure(@Nullable WebSocketServletFactory factory) {
+            Objects.requireNonNull(factory).register(ClosingSocket.class);
+        }
+    }
+
+    public static class ClosingSocket extends WebSocketAdapter {
+        @Override
+        public void onWebSocketConnect(@Nullable Session session) {
+            super.onWebSocketConnect(session);
+            Objects.requireNonNull(session).close(1002, "MdnsService unavailable");
+        }
+    }
+
+    private static void assertThreadsReleased(long threadsBefore) throws InterruptedException {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (webSocketClientThreads() > threadsBefore && System.nanoTime() < deadline) {
+            Thread.sleep(50);
+        }
+        assertEquals(threadsBefore, webSocketClientThreads());
+    }
+
+    private static long webSocketClientThreads() {
+        return Thread.getAllStackTraces().keySet().stream()
+                .filter(thread -> thread.isAlive() && thread.getName().startsWith("WebSocketClient@")).count();
     }
 
     /**
