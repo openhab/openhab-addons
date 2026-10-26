@@ -27,6 +27,11 @@
 			<description>An MQTT topic that this thing will send a STOP command to. If not set, it will send STOP commands to the
 				main commandTopic.</description>
 		</parameter>
+		<parameter name="upDownCommandTopic" type="text">
+			<label>MQTT Up/Down Command Topic</label>
+			<description>An MQTT topic that this thing will send UP and DOWN commands to. Requires the Up/Down Command Values to
+				be set. If not set, it will send UP and DOWN commands to the main commandTopic.</description>
+		</parameter>
 		<parameter name="transformationPattern" type="text" groupName="transformations" multiple="true">
 			<label>Incoming Value Transformations</label>
 			<description><![CDATA[
