@@ -1,0 +1,115 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yeelink.light.mono1",
+			"yeelink.light.mono2",
+			"yeelink.light.mono4",
+			"yeelink.light.mono5",
+			"yeelink.light.mono6",
+			"yeelink.light.monoa",
+			"yeelink.light.monob",
+			"yeelink.light.lamp3",
+			"yeelink.light.lamp5"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "delayoff",
+				"friendlyName": "Shutdown Timer",
+				"channel": "delayoff",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "cron_add",
+						"parameterType": "NUMBER",
+						"parameters": [
+							0,
+							"$value$"
+						]
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "name",
+				"friendlyName": "Name",
+				"channel": "name",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_name",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text"
+			}
+		],
+		"experimental": false
+	}
+}
