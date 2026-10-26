@@ -100,7 +100,8 @@ public class SmartThingsApiService implements SamsungTvService {
     private int TIMEOUT = 1000; // connection timeout in ms
     private long prevUpdate = 0;
     private long backoff = 0;
-    private static final long MAX_BACKOFF = 60000;
+    // SmartThings rate limits are per minute
+    private static final long ERROR_BACKOFF = 60000;
     private boolean online = false;
     private int errorCount = 0;
     private int MAX_ERRORS = 100;
@@ -870,9 +871,9 @@ public class SmartThingsApiService implements SamsungTvService {
             Optional<TvValues> values = fetchTVProperties(COMPONENTS);
             prevUpdate = System.currentTimeMillis();
             if (values.map(TvValues::isError).orElse(false)) {
-                // e.g. TooManyRequestError: keep the last values and back off, as polling on would keep failing
-                backoff = Math.min(Math.max(backoff * 2, RATE_LIMIT), MAX_BACKOFF);
-                logger.debug("{}: Next SmartThings update in {} ms", host, RATE_LIMIT + backoff);
+                // e.g. TooManyRequestError: keep the last values and pause, as polling on would keep failing
+                backoff = ERROR_BACKOFF;
+                logger.debug("{}: Next SmartThings update in {} s", host, (RATE_LIMIT + backoff) / 1000);
             } else {
                 tvInfo = values;
                 backoff = 0;
