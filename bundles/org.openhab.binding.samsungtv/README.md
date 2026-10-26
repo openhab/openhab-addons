@@ -77,6 +77,7 @@ To use it, enable _IP Remote_ on the TV (Settings, General, Network, Expert Sett
 The next time the TV is on and not in art mode, the TV asks you to accept the connection from openHAB.
 You have 30 seconds to accept it, and the returned token is stored in _"IP Control Token"_.
 If you miss the request, the binding asks again the next time the TV is on, at most every 5 minutes.
+If you define the Thing in a `.things` file, copy the token from the Thing's configuration in the UI into `ipControlToken` in the file, otherwise the TV asks again after openHAB restarts.
 If IP Control does not answer, the binding falls back to the REST interface.
 
 For >2019 TV's, there is an app workaround, see [App Discovery](#app-discovery) for details.
