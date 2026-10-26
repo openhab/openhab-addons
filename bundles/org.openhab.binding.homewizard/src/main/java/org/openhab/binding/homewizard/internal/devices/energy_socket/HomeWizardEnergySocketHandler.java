@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.homewizard.internal.devices.energy_socket;
 
+import javax.naming.CommunicationException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardDeviceHandler;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterSubHandler;
@@ -24,7 +25,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -69,8 +69,8 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
                 handleStateData(stateData);
             }
             return true;
-        } catch (JsonSyntaxException ex) {
-            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        } catch (JsonSyntaxException | CommunicationException ex) {
+            updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             return false;
         }
@@ -179,16 +179,12 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
 
     /**
      * @return json response from the state api
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
      * 
      */
-    public String getStateData() {
-        var response = getResponseFrom(getApiUrl() + STATE_URL);
-        if (response != null && response.getStatus() == HttpStatus.OK_200) {
-            return response.getContentAsString();
-        } else {
-            logger.warn("No State data available");
-            return "";
-        }
+    public String getStateData() throws SecurityException, CommunicationException {
+        return getContentFrom(getApiUrl() + STATE_URL);
     }
 
     /**
