@@ -208,7 +208,7 @@ class GradientCacheTest {
     }
 
     @Test
-    void setGradientPointColorXyUpdatesCacheAndSendsFullSetWithoutCapacity() {
+    void setGradientPointColorXySendsFullSetWithoutCapacityAndLeavesCacheUntouched() {
         Resource cache = light(createGradient(5, 5, 0.10));
         Resource target = new Resource(ResourceType.LIGHT);
 
@@ -219,9 +219,15 @@ class GradientCacheTest {
         assertEquals(5, sent.getXyPoints().size());
         assertEquals(0, sent.getPointsCapable());
         assertNotSame(gradientOf(cache), sent);
-        // cache has the changed point, and the other four points unchanged
-        assertNotEquals(0.11, x(gradientOf(cache), 1));
+
+        // sent gradient has the changed point, and the other points unchanged
+        assertNotEquals(0.11, x(sent, 1), 0.0001);
+        assertEquals(0.10, x(sent, 0), 0.0001);
+        assertEquals(0.12, x(sent, 2), 0.0001);
+
+        // cache is not modified by the setter; the handler updates it afterwards
         assertEquals(0.10, x(gradientOf(cache), 0), 0.0001);
+        assertEquals(0.11, x(gradientOf(cache), 1), 0.0001);
         assertEquals(0.12, x(gradientOf(cache), 2), 0.0001);
     }
 
@@ -297,6 +303,6 @@ class GradientCacheTest {
 
         assertNotNull(result);
         assertEquals(5, gradientOf(Objects.requireNonNull(result)).getXyPoints().size());
-        assertEquals(5, gradientOf(cache).getXyPoints().size());
+        assertEquals(1, gradientOf(cache).getXyPoints().size());
     }
 }

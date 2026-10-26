@@ -168,7 +168,7 @@ public class Setters {
      * Setter for a gradient point color xy field:
      * Use the given command value to set the target resource DTO value based on the attributes of the source resource
      * (if any). Use the HS parts of the HSB value to set the value of the 'ColorXy' JSON element, and ignore the 'B'
-     * part. Updates the cached (source) gradient point immediately.
+     * part.
      *
      * @param target the target resource.
      * @param command the new state command should be an HSBType with the new color XY value.
@@ -181,11 +181,20 @@ public class Setters {
             HSBType hsb2 = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             Gamut gamut = cache.getGamut();
             gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
-            Gradient copy = cacheGradient.copy();
+            int capable = cacheGradient.getPointsCapable();
+            if (capable > 0 && index >= capable) {
+                return null; // beyond light capability
+            }
+            Gradient copy;
+            try {
+                copy = cacheGradient.copy();
+            } catch (IllegalStateException e) {
+                copy = new Gradient(); // invalid cached point: repair by sending a full set
+            }
             try {
                 target.setGradient(copy.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut))));
             } catch (IndexOutOfBoundsException | IllegalStateException e) {
-                return null; // beyond light capability or invalid cached point
+                return null; // beyond light capability
             }
             return target;
         }

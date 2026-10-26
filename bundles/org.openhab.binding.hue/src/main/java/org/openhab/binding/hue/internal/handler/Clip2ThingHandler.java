@@ -443,7 +443,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 : ResourceType.GROUPED_LIGHT;
 
         Resource putResource = null;
-        Resource gradientResource = null;
+        Resource putGradientResource = null;
         String putResourceId = null;
 
         Command command = commandParam;
@@ -640,7 +640,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     int index = Integer.parseInt(gradientChannelMatcher.group(1)) - 1;
                     putResource = new Resource(ResourceType.LIGHT);
                     putResource = Setters.setGradientPointColorXy(putResource, command, index, cache);
-                    gradientResource = putResource;
+                    putGradientResource = putResource;
                     break;
                 }
 
@@ -699,6 +699,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         try {
             Resources resources = getBridgeHandler().putResource(putResource);
+
+            // immediately update gradient points cache entry in order to be ready for an immediate next point command
+            if (putGradientResource != null && cache != null) {
+                Setters.setResource(putGradientResource, cache);
+                serviceContributorsCache.put(putGradientResource.getId(), putGradientResource);
+                putGradientResource = null;
+            }
+
             if (resources.hasErrors()) {
                 logger.debug("{} command '{}' for channel '{}' succeeded with error(s): {}", resourceId, command,
                         channelUID,
@@ -707,13 +715,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         .allMatch(e -> ErrorType.ATTRIBUTE_MAY_HAVE_NO_EFFECT == e.getErrorType())) {
                     loopBackNotify(putResource);
                 }
-            }
-
-            // immediately update cache entry in order to be ready for an immediate next point command
-            if (gradientResource != null) {
-                Setters.setResource(gradientResource, cache);
-                serviceContributorsCache.put(gradientResource.getId(), gradientResource);
-                gradientResource = null;
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
@@ -1778,7 +1779,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
 
-            // force main light in commandResourceIds if it exists and there are auxiliary lights
+            // explicitly force main light in commandResourceIds if it exists and there are other auxiliary lights
             if (mainId != null && !auxiliaryGroups.isEmpty()) {
                 commandResourceIds.put(ResourceType.LIGHT, mainId);
             }
