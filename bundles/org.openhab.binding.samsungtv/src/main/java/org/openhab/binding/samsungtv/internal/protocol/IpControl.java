@@ -105,6 +105,13 @@ public class IpControl {
     }
 
     /**
+     * Wake the TV from standby. It resumes in the mode it was switched off from (TV or art mode).
+     */
+    public void powerOn(String token) throws IpControlException {
+        request("powerControl", Map.of("AccessToken", token, "power", "powerOn"));
+    }
+
+    /**
      * Switch the TV to standby, from TV or art mode
      */
     public void powerOff(String token) throws IpControlException {

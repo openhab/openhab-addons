@@ -420,6 +420,27 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     /**
+     * Wake the TV using IP Control, which works from network standby where WOL may not
+     *
+     * @return true if the TV accepted the command, false if IP Control is not available
+     */
+    public boolean ipControlPowerOn() {
+        IpControl ipControl = this.ipControl;
+        String token = configuration.getIpControlToken();
+        if (ipControl == null || token.isBlank()) {
+            return false;
+        }
+        try {
+            ipControl.powerOn(token);
+            logger.debug("{}: IP Control powerOn sent", host);
+            return true;
+        } catch (IpControlException e) {
+            handleIpControlError(e);
+            return false;
+        }
+    }
+
+    /**
      * Switch the TV to standby using IP Control
      *
      * @return true if the TV accepted the command, false if IP Control is not available
@@ -506,8 +527,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 }
             }
         }
-        // if power on/artmode on command try WOL if command failed:
-        if (!wolTask.send(channel, command)) {
+        // if power on/artmode on command failed, try IP Control and WOL (WOL also resends the command):
+        boolean ipControlWoke = (POWER.equals(channel) || ART_MODE.equals(channel)) && OnOffType.ON.equals(command)
+                && ipControlPowerOn();
+        if (!wolTask.send(channel, command) && !ipControlWoke) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 logger.warn("{}: TV is {}", host, getThing().getStatus());
             } else {

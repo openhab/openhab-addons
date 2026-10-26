@@ -73,6 +73,7 @@ Also under `advanced`, _"Use IP Control"_ is off by default.
 Samsung IP Control is a local interface on port 1516, available on 2020 and later TVs.
 When it is on, the binding asks the TV for its power state over IP Control instead of the REST interface.
 Commanding `artMode` OFF then switches the TV to standby over IP Control, instead of sending a long press of the power key, which newer Frame TVs ignore.
+When the TV is offline, commanding `power` or `artMode` ON wakes it over IP Control as well as with WOL, as some TVs ignore WOL in network standby.
 To use it, enable _IP Remote_ on the TV (Settings, General, Network, Expert Settings) and turn on _"Use IP Control"_.
 The next time the TV is on and not in art mode, the TV asks you to accept the connection from openHAB.
 You have 30 seconds to accept it, and the returned token is stored in _"IP Control Token"_.
