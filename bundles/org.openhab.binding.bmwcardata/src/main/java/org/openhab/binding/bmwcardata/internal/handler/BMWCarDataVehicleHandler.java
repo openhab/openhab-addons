@@ -77,8 +77,8 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     // descriptors of the destination guidance, which needs a navigation system
     private static final String DESTINATION_PREFIX = "vehicle.cabin.infotainment.navigation.destinationSet.";
-    // like a failed refresh of the account, e.g. while the request budget is used up
-    private static final long PROPERTIES_RETRY_SECONDS = 15 * 60;
+    // retry of the basic data and the image, like a failed refresh of the account, e.g. while the budget is used up
+    private static final long RETRY_SECONDS = 15 * 60;
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataVehicleHandler.class);
 
@@ -447,7 +447,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      */
     private synchronized void schedulePropertiesRetry() {
         if (!disposed) {
-            propertiesJob = jobScheduler.schedule(this::retrieveProperties, PROPERTIES_RETRY_SECONDS, TimeUnit.SECONDS);
+            propertiesJob = jobScheduler.schedule(this::retrieveProperties, RETRY_SECONDS, TimeUnit.SECONDS);
         }
     }
 
@@ -478,9 +478,19 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Retrieves the image again later; called by the running job, which is therefore replaced.
+     */
+    private synchronized void scheduleImageRetry() {
+        if (!disposed) {
+            imageJob = jobScheduler.schedule(this::retrieveImage, RETRY_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
     private void retrieveImage() {
         BMWCarDataAccountHandler account = getAccountHandler();
-        if (account == null) {
+        // a retry is not needed anymore once the item is unlinked
+        if (account == null || states.containsKey(CHANNEL_IMAGE) || !isLinked(CHANNEL_IMAGE)) {
             return;
         }
         RawType image;
@@ -488,6 +498,10 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             image = account.fetchVehicleImage(vin);
         } catch (BMWCarDataException e) {
             logger.debug("Failed to retrieve the vehicle image: {}", e.getMessage());
+            // the data of a VIN without permission does not become available by retrying
+            if (!e.isVinNotPermitted()) {
+                scheduleImageRetry();
+            }
             return;
         }
         if (disposed) {

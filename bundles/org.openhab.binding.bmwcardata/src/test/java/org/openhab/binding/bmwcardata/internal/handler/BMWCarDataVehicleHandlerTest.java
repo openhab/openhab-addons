@@ -604,6 +604,68 @@ class BMWCarDataVehicleHandlerTest {
         vehicle.dispose();
     }
 
+    @Test
+    void failedImageIsRetriedAfter15Minutes() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        // e.g. the request budget is used up
+        when(account.fetchVehicleImage(VIN)).thenThrow(new BMWCarDataException("Request budget used up"))
+                .thenReturn(IMAGE);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+        assertEquals(List.of(0L, 15 * 60L), jobs.delays);
+
+        jobs.tasks.get(1).run();
+        verify(vehicleCallback).stateUpdated(imageChannel(), IMAGE);
+        vehicle.dispose();
+    }
+
+    @Test
+    void imageRetryIsSkippedOnceTheItemIsUnlinked() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN)).thenThrow(new BMWCarDataException("Request budget used up"));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        jobs.tasks.get(0).run();
+
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(false);
+        jobs.tasks.get(1).run();
+
+        // no request for an image nobody shows
+        verify(account, times(1)).fetchVehicleImage(VIN);
+        vehicle.dispose();
+    }
+
+    @Test
+    void imageOfAVinWithoutPermissionIsNotRetried() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN))
+                .thenThrow(new BMWCarDataException("No permission", 403, BMWCarDataException.ERROR_VIN_NOT_PERMITTED));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        assertEquals(1, jobs.tasks.size());
+        vehicle.dispose();
+    }
+
     private static ChannelUID imageChannel() {
         return new ChannelUID(new ThingUID(THING_TYPE_VEHICLE, BRIDGE_UID, "car"), CHANNEL_IMAGE);
     }
