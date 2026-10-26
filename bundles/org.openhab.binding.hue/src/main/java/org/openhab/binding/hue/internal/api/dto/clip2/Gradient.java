@@ -65,7 +65,7 @@ public class Gradient {
         }
         double[] xy = pairXy.getXY();
         List<Point> current = this.points;
-        int size = Math.max(capacity, current != null ? current.size() : 0);
+        int size = current == null || current.isEmpty() ? capacity : Math.max(index + 1, current.size());
         List<Point> result = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             Point point = current != null && i < current.size() ? current.get(i) : null;
