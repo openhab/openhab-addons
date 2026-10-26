@@ -150,7 +150,7 @@ class StreamMirrorTest {
         when(connection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
         mirror.publishStreamState(true);
 
-        // e.g. the reconnect with a new id token
+        // e.g. a short network drop
         mirror.publishStreamState(false);
         mirror.publishStreamState(true);
         // even if the delayed job was already running when it was cancelled
@@ -159,6 +159,22 @@ class StreamMirrorTest {
         verify(connection, never()).publish("bmw/status", statusPayload(false), StreamMirror.QOS, true);
         // and the unchanged connected state is not published again
         verify(connection, times(1)).publish("bmw/status", statusPayload(true), StreamMirror.QOS, true);
+    }
+
+    @Test
+    void streamStoppedOnPurposeIsPublishedRightAway() {
+        when(connection.connectionState()).thenReturn(MqttConnectionState.CONNECTED);
+        mirror.publishStreamState(true);
+        // a drop was reported just before, so a delayed disconnect is pending
+        mirror.publishStreamState(false);
+
+        // e.g. for a new authorization
+        mirror.publishStreamStopped();
+        verify(connection).publish("bmw/status", statusPayload(false), StreamMirror.QOS, true);
+
+        // the pending delayed disconnect does not publish it a second time
+        jobs.get(0).run();
+        verify(connection, times(1)).publish("bmw/status", statusPayload(false), StreamMirror.QOS, true);
     }
 
     @Test

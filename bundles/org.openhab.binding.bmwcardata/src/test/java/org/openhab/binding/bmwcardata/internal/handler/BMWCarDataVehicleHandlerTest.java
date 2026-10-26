@@ -403,6 +403,35 @@ class BMWCarDataVehicleHandlerTest {
     }
 
     @Test
+    void basicDataDoesNotHideAFailedRefresh() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        // a plug-in hybrid keeps all channels, so the Thing and the status it holds are not replaced
+        when(account.fetchBasicData(VIN)).thenThrow(new BMWCarDataException("Request to BMW CarData failed", 503))
+                .thenReturn(basicData("PHEV", "BE", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        doAnswer(invocation -> {
+            ((Thing) invocation.getArgument(0)).setStatusInfo(invocation.getArgument(1));
+            return null;
+        }).when(vehicleCallback).statusUpdated(any(), any());
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()), jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        jobs.tasks.get(0).run();
+
+        // a refresh fails before the basic data is read again
+        vehicle.refreshFailed(new BMWCarDataException("Request to BMW CarData failed", 502));
+        jobs.tasks.get(1).run();
+        assertEquals(ThingStatus.OFFLINE, vehicle.getThing().getStatus());
+        assertEquals("@text/offline.comm-error.refresh-failed [\"HTTP 502\"]",
+                vehicle.getThing().getStatusInfo().getDescription());
+
+        vehicle.refreshSucceeded();
+        assertEquals(ThingStatus.ONLINE, vehicle.getThing().getStatus());
+        vehicle.dispose();
+    }
+
+    @Test
     void furtherBasicDataIsShownAsProperties() throws Exception {
         BasicData basicData = basicData("PHEV", "BE", true, true);
         basicData.bodyType = "SAV";
@@ -521,12 +550,16 @@ class BMWCarDataVehicleHandlerTest {
     void imageIsNotRetrievedWithoutLinkedItem() throws Exception {
         BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
         ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
-        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES));
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
         vehicle.setCallback(vehicleCallback);
         vehicle.initialize();
 
         verify(vehicleCallback).isChannelLinked(imageChannel());
-        verify(account, after(500).never()).fetchVehicleImage(anyString());
+        // no job retrieves the image, so it cannot be retrieved later either
+        assertTrue(jobs.tasks.isEmpty());
+        verify(account, never()).fetchVehicleImage(anyString());
         vehicle.dispose();
     }
 
@@ -536,11 +569,15 @@ class BMWCarDataVehicleHandlerTest {
         when(account.fetchVehicleImage(VIN)).thenReturn(IMAGE);
         ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
         when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
-        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES));
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
         vehicle.setCallback(vehicleCallback);
         vehicle.initialize();
 
-        verify(vehicleCallback, timeout(5000)).stateUpdated(imageChannel(), IMAGE);
+        jobs.tasks.get(0).run();
+
+        verify(vehicleCallback).stateUpdated(imageChannel(), IMAGE);
         vehicle.dispose();
     }
 
@@ -549,13 +586,16 @@ class BMWCarDataVehicleHandlerTest {
         BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
         when(account.fetchVehicleImage(VIN)).thenReturn(IMAGE);
         ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
-        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES));
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
         vehicle.setCallback(vehicleCallback);
         vehicle.initialize();
 
         when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
         vehicle.channelLinked(imageChannel());
-        verify(vehicleCallback, timeout(5000)).stateUpdated(imageChannel(), IMAGE);
+        jobs.tasks.get(0).run();
+        verify(vehicleCallback).stateUpdated(imageChannel(), IMAGE);
 
         // a second item, or a REFRESH, is served from the published state
         vehicle.channelLinked(imageChannel());

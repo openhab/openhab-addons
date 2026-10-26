@@ -770,9 +770,10 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             scheduleAuthJob(() -> pollDeviceAuthorization(authorization, authorization.interval()),
                     authorization.interval());
         } catch (BMWCarDataException e) {
-            if (e.getHttpStatus() == 400) {
-                // the request is always the same, so BMW rejects the client ID, e.g. with invalid_request; retrying
-                // does not help until the configuration or the subscriptions of the client are fixed
+            if (e.getHttpStatus() == 400 || e.getHttpStatus() == 401) {
+                // the request is always the same, so BMW rejects the client ID, e.g. with invalid_request; the device
+                // flow spec uses 401 for an invalid client at the token endpoint, which is treated the same here;
+                // retrying does not help until the configuration or the subscriptions of the client are fixed
                 logger.debug("Device authorization rejected: {}", e.getMessage());
                 updateOfflineIfActive(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error.client-rejected");
@@ -1024,7 +1025,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private CompletableFuture<Boolean> stopStream(boolean reportDisconnect) {
         StreamMirror mirror = this.mirror;
         if (reportDisconnect && mirror != null && streamSource != null) {
-            mirror.publishStreamState(false);
+            mirror.publishStreamStopped();
         }
         StreamSource source = streamSource;
         streamSource = null;

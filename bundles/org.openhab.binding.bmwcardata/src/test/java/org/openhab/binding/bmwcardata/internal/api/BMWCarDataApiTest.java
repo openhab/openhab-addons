@@ -32,6 +32,7 @@ import org.openhab.core.library.types.RawType;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.google.gson.Gson;
 import com.google.gson.JsonPrimitive;
 
@@ -210,6 +211,21 @@ class BMWCarDataApiTest {
                 .withBody("{\"exveErrorId\":\"CU-1, [\\\"injected\\\"]\",\"exveErrorMsg\":\"Bad request\"}")));
         BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
         assertEquals("HTTP 400", e.getShortDescription());
+    }
+
+    @Test
+    void shortDescriptionTellsAMissingFromAnUnusableResponse() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        // BMW answered, but not with what the binding needs
+        SERVER.stubFor(get(path).willReturn(okJson("not json")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertEquals("invalid response", e.getShortDescription());
+
+        SERVER.stubFor(get(path).willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
+        e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertEquals("no response", e.getShortDescription());
+
+        assertEquals("request budget used up", BMWCarDataException.budgetExhausted(40, 40).getShortDescription());
     }
 
     @Test

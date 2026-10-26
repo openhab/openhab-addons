@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bmwcardata.internal.api;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -126,7 +127,19 @@ public class BMWCarDataException extends Exception {
             return id != null && ERROR_ID_FORMAT.matcher(id).matches() ? "HTTP " + httpStatus + " " + id
                     : "HTTP " + httpStatus;
         }
-        return getCause() instanceof TimeoutException ? "timeout" : "no response";
+        if (budgetExhausted) {
+            return "request budget used up";
+        }
+        Throwable cause = getCause();
+        if (cause instanceof TimeoutException) {
+            return "timeout";
+        }
+        if (cause instanceof ExecutionException || cause instanceof IOException
+                || cause instanceof InterruptedException) {
+            return "no response";
+        }
+        // BMW answered, but the response is malformed, incomplete or not acceptable, e.g. a link other than https
+        return "invalid response";
     }
 
     /**

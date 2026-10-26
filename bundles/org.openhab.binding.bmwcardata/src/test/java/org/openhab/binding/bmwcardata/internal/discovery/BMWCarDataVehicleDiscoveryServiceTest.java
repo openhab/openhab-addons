@@ -72,6 +72,31 @@ class BMWCarDataVehicleDiscoveryServiceTest {
     }
 
     @Test
+    void labelShowsTheDisplayNameOfTheBrand() throws Exception {
+        BasicData basicData = basicData(true);
+        // as reported for a BMW i, where the model name already carries the "i"
+        basicData.brand = "BMW_I";
+        when(handler.fetchBasicData(VIN)).thenReturn(basicData);
+        assertEquals("BMW iX xDrive40 (" + VIN + ")", discoveredLabel());
+    }
+
+    @Test
+    void knownBrandsHaveADisplayName() {
+        for (String brand : List.of("BMW", "BMW_I", "BMWi", "bmw i")) {
+            assertEquals("BMW", BMWCarDataVehicleDiscoveryService.displayBrand(brand), brand);
+        }
+        assertEquals("MINI", BMWCarDataVehicleDiscoveryService.displayBrand("MINI"));
+        assertEquals("BMW Motorrad", BMWCarDataVehicleDiscoveryService.displayBrand("BMW_MOTORRAD"));
+        assertEquals("BMW Motorrad", BMWCarDataVehicleDiscoveryService.displayBrand("BMW Motorrad"));
+        assertEquals("Rolls-Royce", BMWCarDataVehicleDiscoveryService.displayBrand("ROLLS_ROYCE"));
+        assertEquals("Rolls-Royce", BMWCarDataVehicleDiscoveryService.displayBrand("Rolls-Royce"));
+        assertEquals("Toyota", BMWCarDataVehicleDiscoveryService.displayBrand("TOYOTA_SUPRA"));
+        assertEquals("Toyota", BMWCarDataVehicleDiscoveryService.displayBrand("Toyota-Supra"));
+        // anything else keeps the reported value
+        assertEquals("Alpina", BMWCarDataVehicleDiscoveryService.displayBrand("Alpina"));
+    }
+
+    @Test
     void labelWithoutBasicDataIsTheVin() throws Exception {
         when(handler.fetchBasicData(VIN)).thenThrow(new BMWCarDataException("Request budget used up"));
         assertEquals(VIN, discoveredLabel());

@@ -15,6 +15,7 @@ package org.openhab.binding.bmwcardata.internal.discovery;
 import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -123,13 +124,30 @@ public class BMWCarDataVehicleDiscoveryService extends AbstractThingHandlerDisco
         }
     }
 
+    /**
+     * @param brand the brand as reported by BMW, e.g. {@code BMW_I} where BMW's specification lists {@code BMWi}
+     * @return the name of a known brand for the label, otherwise the brand as reported; a BMW i is labeled as BMW, as
+     *         its model name already carries the "i"
+     */
+    static String displayBrand(String brand) {
+        String key = brand.strip().toUpperCase(Locale.ROOT).replaceAll("[\\s-]+", "_");
+        return switch (key) {
+            case "BMW", "BMW_I", "BMWI" -> "BMW";
+            case "MINI" -> "MINI";
+            case "BMW_MOTORRAD" -> "BMW Motorrad";
+            case "ROLLS_ROYCE" -> "Rolls-Royce";
+            case "TOYOTA_SUPRA" -> "Toyota";
+            default -> brand;
+        };
+    }
+
     private String label(String vin, @Nullable BasicData basicData) {
         String label = "";
         boolean telematicsCapable = true; // assume true, as the vehicle is primary and should be telematics capable
         if (basicData != null) {
             String brand = basicData.brand;
             if (brand != null && !brand.isBlank()) {
-                label += brand;
+                label += displayBrand(brand);
             }
             String model = basicData.modelName;
             if (model != null && !model.isBlank()) {

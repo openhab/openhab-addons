@@ -381,6 +381,18 @@ class BMWCarDataAccountHandlerTest {
     }
 
     @Test
+    void unauthorizedDeviceAuthorizationRequestIsAConfigurationErrorWithoutRetry() throws Exception {
+        // like BMW's token endpoint for an invalid client: 401 without WWW-Authenticate header, which the HTTP client
+        // turns into a failed request that keeps the status
+        respond(failure(new ExecutionException(unauthorizedResponse())));
+        startHandler(false, null);
+
+        verify(accountCallback).statusUpdated(any(), argThat(offline(ThingStatusDetail.CONFIGURATION_ERROR)));
+        verify(accountCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.COMMUNICATION_ERROR)));
+        assertEquals(0, pendingJobs(AUTH_RETRY_DELAY));
+    }
+
+    @Test
     void failingDeviceAuthorizationRequestIsRetried() throws Exception {
         respond(status(503, ""));
         startHandler(false, null);

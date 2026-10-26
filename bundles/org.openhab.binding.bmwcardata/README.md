@@ -38,6 +38,7 @@ The DEBUG log shows BMW's error, e.g. `invalid_request`.
 After the account has been authorized, the vehicles mapped to the account as primary user are discovered.
 A discovery scan costs one request of the daily API quota, so it only runs automatically after authorization while the account has no vehicle Things.
 Discovered vehicles are labeled with their brand and model, which costs one more request per vehicle once; a vehicle Thing created from the result reuses that data.
+Known brands are shown with their usual name, e.g. `BMW_I` as BMW; the `brand` property keeps the value reported by BMW.
 If BMW explicitly reports a vehicle as not telematics capable, its label says so.
 BMW does not document this flag, so such a vehicle is still offered: it may not send any data.
 Further scans can be started manually from the Inbox.
@@ -90,7 +91,8 @@ Like the bmw-mqtt-bridge with its default `MQTT_RETAIN=0`, the stream messages a
 With `mirrorRetain=true`, a consumer receives the last message of each vehicle as soon as it subscribes, however old it is, e.g. after the vehicle has been parked for days.
 
 The last will of the mirror sets `<prefix>status` to `{"connected":false}`, so consumers notice when openHAB stops.
-Like the bmw-mqtt-bridge with its default `STATUS_STABLE_DELAY`, a disconnect from BMW is only published once it lasts for five seconds, so short drops, e.g. the reconnect after each token refresh, do not let the state flap.
+Like the bmw-mqtt-bridge with its default `STATUS_STABLE_DELAY`, a disconnect from BMW is only published once it lasts for five seconds, so short drops of the connection do not let the state flap.
+When openHAB stops the stream on purpose, e.g. for a new authorization, the disconnect is published right away.
 After openHAB starts, the state is published once the state of the stream is known.
 The mirror reconnects to the local broker on its own; while the broker is not reachable, messages are dropped and the status description of the account shows this, but the stream and the channels are not affected.
 Mirroring is ignored in bridge mode, as the bridge already publishes the stream.

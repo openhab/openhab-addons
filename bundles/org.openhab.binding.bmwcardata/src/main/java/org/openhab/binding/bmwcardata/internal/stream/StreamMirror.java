@@ -58,8 +58,8 @@ public class StreamMirror implements MqttConnectionObserver {
     private static final int RECONNECT_INTERVAL_MILLIS = 60_000;
     private static final int FIRST_RECONNECT_MILLIS = 10_000;
     private static final long STOP_TIMEOUT_SECONDS = 5;
-    // like STATUS_STABLE_DELAY of the bridge: a disconnect is only published once it lasts, so that short drops, e.g.
-    // the reconnect with a new id token, do not let the state of the consumers flap
+    // like STATUS_STABLE_DELAY of the bridge: a disconnect is only published once it lasts, so that short drops of the
+    // connection do not let the state of the consumers flap
     static final long DISCONNECT_DELAY_SECONDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(StreamMirror.class);
@@ -173,6 +173,23 @@ public class StreamMirror implements MqttConnectionObserver {
             } else if (pendingDisconnect == null && !Boolean.FALSE.equals(streamConnected)) {
                 pendingDisconnect = scheduler.schedule(this::confirmDisconnect, DISCONNECT_DELAY_SECONDS,
                         TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    /**
+     * Publishes right away that the connection to BMW was stopped on purpose, e.g. for a new authorization; unlike a
+     * drop reported by {@link #publishStreamState(boolean)}, it is not delayed.
+     */
+    public void publishStreamStopped() {
+        synchronized (stateLock) {
+            if (stopped) {
+                return;
+            }
+            cancelPendingDisconnect();
+            if (!Boolean.FALSE.equals(streamConnected)) {
+                streamConnected = false;
+                publishStatusIfConnected(false);
             }
         }
     }

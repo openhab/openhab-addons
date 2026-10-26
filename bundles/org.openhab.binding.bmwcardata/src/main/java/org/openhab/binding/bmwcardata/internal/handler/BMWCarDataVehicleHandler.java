@@ -100,6 +100,8 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private volatile boolean pluggedReported;
     // a refresh or stream message of the account may still deliver data while the handler is disposed
     private volatile boolean disposed;
+    // whether the last REST refresh failed, whose status the basic data arriving later must not replace
+    private volatile boolean refreshFailing;
     // guarded by dataLock
     private @Nullable BigDecimal latitude;
     private @Nullable BigDecimal longitude;
@@ -125,6 +127,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         disposed = false;
+        refreshFailing = false;
         VehicleConfiguration config = getConfigAs(VehicleConfiguration.class);
         vin = config.vin.trim().toUpperCase(Locale.ROOT);
         dynamicChannels = config.dynamicChannels;
@@ -184,6 +187,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         if (getThing().getStatus() == ThingStatus.OFFLINE
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR
                 && hasProperties()) {
+            refreshFailing = false;
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -398,6 +402,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      * Called by the account after the telematic data of this vehicle was refreshed via the REST API.
      */
     void refreshSucceeded() {
+        refreshFailing = false;
         if (!disposed && getThing().getStatus() != ThingStatus.ONLINE && hasProperties()) {
             updateStatus(ThingStatus.ONLINE);
         }
@@ -410,6 +415,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         if (disposed) {
             return;
         }
+        refreshFailing = true;
         if (e.isVinNotPermitted()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.vin-not-permitted");
@@ -550,7 +556,8 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         updateProperties(properties);
         removeIrrelevantChannels(basicData);
         Bridge bridge = getBridge();
-        if (!disposed && bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+        // a refresh that failed meanwhile keeps its status until a refresh or stream data succeeds
+        if (!disposed && !refreshFailing && bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
