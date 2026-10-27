@@ -20,6 +20,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -157,6 +158,34 @@ public class WLedHelper {
     public static int fromPercent(PercentType percent, int max) {
         return percent.toBigDecimal().multiply(new BigDecimal(max))
                 .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).intValue();
+    }
+
+    /**
+     * Describes a request body for logging. A WLED configuration ({@code /json/cfg}) can hold secrets like the Wi-Fi,
+     * access point, OTA and MQTT passwords, so for it only the paths of the settings are returned, never the values.
+     */
+    public static String describeForLog(String url, String json) {
+        if (!url.startsWith("/json/cfg")) {
+            return json;
+        }
+        try {
+            List<String> paths = new ArrayList<>();
+            collectSettingPaths(JsonParser.parseString(json), "", paths);
+            return "<values hidden> settings:" + paths;
+        } catch (JsonSyntaxException e) {
+            return "<hidden>";
+        }
+    }
+
+    private static void collectSettingPaths(JsonElement element, String prefix, List<String> paths) {
+        if (element instanceof JsonObject object) {
+            for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+                collectSettingPaths(entry.getValue(), prefix.isEmpty() ? entry.getKey() : prefix + "." + entry.getKey(),
+                        paths);
+            }
+        } else if (!prefix.isEmpty()) {
+            paths.add(prefix);
+        }
     }
 
     /**

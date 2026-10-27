@@ -123,7 +123,9 @@ public class WledApiV084 implements WledApi {
     }
 
     protected String sendPostRequest(String url, String json) throws ApiException {
-        logger.debug("Sending WLED POST:{} Message:{}", url, json);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Sending WLED POST:{} Message:{}", url, WLedHelper.describeForLog(url, json));
+        }
         Request request = httpClient.POST(address + url);
         request.timeout(3, TimeUnit.SECONDS);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
