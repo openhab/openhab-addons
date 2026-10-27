@@ -5,13 +5,14 @@
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
+		"experimental": true,
 		"channels": [
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Fan - Power",
-				"channel": "on",
+				"friendlyName": "Power",
+				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -22,14 +23,41 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "speed-level",
+				"siid": 6,
+				"piid": 8,
+				"friendlyName": "Fan Speed",
+				"channel": "speed_level",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
 				]
 			},
 			{
 				"property": "fan-level",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Fan - Fan Level",
+				"friendlyName": "Fan Level",
 				"channel": "fan_level",
 				"type": "Number",
 				"stateDescription": {
@@ -59,60 +87,29 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\",\"4\"\u003d\"Level 4\"]`"
-			},
-			{
-				"property": "horizontal-swing",
-				"siid": 2,
-				"piid": 3,
-				"friendlyName": "Fan - Horizontal Swing",
-				"channel": "horizontal_swing",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFBOOL"
-					}
-				]
-			},
-			{
-				"property": "horizontal-angle",
-				"siid": 2,
-				"piid": 5,
-				"friendlyName": "Fan - Horizontal Angle",
-				"channel": "horizontal_angle",
-				"type": "Number",
-				"stateDescription": {
-					"minimum": 30,
-					"maximum": 120,
-					"step": 1,
-					"pattern": "%.0f"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				]
 			},
 			{
 				"property": "mode",
 				"siid": 2,
 				"piid": 7,
-				"friendlyName": "Fan - Mode",
+				"friendlyName": "Mode",
 				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "0",
-							"label": "Natural Wind"
+							"label": "Natural"
 						},
 						{
 							"value": "1",
-							"label": "Straight Wind"
+							"label": "Standard"
 						}
 					]
 				},
@@ -123,50 +120,140 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Natural Wind\",\"1\"\u003d\"Straight Wind\"]`"
+				"category": "flow",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Natural\",\"1\"\u003d\"Standard\"]`"
 			},
 			{
-				"property": "off-delay",
+				"property": "horizontal-swing",
 				"siid": 2,
-				"piid": 10,
-				"friendlyName": "Fan - Power Off Delay",
-				"channel": "off_delay",
-				"type": "Number",
+				"piid": 3,
+				"friendlyName": "Oscillation",
+				"channel": "horizontal_swing",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
+				]
+			},
+			{
+				"property": "horizontal-angle",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Oscillation Angle",
+				"channel": "horizontal_angle",
+				"type": "Number:Angle",
+				"unit": "degree",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 36000,
-					"step": 1,
-					"pattern": "%.0f"
+					"pattern": "%.0f %unit%",
+					"options": [
+						{
+							"value": "30",
+							"label": "30"
+						},
+						{
+							"value": "60",
+							"label": "60"
+						},
+						{
+							"value": "90",
+							"label": "90"
+						},
+						{
+							"value": "120",
+							"label": "120"
+						}
+					]
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "incline",
+				"tags": [
+					"Setpoint",
+					"Airflow"
+				],
+				"readmeComment": "Value mapping `[\"30\"\u003d\"30\",\"60\"\u003d\"60\",\"90\"\u003d\"90\",\"120\"\u003d\"120\"]`"
+			},
+			{
+				"property": "swing-step-move",
+				"siid": 6,
+				"piid": 3,
+				"friendlyName": "Move Direction",
+				"channel": "move",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Write only. Turns the fan head a step; only accepted while oscillation is off"
 			},
 			{
-				"property": "anion",
+				"property": "off-delay",
 				"siid": 2,
-				"piid": 11,
-				"friendlyName": "Fan - Anion",
-				"channel": "anion",
-				"type": "Switch",
+				"piid": 10,
+				"friendlyName": "Power-Off Timer",
+				"channel": "off_delay_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 600,
+					"step": 1,
+					"pattern": "%.0f min"
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "ONOFFBOOL"
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
-				"property": "physical-controls-locked",
-				"siid": 3,
+				"property": "alarm",
+				"siid": 5,
 				"piid": 1,
-				"friendlyName": "Physical Control Locked - Physical Control Locked",
-				"channel": "physical_controls_locked",
+				"friendlyName": "Notification Sound",
+				"channel": "buzzer",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -174,21 +261,25 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "brightness",
 				"siid": 4,
 				"piid": 3,
-				"friendlyName": "Indicator Light - Brightness",
-				"channel": "brightness",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
+				"friendlyName": "Screen Brightness",
+				"channel": "led_brightness",
+				"type": "Dimmer",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 100,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f %%"
 				},
 				"refresh": true,
 				"actions": [
@@ -200,15 +291,15 @@
 				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Brightness"
 				]
 			},
 			{
-				"property": "alarm",
-				"siid": 5,
+				"property": "physical-controls-locked",
+				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Alarm - Alarm",
-				"channel": "alarm",
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -216,41 +307,62 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
-				"property": "relative-humidity",
-				"siid": 7,
-				"piid": 1,
-				"friendlyName": "Environment - Relative Humidity",
-				"channel": "relative_humidity",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f %unit%",
-					"readOnly": true
-				},
+				"property": "anion",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Negative Ion Mode",
+				"channel": "anion",
+				"type": "Switch",
 				"refresh": true,
-				"actions": [],
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
 				"tags": [
-					"Measurement",
-					"Humidity"
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "temp-sens",
+				"siid": 6,
+				"piid": 10,
+				"friendlyName": "Temperature-Sensing Mode",
+				"channel": "temperature_sensing",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "temperature",
 				"siid": 7,
 				"piid": 7,
-				"friendlyName": "Environment - Temperature",
+				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
 				"unit": "celsius",
 				"stateDescription": {
-					"minimum": -30,
-					"maximum": 100,
 					"pattern": "%.1f %unit%",
 					"readOnly": true
 				},
@@ -258,104 +370,49 @@
 				"actions": [],
 				"category": "temperature",
 				"tags": [
-					"Setpoint",
+					"Measurement",
 					"Temperature"
 				]
 			},
 			{
-				"property": "button-press",
-				"siid": 6,
+				"property": "relative-humidity",
+				"siid": 7,
 				"piid": 1,
-				"friendlyName": "Custom Service - Button Press",
-				"channel": "button_press",
-				"type": "Number",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
 				"stateDescription": {
-					"readOnly": true,
-					"options": [
-						{
-							"value": "1",
-							"label": "power"
-						},
-						{
-							"value": "2",
-							"label": "swing"
-						},
-						{
-							"value": "0",
-							"label": "No Button Pressed"
-						}
-					]
-				},
-				"refresh": true,
-				"actions": [],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"power\",\"2\"\u003d\"swing\",\"0\"\u003d\"No Button Pressed\"]`"
-			},
-			{
-				"property": "battery-state",
-				"siid": 6,
-				"piid": 2,
-				"friendlyName": "Custom Service - Battery State",
-				"channel": "battery_state",
-				"type": "Switch",
-				"stateDescription": {
+					"pattern": "%.0f %%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "speed-now",
 				"siid": 6,
 				"piid": 4,
-				"friendlyName": "Custom Service - Speed Now",
-				"channel": "speed_now",
+				"friendlyName": "Motor Speed",
+				"channel": "speed",
 				"type": "Number",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 3000,
-					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.0f RPM",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "ac-state",
-				"siid": 6,
-				"piid": 5,
-				"friendlyName": "Custom Service - Ac State",
-				"channel": "ac_state",
-				"type": "Switch",
-				"stateDescription": {
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "speed-level",
-				"siid": 6,
-				"piid": 8,
-				"friendlyName": "Custom Service - Speed Level",
-				"channel": "speed_level",
-				"type": "Number:Dimensionless",
-				"unit": "percent",
-				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f %unit%"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
 				]
 			}
-		],
-		"experimental": true
+		]
 	}
 }
