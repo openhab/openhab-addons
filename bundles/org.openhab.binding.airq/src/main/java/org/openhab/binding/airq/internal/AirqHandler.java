@@ -23,6 +23,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
@@ -150,7 +151,7 @@ public class AirqHandler extends BaseThingHandler {
             Map.entry("powerFreqSuppression", "power-freq-suppression"),
             Map.entry("autoDriftCompensation", "auto-drift-compensation"), Map.entry("autoUpdate", "auto-update"),
             Map.entry("advancedDataProcessing", "advanced-data-processing"), Map.entry("ppm_and_ppb", "ppm-and-ppb"),
-            Map.entry("gasAlarm", "gas-alarm"), Map.entry("soundPressure", "sound-pressure"),
+            Map.entry("gasAlarm", "gas-alarm"), Map.entry("soundPressure", "sound-info"),
             Map.entry("alarmForwarding", "alarm-forwarding"), Map.entry("userCalib", "user-calib"),
             Map.entry("initialCalFinished", "initial-cal-finished"), Map.entry("errorBars", "error-bars"),
             Map.entry("warmupPhase", "warmup-phase"));
@@ -234,7 +235,7 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("Industry", "Industry", "property"),
             new ChannelMapping("ppm&ppb", "ppm_and_ppb", "boolean"),
             new ChannelMapping("GasAlarm", "gasAlarm", "boolean"), new ChannelMapping("id", "id", "property"),
-            new ChannelMapping("SoundInfo", "soundPressure", "boolean"),
+            new ChannelMapping("SoundInfo", "soundPressure", "soundInfo"),
             new ChannelMapping("AlarmForwarding", "alarmForwarding", "boolean"),
             new ChannelMapping("usercalib", "userCalib", "calib"),
             new ChannelMapping("InitialCalFinished", "initialCalFinished", "boolean"),
@@ -333,7 +334,7 @@ public class AirqHandler extends BaseThingHandler {
         }
         boolean acceptedCommand = switch (channelId) {
             case "wifi", "wifiInfo", "fireAlarm", "cloudUpload", "autoDriftCompensation", "advancedDataProcessing",
-                    "gasAlarm", "soundPressure", "alarmForwarding", "errorBars", "ppm_and_ppb", "nightModeFanNightOff",
+                    "gasAlarm", "alarmForwarding", "errorBars", "ppm_and_ppb", "nightModeFanNightOff",
                     "nightModeWifiNightOff" ->
                 command instanceof OnOffType;
             case "SSID", "timeServer", "roomType", "logLevel", "powerFreqSuppression" -> command instanceof StringType;
@@ -369,10 +370,6 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "gasAlarm":
                     newobj.addProperty("GasAlarm", command == OnOffType.ON);
-                    changeSettings(newobj);
-                    break;
-                case "soundPressure":
-                    newobj.addProperty("SoundInfo", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "alarmForwarding":
@@ -828,6 +825,15 @@ public class AirqHandler extends BaseThingHandler {
                 case "number":
                     updateMappedState(channelName, new DecimalType(dec.get(airqName).toString()));
                     break;
+                case "soundInfo":
+                    JsonElement soundInfo = dec.get(airqName);
+                    if (soundInfo.isJsonObject()) {
+                        updateMappedState(channelName, new StringType(soundInfoSummary(soundInfo.getAsJsonObject())));
+                    } else {
+                        updateMappedState(channelName, UnDefType.UNDEF);
+                        logger.debug("Ignoring non-object value for channel {}", channelName);
+                    }
+                    break;
                 case "numberTimePeriod":
                     updateMappedState(channelName,
                             new QuantityType<>(dec.get(airqName).getAsBigDecimal(), Units.SECOND));
@@ -1040,10 +1046,50 @@ public class AirqHandler extends BaseThingHandler {
                 } else if (state instanceof DecimalType decimal && "averaging".equals(legacyId)
                         && "Switch".equals(legacyChannel.getAcceptedItemType())) {
                     legacyState = OnOffType.from(decimal.intValue() > 1);
+                } else if (state instanceof StringType string && "soundPressure".equals(legacyId)
+                        && "Switch".equals(legacyChannel.getAcceptedItemType())) {
+                    legacyState = OnOffType.from(!string.toString().isEmpty());
                 }
                 updateState(legacyId, legacyState);
             }
         }
+    }
+
+    /**
+     * Summarizes the acoustic signals {sensor: {threshold: {pass, freq, vol, length, repeat}}}, e.g.
+     * "co2 1200 up: 900 Hz, 100 %, 2000 ms; co2 2000 down: 1200 Hz, 100 %, 2000 ms, repeat".
+     */
+    private static String soundInfoSummary(JsonObject soundInfo) {
+        List<String> signals = new ArrayList<>();
+        for (Entry<String, JsonElement> sensor : soundInfo.entrySet()) {
+            if (!sensor.getValue().isJsonObject()) {
+                continue;
+            }
+            for (Entry<String, JsonElement> threshold : sensor.getValue().getAsJsonObject().entrySet()) {
+                if (!threshold.getValue().isJsonObject()) {
+                    continue;
+                }
+                JsonObject signal = threshold.getValue().getAsJsonObject();
+                StringBuilder text = new StringBuilder(sensor.getKey()).append(' ').append(threshold.getKey());
+                if (signal.has("pass")) {
+                    text.append(' ').append(signal.get("pass").getAsString());
+                }
+                List<String> details = new ArrayList<>();
+                for (String[] field : new String[][] { { "freq", " Hz" }, { "vol", " %" }, { "length", " ms" } }) {
+                    if (signal.has(field[0])) {
+                        details.add(signal.get(field[0]).getAsString() + field[1]);
+                    }
+                }
+                if (signal.has("repeat") && signal.get("repeat").getAsBoolean()) {
+                    details.add("repeat");
+                }
+                if (!details.isEmpty()) {
+                    text.append(": ").append(String.join(", ", details));
+                }
+                signals.add(text.toString());
+            }
+        }
+        return String.join("; ", signals);
     }
 
     private static String groupedChannelId(String channelId) {

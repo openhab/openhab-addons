@@ -620,6 +620,10 @@
 			<update-channel id="averaging" groupIds="general">
 				<type>airq:averaging</type>
 			</update-channel>
+			<remove-channel id="sound-pressure" groupIds="general"/>
+			<add-channel id="sound-info" groupIds="general">
+				<type>airq:sound-info</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

@@ -22,8 +22,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import javax.measure.MetricPrefix;
@@ -240,6 +243,29 @@ class AirqHandlerTest {
                 allOf(hasEntry("hardwareVersion", "\"hardware\""), hasEntry("sensorList", "co2, sound"),
                         hasEntry("Industry", "true"), hasEntry("id", "\"device-id\""),
                         hasEntry("sensorInfo", "\"info\"")));
+    }
+
+    @Test
+    void soundInfoSummarizesThresholdSignals() throws Exception {
+        Thing legacyThing = ThingBuilder.create(THING_TYPE_AIRQ, thingUID)
+                .withChannel(ChannelBuilder.create(new ChannelUID(thingUID, "soundPressure"), "Switch").build())
+                .build();
+
+        // example from deviceconfig.md, "Acoustic signals"
+        readConfiguration(legacyThing, """
+                {"SoundInfo": {"co2": {
+                  "1200": {"freq": 900, "vol": 100, "pass": "up", "length": 2000, "repeat": false},
+                  "2000": {"freq": 1200, "vol": 100, "pass": "down", "length": 2000, "repeat": true}}}}
+                """);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#sound-info"),
+                new StringType("co2 1200 up: 900 Hz, 100 %, 2000 ms; co2 2000 down: 1200 Hz, 100 %, 2000 ms, repeat"));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "soundPressure"), OnOffType.ON);
+
+        // device default
+        readConfiguration(legacyThing, "{\"SoundInfo\": {}}");
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#sound-info"),
+                new StringType(""));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "soundPressure"), OnOffType.OFF);
     }
 
     @Test
@@ -528,9 +554,9 @@ class AirqHandlerTest {
                 new String[] { "fire-alarm", "FireAlarm" }, new String[] { "cloud-upload", "cloudUpload" },
                 new String[] { "auto-drift-compensation", "AutoDriftCompensation" },
                 new String[] { "advanced-data-processing", "AdvancedDataProcessing" },
-                new String[] { "gas-alarm", "GasAlarm" }, new String[] { "sound-pressure", "SoundInfo" },
-                new String[] { "alarm-forwarding", "AlarmForwarding" }, new String[] { "error-bars", "ErrorBars" },
-                new String[] { "ppm-and-ppb", "ppm&ppb" }, new String[] { "night-mode-fan-night-off", "FanNightOff" },
+                new String[] { "gas-alarm", "GasAlarm" }, new String[] { "alarm-forwarding", "AlarmForwarding" },
+                new String[] { "error-bars", "ErrorBars" }, new String[] { "ppm-and-ppb", "ppm&ppb" },
+                new String[] { "night-mode-fan-night-off", "FanNightOff" },
                 new String[] { "night-mode-wifi-night-off", "WifiNightOff" })
                 .flatMap(mapping -> Stream.of(OnOffType.ON, OnOffType.OFF).map(command -> {
                     JsonObject value = new JsonObject();
@@ -581,7 +607,7 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "wifi", "unknown", "delete-key", "device-name", "initial-cal-finished" })
+    @ValueSource(strings = { "wifi", "unknown", "delete-key", "device-name", "initial-cal-finished", "sound-info" })
     void unwritableOrUnknownChannelsDoNotSendSettings(String channel) throws Exception {
         for (Command command : List.of(OnOffType.ON, OnOffType.OFF, new StringType("value"), new DecimalType(1),
                 new QuantityType<>(1, Units.SECOND), RefreshType.REFRESH)) {
@@ -733,25 +759,35 @@ class AirqHandlerTest {
 
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='5']/remove-channel"), empty());
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='5']/update-channel"), empty());
-        List<String> typeChanges = new ArrayList<>();
+        List<String> changes = new ArrayList<>();
         for (Element instruction : elements(upgrades, "//instruction-set[@targetVersion='6']/*")) {
-            typeChanges.add(instruction.getTagName() + " " + instruction.getAttribute("groupIds") + "#"
-                    + instruction.getAttribute("id") + " " + element(instruction, "type").getTextContent());
+            Element type = findElement(instruction, "type");
+            changes.add(instruction.getTagName() + " " + instruction.getAttribute("groupIds") + "#"
+                    + instruction.getAttribute("id") + (type != null ? " " + type.getTextContent() : ""));
         }
-        assertThat(typeChanges, contains("update-channel general#auto-update airq:auto-update",
-                "update-channel general#averaging airq:averaging"));
+        assertThat(changes,
+                contains("update-channel general#auto-update airq:auto-update",
+                        "update-channel general#averaging airq:averaging", "remove-channel general#sound-pressure",
+                        "add-channel general#sound-info airq:sound-info"));
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='7']"), empty());
+
         List<Element> additions = elements(upgrades, "//instruction-set[@targetVersion='5']/add-channel");
         assertThat(additions, hasSize(162));
-        List<String> addedIds = additions.stream()
-                .map(addition -> addition.getAttribute("groupIds") + "#" + addition.getAttribute("id")).toList();
-        assertThat(addedIds.stream().distinct().count(), is((long) channels.size()));
+        // channels after applying version 5 and the version 6 replacement of sound-pressure by sound-info
+        Map<String, String> upgraded = new LinkedHashMap<>();
         for (Element addition : additions) {
-            String id = addition.getAttribute("id");
-            String groupId = addition.getAttribute("groupIds");
+            upgraded.put(addition.getAttribute("groupIds") + "#" + addition.getAttribute("id"),
+                    element(addition, "type").getTextContent());
+        }
+        assertThat(upgraded.size(), is(additions.size()));
+        upgraded.remove("general#sound-pressure");
+        upgraded.put("general#sound-info", "airq:sound-info");
+        assertThat(upgraded.size(), is(channels.size()));
+        for (Entry<String, String> channel : upgraded.entrySet()) {
+            String[] id = channel.getKey().split("#");
             Element definition = element(metadata,
-                    "//channel-group-type[@id='" + groupId + "']/channels/channel[@id='" + id + "']");
-            assertThat(element(addition, "type").getTextContent(), is("airq:" + definition.getAttribute("typeId")));
+                    "//channel-group-type[@id='" + id[0] + "']/channels/channel[@id='" + id[1] + "']");
+            assertThat(channel.getValue(), is("airq:" + definition.getAttribute("typeId")));
         }
         assertThat(channels, hasSize(161 + 1));
     }

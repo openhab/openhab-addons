@@ -271,7 +271,7 @@
 			<channel id="advanced-data-processing" typeId="advanced-data-processing"/>
 			<channel id="ppm-and-ppb" typeId="ppm-and-ppb"/>
 			<channel id="gas-alarm" typeId="gas-alarm"/>
-			<channel id="sound-pressure" typeId="sound-info"/>
+			<channel id="sound-info" typeId="sound-info"/>
 			<channel id="alarm-forwarding" typeId="alarm-forwarding"/>
 			<channel id="user-calib" typeId="usercalib"/>
 			<channel id="initial-cal-finished" typeId="initial-cal-finished"/>
@@ -938,8 +938,12 @@
 		<label>Gas Alarm</label>
 	</channel-type>
 	<channel-type id="sound-info" advanced="false">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Sound Info</label>
+		<description>Acoustic signals configured for measurement thresholds: sensor, threshold, direction, frequency,
+			volume,
+			duration and repetition.</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="alarm-forwarding" advanced="false">
 		<item-type>Switch</item-type>
@@ -1280,6 +1284,7 @@
 	<channel-type id="SoundInfo" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Sound Info</label>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="AlarmForwarding" advanced="false">
 		<item-type>Switch</item-type>
