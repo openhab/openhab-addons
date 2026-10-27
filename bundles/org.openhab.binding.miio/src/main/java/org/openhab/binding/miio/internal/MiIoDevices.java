@@ -162,6 +162,7 @@ public enum MiIoDevices {
     IKEA_LIGHT_LED1623G12("ikea.light.led1623g12", "IKEA E27 warm white", THING_TYPE_LUMI),
     IKEA_LIGHT_LED1650R5("ikea.light.led1650r5", "IKEA GU10 warm white", THING_TYPE_LUMI),
     IKEA_LIGHT_LED1649C5("ikea.light.led1649c5", "IKEA E14 warm white", THING_TYPE_LUMI),
+    LESHOW_FAN_SS4("leshow.fan.ss4", "leshow fan", THING_TYPE_BASIC),
     LUMI_CTRL_NEUTRAL1_V1("lumi.ctrl_neutral1.v1", "Aqara Wall Switch(No Neutral, Single Rocker)",
             THING_TYPE_UNSUPPORTED),
     LUMI_CTRL_NEUTRAL2_V1("lumi.ctrl_neutral2.v1", "Aqara Wall Switch (No Neutral, Double Rocker)",

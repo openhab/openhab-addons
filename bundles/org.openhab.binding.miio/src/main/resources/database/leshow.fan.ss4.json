@@ -1,0 +1,199 @@
+{
+	"deviceMapping": {
+		"id": [
+			"leshow.fan.ss4"
+		],
+		"experimental": true,
+		"readmeComment": "The Mi Home app sends the commands of this device via the cloud, so it may not accept local commands. If it does not respond, set the communication method of the thing to `cloud` (advanced thing configuration, requires the Cloud Connector). The device only accepts commands while it is switched on.",
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "blow",
+				"friendlyName": "Fan Speed",
+				"channel": "speed_level",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_blow",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
+				]
+			},
+			{
+				"property": "mode",
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Standard"
+						},
+						{
+							"value": "1",
+							"label": "Sleep"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_mode",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "flow",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Standard\",\"1\"\u003d\"Sleep\"]`"
+			},
+			{
+				"property": "yaw",
+				"friendlyName": "Oscillation",
+				"channel": "swing_mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Horizontal"
+						},
+						{
+							"value": "2",
+							"label": "Vertical"
+						},
+						{
+							"value": "3",
+							"label": "Horizontal and Vertical"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_yaw",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Airflow"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Horizontal\",\"2\"\u003d\"Vertical\",\"3\"\u003d\"Horizontal and Vertical\"]`"
+			},
+			{
+				"property": "timer",
+				"friendlyName": "Power-Off Timer",
+				"channel": "off_delay_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 480,
+					"step": 1,
+					"pattern": "%.0f min"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_timer",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "sound",
+				"friendlyName": "Notification Sound",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_sound",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Light",
+				"channel": "led",
+				"type": "Switch",
+				"actions": [
+					{
+						"command": "set_lamp",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				],
+				"readmeComment": "Write only, the state is not reported by the device"
+			},
+			{
+				"property": "fault",
+				"friendlyName": "Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				]
+			}
+		]
+	}
+}
