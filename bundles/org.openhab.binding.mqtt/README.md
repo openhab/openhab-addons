@@ -307,7 +307,7 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 - **stopCommandTopic**: An optional topic to send `STOP` commands to. If not set, `STOP` commands are sent to the main **commandTopic**.
 
 If **on**, **off**, or **stop** are not defined, an explicit 0 or 100 will be sent for `UP` and `DOWN` respectively. `STOP` commands will be ignored entirely.
-Note that **formatBeforePublish** will be ignored for these values, in case your device uses a vastly different format for these special commands than it does for number values.
+Note that **formatBeforePublish** is applied to numeric positions (including the 0 or 100 sent for `UP` and `DOWN` without **on**/**off**), but not to the configured **on**, **off** and **stop** strings, in case your device uses a vastly different format for these special commands than it does for number values.
 
 You can connect this channel to a Rollershutter or Dimmer item.
 
@@ -489,7 +489,7 @@ Default pattern applied for each type:
 | **location**      | BigDecimal, BigDecimal             | "%2$f,%3$f,%1$f"                            | Parameters are **altitude**, **latitude** and **longitude**, altitude is only in default pattern, if value is not '0'. |
 | **image**         | --                                 | --                                          | No publishing supported.                                                                                               |
 | **datetime**      | ZonedDateTime                      | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.                                                                         |
-| **rollershutter** | String                             | "%s"                                        | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.                               |
+| **rollershutter** | Integer                            | "%s"                                        | Integer percent value. Configured **on**, **off**, **stop** strings are sent unformatted.                              |
 | **player**        | String                             | --                                          | No pattern supported. Always the **play**, **pause**, **next**, **previous**, **rewind** and **fastforward** strings.  |
 
 Any outgoing value transformation will **always** result in a **string** value.
