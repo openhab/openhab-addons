@@ -51,6 +51,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.openhab.binding.airq.internal.action.AirqActions;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -1009,10 +1010,7 @@ class AirqHandlerTest {
                 Arguments.of("power-freq-suppression", new StringType("50Hz"), json("{\"Rejection\":\"50Hz\"}")),
                 Arguments.of("power-freq-suppression", new StringType("60Hz"), json("{\"Rejection\":\"60Hz\"}")),
                 Arguments.of("power-freq-suppression", new StringType("50Hz+60Hz"),
-                        json("{\"Rejection\":\"50Hz+60Hz\"}")),
-                Arguments.of("SSID", new StringType(
-                        "{\"WiFissid\":\"network\",\"WiFipass\":\"secret\",\"WiFibssid\":\"mac\",\"reset\":\"true\"}"),
-                        json("{\"WiFissid\":\"network\",\"WiFipass\":\"secret\",\"WiFibssid\":\"mac\",\"reset\":\"true\"}")));
+                        json("{\"Rejection\":\"50Hz+60Hz\"}")));
         return Stream.concat(Stream.concat(switches, strings),
                 Stream.of(Arguments.of("location", new PointType(new DecimalType(50), new DecimalType(10)),
                         json("{\"geopos\":{\"lat\":50,\"long\":10}}"))));
@@ -1359,6 +1357,115 @@ class AirqHandlerTest {
         }
 
         assertThat(options, is(ROOM_TYPES));
+    }
+
+    // the decrypted requests of a setWifi call and its result
+    private record WifiRequest(List<JsonObject> requests, boolean accepted) {
+    }
+
+    private WifiRequest setWifi(int status, String changeLog, @Nullable String ssid, @Nullable String password,
+            @Nullable String bssid, boolean hidden, boolean restart) throws Exception {
+        List<String> bodies = new ArrayList<>();
+        JsonObject response = new JsonObject();
+        response.addProperty("content", handler.encrypt(changeLog.getBytes(StandardCharsets.UTF_8), "secret"));
+        AirqHandler wifiHandler = new AirqHandler(thing, requireNonNull(mock(HttpClient.class))) {
+            @Override
+            protected Result getData(String address, String method, @Nullable String body) {
+                assertThat(address.endsWith("/config"), is(true));
+                assertThat(method, is("POST"));
+                bodies.add(requireNonNull(body));
+                return new Result(response.toString(), status);
+            }
+        };
+        wifiHandler.config.password = "secret";
+        AirqActions actions = new AirqActions();
+        actions.setThingHandler(wifiHandler);
+
+        boolean accepted = AirqActions.setWifi(actions, ssid, password, bssid, hidden, restart);
+
+        List<JsonObject> requests = new ArrayList<>();
+        for (String body : bodies) {
+            requests.add(json(wifiHandler.decrypt(body.substring("request=".length()).getBytes(StandardCharsets.UTF_8),
+                    "secret")));
+        }
+        return new WifiRequest(requests, accepted);
+    }
+
+    static Stream<Arguments> wifiSettings() {
+        // deviceconfig.md: the examples for adding a Wi-Fi network
+        return Stream.of(
+                Arguments.of("Your Wifi SSID", "Your Wifi key", null, false, true,
+                        "{\"WiFissid\": \"Your Wifi SSID\", \"WiFipass\": \"Your Wifi key\", \"reset\": true}"),
+                Arguments.of("Your Wifi SSID", "Your Wifi key", "a0c86d65ee71", false, true,
+                        "{\"WiFissid\": \"Your Wifi SSID\", \"WiFipass\": \"Your Wifi key\","
+                                + " \"WiFibssid\": \"a0c86d65ee71\", \"reset\": true}"),
+                Arguments.of("Ihre WLAN-SSID", "Ihr WLAN-Key", null, true, true,
+                        "{\"WiFissid\": \"Ihre WLAN-SSID\", \"WiFipass\": \"Ihr WLAN-Key\", \"WiFihidden\": true,"
+                                + " \"reset\": true}"),
+                Arguments.of("Ihre WLAN-SSID", "Ihr WLAN-Key", "A0:C8:6D:65:EE:71", true, true,
+                        "{\"WiFissid\": \"Ihre WLAN-SSID\", \"WiFipass\": \"Ihr WLAN-Key\","
+                                + " \"WiFibssid\": \"a0c86d65ee71\", \"WiFihidden\": true, \"reset\": true}"),
+                // an unsecured network has an empty key
+                Arguments.of("Open", "", "", false, true,
+                        "{\"WiFissid\": \"Open\", \"WiFipass\": \"\", \"reset\": true}"),
+                // further networks are remembered without a restart, "reset" may be omitted
+                Arguments.of("Second", "key", null, false, false, "{\"WiFissid\": \"Second\", \"WiFipass\": \"key\"}"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("wifiSettings")
+    void setWifiActionSendsTheWifiSettings(String ssid, String password, @Nullable String bssid, boolean hidden,
+            boolean restart, String expected) throws Exception {
+        WifiRequest wifi = setWifi(200, "{}", ssid, password, bssid, hidden, restart);
+
+        assertThat(wifi.requests(), contains(json(expected)));
+        assertThat(wifi.accepted(), is(true));
+    }
+
+    static Stream<Arguments> invalidWifiSettings() {
+        return Stream.of(Arguments.of(null, "key", null), Arguments.of("", "key", null),
+                Arguments.of("x".repeat(33), "key", null), Arguments.of("ä".repeat(17), "key", null),
+                Arguments.of("ssid", null, null), Arguments.of("ssid", "key", "a0c86d65ee7"),
+                Arguments.of("ssid", "key", "a0c86d65ee71ff"), Arguments.of("ssid", "key", "g0c86d65ee71"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidWifiSettings")
+    void setWifiActionRejectsInvalidSettings(@Nullable String ssid, @Nullable String password, @Nullable String bssid)
+            throws Exception {
+        WifiRequest wifi = setWifi(200, "{}", ssid, password, bssid, false, true);
+
+        assertThat(wifi.requests(), empty());
+        assertThat(wifi.accepted(), is(false));
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = { "500|{}", "200|{\"WiFissid\": \"Error: invalid\"}" })
+    void setWifiActionReportsRejectedSettings(int status, String changeLog) throws Exception {
+        assertThat(setWifi(status, changeLog, "ssid", "key", null, false, true).accepted(), is(false));
+    }
+
+    @Test
+    void setWifiActionNeedsAnAirqThing() {
+        assertThat(AirqActions.setWifi(new AirqActions(), "ssid", "key", null, false, true), is(false));
+    }
+
+    @Test
+    void handlerProvidesTheActions() {
+        assertThat(handler.getServices(), contains(AirqActions.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "general#ssid", "ssid", "SSID" })
+    void ssidChannelIsReadOnly(String channel) throws Exception {
+        // Wi-Fi networks are added with the setWifi action, the channel lists the configured networks
+        assertThat(
+                sendSettings(new ChannelUID(thingUID, channel), new StringType(
+                        "{\"WiFissid\": \"a\", \"WiFipass\": \"b\", \"WiFibssid\": \"\", \"reset\": \"true\"}")),
+                nullValue());
+        assertThat(
+                element(xml("thing/thing-types.xml"), "//channel-type[@id='wla-nssid']/state").getAttribute("readOnly"),
+                is("true"));
     }
 
     @ParameterizedTest

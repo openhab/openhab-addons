@@ -26,6 +26,7 @@ import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,6 +58,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.binding.airq.internal.action.AirqActions;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -71,6 +73,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -376,7 +379,7 @@ public class AirqHandler extends BaseThingHandler {
                     "gasAlarm", "alarmForwarding", "errorBars", "ppm_and_ppb", "nightModeFanNightOff",
                     "nightModeWifiNightOff", "warmupPhase" ->
                 command instanceof OnOffType;
-            case "SSID", "timeServer", "roomType", "logLevel", "powerFreqSuppression", "deviceName" ->
+            case "timeServer", "roomType", "logLevel", "powerFreqSuppression", "deviceName" ->
                 command instanceof StringType;
             case "location" -> command instanceof PointType;
             default -> false;
@@ -440,22 +443,6 @@ public class AirqHandler extends BaseThingHandler {
                     subjson.addProperty("WifiNightOff", command == OnOffType.ON);
                     newobj.add("NightMode", subjson);
                     changeSettings(newobj);
-                    break;
-                case "SSID":
-                    JsonElement wifidatael = gson.fromJson(command.toString(), JsonElement.class);
-                    if (wifidatael != null) {
-                        JsonObject wifidataobj = wifidatael.getAsJsonObject();
-                        newobj.addProperty("WiFissid", wifidataobj.get("WiFissid").getAsString());
-                        newobj.addProperty("WiFipass", wifidataobj.get("WiFipass").getAsString());
-                        String bssid = wifidataobj.get("WiFibssid").getAsString();
-                        if (!bssid.isEmpty()) {
-                            newobj.addProperty("WiFibssid", bssid);
-                        }
-                        newobj.addProperty("reset", wifidataobj.get("reset").getAsString());
-                        changeSettings(newobj);
-                    } else {
-                        logger.warn("Cannot extract wlan data from this string: {}", wifidatael);
-                    }
                     break;
                 case "timeServer":
                     newobj.addProperty("TimeServer", command.toString());
@@ -1344,7 +1331,8 @@ public class AirqHandler extends BaseThingHandler {
         return groupSeparator < 0 ? channelId : channelId.substring(groupSeparator + 1);
     }
 
-    private void changeSettings(JsonObject jsonchange) {
+    // returns whether the device accepted the change
+    private boolean changeSettings(JsonObject jsonchange) {
         try {
             String jsoncmd = jsonchange.toString();
             Result res;
@@ -1357,21 +1345,67 @@ public class AirqHandler extends BaseThingHandler {
             if (res.getResponseCode() < 200 || res.getResponseCode() >= 300) {
                 logger.warn("Failed to change settings {}: device answered with HTTP status {}", keys,
                         res.getResponseCode());
-                return;
+                return false;
             }
 
             // konfigschreiben.md: the response contains a success and error log for the requested changes
             String changeLog = decryptResponse(res.getBody());
+            // the change log may repeat the Wi-Fi key
+            String loggedChangeLog = jsonchange.has("WiFipass") ? "<omitted>" : changeLog;
             if (reportsError(changeLog)) {
-                logger.warn("Device reported an error while changing settings {}: {}", keys, changeLog);
-            } else {
-                logger.debug("Changed settings {}: {}", keys, changeLog);
+                logger.warn("Device reported an error while changing settings {}: {}", keys, loggedChangeLog);
+                return false;
             }
+            logger.debug("Changed settings {}: {}", keys, loggedChangeLog);
+            return true;
         } catch (AirqException e) {
-            logger.warn("Failed to change settings", e);
+            logger.warn("Failed to change settings {}: {}", jsonchange.keySet(), e.getMessage());
         } catch (InterruptedException e) {
-            // nothing
+            Thread.currentThread().interrupt();
         }
+        return false;
+    }
+
+    /**
+     * Adds a Wi-Fi network to the device (deviceconfig.md). Wrong credentials together with a restart take the device
+     * off the network, then it can only be set up again with the air-Q app or its hotspot.
+     *
+     * @param ssid the SSID, 1 to 32 bytes
+     * @param password the Wi-Fi key, empty for an unsecured network
+     * @param bssid the BSSID as 12 hex digits, separators are removed, or null or empty to omit it
+     * @param hidden whether the network is hidden
+     * @param restart whether the device restarts to connect, otherwise it remembers the network for later
+     * @return whether the device accepted the network
+     */
+    public boolean setWifi(String ssid, String password, @Nullable String bssid, boolean hidden, boolean restart) {
+        int ssidLength = ssid.getBytes(StandardCharsets.UTF_8).length;
+        if (ssidLength < 1 || ssidLength > 32) {
+            logger.warn("Not setting Wi-Fi: the SSID must have 1 to 32 bytes");
+            return false;
+        }
+        String normalizedBssid = bssid == null ? "" : bssid.replaceAll("[:-]", "").toLowerCase(Locale.ROOT);
+        if (!normalizedBssid.isEmpty() && !normalizedBssid.matches("[0-9a-f]{12}")) {
+            logger.warn("Not setting Wi-Fi: the BSSID must have 12 hex digits");
+            return false;
+        }
+        JsonObject settings = new JsonObject();
+        settings.addProperty("WiFissid", ssid);
+        settings.addProperty("WiFipass", password);
+        if (!normalizedBssid.isEmpty()) {
+            settings.addProperty("WiFibssid", normalizedBssid);
+        }
+        if (hidden) {
+            settings.addProperty("WiFihidden", true);
+        }
+        if (restart) {
+            settings.addProperty("reset", true);
+        }
+        return changeSettings(settings);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(AirqActions.class);
     }
 
     static boolean reportsError(String changeLog) {

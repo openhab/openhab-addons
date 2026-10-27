@@ -127,8 +127,8 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | r32                        | Number:Dimensionless               |       | Refrigerant R32 in percent (advanced)                                                    |
 | r454b                      | Number:Dimensionless               |       | Refrigerant R454B in percent (advanced)                                                  |
 | r454c                      | Number:Dimensionless               |       | Refrigerant R454C in percent (advanced)                                                  |
-| wifi                       | Switch                             |       | WLAN on or off                                                                           |
-| ssid                       | String                             |       | WLAN SSID                                                                                |
+| wifi                       | Switch                             |       | WLAN on or off, read-only so the device cannot be taken off the network                  |
+| ssid                       | String                             |       | Configured WLAN networks, add networks with the `setWifi` action                         |
 | password                   | String                             | w     | Device Password                                                                          |
 | wifi-info                  | Switch                             | rw    | Show WLAN status with LED                                                                |
 | time-server                | String                             | rw    | Name of Timeserver address                                                               |
@@ -144,12 +144,12 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | log-level                  | String                             | w     | Logging level                                                                            |
 | delete-key                 | String                             | w     | Settings to be deleted                                                                   |
 | fire-alarm                 | Switch                             | rw    | Send Fire Alarm if certain levels are met                                                |
-| wlan-config-gateway        | String                             | rw    | Network Gateway                                                                          |
-| wlan-config-mac            | String                             | rw    | MAC Address                                                                              |
-| wlan-config-ssid           | String                             | rw    | WLAN SSID                                                                                |
-| wlan-config-ip-address     | String                             | rw    | Assigned IP address                                                                      |
-| wlan-config-net-mask       | String                             | rw    | Network mask                                                                             |
-| wlan-config-bssid          | String                             | rw    | Network BSSID                                                                            |
+| wlan-config-gateway        | String                             |       | Network Gateway                                                                          |
+| wlan-config-mac            | String                             |       | MAC Address                                                                              |
+| wlan-config-ssid           | String                             |       | WLAN SSID                                                                                |
+| wlan-config-ip-address     | String                             |       | Assigned IP address                                                                      |
+| wlan-config-net-mask       | String                             |       | Network mask                                                                             |
+| wlan-config-bssid          | String                             |       | Network BSSID                                                                            |
 | cloud-upload               | Switch                             | rw    | Upload to air-Q cloud                                                                    |
 | averaging-rhythm           | Number:Time                        | rw    | Rhythm of measurement for historic average in seconds                                    |
 | power-freq-suppression     | String                             | rw    | Power Frequency                                                                          |
@@ -203,6 +203,30 @@ Restore normal logging afterwards:
 
 ```shell
 log:set DEFAULT org.openhab.binding.airq
+```
+
+## Actions
+
+The binding registers the [Thing Action](https://www.openhab.org/docs/configuration/rules-dsl.html#thing-actions) `setWifi` under the `airq` scope.
+It adds a Wi-Fi network to the air-Q and returns `true` if the device accepted it.
+
+| Parameter          | Description                                                                                          |
+|--------------------|------------------------------------------------------------------------------------------------------|
+| `String ssid`      | Name of the network, 1 to 32 bytes                                                                   |
+| `String password`  | Wi-Fi key, empty for an unsecured network                                                            |
+| `String bssid`     | Optional access point address as 12 hex digits, e.g. `a0c86d65ee71`; `null` or empty to omit it      |
+| `boolean hidden`   | Whether the network is hidden                                                                        |
+| `boolean restart`  | Whether the air-Q restarts to connect; otherwise it remembers the network and stays connected        |
+
+::: warning
+Wrong credentials together with `restart` take the air-Q off the network.
+openHAB can then no longer reach it, and it can only be set up again with the air-Q app or its hotspot.
+For the same reason, the binding does not switch Wi-Fi off.
+:::
+
+```java
+val airqActions = getActions("airq", "airq:airq:1")
+val accepted = airqActions.setWifi("Your Wifi SSID", "Your Wifi key", null, false, true)
 ```
 
 ## Usage with Docker
