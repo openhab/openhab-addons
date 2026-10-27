@@ -242,7 +242,6 @@
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="wifi" typeId="wifi"/>
 			<channel id="ssid" typeId="wla-nssid"/>
-			<channel id="password" typeId="pass"/>
 			<channel id="wifi-info" typeId="wifi-info"/>
 			<channel id="time-server" typeId="time-server"/>
 			<channel id="location" typeId="geopos"/>
@@ -258,7 +257,6 @@
 			<channel id="device-name" typeId="device-name"/>
 			<channel id="room-type" typeId="room-type"/>
 			<channel id="log-level" typeId="logging"/>
-			<channel id="delete-key" typeId="delete-key"/>
 			<channel id="fire-alarm" typeId="fire-alarm"/>
 			<channel id="wlan-config-gateway" typeId="wlan-config-gateway"/>
 			<channel id="wlan-config-mac" typeId="wlan-config-mac"/>
@@ -279,7 +277,6 @@
 			<channel id="user-calib" typeId="usercalib"/>
 			<channel id="initial-cal-finished" typeId="initial-cal-finished"/>
 			<channel id="averaging" typeId="averaging"/>
-			<channel id="error-bars" typeId="error-bars"/>
 			<channel id="warmup-phase" typeId="warmup-phase"/>
 		</channels>
 	</channel-group-type>

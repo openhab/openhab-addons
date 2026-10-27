@@ -154,9 +154,9 @@ public class AirqHandler extends BaseThingHandler {
             Map.entry("nightModeActivated", "night-mode-activated"),
             Map.entry("nightModeAlarmNightOff", "night-mode-alarm-night-off"), Map.entry("deviceName", "device-name"),
             Map.entry("roomType", "room-type"), Map.entry("logLevel", "log-level"),
-            Map.entry("deleteKey", "delete-key"), Map.entry("fireAlarm", "fire-alarm"),
-            Map.entry("wlanConfigGateway", "wlan-config-gateway"), Map.entry("wlanConfigMac", "wlan-config-mac"),
-            Map.entry("wlanConfigSsid", "wlan-config-ssid"), Map.entry("wlanConfigIPAddress", "wlan-config-ip-address"),
+            Map.entry("fireAlarm", "fire-alarm"), Map.entry("wlanConfigGateway", "wlan-config-gateway"),
+            Map.entry("wlanConfigMac", "wlan-config-mac"), Map.entry("wlanConfigSsid", "wlan-config-ssid"),
+            Map.entry("wlanConfigIPAddress", "wlan-config-ip-address"),
             Map.entry("wlanConfigNetMask", "wlan-config-net-mask"), Map.entry("wlanConfigBssid", "wlan-config-bssid"),
             Map.entry("cloudUpload", "cloud-upload"), Map.entry("averagingRhythm", "averaging-rhythm"),
             Map.entry("powerFreqSuppression", "power-freq-suppression"),
@@ -164,8 +164,7 @@ public class AirqHandler extends BaseThingHandler {
             Map.entry("advancedDataProcessing", "advanced-data-processing"), Map.entry("ppm_and_ppb", "ppm-and-ppb"),
             Map.entry("gasAlarm", "gas-alarm"), Map.entry("soundPressure", "sound-info"),
             Map.entry("alarmForwarding", "alarm-forwarding"), Map.entry("userCalib", "user-calib"),
-            Map.entry("initialCalFinished", "initial-cal-finished"), Map.entry("errorBars", "error-bars"),
-            Map.entry("warmupPhase", "warmup-phase"));
+            Map.entry("initialCalFinished", "initial-cal-finished"), Map.entry("warmupPhase", "warmup-phase"));
 
     private static final Map<String, String> LEGACY_CHANNEL_IDS = CHANNEL_IDS.entrySet().stream()
             .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
@@ -237,13 +236,11 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("r32", "r32", Units.PERCENT), new ChannelMapping("r454b", "r454b", Units.PERCENT),
             new ChannelMapping("r454c", "r454c", Units.PERCENT));
     private static final List<ChannelMapping> CONFIGURATION = List.of(new ChannelMapping("Wifi", "wifi", "boolean"),
-            new ChannelMapping("WLANssid", "ssid", "arr"), new ChannelMapping("pass", "password", "string"),
-            new ChannelMapping("WifiInfo", "wifiInfo", "boolean"),
+            new ChannelMapping("WLANssid", "ssid", "arr"), new ChannelMapping("WifiInfo", "wifiInfo", "boolean"),
             new ChannelMapping("TimeServer", "timeServer", "string"), new ChannelMapping("geopos", "location", "coord"),
             new ChannelMapping("NightMode", "", "nightmode"), new ChannelMapping("daytime", "daytime", "boolean"),
             new ChannelMapping("devicename", "deviceName", "string"),
             new ChannelMapping("RoomType", "roomType", "string"), new ChannelMapping("logging", "logLevel", "string"),
-            new ChannelMapping("DeleteKey", "deleteKey", "string"),
             new ChannelMapping("FireAlarm", "fireAlarm", "boolean"),
             new ChannelMapping("air-Q-Hardware-Version", "hardwareVersion", "property"),
             new ChannelMapping("WLAN config", "", "wlan"), new ChannelMapping("cloudUpload", "cloudUpload", "boolean"),
@@ -263,7 +260,6 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("InitialCalFinished", "initialCalFinished", "boolean"),
             new ChannelMapping("Averaging", "averaging", "number"),
             new ChannelMapping("SensorInfo", "sensorInfo", "property"),
-            new ChannelMapping("ErrorBars", "errorBars", "boolean"),
             new ChannelMapping("warmup-phase", "warmupPhase", "boolean"));
     // the units of the deprecated "ppm&ppb" setting, which the device uses for keys without a "units" entry
     private static final Map<String, Unit<?>> PPM_AND_PPB_UNITS = Map.of("co", Units.PARTS_PER_MILLION, "no2",
@@ -379,8 +375,8 @@ public class AirqHandler extends BaseThingHandler {
         }
         boolean acceptedCommand = switch (channelId) {
             case "wifi", "wifiInfo", "fireAlarm", "cloudUpload", "autoDriftCompensation", "advancedDataProcessing",
-                    "gasAlarm", "alarmForwarding", "errorBars", "ppm_and_ppb", "nightModeFanNightOff",
-                    "nightModeWifiNightOff", "nightModeActivated", "nightModeAlarmNightOff", "warmupPhase" ->
+                    "gasAlarm", "alarmForwarding", "ppm_and_ppb", "nightModeFanNightOff", "nightModeWifiNightOff",
+                    "nightModeActivated", "nightModeAlarmNightOff", "warmupPhase" ->
                 command instanceof OnOffType;
             case "timeServer", "roomType", "logLevel", "powerFreqSuppression", "deviceName" ->
                 command instanceof StringType;
@@ -427,10 +423,6 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "alarmForwarding":
                     newobj.addProperty("AlarmForwarding", command == OnOffType.ON);
-                    changeSettings(newobj);
-                    break;
-                case "errorBars":
-                    newobj.addProperty("ErrorBars", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "ppm_and_ppb":
@@ -670,16 +662,15 @@ public class AirqHandler extends BaseThingHandler {
             System.arraycopy(iv, 0, totaltext, 0, 16);
             System.arraycopy(encryptedText, 0, totaltext, 16, encryptedText.length);
             byte[] encodedcontent = Base64.getEncoder().encode(totaltext);
-            return new String(encodedcontent);
+            return new String(encodedcontent, StandardCharsets.US_ASCII);
         } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException exc) {
             throw new AirqException("Failed to encrypt data", exc);
         }
     }
 
-    // gets the data after online/offline management and does the JSON work, or at least the first step.
-    protected String getDecryptedContentString(String url, String requestMethod, @Nullable String body)
-            throws AirqException, InterruptedException {
+    // reads url with GET and returns the decrypted content of the response
+    protected String getDecryptedContentString(String url) throws AirqException, InterruptedException {
         Result res = getData(url, "GET", null);
         return decryptResponse(res.getBody());
     }
@@ -791,7 +782,7 @@ public class AirqHandler extends BaseThingHandler {
         }
         try {
             String url = "http://" + config.ipAddress + "/data";
-            String jsonAnswer = getDecryptedContentString(url, "GET", null);
+            String jsonAnswer = getDecryptedContentString(url);
 
             JsonObject decObj = parseObject(jsonAnswer);
             try {
@@ -829,7 +820,7 @@ public class AirqHandler extends BaseThingHandler {
     public void getConfigData() {
         try {
             String url = "http://" + config.ipAddress + "/config";
-            JsonObject decObj = parseObject(getDecryptedContentString(url, "GET", null));
+            JsonObject decObj = parseObject(getDecryptedContentString(url));
             readUnits(decObj);
             processMappings(decObj, CONFIGURATION, "general");
         } catch (AirqException | JsonSyntaxException e) {

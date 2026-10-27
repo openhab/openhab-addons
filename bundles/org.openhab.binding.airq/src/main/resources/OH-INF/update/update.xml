@@ -669,6 +669,12 @@
 				<type>airq:radon-maxerr</type>
 			</update-channel>
 			<remove-channel id="sound-pressure" groupIds="general"/>
+			<remove-channel id="password" groupIds="general"/>
+			<remove-channel id="password"/>
+			<remove-channel id="delete-key" groupIds="general"/>
+			<remove-channel id="deleteKey"/>
+			<remove-channel id="error-bars" groupIds="general"/>
+			<remove-channel id="errorBars"/>
 			<add-channel id="sound-info" groupIds="general">
 				<type>airq:sound-info</type>
 			</add-channel>

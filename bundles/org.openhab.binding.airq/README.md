@@ -129,7 +129,6 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | r454c                      | Number:Dimensionless               |       | Refrigerant R454C in percent (advanced)                                                  |
 | wifi                       | Switch                             |       | WLAN on or off, read-only so the device cannot be taken off the network                  |
 | ssid                       | String                             |       | Configured WLAN networks, add networks with the `setWifi` action                         |
-| password                   | String                             | w     | Device Password                                                                          |
 | wifi-info                  | Switch                             | rw    | Show WLAN status with LED                                                                |
 | time-server                | String                             | rw    | Name of Timeserver address                                                               |
 | location                   | Location                           | rw    | Location of air-Q device                                                                 |
@@ -145,7 +144,6 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | device-name                | String                             | rw    | Device Name                                                                              |
 | room-type                  | String                             | rw    | Type of room                                                                             |
 | log-level                  | String                             | w     | Logging level                                                                            |
-| delete-key                 | String                             | w     | Settings to be deleted                                                                   |
 | fire-alarm                 | Switch                             | rw    | Send Fire Alarm if certain levels are met                                                |
 | wlan-config-gateway        | String                             |       | Network Gateway                                                                          |
 | wlan-config-mac            | String                             |       | MAC Address                                                                              |
@@ -166,7 +164,6 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | user-calib                 | String                             |       | Last sensor calibration                                                                  |
 | initial-cal-finished       | Switch                             |       | Initial calibration has finished                                                         |
 | averaging                  | Number                             | rw    | Number of measurements averaged, 1 = off (device default 30)                             |
-| error-bars                 | Switch                             | rw    | Calculate Maximum Errors                                                                 |
 | warmup-phase               | Switch                             | rw    | Warm-up phase of the sensors, OFF aborts it                                              |
 
 Measurements are reported in the units configured on the device (`units`, or the deprecated `ppm&ppb`) and converted to the channel's unit.
@@ -311,7 +308,6 @@ Number:Dimensionless  airQ_mold_free_maxerr    "Maximum error of Mold-Free"     
 
 Switch airQ_wifi                    "WLAN on or off"                                 {channel="airq:airq:1:general#wifi"}
 String airQ_SSID                    "Configured WLAN networks"                       {channel="airq:airq:1:general#ssid"}
-String airQ_password                "Device Password"                                {channel="airq:airq:1:general#password"}
 Switch airQ_wifiInfo                "Show WLAN status with LED"                      {channel="airq:airq:1:general#wifi-info"}
 String airQ_timeServer              "Name of Timeserver address"                     {channel="airq:airq:1:general#time-server"}
 Location airQ_location              "Location of air-Q device"                       {channel="airq:airq:1:general#location"}
@@ -327,7 +323,6 @@ Switch airQ_daytime                 "Day operation"                             
 String airQ_deviceName              "Device Name"                                    {channel="airq:airq:1:general#device-name"}
 String airQ_roomType                "Type of room"                                   {channel="airq:airq:1:general#room-type"}
 String airQ_logLevel                "Logging level"                                  {channel="airq:airq:1:general#log-level"}
-String airQ_deleteKey               "Settings to be deleted"                         {channel="airq:airq:1:general#delete-key"}
 Switch airQ_fireAlarm               "Send Fire Alarm if certain levels are met"      {channel="airq:airq:1:general#fire-alarm"}
 String airQ_WLAN_config_gateway     "Network Gateway"                                {channel="airq:airq:1:general#wlan-config-gateway"}
 String airQ_WLAN_config_MAC         "MAC Address"                                    {channel="airq:airq:1:general#wlan-config-mac"}
@@ -348,6 +343,5 @@ Switch airQ_alarmForwarding         "Forward gas or fire alarm to other air-Q de
 String airQ_userCalib               "Last sensor calibration"                        {channel="airq:airq:1:general#user-calib"}
 Switch airQ_initialCalFinished      "Initial calibration has finished"               {channel="airq:airq:1:general#initial-cal-finished"}
 Number airQ_averaging               "Averaging window"                               {channel="airq:airq:1:general#averaging"}
-Switch airQ_errorBars               "Calculate Maximum Errors"                       {channel="airq:airq:1:general#error-bars"}
 Switch airQ_warmupPhase             "Output Data as Warmup Phase"                    {channel="airq:airq:1:general#warmup-phase"}
 ```

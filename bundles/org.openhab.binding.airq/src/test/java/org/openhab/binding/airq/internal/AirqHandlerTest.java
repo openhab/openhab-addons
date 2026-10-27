@@ -285,18 +285,15 @@ class AirqHandlerTest {
     void configurationIsReadBeforeTheFirstMeasurement() throws Exception {
         AirqHandler pollingHandler = requireNonNull(spy(handler()));
         pollingHandler.setCallback(callback);
-        doReturn("{}").when(pollingHandler).getDecryptedContentString(anyString(), eq("GET"), isNull());
+        doReturn("{}").when(pollingHandler).getDecryptedContentString(anyString());
 
         pollingHandler.pollData();
         pollingHandler.pollData();
 
         var order = inOrder(pollingHandler);
-        order.verify(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/config"), eq("GET"),
-                isNull());
-        order.verify(pollingHandler, times(2)).getDecryptedContentString(ArgumentMatchers.endsWith("/data"), eq("GET"),
-                isNull());
-        verify(pollingHandler, times(1)).getDecryptedContentString(ArgumentMatchers.endsWith("/config"), eq("GET"),
-                isNull());
+        order.verify(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/config"));
+        order.verify(pollingHandler, times(2)).getDecryptedContentString(ArgumentMatchers.endsWith("/data"));
+        verify(pollingHandler, times(1)).getDecryptedContentString(ArgumentMatchers.endsWith("/config"));
     }
 
     private State lastState(String channel) {
@@ -621,8 +618,9 @@ class AirqHandlerTest {
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#wifi"), OnOffType.ON);
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#ssid"),
                 new StringType("first, second"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#password"),
-                new StringType("password"));
+        // the undocumented key "pass" is not published, the channel was removed
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, "general#password")), any());
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, "password")), any());
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#time-server"),
                 new StringType("time.example"));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#location"),
@@ -654,6 +652,17 @@ class AirqHandlerTest {
                 allOf(hasEntry("hardwareVersion", "\"hardware\""), hasEntry("sensorList", "co2, sound"),
                         hasEntry("Industry", "true"), hasEntry("id", "\"device-id\""),
                         hasEntry("sensorInfo", "\"info\"")));
+    }
+
+    @Test
+    void removedChannelsAreNotPublished() throws Exception {
+        // "pass" is not documented, DeleteKey is only a command and ErrorBars is no setting of the device
+        readConfiguration("{\"pass\": \"secret\", \"DeleteKey\": \"WLANssid\", \"ErrorBars\": true}");
+
+        for (String channel : List.of("general#password", "general#delete-key", "general#error-bars", "password",
+                "deleteKey", "errorBars")) {
+            verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, channel)), any());
+        }
     }
 
     @Test
@@ -830,10 +839,8 @@ class AirqHandlerTest {
         AirqHandler pollingHandler = requireNonNull(
                 spy(new AirqHandler(configuredThing, requireNonNull(mock(HttpClient.class)))));
         pollingHandler.setCallback(callback);
-        doReturn(payload).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/data"), eq("GET"),
-                isNull());
-        doReturn(configuration).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/config"),
-                eq("GET"), isNull());
+        doReturn(payload).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/data"));
+        doReturn(configuration).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/config"));
         pollingHandler.pollData();
     }
 
@@ -990,8 +997,7 @@ class AirqHandlerTest {
                 new String[] { "auto-drift-compensation", "AutoDriftCompensation" },
                 new String[] { "advanced-data-processing", "AdvancedDataProcessing" },
                 new String[] { "gas-alarm", "GasAlarm" }, new String[] { "alarm-forwarding", "AlarmForwarding" },
-                new String[] { "error-bars", "ErrorBars" }, new String[] { "ppm-and-ppb", "ppm&ppb" },
-                new String[] { "night-mode-fan-night-off", "FanNightOff" },
+                new String[] { "ppm-and-ppb", "ppm&ppb" }, new String[] { "night-mode-fan-night-off", "FanNightOff" },
                 new String[] { "night-mode-wifi-night-off", "WifiNightOff" })
                 .flatMap(mapping -> Stream.of(OnOffType.ON, OnOffType.OFF).map(command -> {
                     JsonObject value = new JsonObject();
@@ -1055,7 +1061,8 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "wifi", "unknown", "delete-key", "initial-cal-finished", "sound-info", "daytime" })
+    @ValueSource(strings = { "wifi", "unknown", "delete-key", "error-bars", "errorBars", "initial-cal-finished",
+            "sound-info", "daytime" })
     void unwritableOrUnknownChannelsDoNotSendSettings(String channel) throws Exception {
         for (Command command : List.of(OnOffType.ON, OnOffType.OFF, new StringType("value"), new DecimalType(1),
                 new QuantityType<>(1, Units.SECOND), RefreshType.REFRESH)) {
@@ -1229,6 +1236,8 @@ class AirqHandlerTest {
                 "update-channel maxerr#so2-maxerr airq:so2-maxerr",
                 "update-channel maxerr#temperature-maxerr airq:temperature-maxerr",
                 "update-channel maxerr#radon-maxerr airq:radon-maxerr", "remove-channel general#sound-pressure",
+                "remove-channel general#password", "remove-channel #password", "remove-channel general#delete-key",
+                "remove-channel #deleteKey", "remove-channel general#error-bars", "remove-channel #errorBars",
                 "add-channel general#sound-info airq:sound-info",
                 "add-channel general#night-mode-activated airq:nightmode-activated",
                 "add-channel general#night-mode-alarm-night-off airq:nightmode-alarm-night-off",
@@ -1246,7 +1255,10 @@ class AirqHandlerTest {
         assertThat(upgraded.size(), is(additions.size()));
         for (Element instruction : elements(upgrades, "//instruction-set[@targetVersion='6']/*")) {
             String channel = instruction.getAttribute("groupIds") + "#" + instruction.getAttribute("id");
-            if ("remove-channel".equals(instruction.getTagName())) {
+            if (instruction.getAttribute("groupIds").isEmpty()) {
+                // a retained flat channel of thing type version 4, which is not part of the grouped channels
+                assertThat(channel, instruction.getTagName(), is("remove-channel"));
+            } else if ("remove-channel".equals(instruction.getTagName())) {
                 assertThat(upgraded.remove(channel), notNullValue());
             } else {
                 // add-channel and update-channel
@@ -1261,7 +1273,7 @@ class AirqHandlerTest {
                     "//channel-group-type[@id='" + id[0] + "']/channels/channel[@id='" + id[1] + "']");
             assertThat(channel.getValue(), is("airq:" + definition.getAttribute("typeId")));
         }
-        assertThat(channels, hasSize(165));
+        assertThat(channels, hasSize(162));
     }
 
     @SuppressWarnings("null")
