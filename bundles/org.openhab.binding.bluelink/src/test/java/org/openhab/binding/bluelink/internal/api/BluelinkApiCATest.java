@@ -141,6 +141,23 @@ public class BluelinkApiCATest {
     }
 
     @Test
+    void testGetVehicles() throws Exception {
+        stubFor(post(urlEqualTo("/vhcllst")).willReturn(json("""
+                {"responseHeader": {"responseCode": 0},
+                 "result": {"vehicles": [{"vehicleId": "123", "vin": "VIN1234", "nickName": "Car",
+                                          "modelName": "IONIQ 5", "modelYear": "2023", "fuelKindCode": "E"}]}}
+                """)));
+        final BluelinkApiCA api = new BluelinkApiCA(HTTP_CLIENT, Brand.HYUNDAI, Map.of(),
+                "http://localhost:" + WIREMOCK_SERVER.port(), timeZoneProvider, TEST_USERNAME, TEST_PASSWORD, null);
+
+        final var vehicles = api.getVehicles();
+
+        assertEquals(1, vehicles.size());
+        assertEquals("VIN1234", vehicles.getFirst().vin());
+        assertEquals(IVehicle.EngineType.EV, vehicles.getFirst().engineType());
+    }
+
+    @Test
     void testLoginWithVerificationCode() throws Exception {
         final String user = "otp@example.com";
         stubFor(post(urlEqualTo("/v2/login")).withRequestBody(matchingJsonPath("$.loginId", equalTo(user)))

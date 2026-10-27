@@ -259,7 +259,9 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
     public List<Vehicle> getVehicles() throws BluelinkApiException {
         ensureAuthenticated();
         final String url = baseUrl + "vhcllst";
-        final Request request = httpClient.newRequest(url).timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .content(new StringContentProvider("{}"), APPLICATION_JSON);
         addStandardHeaders(request);
         addAuthHeaders(request);
         final ListVehiclesResponse listVehiclesResponse = sendRequest(request, ListVehiclesResponse.class,
