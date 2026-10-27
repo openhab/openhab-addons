@@ -68,7 +68,6 @@ public enum VehicleChannel {
     // documented as sporadic, but seen in every stream message of a vehicle with the same values as the lock status
     DOOR_STATUS(GROUP_STATUS, "door-lock", "vehicle.cabin.door.status", Kind.LOCK_STATE, null),
     TRUNK(GROUP_STATUS, "trunk", "vehicle.body.trunk.isOpen", Kind.CONTACT, null),
-    TRUNK_DOOR(GROUP_STATUS, "trunk-door", "vehicle.body.trunk.door.isOpen", Kind.CONTACT, null),
     HOOD(GROUP_STATUS, "hood", "vehicle.body.hood.isOpen", Kind.CONTACT, null),
     TRUNK_LOCKED(GROUP_STATUS, "trunk-locked", "vehicle.body.trunk.isLocked", Kind.SWITCH, null),
     DOOR_FRONT_DRIVER(GROUP_STATUS, "door-front-driver", "vehicle.cabin.door.row1.driver.isOpen", Kind.CONTACT, null),

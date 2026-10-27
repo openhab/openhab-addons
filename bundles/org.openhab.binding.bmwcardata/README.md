@@ -167,7 +167,6 @@ To get removed channels back, delete and recreate the Thing.
 |--------------------------------------|--------------------------|-------------------------------------------------------------------------------|----------|
 | status#door-lock                     | String                   | Lock state of the doors                                                       | no       |
 | status#trunk                         | Contact                  | Whether the trunk is open                                                     | no       |
-| status#trunk-door                    | Contact                  | Whether the trunk door is open                                                | no       |
 | status#hood                          | Contact                  | Whether the hood is open                                                      | no       |
 | status#trunk-locked                  | Switch                   | Whether the trunk is locked                                                   | no       |
 | status#door-front-driver             | Contact                  | Whether the front driver door is open                                         | no       |

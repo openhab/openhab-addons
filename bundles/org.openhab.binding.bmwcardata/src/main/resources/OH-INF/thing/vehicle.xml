@@ -57,10 +57,6 @@
 				<label>Trunk</label>
 				<description>Whether the trunk is open</description>
 			</channel>
-			<channel id="trunk-door" typeId="door">
-				<label>Trunk Door</label>
-				<description>Whether the trunk door is open</description>
-			</channel>
 			<channel id="hood" typeId="door">
 				<label>Hood</label>
 				<description>Whether the hood is open</description>
