@@ -15,6 +15,10 @@ package org.openhab.binding.icalendar.internal.logic;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +31,15 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Event implements Comparable<Event> {
+    private static final Pattern HTML_TOKEN = Pattern.compile(
+            "(?<quoted>(?<=:)(?:\"[^\"\\r\\n]*\"|'[^'\\r\\n]*'))" //
+                    + "|(?<br><br\\s*/?>|</(?:p|div|li)\\s*>)" //
+                    + "|(?<tag></?[a-zA-Z][\\w:-]*(?:\\s[^>]*)?/?>)" //
+                    + "|(?<entity>&(?:nbsp|lt|gt|quot|amp|#39);)",
+            Pattern.CASE_INSENSITIVE);
+    private static final Map<String, String> ENTITIES = Map.of("&nbsp;", " ", "&lt;", "<", "&gt;", ">", "&quot;",
+            "\"", "&amp;", "&", "&#39;", "'");
+
     public final List<CommandTag> commandTags = new ArrayList<>();
     public final Instant end;
     public final Instant start;
@@ -43,13 +56,52 @@ public class Event implements Comparable<Event> {
             return;
         }
 
-        String[] lines = description.replace("<p>", "").replace("</p>", "\n").split("\n");
+        String[] lines = stripHtml(description).split("\\R");
         for (String line : lines) {
-            CommandTag tag = CommandTag.createCommandTag(line);
+            CommandTag tag = CommandTag.createCommandTag(line.trim());
             if (tag != null) {
                 commandTags.add(tag);
             }
         }
+    }
+
+    /**
+     * Converts a (possibly HTML formatted) event description to plain text. Calendar providers like Google Calendar
+     * insert HTML markup into the description, which would otherwise break the Command Tags.
+     * Line breaking elements are converted to line breaks, all other tags are removed and the most common entities are
+     * decoded.
+     * <p>
+     * Quoted String values of a Command Tag (e.g. <code>BEGIN:Item:"&lt;b&gt;text&lt;/b&gt;"</code>) are passed
+     * through literally. Descriptions without any markup outside of such values are returned unchanged.
+     *
+     * @param description the raw description of the event
+     * @return the description as plain text
+     */
+    static String stripHtml(String description) {
+        StringBuilder result = new StringBuilder();
+        boolean hasMarkup = false;
+        int last = 0;
+        Matcher matcher = HTML_TOKEN.matcher(description);
+        while (matcher.find()) {
+            result.append(description, last, matcher.start());
+            last = matcher.end();
+            if (matcher.group("quoted") != null) {
+                result.append(matcher.group());
+            } else if (matcher.group("br") != null) {
+                hasMarkup = true;
+                result.append('\n');
+            } else if (matcher.group("tag") != null) {
+                hasMarkup = true;
+            } else {
+                String entity = matcher.group();
+                result.append(ENTITIES.getOrDefault(entity.toLowerCase(Locale.ROOT), entity));
+            }
+        }
+        if (!hasMarkup) {
+            return description;
+        }
+        result.append(description, last, description.length());
+        return result.toString();
     }
 
     @Override

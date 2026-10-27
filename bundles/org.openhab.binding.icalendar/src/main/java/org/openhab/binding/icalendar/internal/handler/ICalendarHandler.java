@@ -264,7 +264,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                         if ((index > 0) && (index < cmdType.length())) {
                             cmdType = cmdType.substring(index);
                         }
-                        logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", event.title,
+                        logger.debug("Event: {}, Command Tag: {} => {}.sendCommand({}: {})", event.title,
                                 cmdTag.getFullTag(), cmdTag.getItemName(), cmdType, cmdState);
                     }
                 } catch (IllegalArgumentException | IllegalStateException e) {
