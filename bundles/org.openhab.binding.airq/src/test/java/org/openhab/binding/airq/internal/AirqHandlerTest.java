@@ -1306,6 +1306,29 @@ class AirqHandlerTest {
         assertThat(state.getAttribute("step"), is("1"));
     }
 
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = { "[\"WegerLAN\"]|WegerLAN", "[\"WegerLAN\", \"Gast\"]|WegerLAN, Gast",
+            // all networks deleted
+            "[]|''",
+            // entries that are not names are skipped
+            "[\"a\", 5, {\"x\": 1}, null, [\"y\"], \"b\"]|a, b" })
+    void configuredWifiNetworksAreListed(String networks, String shown) throws Exception {
+        readConfiguration("{\"WLANssid\": " + networks + "}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#ssid"), new StringType(shown));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{\"WegerLAN\": \"key\"}", "\"WegerLAN\"", "5" })
+    void configuredWifiNetworksInAnotherFormAreUndefined(String networks) throws Exception {
+        // GET /config returns a list of names, the object with the keys is the SD card format
+        readConfiguration("{\"WLANssid\": " + networks + "}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#ssid"), UnDefType.UNDEF);
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, "general#ssid")),
+                argThat(state -> state.toString().contains("key")));
+    }
+
     @Test
     void nightModeSettingsAreReadAlsoWhenTheNightModeIsOff() throws Exception {
         // deviceconfig.md: the example of the night mode settings, and whether the device is in day operation

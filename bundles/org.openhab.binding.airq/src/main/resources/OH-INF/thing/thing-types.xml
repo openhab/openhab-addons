@@ -803,7 +803,7 @@
 	</channel-type>
 	<channel-type id="wla-nssid" advanced="true">
 		<item-type>String</item-type>
-		<label>WLAN SSID</label>
+		<label>Configured WLAN Networks</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pass" advanced="true">
@@ -922,7 +922,7 @@
 	</channel-type>
 	<channel-type id="wlan-config-ssid" advanced="true">
 		<item-type>String</item-type>
-		<label>WLAN SSID</label>
+		<label>Connected WLAN SSID</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="wlan-config-ip-address" advanced="true">
@@ -1199,7 +1199,7 @@
 	</channel-type>
 	<channel-type id="WLANssid" advanced="true">
 		<item-type>String</item-type>
-		<label>WLAN SSID</label>
+		<label>Configured WLAN Networks</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="WifiInfo" advanced="false">
@@ -1291,7 +1291,7 @@
 	</channel-type>
 	<channel-type id="WLAN_config_SSID" advanced="true">
 		<item-type>String</item-type>
-		<label>WLAN SSID</label>
+		<label>Connected WLAN SSID</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="WLAN_config_IPAddress" advanced="true">

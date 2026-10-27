@@ -1173,21 +1173,21 @@ public class AirqHandler extends BaseThingHandler {
                     }
                     break;
                 case "arr":
-                    JsonElement jsonarr = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);
-                    if ((jsonarr != null) && (jsonarr.isJsonArray())) {
-                        JsonArray arr = jsonarr.getAsJsonArray();
-                        StringBuilder str = new StringBuilder();
-                        for (JsonElement el : arr) {
-                            str.append(el.getAsString() + ", ");
+                    JsonElement jsonarr = dec.get(airqName);
+                    if (jsonarr.isJsonArray()) {
+                        // an empty list is published too, e.g. after all Wi-Fi networks were deleted
+                        List<String> names = new ArrayList<>();
+                        for (JsonElement el : jsonarr.getAsJsonArray()) {
+                            if (el.isJsonPrimitive() && el.getAsJsonPrimitive().isString()) {
+                                names.add(el.getAsString());
+                            } else {
+                                logger.debug("Ignoring non-string entry of {}", airqName);
+                            }
                         }
-                        if (str.length() >= 2) {
-                            updateMappedState(channelName, new StringType(str.substring(0, str.length() - 2)));
-                        } else {
-                            logger.trace("air-Q - airqHandler - processType(): cannot handle this as an array: {}",
-                                    jsonarr);
-                        }
+                        updateMappedState(channelName, new StringType(String.join(", ", names)));
                     } else {
-                        logger.warn("air-Q - airqHandler - processType(): cannot handle this as an array: {}", jsonarr);
+                        updateMappedState(channelName, UnDefType.UNDEF);
+                        logger.debug("Ignoring non-array value of {}", airqName);
                     }
                     break;
                 case "calib":

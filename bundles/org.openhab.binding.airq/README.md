@@ -149,7 +149,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | fire-alarm                 | Switch                             | rw    | Send Fire Alarm if certain levels are met                                                |
 | wlan-config-gateway        | String                             |       | Network Gateway                                                                          |
 | wlan-config-mac            | String                             |       | MAC Address                                                                              |
-| wlan-config-ssid           | String                             |       | WLAN SSID                                                                                |
+| wlan-config-ssid           | String                             |       | Connected WLAN SSID                                                                      |
 | wlan-config-ip-address     | String                             |       | Assigned IP address                                                                      |
 | wlan-config-net-mask       | String                             |       | Network mask                                                                             |
 | wlan-config-bssid          | String                             |       | Network BSSID                                                                            |
@@ -310,7 +310,7 @@ Number:Dimensionless  airQ_virus_free_maxerr   "Maximum error of Virus-Free"    
 Number:Dimensionless  airQ_mold_free_maxerr    "Maximum error of Mold-Free"                     {unit="%",channel="airq:airq:1:maxerr#mold-free-maxerr"}
 
 Switch airQ_wifi                    "WLAN on or off"                                 {channel="airq:airq:1:general#wifi"}
-String airQ_SSID                    "WLAN SSID"                                      {channel="airq:airq:1:general#ssid"}
+String airQ_SSID                    "Configured WLAN networks"                       {channel="airq:airq:1:general#ssid"}
 String airQ_password                "Device Password"                                {channel="airq:airq:1:general#password"}
 Switch airQ_wifiInfo                "Show WLAN status with LED"                      {channel="airq:airq:1:general#wifi-info"}
 String airQ_timeServer              "Name of Timeserver address"                     {channel="airq:airq:1:general#time-server"}
@@ -331,7 +331,7 @@ String airQ_deleteKey               "Settings to be deleted"                    
 Switch airQ_fireAlarm               "Send Fire Alarm if certain levels are met"      {channel="airq:airq:1:general#fire-alarm"}
 String airQ_WLAN_config_gateway     "Network Gateway"                                {channel="airq:airq:1:general#wlan-config-gateway"}
 String airQ_WLAN_config_MAC         "MAC Address"                                    {channel="airq:airq:1:general#wlan-config-mac"}
-String airQ_WLAN_config_SSID        "WLAN SSID"                                      {channel="airq:airq:1:general#wlan-config-ssid"}
+String airQ_WLAN_config_SSID        "Connected WLAN SSID"                            {channel="airq:airq:1:general#wlan-config-ssid"}
 String airQ_WLAN_config_IPAddress   "Assigned IP address"                            {channel="airq:airq:1:general#wlan-config-ip-address"}
 String airQ_WLAN_config_netMask     "Network mask"                                   {channel="airq:airq:1:general#wlan-config-net-mask"}
 String airQ_WLAN_config_BSSID       "Network BSSID"                                  {channel="airq:airq:1:general#wlan-config-bssid"}
