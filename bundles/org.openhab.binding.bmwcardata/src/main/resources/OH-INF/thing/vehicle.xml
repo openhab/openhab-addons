@@ -57,6 +57,10 @@
 				<label>Trunk</label>
 				<description>Whether the trunk is open</description>
 			</channel>
+			<channel id="trunk-door" typeId="door">
+				<label>Trunk Door</label>
+				<description>Whether the trunk door is open</description>
+			</channel>
 			<channel id="hood" typeId="door">
 				<label>Hood</label>
 				<description>Whether the hood is open</description>
@@ -139,6 +143,10 @@
 				<label>Electric Range Forecast</label>
 				<description>Predicted electric range during charging</description>
 			</channel>
+			<channel id="electric-target" typeId="range">
+				<label>Electric Range at Target</label>
+				<description>Electric range at the target state of charge</description>
+			</channel>
 			<channel id="fuel-level" typeId="fuel-level"/>
 			<channel id="remaining-fuel" typeId="remaining-fuel"/>
 		</channels>
@@ -162,6 +170,14 @@
 				<label>AC Charging Limit</label>
 				<description>Selected limit of the AC charging current</description>
 			</channel>
+			<channel id="ac-limit-min" typeId="current-limit">
+				<label>Minimum AC Charging Limit</label>
+				<description>Lowest limit of the AC charging current that can be selected</description>
+			</channel>
+			<channel id="ac-limit-max" typeId="current-limit">
+				<label>Maximum AC Charging Limit</label>
+				<description>Highest limit of the AC charging current that can be selected</description>
+			</channel>
 			<channel id="phases" typeId="charging-phases"/>
 			<channel id="method" typeId="charging-method"/>
 			<channel id="port" typeId="port"/>
@@ -173,6 +189,7 @@
 			<channel id="last-result" typeId="last-charging-result"/>
 			<channel id="cable-lock" typeId="cable-lock"/>
 			<channel id="flap" typeId="charging-flap"/>
+			<channel id="flap-locked" typeId="charging-flap-locked"/>
 		</channels>
 	</channel-group-type>
 
@@ -1311,6 +1328,18 @@
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charging-flap-locked" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Charging Flap Locked</label>
+		<description>Whether the charging flap is locked</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

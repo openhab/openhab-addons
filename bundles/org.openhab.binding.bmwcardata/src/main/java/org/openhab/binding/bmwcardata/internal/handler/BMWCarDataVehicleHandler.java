@@ -105,6 +105,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private @Nullable BigDecimal longitude;
     private @Nullable BigDecimal altitude;
     private @Nullable Instant lastUpdate;
+    private @Nullable Instant doorLockTimestamp;
 
     public BMWCarDataVehicleHandler(Thing thing) {
         this(thing, null);
@@ -221,6 +222,16 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             if (state == null) {
                 logger.trace("Ignoring unsupported value {} of {}", value.value, descriptor);
                 continue;
+            }
+            if (channel == VehicleChannel.DOOR_LOCK || channel == VehicleChannel.DOOR_STATUS) {
+                // both descriptors update the door lock: an older value of one must not replace a newer of the other
+                Instant previousDoorLock = doorLockTimestamp;
+                if (timestamp != null && previousDoorLock != null && timestamp.isBefore(previousDoorLock)) {
+                    continue;
+                }
+                if (timestamp != null) {
+                    doorLockTimestamp = timestamp;
+                }
             }
             switch (channel) {
                 case LATITUDE -> {
@@ -605,7 +616,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         Set<Drive> drives = drives(basicData);
         List<String> ids = new ArrayList<>();
         for (VehicleChannel channel : VehicleChannel.values()) {
-            boolean irrelevant = (channel.getDrive() != Drive.ANY && !drives.contains(channel.getDrive()))
+            boolean irrelevant = !channel.getDrive().appliesTo(drives)
                     || (noSunroof && channel == VehicleChannel.SUNROOF);
             String channelUid = channel.getChannelUid();
             if (irrelevant && channelUid != null) {

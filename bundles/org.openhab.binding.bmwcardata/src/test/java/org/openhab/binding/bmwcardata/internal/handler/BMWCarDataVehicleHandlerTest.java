@@ -197,6 +197,21 @@ class BMWCarDataVehicleHandlerTest {
     }
 
     @Test
+    void doorLockTakesTheNewestOfBothDescriptors() {
+        String doorStatus = "vehicle.cabin.door.status";
+        String lockStatus = "vehicle.cabin.door.lock.status";
+        handler.updateTelematicData(Map.of(doorStatus, stringValue("UNLOCKED", null, "2026-10-01T10:05:00Z")));
+        verifyState("status#door-lock", new StringType("UNLOCKED"));
+
+        // a refresh with an older value of the REST only descriptor does not replace the newer stream value
+        handler.updateTelematicData(Map.of(lockStatus, stringValue("SECURED", null, "2026-10-01T10:00:00Z")));
+        verify(callback, never()).stateUpdated(channel("status#door-lock"), new StringType("SECURED"));
+
+        handler.updateTelematicData(Map.of(lockStatus, stringValue("LOCKED", null, "2026-10-01T10:10:00Z")));
+        verifyState("status#door-lock", new StringType("LOCKED"));
+    }
+
+    @Test
     void combinesLatitudeAndLongitudeOfSeparateMessages() {
         handler.updateTelematicData(Map.of(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z")));
         verify(callback, never()).stateUpdated(eq(channel(CHANNEL_GPS)), any());
@@ -338,6 +353,11 @@ class BMWCarDataVehicleHandlerTest {
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
         assertTrue(ids.contains(GROUP_RANGE + "#fuel-level"));
         assertTrue(ids.contains(GROUP_RANGE + "#total"));
+        assertTrue(ids.contains(GROUP_STATUS + "#engine"));
+        assertTrue(ids.contains(GROUP_TRIP + "#electric-share"));
+        assertFalse(ids.contains(GROUP_STATUS + "#ignition"));
+        assertFalse(ids.contains(GROUP_TRIP + "#eco-pro-share"));
+        assertFalse(ids.contains(GROUP_RANGE + "#electric-target"));
         assertFalse(ids.contains(GROUP_CHARGE + "#soc"));
         assertFalse(ids.contains(GROUP_STATUS + "#sunroof"));
         assertFalse(ids.contains(CHANNEL_GPS));
@@ -350,6 +370,10 @@ class BMWCarDataVehicleHandlerTest {
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
         assertTrue(ids.contains(GROUP_CHARGE + "#soc"));
         assertTrue(ids.contains(GROUP_RANGE + "#electric"));
+        assertTrue(ids.contains(GROUP_RANGE + "#electric-target"));
+        assertTrue(ids.contains(GROUP_CHARGE + "#flap-locked"));
+        assertTrue(ids.contains(GROUP_TRIP + "#electric-share"));
+        assertFalse(ids.contains(GROUP_STATUS + "#engine"));
         assertFalse(ids.contains(GROUP_RANGE + "#fuel-level"));
         assertFalse(ids.contains(GROUP_RANGE + "#mileage"));
     }

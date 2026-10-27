@@ -148,6 +148,24 @@ class VehicleChannelTest {
     }
 
     @Test
+    void zeroBatteryCapacityIsUndefined() {
+        assertEquals(UnDefType.UNDEF, VehicleChannel.BATTERY_CAPACITY.toState(value(new JsonPrimitive("0"), "kWh")));
+        assertEquals(UnDefType.UNDEF, VehicleChannel.BATTERY_CAPACITY.toState(value(new JsonPrimitive(0.0), "kWh")));
+        assertEquals(QuantityType.valueOf("80.7 kWh"),
+                VehicleChannel.BATTERY_CAPACITY.toState(value(new JsonPrimitive(80.7), "kWh")));
+        // other channels keep 0 as a value
+        assertEquals(QuantityType.valueOf("0 kWh"),
+                VehicleChannel.BATTERY_ENERGY.toState(value(new JsonPrimitive(0), "kWh")));
+    }
+
+    @Test
+    void doorStatusUpdatesTheDoorLock() {
+        assertEquals(VehicleChannel.DOOR_LOCK.getChannelUid(), VehicleChannel.DOOR_STATUS.getChannelUid());
+        assertEquals(new StringType("SECURED"),
+                VehicleChannel.DOOR_STATUS.toState(value(new JsonPrimitive("SECURED"), null)));
+    }
+
+    @Test
     void engineStatesAndInspectionDate() {
         assertEquals(OnOffType.ON, VehicleChannel.ENGINE.toState(value(new JsonPrimitive("ASN_isTrue"), null)));
         assertEquals(OnOffType.OFF, VehicleChannel.IGNITION.toState(value(new JsonPrimitive("ASN_isFalse"), null)));

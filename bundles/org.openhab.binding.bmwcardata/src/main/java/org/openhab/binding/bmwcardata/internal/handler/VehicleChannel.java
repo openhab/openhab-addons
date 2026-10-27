@@ -63,8 +63,12 @@ import com.google.gson.JsonPrimitive;
  */
 @NonNullByDefault
 public enum VehicleChannel {
+    // only provided by the REST API
     DOOR_LOCK(GROUP_STATUS, "door-lock", "vehicle.cabin.door.lock.status", Kind.LOCK_STATE, null),
+    // documented as sporadic, but seen in every stream message of a vehicle with the same values as the lock status
+    DOOR_STATUS(GROUP_STATUS, "door-lock", "vehicle.cabin.door.status", Kind.LOCK_STATE, null),
     TRUNK(GROUP_STATUS, "trunk", "vehicle.body.trunk.isOpen", Kind.CONTACT, null),
+    TRUNK_DOOR(GROUP_STATUS, "trunk-door", "vehicle.body.trunk.door.isOpen", Kind.CONTACT, null),
     HOOD(GROUP_STATUS, "hood", "vehicle.body.hood.isOpen", Kind.CONTACT, null),
     TRUNK_LOCKED(GROUP_STATUS, "trunk-locked", "vehicle.body.trunk.isLocked", Kind.SWITCH, null),
     DOOR_FRONT_DRIVER(GROUP_STATUS, "door-front-driver", "vehicle.cabin.door.row1.driver.isOpen", Kind.CONTACT, null),
@@ -134,6 +138,8 @@ public enum VehicleChannel {
     ELECTRIC_RANGE_FORECAST(GROUP_RANGE, "electric-charging-forecast",
             "vehicle.drivetrain.electricEngine.remainingElectricRange", Kind.QUANTITY,
             MetricPrefix.KILO(SIUnits.METRE)),
+    ELECTRIC_RANGE_TARGET(GROUP_RANGE, "electric-target", "vehicle.powertrain.electric.range.target", Kind.QUANTITY,
+            MetricPrefix.KILO(SIUnits.METRE)),
     FUEL_LEVEL(GROUP_RANGE, "fuel-level", "vehicle.drivetrain.fuelSystem.level", Kind.QUANTITY, Units.PERCENT),
     REMAINING_FUEL(GROUP_RANGE, "remaining-fuel", "vehicle.drivetrain.fuelSystem.remainingFuel", Kind.QUANTITY,
             Units.LITRE),
@@ -153,6 +159,10 @@ public enum VehicleChannel {
             Units.VOLT),
     AC_LIMIT(GROUP_CHARGE, "ac-limit", "vehicle.powertrain.electric.battery.charging.acLimit.selected", Kind.QUANTITY,
             Units.AMPERE),
+    AC_LIMIT_MIN(GROUP_CHARGE, "ac-limit-min", "vehicle.powertrain.electric.battery.charging.acLimit.min",
+            Kind.QUANTITY, Units.AMPERE),
+    AC_LIMIT_MAX(GROUP_CHARGE, "ac-limit-max", "vehicle.powertrain.electric.battery.charging.acLimit.max",
+            Kind.QUANTITY, Units.AMPERE),
     PHASES(GROUP_CHARGE, "phases", "vehicle.drivetrain.electricEngine.charging.phaseNumber", Kind.STRING, null),
     CHARGING_METHOD(GROUP_CHARGE, "method", "vehicle.drivetrain.electricEngine.charging.method", Kind.STRING, null),
     PORT(GROUP_CHARGE, "port", "vehicle.body.chargingPort.status", Kind.STRING, null),
@@ -170,6 +180,7 @@ public enum VehicleChannel {
     CABLE_LOCK(GROUP_CHARGE, "cable-lock", "vehicle.body.chargingPort.lockedStatus", Kind.STRING, null),
     CHARGING_FLAP(GROUP_CHARGE, "flap", "vehicle.powertrain.tractionBattery.charging.port.anyPosition.flap.isOpen",
             Kind.CONTACT, null),
+    CHARGING_FLAP_LOCKED(GROUP_CHARGE, "flap-locked", "vehicle.body.flap.isLocked", Kind.SWITCH, null),
     PRESSURE_FRONT_LEFT(GROUP_TYRES, "pressure-front-left", "vehicle.chassis.axle.row1.wheel.left.tire.pressure",
             Kind.QUANTITY, MetricPrefix.KILO(SIUnits.PASCAL)),
     PRESSURE_FRONT_RIGHT(GROUP_TYRES, "pressure-front-right", "vehicle.chassis.axle.row1.wheel.right.tire.pressure",
@@ -261,19 +272,40 @@ public enum VehicleChannel {
         // an electric motor with a high-voltage battery that can be charged: electric and plug-in hybrid vehicles
         ELECTRIC,
         // a combustion engine: combustion, mild hybrid and plug-in hybrid vehicles
-        COMBUSTION
+        COMBUSTION,
+        // both an electric motor with a chargeable high-voltage battery and a combustion engine
+        PLUG_IN_HYBRID;
+
+        /**
+         * @param drives the drives of a vehicle
+         * @return whether a channel that needs this drive applies to the vehicle
+         */
+        boolean appliesTo(Set<Drive> drives) {
+            return switch (this) {
+                case ANY -> true;
+                case ELECTRIC, COMBUSTION -> drives.contains(this);
+                case PLUG_IN_HYBRID -> drives.contains(ELECTRIC) && drives.contains(COMBUSTION);
+            };
+        }
     }
 
     private static final Set<VehicleChannel> ELECTRIC_ONLY = EnumSet.of(BATTERY_CAPACITY, BATTERY_ENERGY,
-            BATTERY_HEALTH, ENERGY_TO_FULL, GRID_ENERGY, AVG_CONSUMPTION, ELECTRIC_RANGE, ELECTRIC_RANGE_FORECAST, SOC,
-            TARGET_SOC, CHARGING_STATUS, PLUGGED, CHARGING_POWER, TIME_REMAINING, AC_CURRENT, AC_VOLTAGE, AC_LIMIT,
-            PHASES, CHARGING_METHOD, PORT, PREDICTED_SOC, MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE,
-            CHARGING_END_REASON, LAST_CHARGING_RESULT, CABLE_LOCK, CHARGING_FLAP, TRIP_END_SOC, TRIP_RECUPERATION,
-            TRIP_COMFORT_ENERGY, TRIP_ELECTRIC_SHARE);
+            BATTERY_HEALTH, ENERGY_TO_FULL, GRID_ENERGY, AVG_CONSUMPTION, ELECTRIC_RANGE, ELECTRIC_RANGE_FORECAST,
+            ELECTRIC_RANGE_TARGET, SOC, TARGET_SOC, CHARGING_STATUS, PLUGGED, CHARGING_POWER, TIME_REMAINING,
+            AC_CURRENT, AC_VOLTAGE, AC_LIMIT, AC_LIMIT_MIN, AC_LIMIT_MAX, PHASES, CHARGING_METHOD, PORT, PREDICTED_SOC,
+            MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE, CHARGING_END_REASON, LAST_CHARGING_RESULT, CABLE_LOCK,
+            CHARGING_FLAP, CHARGING_FLAP_LOCKED, TRIP_END_SOC, TRIP_RECUPERATION, TRIP_COMFORT_ENERGY);
 
-    // lastRemainingRange is meant for vehicles with a combustion engine, according to BMW's catalogue
+    // lastRemainingRange is meant for vehicles with a combustion engine, according to BMW's catalogue; an electric
+    // vehicle was seen not to report the engine state while driving
     private static final Set<VehicleChannel> COMBUSTION_ONLY = EnumSet.of(FUEL_CONSUMED, FUEL_LEVEL, REMAINING_FUEL,
-            TOTAL_RANGE);
+            TOTAL_RANGE, ENGINE);
+
+    // the electric share of a trip only varies with both drives, an electric vehicle was seen reporting 0
+    private static final Set<VehicleChannel> PLUG_IN_HYBRID_ONLY = EnumSet.of(TRIP_ELECTRIC_SHARE);
+
+    // an electric vehicle was seen reporting a battery size of 0 kWh, which cannot be a real value
+    private static final Set<VehicleChannel> ZERO_UNDEFINED = EnumSet.of(BATTERY_CAPACITY);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VehicleChannel.class);
     // the default unit is assumed for every value of a data point, so each assumption is logged once, not per value
@@ -373,6 +405,9 @@ public enum VehicleChannel {
         if (ELECTRIC_ONLY.contains(this)) {
             return Drive.ELECTRIC;
         }
+        if (PLUG_IN_HYBRID_ONLY.contains(this)) {
+            return Drive.PLUG_IN_HYBRID;
+        }
         return COMBUSTION_ONLY.contains(this) ? Drive.COMBUSTION : Drive.ANY;
     }
 
@@ -418,7 +453,10 @@ public enum VehicleChannel {
                 BigDecimal number = toNumber(primitive);
                 yield number == null ? null : new DecimalType(number);
             }
-            case QUANTITY -> toQuantity(primitive, telematicValue.unit);
+            case QUANTITY -> {
+                State quantity = toQuantity(primitive, telematicValue.unit);
+                yield isZeroUndefined(quantity) ? UnDefType.UNDEF : quantity;
+            }
         };
         return state != null ? state : UnDefType.UNDEF;
     }
@@ -451,6 +489,11 @@ public enum VehicleChannel {
             return OnOffType.OFF;
         }
         return null;
+    }
+
+    private boolean isZeroUndefined(@Nullable State quantity) {
+        return ZERO_UNDEFINED.contains(this) && quantity instanceof QuantityType<?> number
+                && number.toBigDecimal().signum() == 0;
     }
 
     private @Nullable State toQuantity(JsonPrimitive primitive, @Nullable String unitSymbol) {
