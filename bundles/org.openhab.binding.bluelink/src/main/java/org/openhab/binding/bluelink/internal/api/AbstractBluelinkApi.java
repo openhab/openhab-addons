@@ -233,7 +233,12 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
             throw new BluelinkApiException("empty response");
         }
         final Token token = tokenExtractor.apply(res);
-        if (token == null || token.accessToken() == null || token.expiresIn() == null) {
+        if (token == null) {
+            // some servers report errors with HTTP 200 and only describe them in the body
+            logger.debug("Login response without token: {}", response.getContentAsString());
+            throw new BluelinkApiException("Invalid token response");
+        }
+        if (token.accessToken() == null || token.expiresIn() == null) {
             throw new BluelinkApiException("Invalid token response");
         }
         setAccessToken(token.accessToken(), Instant.now().plusSeconds(Integer.parseInt(token.expiresIn())));
