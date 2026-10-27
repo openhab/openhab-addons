@@ -69,8 +69,8 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | fine-dust-cnt10            | Number:Dimensionless               |       | Fine Dust >10 µm                                                                         |
 | co                         | Number:Density                     |       | Carbon monoxide (CO) concentration                                                       |
 | co2                        | Number:Dimensionless               |       | Carbon dioxide (CO₂) concentration                                                       |
-| d-co2dt                    | Number                             |       | Change of CO₂ concentration                                                              |
-| d-hdt                      | Number                             |       | Change of Humidity                                                                       |
+| d-co2dt                    | Number                             |       | Change of CO₂ concentration in ppb/s                                                     |
+| d-hdt                      | Number                             |       | Change of absolute humidity in mg/m³/s                                                   |
 | dewpt                      | Number:Temperature                 |       | Dew Point                                                                                |
 | door-event                 | Number                             |       | Door Event (experimental, might not work reliably)                                       |
 | h2s                        | Number:Density                     |       | Hydrogen sulfide (H₂S)                                                                   |
@@ -84,12 +84,12 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | o2                         | Number:Dimensionless               |       | Oxygen (O₂) concentration                                                                |
 | performance-index          | Number:Dimensionless               |       | Performance Index in percent                                                             |
 | performance                | Number:Dimensionless               |       | Performance Index (0 to 1000)                                                            |
-| fine-dust-conc01           | Number                             |       | Fine Dust concentration >1 µm                                                            |
-| fine-dust-conc02-5         | Number                             |       | Fine Dust concentration >2.5 µm                                                          |
-| fine-dust-conc10           | Number                             |       | Fine Dust concentration >10 µm                                                           |
+| fine-dust-conc01           | Number:Density                     |       | Fine Dust concentration >1 µm                                                            |
+| fine-dust-conc02-5         | Number:Density                     |       | Fine Dust concentration >2.5 µm                                                          |
+| fine-dust-conc10           | Number:Density                     |       | Fine Dust concentration >10 µm                                                           |
 | pressure                   | Number:Pressure                    |       | Barometric Pressure                                                                      |
 | radon                      | Number:RadiationSpecificActivity   |       | Radon concentration                                                                      |
-| so2                        | Number                             |       | Sulfur dioxide (SO₂) concentration                                                       |
+| so2                        | Number:Density                     |       | Sulfur dioxide (SO₂) concentration                                                       |
 | sound                      | Number:Dimensionless               |       | Noise                                                                                    |
 | temperature                | Number:Temperature                 |       | Temperature                                                                              |
 | timestamp                  | DateTime                           |       | Timestamp of measurement                                                                 |
@@ -156,7 +156,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | auto-drift-compensation    | Switch                             | rw    | Compensate automatic drift                                                               |
 | auto-update                | Number:Time                        | rw    | Days between automatic firmware updates, 0 = off (device default 90)                     |
 | advanced-data-processing   | Switch                             | rw    | Use advanced algorithms eg. for open window or presence of a person                      |
-| ppm-and-ppb                | Switch                             | rw    | Output CO as ppm and NO₂, O₃ and SO₂ as ppb value instead of mg/m3                       |
+| ppm-and-ppb                | Switch                             | rw    | Deprecated: CO in ppm, NO₂, O₃ and SO₂ in ppb, unless units are configured on the device |
 | gas-alarm                  | Switch                             | rw    | Send Gas Alarm if certain levels are met                                                 |
 | sound-info                 | String                             |       | Acoustic signals for measurement thresholds                                              |
 | alarm-forwarding           | Switch                             | rw    | Forward gas or fire alarm to other air-Q devices in the household                        |
@@ -166,8 +166,11 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | error-bars                 | Switch                             | rw    | Calculate Maximum Errors                                                                 |
 | warmup-phase               | Switch                             | rw    | Warm-up phase of the sensors, OFF aborts it                                              |
 
-The advanced gas, relative-pressure, and maximum-noise measurements have advanced `-maxerr` channels with the same Item type and unit as their measurements.
-For example, `ch2o-m10-maxerr` contains the formaldehyde measurement uncertainty in µg/m³.
+Measurements are reported in the units configured on the device (`units`, or the deprecated `ppm&ppb`) and converted to the channel's unit.
+Gas concentrations are converted between ppm, ppb or % and mg/m³ or µg/m³ with the sensor's molar mass and the measured temperature and pressure.
+
+Each `-maxerr` channel has the Item type and unit of its measurement, for example `ch2o-m10-maxerr` contains the formaldehyde measurement uncertainty in µg/m³.
+Temperature and dew point uncertainties are temperature differences in K.
 For maximum noise, the error channel is `sound-max-maxerr`, distinct from the existing `sound_maxerr` channel.
 These channels support scalar readings as well as `[value, uncertainty]` pairs; for scalars, the error channel is `UNDEF`.
 Absent readings for these channels are silently ignored, since not every device has every sensor.
@@ -235,18 +238,18 @@ Number:Temperature    airQ_dewpt                  "Dew Point"                   
 Number                airQ_doorEvent              "Door Event (exp.)"                     {channel="airq:airq:1:measurements#door-event"}
 Number:Dimensionless  airQ_health                 "Health Index"                          {channel="airq:airq:1:measurements#health"}
 Number:Dimensionless  airQ_humidityRelative       "Humidity"                              {channel="airq:airq:1:measurements#humidity-relative"}
-Number                airQ_humidityAbsolute       "Absolute Humidity"                     {channel="airq:airq:1:measurements#humidity-absolute"}
+Number:Density        airQ_humidityAbsolute       "Absolute Humidity"                     {channel="airq:airq:1:measurements#humidity-absolute"}
 Number:Time           airQ_measureTime            "Time needed for measurement"           {unit="ms",channel="airq:airq:1:measurements#measure-time"}
-Number                airQ_no2                    "NO2 concentration"                     {channel="airq:airq:1:measurements#no2"}
-Number                airQ_o3                     "O3 concentration"                      {channel="airq:airq:1:measurements#o3"}
+Number:Density        airQ_no2                    "NO2 concentration"                     {channel="airq:airq:1:measurements#no2"}
+Number:Density        airQ_o3                     "O3 concentration"                      {channel="airq:airq:1:measurements#o3"}
 Number:Dimensionless  airQ_o2                     "Oxygen concentration"                  {channel="airq:airq:1:measurements#o2"}
 Number:Dimensionless  airQ_performance            "Performance Index"                     {channel="airq:airq:1:measurements#performance"}
-Number                airQ_fineDustConc01         "Fine Dust Concentration >1µ"           {channel="airq:airq:1:measurements#fine-dust-conc01"}
-Number                airQ_fineDustConc02_5       "Fine Dust Concentration >2.5µ"         {channel="airq:airq:1:measurements#fine-dust-conc02-5"}
-Number                airQ_fineDustConc10         "Fine Dust Concentration >10µ"          {channel="airq:airq:1:measurements#fine-dust-conc10"}
+Number:Density        airQ_fineDustConc01         "Fine Dust Concentration >1µ"           {channel="airq:airq:1:measurements#fine-dust-conc01"}
+Number:Density        airQ_fineDustConc02_5       "Fine Dust Concentration >2.5µ"         {channel="airq:airq:1:measurements#fine-dust-conc02-5"}
+Number:Density        airQ_fineDustConc10         "Fine Dust Concentration >10µ"          {channel="airq:airq:1:measurements#fine-dust-conc10"}
 Number:Pressure       airQ_pressure               "Pressure"                              {channel="airq:airq:1:measurements#pressure"}
 Number:RadiationSpecificActivity airQ_radon       "Radon Concentration"                   {channel="airq:airq:1:measurements#radon"}
-Number                airQ_so2                    "SO2 concentration"                     {channel="airq:airq:1:measurements#so2"}
+Number:Density        airQ_so2                    "SO2 concentration"                     {channel="airq:airq:1:measurements#so2"}
 Number:Dimensionless  airQ_sound                  "Noise"                                 {channel="airq:airq:1:measurements#sound"}
 Number:Temperature    airQ_temperature            "Temperature"                           {channel="airq:airq:1:measurements#temperature"}
 DateTime              airQ_timestamp              "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                            {channel="airq:airq:1:measurements#timestamp"}
@@ -262,19 +265,19 @@ Number:Dimensionless  airQ_cnt25_maxerr        "Maximum error of Fine Dust >2,5 
 Number:Dimensionless  airQ_cnt5_maxerr         "Maximum error of Fine Dust >5 µm"               {channel="airq:airq:1:maxerr#fine-dust-cnt05-maxerr"}
 Number:Dimensionless  airQ_cnt10_maxerr        "Maximum error of Fine Dust >10 µm"              {channel="airq:airq:1:maxerr#fine-dust-cnt10-maxerr"}
 Number:Dimensionless  airQ_co2_maxerr          "Maximum error of CO2 Concentration"             {channel="airq:airq:1:maxerr#co2-maxerr"}
-Number:Dimensionless  airQ_dewpt_maxerr        "Maximum error of Dew Point"                     {channel="airq:airq:1:maxerr#dewpt-maxerr"}
+Number:Temperature    airQ_dewpt_maxerr        "Maximum error of Dew Point"                     {unit="K",channel="airq:airq:1:maxerr#dewpt-maxerr"}
 Number:Dimensionless  airQ_humidity_maxerr     "Maximum error of Humidity"                      {channel="airq:airq:1:maxerr#humidity-relative-maxerr"}
-Number:Dimensionless  airQ_humidity_abs_maxerr "Maximum error of Absolute Humidity"             {channel="airq:airq:1:maxerr#humidity-absolute-maxerr"}
-Number:Dimensionless  airQ_no2_maxerr          "Maximum error of NO2 concentration"             {channel="airq:airq:1:maxerr#no2-maxerr"}
-Number:Dimensionless  airQ_o3_maxerr           "Maximum error of O3 concentration"              {channel="airq:airq:1:maxerr#o3-maxerr"}
+Number:Density        airQ_humidity_abs_maxerr "Maximum error of Absolute Humidity"             {channel="airq:airq:1:maxerr#humidity-absolute-maxerr"}
+Number:Density        airQ_no2_maxerr          "Maximum error of NO2 concentration"             {channel="airq:airq:1:maxerr#no2-maxerr"}
+Number:Density        airQ_o3_maxerr           "Maximum error of O3 concentration"              {channel="airq:airq:1:maxerr#o3-maxerr"}
 Number:Dimensionless  airQ_oxygen_maxerr       "Maximum error of Oxygen concentration"          {channel="airq:airq:1:maxerr#o2-maxerr"}
-Number:Dimensionless  airQ_pm1_maxerr          "Maximum error of Fine Dust Concentration >1µ"   {channel="airq:airq:1:maxerr#fine-dust-conc01-maxerr"}
-Number:Dimensionless  airQ_pm2_5_maxerr        "Maximum error of Fine Dust Concentration >2.5µ" {channel="airq:airq:1:maxerr#fine-dust-conc02-5-maxerr"}
-Number:Dimensionless  airQ_pm10_maxerr         "Maximum error of Fine Dust Concentration >10µ"  {channel="airq:airq:1:maxerr#fine-dust-conc10-maxerr"}
-Number:Dimensionless  airQ_pressure_maxerr     "Maximum error of Pressure"                      {channel="airq:airq:1:maxerr#pressure-maxerr"}
-Number:Dimensionless  airQ_so2_maxerr          "Maximum error of SO2 concentration"             {channel="airq:airq:1:maxerr#so2-maxerr"}
+Number:Density        airQ_pm1_maxerr          "Maximum error of Fine Dust Concentration >1µ"   {channel="airq:airq:1:maxerr#fine-dust-conc01-maxerr"}
+Number:Density        airQ_pm2_5_maxerr        "Maximum error of Fine Dust Concentration >2.5µ" {channel="airq:airq:1:maxerr#fine-dust-conc02-5-maxerr"}
+Number:Density        airQ_pm10_maxerr         "Maximum error of Fine Dust Concentration >10µ"  {channel="airq:airq:1:maxerr#fine-dust-conc10-maxerr"}
+Number:Pressure       airQ_pressure_maxerr     "Maximum error of Pressure"                      {channel="airq:airq:1:maxerr#pressure-maxerr"}
+Number:Density        airQ_so2_maxerr          "Maximum error of SO2 concentration"             {channel="airq:airq:1:maxerr#so2-maxerr"}
 Number:Dimensionless  airQ_sound_maxerr        "Maximum error of Noise"                         {channel="airq:airq:1:maxerr#sound-maxerr"}
-Number:Dimensionless  airQ_temperature_maxerr  "Maximum error of Temperature"                   {channel="airq:airq:1:maxerr#temperature-maxerr"}
+Number:Temperature    airQ_temperature_maxerr  "Maximum error of Temperature"                   {unit="K",channel="airq:airq:1:maxerr#temperature-maxerr"}
 Number:Dimensionless  airQ_voc_maxerr          "Maximum error of VOC concentration"             {channel="airq:airq:1:maxerr#tvoc-maxerr"}
 Number:Dimensionless  airQ_virus_free_maxerr   "Maximum error of Virus-Free"                    {unit="%",channel="airq:airq:1:maxerr#virus-free-maxerr"}
 Number:Dimensionless  airQ_mold_free_maxerr    "Maximum error of Mold-Free"                     {unit="%",channel="airq:airq:1:maxerr#mold-free-maxerr"}

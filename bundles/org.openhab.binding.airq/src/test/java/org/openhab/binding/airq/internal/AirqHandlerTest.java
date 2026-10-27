@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.airq.internal.AirqBindingConstants.THING_TYPE_AIRQ;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -68,6 +70,7 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -91,35 +94,223 @@ class AirqHandlerTest {
         handler.setCallback(callback);
     }
 
-    static Stream<Arguments> legacyPairs() {
-        return Stream.concat(Stream
-                .of(new String[] { "cnt0_3", "fine-dust-cnt00-3" }, new String[] { "cnt0_5", "fine-dust-cnt00-5" },
-                        new String[] { "cnt1", "fine-dust-cnt01" }, new String[] { "cnt2_5", "fine-dust-cnt02-5" },
-                        new String[] { "cnt5", "fine-dust-cnt05" }, new String[] { "cnt10", "fine-dust-cnt10" },
-                        new String[] { "co", "co" }, new String[] { "dewpt", "dewpt" }, new String[] { "h2s", "h2s" },
-                        new String[] { "humidity", "humidity-relative" },
-                        new String[] { "humidity_abs", "humidity-absolute" }, new String[] { "no2", "no2" },
-                        new String[] { "o3", "o3" }, new String[] { "oxygen", "o2" },
-                        new String[] { "pm1", "fine-dust-conc01" }, new String[] { "pm2_5", "fine-dust-conc02-5" },
-                        new String[] { "pm10", "fine-dust-conc10" }, new String[] { "pressure", "pressure" },
-                        new String[] { "radon", "radon" }, new String[] { "so2", "so2" },
-                        new String[] { "temperature", "temperature" }, new String[] { "virus", "virus-free" },
-                        new String[] { "mold", "mold-free" })
-                .map(mapping -> Arguments.of(mapping[0], mapping[1], null)),
-                Stream.of(Arguments.of("co2", "co2", Units.PARTS_PER_MILLION),
-                        Arguments.of("tvoc", "tvoc", Units.PARTS_PER_BILLION),
-                        Arguments.of("sound", "sound", Units.DECIBEL)));
+    static Stream<Arguments> particleCounts() {
+        return Stream.of(Arguments.of("cnt0_3", "fine-dust-cnt00-3"), Arguments.of("cnt0_5", "fine-dust-cnt00-5"),
+                Arguments.of("cnt1", "fine-dust-cnt01"), Arguments.of("cnt2_5", "fine-dust-cnt02-5"),
+                Arguments.of("cnt5", "fine-dust-cnt05"), Arguments.of("cnt10", "fine-dust-cnt10"));
     }
 
     @ParameterizedTest
-    @MethodSource("legacyPairs")
-    void preservesLegacyPairChannelsAndStateTypes(String key, String channel, @Nullable Unit<?> unit) throws Exception {
+    @MethodSource("particleCounts")
+    void particleCountsAreUnitlessNumbers(String key, String channel) throws Exception {
+        // datenlesen.md: particles per 100 ml
         poll("{\"" + key + "\": [12.5, 0.25]}");
 
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
-                unit == null ? new DecimalType(12.5f) : new QuantityType<>(12.5f, unit));
+                new DecimalType(12.5f));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#" + channel + "-maxerr"),
                 new DecimalType(0.25f));
+    }
+
+    static Stream<Arguments> defaultUnits() {
+        // datenlesen.md and measurement.md: the units the device reports unless configured otherwise
+        Unit<?> microgram = Units.MICROGRAM_PER_CUBICMETRE;
+        return Stream.of(Arguments.of("co", "co", AirqUnits.MILLIGRAM_PER_CUBICMETRE),
+                Arguments.of("co2", "co2", Units.PARTS_PER_MILLION), Arguments.of("dewpt", "dewpt", SIUnits.CELSIUS),
+                Arguments.of("h2s", "h2s", microgram), Arguments.of("humidity", "humidity-relative", Units.PERCENT),
+                Arguments.of("humidity_abs", "humidity-absolute", AirqUnits.GRAM_PER_CUBICMETRE),
+                Arguments.of("no2", "no2", microgram), Arguments.of("o3", "o3", microgram),
+                Arguments.of("oxygen", "o2", Units.PERCENT), Arguments.of("pm1", "fine-dust-conc01", microgram),
+                Arguments.of("pm2_5", "fine-dust-conc02-5", microgram),
+                Arguments.of("pm10", "fine-dust-conc10", microgram),
+                Arguments.of("pressure", "pressure", AirqUnits.HECTOPASCAL),
+                Arguments.of("radon", "radon", Units.BECQUEREL_PER_CUBIC_METRE), Arguments.of("so2", "so2", microgram),
+                Arguments.of("sound", "sound", Units.DECIBEL),
+                Arguments.of("temperature", "temperature", SIUnits.CELSIUS),
+                Arguments.of("tvoc", "tvoc", Units.PARTS_PER_BILLION),
+                Arguments.of("virus", "virus-free", Units.PERCENT), Arguments.of("mold", "mold-free", Units.PERCENT));
+    }
+
+    @ParameterizedTest
+    @MethodSource("defaultUnits")
+    void measurementsAndErrorBarsHaveTheDefaultUnits(String key, String channel, Unit<?> unit) throws Exception {
+        poll("{\"" + key + "\": [12.5, 0.25]}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
+                new QuantityType<>(12.5, unit));
+        // datenlesen.md: the error bar has the unit of the value, a temperature difference is given in kelvin
+        Unit<?> errorUnit = unit.isCompatible(Units.KELVIN) ? Units.KELVIN : unit;
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#" + channel + "-maxerr"),
+                new QuantityType<>(0.25, errorUnit));
+    }
+
+    // 2. LifeData.md: a measurement of a device with the default units
+    private static final String LIVE_DATA = """
+            {"co2":[1216.0,86.5],"no2":[15.66,3.4],"co":[0.136266,0.03992],"ch2o_M10":[4.27,2.7],
+             "humidity":[59.375,4.85],"sound_max":[52.6,2.8],"humidity_abs":[10.291,0.7],"timestamp":1793046696000,
+             "tvoc":[1330.0,210.7],"pressure_rel":[1022.35,2.26],"health":894,"dHdt":-0.01,"sound":[48.8,3.3],
+             "dCO2dt":16.94,"pm2_5":[0,10],"pressure":[975.93,1.0],"pm1":[0,10],"uptime":1068539,
+             "temperature":[19.978,0.54],"measuretime":2004,"dewpt":[12.007,1.05],"performance":321.32372,
+             "pm10":[3,10]}
+            """;
+
+    @Test
+    void liveDataIsPublishedInTheDefaultUnits() throws Exception {
+        poll(LIVE_DATA);
+
+        assertThat(value("measurements#co", AirqUnits.MILLIGRAM_PER_CUBICMETRE), closeTo(0.136266, 1e-9));
+        assertThat(value("maxerr#co-maxerr", AirqUnits.MILLIGRAM_PER_CUBICMETRE), closeTo(0.03992, 1e-9));
+        assertThat(value("measurements#no2", Units.MICROGRAM_PER_CUBICMETRE), closeTo(15.66, 1e-9));
+        assertThat(value("measurements#temperature", SIUnits.CELSIUS), closeTo(19.978, 1e-9));
+        assertThat(value("maxerr#temperature-maxerr", Units.KELVIN), closeTo(0.54, 1e-9));
+        assertThat(value("measurements#dewpt", SIUnits.CELSIUS), closeTo(12.007, 1e-9));
+        assertThat(value("measurements#pressure", AirqUnits.HECTOPASCAL), closeTo(975.93, 1e-9));
+        assertThat(value("measurements#humidity-relative", Units.PERCENT), closeTo(59.375, 1e-9));
+        assertThat(value("measurements#humidity-absolute", AirqUnits.GRAM_PER_CUBICMETRE), closeTo(10.291, 1e-9));
+        assertThat(value("measurements#fine-dust-conc10", Units.MICROGRAM_PER_CUBICMETRE), closeTo(3, 1e-9));
+        assertThat(value("maxerr#fine-dust-conc10-maxerr", Units.MICROGRAM_PER_CUBICMETRE), closeTo(10, 1e-9));
+        assertThat(value("measurements#co2", Units.PARTS_PER_MILLION), closeTo(1216, 1e-9));
+        assertThat(value("measurements#tvoc", Units.PARTS_PER_BILLION), closeTo(1330, 1e-9));
+        assertThat(value("measurements#sound", Units.DECIBEL), closeTo(48.8, 1e-9));
+    }
+
+    @Test
+    void configuredUnitsAreConvertedToTheChannelUnits() throws Exception {
+        // measurement.md: temperature, dew point, pressure and radon in other units
+        poll(thing, """
+                {"units": {"temperature": "degF", "dewpt": "K", "pressure": "kPa", "radon": "pCi/L"}}
+                """, """
+                {"temperature": [68, 1.8], "dewpt": [285.15, 0.9], "pressure": [101.325, 0.1], "radon": [2.7, 0.27]}
+                """);
+
+        assertThat(value("measurements#temperature", SIUnits.CELSIUS), closeTo(20, 1e-9));
+        // error bars are differences: 1.8 °F are 1 K, not -16.8 °C
+        assertThat(value("maxerr#temperature-maxerr", Units.KELVIN), closeTo(1, 1e-9));
+        assertThat(value("measurements#dewpt", SIUnits.CELSIUS), closeTo(12, 1e-9));
+        assertThat(value("maxerr#dewpt-maxerr", Units.KELVIN), closeTo(0.9, 1e-9));
+        assertThat(value("measurements#pressure", AirqUnits.HECTOPASCAL), closeTo(1013.25, 1e-9));
+        assertThat(value("maxerr#pressure-maxerr", AirqUnits.HECTOPASCAL), closeTo(1, 1e-9));
+        // 1 pCi/L = 37 Bq/m³
+        assertThat(value("measurements#radon", Units.BECQUEREL_PER_CUBIC_METRE), closeTo(99.9, 1e-9));
+        assertThat(value("maxerr#radon-maxerr", Units.BECQUEREL_PER_CUBIC_METRE), closeTo(9.99, 1e-9));
+    }
+
+    // measurement.md: c[mg/m³] = c[ppm] * M / 22.4 * 273.15 / (273.15 + T) * P / 1013.25
+    private static double milligramPerPpm(double molarMass, double temperature, double pressure) {
+        return molarMass / 22.4 * 273.15 / (273.15 + temperature) * pressure / 1013.25;
+    }
+
+    @Test
+    void volumeFractionsAndMassDensitiesAreConvertedWithTheMolarMass() throws Exception {
+        // sensorinfo.md: the molar mass of each gas sensor, e.g. CO 28.01 g/mol
+        poll(thing, """
+                {"units": {"co": "ppm", "no2": "ppb", "co2": "mg/m^3", "temperature": "degF", "pressure": "kPa"},
+                 "SensorInfo": {"co": {"Molar Mass": 28.01}, "no2": {"Molar Mass": 46.01},
+                                "co2": {"Molar Mass": 44.01}}}
+                """, """
+                {"co": [2, 0.2], "no2": [10, 1], "co2": [1800, 90], "temperature": [77, 0.9], "pressure": [98, 0.1]}
+                """);
+
+        // 77 °F = 25 °C and 98 kPa = 980 hPa from the same measurement
+        double co = milligramPerPpm(28.01, 25, 980);
+        assertThat(value("measurements#co", AirqUnits.MILLIGRAM_PER_CUBICMETRE), closeTo(2 * co, 1e-9));
+        assertThat(value("maxerr#co-maxerr", AirqUnits.MILLIGRAM_PER_CUBICMETRE), closeTo(0.2 * co, 1e-9));
+        // c[µg/m³] = c[ppb] * M / 22.4 * 273.15 / (273.15 + T) * P / 1013.25
+        double no2 = milligramPerPpm(46.01, 25, 980);
+        assertThat(value("measurements#no2", Units.MICROGRAM_PER_CUBICMETRE), closeTo(10 * no2, 1e-9));
+        double co2 = milligramPerPpm(44.01, 25, 980);
+        assertThat(value("measurements#co2", Units.PARTS_PER_MILLION), closeTo(1800 / co2, 1e-9));
+        assertThat(value("maxerr#co2-maxerr", Units.PARTS_PER_MILLION), closeTo(90 / co2, 1e-9));
+    }
+
+    @Test
+    void deprecatedPpmAndPpbIsUsedForSensorsWithoutConfiguredUnit() throws Exception {
+        // measurement.md: ppm&ppb is only evaluated if no units are configured
+        poll(thing, """
+                {"ppm&ppb": true, "units": {"no2": "ug/m^3"},
+                 "SensorInfo": {"co": {"Molar Mass": 28.01}, "no2": {"Molar Mass": 46.01}}}
+                """, """
+                {"co": [2, 0.2], "no2": [10, 1], "temperature": [20, 0.5], "pressure": [1013.25, 1]}
+                """);
+
+        assertThat(value("measurements#co", AirqUnits.MILLIGRAM_PER_CUBICMETRE),
+                closeTo(2 * milligramPerPpm(28.01, 20, 1013.25), 1e-9));
+        assertThat(value("measurements#no2", Units.MICROGRAM_PER_CUBICMETRE), closeTo(10, 1e-9));
+    }
+
+    @Test
+    void concentrationsWithoutMolarMassAreUndefined() throws Exception {
+        poll(thing, "{\"units\": {\"co\": \"ppm\"}}", """
+                {"co": [2, 0.2], "temperature": [20, 0.5], "pressure": [1013.25, 1]}
+                """);
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#co"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#co-maxerr"), UnDefType.UNDEF);
+    }
+
+    @Test
+    void measurementsInUnknownUnitsAreUndefined() throws Exception {
+        // a reading in an unknown unit can't be interpreted, the other readings are not affected
+        poll(thing, "{\"units\": {\"co\": \"furlong\", \"so2\": 5}}",
+                "{\"co\": [2, 0.2], \"so2\": [7, 1], \"no2\": [10, 1]}");
+
+        for (String channel : List.of("measurements#co", "maxerr#co-maxerr", "measurements#so2", "maxerr#so2-maxerr")) {
+            requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, channel), UnDefType.UNDEF);
+        }
+        assertThat(value("measurements#no2", Units.MICROGRAM_PER_CUBICMETRE), closeTo(10, 1e-9));
+    }
+
+    @Test
+    void impossibleConditionsDoNotConvertConcentrations() {
+        QuantityType<?> co = new QuantityType<>(2, Units.PARTS_PER_MILLION);
+
+        assertThat(AirqUnits.convertConcentration(co, AirqUnits.MILLIGRAM_PER_CUBICMETRE, 28.01, -273.15, 1013.25),
+                nullValue());
+        assertThat(AirqUnits.convertConcentration(co, AirqUnits.MILLIGRAM_PER_CUBICMETRE, 28.01, 20, 0), nullValue());
+        assertThat(AirqUnits.convertConcentration(co, AirqUnits.MILLIGRAM_PER_CUBICMETRE, Double.NaN, 20, 1013.25),
+                nullValue());
+    }
+
+    @Test
+    void meanParticleSizeIsInMicrometres() throws Exception {
+        // datenlesen.md: TypPS in µm
+        poll("{\"TypPS\": 0.5}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#avg-fine-dust-size"),
+                new QuantityType<>(0.5, AirqUnits.MICROMETRE));
+    }
+
+    @Test
+    void configurationIsReadBeforeTheFirstMeasurement() throws Exception {
+        AirqHandler pollingHandler = requireNonNull(spy(handler()));
+        pollingHandler.setCallback(callback);
+        doReturn("{}").when(pollingHandler).getDecryptedContentString(anyString(), eq("GET"), isNull());
+
+        pollingHandler.pollData();
+        pollingHandler.pollData();
+
+        var order = inOrder(pollingHandler);
+        order.verify(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/config"), eq("GET"),
+                isNull());
+        order.verify(pollingHandler, times(2)).getDecryptedContentString(ArgumentMatchers.endsWith("/data"), eq("GET"),
+                isNull());
+        verify(pollingHandler, times(1)).getDecryptedContentString(ArgumentMatchers.endsWith("/config"), eq("GET"),
+                isNull());
+    }
+
+    private State lastState(String channel) {
+        ChannelUID channelUID = new ChannelUID(thingUID, channel);
+        return mockingDetails(callback).getInvocations().stream()
+                .filter(invocation -> invocation.getMethod().getName().equals("stateUpdated")
+                        && channelUID.equals(invocation.getArgument(0)))
+                .map(invocation -> invocation.getArgument(1, State.class)).reduce((first, second) -> second)
+                .orElseThrow();
+    }
+
+    private double value(String channel, Unit<?> unit) {
+        State state = lastState(channel);
+        assertThat(state, instanceOf(QuantityType.class));
+        return requireNonNull(((QuantityType<?>) state).toUnit(unit)).doubleValue();
     }
 
     @Test
@@ -131,8 +322,8 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "TypPS, avg-fine-dust-size", "dCO2dt, d-co2dt", "dHdt, d-hdt", "door_event, door-event",
-            "health, health", "performance, performance" })
+    @CsvSource({ "dCO2dt, d-co2dt", "dHdt, d-hdt", "door_event, door-event", "health, health",
+            "performance, performance" })
     void preservesLegacyScalarMappings(String key, String channel) throws Exception {
         poll("{\"" + key + "\": 125}");
 
@@ -172,12 +363,12 @@ class AirqHandlerTest {
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#humidity-relative-maxerr"),
                 UnDefType.UNDEF);
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#co2"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#co2-maxerr"), UnDefType.UNDEF);
         assertThat(
                 mockingDetails(callback).getInvocations().stream()
                         .filter(invocation -> invocation.getMethod().getName().equals("stateUpdated"))
                         .map(invocation -> invocation.getArgument(0, ChannelUID.class)).toList(),
-                allOf(not(hasItem(new ChannelUID(thingUID, "maxerr#co2-maxerr"))),
-                        not(hasItem(new ChannelUID(thingUID, "advanced-measurements#ch2o-m10")))));
+                not(hasItem(new ChannelUID(thingUID, "advanced-measurements#ch2o-m10"))));
     }
 
     @Test
@@ -190,7 +381,7 @@ class AirqHandlerTest {
         poll("{\"co\": [12.5, 0.25]}");
 
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#co"),
-                new DecimalType(12.5f));
+                new QuantityType<>(12.5, AirqUnits.MILLIGRAM_PER_CUBICMETRE));
         requireNonNull(verify(callback)).statusUpdated(thing,
                 new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
     }
@@ -214,7 +405,7 @@ class AirqHandlerTest {
         pollResponses(encryptedResponse(form, "{\"co\": [12.5, 0.25]}"));
 
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#co"),
-                new DecimalType(12.5f));
+                new QuantityType<>(12.5, AirqUnits.MILLIGRAM_PER_CUBICMETRE));
         requireNonNull(verify(callback)).statusUpdated(thing,
                 new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
     }
@@ -222,7 +413,7 @@ class AirqHandlerTest {
     @ParameterizedTest
     @ValueSource(strings = { "object", "text", "quoted", "padded" })
     void configurationAcceptsAllEncryptedResponseForms(String form) throws Exception {
-        AirqHandler configurationHandler = respondingHandler(
+        AirqHandler configurationHandler = respondingHandler("/config",
                 List.of(encryptedResponse(form, "{\"devicename\": \"device\"}")));
 
         configurationHandler.getConfigData();
@@ -251,7 +442,7 @@ class AirqHandlerTest {
                 argThat(status -> status.getStatus() == ThingStatus.OFFLINE
                         && status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#co"),
-                new DecimalType(12.5f));
+                new QuantityType<>(12.5, AirqUnits.MILLIGRAM_PER_CUBICMETRE));
         requireNonNull(verify(callback)).statusUpdated(thing,
                 new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
     }
@@ -259,7 +450,7 @@ class AirqHandlerTest {
     @ParameterizedTest
     @MethodSource("malformedResponses")
     void malformedConfigurationResponsesDoNotThrow(String body) throws Exception {
-        respondingHandler(List.of(body)).getConfigData();
+        respondingHandler("/config", List.of(body)).getConfigData();
 
         verify(callback, never()).stateUpdated(any(), any());
     }
@@ -386,20 +577,23 @@ class AirqHandlerTest {
                 requireNonNull(mock(HttpClient.class)));
     }
 
-    private void pollResponses(String... bodies) {
-        AirqHandler pollingHandler = respondingHandler(List.of(bodies));
+    private void pollResponses(String... bodies) throws Exception {
+        AirqHandler pollingHandler = respondingHandler("/data", List.of(bodies));
         for (int i = 0; i < bodies.length; i++) {
             pollingHandler.pollData();
         }
     }
 
-    private AirqHandler respondingHandler(List<String> bodies) {
+    // answers the requests to path with the given bodies, and the other requests with an empty object
+    private AirqHandler respondingHandler(String path, List<String> bodies) throws Exception {
         List<String> responses = new ArrayList<>(bodies);
+        JsonObject empty = new JsonObject();
+        empty.addProperty("content", handler.encrypt("{}".getBytes(StandardCharsets.UTF_8), ""));
         AirqHandler respondingHandler = new AirqHandler(thing, requireNonNull(mock(HttpClient.class))) {
             @Override
             protected Result getData(String address, String method, @Nullable String body) {
                 assertThat(method, is("GET"));
-                return new Result(responses.removeFirst(), 200);
+                return new Result(address.endsWith(path) ? responses.removeFirst() : empty.toString(), 200);
             }
         };
         respondingHandler.setCallback(callback);
@@ -627,30 +821,44 @@ class AirqHandlerTest {
     }
 
     private void poll(Thing configuredThing, String payload) throws Exception {
+        poll(configuredThing, "{}", payload);
+    }
+
+    // the configuration is read before the first measurement, it contains the units of the measurements
+    private void poll(Thing configuredThing, String configuration, String payload) throws Exception {
         AirqHandler pollingHandler = requireNonNull(
                 spy(new AirqHandler(configuredThing, requireNonNull(mock(HttpClient.class)))));
         pollingHandler.setCallback(callback);
-        doReturn(payload).when(pollingHandler).getDecryptedContentString(anyString(), eq("GET"), isNull());
+        doReturn(payload).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/data"), eq("GET"),
+                isNull());
+        doReturn(configuration).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/config"),
+                eq("GET"), isNull());
         pollingHandler.pollData();
     }
 
     @Test
     void retainedFlatMeasurementChannelsReceiveStatesAlongsideGroupedChannels() throws Exception {
         Thing legacyThing = ThingBuilder.create(THING_TYPE_AIRQ, thingUID)
-                .withChannels(ChannelBuilder.create(new ChannelUID(thingUID, "co"), "Number").build(),
-                        ChannelBuilder.create(new ChannelUID(thingUID, "co_maxerr"), "Number").build(),
-                        ChannelBuilder.create(new ChannelUID(thingUID, "measurements#co"), "Number").build(),
-                        ChannelBuilder.create(new ChannelUID(thingUID, "maxerr#co-maxerr"), "Number").build())
+                .withChannels(ChannelBuilder.create(new ChannelUID(thingUID, "co"), "Number:Density").build(),
+                        ChannelBuilder.create(new ChannelUID(thingUID, "co_maxerr"), "Number:Dimensionless").build(),
+                        ChannelBuilder.create(new ChannelUID(thingUID, "so2"), "Number").build(),
+                        ChannelBuilder.create(new ChannelUID(thingUID, "so2_maxerr"), "Number:Dimensionless").build(),
+                        ChannelBuilder.create(new ChannelUID(thingUID, "measurements#co"), "Number:Density").build(),
+                        ChannelBuilder.create(new ChannelUID(thingUID, "maxerr#co-maxerr"), "Number:Density").build())
                 .build();
 
-        poll(legacyThing, "{\"co\": [12.5, 0.25]}");
+        poll(legacyThing, "{\"co\": [12.5, 0.25], \"so2\": [7.5, 1.5]}");
 
+        // the released flat channels keep their item types (thing type version 4)
         for (String channel : List.of("co", "measurements#co")) {
-            requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, channel), new DecimalType(12.5f));
+            requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, channel),
+                    new QuantityType<>(12.5, AirqUnits.MILLIGRAM_PER_CUBICMETRE));
         }
-        for (String channel : List.of("co_maxerr", "maxerr#co-maxerr")) {
-            requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, channel), new DecimalType(0.25f));
-        }
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#co-maxerr"),
+                new QuantityType<>(0.25, AirqUnits.MILLIGRAM_PER_CUBICMETRE));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "co_maxerr"), new DecimalType(0.25));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "so2"), new DecimalType(7.5));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "so2_maxerr"), new DecimalType(1.5));
         assertThat(
                 mockingDetails(callback).getInvocations().stream()
                         .filter(invocation -> invocation.getMethod().getName().equals("stateUpdated"))
@@ -702,14 +910,19 @@ class AirqHandlerTest {
 
         poll(legacyThing, "{\"humidity\": [45, 0.5]}");
 
-        for (String channel : List.of("humidityRelative", "measurements#humidityRelative",
-                "measurements#humidity-relative")) {
-            requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, channel), new DecimalType(45));
+        for (String channel : List.of("measurements#humidityRelative", "measurements#humidity-relative")) {
+            requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, channel),
+                    new QuantityType<>(45, Units.PERCENT));
         }
-        for (String channel : List.of("humidityRelative_maxerr", "maxerr#humidityRelative_maxerr",
-                "maxerr#humidity-relative-maxerr")) {
-            requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, channel), new DecimalType(0.5));
+        for (String channel : List.of("maxerr#humidityRelative_maxerr", "maxerr#humidity-relative-maxerr")) {
+            requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, channel),
+                    new QuantityType<>(0.5, Units.PERCENT));
         }
+        // plain Number flat channels keep receiving the number
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "humidityRelative"),
+                new DecimalType(45));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "humidityRelative_maxerr"),
+                new DecimalType(0.5));
     }
 
     @ParameterizedTest
@@ -1000,12 +1213,23 @@ class AirqHandlerTest {
             changes.add(instruction.getTagName() + " " + instruction.getAttribute("groupIds") + "#"
                     + instruction.getAttribute("id") + (type != null ? " " + type.getTextContent() : ""));
         }
-        assertThat(changes,
-                contains("update-channel general#auto-update airq:auto-update",
-                        "update-channel general#averaging airq:averaging",
-                        "update-channel general#night-mode-brightness-day airq:nightmode-brightness-day",
-                        "update-channel general#night-mode-brightness-night airq:nightmode-brightness-night",
-                        "remove-channel general#sound-pressure", "add-channel general#sound-info airq:sound-info"));
+        assertThat(changes, contains("update-channel general#auto-update airq:auto-update",
+                "update-channel general#averaging airq:averaging",
+                "update-channel general#night-mode-brightness-day airq:nightmode-brightness-day",
+                "update-channel general#night-mode-brightness-night airq:nightmode-brightness-night",
+                "update-channel measurements#so2 airq:so2", "update-channel maxerr#co-maxerr airq:co-maxerr",
+                "update-channel maxerr#dewpt-maxerr airq:dewpt-maxerr",
+                "update-channel maxerr#h2s-maxerr airq:h2s-maxerr",
+                "update-channel maxerr#humidity-absolute-maxerr airq:humidity-abs-maxerr",
+                "update-channel maxerr#no2-maxerr airq:no2-maxerr", "update-channel maxerr#o3-maxerr airq:o3-maxerr",
+                "update-channel maxerr#fine-dust-conc01-maxerr airq:pm1-maxerr",
+                "update-channel maxerr#fine-dust-conc02-5-maxerr airq:pm2-5-maxerr",
+                "update-channel maxerr#fine-dust-conc10-maxerr airq:pm10-maxerr",
+                "update-channel maxerr#pressure-maxerr airq:pressure-maxerr",
+                "update-channel maxerr#so2-maxerr airq:so2-maxerr",
+                "update-channel maxerr#temperature-maxerr airq:temperature-maxerr",
+                "update-channel maxerr#radon-maxerr airq:radon-maxerr", "remove-channel general#sound-pressure",
+                "add-channel general#sound-info airq:sound-info"));
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='7']"), empty());
 
         List<Element> additions = elements(upgrades, "//instruction-set[@targetVersion='5']/add-channel");
@@ -1069,6 +1293,55 @@ class AirqHandlerTest {
         assertThat(state.getAttribute("min"), is("0"));
         assertThat(state.getAttribute("max"), is("10"));
         assertThat(state.getAttribute("step"), is("1"));
+    }
+
+    @Test
+    void errorChannelsHaveTheItemTypeAndUnitOfTheirMeasurement() throws Exception {
+        // datenlesen.md: [value, error] is value ± error in the same unit
+        Document thingTypes = xml("thing/thing-types.xml");
+        List<Element> errorChannels = elements(thingTypes, "//channel-group-type[@id='maxerr']/channels/channel");
+        assertThat(errorChannels, hasSize(26));
+        for (Element errorChannel : errorChannels) {
+            String measurementId = errorChannel.getAttribute("id").replace("-maxerr", "");
+            Element measurement = element(thingTypes,
+                    "//channel-group-type[@id='measurements']/channels/channel[@id='" + measurementId + "']");
+            Element errorType = element(thingTypes,
+                    "//channel-type[@id='" + errorChannel.getAttribute("typeId") + "']/item-type");
+            Element valueType = element(thingTypes,
+                    "//channel-type[@id='" + measurement.getAttribute("typeId") + "']/item-type");
+
+            assertThat(measurementId, errorType.getTextContent(), is(valueType.getTextContent()));
+            // temperature errors are differences in kelvin
+            assertThat(measurementId, errorType.getAttribute("unitHint"),
+                    is("Number:Temperature".equals(valueType.getTextContent()) ? "K"
+                            : valueType.getAttribute("unitHint")));
+            assertThat(measurementId,
+                    element(thingTypes, "//channel-type[@id='" + errorChannel.getAttribute("typeId") + "']/state")
+                            .getAttribute("pattern"),
+                    not(containsString("%%")));
+        }
+    }
+
+    @Test
+    void unitsFollowTheSpecification() throws Exception {
+        Document thingTypes = xml("thing/thing-types.xml");
+
+        // datenlesen.md: SO₂ in µg/m³, dCO2dt in ppb/s, dHdt in mg/m³/s
+        assertThat(element(thingTypes, "//channel-type[@id='so2']/item-type").getTextContent(), is("Number:Density"));
+        assertThat(element(thingTypes, "//channel-type[@id='so2']/item-type").getAttribute("unitHint"), is("µg/m³"));
+        assertThat(element(thingTypes, "//channel-type[@id='dco2dt']/state").getAttribute("pattern"), is("%.2f ppb/s"));
+        assertThat(element(thingTypes, "//channel-type[@id='dhdt']/state").getAttribute("pattern"), is("%.2f mg/m³/s"));
+        // the micro sign U+00B5, as in openHAB's µg/m³, not the Greek letter mu U+03BC
+        assertThat(Files.readString(Path.of("src/main/resources/OH-INF/thing/thing-types.xml"), StandardCharsets.UTF_8),
+                not(containsString("μ")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "degC", "degF", "K", "hPa", "kPa", "mbar", "bar", "psi", "%", "mg/m^3", "ug/m^3", "ppm",
+            "ppb", "Bq/m^3", "pCi/L" })
+    void allUnitsOfTheSpecificationAreKnown(String unit) {
+        // measurement.md: the possible units of the "units" setting
+        assertThat(AirqUnits.deviceUnit(unit), notNullValue());
     }
 
     // deviceconfig.md: the room types air-Q accepts for RoomType

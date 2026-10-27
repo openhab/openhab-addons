@@ -626,6 +626,48 @@
 			<update-channel id="night-mode-brightness-night" groupIds="general">
 				<type>airq:nightmode-brightness-night</type>
 			</update-channel>
+			<update-channel id="so2" groupIds="measurements">
+				<type>airq:so2</type>
+			</update-channel>
+			<update-channel id="co-maxerr" groupIds="maxerr">
+				<type>airq:co-maxerr</type>
+			</update-channel>
+			<update-channel id="dewpt-maxerr" groupIds="maxerr">
+				<type>airq:dewpt-maxerr</type>
+			</update-channel>
+			<update-channel id="h2s-maxerr" groupIds="maxerr">
+				<type>airq:h2s-maxerr</type>
+			</update-channel>
+			<update-channel id="humidity-absolute-maxerr" groupIds="maxerr">
+				<type>airq:humidity-abs-maxerr</type>
+			</update-channel>
+			<update-channel id="no2-maxerr" groupIds="maxerr">
+				<type>airq:no2-maxerr</type>
+			</update-channel>
+			<update-channel id="o3-maxerr" groupIds="maxerr">
+				<type>airq:o3-maxerr</type>
+			</update-channel>
+			<update-channel id="fine-dust-conc01-maxerr" groupIds="maxerr">
+				<type>airq:pm1-maxerr</type>
+			</update-channel>
+			<update-channel id="fine-dust-conc02-5-maxerr" groupIds="maxerr">
+				<type>airq:pm2-5-maxerr</type>
+			</update-channel>
+			<update-channel id="fine-dust-conc10-maxerr" groupIds="maxerr">
+				<type>airq:pm10-maxerr</type>
+			</update-channel>
+			<update-channel id="pressure-maxerr" groupIds="maxerr">
+				<type>airq:pressure-maxerr</type>
+			</update-channel>
+			<update-channel id="so2-maxerr" groupIds="maxerr">
+				<type>airq:so2-maxerr</type>
+			</update-channel>
+			<update-channel id="temperature-maxerr" groupIds="maxerr">
+				<type>airq:temperature-maxerr</type>
+			</update-channel>
+			<update-channel id="radon-maxerr" groupIds="maxerr">
+				<type>airq:radon-maxerr</type>
+			</update-channel>
 			<remove-channel id="sound-pressure" groupIds="general"/>
 			<add-channel id="sound-info" groupIds="general">
 				<type>airq:sound-info</type>

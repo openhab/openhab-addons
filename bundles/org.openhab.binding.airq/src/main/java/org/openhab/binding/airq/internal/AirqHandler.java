@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -103,6 +105,10 @@ public class AirqHandler extends BaseThingHandler {
             this(dataKey, channelId, type, null, "measurements");
         }
 
+        ChannelMapping(String dataKey, String channelId, String type, Unit<?> unit) {
+            this(dataKey, channelId, type, unit, "measurements");
+        }
+
         ChannelMapping(String dataKey, String channelId, Unit<?> unit) {
             this(dataKey, channelId, "measurement", unit, "advanced-measurements");
         }
@@ -165,27 +171,37 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("cnt1", "fineDustCnt01", "pair"),
             new ChannelMapping("cnt2_5", "fineDustCnt02_5", "pair"),
             new ChannelMapping("cnt5", "fineDustCnt05", "pair"), new ChannelMapping("cnt10", "fineDustCnt10", "pair"),
-            new ChannelMapping("co", "co", "pair"), new ChannelMapping("co2", "co2", "pairPPM"),
-            new ChannelMapping("dewpt", "dewpt", "pair"), new ChannelMapping("h2s", "h2s", "pair"),
-            new ChannelMapping("humidity", "humidityRelative", "pair"),
-            new ChannelMapping("humidity_abs", "humidityAbsolute", "pair"), new ChannelMapping("no2", "no2", "pair"),
-            new ChannelMapping("o3", "o3", "pair"), new ChannelMapping("oxygen", "o2", "pair"),
-            new ChannelMapping("pm1", "fineDustConc01", "pair"),
-            new ChannelMapping("pm2_5", "fineDustConc02_5", "pair"),
-            new ChannelMapping("pm10", "fineDustConc10", "pair"), new ChannelMapping("pressure", "pressure", "pair"),
-            new ChannelMapping("radon", "radon", "pair"), new ChannelMapping("so2", "so2", "pair"),
-            new ChannelMapping("sound", "sound", "pairDB"), new ChannelMapping("temperature", "temperature", "pair"),
+            // datenlesen.md and measurement.md: the default units, used unless the device is configured otherwise
+            new ChannelMapping("co", "co", "pair", AirqUnits.MILLIGRAM_PER_CUBICMETRE),
+            new ChannelMapping("co2", "co2", "pair", Units.PARTS_PER_MILLION),
+            new ChannelMapping("dewpt", "dewpt", "pair", SIUnits.CELSIUS),
+            new ChannelMapping("h2s", "h2s", "pair", Units.MICROGRAM_PER_CUBICMETRE),
+            new ChannelMapping("humidity", "humidityRelative", "pair", Units.PERCENT),
+            new ChannelMapping("humidity_abs", "humidityAbsolute", "pair", AirqUnits.GRAM_PER_CUBICMETRE),
+            new ChannelMapping("no2", "no2", "pair", Units.MICROGRAM_PER_CUBICMETRE),
+            new ChannelMapping("o3", "o3", "pair", Units.MICROGRAM_PER_CUBICMETRE),
+            new ChannelMapping("oxygen", "o2", "pair", Units.PERCENT),
+            new ChannelMapping("pm1", "fineDustConc01", "pair", Units.MICROGRAM_PER_CUBICMETRE),
+            new ChannelMapping("pm2_5", "fineDustConc02_5", "pair", Units.MICROGRAM_PER_CUBICMETRE),
+            new ChannelMapping("pm10", "fineDustConc10", "pair", Units.MICROGRAM_PER_CUBICMETRE),
+            new ChannelMapping("pressure", "pressure", "pair", AirqUnits.HECTOPASCAL),
+            new ChannelMapping("radon", "radon", "pair", Units.BECQUEREL_PER_CUBIC_METRE),
+            new ChannelMapping("so2", "so2", "pair", Units.MICROGRAM_PER_CUBICMETRE),
+            new ChannelMapping("sound", "sound", "pair", Units.DECIBEL),
+            new ChannelMapping("temperature", "temperature", "pair", SIUnits.CELSIUS),
             new ChannelMapping("Status", "status", "string", null, "general"),
-            new ChannelMapping("TypPS", "avgFineDustSize", "number"), new ChannelMapping("dCO2dt", "dCO2dt", "number"),
-            new ChannelMapping("dHdt", "dHdt", "number"), new ChannelMapping("door_event", "doorEvent", "number"),
+            new ChannelMapping("TypPS", "avgFineDustSize", "quantity", AirqUnits.MICROMETRE),
+            new ChannelMapping("dCO2dt", "dCO2dt", "number"), new ChannelMapping("dHdt", "dHdt", "number"),
+            new ChannelMapping("door_event", "doorEvent", "number"),
             new ChannelMapping("health", "healthIndex", "index"), new ChannelMapping("health", "health", "number"),
             new ChannelMapping("measuretime", "measureTime", "numberMilliseconds"),
             new ChannelMapping("performance", "performanceIndex", "index"),
             new ChannelMapping("performance", "performance", "number"),
             new ChannelMapping("timestamp", "timestamp", "datetime"),
             new ChannelMapping("uptime", "uptime", "numberTimePeriod", null, "general"),
-            new ChannelMapping("tvoc", "tvoc", "pairPPB"), new ChannelMapping("virus", "virus_free", "pair"),
-            new ChannelMapping("mold", "mold_free", "pair"),
+            new ChannelMapping("tvoc", "tvoc", "pair", Units.PARTS_PER_BILLION),
+            new ChannelMapping("virus", "virus_free", "pair", Units.PERCENT),
+            new ChannelMapping("mold", "mold_free", "pair", Units.PERCENT),
             new ChannelMapping("c2h4o", "c2h4o", Units.MICROGRAM_PER_CUBICMETRE),
             new ChannelMapping("nh3_MR100", "nh3-mr100", Units.MICROGRAM_PER_CUBICMETRE),
             new ChannelMapping("ash3", "ash3", Units.MICROGRAM_PER_CUBICMETRE),
@@ -243,6 +259,9 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("SensorInfo", "sensorInfo", "property"),
             new ChannelMapping("ErrorBars", "errorBars", "boolean"),
             new ChannelMapping("warmup-phase", "warmupPhase", "boolean"));
+    // the units of the deprecated "ppm&ppb" setting, which the device uses for keys without a "units" entry
+    private static final Map<String, Unit<?>> PPM_AND_PPB_UNITS = Map.of("co", Units.PARTS_PER_MILLION, "no2",
+            Units.PARTS_PER_BILLION, "o3", Units.PARTS_PER_BILLION, "so2", Units.PARTS_PER_BILLION);
     private static final Set<String> MEASUREMENT_KEYS = MEASUREMENTS.stream()
             .filter(mapping -> !"string".equals(mapping.type())).map(ChannelMapping::dataKey)
             .collect(Collectors.toUnmodifiableSet());
@@ -254,6 +273,14 @@ public class AirqHandler extends BaseThingHandler {
     protected static final int POLLING_PERIOD_CONFIG = 1; // in minutes
     protected final HttpClient httpClient;
     AirqConfiguration config = new AirqConfiguration();
+
+    // read from GET /config: the configured unit and the molar mass in g/mol per measurement key
+    private volatile Map<String, Unit<?>> configuredUnits = Map.of();
+    private volatile Map<String, Double> molarMasses = Map.of();
+    // keys configured with a unit the binding doesn't know, their readings can't be interpreted
+    private volatile Set<String> unknownUnits = Set.of();
+    private volatile boolean ppmAndPpb;
+    private volatile boolean configurationRequested;
 
     final class ResultPair {
         private final float value;
@@ -490,10 +517,16 @@ public class AirqHandler extends BaseThingHandler {
                     getThing().getUID());
         }
 
+        // the first data poll reads the configuration first, it may belong to a different device after a change
+        configuredUnits = Map.of();
+        unknownUnits = Set.of();
+        molarMasses = Map.of();
+        ppmAndPpb = false;
+        configurationRequested = false;
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollData, 0, POLLING_PERIOD_DATA_MSEC,
                 TimeUnit.MILLISECONDS);
-        getConfigDataJob = scheduler.scheduleWithFixedDelay(this::getConfigData, 0, POLLING_PERIOD_CONFIG,
-                TimeUnit.MINUTES);
+        getConfigDataJob = scheduler.scheduleWithFixedDelay(this::getConfigData, POLLING_PERIOD_CONFIG,
+                POLLING_PERIOD_CONFIG, TimeUnit.MINUTES);
     }
 
     private void handleTimeCommand(String channelId, Command command) {
@@ -751,6 +784,11 @@ public class AirqHandler extends BaseThingHandler {
     }
 
     public void pollData() {
+        if (!configurationRequested) {
+            // the units of the measurements are part of the configuration, which is then read every minute
+            configurationRequested = true;
+            getConfigData();
+        }
         try {
             String url = "http://" + config.ipAddress + "/data";
             String jsonAnswer = getDecryptedContentString(url, "GET", null);
@@ -792,6 +830,7 @@ public class AirqHandler extends BaseThingHandler {
         try {
             String url = "http://" + config.ipAddress + "/config";
             JsonObject decObj = parseObject(getDecryptedContentString(url, "GET", null));
+            readUnits(decObj);
             processMappings(decObj, CONFIGURATION, "general");
         } catch (AirqException | JsonSyntaxException e) {
             logger.warn("Failed to retrieve configuration: {}", e.getMessage());
@@ -808,15 +847,40 @@ public class AirqHandler extends BaseThingHandler {
             String groupId = groupOverride == null ? mapping.groupId() : groupOverride;
             String channelId = groupId + "#" + mapping.channelId();
             Unit<?> unit = mapping.unit();
-            if (unit != null) {
-                processMeasurement(data.get(mapping.dataKey()), channelId, unit);
-            } else {
+            if (unit == null) {
                 processType(data, mapping.dataKey(), channelId, mapping.type());
+            } else if ("pair".equals(mapping.type())) {
+                processPair(data, mapping.dataKey(), channelId, unit);
+            } else if ("quantity".equals(mapping.type())) {
+                JsonElement reading = data.get(mapping.dataKey());
+                updateMappedState(channelId,
+                        reading != null && isNumeric(reading) ? new QuantityType<>(reading.getAsBigDecimal(), unit)
+                                : UnDefType.UNDEF);
+            } else {
+                processMeasurement(data, mapping.dataKey(), channelId, unit);
             }
         }
     }
 
-    private void processMeasurement(@Nullable JsonElement reading, String channel, Unit<?> unit) {
+    // a [value, error] pair of a standard sensor, a malformed pair is a syntax error of the response
+    private void processPair(JsonObject data, String key, String channel, Unit<?> unit) {
+        JsonElement reading = data.get(key);
+        String errorChannel = errorChannel(channel, "maxerr", "_maxerr");
+        if (reading == null || reading.isJsonNull()) {
+            updateMappedState(channel, UnDefType.UNDEF);
+            updateMappedState(errorChannel, UnDefType.UNDEF);
+        } else if (reading.isJsonArray() && reading.getAsJsonArray().size() == 2
+                && isNumeric(reading.getAsJsonArray().get(0)) && isNumeric(reading.getAsJsonArray().get(1))) {
+            JsonArray pair = reading.getAsJsonArray();
+            updateMeasurement(data, key, channel, errorChannel, unit, pair.get(0).getAsBigDecimal(),
+                    pair.get(1).getAsBigDecimal());
+        } else {
+            throw new JsonSyntaxException("Failed to parse pair: " + reading);
+        }
+    }
+
+    private void processMeasurement(JsonObject data, String key, String channel, Unit<?> unit) {
+        JsonElement reading = data.get(key);
         if (reading == null) {
             return;
         }
@@ -827,16 +891,131 @@ public class AirqHandler extends BaseThingHandler {
         } else if (reading.isJsonArray() && reading.getAsJsonArray().size() == 2
                 && isNumeric(reading.getAsJsonArray().get(0)) && isNumeric(reading.getAsJsonArray().get(1))) {
             JsonArray pair = reading.getAsJsonArray();
-            updateMappedState(channel, new QuantityType<>(pair.get(0).getAsBigDecimal(), unit));
-            updateMappedState(errorChannel, new QuantityType<>(pair.get(1).getAsBigDecimal(), unit));
+            updateMeasurement(data, key, channel, errorChannel, unit, pair.get(0).getAsBigDecimal(),
+                    pair.get(1).getAsBigDecimal());
         } else if (isNumeric(reading)) {
-            updateMappedState(channel, new QuantityType<>(reading.getAsBigDecimal(), unit));
-            updateMappedState(errorChannel, UnDefType.UNDEF);
+            updateMeasurement(data, key, channel, errorChannel, unit, reading.getAsBigDecimal(), null);
         } else {
             updateMappedState(channel, UnDefType.UNDEF);
             updateMappedState(errorChannel, UnDefType.UNDEF);
             logger.debug("Ignoring malformed measurement for channel {}", channel);
         }
+    }
+
+    /**
+     * Updates a measurement and its error bar, which the device reports in the same unit (datenlesen.md). Both are
+     * converted from the unit the device is configured to to the unit of the channel. Error bars are differences, so
+     * temperature errors are converted without the zero-point offset and reported in kelvin.
+     */
+    private void updateMeasurement(JsonObject data, String key, String channel, String errorChannel,
+            Unit<?> channelUnit, BigDecimal value, @Nullable BigDecimal error) {
+        Unit<?> deviceUnit = deviceUnit(key, channelUnit);
+        if (deviceUnit == null) {
+            updateMappedState(channel, UnDefType.UNDEF);
+            updateMappedState(errorChannel, UnDefType.UNDEF);
+            return;
+        }
+        updateMappedState(channel, toChannelUnit(data, key, new QuantityType<>(value, deviceUnit), channelUnit, false));
+        if (error == null) {
+            updateMappedState(errorChannel, UnDefType.UNDEF);
+        } else {
+            Unit<?> errorUnit = channelUnit.isCompatible(Units.KELVIN) ? Units.KELVIN : channelUnit;
+            updateMappedState(errorChannel,
+                    toChannelUnit(data, key, new QuantityType<>(error, deviceUnit), errorUnit, true));
+        }
+    }
+
+    // measurement.md: the "units" setting, else the deprecated "ppm&ppb" setting, else the sensor's default unit
+    private @Nullable Unit<?> deviceUnit(String key, Unit<?> defaultUnit) {
+        if (unknownUnits.contains(key)) {
+            return null;
+        }
+        Unit<?> configured = configuredUnits.get(key);
+        if (configured != null) {
+            return configured;
+        }
+        Unit<?> legacy = PPM_AND_PPB_UNITS.get(key);
+        return ppmAndPpb && legacy != null ? legacy : defaultUnit;
+    }
+
+    private State toChannelUnit(JsonObject data, String key, QuantityType<?> quantity, Unit<?> unit,
+            boolean difference) {
+        QuantityType<?> converted = difference ? toUnitRelative(quantity, unit) : quantity.toUnit(unit);
+        if (converted != null) {
+            return converted;
+        }
+        // volume fraction and mass density, converted with the temperature and pressure of the same measurement
+        Double molarMass = molarMasses.get(key);
+        BigDecimal temperature = reading(data, "temperature", SIUnits.CELSIUS);
+        BigDecimal pressure = reading(data, "pressure", AirqUnits.HECTOPASCAL);
+        if (molarMass != null && temperature != null && pressure != null) {
+            converted = AirqUnits.convertConcentration(quantity, unit, molarMass, temperature.doubleValue(),
+                    pressure.doubleValue());
+        }
+        if (converted == null) {
+            logger.debug("Cannot convert {} from {} to {}", key, quantity.getUnit(), unit);
+            return UnDefType.UNDEF;
+        }
+        return converted;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static @Nullable QuantityType<?> toUnitRelative(QuantityType quantity, Unit unit) {
+        return quantity.toUnitRelative(unit);
+    }
+
+    private @Nullable BigDecimal reading(JsonObject data, String key, Unit<?> unit) {
+        JsonElement reading = data.get(key);
+        if (reading != null && reading.isJsonArray() && !reading.getAsJsonArray().isEmpty()) {
+            reading = reading.getAsJsonArray().get(0);
+        }
+        Unit<?> deviceUnit = deviceUnit(key, unit);
+        if (reading == null || !isNumeric(reading) || deviceUnit == null) {
+            return null;
+        }
+        QuantityType<?> converted = new QuantityType<>(reading.getAsBigDecimal(), deviceUnit).toUnit(unit);
+        return converted == null ? null : converted.toBigDecimal();
+    }
+
+    // reads the configured units, the deprecated ppm&ppb setting, and the molar masses of the gas sensors
+    private void readUnits(JsonObject configuration) {
+        Map<String, Unit<?>> units = new HashMap<>();
+        Set<String> unknown = new HashSet<>();
+        JsonElement unitsElement = configuration.get("units");
+        if (unitsElement != null && unitsElement.isJsonObject()) {
+            for (Entry<String, JsonElement> entry : unitsElement.getAsJsonObject().entrySet()) {
+                Unit<?> unit = entry.getValue().isJsonPrimitive() ? AirqUnits.deviceUnit(entry.getValue().getAsString())
+                        : null;
+                if (unit != null) {
+                    units.put(entry.getKey(), unit);
+                } else {
+                    unknown.add(entry.getKey());
+                    // the configuration is read every minute, warn once
+                    if (!unknownUnits.contains(entry.getKey())) {
+                        logger.warn("Unknown unit {} configured for {}, its measurements are undefined",
+                                entry.getValue(), entry.getKey());
+                    }
+                }
+            }
+        }
+        Map<String, Double> masses = new HashMap<>();
+        JsonElement sensorInfo = configuration.get("SensorInfo");
+        if (sensorInfo != null && sensorInfo.isJsonObject()) {
+            for (Entry<String, JsonElement> sensor : sensorInfo.getAsJsonObject().entrySet()) {
+                JsonElement molarMass = sensor.getValue().isJsonObject()
+                        ? sensor.getValue().getAsJsonObject().get("Molar Mass")
+                        : null;
+                if (molarMass != null && isNumeric(molarMass)) {
+                    masses.put(sensor.getKey(), molarMass.getAsDouble());
+                }
+            }
+        }
+        JsonElement legacy = configuration.get("ppm&ppb");
+        ppmAndPpb = legacy != null && legacy.isJsonPrimitive()
+                && ("true".equals(legacy.getAsString()) || "1".equals(legacy.getAsString()));
+        configuredUnits = Map.copyOf(units);
+        unknownUnits = Set.copyOf(unknown);
+        molarMasses = Map.copyOf(masses);
     }
 
     static JsonObject sanitizeData(JsonObject data) {
@@ -920,24 +1099,6 @@ public class AirqHandler extends BaseThingHandler {
                     updateMappedState(channelName, new DecimalType(pair.getValue()));
                     updateMappedState(errorChannel(channelName, "maxerr", "_maxerr"),
                             new DecimalType(pair.getMaxdev()));
-                    break;
-                case "pairPPM":
-                    ResultPair pairPPM = new ResultPair(dec.get(airqName));
-                    updateMappedState(channelName, new QuantityType<>(pairPPM.getValue(), Units.PARTS_PER_MILLION));
-                    updateMappedState(errorChannel(channelName, "maxerr", "_maxerr"),
-                            new DecimalType(pairPPM.getMaxdev()));
-                    break;
-                case "pairPPB":
-                    ResultPair pairPPB = new ResultPair(dec.get(airqName));
-                    updateMappedState(channelName, new QuantityType<>(pairPPB.getValue(), Units.PARTS_PER_BILLION));
-                    updateMappedState(errorChannel(channelName, "maxerr", "_maxerr"),
-                            new DecimalType(pairPPB.getMaxdev()));
-                    break;
-                case "pairDB":
-                    ResultPair pairDB = new ResultPair(dec.get(airqName));
-                    updateMappedState(channelName, new QuantityType<>(pairDB.getValue(), Units.DECIBEL));
-                    updateMappedState(errorChannel(channelName, "maxerr", "_maxerr"),
-                            new DecimalType(pairDB.getMaxdev()));
                     break;
                 case "index":
                     double rawValue = Double.parseDouble(dec.get(airqName).toString());
@@ -1098,11 +1259,11 @@ public class AirqHandler extends BaseThingHandler {
                             legacyState = new StringType(
                                     LocalTime.ofSecondOfDay(minutes.intValue() * 60).format(CLOCK_TIME_FORMAT));
                         }
-                    } else if ("averagingRhythm".equals(legacyId)
-                            && "Number".equals(legacyChannel.getAcceptedItemType())) {
-                        legacyState = new DecimalType(quantity.toBigDecimal());
                     } else if ("autoUpdate".equals(legacyId) && "Switch".equals(legacyChannel.getAcceptedItemType())) {
                         legacyState = OnOffType.from(quantity.intValue() > 0);
+                    } else if ("Number".equals(legacyChannel.getAcceptedItemType()) || legacyId.endsWith("_maxerr")) {
+                        // plain Number and Number:Dimensionless error channels get the number in the channel's unit
+                        legacyState = new DecimalType(quantity.toBigDecimal());
                     }
                 } else if (state instanceof DecimalType decimal && "averaging".equals(legacyId)
                         && "Switch".equals(legacyChannel.getAcceptedItemType())) {
