@@ -106,6 +106,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private @Nullable BigDecimal altitude;
     private @Nullable Instant lastUpdate;
     private @Nullable Instant doorLockTimestamp;
+    // the data points with a reported value, whose fallback data points no longer update their channel; guarded by
+    // dataLock
+    private final Set<VehicleChannel> reportedChannels = EnumSet.noneOf(VehicleChannel.class);
 
     public BMWCarDataVehicleHandler(Thing thing) {
         this(thing, null);
@@ -223,6 +226,11 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                 logger.trace("Ignoring unsupported value {} of {}", value.value, descriptor);
                 continue;
             }
+            VehicleChannel primary = channel.getPrimary();
+            if (primary != null && reportedChannels.contains(primary)) {
+                continue;
+            }
+            reportedChannels.add(channel);
             if (channel == VehicleChannel.DOOR_LOCK || channel == VehicleChannel.DOOR_STATUS) {
                 // both descriptors update the door lock: an older value of one must not replace a newer of the other
                 Instant previousDoorLock = doorLockTimestamp;
@@ -619,7 +627,8 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             boolean irrelevant = !channel.getDrive().appliesTo(drives)
                     || (noSunroof && channel == VehicleChannel.SUNROOF);
             String channelUid = channel.getChannelUid();
-            if (irrelevant && channelUid != null) {
+            // several data points can update the same channel
+            if (irrelevant && channelUid != null && !ids.contains(channelUid)) {
                 ids.add(channelUid);
                 String detailChannelUid = channel.getDetailChannelUid();
                 if (detailChannelUid != null) {

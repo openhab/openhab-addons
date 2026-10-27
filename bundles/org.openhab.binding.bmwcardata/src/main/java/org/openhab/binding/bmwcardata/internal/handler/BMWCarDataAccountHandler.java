@@ -87,7 +87,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private static final String CONTAINER_NAME = "openHAB";
     private static final String CONTAINER_PURPOSE_PREFIX = "openHAB BMW CarData binding";
     // bump the revision whenever the descriptors of VehicleChannel change, so that the container is replaced
-    static final String CONTAINER_PURPOSE = CONTAINER_PURPOSE_PREFIX + " rev 7";
+    static final String CONTAINER_PURPOSE = CONTAINER_PURPOSE_PREFIX + " rev 8";
     private static final Duration REFRESH_MARGIN = Duration.ofMinutes(5);
     private static final long RETRY_DELAY_SECONDS = 60;
     private static final long STREAM_STOP_TIMEOUT_SECONDS = 10;

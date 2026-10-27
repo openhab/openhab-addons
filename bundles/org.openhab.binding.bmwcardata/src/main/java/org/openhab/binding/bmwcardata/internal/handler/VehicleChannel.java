@@ -86,6 +86,8 @@ public enum VehicleChannel {
             Kind.OPENING, null),
     REAR_WINDOW(GROUP_STATUS, "rear-window", "vehicle.body.trunk.window.isOpen", Kind.CONTACT, null),
     SUNROOF(GROUP_STATUS, "sunroof", "vehicle.cabin.sunroof.overallStatus", Kind.OPENING, null),
+    // the sunroof state of vehicles that do not report the overall state, with the same values
+    SUNROOF_STATUS(GROUP_STATUS, "sunroof", "vehicle.cabin.sunroof.status", Kind.OPENING, null),
     MOVING(GROUP_STATUS, "moving", "vehicle.isMoving", Kind.SWITCH, null),
     DEEP_SLEEP(GROUP_STATUS, "deep-sleep", "vehicle.vehicle.deepSleepModeActive", Kind.SWITCH, null),
     BATTERY_VOLTAGE(GROUP_STATUS, "battery-voltage", "vehicle.electricalSystem.battery.voltage", Kind.QUANTITY,
@@ -143,6 +145,9 @@ public enum VehicleChannel {
     REMAINING_FUEL(GROUP_RANGE, "remaining-fuel", "vehicle.drivetrain.fuelSystem.remainingFuel", Kind.QUANTITY,
             Units.LITRE),
     SOC(GROUP_CHARGE, "soc", "vehicle.drivetrain.batteryManagement.header", Kind.QUANTITY, Units.PERCENT),
+    // the state of charge of vehicles that do not report the header, e.g. those of the Neue Klasse
+    SOC_DISPLAYED(GROUP_CHARGE, "soc", "vehicle.powertrain.electric.battery.stateOfCharge.displayed", Kind.QUANTITY,
+            Units.PERCENT),
     TARGET_SOC(GROUP_CHARGE, "target-soc", "vehicle.powertrain.electric.battery.stateOfCharge.target", Kind.QUANTITY,
             Units.PERCENT),
     CHARGING_STATUS(GROUP_CHARGE, "status", "vehicle.drivetrain.electricEngine.charging.status", Kind.STRING, null),
@@ -290,10 +295,10 @@ public enum VehicleChannel {
 
     private static final Set<VehicleChannel> ELECTRIC_ONLY = EnumSet.of(BATTERY_CAPACITY, BATTERY_ENERGY,
             BATTERY_HEALTH, ENERGY_TO_FULL, GRID_ENERGY, AVG_CONSUMPTION, ELECTRIC_RANGE, ELECTRIC_RANGE_FORECAST,
-            ELECTRIC_RANGE_TARGET, SOC, TARGET_SOC, CHARGING_STATUS, PLUGGED, CHARGING_POWER, TIME_REMAINING,
-            AC_CURRENT, AC_VOLTAGE, AC_LIMIT, AC_LIMIT_MIN, AC_LIMIT_MAX, PHASES, CHARGING_METHOD, PORT, PREDICTED_SOC,
-            MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE, CHARGING_END_REASON, LAST_CHARGING_RESULT, CABLE_LOCK,
-            CHARGING_FLAP, CHARGING_FLAP_LOCKED, TRIP_END_SOC, TRIP_RECUPERATION, TRIP_COMFORT_ENERGY);
+            ELECTRIC_RANGE_TARGET, SOC, SOC_DISPLAYED, TARGET_SOC, CHARGING_STATUS, PLUGGED, CHARGING_POWER,
+            TIME_REMAINING, AC_CURRENT, AC_VOLTAGE, AC_LIMIT, AC_LIMIT_MIN, AC_LIMIT_MAX, PHASES, CHARGING_METHOD, PORT,
+            PREDICTED_SOC, MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE, CHARGING_END_REASON, LAST_CHARGING_RESULT,
+            CABLE_LOCK, CHARGING_FLAP, CHARGING_FLAP_LOCKED, TRIP_END_SOC, TRIP_RECUPERATION, TRIP_COMFORT_ENERGY);
 
     // lastRemainingRange is meant for vehicles with a combustion engine, according to BMW's catalogue; an electric
     // vehicle was seen not to report the engine state while driving
@@ -399,6 +404,20 @@ public enum VehicleChannel {
     public @Nullable String getDetailChannelUid() {
         String channelUid = getChannelUid();
         return (kind == Kind.OPENING || kind == Kind.LOCK_STATE) && channelUid != null ? channelUid + "-state" : null;
+    }
+
+    /**
+     * @return the data point whose channel this data point only updates as long as that one has not been reported, or
+     *         {@code null} if this data point updates its channel in any case
+     */
+    public @Nullable VehicleChannel getPrimary() {
+        if (this == SOC_DISPLAYED) {
+            return SOC;
+        }
+        if (this == SUNROOF_STATUS) {
+            return SUNROOF;
+        }
+        return null;
     }
 
     /**

@@ -216,6 +216,29 @@ class BMWCarDataVehicleHandlerTest {
     }
 
     @Test
+    void displayedStateOfChargeIsUsedUntilTheHeaderIsReported() {
+        String header = "vehicle.drivetrain.batteryManagement.header";
+        String displayed = "vehicle.powertrain.electric.battery.stateOfCharge.displayed";
+        handler.updateTelematicData(Map.of(displayed, value(70, "%", "2026-10-01T10:00:00Z")));
+        verifyState("charge#soc", QuantityType.valueOf("70 %"));
+
+        handler.updateTelematicData(Map.of(header, value(71, "%", "2026-10-01T10:05:00Z")));
+        verifyState("charge#soc", QuantityType.valueOf("71 %"));
+
+        // once the vehicle reports the header, the displayed value no longer updates the channel
+        handler.updateTelematicData(Map.of(displayed, value(72, "%", "2026-10-01T10:10:00Z")));
+        verify(callback, never()).stateUpdated(channel("charge#soc"), QuantityType.valueOf("72 %"));
+    }
+
+    @Test
+    void sunroofStatusUpdatesTheSunroofChannels() {
+        handler.updateTelematicData(Map.of("vehicle.cabin.sunroof.status",
+                stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
+        verifyState("status#sunroof", OpenClosedType.OPEN);
+        verifyState("status#sunroof-state", new StringType("INTERMEDIATE"));
+    }
+
+    @Test
     void combinesLatitudeAndLongitudeOfSeparateMessages() {
         handler.updateTelematicData(Map.of(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z")));
         verify(callback, never()).stateUpdated(eq(channel(CHANNEL_GPS)), any());
@@ -373,6 +396,8 @@ class BMWCarDataVehicleHandlerTest {
         assertEquals(EnumSet.of(Drive.COMBUSTION), BMWCarDataVehicleHandler.drives(basicData));
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
         assertTrue(ids.contains(GROUP_CHARGE + "#soc"));
+        // the channel of several data points is removed once
+        assertEquals(1, ids.stream().filter((GROUP_CHARGE + "#soc")::equals).count());
         assertTrue(ids.contains(GROUP_RANGE + "#electric"));
         assertTrue(ids.contains(GROUP_RANGE + "#electric-target"));
         assertTrue(ids.contains(GROUP_CHARGE + "#flap-locked"));
@@ -403,6 +428,7 @@ class BMWCarDataVehicleHandlerTest {
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("PHEV", null, false, false));
         assertTrue(ids.contains(GROUP_STATUS + "#sunroof"));
         assertTrue(ids.contains(GROUP_STATUS + "#sunroof-state"));
+        assertEquals(1, ids.stream().filter((GROUP_STATUS + "#sunroof")::equals).count());
         // hasNavi is not trusted, as vehicles with a navigation system report false
         assertFalse(ids.contains(GROUP_NAVIGATION + "#destination-distance"));
         assertFalse(ids.contains(GROUP_NAVIGATION + "#arrival-time"));

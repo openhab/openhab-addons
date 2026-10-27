@@ -281,6 +281,7 @@ The String channels show the values as reported by the vehicle; the door lock st
 `status#door-lock` is `ON` for `LOCKED` and `SECURED` (locked with the alarm system armed), and `OFF` for `UNLOCKED` and `SELECTIVELOCKED` (all doors locked except the driver door).
 `status#door-lock`, `status#trunk-locked` and `charge#flap-locked` are `ON` when locked, so they can be combined in a group, e.g. `Group:Switch:AND(ON,OFF)`.
 Windows and the sunroof are `OPEN` also when they are only partly open or tilted; the advanced `-state` channels show the reported state.
+Vehicles that do not report the state of charge header or the overall sunroof state, e.g. those of the Neue Klasse, update `charge#soc` and `status#sunroof` from the displayed state of charge and the sunroof state.
 Not every vehicle reports whether a charging cable is plugged in; until it does, `charge#plugged` follows the charging port status (`CONNECTED` or `DISCONNECTED`).
 Values the vehicle reports as unavailable (e.g. `INVALID`, `-NA-` or `UNKNOWN`), and values that cannot be interpreted, set the channel to `UNDEF`.
 
