@@ -14,12 +14,17 @@ package org.openhab.binding.lgwebos.internal.handler;
 
 import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -77,6 +82,9 @@ public class LGWebOSHandler extends BaseThingHandler
     private static final int RECONNECT_START_UP_DELAY_SECONDS = 0;
     private static final int CHANNEL_SUBSCRIPTION_DELAY_SECONDS = 1;
     private static final String APP_ID_LIVETV = "com.webos.app.livetv";
+    private static final int REACHABILITY_TIMEOUT_MS = 1000;
+    // webOS websocket ports; a refused connection on these still proves that the TV's network stack is alive
+    private static final int[] PROBE_PORTS = { 3000, 3001 };
 
     private final Logger logger = LoggerFactory.getLogger(LGWebOSHandler.class);
 
@@ -286,7 +294,7 @@ public class LGWebOSHandler extends BaseThingHandler
                 postUpdate(CHANNEL_POWER, OnOffType.OFF);
                 break;
             case DISCONNECTED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.tv-off");
+                updateOfflineOrStandby(ThingStatusDetail.NONE, "@text/offline.tv-off");
                 channelHandlers.forEach((k, v) -> {
                     v.onDeviceRemoved(k, this);
                     v.removeAnySubscription(this);
@@ -331,10 +339,71 @@ public class LGWebOSHandler extends BaseThingHandler
             case CONNECTING:
             case REGISTERING:
             case REGISTERED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateOfflineOrStandby(ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("@text/offline.comm-error-connexion-failed [ \"%s\" ]", error));
                 break;
         }
+    }
+
+    /**
+     * Sets the thing OFFLINE. If the option standbyOnline is enabled and the TV's network stack still answers
+     * (TV in standby), the thing is set ONLINE instead and the power channel is set to OFF.
+     */
+    private void updateOfflineOrStandby(ThingStatusDetail detail, String description) {
+        LGWebOSConfiguration c = getLGWebOSConfig();
+        if (!c.getStandbyOnline()) {
+            updateStatus(ThingStatus.OFFLINE, detail, description);
+            return;
+        }
+        String host = c.getHost();
+        // network probes block, so keep them off the websocket and framework threads
+        scheduler.execute(() -> {
+            boolean alive = isHostAlive(host);
+            LGWebOSTVSocket s = socket;
+            if (s == null) {
+                return; // disposed in the meantime
+            }
+            LGWebOSTVSocket.State state = s.getState();
+            if (state == LGWebOSTVSocket.State.REGISTERING || state == LGWebOSTVSocket.State.REGISTERED) {
+                return; // TV woke up in the meantime, state handling already set the status
+            }
+            if (alive) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.standby");
+                postUpdate(CHANNEL_POWER, OnOffType.OFF);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, detail, description);
+            }
+        });
+    }
+
+    /**
+     * Checks whether the host answers on the network, independent of the webOS services being available.
+     * First tries ICMP echo (or the JVM's fallback), then a TCP connect where "connection refused" proves
+     * that the host is alive.
+     */
+    private boolean isHostAlive(String host) {
+        try {
+            InetAddress address = InetAddress.getByName(host);
+            if (address.isReachable(REACHABILITY_TIMEOUT_MS)) {
+                return true;
+            }
+            for (int port : PROBE_PORTS) {
+                try (Socket probe = new Socket()) {
+                    probe.connect(new InetSocketAddress(address, port), REACHABILITY_TIMEOUT_MS);
+                    return true;
+                } catch (ConnectException e) {
+                    String message = e.getMessage();
+                    if (message != null && message.toLowerCase(Locale.ROOT).contains("refused")) {
+                        return true;
+                    }
+                } catch (IOException e) {
+                    // timeout or unreachable - try next port
+                }
+            }
+        } catch (IOException e) {
+            logger.debug("Reachability check for {} failed: {}", host, e.getMessage());
+        }
+        return false;
     }
 
     public void setOptions(String channelId, List<StateOption> options) {

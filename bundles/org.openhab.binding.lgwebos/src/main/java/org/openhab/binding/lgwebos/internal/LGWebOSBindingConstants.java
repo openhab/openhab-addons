@@ -44,6 +44,7 @@ public class LGWebOSBindingConstants {
     public static final String CONFIG_KEY = "key";
     public static final String CONFIG_MAC_ADDRESS = "macAddress";
     public static final String CONFIG_BROADCAST_ADDRESS = "broadcastAddress";
+    public static final String CONFIG_STANDBY_ONLINE = "standbyOnline";
 
     /*
      * Property names must match property names in
