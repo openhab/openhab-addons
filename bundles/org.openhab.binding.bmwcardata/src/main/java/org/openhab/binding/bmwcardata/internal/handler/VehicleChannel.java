@@ -319,7 +319,8 @@ public enum VehicleChannel {
         // an opening that can be partly open: a contact that is open when partly open, plus a detail channel with
         // the reported state
         OPENING,
-        // a lock state word, normalized so that e.g. SELECTIVE-LOCKED and SELECTIVELOCKED compare equal
+        // a lock state word: a switch that is on when all doors are locked, plus a detail channel with the reported
+        // word, normalized so that e.g. SELECTIVE-LOCKED and SELECTIVELOCKED compare equal
         LOCK_STATE,
         DATETIME
     }
@@ -359,6 +360,9 @@ public enum VehicleChannel {
     private static final Set<String> OPEN_WORDS = Set.of("OPEN", "INTERMEDIATE", "OPENTILT", "INTERMEDIATETILT", "TRUE",
             "ISTRUE");
     private static final Set<String> CLOSED_WORDS = Set.of("CLOSED", "FALSE", "ISFALSE");
+    // SECURED is locked with the alarm system armed; SELECTIVELOCKED is locked except the driver door
+    private static final Set<String> LOCKED_WORDS = Set.of("LOCKED", "SECURED");
+    private static final Set<String> UNLOCKED_WORDS = Set.of("UNLOCKED", "SELECTIVELOCKED");
 
     private final String groupId;
     private final @Nullable String channelId;
@@ -389,12 +393,12 @@ public enum VehicleChannel {
     }
 
     /**
-     * @return the id of the channel with the reported state of an opening, {@code <channel>-state}, or {@code null}
-     *         for all other kinds
+     * @return the id of the channel with the reported state of an opening or a lock, {@code <channel>-state}, or
+     *         {@code null} for all other kinds
      */
     public @Nullable String getDetailChannelUid() {
         String channelUid = getChannelUid();
-        return kind == Kind.OPENING && channelUid != null ? channelUid + "-state" : null;
+        return (kind == Kind.OPENING || kind == Kind.LOCK_STATE) && channelUid != null ? channelUid + "-state" : null;
     }
 
     /**
@@ -435,10 +439,7 @@ public enum VehicleChannel {
         }
         State state = switch (kind) {
             case STRING -> new StringType(primitive.getAsString().strip());
-            case LOCK_STATE -> {
-                String word = word(primitive);
-                yield word == null ? null : new StringType(word);
-            }
+            case LOCK_STATE -> toLockState(primitive);
             case SWITCH -> {
                 Boolean bool = toBoolean(primitive);
                 yield bool == null ? null : OnOffType.from(bool);
@@ -461,16 +462,39 @@ public enum VehicleChannel {
     }
 
     /**
-     * Converts a value for the detail channel of an opening, see {@link #getDetailChannelUid()}.
+     * Converts a value for the detail channel of an opening or a lock, see {@link #getDetailChannelUid()}.
      *
-     * @return the reported state, e.g. {@code INTERMEDIATE}, or {@code null} if the value is missing
+     * @return the reported state, e.g. {@code INTERMEDIATE}, the normalized word for a lock, e.g.
+     *         {@code SELECTIVELOCKED}, or {@code null} if the value is missing
      */
     public @Nullable State toDetailState(TelematicValue telematicValue) {
         JsonPrimitive primitive = toPrimitive(telematicValue);
         if (primitive == null) {
             return null;
         }
-        return isUndefined(primitive) ? UnDefType.UNDEF : new StringType(primitive.getAsString().strip());
+        if (isUndefined(primitive)) {
+            return UnDefType.UNDEF;
+        }
+        if (kind == Kind.LOCK_STATE) {
+            String word = word(primitive);
+            return word == null ? UnDefType.UNDEF : new StringType(word);
+        }
+        return new StringType(primitive.getAsString().strip());
+    }
+
+    /**
+     * @return {@code ON} if all doors are locked, {@code OFF} if at least one is unlocked, or {@code null} for other
+     *         values
+     */
+    private static @Nullable State toLockState(JsonPrimitive primitive) {
+        String word = word(primitive);
+        if (word != null && LOCKED_WORDS.contains(word)) {
+            return OnOffType.ON;
+        }
+        if (word != null && UNLOCKED_WORDS.contains(word)) {
+            return OnOffType.OFF;
+        }
+        return null;
     }
 
     /**

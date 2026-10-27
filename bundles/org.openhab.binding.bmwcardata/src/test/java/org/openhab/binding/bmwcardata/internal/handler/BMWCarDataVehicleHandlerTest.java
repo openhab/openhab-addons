@@ -122,7 +122,8 @@ class BMWCarDataVehicleHandlerTest {
         // the empty value must not block a later value with an older timestamp
         handler.updateTelematicData(Map.of("vehicle.cabin.door.lock.status",
                 stringValue("SELECTIVE-LOCKED", null, "2026-10-01T11:00:00Z")));
-        verifyState("status#door-lock", new StringType("SELECTIVELOCKED"));
+        verifyState("status#door-lock", OnOffType.OFF);
+        verifyState("status#door-lock-state", new StringType("SELECTIVELOCKED"));
     }
 
     @Test
@@ -201,14 +202,17 @@ class BMWCarDataVehicleHandlerTest {
         String doorStatus = "vehicle.cabin.door.status";
         String lockStatus = "vehicle.cabin.door.lock.status";
         handler.updateTelematicData(Map.of(doorStatus, stringValue("UNLOCKED", null, "2026-10-01T10:05:00Z")));
-        verifyState("status#door-lock", new StringType("UNLOCKED"));
+        verifyState("status#door-lock", OnOffType.OFF);
+        verifyState("status#door-lock-state", new StringType("UNLOCKED"));
 
         // a refresh with an older value of the REST only descriptor does not replace the newer stream value
         handler.updateTelematicData(Map.of(lockStatus, stringValue("SECURED", null, "2026-10-01T10:00:00Z")));
-        verify(callback, never()).stateUpdated(channel("status#door-lock"), new StringType("SECURED"));
+        verify(callback, never()).stateUpdated(channel("status#door-lock"), OnOffType.ON);
+        verify(callback, never()).stateUpdated(channel("status#door-lock-state"), new StringType("SECURED"));
 
         handler.updateTelematicData(Map.of(lockStatus, stringValue("LOCKED", null, "2026-10-01T10:10:00Z")));
-        verifyState("status#door-lock", new StringType("LOCKED"));
+        verifyState("status#door-lock", OnOffType.ON);
+        verifyState("status#door-lock-state", new StringType("LOCKED"));
     }
 
     @Test

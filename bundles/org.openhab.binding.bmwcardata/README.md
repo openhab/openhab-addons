@@ -165,7 +165,8 @@ To get removed channels back, delete and recreate the Thing.
 
 | Channel                              | Type                     | Description                                                                   | Advanced |
 |--------------------------------------|--------------------------|-------------------------------------------------------------------------------|----------|
-| status#door-lock                     | String                   | Lock state of the doors                                                       | no       |
+| status#door-lock                     | Switch                   | Whether all doors are locked (`ON`)                                           | no       |
+| status#door-lock-state               | String                   | Reported lock state of the doors (LOCKED, SECURED, SELECTIVELOCKED, UNLOCKED) | yes      |
 | status#trunk                         | Contact                  | Whether the trunk is open                                                     | no       |
 | status#hood                          | Contact                  | Whether the hood is open                                                      | no       |
 | status#trunk-locked                  | Switch                   | Whether the trunk is locked                                                   | no       |
@@ -277,6 +278,8 @@ To get removed channels back, delete and recreate the Thing.
 | statistics#weekly-distance-long-term | Number:Length            | Average distance per week over two months                                     | yes      |
 
 The String channels show the values as reported by the vehicle; the door lock state is normalized, e.g. `SELECTIVE-LOCKED` becomes `SELECTIVELOCKED`.
+`status#door-lock` is `ON` for `LOCKED` and `SECURED` (locked with the alarm system armed), and `OFF` for `UNLOCKED` and `SELECTIVELOCKED` (all doors locked except the driver door).
+`status#door-lock`, `status#trunk-locked` and `charge#flap-locked` are `ON` when locked, so they can be combined in a group, e.g. `Group:Switch:AND(ON,OFF)`.
 Windows and the sunroof are `OPEN` also when they are only partly open or tilted; the advanced `-state` channels show the reported state.
 Not every vehicle reports whether a charging cable is plugged in; until it does, `charge#plugged` follows the charging port status (`CONNECTED` or `DISCONNECTED`).
 Values the vehicle reports as unavailable (e.g. `INVALID`, `-NA-` or `UNKNOWN`), and values that cannot be interpreted, set the channel to `UNDEF`.
@@ -321,7 +324,7 @@ Number:Length        i4_Mileage   "Mileage [%d %unit%]"           { channel="bmw
 Number:Length        i4_Range     "Range [%d %unit%]"             { channel="bmwcardata:vehicle:myaccount:i4:range#electric" }
 Number:Dimensionless i4_Soc       "State of Charge [%d %%]"       { channel="bmwcardata:vehicle:myaccount:i4:charge#soc" }
 String               i4_Charging  "Charging [%s]"                 { channel="bmwcardata:vehicle:myaccount:i4:charge#status" }
-String               i4_DoorLock  "Doors [%s]"                    { channel="bmwcardata:vehicle:myaccount:i4:status#door-lock" }
+Switch               i4_DoorLock  "Doors Locked [%s]"             { channel="bmwcardata:vehicle:myaccount:i4:status#door-lock" }
 Location             i4_Location  "Location"                      { channel="bmwcardata:vehicle:myaccount:i4:navigation#gps" }
 DateTime             i4_Updated   "Last Update [%1$tF %1$tR]"     { channel="bmwcardata:vehicle:myaccount:i4:status#last-update" }
 ```

@@ -53,6 +53,7 @@
 		<label>Vehicle Status</label>
 		<channels>
 			<channel id="door-lock" typeId="door-lock"/>
+			<channel id="door-lock-state" typeId="door-lock-state"/>
 			<channel id="trunk" typeId="door">
 				<label>Trunk</label>
 				<description>Whether the trunk is open</description>
@@ -357,8 +358,20 @@
 	</channel-group-type>
 
 	<channel-type id="door-lock">
+		<item-type>Switch</item-type>
+		<label>Doors Locked</label>
+		<description>Whether all doors are locked</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="door-lock-state" advanced="true">
 		<item-type>String</item-type>
-		<label>Door Lock</label>
+		<label>Door Lock State</label>
 		<description>Lock state of the doors as reported by the vehicle</description>
 		<category>Lock</category>
 		<tags>
