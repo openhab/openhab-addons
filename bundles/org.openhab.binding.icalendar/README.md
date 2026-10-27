@@ -114,6 +114,10 @@ The `Item_Name` field must be the name of an item.
 The `New_State_Value` is the state value that will be sent to the item.
 It must be a value which is compatible with the item type.
 See openHAB Core definitions for [command types](https://www.openhab.org/docs/concepts/items.html#state-and-command-type-formatting) for valid types and formats.
+A plain number like `50` is sent as a `DecimalType`, which e.g. `Dimmer` items do not accept as command.
+Append a `%` (e.g. `50%`) to send a `PercentType`.
+HTML formatting in the event description (as added by some calendar providers) is removed before the command tags are evaluated.
+Quoted String values (e.g. `"<b>text</b>"`) are sent literally, including any markup or entities inside the quotes.
 
 The `Authorization_Code` may _optionally_ be used as follows:
 
