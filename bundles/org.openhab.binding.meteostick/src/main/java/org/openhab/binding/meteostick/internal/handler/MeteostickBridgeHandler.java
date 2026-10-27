@@ -220,6 +220,88 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Processes one received line.
+     * <p>
+     * Package-visible so that packet handling can be tested without a serial port.
+     *
+     * @param message the received line
+     */
+    void processMessage(String message) {
+        String[] fields = message.split("\\s+");
+        if (fields.length == 0) {
+            return;
+        }
+
+        switch (fields[0]) {
+            case "B": // Barometer
+                processBarometer(fields);
+                break;
+            case "#":
+                break;
+            case "?":
+                // Device has been reset - reconfigure
+                int channels = 0;
+                for (int channel : eventListeners.keySet()) {
+                    channels += (int) Math.pow(2, channel - 1);
+                }
+
+                sendToMeteostick(meteostickFormat);
+                sendToMeteostick(meteostickMode);
+                sendToMeteostick("t" + channels);
+                break;
+            default:
+                processSensorData(fields);
+                break;
+        }
+    }
+
+    private void processBarometer(String[] fields) {
+        // Computed ("o1") output has exactly two values, temperature and pressure. Raw ("o0") output has six
+        // values, so requiring the computed field count keeps raw packets from being published as computed values.
+        if (fields.length != 3) {
+            logger.debug("MeteoStick bridge: ignoring barometer packet with {} fields", fields.length);
+            return;
+        }
+
+        BigDecimal temperature;
+        BigDecimal pressure;
+        try {
+            temperature = new BigDecimal(fields[1]);
+            pressure = new BigDecimal(fields[2]);
+        } catch (NumberFormatException e) {
+            logger.debug("MeteoStick bridge: ignoring barometer packet with non-numeric values");
+            return;
+        }
+
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE),
+                new QuantityType<>(temperature.setScale(1), CELSIUS));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE),
+                new QuantityType<>(pressure.setScale(1, RoundingMode.HALF_UP), HECTO(PASCAL)));
+    }
+
+    private void processSensorData(String[] fields) {
+        if (fields.length < 3) {
+            logger.debug("MeteoStick bridge: ignoring sensor packet with {} fields", fields.length);
+            return;
+        }
+
+        int channel;
+        try {
+            channel = Integer.parseInt(fields[1]);
+        } catch (NumberFormatException e) {
+            logger.debug("MeteoStick bridge: ignoring sensor packet with non-numeric channel");
+            return;
+        }
+
+        MeteostickEventListener listener = eventListeners.get(channel);
+        if (listener != null) {
+            listener.onDataReceived(fields);
+        } else {
+            logger.debug("MeteoStick bridge: data from channel {} with no handler", channel);
+        }
+    }
+
     private class ReceiveThread extends Thread implements SerialPortEventListener {
         private final Logger logger = LoggerFactory.getLogger(ReceiveThread.class);
 
@@ -242,83 +324,37 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             logger.debug("Starting MeteoStick Receive Thread");
-            byte[] rxPacket = new byte[100];
-            int rxCnt = 0;
-            int rxByte;
+            LineBuffer lineBuffer = new LineBuffer();
             while (!interrupted()) {
+                int rxByte;
                 try {
                     rxByte = serialPort.getInputStream().read();
-
-                    if (rxByte == -1) {
-                        continue;
+                } catch (IOException e) {
+                    if (interrupted()) {
+                        break;
                     }
+                    logger.debug("MeteoStick: I/O error while reading serial port: {}", e.getMessage());
+                    continue;
+                }
 
-                    lastData = new Date();
-                    startTimeoutCheck();
+                if (rxByte == -1) {
+                    continue;
+                }
 
-                    // Check for end of line
-                    if (rxByte == 13 && rxCnt > 0) {
-                        String inputString = new String(rxPacket, 0, rxCnt);
-                        logger.debug("MeteoStick received: {}", inputString);
-                        String[] p = inputString.split("\\s+");
+                lastData = new Date();
+                startTimeoutCheck();
 
-                        switch (p[0]) {
-                            case "B": // Barometer
-                                BigDecimal temperature = new BigDecimal(p[1]);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE),
-                                        new QuantityType<>(temperature.setScale(1), CELSIUS));
-
-                                BigDecimal pressure = new BigDecimal(p[2]);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE),
-                                        new QuantityType<>(pressure.setScale(1, RoundingMode.HALF_UP), HECTO(PASCAL)));
-                                break;
-                            case "#":
-                                break;
-                            case "?":
-                                // Create the channel command
-                                int channels = 0;
-                                for (int channel : eventListeners.keySet()) {
-                                    channels += Math.pow(2, channel - 1);
-                                }
-
-                                // Device has been reset - reconfigure
-                                sendToMeteostick(meteostickFormat);
-                                sendToMeteostick(meteostickMode);
-                                sendToMeteostick("t" + channels);
-                                break;
-                            default:
-                                if (p.length < 3) {
-                                    logger.debug("MeteoStick bridge: short data ({})", p.length);
-                                    break;
-                                }
-
-                                try {
-                                    MeteostickEventListener listener = eventListeners.get(Integer.parseInt(p[1]));
-                                    if (listener != null) {
-                                        listener.onDataReceived(p);
-                                    } else {
-                                        logger.debug("MeteoStick bridge: data from channel {} with no handler",
-                                                Integer.parseInt(p[1]));
-                                    }
-                                } catch (NumberFormatException e) {
-                                }
-                                break;
-                        }
-
-                        updateStatus(ThingStatus.ONLINE);
-
-                        rxCnt = 0;
-                    } else if (rxByte != 10) {
-                        // Ignore line feed
-                        rxPacket[rxCnt] = (byte) rxByte;
-
-                        if (rxCnt < rxPacket.length) {
-                            rxCnt++;
-                        }
+                String line = lineBuffer.accept(rxByte);
+                if (line != null) {
+                    logger.debug("MeteoStick received: {}", line);
+                    try {
+                        processMessage(line);
+                    } catch (RuntimeException e) {
+                        logger.debug("MeteoStick: ignoring malformed line '{}': {}", line, e.toString());
                     }
-                } catch (Exception e) {
-                    rxCnt = 0;
-                    logger.error("Exception during MeteoStick receive thread", e);
+                    updateStatus(ThingStatus.ONLINE);
+                } else if (lineBuffer.consumeDroppedLine()) {
+                    logger.debug("MeteoStick: discarding over-long line");
                 }
             }
 
