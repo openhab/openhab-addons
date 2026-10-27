@@ -531,7 +531,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     /**
-     * BLU sensors send full packets only when something happens, so channels can't be decided from the first packet
+     * BLU packets don't all carry the same values (e.g. a battery-only packet), so add a sensor channel as soon as its
+     * value shows up for the first time instead of deciding once on the first packet
      */
     private void addChannelsForNewSensorValues(ShellyBluHandler t) {
         t.updateThingChannels(Map.of(),
