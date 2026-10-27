@@ -116,6 +116,7 @@ The stream is not affected by this limit, so the binding uses the API only to co
   BMW allows 10 containers per customer; if all are used by other tools, the vehicles report this, and one has to be deleted.
 - The vehicle image is read once per vehicle, and only when an item is linked to the `status#image` channel.
   Like the static data, it is kept, so it costs no further requests after a restart; if it cannot be read, e.g. while the request budget is used up, the binding tries again after 15 minutes.
+  It does not retry failures that do not pass by themselves, e.g. when BMW has no image for the vehicle.
 - If BMW does not provide the data of a vehicle to the client, e.g. because it is not mapped to the account as primary user, the vehicle goes `OFFLINE (CONFIGURATION_ERROR)` and is no longer read; disable and enable the Thing once this is fixed.
 
 The binding counts its requests over a rolling 24 hours per client ID, also across restarts and when the account thing is recreated, and sends at most `requestBudget` requests.

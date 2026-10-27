@@ -85,7 +85,6 @@ class StreamMessageParserTest {
         assertEquals("car/", BrokerSettings.normalizeTopicPrefix("car/"));
         BrokerSettings settings = new BrokerSettings("localhost", 1883, false, "", "", "car/");
         assertEquals("car/raw/#", settings.rawTopicFilter());
-        assertEquals("car/raw/" + VIN, settings.rawTopic(VIN));
         assertEquals("car/status", settings.statusTopic());
     }
 

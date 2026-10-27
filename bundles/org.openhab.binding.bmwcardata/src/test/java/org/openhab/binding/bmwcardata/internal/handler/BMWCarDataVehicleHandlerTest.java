@@ -512,7 +512,7 @@ class BMWCarDataVehicleHandlerTest {
         vehicle.initialize();
         assertEquals(ThingStatus.UNKNOWN, thing.getStatus());
 
-        // e.g. the request budget is used up
+        // e.g. BMW's daily limit is reached
         jobs.tasks.get(0).run();
         assertEquals(ThingStatus.OFFLINE, thing.getStatus());
         assertEquals(List.of(0L, 15 * 60L), jobs.delays);
@@ -607,8 +607,9 @@ class BMWCarDataVehicleHandlerTest {
     @Test
     void failedImageIsRetriedAfter15Minutes() throws Exception {
         BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
-        // e.g. the request budget is used up
-        when(account.fetchVehicleImage(VIN)).thenThrow(new BMWCarDataException("Request budget used up"))
+        // e.g. BMW's daily limit is reached
+        when(account.fetchVehicleImage(VIN))
+                .thenThrow(new BMWCarDataException("Too many requests", 429, BMWCarDataException.ERROR_RATE_LIMIT))
                 .thenReturn(IMAGE);
         ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
         when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
@@ -629,7 +630,8 @@ class BMWCarDataVehicleHandlerTest {
     @Test
     void imageRetryIsSkippedOnceTheItemIsUnlinked() throws Exception {
         BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
-        when(account.fetchVehicleImage(VIN)).thenThrow(new BMWCarDataException("Request budget used up"));
+        when(account.fetchVehicleImage(VIN))
+                .thenThrow(new BMWCarDataException("Too many requests", 429, BMWCarDataException.ERROR_RATE_LIMIT));
         ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
         when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
         Jobs jobs = new Jobs();
@@ -663,6 +665,43 @@ class BMWCarDataVehicleHandlerTest {
         jobs.tasks.get(0).run();
 
         assertEquals(1, jobs.tasks.size());
+        vehicle.dispose();
+    }
+
+    @Test
+    void missingImageIsNotRetried() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN))
+                .thenThrow(new BMWCarDataException("No vehicle image found for given VIN", 404, "CU-126"));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        assertEquals(1, jobs.tasks.size());
+        vehicle.dispose();
+    }
+
+    @Test
+    void imageIsRetriedAfterAServerError() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN)).thenThrow(new BMWCarDataException("Bad gateway", 502));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        assertEquals(List.of(0L, 15 * 60L), jobs.delays);
         vehicle.dispose();
     }
 

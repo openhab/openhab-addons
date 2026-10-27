@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataApi;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthException;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
@@ -496,8 +497,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             image = account.fetchVehicleImage(vin);
         } catch (BMWCarDataException e) {
             logger.debug("Failed to retrieve the vehicle image: {}", e.getMessage());
-            // the data of a VIN without permission does not become available by retrying
-            if (!e.isVinNotPermitted()) {
+            // only retry what may succeed later, as each retry costs a request: e.g. a VIN without permission
+            // (CU-104) or without image (CU-126) would use up the budget; a rejected token is renewed by the account
+            if (e.isTransient() || e.isRateLimited() || e instanceof BMWCarDataAuthException) {
                 scheduleImageRetry();
             }
             return;
