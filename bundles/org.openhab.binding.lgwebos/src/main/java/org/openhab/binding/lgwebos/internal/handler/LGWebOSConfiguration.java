@@ -32,6 +32,7 @@ public class LGWebOSConfiguration {
     @Nullable
     String broadcastAddress; // name has to match LGWebOSBindingConstants.CONFIG_BROADCAST_ADDRESS
     boolean useTLS = true;
+    boolean standbyOnline = false; // name has to match LGWebOSBindingConstants.CONFIG_STANDBY_ONLINE
 
     public String getHost() {
         String h = host;
@@ -47,6 +48,10 @@ public class LGWebOSConfiguration {
         return useTLS;
     }
 
+    public boolean getStandbyOnline() {
+        return standbyOnline;
+    }
+
     public String getMacAddress() {
         String m = macAddress;
         return m == null ? "" : m;
@@ -59,7 +64,7 @@ public class LGWebOSConfiguration {
 
     @Override
     public String toString() {
-        return "WebOSConfiguration [host=" + host + ", useTLS=" + useTLS + ", key.length=" + getKey().length()
+        return "WebOSConfiguration [host=" + host + ", useTLS=" + useTLS + ", standbyOnline=" + standbyOnline + ", key.length=" + getKey().length()
                 + ", macAddress=" + macAddress + "]";
     }
 }
