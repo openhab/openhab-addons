@@ -135,11 +135,11 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | location                   | Location                           | rw    | Location of air-Q device                                                                 |
 | night-mode-start-day       | Number:Time                        | rw    | Start of day operation, minutes since midnight UTC                                       |
 | night-mode-start-night     | Number:Time                        | rw    | End of day operation, minutes since midnight UTC                                         |
-| night-mode-brightness-day  | Number:Dimensionless               | rw    | Brightness of LED during the day                                                         |
-| night-mode-brightness-night| Number:Dimensionless               | rw    | Brightness of LED at night                                                               |
+| night-mode-brightness-day  | Number                             | rw    | Brightness of LED during the day, 0 (off) to 10                                          |
+| night-mode-brightness-night| Number                             | rw    | Brightness of LED at night, 0 (off) to 10                                                |
 | night-mode-fan-night-off   | Switch                             | rw    | Switch off fan at night                                                                  |
 | night-mode-wifi-night-off  | Switch                             | rw    | Switch off WLAN at night                                                                 |
-| device-name                | String                             |       | Device Name                                                                              |
+| device-name                | String                             | rw    | Device Name                                                                              |
 | room-type                  | String                             | rw    | Type of room                                                                             |
 | log-level                  | String                             | w     | Logging level                                                                            |
 | delete-key                 | String                             | w     | Settings to be deleted                                                                   |
@@ -164,7 +164,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | initial-cal-finished       | Switch                             |       | Initial calibration has finished                                                         |
 | averaging                  | Number                             | rw    | Number of measurements averaged, 1 = off (device default 30)                             |
 | error-bars                 | Switch                             | rw    | Calculate Maximum Errors                                                                 |
-| warmup-phase               | Switch                             | rw    | Output data as Warmup Phase                                                              |
+| warmup-phase               | Switch                             | rw    | Warm-up phase of the sensors, OFF aborts it                                              |
 
 The advanced gas, relative-pressure, and maximum-noise measurements have advanced `-maxerr` channels with the same Item type and unit as their measurements.
 For example, `ch2o-m10-maxerr` contains the formaldehyde measurement uncertainty in µg/m³.
@@ -287,8 +287,8 @@ String airQ_timeServer              "Name of Timeserver address"                
 Location airQ_location              "Location of air-Q device"                       {channel="airq:airq:1:general#location"}
 Number:Time airQ_nightMode_startDay   "Start of day operation"                       {unit="min",channel="airq:airq:1:general#night-mode-start-day"}
 Number:Time airQ_nightMode_startNight "End of day operation"                         {unit="min",channel="airq:airq:1:general#night-mode-start-night"}
-Number:Dimensionless airQ_nightMode_brightnessDay "Brightness of LED during the day" {channel="airq:airq:1:general#night-mode-brightness-day"}
-Number:Dimensionless airQ_nightMode_brightnessNight   "Brightness of LED at night"   {channel="airq:airq:1:general#night-mode-brightness-night"}
+Number airQ_nightMode_brightnessDay   "Brightness of LED during the day"               {channel="airq:airq:1:general#night-mode-brightness-day"}
+Number airQ_nightMode_brightnessNight "Brightness of LED at night"                     {channel="airq:airq:1:general#night-mode-brightness-night"}
 Switch airQ_nightMode_fanNightOff   "Switch off fan at night"                        {channel="airq:airq:1:general#night-mode-fan-night-off"}
 Switch airQ_nightMode_wifiNightOff  "Switch off WLAN at night"                       {channel="airq:airq:1:general#night-mode-wifi-night-off"}
 String airQ_deviceName              "Device Name"                                    {channel="airq:airq:1:general#device-name"}

@@ -38,12 +38,17 @@ import javax.xml.xpath.XPathFactory;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentProvider;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -188,6 +193,217 @@ class AirqHandlerTest {
                 new DecimalType(12.5f));
         requireNonNull(verify(callback)).statusUpdated(thing,
                 new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+    }
+
+    // entschlüsseln.md: a JSON object with "content", or in some cases the encrypted string directly
+    private String encryptedResponse(String form, String payload) throws Exception {
+        String encrypted = handler.encrypt(payload.getBytes(StandardCharsets.UTF_8), "");
+        JsonObject wrapped = new JsonObject();
+        wrapped.addProperty("content", encrypted);
+        return switch (form) {
+            case "object" -> wrapped.toString();
+            case "text" -> encrypted;
+            case "quoted" -> "\"" + encrypted + "\"";
+            default -> " " + encrypted + "\n";
+        };
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "object", "text", "quoted", "padded" })
+    void pollingAcceptsAllEncryptedResponseForms(String form) throws Exception {
+        pollResponses(encryptedResponse(form, "{\"co\": [12.5, 0.25]}"));
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#co"),
+                new DecimalType(12.5f));
+        requireNonNull(verify(callback)).statusUpdated(thing,
+                new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "object", "text", "quoted", "padded" })
+    void configurationAcceptsAllEncryptedResponseForms(String form) throws Exception {
+        AirqHandler configurationHandler = respondingHandler(
+                List.of(encryptedResponse(form, "{\"devicename\": \"device\"}")));
+
+        configurationHandler.getConfigData();
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#device-name"),
+                new StringType("device"));
+    }
+
+    static Stream<String> malformedResponses() throws Exception {
+        AirqHandler encryptor = handler();
+        return Stream.of("", " ", "[]", "{}", "{", "null", "{\"content\": null}", "{\"content\": {}}",
+                "{\"content\": 5}", "\"\"", "not base64!", "AAAA",
+                "{\"content\": \"" + encryptor.encrypt("[]".getBytes(StandardCharsets.UTF_8), "") + "\"}",
+                "{\"content\": \"" + encryptor.encrypt("{".getBytes(StandardCharsets.UTF_8), "") + "\"}");
+    }
+
+    @ParameterizedTest
+    @MethodSource("malformedResponses")
+    void malformedResponsesKeepPollingAlive(String body) throws Exception {
+        JsonObject valid = new JsonObject();
+        valid.addProperty("content", handler.encrypt("{\"co\": [12.5, 0.25]}".getBytes(StandardCharsets.UTF_8), ""));
+
+        pollResponses(body, valid.toString());
+
+        requireNonNull(verify(callback)).statusUpdated(eq(thing),
+                argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                        && status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#co"),
+                new DecimalType(12.5f));
+        requireNonNull(verify(callback)).statusUpdated(thing,
+                new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+    }
+
+    @ParameterizedTest
+    @MethodSource("malformedResponses")
+    void malformedConfigurationResponsesDoNotThrow(String body) throws Exception {
+        respondingHandler(List.of(body)).getConfigData();
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    void unexpectedRuntimeExceptionsKeepPollingAlive() throws Exception {
+        AirqHandler failingHandler = requireNonNull(spy(handler()));
+        failingHandler.setCallback(callback);
+        doThrow(new IllegalStateException("boom")).when(failingHandler).getData(anyString(), eq("GET"), isNull());
+
+        failingHandler.pollData();
+        failingHandler.getConfigData();
+
+        requireNonNull(verify(callback)).statusUpdated(thing, new ThingStatusInfo(ThingStatus.OFFLINE,
+                ThingStatusDetail.COMMUNICATION_ERROR, "Failed to process measurement data: boom"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "airqsetup, airqsetup00000000000000000000000", "'', 00000000000000000000000000000000",
+            "abcdefghijklmnopqrstuvwxyz012345, abcdefghijklmnopqrstuvwxyz012345",
+            "abcdefghijklmnopqrstuvwxyz0123456789, abcdefghijklmnopqrstuvwxyz012345",
+            "pässwort, pässwort00000000000000000000000" })
+    void aesKeyIsUtf8PasswordPaddedOrTruncatedToThirtyTwoBytes(String password, String expectedKey) {
+        // entschlüsseln.md and verschlüsseln.md, e.g. airqsetup -> airqsetup00000000000000000000000
+        assertThat(AirqHandler.aesKey(password), is(expectedKey.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Test
+    void aesKeyTruncatesUtf8BytesNotCharacters() {
+        // 31 characters plus "ä", which is 2 bytes in UTF-8: the key ends with the first byte of "ä"
+        byte[] key = AirqHandler.aesKey("abcdefghijklmnopqrstuvwxyz01234ä");
+
+        assertThat(key.length, is(32));
+        assertThat(key[31], is((byte) 0xC3));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "airqsetup", "pässwort", "abcdefghijklmnopqrstuvwxyz0123456789" })
+    void encryptedDataDecryptsWithTheSamePassword(String password) throws Exception {
+        String encrypted = handler.encrypt("{\"co\": 1}".getBytes(StandardCharsets.UTF_8), password);
+
+        assertThat(handler.decrypt(encrypted.getBytes(StandardCharsets.UTF_8), password), is("{\"co\": 1}"));
+    }
+
+    @Test
+    void settingsArePostedFormEncoded() throws Exception {
+        Request request = mockedRequest();
+
+        new AirqHandler(thing, mockedClient(request)).getData("http://device/config", "POST", "request=ab+/cd==");
+
+        ArgumentCaptor<ContentProvider> content = ArgumentCaptor.forClass(ContentProvider.class);
+        requireNonNull(verify(request)).header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+        requireNonNull(verify(request)).content(content.capture());
+        // konfigschreiben.md posts the base64 request without URL-encoding it
+        assertThat(StandardCharsets.UTF_8.decode(content.getValue().iterator().next()).toString(),
+                is("request=ab+/cd=="));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 200, 204, 299 })
+    void successfulSettingResponsesAreDecrypted(int status) throws Exception {
+        AirqHandler postingHandler = postingHandler(status);
+
+        postingHandler.handleCommand(new ChannelUID(thingUID, "general#wifi-info"), OnOffType.ON);
+
+        requireNonNull(verify(postingHandler)).decrypt(any(), anyString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 199, 300, 400, 403, 500 })
+    void failedSettingResponsesAreNotDecrypted(int status) throws Exception {
+        AirqHandler postingHandler = postingHandler(status);
+
+        postingHandler.handleCommand(new ChannelUID(thingUID, "general#wifi-info"), OnOffType.ON);
+
+        verify(postingHandler, never()).decrypt(any(), anyString());
+    }
+
+    private AirqHandler postingHandler(int status) throws Exception {
+        JsonObject response = new JsonObject();
+        response.addProperty("content", handler.encrypt("{}".getBytes(StandardCharsets.UTF_8), ""));
+        AirqHandler postingHandler = requireNonNull(spy(handler()));
+        doReturn(new AirqHandler.Result(response.toString(), status)).when(postingHandler).getData(anyString(),
+                eq("POST"), anyString());
+        return postingHandler;
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = { "{\"Wifi\": \"Error: unknown value\"}|true", "ERROR|true",
+            "{\"Averaging\": \"success\"}|false", "{}|false", "''|false" })
+    void changeLogErrorsAreDetected(String changeLog, boolean error) {
+        // konfigschreiben.md: the device returns a success and error log for the requested changes
+        assertThat(AirqHandler.reportsError(changeLog), is(error));
+    }
+
+    @Test
+    void readsAreSentWithoutContent() throws Exception {
+        Request request = mockedRequest();
+
+        new AirqHandler(thing, mockedClient(request)).getData("http://device/data", "GET", null);
+
+        requireNonNull(verify(request)).method("GET");
+        verify(request, never()).header(eq(HttpHeader.CONTENT_TYPE), anyString());
+        verify(request, never()).content(any());
+    }
+
+    private static Request mockedRequest() throws Exception {
+        Request request = requireNonNull(mock(Request.class, RETURNS_SELF));
+        ContentResponse response = requireNonNull(mock(ContentResponse.class));
+        doReturn("{}").when(response).getContentAsString();
+        doReturn(200).when(response).getStatus();
+        doReturn(response).when(request).send();
+        return request;
+    }
+
+    private static HttpClient mockedClient(Request request) {
+        HttpClient httpClient = requireNonNull(mock(HttpClient.class));
+        doReturn(request).when(httpClient).newRequest(anyString());
+        return httpClient;
+    }
+
+    private static AirqHandler handler() {
+        return new AirqHandler(ThingBuilder.create(THING_TYPE_AIRQ, new ThingUID(THING_TYPE_AIRQ, "test")).build(),
+                requireNonNull(mock(HttpClient.class)));
+    }
+
+    private void pollResponses(String... bodies) {
+        AirqHandler pollingHandler = respondingHandler(List.of(bodies));
+        for (int i = 0; i < bodies.length; i++) {
+            pollingHandler.pollData();
+        }
+    }
+
+    private AirqHandler respondingHandler(List<String> bodies) {
+        List<String> responses = new ArrayList<>(bodies);
+        AirqHandler respondingHandler = new AirqHandler(thing, requireNonNull(mock(HttpClient.class))) {
+            @Override
+            protected Result getData(String address, String method, @Nullable String body) {
+                assertThat(method, is("GET"));
+                return new Result(responses.removeFirst(), 200);
+            }
+        };
+        respondingHandler.setCallback(callback);
+        return respondingHandler;
     }
 
     @Test
@@ -512,15 +728,16 @@ class AirqHandlerTest {
             "nightModeBrightnessNight, BrightnessNight", "general#nightModeBrightnessDay, BrightnessDay",
             "general#nightModeBrightnessNight, BrightnessNight" })
     void nightModeBrightnessCommandsUseNumericDeviceSettings(String channel, String key) throws Exception {
-        for (Command command : List.of(new DecimalType("2.5"), new StringType("2.5"),
-                new QuantityType<>(2.5, Units.ONE), new QuantityType<>(250, Units.PERCENT))) {
-            JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), command));
-            JsonObject expectedNightMode = new JsonObject();
-            expectedNightMode.addProperty(key, 2.5);
-            JsonObject expected = new JsonObject();
-            expected.add("NightMode", expectedNightMode);
+        // deviceconfig.md: int, 0 = LEDs off, 1 to 10
+        for (int level : List.of(0, 6, 10)) {
+            for (Command command : List.of(new DecimalType(level), new DecimalType(level + ".0"),
+                    new StringType(String.valueOf(level)), new QuantityType<>(level, Units.ONE))) {
+                JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), command));
 
-            assertThat(settings, is(expected));
+                assertThat(settings, is(json("{\"NightMode\": {\"" + key + "\": " + level + "}}")));
+                assertThat(settings.getAsJsonObject("NightMode").get(key).getAsJsonPrimitive().getAsString(),
+                        is(String.valueOf(level)));
+            }
         }
     }
 
@@ -544,7 +761,9 @@ class AirqHandlerTest {
     @ValueSource(strings = { "general#night-mode-brightness-day", "general#night-mode-brightness-night" })
     void invalidBrightnessCommandsDoNotSendRequests(String channel) throws Exception {
         for (Command command : List.of(OnOffType.ON, new StringType("invalid"), new StringType("NaN"),
-                new StringType("Infinity"), new StringType(""), new QuantityType<>(2.5, Units.SECOND))) {
+                new StringType("Infinity"), new StringType(""), new QuantityType<>(2.5, Units.SECOND),
+                new DecimalType("2.5"), new StringType("2.5"), new QuantityType<>(2.5, Units.ONE), new DecimalType(-1),
+                new DecimalType(11), new QuantityType<>(250, Units.PERCENT), new DecimalType(2147483648L))) {
             assertThat(sendSettings(new ChannelUID(thingUID, channel), command), nullValue());
         }
     }
@@ -607,7 +826,23 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "wifi", "unknown", "delete-key", "device-name", "initial-cal-finished", "sound-info" })
+    @ValueSource(strings = { "general#warmup-phase", "warmupPhase" })
+    void warmupPhaseOffAbortsTheWarmup(String channel) throws Exception {
+        // measurement.md: {"warmup-phase": false} aborts a running warm-up phase
+        JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), OnOffType.OFF));
+
+        assertThat(settings, is(json("{\"warmup-phase\": false}")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "general#warmup-phase", "warmupPhase" })
+    void warmupPhaseCannotBeStarted(String channel) throws Exception {
+        assertThat(sendSettings(new ChannelUID(thingUID, channel), OnOffType.ON), nullValue());
+        assertThat(sendSettings(new ChannelUID(thingUID, channel), new StringType("OFF")), nullValue());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "wifi", "unknown", "delete-key", "initial-cal-finished", "sound-info" })
     void unwritableOrUnknownChannelsDoNotSendSettings(String channel) throws Exception {
         for (Command command : List.of(OnOffType.ON, OnOffType.OFF, new StringType("value"), new DecimalType(1),
                 new QuantityType<>(1, Units.SECOND), RefreshType.REFRESH)) {
@@ -767,8 +1002,10 @@ class AirqHandlerTest {
         }
         assertThat(changes,
                 contains("update-channel general#auto-update airq:auto-update",
-                        "update-channel general#averaging airq:averaging", "remove-channel general#sound-pressure",
-                        "add-channel general#sound-info airq:sound-info"));
+                        "update-channel general#averaging airq:averaging",
+                        "update-channel general#night-mode-brightness-day airq:nightmode-brightness-day",
+                        "update-channel general#night-mode-brightness-night airq:nightmode-brightness-night",
+                        "remove-channel general#sound-pressure", "add-channel general#sound-info airq:sound-info"));
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='7']"), empty());
 
         List<Element> additions = elements(upgrades, "//instruction-set[@targetVersion='5']/add-channel");
@@ -816,6 +1053,84 @@ class AirqHandlerTest {
 
         assertThat(itemType.getTextContent(), is("Number:Time"));
         assertThat(itemType.getAttribute("unitHint"), is(unit));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "nightmode-brightness-day, Number", "nightmode-brightness-night, Number",
+            "nightmodeBrightnessDay, Number:Dimensionless", "nightmodeBrightnessNight, Number:Dimensionless" })
+    void brightnessChannelTypesAreLimitedToDeviceLevels(String typeId, String itemType) throws Exception {
+        // deviceconfig.md: BrightnessDay and BrightnessNight are int, 0 to 10; the released flat channels keep
+        // their item type
+        Document thingTypes = xml("thing/thing-types.xml");
+        Element state = element(thingTypes, "//channel-type[@id='" + typeId + "']/state");
+
+        assertThat(element(thingTypes, "//channel-type[@id='" + typeId + "']/item-type").getTextContent(),
+                is(itemType));
+        assertThat(state.getAttribute("min"), is("0"));
+        assertThat(state.getAttribute("max"), is("10"));
+        assertThat(state.getAttribute("step"), is("1"));
+    }
+
+    // deviceconfig.md: the room types air-Q accepts for RoomType
+    private static final List<String> ROOM_TYPES = List.of("living-room", "bedroom", "kitchen", "bathroom", "office",
+            "workshop", "children", "toilet", "hallway", "cellar", "attic", "outdoor", "garage", "medical", "classroom",
+            "other");
+
+    @ParameterizedTest
+    @ValueSource(strings = { "room-type", "RoomType" })
+    void roomTypeChannelTypesOfferTheDeviceRoomTypes(String typeId) throws Exception {
+        List<String> options = new ArrayList<>();
+        for (Element option : elements(xml("thing/thing-types.xml"),
+                "//channel-type[@id='" + typeId + "']/state/options/option")) {
+            options.add(option.getAttribute("value"));
+        }
+
+        assertThat(options, is(ROOM_TYPES));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "general#device-name", "deviceName" })
+    void deviceNameCommandsSetTheDeviceName(String channel) throws Exception {
+        // deviceconfig.md: {"devicename": "Living-Room 1"}
+        assertThat(sendSettings(new ChannelUID(thingUID, channel), new StringType("Living-Room 1")),
+                is(json("{\"devicename\": \"Living-Room 1\"}")));
+    }
+
+    @Test
+    void deviceNameIsSentWithoutUnicodeEscapes() throws Exception {
+        // deviceconfig.md: air-Q cannot convert \\u escape sequences such as \\ud83d\\ude01 back
+        List<String> requests = new ArrayList<>();
+        AirqHandler commandHandler = new AirqHandler(thing, requireNonNull(mock(HttpClient.class))) {
+            @Override
+            protected Result getData(String address, String method, @Nullable String body) {
+                requests.add(requireNonNull(body));
+                return new Result("", 200);
+            }
+        };
+
+        commandHandler.handleCommand(new ChannelUID(thingUID, "general#device-name"),
+                new StringType("Room 😁 <Küche> & 'Bad'="));
+
+        assertThat(
+                commandHandler.decrypt(
+                        requests.getFirst().substring("request=".length()).getBytes(StandardCharsets.UTF_8), ""),
+                is("{\"devicename\":\"Room 😁 <Küche> & 'Bad'=\"}"));
+    }
+
+    @Test
+    void deviceNameChannelTypesAreWritable() throws Exception {
+        Document thingTypes = xml("thing/thing-types.xml");
+
+        assertThat(findElement(thingTypes, "//channel-type[@id='device-name']/state[@readOnly='true']"), nullValue());
+        assertThat(findElement(thingTypes, "//channel-type[@id='deviceName']/state[@readOnly='true']"), nullValue());
+    }
+
+    @Test
+    void roomTypeOptionsAreSentAsRoomType() throws Exception {
+        for (String roomType : ROOM_TYPES) {
+            assertThat(sendSettings("room-type", new StringType(roomType)),
+                    is(json("{\"RoomType\": \"" + roomType + "\"}")));
+        }
     }
 
     @Test

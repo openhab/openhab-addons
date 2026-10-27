@@ -324,9 +324,21 @@ public class AirqHandler extends BaseThingHandler {
                 logger.debug("Ignoring non-numeric brightness command for channel {}", channelId);
                 return;
             }
+            // the device accepts whole numbers from 0 (LEDs off) to 10
+            int level;
+            try {
+                level = brightness.intValueExact();
+            } catch (ArithmeticException e) {
+                logger.debug("Ignoring fractional brightness command for channel {}", channelId);
+                return;
+            }
+            if (level < 0 || level > 10) {
+                logger.debug("Ignoring out-of-range brightness command for channel {}", channelId);
+                return;
+            }
             JsonObject nightMode = new JsonObject();
             nightMode.addProperty("nightModeBrightnessDay".equals(channelId) ? "BrightnessDay" : "BrightnessNight",
-                    brightness);
+                    level);
             JsonObject settings = new JsonObject();
             settings.add("NightMode", nightMode);
             changeSettings(settings);
@@ -335,9 +347,10 @@ public class AirqHandler extends BaseThingHandler {
         boolean acceptedCommand = switch (channelId) {
             case "wifi", "wifiInfo", "fireAlarm", "cloudUpload", "autoDriftCompensation", "advancedDataProcessing",
                     "gasAlarm", "alarmForwarding", "errorBars", "ppm_and_ppb", "nightModeFanNightOff",
-                    "nightModeWifiNightOff" ->
+                    "nightModeWifiNightOff", "warmupPhase" ->
                 command instanceof OnOffType;
-            case "SSID", "timeServer", "roomType", "logLevel", "powerFreqSuppression" -> command instanceof StringType;
+            case "SSID", "timeServer", "roomType", "logLevel", "powerFreqSuppression", "deviceName" ->
+                command instanceof StringType;
             case "location" -> command instanceof PointType;
             default -> false;
         };
@@ -347,6 +360,13 @@ public class AirqHandler extends BaseThingHandler {
             switch (channelId) {
                 case "wifi":
                     // we do not allow to switch off Wifi because otherwise we can't connect to the air-Q device anymore
+                    break;
+                case "warmupPhase":
+                    // a one-shot command that aborts a running warm-up phase, a warm-up can't be started
+                    if (command == OnOffType.OFF) {
+                        newobj.addProperty("warmup-phase", false);
+                        changeSettings(newobj);
+                    }
                     break;
                 case "wifiInfo":
                     newobj.addProperty("WifiInfo", command == OnOffType.ON);
@@ -425,6 +445,10 @@ public class AirqHandler extends BaseThingHandler {
                     newobj.addProperty("RoomType", command.toString());
                     changeSettings(newobj);
                     break;
+                case "deviceName":
+                    newobj.addProperty("devicename", command.toString());
+                    changeSettings(newobj);
+                    break;
                 case "logLevel":
                     String ll = command.toString();
                     if ("Error".equals(ll) || "Warning".equals(ll) || "Info".equals(ll)) {
@@ -432,7 +456,7 @@ public class AirqHandler extends BaseThingHandler {
                         changeSettings(newobj);
                     } else {
                         logger.warn(
-                                "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct setting for the power frequency suppression (only 50Hz or 60Hz)",
+                                "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct setting for the log level (only Error, Warning or Info)",
                                 channelUID.getIdWithoutGroup(), command.toString());
                     }
                     break;
@@ -443,7 +467,7 @@ public class AirqHandler extends BaseThingHandler {
                         changeSettings(newobj);
                     } else {
                         logger.warn(
-                                "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct setting for the power frequency suppression (only 50Hz or 60Hz)",
+                                "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct setting for the power frequency suppression (only 50Hz, 60Hz or 50Hz+60Hz)",
                                 channelUID.getIdWithoutGroup(), command.toString());
                     }
                     break;
@@ -563,13 +587,17 @@ public class AirqHandler extends BaseThingHandler {
     // AES decoding based on this tutorial: https://www.javainterviewpoint.com/aes-256-encryption-and-decryption/
     public String decrypt(byte[] base64text, String password) throws AirqException {
         String content = "";
-        byte[] encodedtextwithIV = Base64.getDecoder().decode(base64text);
-        byte[] ciphertext = Arrays.copyOfRange(encodedtextwithIV, 16, encodedtextwithIV.length);
-        byte[] passkey = Arrays.copyOf(password.getBytes(), 32);
-        if (password.length() < 32) {
-            Arrays.fill(passkey, password.length(), 32, (byte) '0');
+        byte[] encodedtextwithIV;
+        try {
+            encodedtextwithIV = Base64.getDecoder().decode(base64text);
+        } catch (IllegalArgumentException e) {
+            throw new AirqException("Device response is not valid base64", e);
         }
-        SecretKey seckey = new SecretKeySpec(passkey, 0, passkey.length, "AES");
+        if (encodedtextwithIV.length <= 16) {
+            throw new AirqException("Device response is too short to be decrypted");
+        }
+        byte[] ciphertext = Arrays.copyOfRange(encodedtextwithIV, 16, encodedtextwithIV.length);
+        SecretKey seckey = new SecretKeySpec(aesKey(password), "AES");
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(seckey.getEncoded(), "AES");
@@ -586,15 +614,19 @@ public class AirqHandler extends BaseThingHandler {
         }
     }
 
+    // AES-256 key: the UTF-8 encoded password, padded with '0' bytes or truncated to 32 bytes
+    static byte[] aesKey(String password) {
+        byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
+        byte[] key = Arrays.copyOf(passwordBytes, 32);
+        Arrays.fill(key, Math.min(passwordBytes.length, 32), 32, (byte) '0');
+        return key;
+    }
+
     public String encrypt(byte[] toencode, String password) throws AirqException {
-        byte[] passkey = Arrays.copyOf(password.getBytes(StandardCharsets.UTF_8), 32);
-        if (password.length() < 32) {
-            Arrays.fill(passkey, password.length(), 32, (byte) '0');
-        }
         byte[] iv = new byte[16];
         SecureRandom random = new SecureRandom();
         random.nextBytes(iv);
-        SecretKey seckey = new SecretKeySpec(passkey, 0, passkey.length, "AES");
+        SecretKey seckey = new SecretKeySpec(aesKey(password), "AES");
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(seckey.getEncoded(), "AES");
@@ -616,15 +648,56 @@ public class AirqHandler extends BaseThingHandler {
     protected String getDecryptedContentString(String url, String requestMethod, @Nullable String body)
             throws AirqException, InterruptedException {
         Result res = getData(url, "GET", null);
-        String jsontext = res.getBody();
-        // Gson code based on https://riptutorial.com/de/gson
-        JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
-        if (ans == null) {
+        return decryptResponse(res.getBody());
+    }
+
+    // the device answers with {"content": "<encrypted>"} or, in some cases, with the bare encrypted string
+    private String decryptResponse(String body) throws AirqException {
+        String text = body.trim();
+        if (text.isEmpty()) {
             throw new AirqEmptyResonseException();
         }
 
-        JsonObject jsonObj = ans.getAsJsonObject();
-        return decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
+        String encrypted;
+        if (text.startsWith("{")) {
+            JsonElement content = parseObject(text).get("content");
+            if (content == null || !content.isJsonPrimitive()) {
+                throw new AirqException("Device response has no encrypted content");
+            }
+            encrypted = content.getAsString();
+        } else if (text.startsWith("\"")) {
+            JsonElement content = parseElement(text);
+            if (!content.isJsonPrimitive()) {
+                throw new AirqException("Device response has no encrypted content");
+            }
+            encrypted = content.getAsString();
+        } else {
+            encrypted = text;
+        }
+        return decrypt(encrypted.getBytes(StandardCharsets.UTF_8), config.password);
+    }
+
+    private JsonObject parseObject(String json) throws AirqException {
+        JsonElement element = parseElement(json);
+        if (!element.isJsonObject()) {
+            throw new AirqException("Device response is not a JSON object");
+        }
+        return element.getAsJsonObject();
+    }
+
+    private JsonElement parseElement(String json) throws AirqException {
+        JsonElement element;
+        try {
+            // Gson code based on https://riptutorial.com/de/gson
+            element = gson.fromJson(json, JsonElement.class);
+        } catch (JsonSyntaxException e) {
+            logger.debug("Failed to parse response from device: {}", e.getMessage());
+            throw new AirqException("Syntax error while parsing response from device");
+        }
+        if (element == null) {
+            throw new AirqEmptyResonseException();
+        }
+        return element;
     }
 
     // calls the networking job and in addition does additional tests for online/offline management
@@ -634,7 +707,7 @@ public class AirqHandler extends BaseThingHandler {
         Request request = httpClient.newRequest(address).timeout(timeout, TimeUnit.SECONDS).method(requestMethod);
         if (body != null) {
             request = request.content(new StringContentProvider(body)).header(HttpHeader.CONTENT_TYPE,
-                    "application/json");
+                    "application/x-www-form-urlencoded");
         }
         try {
             ContentResponse response = request.send();
@@ -682,13 +755,8 @@ public class AirqHandler extends BaseThingHandler {
             String url = "http://" + config.ipAddress + "/data";
             String jsonAnswer = getDecryptedContentString(url, "GET", null);
 
+            JsonObject decObj = parseObject(jsonAnswer);
             try {
-                JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
-                if (decEl == null) {
-                    throw new AirqEmptyResonseException();
-                }
-
-                JsonObject decObj = decEl.getAsJsonObject();
                 if (logger.isTraceEnabled()) {
                     logger.trace("Received measurement data (non-measurement values omitted): {}",
                             sanitizeData(decObj));
@@ -712,33 +780,26 @@ public class AirqHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, causeMessage + e.getMessage());
         } catch (InterruptedException e) {
             // nothing
+        } catch (RuntimeException e) {
+            // an uncaught exception would cancel the scheduled polling job for good
+            logger.debug("Failed to process measurement data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Failed to process measurement data: " + e.getMessage());
         }
     }
 
     public void getConfigData() {
-        Result res = null;
         try {
             String url = "http://" + config.ipAddress + "/config";
-            res = getData(url, "GET", null);
-            String jsontext = res.getBody();
-            JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
-            if (ans == null) {
-                throw new AirqEmptyResonseException();
-            }
-
-            JsonObject jsonObj = ans.getAsJsonObject();
-            String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
-            JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
-            if (decEl == null) {
-                throw new AirqEmptyResonseException();
-            }
-
-            JsonObject decObj = decEl.getAsJsonObject();
+            JsonObject decObj = parseObject(getDecryptedContentString(url, "GET", null));
             processMappings(decObj, CONFIGURATION, "general");
         } catch (AirqException | JsonSyntaxException e) {
             logger.warn("Failed to retrieve configuration: {}", e.getMessage());
         } catch (InterruptedException e) {
             // nothing
+        } catch (RuntimeException e) {
+            // an uncaught exception would cancel the scheduled configuration job for good
+            logger.warn("Failed to process configuration: {}", e.getMessage(), e);
         }
     }
 
@@ -1130,18 +1191,29 @@ public class AirqHandler extends BaseThingHandler {
             String jsonbody = encrypt(jsoncmd.getBytes(StandardCharsets.UTF_8), config.password);
             String fullbody = "request=" + jsonbody;
             res = getData(url, "POST", fullbody);
-            JsonElement ans = gson.fromJson(res.getBody(), JsonElement.class);
-
-            if (ans == null) {
-                throw new AirqEmptyResonseException();
+            // only the keys are logged, the values may contain passwords
+            Set<String> keys = jsonchange.keySet();
+            if (res.getResponseCode() < 200 || res.getResponseCode() >= 300) {
+                logger.warn("Failed to change settings {}: device answered with HTTP status {}", keys,
+                        res.getResponseCode());
+                return;
             }
 
-            JsonObject jsonObj = ans.getAsJsonObject();
-            decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
+            // konfigschreiben.md: the response contains a success and error log for the requested changes
+            String changeLog = decryptResponse(res.getBody());
+            if (reportsError(changeLog)) {
+                logger.warn("Device reported an error while changing settings {}: {}", keys, changeLog);
+            } else {
+                logger.debug("Changed settings {}: {}", keys, changeLog);
+            }
         } catch (AirqException e) {
             logger.warn("Failed to change settings", e);
         } catch (InterruptedException e) {
             // nothing
         }
+    }
+
+    static boolean reportsError(String changeLog) {
+        return changeLog.toLowerCase(Locale.ROOT).contains("error");
     }
 }

@@ -833,12 +833,14 @@
 		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
 	<channel-type id="nightmode-brightness-day" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Day Brightness of LED</label>
+		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmode-brightness-night" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Night Brightness of LED</label>
+		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmode-fan-night-off" advanced="false">
 		<item-type>Switch</item-type>
@@ -851,11 +853,30 @@
 	<channel-type id="device-name" advanced="false">
 		<item-type>String</item-type>
 		<label>Device Name</label>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="room-type" advanced="false">
 		<item-type>String</item-type>
 		<label>Room Type</label>
+		<state>
+			<options>
+				<option value="living-room">Living Room</option>
+				<option value="bedroom">Bedroom</option>
+				<option value="kitchen">Kitchen</option>
+				<option value="bathroom">Bathroom</option>
+				<option value="office">Office</option>
+				<option value="workshop">Workshop</option>
+				<option value="children">Children's Room</option>
+				<option value="toilet">Toilet</option>
+				<option value="hallway">Hallway</option>
+				<option value="cellar">Cellar</option>
+				<option value="attic">Attic</option>
+				<option value="outdoor">Outdoor</option>
+				<option value="garage">Garage</option>
+				<option value="medical">Medical</option>
+				<option value="classroom">Classroom</option>
+				<option value="other">Other</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="logging" advanced="true">
 		<item-type>String</item-type>
@@ -1183,10 +1204,12 @@
 	<channel-type id="nightmodeBrightnessDay" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Day Brightness of LED</label>
+		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmodeBrightnessNight" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Night Brightness of LED</label>
+		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmodeFanNightOff" advanced="false">
 		<item-type>Switch</item-type>
@@ -1199,11 +1222,30 @@
 	<channel-type id="deviceName" advanced="false">
 		<item-type>String</item-type>
 		<label>Device Name</label>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="RoomType" advanced="false">
 		<item-type>String</item-type>
 		<label>Room Type</label>
+		<state>
+			<options>
+				<option value="living-room">Living Room</option>
+				<option value="bedroom">Bedroom</option>
+				<option value="kitchen">Kitchen</option>
+				<option value="bathroom">Bathroom</option>
+				<option value="office">Office</option>
+				<option value="workshop">Workshop</option>
+				<option value="children">Children's Room</option>
+				<option value="toilet">Toilet</option>
+				<option value="hallway">Hallway</option>
+				<option value="cellar">Cellar</option>
+				<option value="attic">Attic</option>
+				<option value="outdoor">Outdoor</option>
+				<option value="garage">Garage</option>
+				<option value="medical">Medical</option>
+				<option value="classroom">Classroom</option>
+				<option value="other">Other</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="Logging" advanced="true">
 		<item-type>String</item-type>
