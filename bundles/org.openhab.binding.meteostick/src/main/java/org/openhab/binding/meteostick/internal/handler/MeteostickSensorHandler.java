@@ -51,9 +51,26 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  * @author John Cocula - Added variable spoon size, UoM, wind stats, bug fixes
  * @author Cor Hoogendoorn - Added option for wind vanes not facing North and cumulative rainfall for today
+ * @author Jens Erat - Harden packet parsing and validate received values
  */
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
     private static final String DAILY_MIDNIGHT = "1 0 0 * * ? *";
+
+    // Plausibility bounds, chosen to reject physically impossible values while accepting any real weather reading.
+    private static final BigDecimal MIN_TEMPERATURE = new BigDecimal("-100");
+    private static final BigDecimal MAX_TEMPERATURE = new BigDecimal("100");
+    private static final BigDecimal MIN_HUMIDITY = new BigDecimal("0");
+    private static final BigDecimal MAX_HUMIDITY = new BigDecimal("100");
+    private static final BigDecimal MIN_WIND_SPEED = new BigDecimal("0");
+    private static final BigDecimal MAX_WIND_SPEED = new BigDecimal("200");
+    private static final int MIN_WIND_DIRECTION = 0;
+    private static final int MAX_WIND_DIRECTION = 360;
+    private static final int MIN_RAIN_COUNTER = 0;
+    private static final int MAX_RAIN_COUNTER = 255;
+    private static final BigDecimal MIN_SOLAR_POWER = new BigDecimal("0");
+    private static final BigDecimal MAX_SOLAR_POWER = new BigDecimal("100");
+    private static final double MIN_SIGNAL = -200;
+    private static final double MAX_SIGNAL = 0;
     private final CronScheduler cronScheduler;
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DAVIS);
 
@@ -244,6 +261,12 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             return;
         }
 
+        if (rain < MIN_RAIN_COUNTER || rain > MAX_RAIN_COUNTER || signal < MIN_SIGNAL || signal > MAX_SIGNAL) {
+            logger.debug("MeteoStick received rain packet with implausible values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_RAW), new DecimalType(rain));
         processSignalStrength(signal);
         processBattery(data.length == 5);
@@ -294,6 +317,13 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             return;
         }
 
+        if (!isWithin(windSpeed, MIN_WIND_SPEED, MAX_WIND_SPEED) || windDirection < MIN_WIND_DIRECTION
+                || windDirection > MAX_WIND_DIRECTION || signal < MIN_SIGNAL || signal > MAX_SIGNAL) {
+            logger.debug("MeteoStick received wind packet with implausible values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
                 new QuantityType<>(windSpeed, METRE_PER_SECOND));
         if (deltawinddir != 0) {
@@ -333,6 +363,13 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             return;
         }
 
+        if (!isWithin(temperature, MIN_TEMPERATURE, MAX_TEMPERATURE) || !isWithin(humidity, MIN_HUMIDITY, MAX_HUMIDITY)
+                || signal < MIN_SIGNAL || signal > MAX_SIGNAL) {
+            logger.debug("MeteoStick received temperature packet with implausible values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE),
                 new QuantityType<>(temperature.setScale(1), CELSIUS));
 
@@ -360,10 +397,20 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             return;
         }
 
+        if (!isWithin(power, MIN_SOLAR_POWER, MAX_SOLAR_POWER) || signal < MIN_SIGNAL || signal > MAX_SIGNAL) {
+            logger.debug("MeteoStick received power packet with implausible values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_SOLAR_POWER), new DecimalType(power.setScale(1)));
 
         processSignalStrength(signal);
         processBattery(data.length == 5);
+    }
+
+    private static boolean isWithin(BigDecimal value, BigDecimal min, BigDecimal max) {
+        return value.compareTo(min) >= 0 && value.compareTo(max) <= 0;
     }
 
     class SlidingTimeWindow<T> {

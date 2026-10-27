@@ -98,4 +98,28 @@ public class MeteostickBridgeHandlerTest {
 
         verify(callback, never()).stateUpdated(any(), any());
     }
+
+    @Test
+    public void testImplausibleBarometerPressureIsRejected() {
+        requireNonNull(handler).processMessage("B 19.3 340225");
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testImplausibleBarometerTemperatureIsRejected() {
+        requireNonNull(handler).processMessage("B 26436 982.59");
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testBarometerValuesAtRangeBoundsArePublished() {
+        requireNonNull(handler).processMessage("B -100 0");
+
+        verify(callback).stateUpdated(new ChannelUID(BRIDGE_UID, CHANNEL_INDOOR_TEMPERATURE),
+                new QuantityType<>(-100, CELSIUS));
+        verify(callback).stateUpdated(new ChannelUID(BRIDGE_UID, CHANNEL_PRESSURE),
+                new QuantityType<>(0, HECTO(PASCAL)));
+    }
 }

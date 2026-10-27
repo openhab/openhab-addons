@@ -142,4 +142,64 @@ public class MeteostickSensorHandlerTest {
 
         verify(callback, never()).stateUpdated(any(), any());
     }
+
+    @Test
+    public void testImplausibleRainCounterIsRejected() {
+        requireNonNull(handler).onDataReceived(new String[] { "R", "1", "300", "-66" });
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testImplausibleWindSpeedIsRejected() {
+        requireNonNull(handler).onDataReceived(new String[] { "W", "1", "-0.44", "241", "-67" });
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testImplausibleWindDirectionIsRejected() {
+        requireNonNull(handler).onDataReceived(new String[] { "W", "1", "0.44", "361", "-67" });
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testImplausibleTemperatureIsRejected() {
+        requireNonNull(handler).onDataReceived(new String[] { "T", "3", "200", "36", "-53" });
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testImplausibleHumidityIsRejected() {
+        requireNonNull(handler).onDataReceived(new String[] { "T", "3", "20.8", "101", "-53" });
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testImplausibleSolarPowerIsRejected() {
+        requireNonNull(handler).onDataReceived(new String[] { "P", "1", "101", "-68" });
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testImplausibleSignalStrengthIsRejected() {
+        requireNonNull(handler).onDataReceived(new String[] { "W", "1", "0.44", "241", "5" });
+
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testSensorValuesAtRangeBoundsArePublished() {
+        requireNonNull(handler).onDataReceived(new String[] { "W", "1", "200", "360", "0" });
+
+        verify(callback).stateUpdated(new ChannelUID(THING_UID, CHANNEL_WIND_SPEED),
+                new QuantityType<>(200, METRE_PER_SECOND));
+        verify(callback).stateUpdated(new ChannelUID(THING_UID, CHANNEL_WIND_DIRECTION),
+                new QuantityType<>(360, DEGREE_ANGLE));
+        verify(callback).stateUpdated(new ChannelUID(THING_UID, CHANNEL_SIGNAL_STRENGTH), new DecimalType(4));
+    }
 }

@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Chris Jackson - Initial contribution
+ * @author Jens Erat - Harden packet parsing and validate received values
  */
 public class MeteostickBridgeHandler extends BaseBridgeHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
@@ -59,6 +60,12 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MeteostickBridgeHandler.class);
 
     private static final int RECEIVE_TIMEOUT = 3000;
+
+    // Plausibility bounds, chosen to reject physically impossible values while accepting any real weather reading.
+    private static final BigDecimal MIN_TEMPERATURE = new BigDecimal("-100");
+    private static final BigDecimal MAX_TEMPERATURE = new BigDecimal("100");
+    private static final BigDecimal MIN_PRESSURE = new BigDecimal("0");
+    private static final BigDecimal MAX_PRESSURE = new BigDecimal("1500");
 
     private SerialPort serialPort;
     private final SerialPortManager serialPortManager;
@@ -274,10 +281,20 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        if (!isWithin(temperature, MIN_TEMPERATURE, MAX_TEMPERATURE)
+                || !isWithin(pressure, MIN_PRESSURE, MAX_PRESSURE)) {
+            logger.debug("MeteoStick bridge: ignoring barometer packet with implausible values");
+            return;
+        }
+
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE),
                 new QuantityType<>(temperature.setScale(1), CELSIUS));
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE),
                 new QuantityType<>(pressure.setScale(1, RoundingMode.HALF_UP), HECTO(PASCAL)));
+    }
+
+    private static boolean isWithin(BigDecimal value, BigDecimal min, BigDecimal max) {
+        return value.compareTo(min) >= 0 && value.compareTo(max) <= 0;
     }
 
     private void processSensorData(String[] fields) {
