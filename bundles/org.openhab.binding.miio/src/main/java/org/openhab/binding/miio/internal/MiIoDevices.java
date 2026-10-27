@@ -68,6 +68,7 @@ public enum MiIoDevices {
     DMAKER_FAN_P10("dmaker.fan.p10", "Mi Smart Standing Fan 2", THING_TYPE_BASIC),
     DMAKER_FAN_P15("dmaker.fan.p15", "Mi Smart Standing Fan Pro", THING_TYPE_BASIC),
     DMAKER_FAN_P18("dmaker.fan.p18", "Mi Smart Standing Fan 2", THING_TYPE_BASIC),
+    DMAKER_FAN_P39("dmaker.fan.p39", "Xiaomi Smart Tower Fan", THING_TYPE_BASIC),
     DREAME_VACUUM_MA1808("dreame.vacuum.ma1808", "Mi Robot Vacuum-Mop", THING_TYPE_BASIC),
     DREAME_VACUUM_MB1808("dreame.vacuum.mb1808", "Mi Robot Vacuum-Mop", THING_TYPE_BASIC),
     DREAME_VACUUM_MC1808("dreame.vacuum.mc1808", "Mi Robot Vacuum Mop 1C STYTJ01ZHM", THING_TYPE_BASIC),

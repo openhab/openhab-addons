@@ -2,48 +2,18 @@
 	"deviceMapping": {
 		"id": [
 			"dmaker.fan.p9",
-			"dmaker.fan.p10"
+			"dmaker.fan.p39"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
+		"experimental": false,
 		"channels": [
-			{
-				"property": "",
-				"friendlyName": "Actions",
-				"channel": "actions",
-				"type": "String",
-				"stateDescription": {
-					"options": [
-						{
-							"value": "fan-toggle",
-							"label": "Fan Toggle"
-						}
-					]
-				},
-				"actions": [
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
-						"siid": 2,
-						"aiid": 1,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "fan-toggle"
-								}
-							]
-						}
-					}
-				],
-				"readmeComment": "Value mapping `[\"fan-toggle\"\u003d\"Fan Toggle\"]`"
-			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Fan-Switch Status",
-				"channel": "On",
+				"friendlyName": "Power",
+				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -54,33 +24,60 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "speed-level",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Fan Speed",
+				"channel": "speed_level",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
 				]
 			},
 			{
 				"property": "fan-level",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Fan-Fan Level",
-				"channel": "FanLevel",
+				"friendlyName": "Fan Level",
+				"channel": "fan_level",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "1",
-							"label": "Level1"
+							"label": "Level 1"
 						},
 						{
 							"value": "2",
-							"label": "Level2"
+							"label": "Level 2"
 						},
 						{
 							"value": "3",
-							"label": "Level3"
+							"label": "Level 3"
 						},
 						{
 							"value": "4",
-							"label": "Level4"
+							"label": "Level 4"
 						}
 					]
 				},
@@ -93,26 +90,27 @@
 				],
 				"category": "fan",
 				"tags": [
-					"Setpoint"
+					"Control",
+					"Speed"
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"4\"\u003d\"Level4\"]`"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\",\"4\"\u003d\"Level 4\"]`"
 			},
 			{
 				"property": "mode",
 				"siid": 2,
 				"piid": 4,
-				"friendlyName": "Fan-Mode",
-				"channel": "Mode",
+				"friendlyName": "Mode",
+				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "0",
-							"label": "Straight Wind"
+							"label": "Standard"
 						},
 						{
 							"value": "1",
-							"label": "Natural Wind"
+							"label": "Natural"
 						},
 						{
 							"value": "2",
@@ -129,16 +127,17 @@
 				],
 				"category": "flow",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Straight Wind\",\"1\"\u003d\"Natural Wind\",\"2\"\u003d\"Sleep\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Standard\",\"1\"\u003d\"Natural\",\"2\"\u003d\"Sleep\"]`"
 			},
 			{
 				"property": "horizontal-swing",
 				"siid": 2,
 				"piid": 5,
-				"friendlyName": "Fan-Horizontal Swing",
-				"channel": "HorizontalSwing",
+				"friendlyName": "Oscillation",
+				"channel": "horizontal_swing",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -147,19 +146,22 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "fan",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Airflow"
 				]
 			},
 			{
 				"property": "horizontal-angle",
 				"siid": 2,
 				"piid": 6,
-				"friendlyName": "Fan-Horizontal Angle",
-				"channel": "HorizontalAngle",
-				"type": "Number",
+				"friendlyName": "Oscillation Angle",
+				"channel": "horizontal_angle",
+				"type": "Number:Angle",
+				"unit": "degree",
 				"stateDescription": {
+					"pattern": "%.0f %unit%",
 					"options": [
 						{
 							"value": "30",
@@ -192,39 +194,77 @@
 				],
 				"category": "incline",
 				"tags": [
-					"Setpoint"
+					"Setpoint",
+					"Airflow"
 				],
 				"readmeComment": "Value mapping `[\"30\"\u003d\"30\",\"60\"\u003d\"60\",\"90\"\u003d\"90\",\"120\"\u003d\"120\",\"150\"\u003d\"150\"]`"
 			},
 			{
-				"property": "alarm",
+				"property": "motor-control",
 				"siid": 2,
-				"piid": 7,
-				"friendlyName": "Fan-Alarm",
-				"channel": "Alarm",
-				"type": "Switch",
-				"refresh": true,
+				"piid": 10,
+				"friendlyName": "Move Direction",
+				"channel": "move",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "ONOFFBOOL"
+						"parameterType": "STRING",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "left",
+									"returnValue": 2
+								}
+							]
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "STRING",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "right",
+									"returnValue": 1
+								}
+							]
+						}
 					}
 				],
-				"category": "alarm"
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Write only. Turns the fan head a step; sends 2 for left and 1 for right, as the Mi Home app does"
 			},
 			{
 				"property": "off-delay-time",
 				"siid": 2,
 				"piid": 8,
-				"friendlyName": "Fan - Power Off Delay Time",
-				"channel": "OffDelayTime",
+				"friendlyName": "Power-Off Timer",
+				"channel": "off_delay_time",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 480,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f min"
 				},
 				"refresh": true,
 				"actions": [
@@ -235,15 +275,36 @@
 				],
 				"category": "time",
 				"tags": [
-					"Setpoint"
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Notification Sound",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "brightness",
 				"siid": 2,
 				"piid": 9,
-				"friendlyName": "Fan-Brightness",
-				"channel": "Brightness",
+				"friendlyName": "Indicator Light",
+				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -254,51 +315,16 @@
 				],
 				"category": "light",
 				"tags": [
-					"Control"
-				]
-			},
-			{
-				"property": "motor-control",
-				"siid": 2,
-				"piid": 10,
-				"friendlyName": "Fan-Motor Control",
-				"channel": "MotorControl",
-				"type": "Number",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "speed-level",
-				"siid": 2,
-				"piid": 11,
-				"friendlyName": "Fan-Speed Level",
-				"channel": "SpeedLevel",
-				"type": "Number",
-				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
+					"Switch",
+					"Light"
 				]
 			},
 			{
 				"property": "physical-controls-locked",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Physical Control Locked-Physical Control Locked",
-				"channel": "PhysicalControlsLocked",
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -306,6 +332,11 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			}
 		]

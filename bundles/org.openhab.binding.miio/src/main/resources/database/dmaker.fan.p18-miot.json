@@ -1,6 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
+			"dmaker.fan.p10",
 			"dmaker.fan.p18"
 		],
 		"propertyMethod": "get_properties",
