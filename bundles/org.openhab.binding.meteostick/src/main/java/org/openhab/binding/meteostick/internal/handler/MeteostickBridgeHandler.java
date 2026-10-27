@@ -288,7 +288,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
         }
 
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE),
-                new QuantityType<>(temperature.setScale(1), CELSIUS));
+                new QuantityType<>(temperature.setScale(1, RoundingMode.HALF_UP), CELSIUS));
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE),
                 new QuantityType<>(pressure.setScale(1, RoundingMode.HALF_UP), HECTO(PASCAL)));
     }

@@ -371,9 +371,10 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
 
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE),
-                new QuantityType<>(temperature.setScale(1), CELSIUS));
+                new QuantityType<>(temperature.setScale(1, RoundingMode.HALF_UP), CELSIUS));
 
-        updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY), new DecimalType(humidity.setScale(1)));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY),
+                new DecimalType(humidity.setScale(1, RoundingMode.HALF_UP)));
 
         processSignalStrength(signal);
         processBattery(data.length == 6);
@@ -403,7 +404,8 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             return;
         }
 
-        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SOLAR_POWER), new DecimalType(power.setScale(1)));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SOLAR_POWER),
+                new DecimalType(power.setScale(1, RoundingMode.HALF_UP)));
 
         processSignalStrength(signal);
         processBattery(data.length == 5);

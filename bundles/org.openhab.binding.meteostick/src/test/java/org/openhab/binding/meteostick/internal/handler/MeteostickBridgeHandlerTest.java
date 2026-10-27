@@ -122,4 +122,14 @@ public class MeteostickBridgeHandlerTest {
         verify(callback).stateUpdated(new ChannelUID(BRIDGE_UID, CHANNEL_PRESSURE),
                 new QuantityType<>(0, HECTO(PASCAL)));
     }
+
+    @Test
+    public void testBarometerTemperatureIsRoundedToSingleDecimal() {
+        requireNonNull(handler).processMessage("B 19.35 982.59");
+
+        verify(callback).stateUpdated(new ChannelUID(BRIDGE_UID, CHANNEL_INDOOR_TEMPERATURE),
+                new QuantityType<>(19.4, CELSIUS));
+        verify(callback).stateUpdated(new ChannelUID(BRIDGE_UID, CHANNEL_PRESSURE),
+                new QuantityType<>(982.6, HECTO(PASCAL)));
+    }
 }

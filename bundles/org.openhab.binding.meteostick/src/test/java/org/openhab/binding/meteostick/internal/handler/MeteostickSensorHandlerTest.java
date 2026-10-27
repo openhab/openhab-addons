@@ -202,4 +202,20 @@ public class MeteostickSensorHandlerTest {
                 new QuantityType<>(360, DEGREE_ANGLE));
         verify(callback).stateUpdated(new ChannelUID(THING_UID, CHANNEL_SIGNAL_STRENGTH), new DecimalType(4));
     }
+
+    @Test
+    public void testTemperaturePacketValuesAreRoundedToSingleDecimal() {
+        requireNonNull(handler).onDataReceived(new String[] { "T", "3", "20.85", "36.55", "-53" });
+
+        verify(callback).stateUpdated(new ChannelUID(THING_UID, CHANNEL_OUTDOOR_TEMPERATURE),
+                new QuantityType<>(20.9, CELSIUS));
+        verify(callback).stateUpdated(new ChannelUID(THING_UID, CHANNEL_HUMIDITY), new DecimalType(36.6));
+    }
+
+    @Test
+    public void testPowerIsRoundedToSingleDecimal() {
+        requireNonNull(handler).onDataReceived(new String[] { "P", "1", "21.15", "-68" });
+
+        verify(callback).stateUpdated(new ChannelUID(THING_UID, CHANNEL_SOLAR_POWER), new DecimalType(21.2));
+    }
 }
