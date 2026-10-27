@@ -388,8 +388,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         enableScript(script, ourId, true); // ensure auto-start flag is set
                         if (restart) {
                             logger.debug("{}: Restarting script {}", thingName, script);
-                            startScript(ourId, false);
-                            if (!startScript(ourId, true)) {
+                            if (!startScript(ourId, false) || !startScript(ourId, true)) {
                                 logger.warn("{}: Failed to restart script {}", thingName, script);
                             }
                         } else {

@@ -159,6 +159,17 @@ public class Shelly2ApiRpcBluGatewayTest {
                 SHELLYRPC_METHOD_SCRIPT_SETCONFIG, SHELLYRPC_METHOD_SCRIPT_START));
     }
 
+    @Test
+    void installWithRestartDoesNotStartScriptWhenStopFails() throws Exception {
+        ScriptApiRpc api = buildScriptApi(true);
+        api.failStop = true;
+
+        api.installScript(SHELLY2_BLU_GWSCRIPT, true, true);
+
+        assertThat(api.methods, contains(SHELLYRPC_METHOD_SCRIPT_LIST, SHELLYRPC_METHOD_SCRIPT_GETCODE,
+                SHELLYRPC_METHOD_SCRIPT_SETCONFIG, SHELLYRPC_METHOD_SCRIPT_STOP));
+    }
+
     private record InstallCall(String script, boolean install) {
     }
 
@@ -288,6 +299,7 @@ public class Shelly2ApiRpcBluGatewayTest {
      */
     private static class ScriptApiRpc extends Shelly2ApiRpc {
         final List<String> methods = new ArrayList<>();
+        boolean failStop;
         private final ShellyScriptListResponse scriptList = new ShellyScriptListResponse();
         private final ShellyScriptResponse scriptCode = new ShellyScriptResponse();
 
@@ -307,6 +319,9 @@ public class Shelly2ApiRpcBluGatewayTest {
         @Override
         public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
             methods.add(method);
+            if (failStop && SHELLYRPC_METHOD_SCRIPT_STOP.equals(method)) {
+                throw new ShellyApiException("Stop failed in test");
+            }
             if (SHELLYRPC_METHOD_SCRIPT_LIST.equals(method)) {
                 return (T) scriptList;
             }
