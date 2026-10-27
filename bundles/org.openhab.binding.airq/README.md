@@ -154,7 +154,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | averaging-rhythm           | Number:Time                        | rw    | Rhythm of measurement for historic average in seconds                                    |
 | power-freq-suppression     | String                             | rw    | Power Frequency                                                                          |
 | auto-drift-compensation    | Switch                             | rw    | Compensate automatic drift                                                               |
-| auto-update                | Switch                             | rw    | Install Firmware updates automatically                                                   |
+| auto-update                | Number:Time                        | rw    | Days between automatic firmware updates, 0 = off (device default 90)                     |
 | advanced-data-processing   | Switch                             | rw    | Use advanced algorithms eg. for open window or presence of a person                      |
 | ppm-and-ppb                | Switch                             | rw    | Output CO as ppm and NO₂, O₃ and SO₂ as ppb value instead of mg/m3                       |
 | gas-alarm                  | Switch                             | rw    | Send Gas Alarm if certain levels are met                                                 |
@@ -162,7 +162,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | alarm-forwarding           | Switch                             | rw    | Forward gas or fire alarm to other air-Q devices in the household                        |
 | user-calib                 | String                             |       | Last sensor calibration                                                                  |
 | initial-cal-finished       | Switch                             |       | Initial calibration has finished                                                         |
-| averaging                  | Switch                             | rw    | Do an average                                                                            |
+| averaging                  | Number                             | rw    | Number of measurements averaged, 1 = off (device default 30)                             |
 | error-bars                 | Switch                             | rw    | Calculate Maximum Errors                                                                 |
 | warmup-phase               | Switch                             | rw    | Output data as Warmup Phase                                                              |
 
@@ -306,7 +306,7 @@ Switch airQ_cloudUpload             "Upload to air-Q cloud"                     
 Number:Time airQ_averagingRhythm    "Rhythm of measurement for historic average"     {unit="s",channel="airq:airq:1:general#averaging-rhythm"}
 String airQ_powerFreqSuppression    "Power Frequency"                                {channel="airq:airq:1:general#power-freq-suppression"}
 Switch airQ_autoDriftCompensation   "Compensate automatic drift"                     {channel="airq:airq:1:general#auto-drift-compensation"}
-Switch airQ_autoUpdate              "Install Firmware updates automatically"         {channel="airq:airq:1:general#auto-update"}
+Number:Time airQ_autoUpdate         "Automatic firmware update interval"             {unit="d",channel="airq:airq:1:general#auto-update"}
 Switch airQ_advancedDataProcessing  "Use advanced algorithms eg. for open window or presence of a person"   {channel="airq:airq:1:general#advanced-data-processing"}
 Switch airQ_ppm_and_ppb             "Output CO as ppm and NO2, O3 and SO2 as ppb value instead of mg/m3"    {channel="airq:airq:1:general#ppm-and-ppb"}
 Switch airQ_gasAlarm                "Send Gas Alarm if certain levels are met"       {channel="airq:airq:1:general#gas-alarm"}
@@ -314,7 +314,7 @@ Switch airQ_soundPressure           "Sound Pressure Level"                      
 Switch airQ_alarmForwarding         "Forward gas or fire alarm to other air-Q devices in the household"     {channel="airq:airq:1:general#alarm-forwarding"}
 String airQ_userCalib               "Last sensor calibration"                        {channel="airq:airq:1:general#user-calib"}
 Switch airQ_initialCalFinished      "Initial calibration has finished"               {channel="airq:airq:1:general#initial-cal-finished"}
-Switch airQ_averaging               "Do an average"                                  {channel="airq:airq:1:general#averaging"}
+Number airQ_averaging               "Averaging window"                               {channel="airq:airq:1:general#averaging"}
 Switch airQ_errorBars               "Calculate Maximum Errors"                       {channel="airq:airq:1:general#error-bars"}
 Switch airQ_warmupPhase             "Output Data as Warmup Phase"                    {channel="airq:airq:1:general#warmup-phase"}
 ```

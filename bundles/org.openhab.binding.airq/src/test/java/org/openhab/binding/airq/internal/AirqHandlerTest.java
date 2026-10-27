@@ -197,7 +197,7 @@ class AirqHandlerTest {
                  "geopos": {"lat": 50, "long": 10}, "devicename": "device", "SecondsMeasurementDelay": 5,
                  "NightMode": {"StartDay": "08:00", "StartNight": "22:30", "BrightnessNight": 2, "FanNightOff": true},
                  "Rejection": "50Hz+60Hz",
-                 "WLAN config": {"MAC": "mac", "IP address": "ip"}, "AutoUpdate": 1,
+                 "WLAN config": {"MAC": "mac", "IP address": "ip"}, "AutoUpdate": 90, "Averaging": 30,
                  "warmup-phase": false, "air-Q-Hardware-Version": "hardware", "sensors": ["co2", "sound"],
                  "Industry": true, "id": "device-id", "SensorInfo": "info"}
                     """).when(configurationHandler).decrypt("encoded".getBytes(StandardCharsets.UTF_8), "");
@@ -231,7 +231,10 @@ class AirqHandlerTest {
                 new StringType("mac"));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#wlan-config-ip-address"),
                 new StringType("ip"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#auto-update"), OnOffType.ON);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#auto-update"),
+                new QuantityType<>(90, Units.DAY));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#averaging"),
+                new DecimalType(30));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#warmup-phase"), OnOffType.OFF);
         assertThat(thing.getProperties(),
                 allOf(hasEntry("hardwareVersion", "\"hardware\""), hasEntry("sensorList", "co2, sound"),
@@ -524,20 +527,14 @@ class AirqHandlerTest {
         Stream<Arguments> switches = Stream.of(new String[] { "wifi-info", "WifiInfo" },
                 new String[] { "fire-alarm", "FireAlarm" }, new String[] { "cloud-upload", "cloudUpload" },
                 new String[] { "auto-drift-compensation", "AutoDriftCompensation" },
-                new String[] { "auto-update", "AutoUpdate" },
                 new String[] { "advanced-data-processing", "AdvancedDataProcessing" },
                 new String[] { "gas-alarm", "GasAlarm" }, new String[] { "sound-pressure", "SoundInfo" },
-                new String[] { "alarm-forwarding", "AlarmForwarding" }, new String[] { "averaging", "averaging" },
-                new String[] { "error-bars", "ErrorBars" }, new String[] { "ppm-and-ppb", "ppm&ppb" },
-                new String[] { "night-mode-fan-night-off", "FanNightOff" },
+                new String[] { "alarm-forwarding", "AlarmForwarding" }, new String[] { "error-bars", "ErrorBars" },
+                new String[] { "ppm-and-ppb", "ppm&ppb" }, new String[] { "night-mode-fan-night-off", "FanNightOff" },
                 new String[] { "night-mode-wifi-night-off", "WifiNightOff" })
                 .flatMap(mapping -> Stream.of(OnOffType.ON, OnOffType.OFF).map(command -> {
                     JsonObject value = new JsonObject();
-                    if ("auto-update".equals(mapping[0])) {
-                        value.addProperty(mapping[1], command == OnOffType.ON ? 1 : 0);
-                    } else {
-                        value.addProperty(mapping[1], command == OnOffType.ON);
-                    }
+                    value.addProperty(mapping[1], command == OnOffType.ON);
                     JsonObject settings = value;
                     if (mapping[0].startsWith("night-mode-")) {
                         settings = new JsonObject();
@@ -546,7 +543,7 @@ class AirqHandlerTest {
                     return Arguments.of(mapping[0], command, settings);
                 }));
         Stream<Arguments> strings = Stream.of(
-                Arguments.of("time-server", new StringType("time.example"), json("{\"timeServer\":\"time.example\"}")),
+                Arguments.of("time-server", new StringType("time.example"), json("{\"TimeServer\":\"time.example\"}")),
                 Arguments.of("room-type", new StringType("office"), json("{\"RoomType\":\"office\"}")),
                 Arguments.of("log-level", new StringType("Error"), json("{\"logging\":\"Error\"}")),
                 Arguments.of("log-level", new StringType("Warning"), json("{\"logging\":\"Warning\"}")),
@@ -602,6 +599,65 @@ class AirqHandlerTest {
         }
     }
 
+    static Stream<Arguments> integerSettingCommands() {
+        return Stream.of(Arguments.of("general#auto-update", new DecimalType(30), json("{\"AutoUpdate\":30}")),
+                Arguments.of("general#auto-update", new DecimalType(0), json("{\"AutoUpdate\":0}")),
+                Arguments.of("general#auto-update", new QuantityType<>(2, Units.WEEK), json("{\"AutoUpdate\":14}")),
+                Arguments.of("general#auto-update", OnOffType.ON, json("{\"AutoUpdate\":90}")),
+                Arguments.of("autoUpdate", OnOffType.ON, json("{\"AutoUpdate\":90}")),
+                Arguments.of("autoUpdate", OnOffType.OFF, json("{\"AutoUpdate\":0}")),
+                Arguments.of("general#averaging", new DecimalType(10), json("{\"Averaging\":10}")),
+                Arguments.of("general#averaging", new DecimalType(1), json("{\"Averaging\":1}")),
+                Arguments.of("general#averaging", new QuantityType<>(5, Units.ONE), json("{\"Averaging\":5}")),
+                Arguments.of("averaging", OnOffType.ON, json("{\"Averaging\":30}")),
+                Arguments.of("averaging", OnOffType.OFF, json("{\"Averaging\":1}")));
+    }
+
+    @ParameterizedTest
+    @MethodSource("integerSettingCommands")
+    void integerSettingCommandsSendDeviceIntegers(String channel, Command command, JsonObject expected)
+            throws Exception {
+        assertThat(sendSettings(new ChannelUID(thingUID, channel), command), is(expected));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "auto-update, -1", "auto-update, 1.5", "auto-update, 36 h", "auto-update, 2 s", "averaging, 0",
+            "averaging, 2.5", "averaging, 1 s" })
+    void invalidIntegerSettingCommandsDoNotSendRequests(String channel, String value) throws Exception {
+        Command command = value.contains(" ") ? QuantityType.valueOf(value) : new DecimalType(value);
+
+        assertThat(sendSettings(channel, command), nullValue());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "auto-update", "averaging" })
+    void integerSettingsRejectStringLocationAndRefreshCommands(String channel) throws Exception {
+        for (Command command : List.of(new StringType("30"), new PointType(new DecimalType(50), new DecimalType(10)),
+                RefreshType.REFRESH)) {
+            assertThat(sendSettings(channel, command), nullValue());
+        }
+    }
+
+    @Test
+    void retainedFlatIntegerSettingChannelsStaySwitches() throws Exception {
+        Thing legacyThing = ThingBuilder.create(THING_TYPE_AIRQ, thingUID)
+                .withChannels(ChannelBuilder.create(new ChannelUID(thingUID, "autoUpdate"), "Switch").build(),
+                        ChannelBuilder.create(new ChannelUID(thingUID, "averaging"), "Switch").build())
+                .build();
+
+        readConfiguration(legacyThing, "{\"AutoUpdate\": 0, \"Averaging\": 1}");
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "autoUpdate"), OnOffType.OFF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "averaging"), OnOffType.OFF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#auto-update"),
+                new QuantityType<>(0, Units.DAY));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#averaging"),
+                new DecimalType(1));
+
+        readConfiguration(legacyThing, "{\"AutoUpdate\": 90, \"Averaging\": 30}");
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "autoUpdate"), OnOffType.ON);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "averaging"), OnOffType.ON);
+    }
+
     static Stream<Arguments> measurements() {
         return Stream.concat(
                 Stream.of("c2h4o", "nh3_MR100", "ash3", "br2", "ch4s", "cl2_M20", "clo2", "cs2", "ethanol", "c2h4",
@@ -646,7 +702,7 @@ class AirqHandlerTest {
         Document metadata = xml("thing/thing-types.xml");
         Document upgrades = xml("update/update.xml");
         assertThat(element(metadata, "//thing-type[@id='airq']/properties/property[@name='thingTypeVersion']")
-                .getTextContent(), is("5"));
+                .getTextContent(), is("6"));
         String[] groupIds = { "general", "measurements", "advanced-measurements", "maxerr", "advanced-maxerr" };
         List<Element> channels = new ArrayList<>();
         for (String groupId : groupIds) {
@@ -677,7 +733,14 @@ class AirqHandlerTest {
 
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='5']/remove-channel"), empty());
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='5']/update-channel"), empty());
-        assertThat(elements(upgrades, "//instruction-set[@targetVersion='6']"), empty());
+        List<String> typeChanges = new ArrayList<>();
+        for (Element instruction : elements(upgrades, "//instruction-set[@targetVersion='6']/*")) {
+            typeChanges.add(instruction.getTagName() + " " + instruction.getAttribute("groupIds") + "#"
+                    + instruction.getAttribute("id") + " " + element(instruction, "type").getTextContent());
+        }
+        assertThat(typeChanges, contains("update-channel general#auto-update airq:auto-update",
+                "update-channel general#averaging airq:averaging"));
+        assertThat(elements(upgrades, "//instruction-set[@targetVersion='7']"), empty());
         List<Element> additions = elements(upgrades, "//instruction-set[@targetVersion='5']/add-channel");
         assertThat(additions, hasSize(162));
         List<String> addedIds = additions.stream()
@@ -711,7 +774,7 @@ class AirqHandlerTest {
 
     @ParameterizedTest
     @CsvSource({ "seconds-measurement-delay, s", "mtime, ms", "uptime, s", "nightmode-start-day, min",
-            "nightmode-start-night, min" })
+            "nightmode-start-night, min", "auto-update, d" })
     void timeChannelTypesHaveMatchingUnitHints(String typeId, String unit) throws Exception {
         Element itemType = element(xml("thing/thing-types.xml"), "//channel-type[@id='" + typeId + "']/item-type");
 

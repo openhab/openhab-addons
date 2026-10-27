@@ -92,6 +92,9 @@ import com.google.gson.JsonSyntaxException;
 public class AirqHandler extends BaseThingHandler {
     private static final DateTimeFormatter CLOCK_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm", Locale.ROOT)
             .withResolverStyle(ResolverStyle.STRICT);
+    // device defaults, written when a retained flat Switch channel is switched ON
+    private static final int AUTO_UPDATE_DEFAULT_DAYS = 90;
+    private static final int AVERAGING_DEFAULT_VALUES = 30;
 
     private record ChannelMapping(String dataKey, String channelId, String type, @Nullable Unit<?> unit,
             String groupId) {
@@ -226,7 +229,7 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("air-Q-Software-Version", "softwareVersion", "property"),
             new ChannelMapping("sensors", "sensorList", "proparr"),
             new ChannelMapping("AutoDriftCompensation", "autoDriftCompensation", "boolean"),
-            new ChannelMapping("AutoUpdate", "autoUpdate", "boolean"),
+            new ChannelMapping("AutoUpdate", "autoUpdate", "numberDays"),
             new ChannelMapping("AdvancedDataProcessing", "advancedDataProcessing", "boolean"),
             new ChannelMapping("Industry", "Industry", "property"),
             new ChannelMapping("ppm&ppb", "ppm_and_ppb", "boolean"),
@@ -235,7 +238,7 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("AlarmForwarding", "alarmForwarding", "boolean"),
             new ChannelMapping("usercalib", "userCalib", "calib"),
             new ChannelMapping("InitialCalFinished", "initialCalFinished", "boolean"),
-            new ChannelMapping("Averaging", "averaging", "boolean"),
+            new ChannelMapping("Averaging", "averaging", "number"),
             new ChannelMapping("SensorInfo", "sensorInfo", "property"),
             new ChannelMapping("ErrorBars", "errorBars", "boolean"),
             new ChannelMapping("warmup-phase", "warmupPhase", "boolean"));
@@ -294,6 +297,10 @@ public class AirqHandler extends BaseThingHandler {
             handleTimeCommand(channelId, command);
             return;
         }
+        if ("autoUpdate".equals(channelId) || "averaging".equals(channelId)) {
+            handleIntegerSettingCommand(channelId, command);
+            return;
+        }
         if ("nightModeBrightnessDay".equals(channelId) || "nightModeBrightnessNight".equals(channelId)) {
             BigDecimal brightness;
             if (command instanceof QuantityType<?> quantity) {
@@ -325,9 +332,9 @@ public class AirqHandler extends BaseThingHandler {
             return;
         }
         boolean acceptedCommand = switch (channelId) {
-            case "wifi", "wifiInfo", "fireAlarm", "cloudUpload", "autoDriftCompensation", "autoUpdate",
-                    "advancedDataProcessing", "gasAlarm", "soundPressure", "alarmForwarding", "averaging", "errorBars",
-                    "ppm_and_ppb", "nightModeFanNightOff", "nightModeWifiNightOff" ->
+            case "wifi", "wifiInfo", "fireAlarm", "cloudUpload", "autoDriftCompensation", "advancedDataProcessing",
+                    "gasAlarm", "soundPressure", "alarmForwarding", "errorBars", "ppm_and_ppb", "nightModeFanNightOff",
+                    "nightModeWifiNightOff" ->
                 command instanceof OnOffType;
             case "SSID", "timeServer", "roomType", "logLevel", "powerFreqSuppression" -> command instanceof StringType;
             case "location" -> command instanceof PointType;
@@ -356,11 +363,6 @@ public class AirqHandler extends BaseThingHandler {
                     newobj.addProperty("AutoDriftCompensation", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
-                case "autoUpdate":
-                    // note that this property is binary but uses 1 and 0 instead of true and false
-                    newobj.addProperty("AutoUpdate", command == OnOffType.ON ? 1 : 0);
-                    changeSettings(newobj);
-                    break;
                 case "advancedDataProcessing":
                     newobj.addProperty("AdvancedDataProcessing", command == OnOffType.ON);
                     changeSettings(newobj);
@@ -375,10 +377,6 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "alarmForwarding":
                     newobj.addProperty("AlarmForwarding", command == OnOffType.ON);
-                    changeSettings(newobj);
-                    break;
-                case "averaging":
-                    newobj.addProperty("averaging", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "errorBars":
@@ -416,7 +414,7 @@ public class AirqHandler extends BaseThingHandler {
                     }
                     break;
                 case "timeServer":
-                    newobj.addProperty(channelId, command.toString());
+                    newobj.addProperty("TimeServer", command.toString());
                     changeSettings(newobj);
                     break;
                 case "location":
@@ -522,6 +520,46 @@ public class AirqHandler extends BaseThingHandler {
             nightMode.addProperty(key, LocalTime.ofSecondOfDay(timeValue * 60).format(CLOCK_TIME_FORMAT));
             settings.add("NightMode", nightMode);
         }
+        changeSettings(settings);
+    }
+
+    /**
+     * Handles the integer settings AutoUpdate (interval in days, 0 = off) and Averaging (number of averaged values,
+     * 1 = off). ON and OFF from retained flat Switch channels map to the device default and to "off".
+     */
+    private void handleIntegerSettingCommand(String channelId, Command command) {
+        boolean autoUpdate = "autoUpdate".equals(channelId);
+        int minimum = autoUpdate ? 0 : 1;
+        BigDecimal value;
+        if (command instanceof OnOffType) {
+            int defaultValue = autoUpdate ? AUTO_UPDATE_DEFAULT_DAYS : AVERAGING_DEFAULT_VALUES;
+            value = BigDecimal.valueOf(command == OnOffType.ON ? defaultValue : minimum);
+        } else if (command instanceof QuantityType<?> quantity) {
+            QuantityType<?> converted = quantity.toUnit(autoUpdate ? Units.DAY : Units.ONE);
+            if (converted == null) {
+                logger.debug("Ignoring incompatible unit for channel {}", channelId);
+                return;
+            }
+            value = converted.toBigDecimal();
+        } else if (command instanceof DecimalType decimal) {
+            value = decimal.toBigDecimal();
+        } else {
+            logger.debug("Ignoring non-numeric command for channel {}", channelId);
+            return;
+        }
+        int intValue;
+        try {
+            intValue = value.intValueExact();
+        } catch (ArithmeticException e) {
+            logger.debug("Ignoring non-integer or out-of-range command for channel {}", channelId);
+            return;
+        }
+        if (intValue < minimum) {
+            logger.debug("Ignoring out-of-range command for channel {}", channelId);
+            return;
+        }
+        JsonObject settings = new JsonObject();
+        settings.addProperty(autoUpdate ? "AutoUpdate" : "Averaging", intValue);
         changeSettings(settings);
     }
 
@@ -794,6 +832,9 @@ public class AirqHandler extends BaseThingHandler {
                     updateMappedState(channelName,
                             new QuantityType<>(dec.get(airqName).getAsBigDecimal(), Units.SECOND));
                     break;
+                case "numberDays":
+                    updateMappedState(channelName, new QuantityType<>(dec.get(airqName).getAsBigDecimal(), Units.DAY));
+                    break;
                 case "numberMilliseconds":
                     updateMappedState(channelName,
                             new QuantityType<>(dec.get(airqName).getAsBigDecimal(), MetricPrefix.MILLI(Units.SECOND)));
@@ -993,7 +1034,12 @@ public class AirqHandler extends BaseThingHandler {
                     } else if ("averagingRhythm".equals(legacyId)
                             && "Number".equals(legacyChannel.getAcceptedItemType())) {
                         legacyState = new DecimalType(quantity.toBigDecimal());
+                    } else if ("autoUpdate".equals(legacyId) && "Switch".equals(legacyChannel.getAcceptedItemType())) {
+                        legacyState = OnOffType.from(quantity.intValue() > 0);
                     }
+                } else if (state instanceof DecimalType decimal && "averaging".equals(legacyId)
+                        && "Switch".equals(legacyChannel.getAcceptedItemType())) {
+                    legacyState = OnOffType.from(decimal.intValue() > 1);
                 }
                 updateState(legacyId, legacyState);
             }

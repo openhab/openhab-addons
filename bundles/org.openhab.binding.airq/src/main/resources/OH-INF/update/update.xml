@@ -613,5 +613,13 @@
 				<type>airq:warmup-phase</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="6">
+			<update-channel id="auto-update" groupIds="general">
+				<type>airq:auto-update</type>
+			</update-channel>
+			<update-channel id="averaging" groupIds="general">
+				<type>airq:averaging</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

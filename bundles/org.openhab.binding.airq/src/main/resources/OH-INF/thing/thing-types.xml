@@ -22,7 +22,7 @@
 			<property name="sensorList">Unknown sensor list</property>
 			<property name="sensorInfo">No info about sensors</property>
 			<property name="industry">No industry info</property>
-			<property name="thingTypeVersion">5</property>
+			<property name="thingTypeVersion">6</property>
 		</properties>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -918,8 +918,12 @@
 		<label>Compensate Automatic Drift</label>
 	</channel-type>
 	<channel-type id="auto-update" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Automatic Firmware Update</label>
+		<item-type unitHint="d">Number:Time</item-type>
+		<label>Automatic Firmware Update Interval</label>
+		<description>Days between automatic firmware update checks; 0 disables automatic updates. The device restarts
+			after
+			installing an update.</description>
+		<state min="0" step="1" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="advanced-data-processing" advanced="true">
 		<item-type>Switch</item-type>
@@ -952,8 +956,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="averaging" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Do Average</label>
+		<item-type>Number</item-type>
+		<label>Averaging Window</label>
+		<description>Number of measurements the device averages over; 1 disables averaging.</description>
+		<state min="1" step="1" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="error-bars" advanced="true">
 		<item-type>Switch</item-type>
