@@ -15,11 +15,15 @@ package org.openhab.binding.bluelink.internal.api;
 import static org.openhab.binding.bluelink.internal.dto.ca.ChargeLimitsRequest.PLUG_TYPE_AC;
 import static org.openhab.binding.bluelink.internal.dto.ca.ChargeLimitsRequest.PLUG_TYPE_DC;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
@@ -27,10 +31,14 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.bluelink.internal.api.LoginRejectedException.Reason;
+import org.openhab.binding.bluelink.internal.dto.Token;
 import org.openhab.binding.bluelink.internal.dto.ca.ChargeLimitsRequest;
 import org.openhab.binding.bluelink.internal.dto.ca.ClimateRequestEV;
 import org.openhab.binding.bluelink.internal.dto.ca.ClimateRequestICE;
@@ -39,8 +47,11 @@ import org.openhab.binding.bluelink.internal.dto.ca.ClimateRequestKiaEV9;
 import org.openhab.binding.bluelink.internal.dto.ca.ListVehiclesResponse;
 import org.openhab.binding.bluelink.internal.dto.ca.ListVehiclesResponse.Result.VehicleInfo;
 import org.openhab.binding.bluelink.internal.dto.ca.LoginRequest;
+import org.openhab.binding.bluelink.internal.dto.ca.MfaRequest;
+import org.openhab.binding.bluelink.internal.dto.ca.MfaResponse;
 import org.openhab.binding.bluelink.internal.dto.ca.PinRequest;
 import org.openhab.binding.bluelink.internal.dto.ca.PinVerifyResponse;
+import org.openhab.binding.bluelink.internal.dto.ca.ResponseError;
 import org.openhab.binding.bluelink.internal.dto.ca.TokenResponse;
 import org.openhab.binding.bluelink.internal.dto.ca.Vehicle;
 import org.openhab.binding.bluelink.internal.dto.ca.VehicleStatusResponse;
@@ -49,23 +60,36 @@ import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * Client for the Kia Connect / Hyundai Bluelink / Genesis Connect API in Canada.
  * <p>
  * Implementation based on [hyundai_kia_connect_api](https://github.com/Hyundai-Kia-Connect/hyundai_kia_connect_api)
  *
  * @author Marcus Better - Initial contribution
+ * @author Carlo Dischler - Login verification code
  */
 @NonNullByDefault
 public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
     private static final String CLIENT_ID = "HATAHSPACA0232141ED9722C67715A0B";
+    private static final String VERIFICATION_REQUIRED = "7110";
+    private static final String ACCOUNT_LOCKED = "7402";
+    private static final String INVALID_CREDENTIALS = "7404";
+
+    private record PendingVerification(String otpKey, String email) {
+    }
 
     private final Brand brand;
     private final String baseUrl;
+    // the server asks for a verification code only once per device
+    private final String deviceId;
+    private volatile boolean verificationRequired;
+    private volatile @Nullable PendingVerification pendingVerification;
 
-    public BluelinkApiCA(final HttpClient httpClient, final Brand brand, final @Nullable String baseUrl,
-            final TimeZoneProvider timeZoneProvider, final String username, final String password,
-            final @Nullable String pin) {
+    public BluelinkApiCA(final HttpClient httpClient, final Brand brand, final Map<String, String> properties,
+            final @Nullable String baseUrl, final TimeZoneProvider timeZoneProvider, final String username,
+            final String password, final @Nullable String pin) {
         super(httpClient, timeZoneProvider, username, password, pin);
         this.brand = brand;
         if (baseUrl == null) {
@@ -73,6 +97,15 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         } else {
             this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
         }
+        final String storedDeviceId = properties.get("deviceId");
+        this.deviceId = storedDeviceId != null && !storedDeviceId.isBlank() ? storedDeviceId
+                : Base64.getEncoder().encodeToString(
+                        UUID.randomUUID().toString().replace("-", "").getBytes(StandardCharsets.US_ASCII));
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return Map.of("deviceId", deviceId);
     }
 
     private static String getApiHostname(final Brand brand) {
@@ -85,14 +118,141 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
     }
 
     @Override
-    public boolean login() throws BluelinkApiException {
-        final LoginRequest loginRequest = new LoginRequest(username, password);
-        final String loginUrl = baseUrl + "v2/login";
-        final Request request = httpClient.newRequest(loginUrl).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(loginRequest)), APPLICATION_JSON);
+    public synchronized boolean login() throws BluelinkApiException {
+        // the user requests the code, until then further logins would only be rejected again
+        if (verificationRequired) {
+            final PendingVerification pending = pendingVerification;
+            if (pending != null) {
+                throw new LoginRejectedException(Reason.VERIFICATION_CODE_SENT, "verification code sent",
+                        pending.email());
+            }
+            throw verificationRequired();
+        }
+        final TokenResponse response = postLogin("v2/login", new LoginRequest(username, password), TokenResponse.class,
+                "login");
+        final ResponseError error = response.error();
+        if (error != null && VERIFICATION_REQUIRED.equals(error.errorCode())) {
+            verificationRequired = true;
+            throw verificationRequired();
+        }
+        checkError(error, "login");
+        applyToken(response.result() != null ? response.result().token() : null);
+        return true;
+    }
+
+    /**
+     * Complete a login that needs a verification code with the code the user received by e-mail.
+     *
+     * @param code the verification code
+     * @return false if no code was requested
+     * @throws BluelinkApiException if the code is not accepted
+     */
+    public synchronized boolean verifyCode(final String code) throws BluelinkApiException {
+        final PendingVerification pending = pendingVerification;
+        if (pending == null) {
+            return false;
+        }
+        final MfaResponse validation = postLogin("mfa/validateotp",
+                new MfaRequest.ValidateCode(code.trim(), username, pending.otpKey(), MfaRequest.API_CODE),
+                MfaResponse.class, "verify code");
+        checkError(validation.error(), "verify code");
+        final MfaResponse.Result result = validation.result();
+        if (result == null || !Boolean.TRUE.equals(result.verifiedOtp()) || result.otpValidationKey() == null) {
+            throw new LoginRejectedException(Reason.REJECTED, "verify code: code not accepted", "code not accepted");
+        }
+        final MfaResponse tokenResponse = postLogin("mfa/genmfatkn", new MfaRequest.GenerateToken(username,
+                pending.email(), MfaRequest.API_CODE, result.otpValidationKey(), "Y"), MfaResponse.class,
+                "verified login");
+        checkError(tokenResponse.error(), "verified login");
+        applyToken(tokenResponse.result() != null ? tokenResponse.result().token() : null);
+        pendingVerification = null;
+        verificationRequired = false;
+        logger.debug("Login verified, deviceId: {}", deviceId);
+        return true;
+    }
+
+    /**
+     * Send a verification code to the e-mail address of the account.
+     *
+     * @return the e-mail address, or null if the login does not need a code
+     * @throws BluelinkApiException if the code cannot be sent
+     */
+    public synchronized @Nullable String requestVerificationCode() throws BluelinkApiException {
+        if (!verificationRequired) {
+            return null;
+        }
+        final MfaResponse methods = postLogin("mfa/selverifmeth",
+                new MfaRequest.SelectMethod(MfaRequest.API_CODE, username), MfaResponse.class, "verification methods");
+        checkError(methods.error(), "verification methods");
+        final MfaResponse.Result result = methods.result();
+        if (result == null || result.userInfoUuid() == null) {
+            throw new BluelinkApiException("verification methods: invalid response");
+        }
+        final List<String> emails = result.emailList();
+        final String email = emails != null && !emails.isEmpty() ? emails.getFirst() : username;
+        final MfaResponse sent = postLogin("mfa/sendotp",
+                new MfaRequest.SendCode("E", MfaRequest.API_CODE, email, "", result.userInfoUuid()), MfaResponse.class,
+                "send code");
+        checkError(sent.error(), "send code");
+        if (sent.result() == null || sent.result().otpKey() == null) {
+            throw new BluelinkApiException("send code: invalid response");
+        }
+        logger.debug("Verification code sent to {}", email);
+        pendingVerification = new PendingVerification(sent.result().otpKey(), email);
+        return email;
+    }
+
+    private static LoginRejectedException verificationRequired() {
+        return new LoginRejectedException(Reason.VERIFICATION_REQUIRED, "verification required");
+    }
+
+    private void checkError(final @Nullable ResponseError error, final String op) throws BluelinkApiException {
+        if (error == null || error.errorCode() == null) {
+            return;
+        }
+        final String description = error.errorDesc() != null ? error.errorDesc() : error.errorCode();
+        logger.debug("{} failed: {} - {}", op, error.errorCode(), description);
+        throw switch (error.errorCode()) {
+            case INVALID_CREDENTIALS ->
+                new LoginRejectedException(Reason.INVALID_CREDENTIALS, op + ": invalid username or password");
+            case ACCOUNT_LOCKED -> new LoginRejectedException(Reason.REJECTED, op + ": " + description, description);
+            default -> new BluelinkApiException(op + ": " + description);
+        };
+    }
+
+    private void applyToken(final @Nullable Token token) throws BluelinkApiException {
+        if (token == null || token.accessToken() == null || token.expiresIn() == null) {
+            throw new BluelinkApiException("Invalid token response");
+        }
+        try {
+            setAccessToken(token.accessToken(), Instant.now().plusSeconds(Long.parseLong(token.expiresIn())));
+        } catch (final NumberFormatException e) {
+            throw new BluelinkApiException("Invalid token response", e);
+        }
+    }
+
+    // the login requests carry the device id, a known device does not need a verification code
+    private <T> T postLogin(final String endpoint, final Object payload, final Class<T> type, final String op)
+            throws BluelinkApiException {
+        final Request request = httpClient.newRequest(baseUrl + endpoint).method(HttpMethod.POST)
+                .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON)
+                .header("Deviceid", deviceId);
         addStandardHeaders(request);
-        return doLogin(request, TokenResponse.class, t -> t.result() != null ? t.result().token() : null);
+        final ContentResponse response = send(request, op);
+        final int status = response.getStatus();
+        if (status != HttpStatus.OK_200) {
+            logger.debug("operation failed ({}): {} - {}", op, status, response.getContentAsString());
+            throw operationFailed(op, status, isServerError(status));
+        }
+        try {
+            final @Nullable T result = gson.fromJson(response.getContentAsString(), type);
+            if (result == null) {
+                throw new BluelinkApiException(op + ": empty response");
+            }
+            return result;
+        } catch (final JsonSyntaxException e) {
+            throw new BluelinkApiException(op + ": invalid response", e);
+        }
     }
 
     @Override

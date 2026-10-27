@@ -45,6 +45,13 @@ Both legacy and newer CCS2/CCU-based vehicles are supported in the EU region.
 
 The `pin` field is not required for the EU region.
 
+#### Canada Region Notes
+
+When openHAB logs in from a new device, the account asks for a verification code.
+Run the Request Verification Code action of the account Thing to receive the code by e-mail.
+Then run the Verify Code action with this code.
+Afterwards openHAB is a known device and further logins do not need a code.
+
 ### `vehicle` Thing
 
 | Parameter              | Required | Default | Description                                                                                 |
