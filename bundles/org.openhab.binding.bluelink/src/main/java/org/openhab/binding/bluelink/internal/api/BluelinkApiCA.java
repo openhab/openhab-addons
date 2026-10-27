@@ -23,6 +23,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -76,6 +77,8 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
     private static final String VERIFICATION_REQUIRED = "7110";
     private static final String ACCOUNT_LOCKED = "7402";
     private static final String INVALID_CREDENTIALS = "7404";
+    // expired, deleted by a newer login, issued to another IP address
+    private static final Set<String> TOKEN_INVALID = Set.of("7403", "7602", "7606");
 
     private record PendingVerification(String otpKey, String email) {
     }
@@ -117,8 +120,17 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         };
     }
 
+    // a login deletes the previous token, so a token that is still valid must not be replaced
+    @Override
+    protected synchronized void ensureAuthenticated() throws BluelinkApiException {
+        super.ensureAuthenticated();
+    }
+
     @Override
     public synchronized boolean login() throws BluelinkApiException {
+        if (isAuthenticated()) {
+            return true;
+        }
         // the user requests the code, until then further logins would only be rejected again
         if (verificationRequired) {
             final PendingVerification pending = pendingVerification;
@@ -202,6 +214,54 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         return email;
     }
 
+    @Override
+    protected void checkResponse(final Request request, final ContentResponse response, final String op)
+            throws BluelinkApiException {
+        final ResponseError error;
+        try {
+            final ResponseError.Envelope envelope = gson.fromJson(response.getContentAsString(),
+                    ResponseError.Envelope.class);
+            error = envelope != null ? envelope.error() : null;
+        } catch (final JsonSyntaxException e) {
+            return;
+        }
+        if (error != null && TOKEN_INVALID.contains(error.errorCode())) {
+            invalidateToken(request.getHeaders().get("accessToken"));
+            throw new TokenInvalidException(op + ": " + error.errorDesc());
+        }
+        checkError(error, op);
+    }
+
+    private synchronized void invalidateToken(final @Nullable String usedToken) {
+        // another request may have logged in again already
+        if (usedToken != null && usedToken.equals(accessToken)) {
+            accessToken = null;
+        }
+    }
+
+    // the token expires early when it is not used and is deleted by a login from elsewhere, so log in once more
+    private <T> T withLogin(final Call<T> call) throws BluelinkApiException {
+        try {
+            return call.run();
+        } catch (final TokenInvalidException e) {
+            logger.debug("{}, logging in again", e.getMessage());
+            return call.run();
+        }
+    }
+
+    @FunctionalInterface
+    private interface Call<T> {
+        T run() throws BluelinkApiException;
+    }
+
+    private static class TokenInvalidException extends BluelinkApiException {
+        private static final long serialVersionUID = 1L;
+
+        TokenInvalidException(final String message) {
+            super(message);
+        }
+    }
+
     private static LoginRejectedException verificationRequired() {
         return new LoginRejectedException(Reason.VERIFICATION_REQUIRED, "verification required");
     }
@@ -257,55 +317,60 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public List<Vehicle> getVehicles() throws BluelinkApiException {
-        ensureAuthenticated();
-        final String url = baseUrl + "vhcllst";
-        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider("{}"), APPLICATION_JSON);
-        addStandardHeaders(request);
-        addAuthHeaders(request);
-        final ListVehiclesResponse listVehiclesResponse = sendRequest(request, ListVehiclesResponse.class,
-                "get vehicles");
-        if (listVehiclesResponse.result() == null || listVehiclesResponse.result().vehicles() == null) {
-            return List.of();
-        }
-        return listVehiclesResponse.result().vehicles().stream().filter(Objects::nonNull).filter(v -> v.vin() != null)
-                .map(BluelinkApiCA::toVehicle).toList();
+        return withLogin(() -> {
+            ensureAuthenticated();
+            final String url = baseUrl + "vhcllst";
+            final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+                    .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .content(new StringContentProvider("{}"), APPLICATION_JSON);
+            addStandardHeaders(request);
+            addAuthHeaders(request);
+            final ListVehiclesResponse listVehiclesResponse = sendRequest(request, ListVehiclesResponse.class,
+                    "get vehicles");
+            if (listVehiclesResponse.result() == null || listVehiclesResponse.result().vehicles() == null) {
+                return List.of();
+            }
+            return listVehiclesResponse.result().vehicles().stream().filter(Objects::nonNull)
+                    .filter(v -> v.vin() != null).map(BluelinkApiCA::toVehicle).toList();
+        });
     }
 
     @Override
     public boolean getVehicleStatus(final IVehicle vehicle, final boolean forceRefresh, final VehicleStatusCallback cb)
             throws BluelinkApiException {
-        ensureAuthenticated();
-        final String endpoint = forceRefresh ? "rltmvhclsts" : "lstvhclsts";
-        final String url = baseUrl + endpoint;
-        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider("{}"), APPLICATION_JSON);
-        addStandardHeaders(request);
-        addAuthHeaders(request);
-        addVehicleHeaders(request, vehicle);
-        final VehicleStatusResponse response = sendRequest(request, VehicleStatusResponse.class, "get vehicle status");
-        if (response.result() == null || response.result().status() == null) {
-            return false;
-        }
-        final var data = response.result().status();
-        cb.acceptStatus(data);
+        return withLogin(() -> {
+            ensureAuthenticated();
+            final String endpoint = forceRefresh ? "rltmvhclsts" : "lstvhclsts";
+            final String url = baseUrl + endpoint;
+            final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+                    .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .content(new StringContentProvider("{}"), APPLICATION_JSON);
+            addStandardHeaders(request);
+            addAuthHeaders(request);
+            addVehicleHeaders(request, vehicle);
+            final VehicleStatusResponse response = sendRequest(request, VehicleStatusResponse.class,
+                    "get vehicle status");
+            if (response.result() == null || response.result().status() == null) {
+                return false;
+            }
+            final var data = response.result().status();
+            cb.acceptStatus(data);
 
-        if (data.lastStatusDate() != null) {
-            try {
-                cb.acceptLastUpdateTimestamp(
-                        DateTimeFormatter.RFC_1123_DATE_TIME.parse(data.lastStatusDate(), Instant::from));
-            } catch (final DateTimeParseException e) {
+            if (data.lastStatusDate() != null) {
                 try {
                     cb.acceptLastUpdateTimestamp(
-                            DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(data.lastStatusDate(), Instant::from));
-                } catch (final DateTimeParseException e2) {
-                    logger.warn("unexpected lastStatusDate: {}", data.lastStatusDate());
+                            DateTimeFormatter.RFC_1123_DATE_TIME.parse(data.lastStatusDate(), Instant::from));
+                } catch (final DateTimeParseException e) {
+                    try {
+                        cb.acceptLastUpdateTimestamp(
+                                DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(data.lastStatusDate(), Instant::from));
+                    } catch (final DateTimeParseException e2) {
+                        logger.warn("unexpected lastStatusDate: {}", data.lastStatusDate());
+                    }
                 }
             }
-        }
-        return true;
+            return true;
+        });
     }
 
     @Override
@@ -375,20 +440,23 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
 
     private boolean setChargeLimit(final IVehicle vehicle, final int plugType, final int limit)
             throws BluelinkApiException {
-        ensureAuthenticated();
-        final var payload = new ChargeLimitsRequest(pin, List.of(new ChargeLimitsRequest.TargetSOC(plugType, limit)));
-        final String url = baseUrl + "evc/setsoc";
-        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON).header("from", "SPA")
-                .header("offset", "-8").header("priority", "u=1, i")
-                .header(HttpHeader.REFERER, "https://kiaconnect.ca/remote/");
-        addStandardHeaders(request);
-        addAuthHeaders(request);
-        addPinAuthHeader(request, vehicle);
-        addVehicleHeaders(request, vehicle);
-        sendRequest(request, "evc/setsoc");
-        return true;
+        return withLogin(() -> {
+            ensureAuthenticated();
+            final var payload = new ChargeLimitsRequest(pin,
+                    List.of(new ChargeLimitsRequest.TargetSOC(plugType, limit)));
+            final String url = baseUrl + "evc/setsoc";
+            final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+                    .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON).header("from", "SPA")
+                    .header("offset", "-8").header("priority", "u=1, i")
+                    .header(HttpHeader.REFERER, "https://kiaconnect.ca/remote/");
+            addStandardHeaders(request);
+            addAuthHeaders(request);
+            addPinAuthHeader(request, vehicle);
+            addVehicleHeaders(request, vehicle);
+            sendRequest(request, "evc/setsoc");
+            return true;
+        });
     }
 
     private String getPinToken(final IVehicle vehicle) throws BluelinkApiException {
@@ -418,17 +486,19 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
 
     private boolean simplePostWithPin(final IVehicle vehicle, final String endpoint, final Object payload)
             throws BluelinkApiException {
-        ensureAuthenticated();
-        final String url = baseUrl + endpoint;
-        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON);
-        addStandardHeaders(request);
-        addAuthHeaders(request);
-        addPinAuthHeader(request, vehicle);
-        addVehicleHeaders(request, vehicle);
-        sendRequest(request, endpoint);
-        return true;
+        return withLogin(() -> {
+            ensureAuthenticated();
+            final String url = baseUrl + endpoint;
+            final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+                    .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON);
+            addStandardHeaders(request);
+            addAuthHeaders(request);
+            addPinAuthHeader(request, vehicle);
+            addVehicleHeaders(request, vehicle);
+            sendRequest(request, endpoint);
+            return true;
+        });
     }
 
     @Override

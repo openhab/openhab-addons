@@ -18,4 +18,10 @@ package org.openhab.binding.bluelink.internal.dto.ca;
  * @author Carlo Dischler - Initial contribution
  */
 public record ResponseError(String errorCode, String errorDesc) {
+
+    /**
+     * Any Canada API response, reduced to its error block.
+     */
+    public record Envelope(ResponseError error) {
+    }
 }

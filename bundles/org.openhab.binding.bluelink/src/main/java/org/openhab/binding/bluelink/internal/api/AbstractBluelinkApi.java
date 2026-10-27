@@ -312,7 +312,20 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
             throws BluelinkApiException {
         final ContentResponse response = checkStatus(send(request, op), op);
         logger.debug("{} response: {}", op, response.getContentAsString());
+        checkResponse(request, response, op);
         return gson.fromJson(response.getContentAsString(), responseType);
+    }
+
+    /**
+     * Check a response with a successful HTTP status for errors that are only reported in the body.
+     *
+     * @param request the request that was sent
+     * @param response the response
+     * @param op the operation, for logging
+     * @throws BluelinkApiException if the response reports an error
+     */
+    protected void checkResponse(final Request request, final ContentResponse response, final String op)
+            throws BluelinkApiException {
     }
 
     // transport failures are transient, callers may retry them like a 5xx

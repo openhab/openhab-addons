@@ -13,6 +13,7 @@
 package org.openhab.binding.bluelink.internal.api;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.bluelink.internal.MockApiData.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
@@ -158,6 +159,41 @@ public class BluelinkApiCATest {
     }
 
     @Test
+    void testExpiredTokenLogsInAgain() throws Exception {
+        final String user = "expired@example.com";
+        stubFor(post(urlEqualTo("/v2/login")).withRequestBody(matchingJsonPath("$.loginId", equalTo(user)))
+                .willReturn(json(TOKEN_RESPONSE_CA)));
+        stubFor(post(urlEqualTo("/lstvhclsts")).inScenario("expired").whenScenarioStateIs(STARTED).willReturn(json("""
+                {"responseHeader": {"responseCode": 1},
+                 "error": {"errorCode": "7403", "errorDesc": "Your authentication has expired."}}
+                """)).willSetStateTo("renewed"));
+        final BluelinkApiCA api = new BluelinkApiCA(HTTP_CLIENT, Brand.HYUNDAI, Map.of(),
+                "http://localhost:" + WIREMOCK_SERVER.port(), timeZoneProvider, user, TEST_PASSWORD, null);
+        final IVehicle vehicle = new Vehicle("123", "VIN1234", "Car", IVehicle.EngineType.EV, "IONIQ 5", 2023);
+
+        assertTrue(api.getVehicleStatus(vehicle, false, new NoOpCallback()));
+
+        verify(2, postRequestedFor(urlEqualTo("/v2/login"))
+                .withRequestBody(matchingJsonPath("$.loginId", equalTo(user))));
+    }
+
+    @Test
+    void testValidTokenIsNotReplaced() throws Exception {
+        final String user = "once@example.com";
+        stubFor(post(urlEqualTo("/v2/login")).withRequestBody(matchingJsonPath("$.loginId", equalTo(user)))
+                .willReturn(json(TOKEN_RESPONSE_CA)));
+        final BluelinkApiCA api = new BluelinkApiCA(HTTP_CLIENT, Brand.HYUNDAI, Map.of(),
+                "http://localhost:" + WIREMOCK_SERVER.port(), timeZoneProvider, user, TEST_PASSWORD, null);
+
+        // a second login would delete the token of the first one
+        assertTrue(api.login());
+        assertTrue(api.login());
+
+        verify(1, postRequestedFor(urlEqualTo("/v2/login"))
+                .withRequestBody(matchingJsonPath("$.loginId", equalTo(user))));
+    }
+
+    @Test
     void testLoginWithVerificationCode() throws Exception {
         final String user = "otp@example.com";
         stubFor(post(urlEqualTo("/v2/login")).withRequestBody(matchingJsonPath("$.loginId", equalTo(user)))
@@ -239,6 +275,28 @@ public class BluelinkApiCATest {
 
         final LoginRejectedException e = assertThrows(LoginRejectedException.class, api::login);
         assertEquals(LoginRejectedException.Reason.INVALID_CREDENTIALS, e.getReason());
+    }
+
+    private static class NoOpCallback implements VehicleStatusCallback {
+        @Override
+        public void acceptStatus(final CommonVehicleStatus data) {
+        }
+
+        @Override
+        public void acceptLastUpdateTimestamp(final Instant lastUpdated) {
+        }
+
+        @Override
+        public void acceptSmartKeyBatteryWarning(final boolean smartKeyBattery) {
+        }
+
+        @Override
+        public void acceptLocation(final PointType location) {
+        }
+
+        @Override
+        public void acceptOdometer(final QuantityType<Length> odometer) {
+        }
     }
 
     private static ResponseDefinitionBuilder json(final String body) {
