@@ -15,6 +15,7 @@ package org.openhab.binding.viessmann.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Objects;
 
@@ -75,5 +76,31 @@ public class DeviceHandlerTest {
         assertNotNull(measurements);
         assertEquals("MeasurementEntries", measurements.type());
         assertEquals("[1,2]", measurements.value());
+    }
+
+    private static final String STATUS_MESSAGE_PROPERTIES = """
+            {
+              "errorEntries": {
+                "type": "array",
+                "value": [
+                  { "errorCode": "S.125", "busAddress": "1", "priority": "status", "audiences": ["IS-SUPPLIER"] },
+                  { "errorCode": "S.131", "busAddress": "1", "priority": "status", "audiences": [] }
+                ]
+              }
+            }
+            """;
+
+    @Test
+    public void testStatusMessageCodesAreJoined() {
+        FeatureProperties properties = Objects
+                .requireNonNull(new Gson().fromJson(STATUS_MESSAGE_PROPERTIES, FeatureProperties.class));
+
+        assertTrue(properties.getUsedEntries().contains("errorEntries"));
+        assertEquals("S.125,S.131", DeviceHandler.joinErrorCodes(properties.errorEntries));
+    }
+
+    @Test
+    public void testNoStatusMessagesGiveEmptyCodeList() {
+        assertEquals("", DeviceHandler.joinErrorCodes(null));
     }
 }
