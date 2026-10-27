@@ -281,7 +281,12 @@ Values the vehicle reports as unavailable (e.g. `INVALID`, `-NA-` or `UNKNOWN`),
 ### Dynamic Channels
 
 BMW CarData provides several hundred data points, of which only the most common ones have a predefined channel.
-If `dynamicChannels` is enabled, the binding adds a channel for every other data point it receives, typically data selected for the stream in the customer portal.
+If `dynamicChannels` is enabled, the binding adds a channel for every other data point it receives through the stream.
+These data points need to be enabled in the customer portal.
+Note that data points that cannot be streamed and are not included in the binding will never become available as dynamic channels, even when your car could provide data.
+
+Dynamic channels will also not get a state update at startup.
+They will only update from streamed data.
 
 - The channels are created in the channel group `other`.
 - The channel ID is the CarData identifier without the `vehicle.` prefix in lower-case-hyphen notation, e.g. `vehicle.cabin.sunroof.tiltStatus` becomes `other#cabin-sunroof-tilt-status`.
