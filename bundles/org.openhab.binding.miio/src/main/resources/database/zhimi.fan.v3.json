@@ -5,6 +5,7 @@
 			"zhimi.fan.v2",
 			"zhimi.fan.v3"
 		],
+		"experimental": false,
 		"channels": [
 			{
 				"property": "power",
@@ -20,13 +21,63 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
+				"property": "speed_level",
+				"friendlyName": "Fan Speed",
+				"channel": "speed_level",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_speed_level",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
+				]
+			},
+			{
+				"property": "natural_level",
+				"friendlyName": "Natural Wind Speed",
+				"channel": "natural_level",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_natural_level",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
+				],
+				"readmeComment": "Setting a value switches to natural wind; 0 while in standard mode"
+			},
+			{
 				"property": "angle_enable",
-				"friendlyName": "Rotation",
-				"channel": "angleEnable",
+				"friendlyName": "Oscillation",
+				"channel": "horizontal_swing",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -35,33 +86,20 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
+				"category": "fan",
 				"tags": [
-					"Switch"
-				]
-			},
-			{
-				"property": "use_time",
-				"friendlyName": "Run Time",
-				"channel": "usedhours",
-				"type": "Number:Time",
-				"unit": "hours",
-				"refresh": true,
-				"transformation": "SecondsToHours",
-				"actions": [],
-				"category": "time",
-				"tags": [
-					"Measurement",
-					"Duration"
+					"Switch",
+					"Airflow"
 				]
 			},
 			{
 				"property": "angle",
-				"friendlyName": "Angle",
-				"channel": "angle",
+				"friendlyName": "Oscillation Angle",
+				"channel": "horizontal_angle",
 				"type": "Number:Angle",
 				"unit": "degree",
 				"stateDescription": {
+					"pattern": "%.0f %unit%",
 					"options": [
 						{
 							"value": "30",
@@ -90,18 +128,53 @@
 				],
 				"category": "incline",
 				"tags": [
-					"Setpoint"
+					"Setpoint",
+					"Airflow"
 				],
 				"readmeComment": "Value mapping `[\"30\"\u003d\"30\",\"60\"\u003d\"60\",\"90\"\u003d\"90\",\"120\"\u003d\"120\"]`"
 			},
 			{
+				"property": "",
+				"friendlyName": "Move Direction",
+				"channel": "move",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "set_move",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Write only. Turns the fan head a step; only accepted while oscillation is off"
+			},
+			{
 				"property": "poweroff_time",
 				"friendlyName": "Power-Off Timer",
-				"channel": "poweroffTime",
+				"channel": "off_delay_time",
 				"type": "Number:Time",
-				"unit": "hours",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 480,
+					"step": 1,
+					"pattern": "%.0f min"
+				},
 				"refresh": true,
-				"transformation": "SecondsToHours",
 				"actions": [
 					{
 						"command": "set_poweroff_time",
@@ -116,7 +189,7 @@
 			},
 			{
 				"property": "buzzer",
-				"friendlyName": "Buzzer",
+				"friendlyName": "Notification Sound",
 				"channel": "buzzer",
 				"type": "Switch",
 				"refresh": true,
@@ -128,13 +201,14 @@
 				],
 				"category": "soundvolume",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "led_b",
-				"friendlyName": "LED",
-				"channel": "led_b",
+				"friendlyName": "Indicator Light",
+				"channel": "led_brightness",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -144,7 +218,7 @@
 						},
 						{
 							"value": "1",
-							"label": "Dimmed"
+							"label": "Dim"
 						},
 						{
 							"value": "2",
@@ -161,9 +235,10 @@
 				],
 				"category": "light",
 				"tags": [
-					"Control"
+					"Control",
+					"Light"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dimmed\",\"2\"\u003d\"Off\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Off\"]`"
 			},
 			{
 				"property": "child_lock",
@@ -179,78 +254,22 @@
 				],
 				"category": "lock",
 				"tags": [
-					"Control"
-				]
-			},
-			{
-				"property": "speed_level",
-				"friendlyName": "Speed Level",
-				"channel": "speedLevel",
-				"type": "Dimmer",
-				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f %%"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_speed_level",
-						"parameterType": "NUMBER"
-					}
-				],
-				"category": "fan",
-				"tags": [
-					"Setpoint",
-					"Level"
-				]
-			},
-			{
-				"property": "speed",
-				"friendlyName": "Speed",
-				"channel": "speed",
-				"type": "Number",
-				"stateDescription": {
-					"pattern": "%.0f RPM",
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": [],
-				"category": "fan",
-				"tags": [
-					"Measurement",
-					"Level"
-				]
-			},
-			{
-				"property": "natural_level",
-				"friendlyName": "Natural Level",
-				"channel": "naturalLevel",
-				"type": "Dimmer",
-				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f %%"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_natural_level",
-						"parameterType": "NUMBER"
-					}
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "temp_dec",
 				"friendlyName": "Temperature",
-				"channel": "temp_dec",
-				"type": "Number",
+				"channel": "temperature",
+				"type": "Number:Temperature",
 				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"transformation": "/10",
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "temperature",
 				"tags": [
@@ -264,8 +283,11 @@
 				"channel": "humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "humidity",
 				"tags": [
@@ -274,71 +296,86 @@
 				]
 			},
 			{
-				"property": "ac_power",
-				"friendlyName": "AC Power",
-				"channel": "acPower",
-				"type": "Switch",
-				"stateDescription": {
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": [],
-				"category": "poweroutlet_eu",
-				"tags": [
-					"Switch"
-				]
-			},
-			{
-				"property": "bat_charge",
-				"friendlyName": "Battery Charge",
-				"channel": "mode",
-				"type": "String",
-				"refresh": true,
-				"actions": [],
-				"category": "batterylevel"
-			},
-			{
 				"property": "battery",
 				"friendlyName": "Battery",
 				"channel": "battery",
 				"channelType": "system:battery-level",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
 			},
 			{
-				"property": "",
-				"friendlyName": "Move Direction",
-				"channel": "move",
-				"type": "String",
+				"property": "ac_power",
+				"friendlyName": "AC Power",
+				"channel": "ac_power",
+				"type": "Switch",
 				"stateDescription": {
-					"options": [
-						{
-							"value": "",
-							"label": "None"
-						},
-						{
-							"value": "left",
-							"label": "Left"
-						},
-						{
-							"value": "right",
-							"label": "Right"
-						}
-					]
+					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_move",
-						"parameterType": "STRING"
-					}
-				],
-				"category": "movecontrol",
+				"actions": [],
+				"category": "poweroutlet",
 				"tags": [
-					"Control"
-				],
-				"readmeComment": "Value mapping `[\"\"\u003d\"None\",\"left\"\u003d\"Left\",\"right\"\u003d\"Right\"]`"
+					"Status",
+					"Power"
+				]
+			},
+			{
+				"property": "bat_charge",
+				"friendlyName": "Battery Charge State",
+				"channel": "battery_charge",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Status",
+					"StateOfCharge"
+				]
+			},
+			{
+				"property": "speed",
+				"friendlyName": "Motor Speed",
+				"channel": "speed",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f RPM",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
+			},
+			{
+				"property": "use_time",
+				"friendlyName": "Run Time",
+				"channel": "use_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"transformation": "SecondsToHours",
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			}
 		]
 	}
