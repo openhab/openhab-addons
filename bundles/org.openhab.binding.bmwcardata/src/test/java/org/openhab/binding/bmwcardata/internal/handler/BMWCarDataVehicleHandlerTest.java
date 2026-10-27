@@ -232,8 +232,8 @@ class BMWCarDataVehicleHandlerTest {
 
     @Test
     void sunroofStatusUpdatesTheSunroofChannels() {
-        handler.updateTelematicData(Map.of("vehicle.cabin.sunroof.status",
-                stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(
+                Map.of("vehicle.cabin.sunroof.status", stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
         verifyState("status#sunroof", OpenClosedType.OPEN);
         verifyState("status#sunroof-state", new StringType("INTERMEDIATE"));
     }
