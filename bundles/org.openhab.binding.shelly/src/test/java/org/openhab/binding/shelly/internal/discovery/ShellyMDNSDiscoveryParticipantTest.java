@@ -93,6 +93,43 @@ public class ShellyMDNSDiscoveryParticipantTest {
     }
 
     @Test
+    void createResultDoesNotRequestUpdateForInitializedOnlineThing() throws Exception {
+        ShellyThingTable thingTable = mock(ShellyThingTable.class);
+        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYPLUSSMOKE);
+        thing.getProfile().initialized = true;
+        when(thing.isThingOnline()).thenReturn(true);
+        when(thingTable.findThing(SERVICE_NAME)).thenReturn(thing);
+
+        createParticipant(thingTable).createResult(mockService());
+
+        verify(thing, never()).requestUpdates(anyInt(), anyBoolean());
+    }
+
+    @Test
+    void createResultRequestsUpdateForInitializedOfflineThing() throws Exception {
+        ShellyThingTable thingTable = mock(ShellyThingTable.class);
+        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYPLUSSMOKE);
+        thing.getProfile().initialized = true;
+        when(thingTable.findThing(SERVICE_NAME)).thenReturn(thing);
+
+        createParticipant(thingTable).createResult(mockService());
+
+        verify(thing).requestUpdates(1, true);
+    }
+
+    @Test
+    void createResultRequestsUpdateForUninitializedOnlineThing() throws Exception {
+        ShellyThingTable thingTable = mock(ShellyThingTable.class);
+        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYPLUSSMOKE);
+        when(thing.isThingOnline()).thenReturn(true);
+        when(thingTable.findThing(SERVICE_NAME)).thenReturn(thing);
+
+        createParticipant(thingTable).createResult(mockService());
+
+        verify(thing).requestUpdates(1, true);
+    }
+
+    @Test
     void createResultForUnknownDeviceReturnsNull() throws Exception {
         ShellyThingTable thingTable = mock(ShellyThingTable.class);
 

@@ -181,16 +181,20 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     /**
      * A sleeping battery device announces itself via mDNS every time it wakes up, and is reachable only for a short
-     * while. Ask an existing Thing for that device to update now, its own poll would most likely come too late.
+     * while. Ask an existing Thing for that device to update now, its own poll would most likely come too late. An
+     * initialized Thing that is online is left alone, such a device already pushes its status when it wakes up.
      */
     private void requestUpdateOnWakeup(String serviceName, String address) {
         ShellyThingInterface thing = thingTable.findThing(serviceName);
         if (thing == null) {
             thing = thingTable.findThing(address);
         }
-        if (thing != null && thing.getProfile().hasBattery && !thing.getProfile().alwaysOn) {
-            logger.debug("{}: Device woke up, requesting update", serviceName);
-            thing.requestUpdates(1, true);
+        if (thing != null) {
+            ShellyDeviceProfile profile = thing.getProfile();
+            if ((!profile.isInitialized() || !thing.isThingOnline()) && profile.hasBattery && !profile.alwaysOn) {
+                logger.debug("{}: Device woke up, requesting update", serviceName);
+                thing.requestUpdates(1, true);
+            }
         }
     }
 
