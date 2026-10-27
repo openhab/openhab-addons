@@ -89,7 +89,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     private final Object requestLock = new Object();
     /** Keeps the decision for a status and its update together, so a rejected key is not overwritten by ONLINE */
     private final Object statusLock = new Object();
-    /** Incremented by every movement command, so a running tilt can tell that it has been superseded */
+    /** Incremented by every movement command, so an older one that is still queued or running is not sent */
     private final AtomicLong movementGeneration = new AtomicLong();
 
     private MotionBlindsConfiguration config = new MotionBlindsConfiguration();
@@ -205,8 +205,8 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             logger.debug("Unsupported command {} for channel {}", command, channelUID);
             return;
         }
-        movementGeneration.incrementAndGet();
-        submit(() -> write(currentSession, data));
+        long generation = movementGeneration.incrementAndGet();
+        submit(() -> writeIfCurrent(currentSession, generation, data));
     }
 
     private void submit(Runnable task) {
@@ -264,15 +264,16 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     }
 
     /**
-     * Send a tilt move unless a newer movement command arrived. The check is made under the request lock, so the
-     * write of a newer command cannot go out between the check and this write and then be overridden by it.
+     * Send a movement unless a newer movement command arrived. The commands run on the shared scheduler and may reach
+     * this out of order; the check is made under the request lock, so the write of a newer command cannot go out
+     * between the check and this write and then be overridden by it.
      *
-     * @return {@code false} if the tilt was superseded and nothing was sent
+     * @return {@code false} if the command was superseded and nothing was sent
      */
     private boolean writeIfCurrent(Object session, long generation, Map<String, Object> data) {
         synchronized (requestLock) {
             if (generation != movementGeneration.get()) {
-                logger.debug("Tilt of motor {} is superseded by a newer command", mac);
+                logger.debug("Command {} to motor {} is superseded by a newer command", data, mac);
                 return false;
             }
             write(session, data);

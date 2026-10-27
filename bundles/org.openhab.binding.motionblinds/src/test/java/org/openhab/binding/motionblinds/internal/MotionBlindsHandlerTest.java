@@ -23,12 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -214,13 +212,48 @@ public class MotionBlindsHandlerTest {
         verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
 
         handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), UpDownType.UP);
+        captureRequests(3);
         handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), new PercentType(50));
 
-        // commands are executed on the scheduler, so their order is not guaranteed
         List<MotionBlindsRequest> writes = captureRequests(4).subList(2, 4);
         assertTrue(writes.stream().allMatch(r -> MSG_WRITE_DEVICE.equals(r.msgType)));
-        assertEquals(Set.of(Map.of("operation", OPERATION_OPEN), Map.of("targetPosition", 50)),
-                writes.stream().map(r -> r.data).collect(Collectors.toSet()));
+        assertEquals(List.of(Map.of("operation", OPERATION_OPEN), Map.of("targetPosition", 50)),
+                writes.stream().map(r -> r.data).toList());
+    }
+
+    @Test
+    public void olderMovementIsNotSentAfterStop() throws IOException, InterruptedException {
+        AtomicBoolean blockNextRead = new AtomicBoolean();
+        CountDownLatch readStarted = new CountDownLatch(1);
+        CountDownLatch releaseRead = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            MotionBlindsRequest request = invocation.getArgument(1);
+            if (MSG_GET_DEVICE_LIST.equals(request.msgType)) {
+                return parse(GET_DEVICE_LIST_ACK);
+            }
+            if (MSG_READ_DEVICE.equals(request.msgType) && blockNextRead.getAndSet(false)) {
+                readStarted.countDown();
+                assertTrue(releaseRead.await(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+            }
+            return parse(READ_DEVICE_ACK);
+        }).when(communicationManager).sendRequest(eq(IP), any(), eq(MAC));
+        createHandler(KEY).initialize();
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
+
+        // a slow request holds the motor, so both commands are still queued when it ends and may run in any order
+        blockNextRead.set(true);
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), RefreshType.REFRESH);
+        assertTrue(readStarted.await(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), UpDownType.UP);
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), CHANNEL_POSITION), StopMoveType.STOP);
+        releaseRead.countDown();
+
+        verify(communicationManager, timeout(TIMEOUT_MS)).sendRequest(eq(IP),
+                argThat(r -> Map.of("operation", OPERATION_STOP).equals(r.data)), eq(MAC));
+        // the older UP must not be sent, neither before nor after the STOP
+        verify(communicationManager, after(1000).never()).sendRequest(eq(IP),
+                argThat(r -> Map.of("operation", OPERATION_OPEN).equals(r.data)), eq(MAC));
+        assertEquals(List.of(Map.of("operation", OPERATION_STOP)), writes());
     }
 
     @Test
