@@ -150,7 +150,9 @@ public class AirqHandler extends BaseThingHandler {
             Map.entry("nightModeBrightnessDay", "night-mode-brightness-day"),
             Map.entry("nightModeBrightnessNight", "night-mode-brightness-night"),
             Map.entry("nightModeFanNightOff", "night-mode-fan-night-off"),
-            Map.entry("nightModeWifiNightOff", "night-mode-wifi-night-off"), Map.entry("deviceName", "device-name"),
+            Map.entry("nightModeWifiNightOff", "night-mode-wifi-night-off"),
+            Map.entry("nightModeActivated", "night-mode-activated"),
+            Map.entry("nightModeAlarmNightOff", "night-mode-alarm-night-off"), Map.entry("deviceName", "device-name"),
             Map.entry("roomType", "room-type"), Map.entry("logLevel", "log-level"),
             Map.entry("deleteKey", "delete-key"), Map.entry("fireAlarm", "fire-alarm"),
             Map.entry("wlanConfigGateway", "wlan-config-gateway"), Map.entry("wlanConfigMac", "wlan-config-mac"),
@@ -238,7 +240,8 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("WLANssid", "ssid", "arr"), new ChannelMapping("pass", "password", "string"),
             new ChannelMapping("WifiInfo", "wifiInfo", "boolean"),
             new ChannelMapping("TimeServer", "timeServer", "string"), new ChannelMapping("geopos", "location", "coord"),
-            new ChannelMapping("NightMode", "", "nightmode"), new ChannelMapping("devicename", "deviceName", "string"),
+            new ChannelMapping("NightMode", "", "nightmode"), new ChannelMapping("daytime", "daytime", "boolean"),
+            new ChannelMapping("devicename", "deviceName", "string"),
             new ChannelMapping("RoomType", "roomType", "string"), new ChannelMapping("logging", "logLevel", "string"),
             new ChannelMapping("DeleteKey", "deleteKey", "string"),
             new ChannelMapping("FireAlarm", "fireAlarm", "boolean"),
@@ -377,7 +380,7 @@ public class AirqHandler extends BaseThingHandler {
         boolean acceptedCommand = switch (channelId) {
             case "wifi", "wifiInfo", "fireAlarm", "cloudUpload", "autoDriftCompensation", "advancedDataProcessing",
                     "gasAlarm", "alarmForwarding", "errorBars", "ppm_and_ppb", "nightModeFanNightOff",
-                    "nightModeWifiNightOff", "warmupPhase" ->
+                    "nightModeWifiNightOff", "nightModeActivated", "nightModeAlarmNightOff", "warmupPhase" ->
                 command instanceof OnOffType;
             case "timeServer", "roomType", "logLevel", "powerFreqSuppression", "deviceName" ->
                 command instanceof StringType;
@@ -441,6 +444,16 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "nightModeWifiNightOff":
                     subjson.addProperty("WifiNightOff", command == OnOffType.ON);
+                    newobj.add("NightMode", subjson);
+                    changeSettings(newobj);
+                    break;
+                case "nightModeActivated":
+                    subjson.addProperty("Activated", command == OnOffType.ON);
+                    newobj.add("NightMode", subjson);
+                    changeSettings(newobj);
+                    break;
+                case "nightModeAlarmNightOff":
+                    subjson.addProperty("AlarmNightOff", command == OnOffType.ON);
                     newobj.add("NightMode", subjson);
                     changeSettings(newobj);
                     break;
@@ -1127,6 +1140,15 @@ public class AirqHandler extends BaseThingHandler {
                                 "boolean");
                         processType(jsonDaynightdata, "WifiNightOff",
                                 nestedChannel(channelName, "nightModeWifiNightOff"), "boolean");
+                        processType(jsonDaynightdata, "AlarmNightOff",
+                                nestedChannel(channelName, "nightModeAlarmNightOff"), "boolean");
+                        // deviceconfig.md: firmware before 1.80 has no Activated key and evaluates the night mode
+                        if (jsonDaynightdata.has("Activated")) {
+                            processType(jsonDaynightdata, "Activated", nestedChannel(channelName, "nightModeActivated"),
+                                    "boolean");
+                        } else {
+                            updateMappedState(nestedChannel(channelName, "nightModeActivated"), OnOffType.ON);
+                        }
                     } else {
                         logger.warn("air-Q - airqHandler - processType(): Cannot extract day/night data: {}",
                                 dec.get(airqName).toString());

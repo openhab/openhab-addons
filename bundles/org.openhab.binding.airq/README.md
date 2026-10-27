@@ -139,6 +139,9 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | night-mode-brightness-night| Number                             | rw    | Brightness of LED at night, 0 (off) to 10                                                |
 | night-mode-fan-night-off   | Switch                             | rw    | Switch off fan at night                                                                  |
 | night-mode-wifi-night-off  | Switch                             | rw    | Switch off WLAN at night                                                                 |
+| night-mode-activated       | Switch                             | rw    | Night mode on or off; the other night mode settings are kept while it is off             |
+| night-mode-alarm-night-off | Switch                             | rw    | Switch off acoustic signals at night; fire and gas alarms are still given                |
+| daytime                    | Switch                             |       | ON in day operation, OFF in night operation                                              |
 | device-name                | String                             | rw    | Device Name                                                                              |
 | room-type                  | String                             | rw    | Type of room                                                                             |
 | log-level                  | String                             | w     | Logging level                                                                            |
@@ -318,6 +321,9 @@ Number airQ_nightMode_brightnessDay   "Brightness of LED during the day"        
 Number airQ_nightMode_brightnessNight "Brightness of LED at night"                     {channel="airq:airq:1:general#night-mode-brightness-night"}
 Switch airQ_nightMode_fanNightOff   "Switch off fan at night"                        {channel="airq:airq:1:general#night-mode-fan-night-off"}
 Switch airQ_nightMode_wifiNightOff  "Switch off WLAN at night"                       {channel="airq:airq:1:general#night-mode-wifi-night-off"}
+Switch airQ_nightMode_activated     "Night mode"                                     {channel="airq:airq:1:general#night-mode-activated"}
+Switch airQ_nightMode_alarmNightOff "Switch off acoustic signals at night"           {channel="airq:airq:1:general#night-mode-alarm-night-off"}
+Switch airQ_daytime                 "Day operation"                                  {channel="airq:airq:1:general#daytime"}
 String airQ_deviceName              "Device Name"                                    {channel="airq:airq:1:general#device-name"}
 String airQ_roomType                "Type of room"                                   {channel="airq:airq:1:general#room-type"}
 String airQ_logLevel                "Logging level"                                  {channel="airq:airq:1:general#log-level"}

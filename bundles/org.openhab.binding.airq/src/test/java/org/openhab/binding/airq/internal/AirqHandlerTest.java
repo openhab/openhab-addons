@@ -958,7 +958,9 @@ class AirqHandlerTest {
     @ParameterizedTest
     @CsvSource({ "general#night-mode-fan-night-off, FanNightOff", "general#night-mode-wifi-night-off, WifiNightOff",
             "nightModeFanNightOff, FanNightOff", "nightModeWifiNightOff, WifiNightOff",
-            "general#nightModeFanNightOff, FanNightOff", "general#nightModeWifiNightOff, WifiNightOff" })
+            "general#nightModeFanNightOff, FanNightOff", "general#nightModeWifiNightOff, WifiNightOff",
+            // deviceconfig.md: NightMode {Activated: bool, AlarmNightOff: bool}
+            "general#night-mode-activated, Activated", "general#night-mode-alarm-night-off, AlarmNightOff" })
     void nightModeSwitchCommandsUseBooleanDeviceSettings(String channel, String key) throws Exception {
         for (OnOffType command : List.of(OnOffType.ON, OnOffType.OFF)) {
             JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), command));
@@ -1053,7 +1055,7 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "wifi", "unknown", "delete-key", "initial-cal-finished", "sound-info" })
+    @ValueSource(strings = { "wifi", "unknown", "delete-key", "initial-cal-finished", "sound-info", "daytime" })
     void unwritableOrUnknownChannelsDoNotSendSettings(String channel) throws Exception {
         for (Command command : List.of(OnOffType.ON, OnOffType.OFF, new StringType("value"), new DecimalType(1),
                 new QuantityType<>(1, Units.SECOND), RefreshType.REFRESH)) {
@@ -1227,20 +1229,31 @@ class AirqHandlerTest {
                 "update-channel maxerr#so2-maxerr airq:so2-maxerr",
                 "update-channel maxerr#temperature-maxerr airq:temperature-maxerr",
                 "update-channel maxerr#radon-maxerr airq:radon-maxerr", "remove-channel general#sound-pressure",
-                "add-channel general#sound-info airq:sound-info"));
+                "add-channel general#sound-info airq:sound-info",
+                "add-channel general#night-mode-activated airq:nightmode-activated",
+                "add-channel general#night-mode-alarm-night-off airq:nightmode-alarm-night-off",
+                "add-channel general#daytime airq:daytime"));
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='7']"), empty());
 
         List<Element> additions = elements(upgrades, "//instruction-set[@targetVersion='5']/add-channel");
         assertThat(additions, hasSize(162));
-        // channels after applying version 5 and the version 6 replacement of sound-pressure by sound-info
+        // channels after applying the instructions of version 5 and version 6
         Map<String, String> upgraded = new LinkedHashMap<>();
         for (Element addition : additions) {
             upgraded.put(addition.getAttribute("groupIds") + "#" + addition.getAttribute("id"),
                     element(addition, "type").getTextContent());
         }
         assertThat(upgraded.size(), is(additions.size()));
-        upgraded.remove("general#sound-pressure");
-        upgraded.put("general#sound-info", "airq:sound-info");
+        for (Element instruction : elements(upgrades, "//instruction-set[@targetVersion='6']/*")) {
+            String channel = instruction.getAttribute("groupIds") + "#" + instruction.getAttribute("id");
+            if ("remove-channel".equals(instruction.getTagName())) {
+                assertThat(upgraded.remove(channel), notNullValue());
+            } else {
+                // add-channel and update-channel
+                assertThat(channel, "add-channel".equals(instruction.getTagName()), is(!upgraded.containsKey(channel)));
+                upgraded.put(channel, element(instruction, "type").getTextContent());
+            }
+        }
         assertThat(upgraded.size(), is(channels.size()));
         for (Entry<String, String> channel : upgraded.entrySet()) {
             String[] id = channel.getKey().split("#");
@@ -1248,7 +1261,7 @@ class AirqHandlerTest {
                     "//channel-group-type[@id='" + id[0] + "']/channels/channel[@id='" + id[1] + "']");
             assertThat(channel.getValue(), is("airq:" + definition.getAttribute("typeId")));
         }
-        assertThat(channels, hasSize(161 + 1));
+        assertThat(channels, hasSize(165));
     }
 
     @SuppressWarnings("null")
@@ -1291,6 +1304,60 @@ class AirqHandlerTest {
         assertThat(state.getAttribute("min"), is("0"));
         assertThat(state.getAttribute("max"), is("10"));
         assertThat(state.getAttribute("step"), is("1"));
+    }
+
+    @Test
+    void nightModeSettingsAreReadAlsoWhenTheNightModeIsOff() throws Exception {
+        // deviceconfig.md: the example of the night mode settings, and whether the device is in day operation
+        readConfiguration("""
+                {"NightMode": {"Activated": false, "StartDay": "07:00", "StartNight": "21:00", "BrightnessDay": 6.0,
+                               "BrightnessNight": 6.0, "FanNightOff": false, "WifiNightOff": false,
+                               "AlarmNightOff": true},
+                 "daytime": true}
+                """);
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-activated"),
+                OnOffType.OFF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-alarm-night-off"),
+                OnOffType.ON);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#daytime"), OnOffType.ON);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-start-day"),
+                new QuantityType<>(420, Units.MINUTE));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-start-night"),
+                new QuantityType<>(1260, Units.MINUTE));
+    }
+
+    @Test
+    void nightModeWithoutActivatedKeyIsUsed() throws Exception {
+        // deviceconfig.md: firmware before 1.80 has no Activated key, it is handled as true
+        readConfiguration("{\"NightMode\": {\"StartDay\": \"07:00\"}, \"daytime\": false}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-activated"),
+                OnOffType.ON);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#daytime"), OnOffType.OFF);
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "0, 00:00 UTC", "420, 07:00 UTC", "1260, 21:00 UTC", "1439, 23:59 UTC" })
+    void nightModeTimesAreShownInUtc(int minutes, String shown) throws Exception {
+        // deviceconfig.md: the night mode times are UTC
+        for (String typeId : List.of("nightmode-start-day", "nightmode-start-night")) {
+            String pattern = element(xml("thing/thing-types.xml"), "//channel-type[@id='" + typeId + "']/state")
+                    .getAttribute("pattern");
+
+            assertThat(new QuantityType<>(minutes, Units.MINUTE).format(pattern), is(shown));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "nightmodeStartDay", "nightmodeStartNight" })
+    void retainedFlatNightModeTimesStayStrings(String typeId) throws Exception {
+        // thing type version 4 published HH:mm strings
+        Document thingTypes = xml("thing/thing-types.xml");
+
+        assertThat(element(thingTypes, "//channel-type[@id='" + typeId + "']/item-type").getTextContent(),
+                is("String"));
+        assertThat(findElement(thingTypes, "//channel-type[@id='" + typeId + "']/state"), nullValue());
     }
 
     @Test

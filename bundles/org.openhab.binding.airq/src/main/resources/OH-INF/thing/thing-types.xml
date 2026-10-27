@@ -252,6 +252,9 @@
 			<channel id="night-mode-brightness-night" typeId="nightmode-brightness-night"/>
 			<channel id="night-mode-fan-night-off" typeId="nightmode-fan-night-off"/>
 			<channel id="night-mode-wifi-night-off" typeId="nightmode-wifi-night-off"/>
+			<channel id="night-mode-activated" typeId="nightmode-activated"/>
+			<channel id="night-mode-alarm-night-off" typeId="nightmode-alarm-night-off"/>
+			<channel id="daytime" typeId="daytime"/>
 			<channel id="device-name" typeId="device-name"/>
 			<channel id="room-type" typeId="room-type"/>
 			<channel id="log-level" typeId="logging"/>
@@ -824,13 +827,13 @@
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Start of Day Operation</label>
 		<description>Minutes since midnight UTC at which day operation starts.</description>
-		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
+		<state min="0" max="1439" step="1" pattern="%1$tH:%1$tM UTC"/>
 	</channel-type>
 	<channel-type id="nightmode-start-night" advanced="false">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>End of Day Operation</label>
 		<description>Minutes since midnight UTC at which night operation starts.</description>
-		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
+		<state min="0" max="1439" step="1" pattern="%1$tH:%1$tM UTC"/>
 	</channel-type>
 	<channel-type id="nightmode-brightness-day" advanced="false">
 		<item-type>Number</item-type>
@@ -849,6 +852,22 @@
 	<channel-type id="nightmode-wifi-night-off" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Switch Off WLAN at Night</label>
+	</channel-type>
+	<channel-type id="nightmode-activated" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Night Mode</label>
+		<description>Whether the night mode is used. The other night mode settings are kept while it is off.</description>
+	</channel-type>
+	<channel-type id="nightmode-alarm-night-off" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Switch Off Acoustic Signals at Night</label>
+		<description>Suppresses the configured acoustic signals at night. Fire and gas alarms are still given.</description>
+	</channel-type>
+	<channel-type id="daytime" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Day Operation</label>
+		<description>ON while the device is in day operation, OFF while it is in night operation.</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-name" advanced="false">
 		<item-type>String</item-type>
@@ -1192,16 +1211,14 @@
 		<label>Time Server</label>
 	</channel-type>
 	<channel-type id="nightmodeStartDay" advanced="false">
-		<item-type unitHint="min">Number:Time</item-type>
+		<item-type>String</item-type>
 		<label>Start of Day Operation</label>
-		<description>Minutes since midnight UTC at which day operation starts.</description>
-		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
+		<description>Time in HH:mm UTC at which day operation starts.</description>
 	</channel-type>
 	<channel-type id="nightmodeStartNight" advanced="false">
-		<item-type unitHint="min">Number:Time</item-type>
+		<item-type>String</item-type>
 		<label>End of Day Operation</label>
-		<description>Minutes since midnight UTC at which night operation starts.</description>
-		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
+		<description>Time in HH:mm UTC at which night operation starts.</description>
 	</channel-type>
 	<channel-type id="nightmodeBrightnessDay" advanced="false">
 		<item-type>Number:Dimensionless</item-type>

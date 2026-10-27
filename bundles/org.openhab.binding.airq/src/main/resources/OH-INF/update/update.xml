@@ -672,6 +672,15 @@
 			<add-channel id="sound-info" groupIds="general">
 				<type>airq:sound-info</type>
 			</add-channel>
+			<add-channel id="night-mode-activated" groupIds="general">
+				<type>airq:nightmode-activated</type>
+			</add-channel>
+			<add-channel id="night-mode-alarm-night-off" groupIds="general">
+				<type>airq:nightmode-alarm-night-off</type>
+			</add-channel>
+			<add-channel id="daytime" groupIds="general">
+				<type>airq:daytime</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 </update:update-descriptions>
