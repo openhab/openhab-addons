@@ -472,6 +472,7 @@ public enum MiIoDevices {
     XIAOMI_AIRP_MEB1("xiaomi.airp.meb1", "Xiaomi Smart Air Purifier Elite", THING_TYPE_BASIC),
     XIAOMI_AIRP_MEB2("xiaomi.airp.meb2", "Mijia Smart Air Purifier Elite", THING_TYPE_BASIC),
     XIAOMI_FAN_P43("xiaomi.fan.p43", "Mijia Smart Standing Fan Pro", THING_TYPE_BASIC),
+    XIAOMI_FAN_P45("xiaomi.fan.p45", "Xiaomi Smart Tower Fan 2", THING_TYPE_BASIC),
     XIAOMI_REPEATER_V2("xiaomi.repeater.v2", "Mi Wi-Fi Repeater 2", THING_TYPE_UNSUPPORTED),
     XIAOMI_VACUUM_B106BK("xiaomi.vacuum.b106bk", "Xiaomi Robot Vacuum T12", THING_TYPE_BASIC),
     XIAOMI_VACUUM_B106EU("xiaomi.vacuum.b106eu", "Xiaomi Robot Vacuum S12", THING_TYPE_BASIC),
