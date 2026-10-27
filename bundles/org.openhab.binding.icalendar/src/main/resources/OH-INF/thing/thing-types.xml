@@ -43,11 +43,11 @@
 			</parameter>
 			<parameter name="username" type="text" required="false" groupName="source">
 				<label>User Name</label>
-				<description>User name for fetching the calendar (usable in combination with password in HTTP basic auth)</description>
+				<description>User name for fetching the calendar (usable in combination with password in HTTP basic or digest auth)</description>
 			</parameter>
 			<parameter name="password" type="text" required="false" groupName="source">
 				<label>Password</label>
-				<description>Password for fetching the calendar (usable in combination with user name in HTTP basic auth)</description>
+				<description>Password for fetching the calendar (usable in combination with user name in HTTP basic or digest auth)</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="maxSize" type="integer" required="true" min="1" groupName="source">
