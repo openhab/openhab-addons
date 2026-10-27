@@ -64,7 +64,7 @@ public class LGWebOSConfiguration {
 
     @Override
     public String toString() {
-        return "WebOSConfiguration [host=" + host + ", useTLS=" + useTLS + ", standbyOnline=" + standbyOnline + ", key.length=" + getKey().length()
-                + ", macAddress=" + macAddress + "]";
+        return "WebOSConfiguration [host=" + host + ", useTLS=" + useTLS + ", standbyOnline=" + standbyOnline
+                + ", key.length=" + getKey().length() + ", macAddress=" + macAddress + "]";
     }
 }
