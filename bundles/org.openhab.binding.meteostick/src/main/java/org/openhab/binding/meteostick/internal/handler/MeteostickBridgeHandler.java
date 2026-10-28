@@ -60,11 +60,13 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
 
     private static final int RECEIVE_TIMEOUT = 3000;
 
-    private SerialPort serialPort;
+    private volatile SerialPort serialPort;
     private final SerialPortManager serialPortManager;
     private ReceiveThread receiveThread;
 
+    private ScheduledFuture<?> reconnectJob;
     private ScheduledFuture<?> offlineTimerJob;
+    private final Object portLock = new Object();
 
     // Package-visible so tests can shorten the reconnect poll instead of waiting 60 s.
     long reconnectIntervalSeconds = 60;
@@ -96,23 +98,23 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
             meteostickMode = "m" + mode.toString();
         }
 
-        Runnable pollingRunnable = () -> {
-            if (connectPort(port)) {
-                offlineTimerJob.cancel(true);
-            }
-        };
+        Runnable reconnectRunnable = () -> connectPort(port);
 
-        // Scheduling a job on each hour to update the last hour rainfall
-        offlineTimerJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, reconnectIntervalSeconds,
+        // Try to (re)connect periodically; connectPort is idempotent, so the poll keeps running while connected.
+        reconnectJob = scheduler.scheduleWithFixedDelay(reconnectRunnable, 0, reconnectIntervalSeconds,
                 TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
-        disconnect();
+        // Cancel the polls before tearing down the port so a late reconnect cannot re-open it mid-dispose.
+        if (reconnectJob != null) {
+            reconnectJob.cancel(true);
+        }
         if (offlineTimerJob != null) {
             offlineTimerJob.cancel(true);
         }
+        disconnect();
     }
 
     @Override
@@ -147,77 +149,100 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
      * Connects to the comm port and starts send and receive threads.
      *
      * @param serialPortName the port name to open
-     * @throws SerialInterfaceException when a connection error occurs.
+     * @return {@code true} if the port is (already) connected, {@code false} otherwise
      */
     private boolean connectPort(final String serialPortName) {
-        logger.debug("MeteoStick Connecting to serial port {}", serialPortName);
+        synchronized (portLock) {
+            if (serialPort != null) {
+                return true; // already connected
+            }
 
-        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
-        if (portIdentifier == null) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Serial Error: Port " + serialPortName + " does not exist");
+            logger.debug("MeteoStick Connecting to serial port {}", serialPortName);
+
+            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
+            if (portIdentifier == null) {
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Serial Error: Port " + serialPortName + " does not exist");
+                return false;
+            }
+
+            try {
+                serialPort = portIdentifier.open("org.openhab.binding.meteostick", 2000);
+                serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                        SerialPort.PARITY_NONE);
+                serialPort.enableReceiveThreshold(1);
+                serialPort.enableReceiveTimeout(RECEIVE_TIMEOUT);
+
+                receiveThread = new ReceiveThread();
+                receiveThread.start();
+
+                // RXTX serial port library causes high CPU load
+                // Start event listener, which will just sleep and slow down event loop
+                serialPort.addEventListener(this.receiveThread);
+                serialPort.notifyOnDataAvailable(true);
+
+                logger.debug("Serial port is initialized");
+                return true;
+            } catch (PortInUseException e) {
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Serial Error: Port " + serialPortName + " in use");
+            } catch (UnsupportedCommOperationException e) {
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Serial Error: Unsupported comm operation on port " + serialPortName);
+            } catch (TooManyListenersException e) {
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Serial Error: Too many listeners on port " + serialPortName);
+            }
+
             return false;
         }
-
-        boolean success = false;
-        try {
-            serialPort = portIdentifier.open("org.openhab.binding.meteostick", 2000);
-            serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
-            serialPort.enableReceiveThreshold(1);
-            serialPort.enableReceiveTimeout(RECEIVE_TIMEOUT);
-
-            receiveThread = new ReceiveThread();
-            receiveThread.start();
-
-            // RXTX serial port library causes high CPU load
-            // Start event listener, which will just sleep and slow down event loop
-            serialPort.addEventListener(this.receiveThread);
-            serialPort.notifyOnDataAvailable(true);
-
-            logger.debug("Serial port is initialized");
-
-            success = true;
-        } catch (PortInUseException e) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Serial Error: Port " + serialPortName + " in use");
-        } catch (UnsupportedCommOperationException e) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Serial Error: Unsupported comm operation on port " + serialPortName);
-        } catch (TooManyListenersException e) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Serial Error: Too many listeners on port " + serialPortName);
-        }
-
-        return success;
     }
 
     /**
      * Disconnects from the serial interface and stops send and receive threads.
      */
     private void disconnect() {
-        if (receiveThread != null) {
-            receiveThread.interrupt();
+        ReceiveThread thread;
+        synchronized (portLock) {
+            thread = receiveThread;
+        }
+        if (thread != null) {
+            thread.interrupt();
             try {
-                receiveThread.join();
+                thread.join();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-            receiveThread = null;
         }
-
-        if (this.serialPort != null) {
-            this.serialPort.close();
-            this.serialPort = null;
-        }
+        closePort();
         logger.debug("Disconnected from serial port");
     }
 
+    /**
+     * Closes the serial port and forgets the receive thread. Safe to call from the receive thread itself (it must not
+     * interrupt/join itself) and idempotent, so it can also back up {@link #disconnect()}.
+     */
+    private void closePort() {
+        synchronized (portLock) {
+            if (serialPort != null) {
+                serialPort.removeEventListener();
+                serialPort.close();
+                serialPort = null;
+            }
+            receiveThread = null;
+        }
+    }
+
     private void sendToMeteostick(String string) {
+        SerialPort port = serialPort;
+        if (port == null) {
+            return;
+        }
         try {
-            synchronized (serialPort.getOutputStream()) {
-                serialPort.getOutputStream().write(string.getBytes());
-                serialPort.getOutputStream().write(13);
-                serialPort.getOutputStream().flush();
+            synchronized (port.getOutputStream()) {
+                port.getOutputStream().write(string.getBytes());
+                port.getOutputStream().write(13);
+                port.getOutputStream().flush();
             }
         } catch (IOException e) {
             logger.error("Got I/O exception {} during sending. exiting thread.", e.getLocalizedMessage());
@@ -248,14 +273,29 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
             logger.debug("Starting MeteoStick Receive Thread");
             byte[] rxPacket = new byte[100];
             int rxCnt = 0;
-            int rxByte;
+            int consecutiveFastEof = 0;
+            boolean connectionLost = false;
             while (!interrupted()) {
+                int rxByte;
+                long start = System.nanoTime();
                 try {
                     rxByte = serialPort.getInputStream().read();
 
                     if (rxByte == -1) {
+                        // read() returns -1 both on the idle receive timeout and on EOF. A dead port returns -1
+                        // immediately, well before RECEIVE_TIMEOUT, so consecutive fast -1s indicate EOF.
+                        if ((System.nanoTime() - start) / 1_000_000 < RECEIVE_TIMEOUT) {
+                            if (++consecutiveFastEof >= 2) {
+                                logger.debug("MeteoStick receive thread: EOF, reconnecting");
+                                connectionLost = true;
+                                break;
+                            }
+                        } else {
+                            consecutiveFastEof = 0;
+                        }
                         continue;
                     }
+                    consecutiveFastEof = 0;
 
                     lastData = new Date();
                     startTimeoutCheck();
@@ -320,6 +360,13 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
                             rxCnt++;
                         }
                     }
+                } catch (IOException e) {
+                    if (interrupted()) {
+                        break;
+                    }
+                    logger.warn("MeteoStick: I/O error while reading serial port, reconnecting", e);
+                    connectionLost = true;
+                    break;
                 } catch (Exception e) {
                     rxCnt = 0;
                     logger.error("Exception during MeteoStick receive thread", e);
@@ -327,7 +374,10 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
             }
 
             logger.debug("Stopping MeteoStick Receive Thread");
-            serialPort.removeEventListener();
+            closePort();
+            if (connectionLost) {
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Serial connection lost, reconnecting");
+            }
         }
     }
 
