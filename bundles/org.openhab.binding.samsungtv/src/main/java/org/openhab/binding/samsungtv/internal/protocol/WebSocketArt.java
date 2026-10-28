@@ -474,8 +474,10 @@ class WebSocketArt extends WebSocketBase {
                     if ("off".equals(data.getValue())) {
                         remoteControllerWebSocket.callback.powerUpdatedAsync(true, false);
                         remoteControllerWebSocket.callback.currentAppUpdated("");
+                        remoteControllerWebSocket.callback.requestModeIfWaking(false);
                     } else {
                         remoteControllerWebSocket.callback.powerUpdatedAsync(false, true);
+                        remoteControllerWebSocket.callback.requestModeIfWaking(true);
                     }
                     if (!remoteControllerWebSocket.noApps()) {
                         remoteControllerWebSocket.updateCurrentApp();
