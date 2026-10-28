@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthException;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
 import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
@@ -691,6 +692,24 @@ class BMWCarDataVehicleHandlerTest {
     void imageIsRetriedAfterAServerError() throws Exception {
         BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
         when(account.fetchVehicleImage(VIN)).thenThrow(new BMWCarDataException("Bad gateway", 502));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        assertEquals(List.of(0L, 15 * 60L), jobs.delays);
+        vehicle.dispose();
+    }
+
+    @Test
+    void imageIsRetriedAfterARejectedToken() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN)).thenThrow(new BMWCarDataAuthException("Unauthorized", 401));
         ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
         when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
         Jobs jobs = new Jobs();

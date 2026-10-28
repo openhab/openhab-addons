@@ -495,11 +495,16 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         RawType image;
         try {
             image = account.fetchVehicleImage(vin);
+        } catch (BMWCarDataAuthException e) {
+            logger.debug("Failed to retrieve the vehicle image: {}", e.getMessage());
+            // the account renews the rejected token
+            scheduleImageRetry();
+            return;
         } catch (BMWCarDataException e) {
             logger.debug("Failed to retrieve the vehicle image: {}", e.getMessage());
             // only retry what may succeed later, as each retry costs a request: e.g. a VIN without permission
-            // (CU-104) or without image (CU-126) would use up the budget; a rejected token is renewed by the account
-            if (e.isTransient() || e.isRateLimited() || e instanceof BMWCarDataAuthException) {
+            // (CU-104) or without image (CU-126) would use up the budget
+            if (e.isTransient() || e.isRateLimited()) {
                 scheduleImageRetry();
             }
             return;
