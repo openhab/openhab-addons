@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.measure.MetricPrefix;
@@ -230,18 +233,13 @@ class AirqHandlerTest {
             "co, measurements#co, mg/m^3, ppm", "co2, measurements#co2, ppm, ug/m^3",
             "no2, measurements#no2, ug/m^3, ppm", "so2, measurements#so2, ug/m^3, ppm",
             "o3, measurements#o3, ug/m^3, ppm", "h2s, measurements#h2s, ug/m^3, ppm",
-            "ethanol, advanced-measurements#ethanol, ug/m^3, ppm",
-            "c3h8_MIPEX, advanced-measurements#c3h8-mipex, %, ug/m^3",
-            "ch4_MIPEX, advanced-measurements#ch4-mipex, %, ug/m^3",
-            "tvoc_ionsc, advanced-measurements#tvoc-ionsc, ppb, ug/m^3",
-            "nh3_MR100, advanced-measurements#nh3-mr100, ug/m^3, ppm",
-            "acid_M100, advanced-measurements#acid-m100, ppb, ug/m^3",
-            "h2_M1000, advanced-measurements#h2-m1000, ug/m^3, ppm",
-            "no_M250, advanced-measurements#no-m250, ug/m^3, ppm",
-            "cl2_M20, advanced-measurements#cl2-m20, ug/m^3, ppm",
-            "ch2o_M10, advanced-measurements#ch2o-m10, ug/m^3, ppm", "n2o, advanced-measurements#n2o, ug/m^3, ppm",
-            "r32, advanced-measurements#r32, %, ug/m^3", "r454b, advanced-measurements#r454b, %, ug/m^3",
-            "r454c, advanced-measurements#r454c, %, ug/m^3" })
+            "ethanol, measurements#ethanol, ug/m^3, ppm", "c3h8_MIPEX, measurements#c3h8-mipex, %, ug/m^3",
+            "ch4_MIPEX, measurements#ch4-mipex, %, ug/m^3", "tvoc_ionsc, measurements#tvoc-ionsc, ppb, ug/m^3",
+            "nh3_MR100, measurements#nh3-mr100, ug/m^3, ppm", "acid_M100, measurements#acid-m100, ppb, ug/m^3",
+            "h2_M1000, measurements#h2-m1000, ug/m^3, ppm", "no_M250, measurements#no-m250, ug/m^3, ppm",
+            "cl2_M20, measurements#cl2-m20, ug/m^3, ppm", "ch2o_M10, measurements#ch2o-m10, ug/m^3, ppm",
+            "n2o, measurements#n2o, ug/m^3, ppm", "r32, measurements#r32, %, ug/m^3",
+            "r454b, measurements#r454b, %, ug/m^3", "r454c, measurements#r454c, %, ug/m^3" })
     void everyGasSensorConvertsBetweenVolumeFractionAndMassDensity(String key, String channel, String channelUnit,
             String configuredUnit) throws Exception {
         // measurement.md: the units of these sensors may be changed to %, mg/m^3, ug/m^3, ppm or ppb
@@ -376,13 +374,12 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "dCO2dt, d-co2dt", "dHdt, d-hdt", "door_event, door-event", "health, health",
-            "performance, performance" })
+    @CsvSource({ "dCO2dt, measurements#d-co2dt", "dHdt, measurements#d-hdt", "door_event, events#door-event",
+            "health, measurements#health", "performance, measurements#performance" })
     void preservesLegacyScalarMappings(String key, String channel) throws Exception {
         poll("{\"" + key + "\": 125}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
-                new DecimalType(125));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, channel), new DecimalType(125));
     }
 
     @ParameterizedTest
@@ -406,8 +403,8 @@ class AirqHandlerTest {
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#health"),
                 new DecimalType(health));
         assertThat(value("measurements#health-index", Units.PERCENT), closeTo(percent, 1e-9));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#fire-alarm-active"), fire);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#gas-alarm-active"), gas);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#fire-alarm-active"), fire);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#gas-alarm-active"), gas);
     }
 
     @ParameterizedTest
@@ -415,9 +412,9 @@ class AirqHandlerTest {
     void alarmsAreUndefinedWithoutHealthIndex(String payload) throws Exception {
         poll(payload);
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#fire-alarm-active"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#fire-alarm-active"),
                 UnDefType.UNDEF);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#gas-alarm-active"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#gas-alarm-active"),
                 UnDefType.UNDEF);
     }
 
@@ -426,9 +423,9 @@ class AirqHandlerTest {
         // 2. LifeData.md: "health":894
         poll(LIVE_DATA);
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#fire-alarm-active"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#fire-alarm-active"),
                 OnOffType.OFF);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#gas-alarm-active"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#gas-alarm-active"),
                 OnOffType.OFF);
     }
 
@@ -438,7 +435,7 @@ class AirqHandlerTest {
         // datenlesen.md: the RSSI in dBm, typically -30 dBm (very good) to -90 dBm (very poor)
         poll("{\"wifi\": " + wifi + "}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#wifi-rssi"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#wifi-rssi"),
                 new QuantityType<>(-61, Units.DECIBEL_MILLIWATTS));
     }
 
@@ -448,8 +445,7 @@ class AirqHandlerTest {
         // datenlesen.md: 0 dBm means that no connection is present
         poll(payload);
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#wifi-rssi"),
-                UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#wifi-rssi"), UnDefType.UNDEF);
         requireNonNull(verify(callback)).statusUpdated(thing,
                 new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
     }
@@ -460,7 +456,7 @@ class AirqHandlerTest {
         // datenlesen.md: air flow in slm, standard litres per minute
         poll("{\"" + key + "\": 1.25}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#" + channel),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
                 new QuantityType<>(new BigDecimal("1.25"), Units.LITRE_PER_MINUTE));
     }
 
@@ -470,7 +466,7 @@ class AirqHandlerTest {
         // datenlesen.md: SPS30 particulates concentration in µg/m³
         poll("{\"" + key + "\": [12, 3]}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#" + channel),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
                 new QuantityType<>(12, Units.MICROGRAM_PER_CUBICMETRE));
     }
 
@@ -481,7 +477,7 @@ class AirqHandlerTest {
         // datenlesen.md: SPS30 particle number concentrations in 1/cm³, a plain number
         poll("{\"" + key + "\": 7.5}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#" + channel),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
                 new DecimalType(new BigDecimal("7.5")));
     }
 
@@ -490,8 +486,7 @@ class AirqHandlerTest {
         // datenlesen.md: the mean particulates size of the SPS30 in µm
         poll("{\"TypPS_SPS30\": 0.62}");
 
-        requireNonNull(verify(callback)).stateUpdated(
-                new ChannelUID(thingUID, "advanced-measurements#avg-fine-dust-size-sps30"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#avg-fine-dust-size-sps30"),
                 new QuantityType<>(new BigDecimal("0.62"), AirqUnits.MICROMETRE));
     }
 
@@ -501,16 +496,14 @@ class AirqHandlerTest {
         // datenlesen.md: "door_event": 0, "person": 1, "window_event": 0, "window_open": 0 in the sample payload
         poll("{\"" + key + "\": 1}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#" + channel),
                 new DecimalType(1));
     }
 
     @ParameterizedTest
-    @CsvSource({ "person, measurements#person", "window_event, measurements#window-event",
-            "window_open, measurements#window-open", "door_event, measurements#door-event",
-            "flow1, advanced-measurements#flow1", "pm4_SPS30, advanced-measurements#pm4-sps30",
-            "cnt4_SPS30, advanced-measurements#cnt4-sps30",
-            "TypPS_SPS30, advanced-measurements#avg-fine-dust-size-sps30" })
+    @CsvSource({ "person, events#person", "window_event, events#window-event", "window_open, events#window-open",
+            "door_event, events#door-event", "flow1, measurements#flow1", "pm4_SPS30, measurements#pm4-sps30",
+            "cnt4_SPS30, measurements#cnt4-sps30", "TypPS_SPS30, measurements#avg-fine-dust-size-sps30" })
     void measurementsWithoutErrorChannelAreUndefinedWhenMalformedOrAbsent(String key, String channel) throws Exception {
         poll("{\"" + key + "\": {\"x\": 1}}");
         poll("{}");
@@ -524,10 +517,10 @@ class AirqHandlerTest {
     void preservesLegacyStatusTimestampAndUptime() throws Exception {
         poll("{\"Status\": \"OK\", \"timestamp\": 0, \"uptime\": 123}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#status"), new StringType("OK"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#timestamp"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#status"), new StringType("OK"));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#timestamp"),
                 new DateTimeType(Instant.EPOCH));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#uptime"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#uptime"),
                 new QuantityType<>(123, Units.SECOND));
     }
 
@@ -541,7 +534,7 @@ class AirqHandlerTest {
                             "so2": "so2 sensor still in warm up phase; waiting time = 3343 s"}}
                 """);
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#status"), new StringType(
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#status"), new StringType(
                 "co: co sensor still in warm up phase; waiting time = 1543 s, no2: no2 sensor still in warm up phase; "
                         + "waiting time = 3343 s, o3: o3 sensor still in warm up phase; waiting time = 3343 s, "
                         + "so2: so2 sensor still in warm up phase; waiting time = 3343 s"));
@@ -552,7 +545,7 @@ class AirqHandlerTest {
     void statusInAnotherFormIsUndefined(String status) throws Exception {
         poll("{\"Status\": " + status + "}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#status"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#status"), UnDefType.UNDEF);
     }
 
     @ParameterizedTest
@@ -570,7 +563,7 @@ class AirqHandlerTest {
                 mockingDetails(callback).getInvocations().stream()
                         .filter(invocation -> invocation.getMethod().getName().equals("stateUpdated"))
                         .map(invocation -> invocation.getArgument(0, ChannelUID.class)).toList(),
-                not(hasItem(new ChannelUID(thingUID, "advanced-measurements#ch2o-m10"))));
+                not(hasItem(new ChannelUID(thingUID, "measurements#ch2o-m10"))));
     }
 
     @Test
@@ -620,7 +613,7 @@ class AirqHandlerTest {
 
         configurationHandler.getConfigData();
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#device-name"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#device-name"),
                 new StringType("device"));
     }
 
@@ -716,7 +709,7 @@ class AirqHandlerTest {
     void successfulSettingResponsesAreDecrypted(int status) throws Exception {
         AirqHandler postingHandler = postingHandler(status);
 
-        postingHandler.handleCommand(new ChannelUID(thingUID, "general#wifi-info"), OnOffType.ON);
+        postingHandler.handleCommand(new ChannelUID(thingUID, "settings#wifi-info"), OnOffType.ON);
 
         requireNonNull(verify(postingHandler)).decrypt(any(), anyString());
     }
@@ -726,7 +719,7 @@ class AirqHandlerTest {
     void failedSettingResponsesAreNotDecrypted(int status) throws Exception {
         AirqHandler postingHandler = postingHandler(status);
 
-        postingHandler.handleCommand(new ChannelUID(thingUID, "general#wifi-info"), OnOffType.ON);
+        postingHandler.handleCommand(new ChannelUID(thingUID, "settings#wifi-info"), OnOffType.ON);
 
         verify(postingHandler, never()).decrypt(any(), anyString());
     }
@@ -819,39 +812,39 @@ class AirqHandlerTest {
 
         configurationHandler.getConfigData();
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#wifi"), OnOffType.ON);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#ssid"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#wifi"), OnOffType.ON);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#ssid"),
                 new StringType("first, second"));
         // the undocumented key "pass" is not published, the channel was removed
-        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, "general#password")), any());
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, "settings#password")), any());
         verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, "password")), any());
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#time-server"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#time-server"),
                 new StringType("time.example"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#location"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#location"),
                 new PointType(new DecimalType(50f), new DecimalType(10f)));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#device-name"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#device-name"),
                 new StringType("device"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#averaging-rhythm"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#averaging-rhythm"),
                 new QuantityType<>(5, Units.SECOND));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-start-day"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-start-day"),
                 new QuantityType<>(480, Units.MINUTE));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-start-night"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-start-night"),
                 new QuantityType<>(1350, Units.MINUTE));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#power-freq-suppression"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#power-freq-suppression"),
                 new StringType("50Hz+60Hz"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-brightness-night"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-brightness-night"),
                 new DecimalType(2));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-fan-night-off"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-fan-night-off"),
                 OnOffType.ON);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#wlan-config-mac"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#wlan-config-mac"),
                 new StringType("mac"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#wlan-config-ip-address"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#wlan-config-ip-address"),
                 new StringType("ip"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#auto-update"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#auto-update"),
                 new QuantityType<>(90, Units.DAY));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#averaging"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#averaging"),
                 new DecimalType(30));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#warmup-phase"), OnOffType.OFF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#warmup-phase"), OnOffType.OFF);
         assertThat(thing.getProperties(),
                 allOf(hasEntry("hardwareVersion", "hardware"), hasEntry("sensorList", "co2, sound"),
                         hasEntry("industry", "true"), hasEntry("id", "device-id"), hasEntry("sensorInfo", "info")));
@@ -880,7 +873,7 @@ class AirqHandlerTest {
         // "pass" is not documented, DeleteKey is only a command and ErrorBars is no setting of the device
         readConfiguration("{\"pass\": \"secret\", \"DeleteKey\": \"WLANssid\", \"ErrorBars\": true}");
 
-        for (String channel : List.of("general#password", "general#delete-key", "general#error-bars", "password",
+        for (String channel : List.of("settings#password", "settings#delete-key", "settings#error-bars", "password",
                 "deleteKey", "errorBars")) {
             verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, channel)), any());
         }
@@ -898,13 +891,13 @@ class AirqHandlerTest {
                   "1200": {"freq": 900, "vol": 100, "pass": "up", "length": 2000, "repeat": false},
                   "2000": {"freq": 1200, "vol": 100, "pass": "down", "length": 2000, "repeat": true}}}}
                 """);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#sound-info"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#sound-info"),
                 new StringType("co2 1200 up: 900 Hz, 100 %, 2000 ms; co2 2000 down: 1200 Hz, 100 %, 2000 ms, repeat"));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "soundPressure"), OnOffType.ON);
 
         // device default
         readConfiguration(legacyThing, "{\"SoundInfo\": {}}");
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#sound-info"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#sound-info"),
                 new StringType(""));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "soundPressure"), OnOffType.OFF);
     }
@@ -913,7 +906,7 @@ class AirqHandlerTest {
     void measurementDurationUsesMilliseconds() throws Exception {
         poll("{\"measuretime\": 2006}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#measure-time"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#measure-time"),
                 new QuantityType<>(2006, MetricPrefix.MILLI(Units.SECOND)));
     }
 
@@ -930,7 +923,7 @@ class AirqHandlerTest {
     @ParameterizedTest
     @CsvSource({ "nightModeStartDay, 08:00, StartDay", "nightModeStartNight, 22:30, StartNight",
             "nightModeStartDay, 00:00, StartDay", "nightModeStartNight, 23:59, StartNight",
-            "general#night-mode-start-day, 08:00, StartDay", "general#night-mode-start-night, 22:30, StartNight" })
+            "settings#night-mode-start-day, 08:00, StartDay", "settings#night-mode-start-night, 22:30, StartNight" })
     void stringClockCommandsPreserveLegacyAndGroupedChannels(String channel, String clock, String key)
             throws Exception {
         JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), new StringType(clock)));
@@ -941,8 +934,8 @@ class AirqHandlerTest {
     @ParameterizedTest
     @ValueSource(strings = { "24:00", "08:60", "invalid", "08:00:30", "8:00", "480", "" })
     void malformedStringClockCommandsDoNotSendRequests(String clock) throws Exception {
-        for (String channel : List.of("nightModeStartDay", "nightModeStartNight", "general#night-mode-start-day",
-                "general#night-mode-start-night")) {
+        for (String channel : List.of("nightModeStartDay", "nightModeStartNight", "settings#night-mode-start-day",
+                "settings#night-mode-start-night")) {
             assertThat(sendSettings(new ChannelUID(thingUID, channel), new StringType(clock)), nullValue());
         }
     }
@@ -957,7 +950,7 @@ class AirqHandlerTest {
     void clockReadingsUseMinutesSinceMidnight(String clock, int minutes) throws Exception {
         readConfiguration("{\"NightMode\": {\"StartDay\": \"" + clock + "\"}}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-start-day"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-start-day"),
                 new QuantityType<>(minutes, Units.MINUTE));
     }
 
@@ -966,7 +959,7 @@ class AirqHandlerTest {
     void invalidClockReadingsBecomeUndefined(String clock) throws Exception {
         readConfiguration("{\"NightMode\": {\"StartDay\": \"" + clock + "\"}}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-start-day"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-start-day"),
                 UnDefType.UNDEF);
     }
 
@@ -1021,7 +1014,7 @@ class AirqHandlerTest {
     }
 
     private @Nullable JsonObject sendSettings(String channel, Command command) throws Exception {
-        return sendSettings(new ChannelUID(thingUID, "general#" + channel), command);
+        return sendSettings(new ChannelUID(thingUID, "settings#" + channel), command);
     }
 
     private @Nullable JsonObject sendSettings(ChannelUID channel, Command command) throws Exception {
@@ -1116,9 +1109,9 @@ class AirqHandlerTest {
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "nightModeStartNight"),
                 new StringType("23:59"));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "averagingRhythm"), new DecimalType(5));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-start-day"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-start-day"),
                 new QuantityType<>(480, Units.MINUTE));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#averaging-rhythm"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#averaging-rhythm"),
                 new QuantityType<>(5, Units.SECOND));
 
         poll(legacyThing, "{\"uptime\": 123}");
@@ -1155,8 +1148,8 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "wifiInfo, WifiInfo", "general#wifi-info, WifiInfo", "fireAlarm, FireAlarm",
-            "general#fire-alarm, FireAlarm", "cloudUpload, cloudUpload", "general#cloud-upload, cloudUpload" })
+    @CsvSource({ "wifiInfo, WifiInfo", "settings#wifi-info, WifiInfo", "fireAlarm, FireAlarm",
+            "settings#fire-alarm, FireAlarm", "cloudUpload, cloudUpload", "settings#cloud-upload, cloudUpload" })
     void renamedCommandsAndLegacyCommandsUseOriginalDeviceKeys(String channel, String key) throws Exception {
         JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), OnOffType.ON));
 
@@ -1165,10 +1158,10 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "general#night-mode-brightness-day, BrightnessDay",
-            "general#night-mode-brightness-night, BrightnessNight", "nightModeBrightnessDay, BrightnessDay",
-            "nightModeBrightnessNight, BrightnessNight", "general#nightModeBrightnessDay, BrightnessDay",
-            "general#nightModeBrightnessNight, BrightnessNight" })
+    @CsvSource({ "settings#night-mode-brightness-day, BrightnessDay",
+            "settings#night-mode-brightness-night, BrightnessNight", "nightModeBrightnessDay, BrightnessDay",
+            "nightModeBrightnessNight, BrightnessNight", "settings#nightModeBrightnessDay, BrightnessDay",
+            "settings#nightModeBrightnessNight, BrightnessNight" })
     void nightModeBrightnessCommandsUseNumericDeviceSettings(String channel, String key) throws Exception {
         // deviceconfig.md: int, 0 = LEDs off, 1 to 10
         for (int level : List.of(0, 6, 10)) {
@@ -1184,11 +1177,11 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "general#night-mode-fan-night-off, FanNightOff", "general#night-mode-wifi-night-off, WifiNightOff",
+    @CsvSource({ "settings#night-mode-fan-night-off, FanNightOff", "settings#night-mode-wifi-night-off, WifiNightOff",
             "nightModeFanNightOff, FanNightOff", "nightModeWifiNightOff, WifiNightOff",
-            "general#nightModeFanNightOff, FanNightOff", "general#nightModeWifiNightOff, WifiNightOff",
+            "settings#nightModeFanNightOff, FanNightOff", "settings#nightModeWifiNightOff, WifiNightOff",
             // deviceconfig.md: NightMode {Activated: bool, AlarmNightOff: bool}
-            "general#night-mode-activated, Activated", "general#night-mode-alarm-night-off, AlarmNightOff" })
+            "settings#night-mode-activated, Activated", "settings#night-mode-alarm-night-off, AlarmNightOff" })
     void nightModeSwitchCommandsUseBooleanDeviceSettings(String channel, String key) throws Exception {
         for (OnOffType command : List.of(OnOffType.ON, OnOffType.OFF)) {
             JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), command));
@@ -1202,7 +1195,7 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "general#night-mode-brightness-day", "general#night-mode-brightness-night" })
+    @ValueSource(strings = { "settings#night-mode-brightness-day", "settings#night-mode-brightness-night" })
     void invalidBrightnessCommandsDoNotSendRequests(String channel) throws Exception {
         for (Command command : List.of(OnOffType.ON, new StringType("invalid"), new StringType("NaN"),
                 new StringType("Infinity"), new StringType(""), new QuantityType<>(2.5, Units.SECOND),
@@ -1271,7 +1264,7 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "general#warmup-phase", "warmupPhase" })
+    @ValueSource(strings = { "settings#warmup-phase", "warmupPhase" })
     void warmupPhaseOffAbortsTheWarmup(String channel) throws Exception {
         // measurement.md: {"warmup-phase": false} aborts a running warm-up phase
         JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), OnOffType.OFF));
@@ -1280,7 +1273,7 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "general#warmup-phase", "warmupPhase" })
+    @ValueSource(strings = { "settings#warmup-phase", "warmupPhase" })
     void warmupPhaseCannotBeStarted(String channel) throws Exception {
         assertThat(sendSettings(new ChannelUID(thingUID, channel), OnOffType.ON), nullValue());
         assertThat(sendSettings(new ChannelUID(thingUID, channel), new StringType("OFF")), nullValue());
@@ -1307,15 +1300,15 @@ class AirqHandlerTest {
     }
 
     static Stream<Arguments> integerSettingCommands() {
-        return Stream.of(Arguments.of("general#auto-update", new DecimalType(30), json("{\"AutoUpdate\":30}")),
-                Arguments.of("general#auto-update", new DecimalType(0), json("{\"AutoUpdate\":0}")),
-                Arguments.of("general#auto-update", new QuantityType<>(2, Units.WEEK), json("{\"AutoUpdate\":14}")),
-                Arguments.of("general#auto-update", OnOffType.ON, json("{\"AutoUpdate\":90}")),
+        return Stream.of(Arguments.of("settings#auto-update", new DecimalType(30), json("{\"AutoUpdate\":30}")),
+                Arguments.of("settings#auto-update", new DecimalType(0), json("{\"AutoUpdate\":0}")),
+                Arguments.of("settings#auto-update", new QuantityType<>(2, Units.WEEK), json("{\"AutoUpdate\":14}")),
+                Arguments.of("settings#auto-update", OnOffType.ON, json("{\"AutoUpdate\":90}")),
                 Arguments.of("autoUpdate", OnOffType.ON, json("{\"AutoUpdate\":90}")),
                 Arguments.of("autoUpdate", OnOffType.OFF, json("{\"AutoUpdate\":0}")),
-                Arguments.of("general#averaging", new DecimalType(10), json("{\"Averaging\":10}")),
-                Arguments.of("general#averaging", new DecimalType(1), json("{\"Averaging\":1}")),
-                Arguments.of("general#averaging", new QuantityType<>(5, Units.ONE), json("{\"Averaging\":5}")),
+                Arguments.of("settings#averaging", new DecimalType(10), json("{\"Averaging\":10}")),
+                Arguments.of("settings#averaging", new DecimalType(1), json("{\"Averaging\":1}")),
+                Arguments.of("settings#averaging", new QuantityType<>(5, Units.ONE), json("{\"Averaging\":5}")),
                 Arguments.of("averaging", OnOffType.ON, json("{\"Averaging\":30}")),
                 Arguments.of("averaging", OnOffType.OFF, json("{\"Averaging\":1}")));
     }
@@ -1355,9 +1348,9 @@ class AirqHandlerTest {
         readConfiguration(legacyThing, "{\"AutoUpdate\": 0, \"Averaging\": 1}");
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "autoUpdate"), OnOffType.OFF);
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "averaging"), OnOffType.OFF);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#auto-update"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#auto-update"),
                 new QuantityType<>(0, Units.DAY));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#averaging"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#averaging"),
                 new DecimalType(1));
 
         readConfiguration(legacyThing, "{\"AutoUpdate\": 90, \"Averaging\": 30}");
@@ -1384,8 +1377,8 @@ class AirqHandlerTest {
         String channel = key.toLowerCase(Locale.ROOT).replace('_', '-');
         Document metadata = xml("thing/thing-types.xml");
         Document upgrades = xml("update/update.xml");
-        for (String[] groupedChannel : new String[][] { { "advanced-measurements", channel },
-                { "advanced-maxerr", channel + "-maxerr" } }) {
+        for (String[] groupedChannel : new String[][] { { "measurements", channel, "advanced-measurements" },
+                { "maxerr", channel + "-maxerr", "advanced-maxerr" } }) {
             String groupId = groupedChannel[0];
             String id = groupedChannel[1];
             Element definition = element(metadata,
@@ -1399,8 +1392,12 @@ class AirqHandlerTest {
             String hint = element(type, "item-type").getAttribute("unitHint");
             assertThat(QuantityType.valueOf("1 " + hint).getUnit(), is(unit));
             Element upgrade = element(upgrades, "//instruction-set[@targetVersion='5']/add-channel[@id='" + id + "']");
-            assertThat(upgrade.getAttribute("groupIds"), is(groupId));
+            assertThat(upgrade.getAttribute("groupIds"), is(groupedChannel[2]));
             assertThat(element(upgrade, "type").getTextContent(), is("airq:" + typeId));
+            // version 6 moves the channel from its group of version 5
+            Element move = element(upgrades, "//instruction-set[@targetVersion='6']/add-channel[@id='" + id
+                    + "' and @groupIds='" + groupId + "']");
+            assertThat(element(move, "type").getTextContent(), is("airq:" + typeId));
         }
     }
 
@@ -1410,7 +1407,7 @@ class AirqHandlerTest {
         Document upgrades = xml("update/update.xml");
         assertThat(element(metadata, "//thing-type[@id='airq']/properties/property[@name='thingTypeVersion']")
                 .getTextContent(), is("6"));
-        String[] groupIds = { "general", "measurements", "advanced-measurements", "maxerr", "advanced-maxerr" };
+        String[] groupIds = { "status", "measurements", "events", "maxerr", "settings" };
         List<Element> channels = new ArrayList<>();
         for (String groupId : groupIds) {
             Element group = findElement(metadata, "//channel-group-type[@id='" + groupId + "']");
@@ -1446,55 +1443,24 @@ class AirqHandlerTest {
             changes.add(instruction.getTagName() + " " + instruction.getAttribute("groupIds") + "#"
                     + instruction.getAttribute("id") + (type != null ? " " + type.getTextContent() : ""));
         }
-        assertThat(changes, contains("update-channel general#auto-update airq:auto-update",
-                "update-channel general#averaging airq:averaging",
-                "update-channel general#night-mode-brightness-day airq:nightmode-brightness-day",
-                "update-channel general#night-mode-brightness-night airq:nightmode-brightness-night",
-                "update-channel measurements#so2 airq:so2", "update-channel #so2 airq:so2-number",
-                "update-channel maxerr#co-maxerr airq:co-maxerr",
-                "update-channel maxerr#dewpt-maxerr airq:dewpt-maxerr",
-                "update-channel maxerr#h2s-maxerr airq:h2s-maxerr",
-                "update-channel maxerr#humidity-absolute-maxerr airq:humidity-abs-maxerr",
-                "update-channel maxerr#no2-maxerr airq:no2-maxerr", "update-channel maxerr#o3-maxerr airq:o3-maxerr",
-                "update-channel maxerr#fine-dust-conc01-maxerr airq:pm1-maxerr",
-                "update-channel maxerr#fine-dust-conc02-5-maxerr airq:pm2-5-maxerr",
-                "update-channel maxerr#fine-dust-conc10-maxerr airq:pm10-maxerr",
-                "update-channel maxerr#pressure-maxerr airq:pressure-maxerr",
-                "update-channel maxerr#so2-maxerr airq:so2-maxerr",
-                "update-channel maxerr#temperature-maxerr airq:temperature-maxerr",
-                "update-channel maxerr#radon-maxerr airq:radon-maxerr", "remove-channel general#sound-pressure",
+        // version 6 changes the item types of channels that keep their group, moves the channels of version 5 to the
+        // groups status, measurements, events, maxerr and settings, and adds the new channels
+        assertThat(changes, hasSize(253));
+        assertThat(changes, hasItems("update-channel measurements#so2 airq:so2", "update-channel #so2 airq:so2-number",
+                "update-channel maxerr#co-maxerr airq:co-maxerr", "remove-channel general#sound-pressure",
                 "remove-channel general#password", "remove-channel #password", "remove-channel general#delete-key",
                 "remove-channel #deleteKey", "remove-channel general#error-bars", "remove-channel #errorBars",
-                "add-channel general#sound-info airq:sound-info",
-                "add-channel general#night-mode-activated airq:nightmode-activated",
-                "add-channel general#night-mode-alarm-night-off airq:nightmode-alarm-night-off",
-                "add-channel general#daytime airq:daytime",
-                "add-channel measurements#fire-alarm-active airq:fire-alarm-active",
-                "add-channel measurements#gas-alarm-active airq:gas-alarm-active",
-                "add-channel measurements#person airq:person",
-                "add-channel measurements#window-event airq:window-event",
-                "add-channel measurements#window-open airq:window-open",
-                "add-channel measurements#wifi-rssi airq:wifi-rssi",
-                "add-channel advanced-measurements#flow1 airq:flow1",
-                "add-channel advanced-measurements#flow2 airq:flow2",
-                "add-channel advanced-measurements#flow3 airq:flow3",
-                "add-channel advanced-measurements#flow4 airq:flow4",
-                "add-channel advanced-measurements#pm1-sps30 airq:pm1-sps30",
-                "add-channel advanced-measurements#pm2-5-sps30 airq:pm2-5-sps30",
-                "add-channel advanced-measurements#pm4-sps30 airq:pm4-sps30",
-                "add-channel advanced-measurements#pm10-sps30 airq:pm10-sps30",
-                "add-channel advanced-measurements#cnt0-5-sps30 airq:cnt0-5-sps30",
-                "add-channel advanced-measurements#cnt1-sps30 airq:cnt1-sps30",
-                "add-channel advanced-measurements#cnt2-5-sps30 airq:cnt2-5-sps30",
-                "add-channel advanced-measurements#cnt4-sps30 airq:cnt4-sps30",
-                "add-channel advanced-measurements#cnt10-sps30 airq:cnt10-sps30",
-                "add-channel advanced-measurements#avg-fine-dust-size-sps30 airq:typps-sps30",
-                "add-channel general#night-mode-last-time-switch airq:nightmode-last-time-switch",
-                "add-channel general#cloud-connection airq:cloud-connection", "add-channel general#boots airq:boots",
-                "add-channel general#altitude airq:altitude", "add-channel general#altitude-error airq:altitude-error",
-                "add-channel general#building-standard airq:building-standard",
-                "add-channel general#country-code airq:country-code",
-                "add-channel general#room-height airq:room-height", "add-channel general#room-area airq:room-area"));
+                "remove-channel general#auto-update", "add-channel settings#auto-update airq:auto-update",
+                "remove-channel general#status", "add-channel status#status airq:status",
+                "remove-channel measurements#door-event", "add-channel events#door-event airq:door",
+                "remove-channel advanced-measurements#c2h4o", "add-channel measurements#c2h4o airq:c2h4o",
+                "remove-channel advanced-maxerr#c2h4o-maxerr", "add-channel maxerr#c2h4o-maxerr airq:density-maxerr",
+                "add-channel events#person airq:person", "add-channel settings#country-code airq:country-code"));
+        // only removals refer to the groups of version 5
+        assertThat(changes.stream().filter(change -> !change.startsWith("remove-channel"))
+                .filter(change -> Stream.of("general#", "advanced-measurements#", "advanced-maxerr#")
+                        .anyMatch(group -> change.contains(" " + group)))
+                .toList(), empty());
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='7']"), empty());
 
         List<Element> additions = elements(upgrades, "//instruction-set[@targetVersion='5']/add-channel");
@@ -1541,7 +1507,7 @@ class AirqHandlerTest {
         doReturn(new AirqHandler.Result(response.toString(), 200)).when(commandHandler).getData(anyString(), eq("POST"),
                 anyString());
 
-        commandHandler.handleCommand(new ChannelUID(thingUID, "general#wifi-info"), OnOffType.ON);
+        commandHandler.handleCommand(new ChannelUID(thingUID, "settings#wifi-info"), OnOffType.ON);
 
         requireNonNull(verify(commandHandler)).getData(anyString(), eq("POST"), anyString());
     }
@@ -1581,7 +1547,7 @@ class AirqHandlerTest {
     void configuredWifiNetworksAreListed(String networks, String shown) throws Exception {
         readConfiguration("{\"WLANssid\": " + networks + "}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#ssid"), new StringType(shown));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#ssid"), new StringType(shown));
     }
 
     @ParameterizedTest
@@ -1590,8 +1556,8 @@ class AirqHandlerTest {
         // GET /config returns a list of names, the object with the keys is the SD card format
         readConfiguration("{\"WLANssid\": " + networks + "}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#ssid"), UnDefType.UNDEF);
-        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, "general#ssid")),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#ssid"), UnDefType.UNDEF);
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, "settings#ssid")),
                 argThat(state -> state.toString().contains("key")));
     }
 
@@ -1601,7 +1567,7 @@ class AirqHandlerTest {
         readConfiguration(
                 "{\"usercalib\": {\"so2\": {\"offset\": 12.5, \"timestamp\": 1793046696}, \"co\": {\"offset\": 0, \"timestamp\": 1793050296}}}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#user-calib"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#user-calib"),
                 new StringType("so2: offset=12.5 [" + calibrationTime(1793046696) + "], co: offset=0 ["
                         + calibrationTime(1793050296) + "]"));
     }
@@ -1610,7 +1576,7 @@ class AirqHandlerTest {
     void userCalibrationsWithoutTimestampShowTheOffset() throws Exception {
         readConfiguration("{\"usercalib\": {\"so2\": {\"offset\": -3}}}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#user-calib"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#user-calib"),
                 new StringType("so2: offset=-3"));
     }
 
@@ -1621,7 +1587,7 @@ class AirqHandlerTest {
     void userCalibrationEntriesThatAreNotCalibrationsAreSkipped(String usercalib, String shown) throws Exception {
         readConfiguration("{\"usercalib\": " + usercalib + "}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#user-calib"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#user-calib"),
                 new StringType(shown));
     }
 
@@ -1630,8 +1596,8 @@ class AirqHandlerTest {
     void userCalibrationsInAnotherFormAreUndefinedAndTheConfigurationIsStillRead(String usercalib) throws Exception {
         readConfiguration("{\"usercalib\": " + usercalib + ", \"InitialCalFinished\": true}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#user-calib"), UnDefType.UNDEF);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#initial-cal-finished"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#user-calib"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#initial-cal-finished"),
                 OnOffType.ON);
     }
 
@@ -1649,14 +1615,14 @@ class AirqHandlerTest {
                  "daytime": true}
                 """);
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-activated"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-activated"),
                 OnOffType.OFF);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-alarm-night-off"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-alarm-night-off"),
                 OnOffType.ON);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#daytime"), OnOffType.ON);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-start-day"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#daytime"), OnOffType.ON);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-start-day"),
                 new QuantityType<>(420, Units.MINUTE));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-start-night"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-start-night"),
                 new QuantityType<>(1260, Units.MINUTE));
     }
 
@@ -1665,9 +1631,9 @@ class AirqHandlerTest {
         // deviceconfig.md: firmware before 1.80 has no Activated key, it is handled as true
         readConfiguration("{\"NightMode\": {\"StartDay\": \"07:00\"}, \"daytime\": false}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-activated"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-activated"),
                 OnOffType.ON);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#daytime"), OnOffType.OFF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#daytime"), OnOffType.OFF);
     }
 
     @ParameterizedTest
@@ -1694,7 +1660,7 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "maxerr, measurements, 26", "advanced-maxerr, advanced-measurements, 30" })
+    @CsvSource({ "maxerr, measurements, 56" })
     void errorChannelsHaveTheItemTypeAndUnitOfTheirMeasurement(String errorGroup, String measurementGroup,
             int channelCount) throws Exception {
         // datenlesen.md: [value, error] is value ± error in the same unit
@@ -1909,7 +1875,7 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "general#ssid", "ssid", "SSID" })
+    @ValueSource(strings = { "settings#ssid", "ssid", "SSID" })
     void ssidChannelIsReadOnly(String channel) throws Exception {
         // Wi-Fi networks are added with the setWifi action, the channel lists the configured networks
         assertThat(
@@ -1922,7 +1888,7 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "general#device-name", "deviceName" })
+    @ValueSource(strings = { "settings#device-name", "deviceName" })
     void deviceNameCommandsSetTheDeviceName(String channel) throws Exception {
         // deviceconfig.md: {"devicename": "Living-Room 1"}
         assertThat(sendSettings(new ChannelUID(thingUID, channel), new StringType("Living-Room 1")),
@@ -1941,7 +1907,7 @@ class AirqHandlerTest {
             }
         };
 
-        commandHandler.handleCommand(new ChannelUID(thingUID, "general#device-name"),
+        commandHandler.handleCommand(new ChannelUID(thingUID, "settings#device-name"),
                 new StringType("Room 😁 <Küche> & 'Bad'="));
 
         assertThat(
@@ -1967,13 +1933,17 @@ class AirqHandlerTest {
     }
 
     @Test
-    void uptimeBelongsToGeneralInMetadataAndUpgrade() throws Exception {
+    void uptimeBelongsToStatusInMetadataAndUpgrade() throws Exception {
         assertThat(findElement(xml("thing/thing-types.xml"),
-                "//channel-group-type[@id='general']/channels/channel[@id='uptime']"), notNullValue());
+                "//channel-group-type[@id='status']/channels/channel[@id='uptime']"), notNullValue());
         assertThat(findElement(xml("thing/thing-types.xml"),
                 "//channel-group-type[@id='measurements']/channels/channel[@id='uptime']"), nullValue());
         assertThat(element(xml("update/update.xml"), "//instruction-set[@targetVersion='5']/add-channel[@id='uptime']")
                 .getAttribute("groupIds"), is("general"));
+        assertThat(
+                findElement(xml("update/update.xml"),
+                        "//instruction-set[@targetVersion='6']/add-channel[@id='uptime' and @groupIds='status']"),
+                notNullValue());
     }
 
     private static Document xml(String resource) throws Exception {
@@ -2007,10 +1977,10 @@ class AirqHandlerTest {
         poll("{\"" + key + "\": [12.5, 0.25]}");
         String channel = key.toLowerCase(Locale.ROOT).replace('_', '-');
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#" + channel),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
                 new QuantityType<>(12.5, unit));
-        requireNonNull(verify(callback)).stateUpdated(
-                new ChannelUID(thingUID, "advanced-maxerr#" + channel + "-maxerr"), new QuantityType<>(0.25, unit));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#" + channel + "-maxerr"),
+                new QuantityType<>(0.25, unit));
     }
 
     @ParameterizedTest
@@ -2019,10 +1989,10 @@ class AirqHandlerTest {
         poll("{\"" + key + "\": 12.5}");
         String channel = key.toLowerCase(Locale.ROOT).replace('_', '-');
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#" + channel),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
                 new QuantityType<>(12.5, unit));
-        requireNonNull(verify(callback))
-                .stateUpdated(new ChannelUID(thingUID, "advanced-maxerr#" + channel + "-maxerr"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#" + channel + "-maxerr"),
+                UnDefType.UNDEF);
     }
 
     @Test
@@ -2034,7 +2004,7 @@ class AirqHandlerTest {
                         .filter(invocation -> invocation.getMethod().getName().equals("stateUpdated"))
                         .map(invocation -> invocation.getArgument(0, ChannelUID.class)).toList(),
                 allOf(not(hasItem(new ChannelUID(thingUID, "future_sensor"))),
-                        not(hasItem(new ChannelUID(thingUID, "advanced-measurements#ch2o-m10")))));
+                        not(hasItem(new ChannelUID(thingUID, "measurements#ch2o-m10")))));
     }
 
     @ParameterizedTest
@@ -2043,16 +2013,16 @@ class AirqHandlerTest {
     void invalidatesMalformedReadingsAndRecovers(String reading) throws Exception {
         poll("{\"ch2o_M10\": " + reading + "}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#ch2o-m10"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#ch2o-m10"),
                 UnDefType.UNDEF);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-maxerr#ch2o-m10-maxerr"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#ch2o-m10-maxerr"),
                 UnDefType.UNDEF);
 
         poll("{\"ch2o_M10\": [3, 0.5]}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#ch2o-m10"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#ch2o-m10"),
                 new QuantityType<>(3, Units.MICROGRAM_PER_CUBICMETRE));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-maxerr#ch2o-m10-maxerr"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "maxerr#ch2o-m10-maxerr"),
                 new QuantityType<>(0.5, Units.MICROGRAM_PER_CUBICMETRE));
     }
 
@@ -2080,6 +2050,56 @@ class AirqHandlerTest {
     }
 
     @Test
+    void everyChannelOfTheGroupsIsPublishedAndOnlyThose() throws Exception {
+        // every key of the measurements and the configuration that the binding reads
+        StringBuilder data = new StringBuilder("{\"Status\": \"OK\", \"timestamp\": 1793046696000, \"health\": 894,"
+                + " \"performance\": 321.3, \"dCO2dt\": 16.94, \"dHdt\": -0.01, \"measuretime\": 2004,"
+                + " \"uptime\": 1068539, \"TypPS\": 0.62, \"wifi\": -70");
+        for (String key : List.of("acid_M100", "ash3", "br2", "c2h4", "c2h4o", "c3h8_MIPEX", "ch2o_M10", "ch4_MIPEX",
+                "ch4s", "cl2_M20", "clo2", "cnt0_3", "cnt0_5", "cnt0_5_SPS30", "cnt1", "cnt10", "cnt10_SPS30",
+                "cnt1_SPS30", "cnt2_5", "cnt2_5_SPS30", "cnt4_SPS30", "cnt5", "co", "co2", "cs2", "dewpt", "door_event",
+                "ethanol", "f2", "flow1", "flow2", "flow3", "flow4", "h2_M1000", "h2o2", "h2s", "hcl", "hcn", "hf",
+                "humidity", "humidity_abs", "mold", "n2o", "nh3_MR100", "no2", "no_M250", "o3", "oxygen", "person",
+                "ph3", "pm1", "pm10", "pm10_SPS30", "pm1_SPS30", "pm2_5", "pm2_5_SPS30", "pm4_SPS30", "pressure",
+                "pressure_rel", "r32", "r454b", "r454c", "radon", "sih4", "so2", "sound", "sound_max", "temperature",
+                "tvoc", "tvoc_ionsc", "virus", "window_event", "window_open")) {
+            data.append(", \"").append(key).append("\": [1.5, 0.5]");
+        }
+        poll(data.append('}').toString());
+        readConfiguration("""
+                {"Wifi": true, "WLANssid": ["net"], "WifiInfo": true, "TimeServer": "pool.ntp.org",
+                 "geopos": {"lat": 0.0, "long": 0.0}, "daytime": true, "devicename": "airQ Pro", "RoomType": "office",
+                 "logging": "Error", "FireAlarm": false, "cloudUpload": false, "SecondsMeasurementDelay": 120,
+                 "Rejection": "50Hz", "AutoDriftCompensation": true, "AutoUpdate": 90, "AdvancedDataProcessing": false,
+                 "ppm&ppb": false, "GasAlarm": false, "SoundInfo": {}, "AlarmForwarding": false,
+                 "usercalib": {"co": {"offset": -0.7, "timestamp": 1793004929}}, "InitialCalFinished": true,
+                 "Averaging": 30, "warmup-phase": false, "country_code": "DE", "cloud_connection": "DISCONNECTED",
+                 "boots": "13/41/0/239/78", "Altitude": ["392", 10], "BuildingStandard": "None", "RoomHeight": 2.4,
+                 "RoomArea": 20.0,
+                 "WLAN config": {"IP address": "ip", "Gateway": "gateway", "MAC": "mac", "Net Mask": "mask",
+                  "BSSID": "bssid", "SSID": "ssid"},
+                 "NightMode": {"Activated": false, "WifiNightOff": false, "StartDay": "07:00",
+                  "last_summer_winter_time_switch": 0, "StartNight": "21:00", "AlarmNightOff": false,
+                  "FanNightOff": false, "BrightnessNight": 6, "BrightnessDay": 6}}
+                """);
+
+        ArgumentCaptor<ChannelUID> published = ArgumentCaptor.forClass(ChannelUID.class);
+        requireNonNull(verify(callback, atLeastOnce())).stateUpdated(published.capture(), any());
+        Set<String> publishedIds = published.getAllValues().stream().map(ChannelUID::getId)
+                .collect(Collectors.toCollection(TreeSet::new));
+        Set<String> definedIds = new TreeSet<>();
+        for (Element group : elements(xml("thing/thing-types.xml"), "//channel-group-type")) {
+            for (Element channel : elements(group, "channels/channel")) {
+                definedIds.add(group.getAttribute("id") + "#" + channel.getAttribute("id"));
+            }
+        }
+        assertThat("published but not defined", publishedIds.stream().filter(id -> !definedIds.contains(id)).toList(),
+                empty());
+        assertThat("defined but not published", definedIds.stream().filter(id -> !publishedIds.contains(id)).toList(),
+                empty());
+    }
+
+    @Test
     void deviceDetailsOfARealDeviceArePublished() throws Exception {
         // excerpt of the /config answer of an air-Q Pro
         readConfiguration("""
@@ -2093,23 +2113,23 @@ class AirqHandlerTest {
 
         assertThat(thing.getProperties(),
                 allOf(hasEntry("deviceType", "airQ Select"), hasEntry("serialNumber", "91e5157abe")));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#country-code"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#country-code"),
                 new StringType("DE"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#cloud-connection"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#cloud-connection"),
                 new StringType("DISCONNECTED"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#boots"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#boots"),
                 new StringType("13/41/0/239/78"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#altitude"),
                 new QuantityType<>(392, SIUnits.METRE));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude-error"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#altitude-error"),
                 new QuantityType<>(10, SIUnits.METRE));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#building-standard"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#building-standard"),
                 new StringType("None"));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#room-height"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#room-height"),
                 new QuantityType<>(0.0, SIUnits.METRE));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#room-area"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#room-area"),
                 new QuantityType<>(0.0, SIUnits.SQUARE_METRE));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-last-time-switch"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#night-mode-last-time-switch"),
                 new DecimalType(0));
     }
 
@@ -2118,8 +2138,8 @@ class AirqHandlerTest {
         // deviceconfig.md: the default [-10000.0, 100.0]
         readConfiguration("{\"Altitude\": [-10000.0, 100.0]}");
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude"), UnDefType.UNDEF);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude-error"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#altitude"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#altitude-error"),
                 new QuantityType<>(100.0, SIUnits.METRE));
     }
 
@@ -2129,11 +2149,11 @@ class AirqHandlerTest {
     void malformedOrMissingAltitudesAreUndefined(String configuration) throws Exception {
         readConfiguration(configuration);
 
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude"), UnDefType.UNDEF);
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude-error"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#altitude"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "settings#altitude-error"),
                 UnDefType.UNDEF);
         // the configuration is still read after the altitude
-        requireNonNull(verify(callback)).stateUpdated(eq(new ChannelUID(thingUID, "general#room-height")), any());
+        requireNonNull(verify(callback)).stateUpdated(eq(new ChannelUID(thingUID, "settings#room-height")), any());
     }
 
     @Test
@@ -2211,7 +2231,7 @@ class AirqHandlerTest {
         commandHandler.setCallback(callback);
         commandHandler.config.password = password;
         commandHandler.getConfigData();
-        commandHandler.handleCommand(new ChannelUID(thingUID, "general#" + channel), command);
+        commandHandler.handleCommand(new ChannelUID(thingUID, "settings#" + channel), command);
         if (requests.isEmpty()) {
             return null;
         }

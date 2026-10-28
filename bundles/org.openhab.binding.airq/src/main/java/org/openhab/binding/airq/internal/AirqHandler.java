@@ -119,7 +119,7 @@ public class AirqHandler extends BaseThingHandler {
         }
 
         ChannelMapping(String dataKey, String channelId, Unit<?> unit) {
-            this(dataKey, channelId, "measurement", unit, "advanced-measurements");
+            this(dataKey, channelId, "measurement", unit, "measurements");
         }
     }
 
@@ -200,22 +200,22 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("so2", "so2", "pair", Units.MICROGRAM_PER_CUBICMETRE),
             new ChannelMapping("sound", "sound", "pair", Units.DECIBEL),
             new ChannelMapping("temperature", "temperature", "pair", SIUnits.CELSIUS),
-            new ChannelMapping("Status", "status", "status", null, "general"),
+            new ChannelMapping("Status", "status", "status", null, "status"),
             new ChannelMapping("TypPS", "avgFineDustSize", "quantity", AirqUnits.MICROMETRE),
             new ChannelMapping("dCO2dt", "dCO2dt", "number"), new ChannelMapping("dHdt", "dHdt", "number"),
-            new ChannelMapping("door_event", "doorEvent", "value"),
+            new ChannelMapping("door_event", "doorEvent", "value", null, "events"),
             // only in the sample payload of datenlesen.md, without meaning or unit like door_event
-            new ChannelMapping("person", "person", "value"),
-            new ChannelMapping("window_event", "window-event", "value"),
-            new ChannelMapping("window_open", "window-open", "value"),
-            new ChannelMapping("wifi", "wifi-rssi", "rssi", Units.DECIBEL_MILLIWATTS),
+            new ChannelMapping("person", "person", "value", null, "events"),
+            new ChannelMapping("window_event", "window-event", "value", null, "events"),
+            new ChannelMapping("window_open", "window-open", "value", null, "events"),
+            new ChannelMapping("wifi", "wifi-rssi", "rssi", Units.DECIBEL_MILLIWATTS, "status"),
             new ChannelMapping("health", "healthIndex", "index"), new ChannelMapping("health", "health", "number"),
-            new ChannelMapping("health", "", "alarm"),
-            new ChannelMapping("measuretime", "measureTime", "numberMilliseconds"),
+            new ChannelMapping("health", "", "alarm", null, "events"),
+            new ChannelMapping("measuretime", "measureTime", "numberMilliseconds", null, "status"),
             new ChannelMapping("performance", "performanceIndex", "index"),
             new ChannelMapping("performance", "performance", "number"),
-            new ChannelMapping("timestamp", "timestamp", "datetime"),
-            new ChannelMapping("uptime", "uptime", "numberTimePeriod", null, "general"),
+            new ChannelMapping("timestamp", "timestamp", "datetime", null, "status"),
+            new ChannelMapping("uptime", "uptime", "numberTimePeriod", null, "status"),
             new ChannelMapping("tvoc", "tvoc", "pair", Units.PARTS_PER_BILLION),
             new ChannelMapping("virus", "virus_free", "pair", Units.PERCENT),
             new ChannelMapping("mold", "mold_free", "pair", Units.PERCENT),
@@ -249,60 +249,64 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("r32", "r32", Units.PERCENT), new ChannelMapping("r454b", "r454b", Units.PERCENT),
             new ChannelMapping("r454c", "r454c", Units.PERCENT),
             // datenlesen.md: standard litres per minute at 20 °C and 1013 hPa
-            new ChannelMapping("flow1", "flow1", "value", Units.LITRE_PER_MINUTE, "advanced-measurements"),
-            new ChannelMapping("flow2", "flow2", "value", Units.LITRE_PER_MINUTE, "advanced-measurements"),
-            new ChannelMapping("flow3", "flow3", "value", Units.LITRE_PER_MINUTE, "advanced-measurements"),
-            new ChannelMapping("flow4", "flow4", "value", Units.LITRE_PER_MINUTE, "advanced-measurements"),
+            new ChannelMapping("flow1", "flow1", "value", Units.LITRE_PER_MINUTE, "measurements"),
+            new ChannelMapping("flow2", "flow2", "value", Units.LITRE_PER_MINUTE, "measurements"),
+            new ChannelMapping("flow3", "flow3", "value", Units.LITRE_PER_MINUTE, "measurements"),
+            new ChannelMapping("flow4", "flow4", "value", Units.LITRE_PER_MINUTE, "measurements"),
             // datenlesen.md: the optional Sensirion SPS30 sensor, its counts are per cm³ instead of per 100 ml
-            new ChannelMapping("pm1_SPS30", "pm1-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE,
-                    "advanced-measurements"),
-            new ChannelMapping("pm2_5_SPS30", "pm2-5-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE,
-                    "advanced-measurements"),
-            new ChannelMapping("pm4_SPS30", "pm4-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE,
-                    "advanced-measurements"),
-            new ChannelMapping("pm10_SPS30", "pm10-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE,
-                    "advanced-measurements"),
-            new ChannelMapping("cnt0_5_SPS30", "cnt0-5-sps30", "value", null, "advanced-measurements"),
-            new ChannelMapping("cnt1_SPS30", "cnt1-sps30", "value", null, "advanced-measurements"),
-            new ChannelMapping("cnt2_5_SPS30", "cnt2-5-sps30", "value", null, "advanced-measurements"),
-            new ChannelMapping("cnt4_SPS30", "cnt4-sps30", "value", null, "advanced-measurements"),
-            new ChannelMapping("cnt10_SPS30", "cnt10-sps30", "value", null, "advanced-measurements"),
-            new ChannelMapping("TypPS_SPS30", "avg-fine-dust-size-sps30", "value", AirqUnits.MICROMETRE,
-                    "advanced-measurements"));
-    private static final List<ChannelMapping> CONFIGURATION = List.of(new ChannelMapping("Wifi", "wifi", "boolean"),
-            new ChannelMapping("WLANssid", "ssid", "arr"), new ChannelMapping("WifiInfo", "wifiInfo", "boolean"),
-            new ChannelMapping("TimeServer", "timeServer", "string"), new ChannelMapping("geopos", "location", "coord"),
-            new ChannelMapping("NightMode", "", "nightmode"), new ChannelMapping("daytime", "daytime", "boolean"),
-            new ChannelMapping("devicename", "deviceName", "string"),
-            new ChannelMapping("RoomType", "roomType", "string"), new ChannelMapping("logging", "logLevel", "string"),
-            new ChannelMapping("FireAlarm", "fireAlarm", "boolean"),
-            new ChannelMapping("air-Q-Hardware-Version", "hardwareVersion", "property"),
-            new ChannelMapping("WLAN config", "", "wlan"), new ChannelMapping("cloudUpload", "cloudUpload", "boolean"),
-            new ChannelMapping("SecondsMeasurementDelay", "averagingRhythm", "numberTimePeriod"),
-            new ChannelMapping("Rejection", "powerFreqSuppression", "string"),
-            new ChannelMapping("air-Q-Software-Version", "softwareVersion", "property"),
-            new ChannelMapping("sensors", "sensorList", "proparr"),
-            new ChannelMapping("AutoDriftCompensation", "autoDriftCompensation", "boolean"),
-            new ChannelMapping("AutoUpdate", "autoUpdate", "numberDays"),
-            new ChannelMapping("AdvancedDataProcessing", "advancedDataProcessing", "boolean"),
-            new ChannelMapping("Industry", "industry", "property"),
-            new ChannelMapping("ppm&ppb", "ppm_and_ppb", "boolean"),
-            new ChannelMapping("GasAlarm", "gasAlarm", "boolean"), new ChannelMapping("id", "id", "property"),
-            new ChannelMapping("SoundInfo", "soundPressure", "soundInfo"),
-            new ChannelMapping("AlarmForwarding", "alarmForwarding", "boolean"),
-            new ChannelMapping("usercalib", "userCalib", "calib"),
-            new ChannelMapping("InitialCalFinished", "initialCalFinished", "boolean"),
-            new ChannelMapping("Averaging", "averaging", "number"),
-            new ChannelMapping("SensorInfo", "sensorInfo", "property"),
-            new ChannelMapping("warmup-phase", "warmupPhase", "boolean"),
+            new ChannelMapping("pm1_SPS30", "pm1-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE, "measurements"),
+            new ChannelMapping("pm2_5_SPS30", "pm2-5-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE, "measurements"),
+            new ChannelMapping("pm4_SPS30", "pm4-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE, "measurements"),
+            new ChannelMapping("pm10_SPS30", "pm10-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE, "measurements"),
+            new ChannelMapping("cnt0_5_SPS30", "cnt0-5-sps30", "value", null, "measurements"),
+            new ChannelMapping("cnt1_SPS30", "cnt1-sps30", "value", null, "measurements"),
+            new ChannelMapping("cnt2_5_SPS30", "cnt2-5-sps30", "value", null, "measurements"),
+            new ChannelMapping("cnt4_SPS30", "cnt4-sps30", "value", null, "measurements"),
+            new ChannelMapping("cnt10_SPS30", "cnt10-sps30", "value", null, "measurements"), new ChannelMapping(
+                    "TypPS_SPS30", "avg-fine-dust-size-sps30", "value", AirqUnits.MICROMETRE, "measurements"));
+    private static final List<ChannelMapping> CONFIGURATION = List.of(
+            new ChannelMapping("Wifi", "wifi", "boolean", null, "settings"),
+            new ChannelMapping("WLANssid", "ssid", "arr", null, "settings"),
+            new ChannelMapping("WifiInfo", "wifiInfo", "boolean", null, "settings"),
+            new ChannelMapping("TimeServer", "timeServer", "string", null, "settings"),
+            new ChannelMapping("geopos", "location", "coord", null, "settings"),
+            new ChannelMapping("NightMode", "", "nightmode", null, "settings"),
+            new ChannelMapping("daytime", "daytime", "boolean", null, "status"),
+            new ChannelMapping("devicename", "deviceName", "string", null, "settings"),
+            new ChannelMapping("RoomType", "roomType", "string", null, "settings"),
+            new ChannelMapping("logging", "logLevel", "string", null, "settings"),
+            new ChannelMapping("FireAlarm", "fireAlarm", "boolean", null, "settings"),
+            new ChannelMapping("air-Q-Hardware-Version", "hardwareVersion", "property", null, "settings"),
+            new ChannelMapping("WLAN config", "", "wlan", null, "status"),
+            new ChannelMapping("cloudUpload", "cloudUpload", "boolean", null, "settings"),
+            new ChannelMapping("SecondsMeasurementDelay", "averagingRhythm", "numberTimePeriod", null, "settings"),
+            new ChannelMapping("Rejection", "powerFreqSuppression", "string", null, "settings"),
+            new ChannelMapping("air-Q-Software-Version", "softwareVersion", "property", null, "settings"),
+            new ChannelMapping("sensors", "sensorList", "proparr", null, "settings"),
+            new ChannelMapping("AutoDriftCompensation", "autoDriftCompensation", "boolean", null, "settings"),
+            new ChannelMapping("AutoUpdate", "autoUpdate", "numberDays", null, "settings"),
+            new ChannelMapping("AdvancedDataProcessing", "advancedDataProcessing", "boolean", null, "settings"),
+            new ChannelMapping("Industry", "industry", "property", null, "settings"),
+            new ChannelMapping("ppm&ppb", "ppm_and_ppb", "boolean", null, "settings"),
+            new ChannelMapping("GasAlarm", "gasAlarm", "boolean", null, "settings"),
+            new ChannelMapping("id", "id", "property", null, "settings"),
+            new ChannelMapping("SoundInfo", "soundPressure", "soundInfo", null, "settings"),
+            new ChannelMapping("AlarmForwarding", "alarmForwarding", "boolean", null, "settings"),
+            new ChannelMapping("usercalib", "userCalib", "calib", null, "status"),
+            new ChannelMapping("InitialCalFinished", "initialCalFinished", "boolean", null, "status"),
+            new ChannelMapping("Averaging", "averaging", "number", null, "settings"),
+            new ChannelMapping("SensorInfo", "sensorInfo", "property", null, "settings"),
+            new ChannelMapping("warmup-phase", "warmupPhase", "boolean", null, "settings"),
             // type, SN, cloud_connection and boots are not documented, they are read from a real device
-            new ChannelMapping("type", "deviceType", "property"), new ChannelMapping("SN", "serialNumber", "property"),
-            new ChannelMapping("country_code", "country-code", "string"),
-            new ChannelMapping("cloud_connection", "cloud-connection", "string"),
-            new ChannelMapping("boots", "boots", "string"), new ChannelMapping("Altitude", "altitude", "altitude"),
-            new ChannelMapping("BuildingStandard", "building-standard", "string"),
-            new ChannelMapping("RoomHeight", "room-height", "quantity", SIUnits.METRE),
-            new ChannelMapping("RoomArea", "room-area", "quantity", SIUnits.SQUARE_METRE));
+            new ChannelMapping("type", "deviceType", "property", null, "settings"),
+            new ChannelMapping("SN", "serialNumber", "property", null, "settings"),
+            new ChannelMapping("country_code", "country-code", "string", null, "settings"),
+            new ChannelMapping("cloud_connection", "cloud-connection", "string", null, "status"),
+            new ChannelMapping("boots", "boots", "string", null, "status"),
+            new ChannelMapping("Altitude", "altitude", "altitude", null, "settings"),
+            new ChannelMapping("BuildingStandard", "building-standard", "string", null, "settings"),
+            new ChannelMapping("RoomHeight", "room-height", "quantity", SIUnits.METRE, "settings"),
+            new ChannelMapping("RoomArea", "room-area", "quantity", SIUnits.SQUARE_METRE, "settings"));
     // the units of the deprecated "ppm&ppb" setting, which the device uses for keys without a "units" entry
     private static final Map<String, Unit<?>> PPM_AND_PPB_UNITS = Map.of("co", Units.PARTS_PER_MILLION, "no2",
             Units.PARTS_PER_BILLION, "o3", Units.PARTS_PER_BILLION, "so2", Units.PARTS_PER_BILLION);
@@ -923,7 +927,7 @@ public class AirqHandler extends BaseThingHandler {
                     logger.trace("Received measurement data (non-measurement values omitted): {}",
                             sanitizeData(decObj));
                 }
-                processMappings(decObj, MEASUREMENTS, null);
+                processMappings(decObj, MEASUREMENTS);
 
                 updateStatus(ThingStatus.ONLINE);
             } catch (JsonSyntaxException e) {
@@ -955,7 +959,7 @@ public class AirqHandler extends BaseThingHandler {
             String url = "http://" + config.ipAddress + "/config";
             JsonObject decObj = parseObject(getDecryptedContentString(url));
             readUnits(decObj);
-            processMappings(decObj, CONFIGURATION, "general");
+            processMappings(decObj, CONFIGURATION);
             // earlier versions stored the industry flag as "Industry" next to the declared property "industry"
             getThing().setProperty("Industry", null);
         } catch (AirqException | JsonSyntaxException e) {
@@ -969,10 +973,9 @@ public class AirqHandler extends BaseThingHandler {
         }
     }
 
-    private void processMappings(JsonObject data, List<ChannelMapping> mappings, @Nullable String groupOverride) {
+    private void processMappings(JsonObject data, List<ChannelMapping> mappings) {
         for (ChannelMapping mapping : mappings) {
-            String groupId = groupOverride == null ? mapping.groupId() : groupOverride;
-            String channelId = groupId + "#" + mapping.channelId();
+            String channelId = mapping.groupId() + "#" + mapping.channelId();
             Unit<?> unit = mapping.unit();
             if ("value".equals(mapping.type()) || "rssi".equals(mapping.type())) {
                 processValue(data, mapping.dataKey(), channelId, unit, "rssi".equals(mapping.type()));
@@ -1035,7 +1038,7 @@ public class AirqHandler extends BaseThingHandler {
         if (reading == null) {
             return;
         }
-        String errorChannel = errorChannel(channel, "advanced-maxerr", "-maxerr");
+        String errorChannel = errorChannel(channel, "maxerr", "-maxerr");
         if (reading.isJsonNull()) {
             updateMappedState(channel, UnDefType.UNDEF);
             updateMappedState(errorChannel, UnDefType.UNDEF);
@@ -1223,6 +1226,10 @@ public class AirqHandler extends BaseThingHandler {
         // If a device variant does not have a specific sensor type, the value is not present in the JSON data.
         // Under rare conditions an existing sensor has a null value in the JSON data on a single event.
         if (dec.get(airqName) == null || dec.get(airqName).isJsonNull()) {
+            if ("property".equals(type) || "proparr".equals(type)) {
+                // a Thing property, not a channel; it keeps its last value
+                return;
+            }
             updateMappedState(channelName, UnDefType.UNDEF);
             if (type.contentEquals("pair")) {
                 updateMappedState(errorChannel(channelName, "maxerr", "_maxerr"), UnDefType.UNDEF);

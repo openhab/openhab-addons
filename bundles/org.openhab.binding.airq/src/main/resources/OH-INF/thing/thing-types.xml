@@ -9,11 +9,11 @@
 		<category>Sensor</category>
 		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="general" typeId="general"/>
+			<channel-group id="status" typeId="status"/>
 			<channel-group id="measurements" typeId="measurements"/>
-			<channel-group id="advanced-measurements" typeId="advanced-measurements"/>
+			<channel-group id="events" typeId="events"/>
 			<channel-group id="maxerr" typeId="maxerr"/>
-			<channel-group id="advanced-maxerr" typeId="advanced-maxerr"/>
+			<channel-group id="settings" typeId="settings"/>
 		</channel-groups>
 		<properties>
 			<property name="id">Unknown Device ID</property>
@@ -37,9 +37,142 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<channel-group-type id="advanced-maxerr">
-		<label>Advanced Maximum Errors</label>
+	<channel-group-type id="status">
+		<label>Status</label>
 		<channels>
+			<channel id="status" typeId="status"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="boots" typeId="boots"/>
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="measure-time" typeId="mtime"/>
+			<channel id="daytime" typeId="daytime"/>
+			<channel id="initial-cal-finished" typeId="initial-cal-finished"/>
+			<channel id="user-calib" typeId="usercalib"/>
+			<channel id="wifi-rssi" typeId="wifi-rssi"/>
+			<channel id="wlan-config-ssid" typeId="wlan-config-ssid"/>
+			<channel id="wlan-config-ip-address" typeId="wlan-config-ip-address"/>
+			<channel id="wlan-config-net-mask" typeId="wlan-config-net-mask"/>
+			<channel id="wlan-config-gateway" typeId="wlan-config-gateway"/>
+			<channel id="wlan-config-mac" typeId="wlan-config-mac"/>
+			<channel id="wlan-config-bssid" typeId="wlan-config-bssid"/>
+			<channel id="cloud-connection" typeId="cloud-connection"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="measurements">
+		<label>Measurements</label>
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity-relative" typeId="humidity"/>
+			<channel id="humidity-absolute" typeId="humidity-abs"/>
+			<channel id="dewpt" typeId="dewpt"/>
+			<channel id="d-hdt" typeId="dhdt"/>
+			<channel id="pressure" typeId="pressure"/>
+			<channel id="pressure-rel" typeId="pressure-rel"/>
+			<channel id="health-index" typeId="health-index"/>
+			<channel id="health" typeId="health"/>
+			<channel id="performance-index" typeId="performance-index"/>
+			<channel id="performance" typeId="performance"/>
+			<channel id="virus-free" typeId="virus-free"/>
+			<channel id="mold-free" typeId="mold-free"/>
+			<channel id="co2" typeId="co2"/>
+			<channel id="d-co2dt" typeId="dco2dt"/>
+			<channel id="tvoc" typeId="tvoc"/>
+			<channel id="tvoc-ionsc" typeId="tvoc-ionsc"/>
+			<channel id="co" typeId="co"/>
+			<channel id="no2" typeId="no2"/>
+			<channel id="o3" typeId="o3"/>
+			<channel id="o2" typeId="oxygen"/>
+			<channel id="so2" typeId="so2"/>
+			<channel id="h2s" typeId="h2s"/>
+			<channel id="c2h4o" typeId="c2h4o"/>
+			<channel id="nh3-mr100" typeId="nh3-mr100"/>
+			<channel id="ash3" typeId="ash3"/>
+			<channel id="br2" typeId="br2"/>
+			<channel id="ch4s" typeId="ch4s"/>
+			<channel id="cl2-m20" typeId="cl2-m20"/>
+			<channel id="clo2" typeId="clo2"/>
+			<channel id="cs2" typeId="cs2"/>
+			<channel id="ethanol" typeId="ethanol"/>
+			<channel id="c2h4" typeId="c2h4"/>
+			<channel id="ch2o-m10" typeId="ch2o-m10"/>
+			<channel id="f2" typeId="f2"/>
+			<channel id="hcl" typeId="hcl"/>
+			<channel id="hcn" typeId="hcn"/>
+			<channel id="hf" typeId="hf"/>
+			<channel id="h2-m1000" typeId="h2-m1000"/>
+			<channel id="h2o2" typeId="h2o2"/>
+			<channel id="n2o" typeId="n2o"/>
+			<channel id="no-m250" typeId="no-m250"/>
+			<channel id="acid-m100" typeId="acid-m100"/>
+			<channel id="ph3" typeId="ph3"/>
+			<channel id="sih4" typeId="sih4"/>
+			<channel id="ch4-mipex" typeId="ch4-mipex"/>
+			<channel id="c3h8-mipex" typeId="c3h8-mipex"/>
+			<channel id="r32" typeId="r32"/>
+			<channel id="r454b" typeId="r454b"/>
+			<channel id="r454c" typeId="r454c"/>
+			<channel id="radon" typeId="radon"/>
+			<channel id="fine-dust-conc01" typeId="pm1"/>
+			<channel id="fine-dust-conc02-5" typeId="pm2-5"/>
+			<channel id="fine-dust-conc10" typeId="pm10"/>
+			<channel id="fine-dust-cnt00-3" typeId="cnt0-3"/>
+			<channel id="fine-dust-cnt00-5" typeId="cnt0-5"/>
+			<channel id="fine-dust-cnt01" typeId="cnt1"/>
+			<channel id="fine-dust-cnt02-5" typeId="cnt2-5"/>
+			<channel id="fine-dust-cnt05" typeId="cnt5"/>
+			<channel id="fine-dust-cnt10" typeId="cnt10"/>
+			<channel id="avg-fine-dust-size" typeId="typps"/>
+			<channel id="pm1-sps30" typeId="pm1-sps30"/>
+			<channel id="pm2-5-sps30" typeId="pm2-5-sps30"/>
+			<channel id="pm4-sps30" typeId="pm4-sps30"/>
+			<channel id="pm10-sps30" typeId="pm10-sps30"/>
+			<channel id="cnt0-5-sps30" typeId="cnt0-5-sps30"/>
+			<channel id="cnt1-sps30" typeId="cnt1-sps30"/>
+			<channel id="cnt2-5-sps30" typeId="cnt2-5-sps30"/>
+			<channel id="cnt4-sps30" typeId="cnt4-sps30"/>
+			<channel id="cnt10-sps30" typeId="cnt10-sps30"/>
+			<channel id="avg-fine-dust-size-sps30" typeId="typps-sps30"/>
+			<channel id="sound" typeId="sound"/>
+			<channel id="sound-max" typeId="sound-max"/>
+			<channel id="flow1" typeId="flow1"/>
+			<channel id="flow2" typeId="flow2"/>
+			<channel id="flow3" typeId="flow3"/>
+			<channel id="flow4" typeId="flow4"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="events">
+		<label>Events</label>
+		<channels>
+			<channel id="fire-alarm-active" typeId="fire-alarm-active"/>
+			<channel id="gas-alarm-active" typeId="gas-alarm-active"/>
+			<channel id="door-event" typeId="door"/>
+			<channel id="window-event" typeId="window-event"/>
+			<channel id="window-open" typeId="window-open"/>
+			<channel id="person" typeId="person"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="maxerr">
+		<label>Maximum Errors</label>
+		<channels>
+			<channel id="temperature-maxerr" typeId="temperature-maxerr"/>
+			<channel id="humidity-relative-maxerr" typeId="humidity-maxerr"/>
+			<channel id="humidity-absolute-maxerr" typeId="humidity-abs-maxerr"/>
+			<channel id="dewpt-maxerr" typeId="dewpt-maxerr"/>
+			<channel id="pressure-maxerr" typeId="pressure-maxerr"/>
+			<channel id="pressure-rel-maxerr" typeId="pressure-rel-maxerr"/>
+			<channel id="virus-free-maxerr" typeId="virus-free-maxerr"/>
+			<channel id="mold-free-maxerr" typeId="mold-free-maxerr"/>
+			<channel id="co2-maxerr" typeId="co2-maxerr"/>
+			<channel id="tvoc-maxerr" typeId="tvoc-maxerr"/>
+			<channel id="tvoc-ionsc-maxerr" typeId="ppb-maxerr">
+				<label>Max. Error Industrial VOC</label>
+			</channel>
+			<channel id="co-maxerr" typeId="co-maxerr"/>
+			<channel id="no2-maxerr" typeId="no2-maxerr"/>
+			<channel id="o3-maxerr" typeId="o3-maxerr"/>
+			<channel id="o2-maxerr" typeId="oxygen-maxerr"/>
+			<channel id="so2-maxerr" typeId="so2-maxerr"/>
+			<channel id="h2s-maxerr" typeId="h2s-maxerr"/>
 			<channel id="c2h4o-maxerr" typeId="density-maxerr">
 				<label>Max. Error Acetaldehyde</label>
 			</channel>
@@ -106,11 +239,6 @@
 			<channel id="sih4-maxerr" typeId="density-maxerr">
 				<label>Max. Error Silane</label>
 			</channel>
-			<channel id="tvoc-ionsc-maxerr" typeId="ppb-maxerr">
-				<label>Max. Error Industrial VOC</label>
-			</channel>
-			<channel id="pressure-rel-maxerr" typeId="pressure-rel-maxerr"/>
-			<channel id="sound-max-maxerr" typeId="sound-max-maxerr"/>
 			<channel id="ch4-mipex-maxerr" typeId="percent-maxerr">
 				<label>Max. Error Methane</label>
 			</channel>
@@ -126,187 +254,59 @@
 			<channel id="r454c-maxerr" typeId="percent-maxerr">
 				<label>Max. Error Refrigerant R454C</label>
 			</channel>
-		</channels>
-	</channel-group-type>
-	<channel-group-type id="maxerr">
-		<label>Maximum Errors</label>
-		<channels>
+			<channel id="radon-maxerr" typeId="radon-maxerr"/>
+			<channel id="fine-dust-conc01-maxerr" typeId="pm1-maxerr"/>
+			<channel id="fine-dust-conc02-5-maxerr" typeId="pm2-5-maxerr"/>
+			<channel id="fine-dust-conc10-maxerr" typeId="pm10-maxerr"/>
 			<channel id="fine-dust-cnt00-3-maxerr" typeId="cnt0-3-maxerr"/>
 			<channel id="fine-dust-cnt00-5-maxerr" typeId="cnt0-5-maxerr"/>
 			<channel id="fine-dust-cnt01-maxerr" typeId="cnt1-maxerr"/>
 			<channel id="fine-dust-cnt02-5-maxerr" typeId="cnt2-5-maxerr"/>
 			<channel id="fine-dust-cnt05-maxerr" typeId="cnt5-maxerr"/>
 			<channel id="fine-dust-cnt10-maxerr" typeId="cnt10-maxerr"/>
-			<channel id="co-maxerr" typeId="co-maxerr"/>
-			<channel id="co2-maxerr" typeId="co2-maxerr"/>
-			<channel id="dewpt-maxerr" typeId="dewpt-maxerr"/>
-			<channel id="h2s-maxerr" typeId="h2s-maxerr"/>
-			<channel id="humidity-relative-maxerr" typeId="humidity-maxerr"/>
-			<channel id="humidity-absolute-maxerr" typeId="humidity-abs-maxerr"/>
-			<channel id="no2-maxerr" typeId="no2-maxerr"/>
-			<channel id="o3-maxerr" typeId="o3-maxerr"/>
-			<channel id="o2-maxerr" typeId="oxygen-maxerr"/>
-			<channel id="fine-dust-conc01-maxerr" typeId="pm1-maxerr"/>
-			<channel id="fine-dust-conc02-5-maxerr" typeId="pm2-5-maxerr"/>
-			<channel id="fine-dust-conc10-maxerr" typeId="pm10-maxerr"/>
-			<channel id="pressure-maxerr" typeId="pressure-maxerr"/>
-			<channel id="so2-maxerr" typeId="so2-maxerr"/>
 			<channel id="sound-maxerr" typeId="sound-maxerr"/>
-			<channel id="temperature-maxerr" typeId="temperature-maxerr"/>
-			<channel id="tvoc-maxerr" typeId="tvoc-maxerr"/>
-			<channel id="virus-free-maxerr" typeId="virus-free-maxerr"/>
-			<channel id="mold-free-maxerr" typeId="mold-free-maxerr"/>
-			<channel id="radon-maxerr" typeId="radon-maxerr"/>
+			<channel id="sound-max-maxerr" typeId="sound-max-maxerr"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="advanced-measurements">
-		<label>Advanced Measurements</label>
+	<channel-group-type id="settings">
+		<label>Settings</label>
 		<channels>
-			<channel id="c2h4o" typeId="c2h4o"/>
-			<channel id="nh3-mr100" typeId="nh3-mr100"/>
-			<channel id="ash3" typeId="ash3"/>
-			<channel id="br2" typeId="br2"/>
-			<channel id="ch4s" typeId="ch4s"/>
-			<channel id="cl2-m20" typeId="cl2-m20"/>
-			<channel id="clo2" typeId="clo2"/>
-			<channel id="cs2" typeId="cs2"/>
-			<channel id="ethanol" typeId="ethanol"/>
-			<channel id="c2h4" typeId="c2h4"/>
-			<channel id="ch2o-m10" typeId="ch2o-m10"/>
-			<channel id="f2" typeId="f2"/>
-			<channel id="hcl" typeId="hcl"/>
-			<channel id="hcn" typeId="hcn"/>
-			<channel id="hf" typeId="hf"/>
-			<channel id="h2-m1000" typeId="h2-m1000"/>
-			<channel id="h2o2" typeId="h2o2"/>
-			<channel id="n2o" typeId="n2o"/>
-			<channel id="no-m250" typeId="no-m250"/>
-			<channel id="acid-m100" typeId="acid-m100"/>
-			<channel id="ph3" typeId="ph3"/>
-			<channel id="sih4" typeId="sih4"/>
-			<channel id="tvoc-ionsc" typeId="tvoc-ionsc"/>
-			<channel id="pressure-rel" typeId="pressure-rel"/>
-			<channel id="sound-max" typeId="sound-max"/>
-			<channel id="ch4-mipex" typeId="ch4-mipex"/>
-			<channel id="c3h8-mipex" typeId="c3h8-mipex"/>
-			<channel id="r32" typeId="r32"/>
-			<channel id="r454b" typeId="r454b"/>
-			<channel id="r454c" typeId="r454c"/>
-			<channel id="flow1" typeId="flow1"/>
-			<channel id="flow2" typeId="flow2"/>
-			<channel id="flow3" typeId="flow3"/>
-			<channel id="flow4" typeId="flow4"/>
-			<channel id="pm1-sps30" typeId="pm1-sps30"/>
-			<channel id="pm2-5-sps30" typeId="pm2-5-sps30"/>
-			<channel id="pm4-sps30" typeId="pm4-sps30"/>
-			<channel id="pm10-sps30" typeId="pm10-sps30"/>
-			<channel id="cnt0-5-sps30" typeId="cnt0-5-sps30"/>
-			<channel id="cnt1-sps30" typeId="cnt1-sps30"/>
-			<channel id="cnt2-5-sps30" typeId="cnt2-5-sps30"/>
-			<channel id="cnt4-sps30" typeId="cnt4-sps30"/>
-			<channel id="cnt10-sps30" typeId="cnt10-sps30"/>
-			<channel id="avg-fine-dust-size-sps30" typeId="typps-sps30"/>
-		</channels>
-	</channel-group-type>
-	<channel-group-type id="measurements">
-		<label>Measurements</label>
-		<channels>
-			<channel id="avg-fine-dust-size" typeId="typps"/>
-			<channel id="fine-dust-cnt00-3" typeId="cnt0-3"/>
-			<channel id="fine-dust-cnt00-5" typeId="cnt0-5"/>
-			<channel id="fine-dust-cnt01" typeId="cnt1"/>
-			<channel id="fine-dust-cnt02-5" typeId="cnt2-5"/>
-			<channel id="fine-dust-cnt05" typeId="cnt5"/>
-			<channel id="fine-dust-cnt10" typeId="cnt10"/>
-			<channel id="co" typeId="co"/>
-			<channel id="co2" typeId="co2"/>
-			<channel id="d-co2dt" typeId="dco2dt"/>
-			<channel id="d-hdt" typeId="dhdt"/>
-			<channel id="dewpt" typeId="dewpt"/>
-			<channel id="door-event" typeId="door"/>
-			<channel id="person" typeId="person"/>
-			<channel id="window-event" typeId="window-event"/>
-			<channel id="window-open" typeId="window-open"/>
-			<channel id="h2s" typeId="h2s"/>
-			<channel id="health-index" typeId="health-index"/>
-			<channel id="health" typeId="health"/>
-			<channel id="fire-alarm-active" typeId="fire-alarm-active"/>
-			<channel id="gas-alarm-active" typeId="gas-alarm-active"/>
-			<channel id="wifi-rssi" typeId="wifi-rssi"/>
-			<channel id="humidity-relative" typeId="humidity"/>
-			<channel id="humidity-absolute" typeId="humidity-abs"/>
-			<channel id="measure-time" typeId="mtime"/>
-			<channel id="no2" typeId="no2"/>
-			<channel id="o3" typeId="o3"/>
-			<channel id="o2" typeId="oxygen"/>
-			<channel id="performance-index" typeId="performance-index"/>
-			<channel id="performance" typeId="performance"/>
-			<channel id="fine-dust-conc01" typeId="pm1"/>
-			<channel id="fine-dust-conc02-5" typeId="pm2-5"/>
-			<channel id="fine-dust-conc10" typeId="pm10"/>
-			<channel id="pressure" typeId="pressure"/>
-			<channel id="radon" typeId="radon"/>
-			<channel id="so2" typeId="so2"/>
-			<channel id="sound" typeId="sound"/>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="timestamp" typeId="timestamp"/>
-			<channel id="tvoc" typeId="tvoc"/>
-			<channel id="virus-free" typeId="virus-free"/>
-			<channel id="mold-free" typeId="mold-free"/>
-		</channels>
-	</channel-group-type>
-	<channel-group-type id="general">
-		<label>General</label>
-		<channels>
-			<channel id="status" typeId="status"/>
-			<channel id="uptime" typeId="uptime"/>
+			<channel id="device-name" typeId="device-name"/>
+			<channel id="room-type" typeId="room-type"/>
+			<channel id="room-height" typeId="room-height"/>
+			<channel id="room-area" typeId="room-area"/>
+			<channel id="location" typeId="geopos"/>
+			<channel id="altitude" typeId="altitude"/>
+			<channel id="altitude-error" typeId="altitude-error"/>
+			<channel id="country-code" typeId="country-code"/>
+			<channel id="time-server" typeId="time-server"/>
+			<channel id="log-level" typeId="logging"/>
 			<channel id="wifi" typeId="wifi"/>
 			<channel id="ssid" typeId="wla-nssid"/>
 			<channel id="wifi-info" typeId="wifi-info"/>
-			<channel id="time-server" typeId="time-server"/>
-			<channel id="location" typeId="geopos"/>
+			<channel id="night-mode-activated" typeId="nightmode-activated"/>
 			<channel id="night-mode-start-day" typeId="nightmode-start-day"/>
 			<channel id="night-mode-start-night" typeId="nightmode-start-night"/>
 			<channel id="night-mode-brightness-day" typeId="nightmode-brightness-day"/>
 			<channel id="night-mode-brightness-night" typeId="nightmode-brightness-night"/>
 			<channel id="night-mode-fan-night-off" typeId="nightmode-fan-night-off"/>
 			<channel id="night-mode-wifi-night-off" typeId="nightmode-wifi-night-off"/>
-			<channel id="night-mode-activated" typeId="nightmode-activated"/>
 			<channel id="night-mode-alarm-night-off" typeId="nightmode-alarm-night-off"/>
 			<channel id="night-mode-last-time-switch" typeId="nightmode-last-time-switch"/>
-			<channel id="daytime" typeId="daytime"/>
-			<channel id="device-name" typeId="device-name"/>
-			<channel id="room-type" typeId="room-type"/>
-			<channel id="log-level" typeId="logging"/>
 			<channel id="fire-alarm" typeId="fire-alarm"/>
-			<channel id="wlan-config-gateway" typeId="wlan-config-gateway"/>
-			<channel id="wlan-config-mac" typeId="wlan-config-mac"/>
-			<channel id="wlan-config-ssid" typeId="wlan-config-ssid"/>
-			<channel id="wlan-config-ip-address" typeId="wlan-config-ip-address"/>
-			<channel id="wlan-config-net-mask" typeId="wlan-config-net-mask"/>
-			<channel id="wlan-config-bssid" typeId="wlan-config-bssid"/>
-			<channel id="cloud-upload" typeId="cloud-upload"/>
+			<channel id="gas-alarm" typeId="gas-alarm"/>
+			<channel id="alarm-forwarding" typeId="alarm-forwarding"/>
+			<channel id="sound-info" typeId="sound-info"/>
+			<channel id="averaging" typeId="averaging"/>
 			<channel id="averaging-rhythm" typeId="seconds-measurement-delay"/>
 			<channel id="power-freq-suppression" typeId="rejection"/>
 			<channel id="auto-drift-compensation" typeId="auto-drift-compensation"/>
-			<channel id="auto-update" typeId="auto-update"/>
 			<channel id="advanced-data-processing" typeId="advanced-data-processing"/>
-			<channel id="ppm-and-ppb" typeId="ppm-and-ppb"/>
-			<channel id="gas-alarm" typeId="gas-alarm"/>
-			<channel id="sound-info" typeId="sound-info"/>
-			<channel id="alarm-forwarding" typeId="alarm-forwarding"/>
-			<channel id="user-calib" typeId="usercalib"/>
-			<channel id="initial-cal-finished" typeId="initial-cal-finished"/>
-			<channel id="averaging" typeId="averaging"/>
-			<channel id="warmup-phase" typeId="warmup-phase"/>
-			<channel id="cloud-connection" typeId="cloud-connection"/>
-			<channel id="boots" typeId="boots"/>
-			<channel id="altitude" typeId="altitude"/>
-			<channel id="altitude-error" typeId="altitude-error"/>
 			<channel id="building-standard" typeId="building-standard"/>
-			<channel id="country-code" typeId="country-code"/>
-			<channel id="room-height" typeId="room-height"/>
-			<channel id="room-area" typeId="room-area"/>
+			<channel id="ppm-and-ppb" typeId="ppm-and-ppb"/>
+			<channel id="warmup-phase" typeId="warmup-phase"/>
+			<channel id="cloud-upload" typeId="cloud-upload"/>
+			<channel id="auto-update" typeId="auto-update"/>
 		</channels>
 	</channel-group-type>
 	<channel-type id="status" advanced="false">
