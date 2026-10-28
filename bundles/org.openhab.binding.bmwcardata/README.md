@@ -105,7 +105,9 @@ If other tools need the stream independent of openHAB, run the bmw-mqtt-bridge a
 BMW allows 50 requests to the CarData API per account and day, reset at midnight UTC, shared by all vehicles and all tools using the account (see BMW's [additional information on the CarData API](https://bmw-cardata.bmwgroup.com/customer/public/api-documentation/Id-CarData-API_Additional-information)).
 The stream is not affected by this limit, so the binding uses the API only to complete the stream data:
 
-- Two minutes after the authorization, and then every `refreshInterval` hours, the current values of all vehicles are read, one request per vehicle.
+- When a vehicle goes `ONLINE` after its start, after the start of the account or after a new authorization, its current values are read once, one request.
+  Later status changes, e.g. when the account was offline for a moment, do not read it again; if the request budget is used up at that time, the vehicle is read at the next periodic refresh.
+- Every `refreshInterval` hours, the current values of all vehicles are read, one request per vehicle.
 - When the stream was interrupted for five minutes or more, the values are read again after the reconnect, as the stream does not replay missed values.
   This catch-up runs at most every 30 minutes.
 - When a read fails on BMW's side (e.g. HTTP 502) or times out, it is repeated once after 15 minutes for the affected vehicles.

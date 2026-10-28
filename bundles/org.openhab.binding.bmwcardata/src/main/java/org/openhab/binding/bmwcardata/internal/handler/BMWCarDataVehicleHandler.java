@@ -123,6 +123,10 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         return vin;
     }
 
+    boolean isDisposed() {
+        return disposed;
+    }
+
     @Override
     public void initialize() {
         disposed = false;
@@ -187,7 +191,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR
                 && hasProperties()) {
             refreshFailing = false;
-            updateStatus(ThingStatus.ONLINE);
+            goOnline();
         }
     }
 
@@ -380,10 +384,21 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         updateState(channelUid, state);
     }
 
+    /**
+     * Sets the vehicle ONLINE. Its channels are final then, so the account reads its current values the first time.
+     */
+    private void goOnline() {
+        updateStatus(ThingStatus.ONLINE);
+        BMWCarDataAccountHandler account = getAccountHandler();
+        if (account != null) {
+            account.vehicleOnline(this);
+        }
+    }
+
     private void updateBridgeStatus(ThingStatus bridgeStatus) {
         if (bridgeStatus == ThingStatus.ONLINE) {
             if (hasProperties()) {
-                updateStatus(ThingStatus.ONLINE);
+                goOnline();
             } else {
                 // the vehicle goes online once its basic data is known, which usually comes from the account's cache
                 updateStatus(ThingStatus.UNKNOWN);
@@ -403,7 +418,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     void refreshSucceeded() {
         refreshFailing = false;
         if (!disposed && getThing().getStatus() != ThingStatus.ONLINE && hasProperties()) {
-            updateStatus(ThingStatus.ONLINE);
+            goOnline();
         }
     }
 
@@ -577,7 +592,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         // a refresh that failed meanwhile keeps its status until a refresh or stream data succeeds
         if (!disposed && !refreshFailing && bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
+            goOnline();
         }
     }
 

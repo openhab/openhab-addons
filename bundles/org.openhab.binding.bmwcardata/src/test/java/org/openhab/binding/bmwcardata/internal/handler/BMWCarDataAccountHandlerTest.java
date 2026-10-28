@@ -79,7 +79,8 @@ class BMWCarDataAccountHandlerTest {
 
     private static final ThingUID ACCOUNT_UID = new ThingUID(THING_TYPE_ACCOUNT, "account");
     private static final String VIN = "WBA12345678901234";
-    private static final long PERIODIC_DELAY = 120;
+    // the refresh interval of 6 hours, as the first refresh after the start is done per vehicle
+    private static final long PERIODIC_DELAY = 6 * 3600;
     private static final long RETRY_DELAY = 900;
     private static final int POLL_INTERVAL = 5;
     private static final long AUTH_RETRY_DELAY = 60;
@@ -298,6 +299,97 @@ class BMWCarDataAccountHandlerTest {
 
         verify(vehicleCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.COMMUNICATION_ERROR)));
         assertEquals(0, pendingJobs(RETRY_DELAY));
+    }
+
+    @Test
+    void vehicleIsReadOnceWhenItGoesOnline() throws Exception {
+        authorize(false);
+        respond(status(200, TELEMATIC_DATA));
+
+        handler.vehicleOnline(vehicle);
+        runJobs(0);
+        verify(vehicleCallback).stateUpdated(new ChannelUID(vehicleThing.getUID(), "range#mileage"),
+                QuantityType.valueOf("12345 km"));
+
+        // e.g. after the account was offline for a moment
+        handler.vehicleOnline(vehicle);
+        runJobs(0);
+        assertEquals(1, telematicRequests());
+    }
+
+    @Test
+    void vehicleIsReadAgainAfterItsRestart() throws Exception {
+        authorize(false);
+        respond(status(200, TELEMATIC_DATA), status(200, TELEMATIC_DATA));
+        handler.vehicleOnline(vehicle);
+        runJobs(0);
+
+        handler.childHandlerDisposed(vehicle, vehicleThing);
+        handler.vehicleOnline(vehicle);
+        runJobs(0);
+
+        assertEquals(2, telematicRequests());
+    }
+
+    @Test
+    void vehicleIsReadAgainAfterTheRestartOfTheAccount() throws Exception {
+        authorize(false);
+        respond(status(200, TELEMATIC_DATA), status(200, TELEMATIC_DATA));
+        handler.vehicleOnline(vehicle);
+        runJobs(0);
+
+        handler.dispose();
+        handler.initialize();
+        runJobs(0);
+        handler.vehicleOnline(vehicle);
+        runJobs(0);
+
+        assertEquals(2, telematicRequests());
+    }
+
+    @Test
+    void readOfAVehicleScheduledBeforeTheRestartOfTheAccountIsDropped() throws Exception {
+        authorize(false);
+        handler.vehicleOnline(vehicle);
+        handler.dispose();
+
+        // fails with an unexpected request if the read of the previous lifecycle is sent
+        runJobs(0);
+
+        assertEquals(0, telematicRequests());
+    }
+
+    @Test
+    void lateCallOfADisposedVehicleDoesNotKeepItsSuccessorFromBeingRead() throws Exception {
+        authorize(false);
+        respond(status(200, TELEMATIC_DATA));
+        // the vehicle is disposed after its job checked it, but before it went online
+        vehicle.dispose();
+        handler.childHandlerDisposed(vehicle, vehicleThing);
+        handler.vehicleOnline(vehicle);
+        runJobs(0);
+        assertEquals(0, telematicRequests());
+
+        BMWCarDataVehicleHandler successor = new BMWCarDataVehicleHandler(vehicleThing);
+        successor.setCallback(vehicleCallback);
+        successor.initialize();
+        vehicleThing.setHandler(successor);
+        handler.vehicleOnline(successor);
+        runJobs(0);
+
+        assertEquals(1, telematicRequests());
+    }
+
+    @Test
+    void vehicleDisposedBeforeItsReadIsNotRead() throws Exception {
+        authorize(false);
+        handler.vehicleOnline(vehicle);
+        vehicle.dispose();
+
+        // fails with an unexpected request if the disposed vehicle is read
+        runJobs(0);
+
+        assertEquals(0, telematicRequests());
     }
 
     @Test

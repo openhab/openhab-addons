@@ -66,6 +66,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -92,7 +93,6 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private static final long RETRY_DELAY_SECONDS = 60;
     private static final long STREAM_STOP_TIMEOUT_SECONDS = 10;
     private static final int SLOW_DOWN_INCREMENT_SECONDS = 5;
-    private static final Duration INITIAL_REFRESH_DELAY = Duration.ofMinutes(2);
     // the stream does not replay values sent while it was down
     private static final Duration CATCH_UP_AFTER_OUTAGE = Duration.ofMinutes(5);
     private static final Duration CATCH_UP_MIN_SPACING = Duration.ofMinutes(30);
@@ -134,6 +134,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private @Nullable ScheduledFuture<?> retryJob;
     // VINs of the vehicles to refresh again, dropped once a later refresh of the vehicle succeeds
     private final Set<String> retryVins = ConcurrentHashMap.newKeySet();
+    // the vehicle handlers read since they or the account started, so that each is read once when it goes ONLINE; by
+    // instance, so that a late call of a disposed handler cannot keep its successor from being read
+    private final Set<BMWCarDataVehicleHandler> startedVehicles = ConcurrentHashMap.newKeySet();
     private volatile @Nullable Instant streamDownSince;
     private volatile @Nullable Instant lastCatchUp;
     // status description while the request budget is used up
@@ -303,6 +306,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             retryJob = null;
         }
         retryVins.clear();
+        startedVehicles.clear();
     }
 
     @Override
@@ -413,7 +417,35 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
      * request budget cannot cover all vehicles.
      */
     private void refreshTelematicData(String reason) {
-        refreshTelematicData(reason, getVehicles(), true);
+        refreshTelematicData(reason, getVehicles(), true, generation);
+    }
+
+    /**
+     * Called by a vehicle when it goes ONLINE. Its current values are read once after the start of the vehicle and once
+     * after the start or a new authorization of the account, as the periodic refresh may be hours away; later calls,
+     * e.g. after the account was offline for a moment, do nothing.
+     */
+    void vehicleOnline(BMWCarDataVehicleHandler vehicle) {
+        int generation = this.generation;
+        if (disposed || !authorized || vehicle.isDisposed() || !startedVehicles.add(vehicle)) {
+            return;
+        }
+        jobScheduler.schedule(() -> {
+            // a disposed handler may still have been added, its successor is read when it goes online
+            if (vehicle.isDisposed()) {
+                startedVehicles.remove(vehicle);
+                return;
+            }
+            refreshTelematicData("start", List.of(vehicle), true, generation);
+        }, 0, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof BMWCarDataVehicleHandler vehicle) {
+            startedVehicles.remove(vehicle);
+        }
+        super.childHandlerDisposed(childHandler, childThing);
     }
 
     private List<BMWCarDataVehicleHandler> getVehicles() {
@@ -428,9 +460,11 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     /**
      * Reads the current values of the given vehicles. Vehicles whose refresh failed on BMW's side are refreshed once
      * more after {@link #RETRY_AFTER_TRANSIENT_FAILURE}, if {@code retry} is set.
+     *
+     * @param generation the lifecycle the refresh was started in; nothing is read once it is over
      */
-    private void refreshTelematicData(String reason, List<BMWCarDataVehicleHandler> vehicles, boolean retry) {
-        int generation = this.generation;
+    private void refreshTelematicData(String reason, List<BMWCarDataVehicleHandler> vehicles, boolean retry,
+            int generation) {
         BMWCarDataApi api = this.api;
         RequestBudget budget = this.budget;
         if (api == null || budget == null || isStale(generation) || tokens == null || vehicles.isEmpty()) {
@@ -522,22 +556,18 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         Set<String> vins = new HashSet<>(retryVins);
         retryVins.removeAll(vins);
         refreshTelematicData("retry",
-                getVehicles().stream().filter(vehicle -> vins.contains(vehicle.getVin())).toList(), false);
+                getVehicles().stream().filter(vehicle -> vins.contains(vehicle.getVin())).toList(), false, generation);
     }
 
     private void scheduleRefresh() {
         synchronized (this) {
-            if (disposed || refreshJob != null) {
+            if (disposed || refreshJob != null || config.refreshInterval <= 0) {
                 return;
             }
-            long initialDelay = INITIAL_REFRESH_DELAY.toSeconds();
-            if (config.refreshInterval > 0) {
-                refreshJob = jobScheduler.scheduleWithFixedDelay(() -> refreshTelematicData("periodic"), initialDelay,
-                        TimeUnit.HOURS.toSeconds(config.refreshInterval), TimeUnit.SECONDS);
-            } else {
-                refreshJob = jobScheduler.schedule(() -> refreshTelematicData("startup"), initialDelay,
-                        TimeUnit.SECONDS);
-            }
+            // the first refresh after the start is done per vehicle, see vehicleOnline
+            long interval = TimeUnit.HOURS.toSeconds(config.refreshInterval);
+            refreshJob = jobScheduler.scheduleWithFixedDelay(() -> refreshTelematicData("periodic"), interval, interval,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -850,6 +880,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         if (disposed || current == null) {
             return;
         }
+        // before going ONLINE, so that the vehicles are read again after the start or a new authorization
+        startedVehicles.clear();
         authorized = true;
         pendingAuthorization = null;
         scheduleTokenRefresh(current);

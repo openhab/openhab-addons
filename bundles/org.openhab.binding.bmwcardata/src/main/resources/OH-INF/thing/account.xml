@@ -100,8 +100,8 @@
 			<parameter name="refreshInterval" type="integer" min="0" max="24" unit="h" groupName="rest">
 				<label>Refresh Interval</label>
 				<description>Hours between refreshes of all vehicle data via the CarData API, one request per vehicle. 0 disables
-					the periodic refresh; the data is still refreshed two minutes after the start and after stream outages of five
-					minutes or more.</description>
+					the periodic refresh; a vehicle is still read once when it goes online after its start or the start of the account,
+					and after stream outages of five minutes or more.</description>
 				<default>6</default>
 			</parameter>
 			<parameter name="requestBudget" type="integer" min="1" max="50" groupName="rest">

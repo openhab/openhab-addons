@@ -473,6 +473,7 @@ class BMWCarDataVehicleHandlerTest {
         assertTrue(jobs.tasks.isEmpty());
         verify(account, never()).fetchBasicData(anyString());
         verify(vehicleCallback, never()).thingUpdated(any());
+        verify(account).vehicleOnline(vehicle);
         vehicle.dispose();
     }
 
@@ -521,11 +522,14 @@ class BMWCarDataVehicleHandlerTest {
         vehicle.updateTelematicData(Map.of(MILEAGE, value(100, "km", "2026-10-01T10:00:00Z")));
         vehicle.refreshSucceeded();
         assertEquals(ThingStatus.OFFLINE, thing.getStatus());
+        verify(account, never()).vehicleOnline(any());
 
         jobs.tasks.get(1).run();
         // removing the fuel channels of the electric vehicle replaced the Thing
         assertEquals(ThingStatus.ONLINE, vehicle.getThing().getStatus());
         assertEquals("BEV", vehicle.getThing().getProperties().get(PROPERTY_DRIVE_TRAIN));
+        // with its channels final, the account reads its current values
+        verify(account).vehicleOnline(vehicle);
         vehicle.dispose();
     }
 
