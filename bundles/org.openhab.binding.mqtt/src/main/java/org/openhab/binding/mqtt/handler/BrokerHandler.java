@@ -208,13 +208,24 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
      * Loads the client certificate and private key from the configured keystore and assigns them to the
      * {@link MqttBrokerConnection}, enabling TLS client authentication (mutual TLS).
      * Does nothing if no keystore is configured or the connection is not secure.
+     * <p>
+     * A client certificate only authenticates the client. To avoid talking to an unverified broker, a client
+     * certificate is refused if the broker is neither verified by hostname validation nor by certificate or public key
+     * pinning.
      *
-     * @throws IllegalArgumentException if the keystore cannot be loaded
+     * @throws IllegalArgumentException if the keystore cannot be loaded or the broker would not be verified
      */
     protected void assignClientCertificate(BrokerHandlerConfig config, MqttBrokerConnection connection)
             throws IllegalArgumentException {
         if (!config.secure || config.clientKeystore.isBlank()) {
             return;
+        }
+        if (!config.hostnameValidated && !config.certificatepin && !config.publickeypin) {
+            logger.warn(
+                    "Broker '{}' is configured with a TLS client certificate, but neither hostname validation nor certificate/public key pinning is enabled. Refusing to connect to an unverified broker.",
+                    thing.getUID());
+            throw new IllegalArgumentException(
+                    "A client certificate requires hostname validation or certificate/public key pinning");
         }
         final char[] keystorePassword = config.clientKeystorePassword.toCharArray();
         try (InputStream in = Files.newInputStream(Path.of(config.clientKeystore))) {
