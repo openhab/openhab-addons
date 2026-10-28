@@ -94,7 +94,7 @@ public class Shade {
 
     public PowerType getPowerType() {
         Integer powerType = this.powerType;
-        return PowerType.values()[powerType != null ? powerType.intValue() : 0];
+        return powerType != null ? PowerType.fromValue(powerType.intValue()) : PowerType.BATTERY;
     }
 
     public @Nullable ShadePosition getShadePositions() {
@@ -120,7 +120,8 @@ public class Shade {
     }
 
     public boolean isMainsPowered() {
-        return getPowerType() == PowerType.HARDWIRED;
+        PowerType powerType = getPowerType();
+        return powerType == PowerType.HARDWIRED || powerType == PowerType.FIXED_HARDWIRED;
     }
 
     public Shade setCapabilities(int capabilities) {
