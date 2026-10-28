@@ -523,9 +523,10 @@ public class BiancaHandler extends BaseThingHandler {
         if (intent.start()) {
             Program program = intent.program().orElseThrow();
             confirmed = "RUNNING".equals(mode)
-                    && program.parameters().getOrDefault("selector_position", "")
-                            .equals(value(snapshot, CHANNEL_PROGRAM_NUMBER))
-                    && program.parameters().getOrDefault("pr_code", "").equals(value(snapshot, CHANNEL_PROGRAM_CODE));
+                    && matchesProgramCode(program.parameters().getOrDefault("selector_position", ""),
+                            value(snapshot, CHANNEL_PROGRAM_NUMBER))
+                    && matchesProgramCode(program.parameters().getOrDefault("pr_code", ""),
+                            value(snapshot, CHANNEL_PROGRAM_CODE));
         } else {
             confirmed = List.of("SELECTING", "FINISHED").contains(mode);
         }
@@ -534,6 +535,18 @@ public class BiancaHandler extends BaseThingHandler {
             current.confirmationTimer = null;
             current.intent = null;
             commandResult(current, "CONFIRMED");
+        }
+    }
+
+    private boolean matchesProgramCode(String expected, String actual) {
+        try {
+            int expectedCode = Integer.parseInt(expected);
+            int actualCode = Integer.parseInt(actual);
+            return expectedCode >= 1 && expectedCode <= 255 && actualCode == expectedCode;
+        } catch (NumberFormatException e) {
+            logger.debug("Invalid numeric program code while confirming a command for {} (expected: {}, actual: {})",
+                    getThing().getUID(), expected, actual, e);
+            return false;
         }
     }
 

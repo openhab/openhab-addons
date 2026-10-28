@@ -737,9 +737,12 @@ class BiancaHandlerTest {
         verify(client, times(1)).read(any());
     }
 
-    @Test
-    void startsOnlyAfterFreshPermissionAndConfirmsMatchingProgramFromStatus() throws Exception {
-        prepareControls();
+    @ParameterizedTest
+    @CsvSource({ "1,65,1,65", "1,65,01,065", "01,065,1,65", "01,065,001,00065", "01,65,1,065", "1,065,01,65",
+            "1,1,01,001", "255,255,0255,00255" })
+    void startsOnlyAfterFreshPermissionAndConfirmsMatchingProgramFromStatus(String selector, String code,
+            String reportedSelector, String reportedCode) throws Exception {
+        prepareControls(selector, code);
         send(CHANNEL_SELECTED_PROGRAM, new StringType("cottons"));
         verify(client, never()).write(any(), anyString());
         send(CHANNEL_START, OnOffType.ON);
@@ -754,10 +757,40 @@ class BiancaHandlerTest {
         assertEquals(new StringType("SENT"), states.get(CHANNEL_LAST_COMMAND_RESULT));
         assertEquals(new StringType("SELECTING"), states.get(CHANNEL_MACHINE_STATE));
         runTimer();
-        nextRead().complete(controlSnapshot(2, 1));
+        nextRead().complete(runningProgramSnapshot(reportedSelector, reportedCode));
         flush();
         assertEquals(new StringType("CONFIRMED"), states.get(CHANNEL_LAST_COMMAND_RESULT));
-        verify(client, times(1)).write(any(), contains("&StSt=1&"));
+        assertEquals(new StringType(reportedSelector), states.get(CHANNEL_PROGRAM_NUMBER));
+        assertEquals(new StringType(reportedCode), states.get(CHANNEL_PROGRAM_CODE));
+        verify(client, times(1)).write(any(),
+                contains("&PrNm=" + Integer.parseInt(selector) + "&PrCode=" + Integer.parseInt(code) + "&"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "2,65", "1,66", "0,65", "256,65", "-1,65", "unknown,65", "2147483648,65", "'',65", "1,0", "1,256",
+            "1,-65", "1,unknown", "1,2147483648", "1,''" })
+    void doesNotConfirmStartWithMismatchedOrInvalidProgramCodes(String reportedSelector, String reportedCode)
+            throws Exception {
+        prepareControls();
+        send(CHANNEL_START_PROGRAM, new StringType("cottons"));
+        runTimer();
+        nextRead().complete(controlSnapshot(1, 1));
+        flush();
+        var write = writes.poll(10, TimeUnit.SECONDS);
+        assertNotNull(write);
+        write.complete(200);
+        flush();
+        assertEquals(new StringType("SENT"), states.get(CHANNEL_LAST_COMMAND_RESULT));
+
+        runTimer();
+        nextRead().complete(runningProgramSnapshot(reportedSelector, reportedCode));
+        flush();
+        assertEquals(new StringType("SENT"), states.get(CHANNEL_LAST_COMMAND_RESULT));
+        Timer expiry = allTimers.stream().filter(task -> task.seconds() == 60).findFirst().orElseThrow();
+        expiry.runnable().run();
+        flush();
+        assertEquals(new StringType("UNKNOWN"), states.get(CHANNEL_LAST_COMMAND_RESULT));
+        verify(client, times(1)).write(any(), anyString());
     }
 
     @ParameterizedTest
@@ -946,11 +979,15 @@ class BiancaHandlerTest {
     }
 
     private void prepareControls() throws Exception {
+        prepareControls("1", "65");
+    }
+
+    private void prepareControls(String selector, String code) throws Exception {
         handler.thingUpdated(controlThing());
         nextRead().complete(controlSnapshot(1, 1));
         var request = nextCatalogRead();
-        Map<String, String> parameters = Map.of("selector_position", "1", "pr_code", "65", "default_temperature", "60",
-                "default_spin_speed", "1000", "minimum_soil_level", "1", "maximum_soil_level", "3",
+        Map<String, String> parameters = Map.of("selector_position", selector, "pr_code", code, "default_temperature",
+                "60", "default_spin_speed", "1000", "minimum_soil_level", "1", "maximum_soil_level", "3",
                 "default_soil_level", "3", "steam", "5", "dry", "0");
         request.complete(List.of(new Program("cottons", "Cottons", parameters,
                 Optional.of(BiancaCommands.start("Cottons", parameters)))));
@@ -968,6 +1005,12 @@ class BiancaHandlerTest {
     private BiancaSnapshot controlSnapshot(int mode, int remote) throws CandyProtocolException {
         return new BiancaStatusParser().parse("{\"statusLavatrice\":{\"MachMd\":" + mode + ",\"WiFiStatus\":" + remote
                 + ",\"PrNm\":1,\"PrCode\":65}}");
+    }
+
+    private BiancaSnapshot runningProgramSnapshot(String selector, String code) throws CandyProtocolException {
+        return new BiancaStatusParser().parse("""
+                {"statusLavatrice":{"MachMd":2,"WiFiStatus":1,"PrNm":"%s","PrCode":"%s"}}
+                """.formatted(selector, code));
     }
 
     private void send(String channel, org.openhab.core.types.Command command) throws Exception {
