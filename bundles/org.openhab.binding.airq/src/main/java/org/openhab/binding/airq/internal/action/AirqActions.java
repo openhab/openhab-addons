@@ -53,7 +53,7 @@ public class AirqActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.set-wifi.label", description = "@text/action.set-wifi.description")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean", label = "@text/action.set-wifi.output.success.label") boolean setWifi(
+    public @ActionOutput(name = "result", type = "java.lang.Boolean", label = "@text/action.set-wifi.output.result.label") boolean setWifi(
             @ActionInput(name = "ssid", label = "@text/action.set-wifi.input.ssid.label", description = "@text/action.set-wifi.input.ssid.description") @Nullable String ssid,
             @ActionInput(name = "password", label = "@text/action.set-wifi.input.password.label", description = "@text/action.set-wifi.input.password.description") @Nullable String password,
             @ActionInput(name = "bssid", label = "@text/action.set-wifi.input.bssid.label", description = "@text/action.set-wifi.input.bssid.description") @Nullable String bssid,

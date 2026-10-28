@@ -197,7 +197,12 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("Status", "status", "status", null, "general"),
             new ChannelMapping("TypPS", "avgFineDustSize", "quantity", AirqUnits.MICROMETRE),
             new ChannelMapping("dCO2dt", "dCO2dt", "number"), new ChannelMapping("dHdt", "dHdt", "number"),
-            new ChannelMapping("door_event", "doorEvent", "number"),
+            new ChannelMapping("door_event", "doorEvent", "value"),
+            // only in the sample payload of datenlesen.md, without meaning or unit like door_event
+            new ChannelMapping("person", "person", "value"),
+            new ChannelMapping("window_event", "window-event", "value"),
+            new ChannelMapping("window_open", "window-open", "value"),
+            new ChannelMapping("wifi", "wifi-rssi", "rssi", Units.DECIBEL_MILLIWATTS),
             new ChannelMapping("health", "healthIndex", "index"), new ChannelMapping("health", "health", "number"),
             new ChannelMapping("health", "", "alarm"),
             new ChannelMapping("measuretime", "measureTime", "numberMilliseconds"),
@@ -236,7 +241,28 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("ch4_MIPEX", "ch4-mipex", Units.PERCENT),
             new ChannelMapping("c3h8_MIPEX", "c3h8-mipex", Units.PERCENT),
             new ChannelMapping("r32", "r32", Units.PERCENT), new ChannelMapping("r454b", "r454b", Units.PERCENT),
-            new ChannelMapping("r454c", "r454c", Units.PERCENT));
+            new ChannelMapping("r454c", "r454c", Units.PERCENT),
+            // datenlesen.md: standard litres per minute at 20 °C and 1013 hPa
+            new ChannelMapping("flow1", "flow1", "value", Units.LITRE_PER_MINUTE, "advanced-measurements"),
+            new ChannelMapping("flow2", "flow2", "value", Units.LITRE_PER_MINUTE, "advanced-measurements"),
+            new ChannelMapping("flow3", "flow3", "value", Units.LITRE_PER_MINUTE, "advanced-measurements"),
+            new ChannelMapping("flow4", "flow4", "value", Units.LITRE_PER_MINUTE, "advanced-measurements"),
+            // datenlesen.md: the optional Sensirion SPS30 sensor, its counts are per cm³ instead of per 100 ml
+            new ChannelMapping("pm1_SPS30", "pm1-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE,
+                    "advanced-measurements"),
+            new ChannelMapping("pm2_5_SPS30", "pm2-5-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE,
+                    "advanced-measurements"),
+            new ChannelMapping("pm4_SPS30", "pm4-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE,
+                    "advanced-measurements"),
+            new ChannelMapping("pm10_SPS30", "pm10-sps30", "value", Units.MICROGRAM_PER_CUBICMETRE,
+                    "advanced-measurements"),
+            new ChannelMapping("cnt0_5_SPS30", "cnt0-5-sps30", "value", null, "advanced-measurements"),
+            new ChannelMapping("cnt1_SPS30", "cnt1-sps30", "value", null, "advanced-measurements"),
+            new ChannelMapping("cnt2_5_SPS30", "cnt2-5-sps30", "value", null, "advanced-measurements"),
+            new ChannelMapping("cnt4_SPS30", "cnt4-sps30", "value", null, "advanced-measurements"),
+            new ChannelMapping("cnt10_SPS30", "cnt10-sps30", "value", null, "advanced-measurements"),
+            new ChannelMapping("TypPS_SPS30", "avg-fine-dust-size-sps30", "value", AirqUnits.MICROMETRE,
+                    "advanced-measurements"));
     private static final List<ChannelMapping> CONFIGURATION = List.of(new ChannelMapping("Wifi", "wifi", "boolean"),
             new ChannelMapping("WLANssid", "ssid", "arr"), new ChannelMapping("WifiInfo", "wifiInfo", "boolean"),
             new ChannelMapping("TimeServer", "timeServer", "string"), new ChannelMapping("geopos", "location", "coord"),
@@ -841,7 +867,9 @@ public class AirqHandler extends BaseThingHandler {
             String groupId = groupOverride == null ? mapping.groupId() : groupOverride;
             String channelId = groupId + "#" + mapping.channelId();
             Unit<?> unit = mapping.unit();
-            if (unit == null) {
+            if ("value".equals(mapping.type()) || "rssi".equals(mapping.type())) {
+                processValue(data, mapping.dataKey(), channelId, unit, "rssi".equals(mapping.type()));
+            } else if (unit == null) {
                 processType(data, mapping.dataKey(), channelId, mapping.type());
             } else if ("pair".equals(mapping.type())) {
                 processPair(data, mapping.dataKey(), channelId, unit);
@@ -870,6 +898,28 @@ public class AirqHandler extends BaseThingHandler {
                     pair.get(1).getAsBigDecimal());
         } else {
             throw new JsonSyntaxException("Failed to parse pair: " + reading);
+        }
+    }
+
+    // a value without an error channel, the spec doesn't say whether it is a number or a [value, error] pair
+    private void processValue(JsonObject data, String key, String channel, @Nullable Unit<?> unit, boolean rssi) {
+        JsonElement reading = data.get(key);
+        if (reading != null && reading.isJsonArray() && reading.getAsJsonArray().size() == 2) {
+            reading = reading.getAsJsonArray().get(0);
+        }
+        if (reading == null || !isNumeric(reading)) {
+            updateMappedState(channel, UnDefType.UNDEF);
+            if (reading != null && !reading.isJsonNull()) {
+                logger.debug("Ignoring malformed measurement for channel {}", channel);
+            }
+            return;
+        }
+        BigDecimal value = reading.getAsBigDecimal();
+        if (rssi && value.signum() == 0) {
+            // datenlesen.md: 0 dBm means that no connection is present
+            updateMappedState(channel, UnDefType.UNDEF);
+        } else {
+            updateMappedState(channel, unit == null ? new DecimalType(value) : new QuantityType<>(value, unit));
         }
     }
 
@@ -1222,31 +1272,33 @@ public class AirqHandler extends BaseThingHandler {
                     }
                     break;
                 case "calib":
-                    JsonElement lastcalib = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);
-                    if (lastcalib != null) {
-                        JsonObject calibobj = lastcalib.getAsJsonObject();
-                        String str = new String();
-                        Long timecalib;
+                    // calibration.md: an offset and a timestamp per sensor, deleting a calibration stores offset 0
+                    JsonElement usercalib = dec.get(airqName);
+                    if (usercalib.isJsonObject()) {
+                        List<String> calibrations = new ArrayList<>();
                         SimpleDateFormat sdfcalib = new SimpleDateFormat("dd.MM.yyyy' 'HH:mm:ss");
-                        for (Entry<String, JsonElement> entry : calibobj.entrySet()) {
-                            String attributeName = entry.getKey();
-                            JsonObject attributeValue = (JsonObject) entry.getValue();
-                            timecalib = Long.valueOf(attributeValue.get("timestamp").toString());
-                            String timecalibString = sdfcalib.format(new Date(timecalib * 1000));
-                            str = str + attributeName + ": offset=" + attributeValue.get("offset").getAsString() + " ["
-                                    + timecalibString + "]";
+                        for (Entry<String, JsonElement> entry : usercalib.getAsJsonObject().entrySet()) {
+                            JsonElement offset = entry.getValue().isJsonObject()
+                                    ? entry.getValue().getAsJsonObject().get("offset")
+                                    : null;
+                            if (offset == null || !isNumeric(offset)) {
+                                logger.debug("Ignoring calibration entry {} of {}", entry.getKey(), airqName);
+                                continue;
+                            }
+                            String calibration = entry.getKey() + ": offset=" + offset.getAsString();
+                            JsonElement timestamp = entry.getValue().getAsJsonObject().get("timestamp");
+                            if (timestamp != null && isNumeric(timestamp)) {
+                                calibration += " ["
+                                        + sdfcalib.format(new Date(timestamp.getAsBigDecimal().longValue() * 1000))
+                                        + "]";
+                            }
+                            calibrations.add(calibration);
                         }
-                        if (!str.isEmpty()) {
-                            updateMappedState(channelName, new StringType(str.substring(0, str.length() - 1)));
-                        } else {
-                            logger.trace(
-                                    "air-Q - airqHandler - processType(): Cannot extract calibration data from this string: {}",
-                                    dec.get(airqName).toString());
-                        }
+                        // an empty list is published too, e.g. after all user calibrations were deleted
+                        updateMappedState(channelName, new StringType(String.join(", ", calibrations)));
                     } else {
-                        logger.warn(
-                                "air-Q - airqHandler - processType(): Cannot extract calibration data from this string: {}",
-                                dec.get(airqName).toString());
+                        updateMappedState(channelName, UnDefType.UNDEF);
+                        logger.debug("Ignoring malformed value for channel {}", channelName);
                     }
                     break;
                 case "property":

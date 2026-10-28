@@ -73,11 +73,15 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | d-hdt                      | Number                             |       | Change of absolute humidity in mg/m³/s                                                   |
 | dewpt                      | Number:Temperature                 |       | Dew Point                                                                                |
 | door-event                 | Number                             |       | Door Event (experimental, might not work reliably)                                       |
+| person                     | Number                             |       | Person (experimental, might not work reliably)                                           |
+| window-event               | Number                             |       | Window Event (experimental, might not work reliably)                                     |
+| window-open                | Number                             |       | Window Open (experimental, might not work reliably)                                      |
 | h2s                        | Number:Density                     |       | Hydrogen sulfide (H₂S)                                                                   |
 | health-index               | Number:Dimensionless               |       | Health Index in percent, -20 % during a gas alarm and -80 % during a fire alarm          |
 | health                     | Number:Dimensionless               |       | Health Index (0 to 1000, -200 for gas alarm, -800 for fire alarm)                        |
 | fire-alarm-active          | Switch                             |       | ON while the device raises a fire alarm                                                  |
 | gas-alarm-active           | Switch                             |       | ON while the device raises a gas alarm                                                   |
+| wifi-rssi                  | Number:Power                       |       | Wi-Fi signal strength (RSSI) in dBm, UNDEF while not connected                           |
 | humidity-relative          | Number:Dimensionless               |       | Humidity in percent                                                                      |
 | humidity-absolute          | Number:Density                     |       | Absolute Humidity                                                                        |
 | measure-time               | Number:Time                        |       | Milliseconds needed for measurement                                                      |
@@ -129,6 +133,20 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | r32                        | Number:Dimensionless               |       | Refrigerant R32 in percent (advanced)                                                    |
 | r454b                      | Number:Dimensionless               |       | Refrigerant R454B in percent (advanced)                                                  |
 | r454c                      | Number:Dimensionless               |       | Refrigerant R454C in percent (advanced)                                                  |
+| flow1                      | Number:VolumetricFlowRate          |       | Air flow 1 in standard litres per minute at 20 °C and 1013 hPa (advanced)                |
+| flow2                      | Number:VolumetricFlowRate          |       | Air flow 2 in standard litres per minute at 20 °C and 1013 hPa (advanced)                |
+| flow3                      | Number:VolumetricFlowRate          |       | Air flow 3 in standard litres per minute at 20 °C and 1013 hPa (advanced)                |
+| flow4                      | Number:VolumetricFlowRate          |       | Air flow 4 in standard litres per minute at 20 °C and 1013 hPa (advanced)                |
+| pm1-sps30                  | Number:Density                     |       | Fine Dust concentration >1 µm of the optional SPS30 sensor (advanced)                    |
+| pm2-5-sps30                | Number:Density                     |       | Fine Dust concentration >2.5 µm of the optional SPS30 sensor (advanced)                  |
+| pm4-sps30                  | Number:Density                     |       | Fine Dust concentration >4 µm of the optional SPS30 sensor (advanced)                    |
+| pm10-sps30                 | Number:Density                     |       | Fine Dust concentration >10 µm of the optional SPS30 sensor (advanced)                   |
+| cnt0-5-sps30               | Number                             |       | Fine Dust >0.5 µm per cm³ of the optional SPS30 sensor (advanced)                        |
+| cnt1-sps30                 | Number                             |       | Fine Dust >1 µm per cm³ of the optional SPS30 sensor (advanced)                          |
+| cnt2-5-sps30               | Number                             |       | Fine Dust >2.5 µm per cm³ of the optional SPS30 sensor (advanced)                        |
+| cnt4-sps30                 | Number                             |       | Fine Dust >4 µm per cm³ of the optional SPS30 sensor (advanced)                          |
+| cnt10-sps30                | Number                             |       | Fine Dust >10 µm per cm³ of the optional SPS30 sensor (advanced)                         |
+| avg-fine-dust-size-sps30   | Number:Length                      |       | Average size of Fine Dust of the optional SPS30 sensor (advanced)                        |
 | wifi                       | Switch                             |       | WLAN on or off, read-only so the device cannot be taken off the network                  |
 | ssid                       | String                             |       | Configured WLAN networks, add networks with the `setWifi` action                         |
 | wifi-info                  | Switch                             | rw    | Show WLAN status with LED                                                                |
@@ -163,7 +181,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | gas-alarm                  | Switch                             | rw    | Send Gas Alarm if certain levels are met                                                 |
 | sound-info                 | String                             |       | Acoustic signals for measurement thresholds                                              |
 | alarm-forwarding           | Switch                             | rw    | Forward gas or fire alarm to other air-Q devices in the household                        |
-| user-calib                 | String                             |       | Last sensor calibration                                                                  |
+| user-calib                 | String                             |       | User calibrations, "sensor: offset=value [dd.MM.yyyy HH:mm:ss]" for each sensor          |
 | initial-cal-finished       | Switch                             |       | Initial calibration has finished                                                         |
 | averaging                  | Number                             | rw    | Number of measurements averaged, 1 = off (device default 30)                             |
 | warmup-phase               | Switch                             | rw    | Warm-up phase of the sensors, OFF aborts it                                              |
@@ -262,9 +280,13 @@ Number                airQ_dCO2dt                 "Change of CO2 Concentration" 
 Number                airQ_dHdt                   "Change of Humidity"                    {channel="airq:airq:1:measurements#d-hdt"}
 Number:Temperature    airQ_dewpt                  "Dew Point"                             {channel="airq:airq:1:measurements#dewpt"}
 Number                airQ_doorEvent              "Door Event (exp.)"                     {channel="airq:airq:1:measurements#door-event"}
+Number                airQ_person                 "Person (exp.)"                         {channel="airq:airq:1:measurements#person"}
+Number                airQ_windowEvent            "Window Event (exp.)"                   {channel="airq:airq:1:measurements#window-event"}
+Number                airQ_windowOpen             "Window Open (exp.)"                    {channel="airq:airq:1:measurements#window-open"}
 Number:Dimensionless  airQ_health                 "Health Index"                          {channel="airq:airq:1:measurements#health"}
 Switch                airQ_fireAlarmActive        "Fire Alarm Active"                     {channel="airq:airq:1:measurements#fire-alarm-active"}
 Switch                airQ_gasAlarmActive         "Gas Alarm Active"                      {channel="airq:airq:1:measurements#gas-alarm-active"}
+Number:Power          airQ_wifiRssi               "Wi-Fi Signal Strength"                 {channel="airq:airq:1:measurements#wifi-rssi"}
 Number:Dimensionless  airQ_humidityRelative       "Humidity"                              {channel="airq:airq:1:measurements#humidity-relative"}
 Number:Density        airQ_humidityAbsolute       "Absolute Humidity"                     {channel="airq:airq:1:measurements#humidity-absolute"}
 Number:Time           airQ_measureTime            "Time needed for measurement"           {unit="ms",channel="airq:airq:1:measurements#measure-time"}

@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.airq.internal.AirqBindingConstants.THING_TYPE_AIRQ;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -429,6 +430,94 @@ class AirqHandlerTest {
                 OnOffType.OFF);
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#gas-alarm-active"),
                 OnOffType.OFF);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "-61", "[-61, 2]" })
+    void wifiSignalStrengthIsInDecibelMilliwatts(String wifi) throws Exception {
+        // datenlesen.md: the RSSI in dBm, typically -30 dBm (very good) to -90 dBm (very poor)
+        poll("{\"wifi\": " + wifi + "}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#wifi-rssi"),
+                new QuantityType<>(-61, Units.DECIBEL_MILLIWATTS));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{\"wifi\": 0}", "{}", "{\"wifi\": null}", "{\"wifi\": \"x\"}" })
+    void wifiSignalStrengthIsUndefinedWithoutConnection(String payload) throws Exception {
+        // datenlesen.md: 0 dBm means that no connection is present
+        poll(payload);
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#wifi-rssi"),
+                UnDefType.UNDEF);
+        requireNonNull(verify(callback)).statusUpdated(thing,
+                new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "flow1, flow1", "flow2, flow2", "flow3, flow3", "flow4, flow4" })
+    void airFlowsAreInLitresPerMinute(String key, String channel) throws Exception {
+        // datenlesen.md: air flow in slm, standard litres per minute
+        poll("{\"" + key + "\": 1.25}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#" + channel),
+                new QuantityType<>(new BigDecimal("1.25"), Units.LITRE_PER_MINUTE));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "pm1_SPS30, pm1-sps30", "pm2_5_SPS30, pm2-5-sps30", "pm4_SPS30, pm4-sps30", "pm10_SPS30, pm10-sps30" })
+    void sps30ParticulatesAreInMicrogramsPerCubicMetre(String key, String channel) throws Exception {
+        // datenlesen.md: SPS30 particulates concentration in µg/m³
+        poll("{\"" + key + "\": [12, 3]}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#" + channel),
+                new QuantityType<>(12, Units.MICROGRAM_PER_CUBICMETRE));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "cnt0_5_SPS30, cnt0-5-sps30", "cnt1_SPS30, cnt1-sps30", "cnt2_5_SPS30, cnt2-5-sps30",
+            "cnt4_SPS30, cnt4-sps30", "cnt10_SPS30, cnt10-sps30" })
+    void sps30CountsArePerCubicCentimetre(String key, String channel) throws Exception {
+        // datenlesen.md: SPS30 particle number concentrations in 1/cm³, a plain number
+        poll("{\"" + key + "\": 7.5}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "advanced-measurements#" + channel),
+                new DecimalType(new BigDecimal("7.5")));
+    }
+
+    @Test
+    void sps30MeanParticleSizeIsInMicrometres() throws Exception {
+        // datenlesen.md: the mean particulates size of the SPS30 in µm
+        poll("{\"TypPS_SPS30\": 0.62}");
+
+        requireNonNull(verify(callback)).stateUpdated(
+                new ChannelUID(thingUID, "advanced-measurements#avg-fine-dust-size-sps30"),
+                new QuantityType<>(new BigDecimal("0.62"), AirqUnits.MICROMETRE));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "person, person", "window_event, window-event", "window_open, window-open", "door_event, door-event" })
+    void eventsOfTheSamplePayloadArePlainNumbers(String key, String channel) throws Exception {
+        // datenlesen.md: "door_event": 0, "person": 1, "window_event": 0, "window_open": 0 in the sample payload
+        poll("{\"" + key + "\": 1}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#" + channel),
+                new DecimalType(1));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "person, measurements#person", "window_event, measurements#window-event",
+            "window_open, measurements#window-open", "door_event, measurements#door-event",
+            "flow1, advanced-measurements#flow1", "pm4_SPS30, advanced-measurements#pm4-sps30",
+            "cnt4_SPS30, advanced-measurements#cnt4-sps30",
+            "TypPS_SPS30, advanced-measurements#avg-fine-dust-size-sps30" })
+    void measurementsWithoutErrorChannelAreUndefinedWhenMalformedOrAbsent(String key, String channel) throws Exception {
+        poll("{\"" + key + "\": {\"x\": 1}}");
+        poll("{}");
+
+        verify(callback, times(2)).stateUpdated(new ChannelUID(thingUID, channel), UnDefType.UNDEF);
+        verify(callback, never()).statusUpdated(eq(thing),
+                argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
     }
 
     @Test
@@ -1359,7 +1448,25 @@ class AirqHandlerTest {
                 "add-channel general#night-mode-alarm-night-off airq:nightmode-alarm-night-off",
                 "add-channel general#daytime airq:daytime",
                 "add-channel measurements#fire-alarm-active airq:fire-alarm-active",
-                "add-channel measurements#gas-alarm-active airq:gas-alarm-active"));
+                "add-channel measurements#gas-alarm-active airq:gas-alarm-active",
+                "add-channel measurements#person airq:person",
+                "add-channel measurements#window-event airq:window-event",
+                "add-channel measurements#window-open airq:window-open",
+                "add-channel measurements#wifi-rssi airq:wifi-rssi",
+                "add-channel advanced-measurements#flow1 airq:flow1",
+                "add-channel advanced-measurements#flow2 airq:flow2",
+                "add-channel advanced-measurements#flow3 airq:flow3",
+                "add-channel advanced-measurements#flow4 airq:flow4",
+                "add-channel advanced-measurements#pm1-sps30 airq:pm1-sps30",
+                "add-channel advanced-measurements#pm2-5-sps30 airq:pm2-5-sps30",
+                "add-channel advanced-measurements#pm4-sps30 airq:pm4-sps30",
+                "add-channel advanced-measurements#pm10-sps30 airq:pm10-sps30",
+                "add-channel advanced-measurements#cnt0-5-sps30 airq:cnt0-5-sps30",
+                "add-channel advanced-measurements#cnt1-sps30 airq:cnt1-sps30",
+                "add-channel advanced-measurements#cnt2-5-sps30 airq:cnt2-5-sps30",
+                "add-channel advanced-measurements#cnt4-sps30 airq:cnt4-sps30",
+                "add-channel advanced-measurements#cnt10-sps30 airq:cnt10-sps30",
+                "add-channel advanced-measurements#avg-fine-dust-size-sps30 airq:typps-sps30"));
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='7']"), empty());
 
         List<Element> additions = elements(upgrades, "//instruction-set[@targetVersion='5']/add-channel");
@@ -1392,7 +1499,7 @@ class AirqHandlerTest {
                     "//channel-group-type[@id='" + id[0] + "']/channels/channel[@id='" + id[1] + "']");
             assertThat(channel.getValue(), is("airq:" + definition.getAttribute("typeId")));
         }
-        assertThat(channels, hasSize(164));
+        assertThat(channels, hasSize(182));
     }
 
     @SuppressWarnings("null")
@@ -1458,6 +1565,50 @@ class AirqHandlerTest {
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#ssid"), UnDefType.UNDEF);
         verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, "general#ssid")),
                 argThat(state -> state.toString().contains("key")));
+    }
+
+    @Test
+    void userCalibrationsListTheOffsetAndTimeOfEachSensor() throws Exception {
+        // calibration.md: /usercalibration adds a timestamp to the sensor's usercalib entry, deleting it stores 0
+        readConfiguration(
+                "{\"usercalib\": {\"so2\": {\"offset\": 12.5, \"timestamp\": 1793046696}, \"co\": {\"offset\": 0, \"timestamp\": 1793050296}}}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#user-calib"),
+                new StringType("so2: offset=12.5 [" + calibrationTime(1793046696) + "], co: offset=0 ["
+                        + calibrationTime(1793050296) + "]"));
+    }
+
+    @Test
+    void userCalibrationsWithoutTimestampShowTheOffset() throws Exception {
+        readConfiguration("{\"usercalib\": {\"so2\": {\"offset\": -3}}}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#user-calib"),
+                new StringType("so2: offset=-3"));
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = { "{}|''",
+            // entries without a numeric offset are skipped
+            "{\"so2\": 5, \"co\": {\"timestamp\": 1}, \"no2\": {\"offset\": \"x\"}, \"o3\": {\"offset\": 2}}|o3: offset=2" })
+    void userCalibrationEntriesThatAreNotCalibrationsAreSkipped(String usercalib, String shown) throws Exception {
+        readConfiguration("{\"usercalib\": " + usercalib + "}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#user-calib"),
+                new StringType(shown));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "[\"so2\"]", "\"so2\"", "5" })
+    void userCalibrationsInAnotherFormAreUndefinedAndTheConfigurationIsStillRead(String usercalib) throws Exception {
+        readConfiguration("{\"usercalib\": " + usercalib + ", \"InitialCalFinished\": true}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#user-calib"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#initial-cal-finished"),
+                OnOffType.ON);
+    }
+
+    private static String calibrationTime(long epochSeconds) {
+        return new java.text.SimpleDateFormat("dd.MM.yyyy' 'HH:mm:ss").format(new java.util.Date(epochSeconds * 1000));
     }
 
     @Test

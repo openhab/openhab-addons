@@ -696,6 +696,60 @@
 			<add-channel id="gas-alarm-active" groupIds="measurements">
 				<type>airq:gas-alarm-active</type>
 			</add-channel>
+			<add-channel id="person" groupIds="measurements">
+				<type>airq:person</type>
+			</add-channel>
+			<add-channel id="window-event" groupIds="measurements">
+				<type>airq:window-event</type>
+			</add-channel>
+			<add-channel id="window-open" groupIds="measurements">
+				<type>airq:window-open</type>
+			</add-channel>
+			<add-channel id="wifi-rssi" groupIds="measurements">
+				<type>airq:wifi-rssi</type>
+			</add-channel>
+			<add-channel id="flow1" groupIds="advanced-measurements">
+				<type>airq:flow1</type>
+			</add-channel>
+			<add-channel id="flow2" groupIds="advanced-measurements">
+				<type>airq:flow2</type>
+			</add-channel>
+			<add-channel id="flow3" groupIds="advanced-measurements">
+				<type>airq:flow3</type>
+			</add-channel>
+			<add-channel id="flow4" groupIds="advanced-measurements">
+				<type>airq:flow4</type>
+			</add-channel>
+			<add-channel id="pm1-sps30" groupIds="advanced-measurements">
+				<type>airq:pm1-sps30</type>
+			</add-channel>
+			<add-channel id="pm2-5-sps30" groupIds="advanced-measurements">
+				<type>airq:pm2-5-sps30</type>
+			</add-channel>
+			<add-channel id="pm4-sps30" groupIds="advanced-measurements">
+				<type>airq:pm4-sps30</type>
+			</add-channel>
+			<add-channel id="pm10-sps30" groupIds="advanced-measurements">
+				<type>airq:pm10-sps30</type>
+			</add-channel>
+			<add-channel id="cnt0-5-sps30" groupIds="advanced-measurements">
+				<type>airq:cnt0-5-sps30</type>
+			</add-channel>
+			<add-channel id="cnt1-sps30" groupIds="advanced-measurements">
+				<type>airq:cnt1-sps30</type>
+			</add-channel>
+			<add-channel id="cnt2-5-sps30" groupIds="advanced-measurements">
+				<type>airq:cnt2-5-sps30</type>
+			</add-channel>
+			<add-channel id="cnt4-sps30" groupIds="advanced-measurements">
+				<type>airq:cnt4-sps30</type>
+			</add-channel>
+			<add-channel id="cnt10-sps30" groupIds="advanced-measurements">
+				<type>airq:cnt10-sps30</type>
+			</add-channel>
+			<add-channel id="avg-fine-dust-size-sps30" groupIds="advanced-measurements">
+				<type>airq:typps-sps30</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 </update:update-descriptions>
