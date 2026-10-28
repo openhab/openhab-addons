@@ -66,6 +66,9 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
 
     private ScheduledFuture<?> offlineTimerJob;
 
+    // Package-visible so tests can shorten the reconnect poll instead of waiting 60 s.
+    long reconnectIntervalSeconds = 60;
+
     private String meteostickMode = "m1";
     private final String meteostickFormat = "o1";
 
@@ -100,7 +103,8 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
         };
 
         // Scheduling a job on each hour to update the last hour rainfall
-        offlineTimerJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, 60, TimeUnit.SECONDS);
+        offlineTimerJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, reconnectIntervalSeconds,
+                TimeUnit.SECONDS);
     }
 
     @Override
