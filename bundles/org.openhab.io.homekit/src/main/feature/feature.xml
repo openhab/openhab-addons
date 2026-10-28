@@ -7,6 +7,9 @@
 		<feature>openhab.tp-netty</feature>
 		<bundle dependency="true">mvn:org.glassfish/javax.json/1.0.4</bundle>
 		<bundle dependency="true">mvn:javax.json/javax.json-api/1.0</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk18on/${bouncycastle.version}</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bcutil-jdk18on/${bouncycastle.version}</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bctls-jdk18on/${bouncycastle.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.homekit/${project.version}</bundle>
 	</feature>
 </features>
