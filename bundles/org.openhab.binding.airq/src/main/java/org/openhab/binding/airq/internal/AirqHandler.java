@@ -101,6 +101,12 @@ public class AirqHandler extends BaseThingHandler {
     // device defaults, written when a retained flat Switch channel is switched ON
     private static final int AUTO_UPDATE_DEFAULT_DAYS = 90;
     private static final int AVERAGING_DEFAULT_VALUES = 30;
+    // deviceconfig.md: the default altitude -10000 m means that no altitude is set
+    private static final BigDecimal ALTITUDE_NOT_SET = BigDecimal.valueOf(-10000);
+    // deviceconfig.md: the supported country codes (ISO 3166)
+    private static final Set<String> COUNTRY_CODES = Set.of("AT", "AU", "BE", "BG", "BR", "CA", "CH", "CN", "CY", "CZ",
+            "DE", "DK", "EE", "ES", "FI", "FR", "GB", "GR", "HK", "HR", "HU", "IE", "IN", "IS", "IT", "JP", "KR", "LI",
+            "LT", "LU", "LV", "MT", "MX", "NL", "NO", "NZ", "PL", "PT", "RO", "SE", "SI", "SK", "TW", "US");
 
     private record ChannelMapping(String dataKey, String channelId, String type, @Nullable Unit<?> unit,
             String groupId) {
@@ -279,7 +285,7 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("AutoDriftCompensation", "autoDriftCompensation", "boolean"),
             new ChannelMapping("AutoUpdate", "autoUpdate", "numberDays"),
             new ChannelMapping("AdvancedDataProcessing", "advancedDataProcessing", "boolean"),
-            new ChannelMapping("Industry", "Industry", "property"),
+            new ChannelMapping("Industry", "industry", "property"),
             new ChannelMapping("ppm&ppb", "ppm_and_ppb", "boolean"),
             new ChannelMapping("GasAlarm", "gasAlarm", "boolean"), new ChannelMapping("id", "id", "property"),
             new ChannelMapping("SoundInfo", "soundPressure", "soundInfo"),
@@ -288,7 +294,15 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("InitialCalFinished", "initialCalFinished", "boolean"),
             new ChannelMapping("Averaging", "averaging", "number"),
             new ChannelMapping("SensorInfo", "sensorInfo", "property"),
-            new ChannelMapping("warmup-phase", "warmupPhase", "boolean"));
+            new ChannelMapping("warmup-phase", "warmupPhase", "boolean"),
+            // type, SN, cloud_connection and boots are not documented, they are read from a real device
+            new ChannelMapping("type", "deviceType", "property"), new ChannelMapping("SN", "serialNumber", "property"),
+            new ChannelMapping("country_code", "country-code", "string"),
+            new ChannelMapping("cloud_connection", "cloud-connection", "string"),
+            new ChannelMapping("boots", "boots", "string"), new ChannelMapping("Altitude", "altitude", "altitude"),
+            new ChannelMapping("BuildingStandard", "building-standard", "string"),
+            new ChannelMapping("RoomHeight", "room-height", "quantity", SIUnits.METRE),
+            new ChannelMapping("RoomArea", "room-area", "quantity", SIUnits.SQUARE_METRE));
     // the units of the deprecated "ppm&ppb" setting, which the device uses for keys without a "units" entry
     private static final Map<String, Unit<?>> PPM_AND_PPB_UNITS = Map.of("co", Units.PARTS_PER_MILLION, "no2",
             Units.PARTS_PER_BILLION, "o3", Units.PARTS_PER_BILLION, "so2", Units.PARTS_PER_BILLION);
@@ -310,6 +324,9 @@ public class AirqHandler extends BaseThingHandler {
     // keys configured with a unit the binding doesn't know, their readings can't be interpreted
     private volatile Set<String> unknownUnits = Set.of();
     private volatile boolean ppmAndPpb;
+    // the Altitude setting is written as a pair, a command for one half keeps the other one
+    private volatile @Nullable BigDecimal altitude;
+    private volatile @Nullable BigDecimal altitudeError;
     private volatile boolean configurationRequested;
 
     final class ResultPair {
@@ -359,6 +376,25 @@ public class AirqHandler extends BaseThingHandler {
             handleIntegerSettingCommand(channelId, command);
             return;
         }
+        if ("altitude".equals(channelId) || "altitude-error".equals(channelId)) {
+            handleAltitudeCommand(channelId, command);
+            return;
+        }
+        if ("room-height".equals(channelId) || "room-area".equals(channelId)) {
+            boolean height = "room-height".equals(channelId);
+            BigDecimal size = numericCommand(channelId, command, height ? SIUnits.METRE : SIUnits.SQUARE_METRE);
+            if (size == null) {
+                return;
+            }
+            if (size.signum() < 0) {
+                logger.debug("Ignoring negative room size for channel {}", channelId);
+                return;
+            }
+            JsonObject settings = new JsonObject();
+            settings.addProperty(height ? "RoomHeight" : "RoomArea", size.doubleValue());
+            changeSettings(settings);
+            return;
+        }
         if ("nightModeBrightnessDay".equals(channelId) || "nightModeBrightnessNight".equals(channelId)) {
             BigDecimal brightness;
             if (command instanceof QuantityType<?> quantity) {
@@ -406,7 +442,8 @@ public class AirqHandler extends BaseThingHandler {
                     "gasAlarm", "alarmForwarding", "ppm_and_ppb", "nightModeFanNightOff", "nightModeWifiNightOff",
                     "nightModeActivated", "nightModeAlarmNightOff", "warmupPhase" ->
                 command instanceof OnOffType;
-            case "timeServer", "roomType", "logLevel", "powerFreqSuppression", "deviceName" ->
+            case "timeServer", "roomType", "logLevel", "powerFreqSuppression", "deviceName", "building-standard",
+                    "country-code" ->
                 command instanceof StringType;
             case "location" -> command instanceof PointType;
             default -> false;
@@ -518,6 +555,25 @@ public class AirqHandler extends BaseThingHandler {
                                 channelUID.getIdWithoutGroup(), command.toString());
                     }
                     break;
+                case "building-standard":
+                    // deviceconfig.md: the options of PossibleBuildingStandards
+                    String standard = command.toString();
+                    if ("None".equals(standard) || "WELL".equals(standard) || "RESET".equals(standard)) {
+                        newobj.addProperty("BuildingStandard", standard);
+                        changeSettings(newobj);
+                    } else {
+                        logger.warn("Ignoring building standard {}, only None, WELL or RESET are supported", standard);
+                    }
+                    break;
+                case "country-code":
+                    String countryCode = command.toString();
+                    if (COUNTRY_CODES.contains(countryCode)) {
+                        newobj.addProperty("country_code", countryCode);
+                        changeSettings(newobj);
+                    } else {
+                        logger.warn("Ignoring country code {}, it isn't supported by the device", countryCode);
+                    }
+                    break;
                 default:
                     logger.warn(
                             "air-Q - airqHandler - handleCommand(): unknown command {} received (channelUID={}, value={})",
@@ -542,6 +598,8 @@ public class AirqHandler extends BaseThingHandler {
         unknownUnits = Set.of();
         molarMasses = Map.of();
         ppmAndPpb = false;
+        altitude = null;
+        altitudeError = null;
         configurationRequested = false;
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollData, 0, POLLING_PERIOD_DATA_MSEC,
                 TimeUnit.MILLISECONDS);
@@ -635,6 +693,53 @@ public class AirqHandler extends BaseThingHandler {
         JsonObject settings = new JsonObject();
         settings.addProperty(autoUpdate ? "AutoUpdate" : "Averaging", intValue);
         changeSettings(settings);
+    }
+
+    // the value of a numeric command in the given unit, a plain number is taken as that unit
+    private @Nullable BigDecimal numericCommand(String channelId, Command command, Unit<?> unit) {
+        if (command instanceof QuantityType<?> quantity) {
+            QuantityType<?> converted = quantity.toUnit(unit);
+            if (converted == null) {
+                logger.debug("Ignoring incompatible unit for channel {}", channelId);
+                return null;
+            }
+            return converted.toBigDecimal();
+        } else if (command instanceof DecimalType decimal) {
+            return decimal.toBigDecimal();
+        }
+        logger.debug("Ignoring non-numeric command for channel {}", channelId);
+        return null;
+    }
+
+    // deviceconfig.md: Altitude is [altitude in m, estimated error in m], both are written together
+    private void handleAltitudeCommand(String channelId, Command command) {
+        BigDecimal metres = numericCommand(channelId, command, SIUnits.METRE);
+        if (metres == null) {
+            return;
+        }
+        boolean error = "altitude-error".equals(channelId);
+        if (error && metres.signum() < 0) {
+            logger.debug("Ignoring negative altitude error");
+            return;
+        }
+        @Nullable
+        BigDecimal newAltitude = error ? altitude : metres;
+        @Nullable
+        BigDecimal newError = error ? metres : altitudeError;
+        if (newAltitude == null || newError == null) {
+            logger.debug("Ignoring command for channel {}, the current altitude setting has not been read yet",
+                    channelId);
+            return;
+        }
+        JsonArray setting = new JsonArray();
+        setting.add(newAltitude.doubleValue());
+        setting.add(newError.doubleValue());
+        JsonObject settings = new JsonObject();
+        settings.add("Altitude", setting);
+        if (changeSettings(settings)) {
+            altitude = newAltitude;
+            altitudeError = newError;
+        }
     }
 
     // AES decoding based on this tutorial: https://www.javainterviewpoint.com/aes-256-encryption-and-decryption/
@@ -851,6 +956,8 @@ public class AirqHandler extends BaseThingHandler {
             JsonObject decObj = parseObject(getDecryptedContentString(url));
             readUnits(decObj);
             processMappings(decObj, CONFIGURATION, "general");
+            // earlier versions stored the industry flag as "Industry" next to the declared property "industry"
+            getThing().setProperty("Industry", null);
         } catch (AirqException | JsonSyntaxException e) {
             logger.warn("Failed to retrieve configuration: {}", e.getMessage());
         } catch (InterruptedException e) {
@@ -1097,6 +1204,21 @@ public class AirqHandler extends BaseThingHandler {
         return value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber();
     }
 
+    // a number, also when it is sent as a string
+    private static @Nullable BigDecimal decimalOf(JsonElement value) {
+        if (isNumeric(value)) {
+            return value.getAsBigDecimal();
+        }
+        if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+            try {
+                return new BigDecimal(value.getAsString().trim());
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     private void processType(JsonObject dec, String airqName, String channelName, String type) {
         // If a device variant does not have a specific sensor type, the value is not present in the JSON data.
         // Under rare conditions an existing sensor has a null value in the JSON data on a single event.
@@ -1106,6 +1228,10 @@ public class AirqHandler extends BaseThingHandler {
                 updateMappedState(errorChannel(channelName, "maxerr", "_maxerr"), UnDefType.UNDEF);
             } else if ("alarm".equals(type)) {
                 updateAlarms(channelName, null);
+            } else if ("altitude".equals(type)) {
+                altitude = null;
+                altitudeError = null;
+                updateMappedState(nestedChannel(channelName, "altitude-error"), UnDefType.UNDEF);
             }
         } else {
             switch (type) {
@@ -1223,6 +1349,9 @@ public class AirqHandler extends BaseThingHandler {
                                 nestedChannel(channelName, "nightModeWifiNightOff"), "boolean");
                         processType(jsonDaynightdata, "AlarmNightOff",
                                 nestedChannel(channelName, "nightModeAlarmNightOff"), "boolean");
+                        // not documented, 0 on a real device
+                        processValue(jsonDaynightdata, "last_summer_winter_time_switch",
+                                nestedChannel(channelName, "night-mode-last-time-switch"), null, false);
                         // deviceconfig.md: firmware before 1.80 has no Activated key and evaluates the night mode
                         if (jsonDaynightdata.has("Activated")) {
                             processType(jsonDaynightdata, "Activated", nestedChannel(channelName, "nightModeActivated"),
@@ -1301,9 +1430,34 @@ public class AirqHandler extends BaseThingHandler {
                         logger.debug("Ignoring malformed value for channel {}", channelName);
                     }
                     break;
+                case "altitude":
+                    // deviceconfig.md: [altitude in m, estimated error in m], [-10000.0, 100.0] while it is not set;
+                    // a real device sends the altitude as a string
+                    JsonElement altitudeSetting = dec.get(airqName);
+                    @Nullable
+                    BigDecimal height = null;
+                    @Nullable
+                    BigDecimal heightError = null;
+                    if (altitudeSetting.isJsonArray() && altitudeSetting.getAsJsonArray().size() == 2) {
+                        height = decimalOf(altitudeSetting.getAsJsonArray().get(0));
+                        heightError = decimalOf(altitudeSetting.getAsJsonArray().get(1));
+                    }
+                    if (height == null || heightError == null) {
+                        logger.debug("Ignoring malformed value for channel {}", channelName);
+                    }
+                    altitude = height;
+                    altitudeError = heightError;
+                    updateMappedState(channelName,
+                            height == null || height.compareTo(ALTITUDE_NOT_SET) <= 0 ? UnDefType.UNDEF
+                                    : new QuantityType<>(height, SIUnits.METRE));
+                    updateMappedState(nestedChannel(channelName, "altitude-error"),
+                            heightError == null ? UnDefType.UNDEF : new QuantityType<>(heightError, SIUnits.METRE));
+                    break;
                 case "property":
-                    String propstr = dec.get(airqName).toString();
-                    getThing().setProperty(rawChannelId(channelName), propstr);
+                    // strings without their JSON quotes, objects such as SensorInfo as JSON
+                    JsonElement property = dec.get(airqName);
+                    getThing().setProperty(rawChannelId(channelName),
+                            property.isJsonPrimitive() ? property.getAsString() : property.toString());
                     break;
                 case "proparr":
                     JsonElement proparr = gson.fromJson(dec.get(airqName).toString(), JsonElement.class);

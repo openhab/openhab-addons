@@ -273,6 +273,7 @@
 			<channel id="night-mode-wifi-night-off" typeId="nightmode-wifi-night-off"/>
 			<channel id="night-mode-activated" typeId="nightmode-activated"/>
 			<channel id="night-mode-alarm-night-off" typeId="nightmode-alarm-night-off"/>
+			<channel id="night-mode-last-time-switch" typeId="nightmode-last-time-switch"/>
 			<channel id="daytime" typeId="daytime"/>
 			<channel id="device-name" typeId="device-name"/>
 			<channel id="room-type" typeId="room-type"/>
@@ -298,6 +299,14 @@
 			<channel id="initial-cal-finished" typeId="initial-cal-finished"/>
 			<channel id="averaging" typeId="averaging"/>
 			<channel id="warmup-phase" typeId="warmup-phase"/>
+			<channel id="cloud-connection" typeId="cloud-connection"/>
+			<channel id="boots" typeId="boots"/>
+			<channel id="altitude" typeId="altitude"/>
+			<channel id="altitude-error" typeId="altitude-error"/>
+			<channel id="building-standard" typeId="building-standard"/>
+			<channel id="country-code" typeId="country-code"/>
+			<channel id="room-height" typeId="room-height"/>
+			<channel id="room-area" typeId="room-area"/>
 		</channels>
 	</channel-group-type>
 	<channel-type id="status" advanced="false">
@@ -1143,6 +1152,114 @@
 	<channel-type id="warmup-phase" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Send data as in Warmup Phase</label>
+	</channel-type>
+	<channel-type id="nightmode-last-time-switch" advanced="true">
+		<item-type>Number</item-type>
+		<label>Last Summer/Winter Time Switch</label>
+		<description>Not documented by the manufacturer.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="cloud-connection" advanced="true">
+		<item-type>String</item-type>
+		<label>Cloud Connection</label>
+		<description>State of the connection to the air-Q Cloud, e.g. DISCONNECTED.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="boots" advanced="true">
+		<item-type>String</item-type>
+		<label>Boot Counters</label>
+		<description>Not documented by the manufacturer.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="altitude" advanced="true">
+		<item-type unitHint="m">Number:Length</item-type>
+		<label>Altitude</label>
+		<description>Height above sea level, needed for the relative air pressure. UNDEF while not set. The device has to be
+			restarted before a new altitude takes effect.</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="altitude-error" advanced="true">
+		<item-type unitHint="m">Number:Length</item-type>
+		<label>Altitude Error</label>
+		<description>Estimated error of the altitude.</description>
+		<state min="0" pattern="± %.0f %unit%"/>
+	</channel-type>
+	<channel-type id="building-standard" advanced="true">
+		<item-type>String</item-type>
+		<label>Building Standard</label>
+		<description>Evaluates the VOCs according to the requirements of a building standard.</description>
+		<state>
+			<options>
+				<option value="None">None</option>
+				<option value="WELL">WELL</option>
+				<option value="RESET">RESET</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="country-code" advanced="true">
+		<item-type>String</item-type>
+		<label>Country</label>
+		<description>Time zone for the switch between summer and winter time in night mode, and the cloud endpoint.</description>
+		<state>
+			<options>
+				<option value="AT">Austria</option>
+				<option value="AU">Australia</option>
+				<option value="BE">Belgium</option>
+				<option value="BG">Bulgaria</option>
+				<option value="BR">Brazil</option>
+				<option value="CA">Canada</option>
+				<option value="CH">Switzerland</option>
+				<option value="CN">China</option>
+				<option value="CY">Cyprus</option>
+				<option value="CZ">Czechia</option>
+				<option value="DE">Germany</option>
+				<option value="DK">Denmark</option>
+				<option value="EE">Estonia</option>
+				<option value="ES">Spain</option>
+				<option value="FI">Finland</option>
+				<option value="FR">France</option>
+				<option value="GB">United Kingdom</option>
+				<option value="GR">Greece</option>
+				<option value="HK">Hong Kong</option>
+				<option value="HR">Croatia</option>
+				<option value="HU">Hungary</option>
+				<option value="IE">Ireland</option>
+				<option value="IN">India</option>
+				<option value="IS">Iceland</option>
+				<option value="IT">Italy</option>
+				<option value="JP">Japan</option>
+				<option value="KR">South Korea</option>
+				<option value="LI">Liechtenstein</option>
+				<option value="LT">Lithuania</option>
+				<option value="LU">Luxembourg</option>
+				<option value="LV">Latvia</option>
+				<option value="MT">Malta</option>
+				<option value="MX">Mexico</option>
+				<option value="NL">Netherlands</option>
+				<option value="NO">Norway</option>
+				<option value="NZ">New Zealand</option>
+				<option value="PL">Poland</option>
+				<option value="PT">Portugal</option>
+				<option value="RO">Romania</option>
+				<option value="SE">Sweden</option>
+				<option value="SI">Slovenia</option>
+				<option value="SK">Slovakia</option>
+				<option value="TW">Taiwan</option>
+				<option value="US">United States</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="room-height" advanced="true">
+		<item-type unitHint="m">Number:Length</item-type>
+		<label>Room Height</label>
+		<description>Used by the advanced data processing, 0 if not set.</description>
+		<state min="0" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="room-area" advanced="true">
+		<item-type unitHint="m²">Number:Area</item-type>
+		<label>Room Area</label>
+		<description>Used by the advanced data processing, 0 if not set.</description>
+		<state min="0" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="radon-maxerr" advanced="true">
 		<item-type unitHint="Bq/m³">Number:RadiationSpecificActivity</item-type>

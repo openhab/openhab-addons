@@ -853,9 +853,26 @@ class AirqHandlerTest {
                 new DecimalType(30));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#warmup-phase"), OnOffType.OFF);
         assertThat(thing.getProperties(),
-                allOf(hasEntry("hardwareVersion", "\"hardware\""), hasEntry("sensorList", "co2, sound"),
-                        hasEntry("Industry", "true"), hasEntry("id", "\"device-id\""),
-                        hasEntry("sensorInfo", "\"info\"")));
+                allOf(hasEntry("hardwareVersion", "hardware"), hasEntry("sensorList", "co2, sound"),
+                        hasEntry("industry", "true"), hasEntry("id", "device-id"), hasEntry("sensorInfo", "info")));
+    }
+
+    @Test
+    void propertiesOmitJsonQuotesAndReplaceTheOldIndustryProperty() throws Exception {
+        thing.setProperty("Industry", "false");
+
+        // excerpt of the /config answer of an air-Q Pro
+        readConfiguration(thing, """
+                {"air-Q-Hardware-Version": "D", "air-Q-Software-Version": "1.26.0_D_2.2.2", "Industry": false,
+                 "id": "91e5157abe8a02b2f3cd428558decacb",
+                 "SensorInfo": {"co2": {"Unit": "ppm", "Value Name": "co2"}}}
+                """);
+
+        assertThat(thing.getProperties(),
+                allOf(hasEntry("hardwareVersion", "D"), hasEntry("softwareVersion", "1.26.0_D_2.2.2"),
+                        hasEntry("industry", "false"), hasEntry("id", "91e5157abe8a02b2f3cd428558decacb"),
+                        hasEntry("sensorInfo", "{\"co2\":{\"Unit\":\"ppm\",\"Value Name\":\"co2\"}}"),
+                        not(hasKey("Industry"))));
     }
 
     @Test
@@ -1222,7 +1239,12 @@ class AirqHandlerTest {
                 Arguments.of("power-freq-suppression", new StringType("50Hz"), json("{\"Rejection\":\"50Hz\"}")),
                 Arguments.of("power-freq-suppression", new StringType("60Hz"), json("{\"Rejection\":\"60Hz\"}")),
                 Arguments.of("power-freq-suppression", new StringType("50Hz+60Hz"),
-                        json("{\"Rejection\":\"50Hz+60Hz\"}")));
+                        json("{\"Rejection\":\"50Hz+60Hz\"}")),
+                Arguments.of("building-standard", new StringType("None"), json("{\"BuildingStandard\":\"None\"}")),
+                Arguments.of("building-standard", new StringType("WELL"), json("{\"BuildingStandard\":\"WELL\"}")),
+                Arguments.of("building-standard", new StringType("RESET"), json("{\"BuildingStandard\":\"RESET\"}")),
+                Arguments.of("country-code", new StringType("DE"), json("{\"country_code\":\"DE\"}")),
+                Arguments.of("country-code", new StringType("US"), json("{\"country_code\":\"US\"}")));
         return Stream.concat(Stream.concat(switches, strings),
                 Stream.of(Arguments.of("location", new PointType(new DecimalType(50), new DecimalType(10)),
                         json("{\"geopos\":{\"lat\":50,\"long\":10}}"))));
@@ -1466,7 +1488,13 @@ class AirqHandlerTest {
                 "add-channel advanced-measurements#cnt2-5-sps30 airq:cnt2-5-sps30",
                 "add-channel advanced-measurements#cnt4-sps30 airq:cnt4-sps30",
                 "add-channel advanced-measurements#cnt10-sps30 airq:cnt10-sps30",
-                "add-channel advanced-measurements#avg-fine-dust-size-sps30 airq:typps-sps30"));
+                "add-channel advanced-measurements#avg-fine-dust-size-sps30 airq:typps-sps30",
+                "add-channel general#night-mode-last-time-switch airq:nightmode-last-time-switch",
+                "add-channel general#cloud-connection airq:cloud-connection", "add-channel general#boots airq:boots",
+                "add-channel general#altitude airq:altitude", "add-channel general#altitude-error airq:altitude-error",
+                "add-channel general#building-standard airq:building-standard",
+                "add-channel general#country-code airq:country-code",
+                "add-channel general#room-height airq:room-height", "add-channel general#room-area airq:room-area"));
         assertThat(elements(upgrades, "//instruction-set[@targetVersion='7']"), empty());
 
         List<Element> additions = elements(upgrades, "//instruction-set[@targetVersion='5']/add-channel");
@@ -1499,7 +1527,7 @@ class AirqHandlerTest {
                     "//channel-group-type[@id='" + id[0] + "']/channels/channel[@id='" + id[1] + "']");
             assertThat(channel.getValue(), is("airq:" + definition.getAttribute("typeId")));
         }
-        assertThat(channels, hasSize(182));
+        assertThat(channels, hasSize(191));
     }
 
     @SuppressWarnings("null")
@@ -2049,6 +2077,147 @@ class AirqHandlerTest {
             assertThat(sanitized.get(key).getAsString(), is("<omitted>"));
         }
         assertThat(data.get("pass").getAsString(), is("secret"));
+    }
+
+    @Test
+    void deviceDetailsOfARealDeviceArePublished() throws Exception {
+        // excerpt of the /config answer of an air-Q Pro
+        readConfiguration("""
+                {"type": "airQ Select", "SN": "91e5157abe", "country_code": "DE", "cloud_connection": "DISCONNECTED",
+                 "boots": "13/41/0/239/78", "Altitude": ["392", 10], "BuildingStandard": "None",
+                 "RoomHeight": 0.0, "RoomArea": 0.0,
+                 "NightMode": {"Activated": false, "WifiNightOff": false, "StartDay": "07:00",
+                  "last_summer_winter_time_switch": 0, "StartNight": "21:00", "AlarmNightOff": false,
+                  "FanNightOff": false, "BrightnessNight": 6, "BrightnessDay": 6}}
+                """);
+
+        assertThat(thing.getProperties(),
+                allOf(hasEntry("deviceType", "airQ Select"), hasEntry("serialNumber", "91e5157abe")));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#country-code"),
+                new StringType("DE"));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#cloud-connection"),
+                new StringType("DISCONNECTED"));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#boots"),
+                new StringType("13/41/0/239/78"));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude"),
+                new QuantityType<>(392, SIUnits.METRE));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude-error"),
+                new QuantityType<>(10, SIUnits.METRE));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#building-standard"),
+                new StringType("None"));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#room-height"),
+                new QuantityType<>(0.0, SIUnits.METRE));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#room-area"),
+                new QuantityType<>(0.0, SIUnits.SQUARE_METRE));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#night-mode-last-time-switch"),
+                new DecimalType(0));
+    }
+
+    @Test
+    void altitudeIsUndefinedWhileNotSet() throws Exception {
+        // deviceconfig.md: the default [-10000.0, 100.0]
+        readConfiguration("{\"Altitude\": [-10000.0, 100.0]}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude-error"),
+                new QuantityType<>(100.0, SIUnits.METRE));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{\"Altitude\": 127}", "{\"Altitude\": [127.0]}", "{\"Altitude\": [\"high\", \"low\"]}",
+            "{\"Altitude\": {\"altitude\": 127}}", "{}" })
+    void malformedOrMissingAltitudesAreUndefined(String configuration) throws Exception {
+        readConfiguration(configuration);
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude"), UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#altitude-error"),
+                UnDefType.UNDEF);
+        // the configuration is still read after the altitude
+        requireNonNull(verify(callback)).stateUpdated(eq(new ChannelUID(thingUID, "general#room-height")), any());
+    }
+
+    @Test
+    void altitudeCommandsKeepTheOtherHalfOfTheSetting() throws Exception {
+        // deviceconfig.md: [altitude in m, estimated error in m]
+        assertThat(sendAltitude("altitude", new QuantityType<>(400, SIUnits.METRE)),
+                is(json("{\"Altitude\":[400.0,10.0]}")));
+        assertThat(sendAltitude("altitude", new DecimalType(127.5)), is(json("{\"Altitude\":[127.5,10.0]}")));
+        assertThat(sendAltitude("altitude", QuantityType.valueOf("1000 ft")), is(json("{\"Altitude\":[304.8,10.0]}")));
+        assertThat(sendAltitude("altitude-error", new QuantityType<>(2, SIUnits.METRE)),
+                is(json("{\"Altitude\":[392.0,2.0]}")));
+    }
+
+    @Test
+    void invalidAltitudeCommandsDoNotSendRequests() throws Exception {
+        assertThat(sendAltitude("altitude-error", new QuantityType<>(-1, SIUnits.METRE)), nullValue());
+        assertThat(sendAltitude("altitude", new QuantityType<>(5, Units.SECOND)), nullValue());
+        assertThat(sendAltitude("altitude", new StringType("400")), nullValue());
+        // the other half of the setting is not known before the configuration was read
+        assertThat(sendSettings("altitude", new QuantityType<>(400, SIUnits.METRE)), nullValue());
+    }
+
+    @Test
+    void unknownBuildingStandardsAreNotSent() throws Exception {
+        assertThat(sendSettings("building-standard", new StringType("LEED")), nullValue());
+        assertThat(sendSettings("building-standard", new StringType("well")), nullValue());
+    }
+
+    @Test
+    void unsupportedCountryCodesAreNotSent() throws Exception {
+        // deviceconfig.md: only the listed ISO 3166 codes are supported
+        assertThat(sendSettings("country-code", new StringType("ZA")), nullValue());
+        assertThat(sendSettings("country-code", new StringType("de")), nullValue());
+        assertThat(sendSettings("country-code", new StringType("None")), nullValue());
+    }
+
+    @Test
+    void roomSizeCommandsUseMetres() throws Exception {
+        // example of deviceconfig.md
+        assertThat(sendSettings("room-height", new QuantityType<>(2.4, SIUnits.METRE)),
+                is(json("{\"RoomHeight\":2.4}")));
+        assertThat(sendSettings("room-area", new QuantityType<>(20, SIUnits.SQUARE_METRE)),
+                is(json("{\"RoomArea\":20.0}")));
+        assertThat(sendSettings("room-height", QuantityType.valueOf("250 cm")), is(json("{\"RoomHeight\":2.5}")));
+        assertThat(sendSettings("room-area", new DecimalType(12.5)), is(json("{\"RoomArea\":12.5}")));
+        assertThat(sendSettings("room-height", new DecimalType(0)), is(json("{\"RoomHeight\":0.0}")));
+    }
+
+    @Test
+    void invalidRoomSizeCommandsDoNotSendRequests() throws Exception {
+        assertThat(sendSettings("room-height", new QuantityType<>(-1, SIUnits.METRE)), nullValue());
+        assertThat(sendSettings("room-area", new QuantityType<>(20, SIUnits.METRE)), nullValue());
+        assertThat(sendSettings("room-height", new StringType("2.4")), nullValue());
+    }
+
+    // reads the altitude of a real device first, then sends the command
+    private @Nullable JsonObject sendAltitude(String channel, Command command) throws Exception {
+        List<String> requests = new ArrayList<>();
+        String password = "secret";
+        JsonObject configuration = new JsonObject();
+        configuration.addProperty("content",
+                handler.encrypt("{\"Altitude\": [\"392\", 10]}".getBytes(StandardCharsets.UTF_8), password));
+        JsonObject response = new JsonObject();
+        response.addProperty("content", handler.encrypt("{}".getBytes(StandardCharsets.UTF_8), password));
+        AirqHandler commandHandler = new AirqHandler(thing, requireNonNull(mock(HttpClient.class))) {
+            @Override
+            protected Result getData(String address, String method, @Nullable String body) {
+                if ("GET".equals(method)) {
+                    return new Result(configuration.toString(), 200);
+                }
+                requests.add(requireNonNull(body));
+                return new Result(response.toString(), 200);
+            }
+        };
+        commandHandler.setCallback(callback);
+        commandHandler.config.password = password;
+        commandHandler.getConfigData();
+        commandHandler.handleCommand(new ChannelUID(thingUID, "general#" + channel), command);
+        if (requests.isEmpty()) {
+            return null;
+        }
+        assertThat(requests, hasSize(1));
+        return json(commandHandler.decrypt(
+                requests.getFirst().substring("request=".length()).getBytes(StandardCharsets.UTF_8), password));
     }
 
     private static JsonObject json(String text) {

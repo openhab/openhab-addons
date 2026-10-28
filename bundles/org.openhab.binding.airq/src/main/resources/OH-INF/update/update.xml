@@ -750,6 +750,33 @@
 			<add-channel id="avg-fine-dust-size-sps30" groupIds="advanced-measurements">
 				<type>airq:typps-sps30</type>
 			</add-channel>
+			<add-channel id="night-mode-last-time-switch" groupIds="general">
+				<type>airq:nightmode-last-time-switch</type>
+			</add-channel>
+			<add-channel id="cloud-connection" groupIds="general">
+				<type>airq:cloud-connection</type>
+			</add-channel>
+			<add-channel id="boots" groupIds="general">
+				<type>airq:boots</type>
+			</add-channel>
+			<add-channel id="altitude" groupIds="general">
+				<type>airq:altitude</type>
+			</add-channel>
+			<add-channel id="altitude-error" groupIds="general">
+				<type>airq:altitude-error</type>
+			</add-channel>
+			<add-channel id="building-standard" groupIds="general">
+				<type>airq:building-standard</type>
+			</add-channel>
+			<add-channel id="country-code" groupIds="general">
+				<type>airq:country-code</type>
+			</add-channel>
+			<add-channel id="room-height" groupIds="general">
+				<type>airq:room-height</type>
+			</add-channel>
+			<add-channel id="room-area" groupIds="general">
+				<type>airq:room-area</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

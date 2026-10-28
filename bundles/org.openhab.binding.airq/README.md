@@ -39,6 +39,8 @@ The Thing provides the following properties:
 | sensorList        | Available sensors               |
 | sensorInfo        | Information about the sensors   |
 | industry          | Industry version                |
+| deviceType        | Product type, e.g. airQ Select  |
+| serialNumber      | Serial number                   |
 
 ## Channels
 
@@ -160,6 +162,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | night-mode-wifi-night-off  | Switch                             | rw    | Switch off WLAN at night                                                                 |
 | night-mode-activated       | Switch                             | rw    | Night mode on or off; the other night mode settings are kept while it is off             |
 | night-mode-alarm-night-off | Switch                             | rw    | Switch off acoustic signals at night; fire and gas alarms are still given                |
+| night-mode-last-time-switch| Number                             |       | Undocumented, presumably the last summer/winter time switch, 0 if none                   |
 | daytime                    | Switch                             |       | ON in day operation, OFF in night operation                                              |
 | device-name                | String                             | rw    | Device Name                                                                              |
 | room-type                  | String                             | rw    | Type of room                                                                             |
@@ -185,6 +188,14 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | initial-cal-finished       | Switch                             |       | Initial calibration has finished                                                         |
 | averaging                  | Number                             | rw    | Number of measurements averaged, 1 = off (device default 30)                             |
 | warmup-phase               | Switch                             | rw    | Warm-up phase of the sensors, OFF aborts it                                              |
+| cloud-connection           | String                             |       | State of the connection to the air-Q cloud, e.g. DISCONNECTED                            |
+| boots                      | String                             |       | Undocumented boot counters                                                               |
+| altitude                   | Number:Length                      | rw    | Height above sea level for the relative pressure, active after a device restart          |
+| altitude-error             | Number:Length                      | rw    | Estimated error of the altitude                                                          |
+| building-standard          | String                             | rw    | Building standard for the VOC evaluation: None, WELL or RESET                            |
+| country-code               | String                             | rw    | Country (ISO 3166) for the summer/winter time switch and the cloud endpoint              |
+| room-height                | Number:Length                      | rw    | Room height, 0 if not set                                                                |
+| room-area                  | Number:Area                        | rw    | Room area, 0 if not set                                                                  |
 
 Measurements are reported in the units configured on the device (`units`, or the deprecated `ppm&ppb`) and converted to the channel's unit.
 Gas concentrations are converted between ppm, ppb or % and mg/m³ or µg/m³ with the sensor's molar mass and the measured temperature and pressure.
@@ -345,6 +356,7 @@ Switch airQ_nightMode_fanNightOff   "Switch off fan at night"                   
 Switch airQ_nightMode_wifiNightOff  "Switch off WLAN at night"                       {channel="airq:airq:1:general#night-mode-wifi-night-off"}
 Switch airQ_nightMode_activated     "Night mode"                                     {channel="airq:airq:1:general#night-mode-activated"}
 Switch airQ_nightMode_alarmNightOff "Switch off acoustic signals at night"           {channel="airq:airq:1:general#night-mode-alarm-night-off"}
+Number airQ_nightMode_lastTimeSwitch "Last summer/winter time switch"              {channel="airq:airq:1:general#night-mode-last-time-switch"}
 Switch airQ_daytime                 "Day operation"                                  {channel="airq:airq:1:general#daytime"}
 String airQ_deviceName              "Device Name"                                    {channel="airq:airq:1:general#device-name"}
 String airQ_roomType                "Type of room"                                   {channel="airq:airq:1:general#room-type"}
@@ -370,4 +382,12 @@ String airQ_userCalib               "Last sensor calibration"                   
 Switch airQ_initialCalFinished      "Initial calibration has finished"               {channel="airq:airq:1:general#initial-cal-finished"}
 Number airQ_averaging               "Averaging window"                               {channel="airq:airq:1:general#averaging"}
 Switch airQ_warmupPhase             "Output Data as Warmup Phase"                    {channel="airq:airq:1:general#warmup-phase"}
+String airQ_cloudConnection        "Connection to the air-Q cloud"                 {channel="airq:airq:1:general#cloud-connection"}
+String airQ_boots                  "Boot counters"                                 {channel="airq:airq:1:general#boots"}
+Number:Length airQ_altitude        "Altitude"                                      {unit="m",channel="airq:airq:1:general#altitude"}
+Number:Length airQ_altitudeError   "Altitude error"                                {unit="m",channel="airq:airq:1:general#altitude-error"}
+String airQ_buildingStandard       "Building standard"                             {channel="airq:airq:1:general#building-standard"}
+String airQ_countryCode          "Country"                                       {channel="airq:airq:1:general#country-code"}
+Number:Length airQ_roomHeight      "Room height"                                   {unit="m",channel="airq:airq:1:general#room-height"}
+Number:Area airQ_roomArea          "Room area"                                     {unit="m²",channel="airq:airq:1:general#room-area"}
 ```
