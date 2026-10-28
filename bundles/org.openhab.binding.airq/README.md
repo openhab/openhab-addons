@@ -24,10 +24,11 @@ If auto-discovery does not work (e.g. due to network segmentation), you can stil
 
 The air-Q Thing must be configured with:
 
-| Parameter   | Description                          | Required                         |
-|-------------|--------------------------------------|----------------------------------|
-| ipAddress   | Network address, e.g. 192.168.0.68   | Yes (auto-filled by discovery)   |
-| password    | Password of the air-Q device         | Yes                              |
+| Parameter                 | Description                                                               | Required                       |
+|---------------------------|---------------------------------------------------------------------------|--------------------------------|
+| ipAddress                 | Network address, e.g. 192.168.0.68                                        | Yes (auto-filled by discovery) |
+| password                  | Password of the air-Q device                                              | Yes                            |
+| removeUnsupportedChannels | Remove the channels of measurements and settings the device does not have | No (default `true`)            |
 
 The Thing provides the following properties:
 
@@ -45,6 +46,11 @@ The Thing provides the following properties:
 ## Channels
 
 The available sensor data depends on the air-Q model and installed sensor package.
+The binding reads the installed sensors and the settings from the device and removes the channels it does not have.
+They are added again when the device reports them, for example after a sensor was added; Item links are kept.
+Event channels such as `events#door-event` are added once the device sends the event.
+If the device does not report its sensors, all channels are kept.
+Set `removeUnsupportedChannels` to `false` to keep all channels.
 This includes also the Maximum Error per sensor value.
 Deprecated flat Maximum Error channels use the `_maxerr` suffix; grouped channels use `-maxerr`.
 Channels are grouped into Status (read-only device state), Measurements, Events, Maximum Errors, and Settings (device configuration).
@@ -70,7 +76,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | daytime                    | Switch                             |       | ON in day operation, OFF in night operation                                              |
 | initial-cal-finished       | Switch                             |       | Initial calibration has finished                                                         |
 | user-calib                 | String                             |       | User calibrations, "sensor: offset=value [dd.MM.yyyy HH:mm:ss]" for each sensor          |
-| wifi-rssi                  | Number:Power                       |       | Wi-Fi signal strength (RSSI) in dBm, UNDEF while not connected                           |
+| wifi-rssi                  | Number:Power                       |       | Wi-Fi signal strength (RSSI) in dBm from the WLAN config, UNDEF while not connected      |
 | wlan-config-ssid           | String                             |       | Connected WLAN SSID                                                                      |
 | wlan-config-ip-address     | String                             |       | Assigned IP address                                                                      |
 | wlan-config-net-mask       | String                             |       | Network mask                                                                             |
@@ -91,9 +97,9 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | pressure                   | Number:Pressure                    |       | Barometric Pressure                                                                      |
 | pressure-rel               | Number:Pressure                    |       | Relative barometric pressure in hPa (advanced)                                           |
 | health-index               | Number:Dimensionless               |       | Health Index in percent, -20 % during a gas alarm and -80 % during a fire alarm          |
-| health                     | Number:Dimensionless               |       | Health Index (0 to 1000, -200 for gas alarm, -800 for fire alarm)                        |
+| health                     | Number                             |       | Health Index (0 to 1000, -200 for gas alarm, -800 for fire alarm)                        |
 | performance-index          | Number:Dimensionless               |       | Performance Index in percent                                                             |
-| performance                | Number:Dimensionless               |       | Performance Index (0 to 1000)                                                            |
+| performance                | Number                             |       | Performance Index (0 to 1000)                                                            |
 | virus-free                 | Number:Dimensionless               | r     | Virus-Free index in percent; the lower the index, the higher the potential virus risk.   |
 | mold-free                  | Number:Dimensionless               | r     | Mold-Free index in percent; the lower the index, the higher the potential mold risk.     |
 | co2                        | Number:Dimensionless               |       | Carbon dioxide (CO₂) concentration                                                       |
@@ -320,8 +326,8 @@ Number:Density        airQ_humidityAbsolute         "Absolute Humidity"         
 Number:Temperature    airQ_dewpt                    "Dew Point"                                            {channel="airq:airq:1:measurements#dewpt"}
 Number                airQ_dHdt                     "Change of Humidity"                                   {channel="airq:airq:1:measurements#d-hdt"}
 Number:Pressure       airQ_pressure                 "Pressure"                                             {channel="airq:airq:1:measurements#pressure"}
-Number:Dimensionless  airQ_health                   "Health Index"                                         {channel="airq:airq:1:measurements#health"}
-Number:Dimensionless  airQ_performance              "Performance Index"                                    {channel="airq:airq:1:measurements#performance"}
+Number                airQ_health                   "Health Index"                                         {channel="airq:airq:1:measurements#health"}
+Number                airQ_performance              "Performance Index"                                    {channel="airq:airq:1:measurements#performance"}
 Number:Dimensionless  airQ_Virus_free               "Virus-Free index"                                     {unit="%",channel="airq:airq:1:measurements#virus-free"}
 Number:Dimensionless  airQ_Mold_free                "Mold-Free index"                                      {unit="%",channel="airq:airq:1:measurements#mold-free"}
 Number:Dimensionless  airQ_co2                      "CO2 Concentration"                                    {channel="airq:airq:1:measurements#co2"}

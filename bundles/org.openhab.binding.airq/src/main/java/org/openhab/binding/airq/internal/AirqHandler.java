@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -68,12 +69,16 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -208,7 +213,6 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("person", "person", "value", null, "events"),
             new ChannelMapping("window_event", "window-event", "value", null, "events"),
             new ChannelMapping("window_open", "window-open", "value", null, "events"),
-            new ChannelMapping("wifi", "wifi-rssi", "rssi", Units.DECIBEL_MILLIWATTS, "status"),
             new ChannelMapping("health", "healthIndex", "index"), new ChannelMapping("health", "health", "number"),
             new ChannelMapping("health", "", "alarm", null, "events"),
             new ChannelMapping("measuretime", "measureTime", "numberMilliseconds", null, "status"),
@@ -313,6 +317,24 @@ public class AirqHandler extends BaseThingHandler {
     private static final Set<String> MEASUREMENT_KEYS = MEASUREMENTS.stream()
             .filter(mapping -> !"status".equals(mapping.type())).map(ChannelMapping::dataKey)
             .collect(Collectors.toUnmodifiableSet());
+    private static final List<String> CHANNEL_GROUPS = List.of("status", "measurements", "events", "maxerr",
+            "settings");
+    // data keys that no sensor of SensorInfo lists; a real air-Q sends uptime and measuretime although they are
+    // listed in deactivated_sensors
+    private static final Set<String> ALWAYS_SENT_KEYS = Set.of("Status", "timestamp", "health", "performance", "uptime",
+            "measuretime");
+    // only in the sample payload of datenlesen.md, their channels are added once the device sends them
+    private static final Set<String> EVENT_KEYS = Set.of("door_event", "person", "window_event", "window_open");
+    // datenlesen.md: the virtual sensor pm_cnts adds the particle counts and the mean particle sizes
+    private static final Set<String> PARTICLE_COUNT_KEYS = Set.of("cnt0_3", "cnt0_5", "cnt1", "cnt2_5", "cnt5", "cnt10",
+            "TypPS", "TypPS_SPS30");
+    // virtual sensors without a SensorInfo entry, they are sent unless deactivated
+    private static final Set<String> VIRTUAL_SENSOR_KEYS = Set.of("virus", "mold");
+    // values calculated from the readings of another sensor
+    private static final Map<String, String> DERIVED_KEYS = Map.of("dCO2dt", "co2", "dHdt", "humidity");
+    // grouped channel ID -> key of the measurement or of the configuration that the channel shows
+    private static final Map<String, String> MEASUREMENT_CHANNEL_KEYS = measurementChannelKeys();
+    private static final Map<String, String> CONFIGURATION_CHANNEL_KEYS = configurationChannelKeys();
     private final Logger logger = LoggerFactory.getLogger(AirqHandler.class);
     private final Gson gson = new Gson();
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -331,6 +353,22 @@ public class AirqHandler extends BaseThingHandler {
     // the Altitude setting is written as a pair, a command for one half keeps the other one
     private volatile @Nullable BigDecimal altitude;
     private volatile @Nullable BigDecimal altitudeError;
+    // what the device reported in its last configuration, null until it has been read
+    private volatile @Nullable DeviceCapabilities capabilities;
+    private final Set<String> sentEventKeys = ConcurrentHashMap.newKeySet();
+    private volatile boolean measurementsReceived;
+
+    /**
+     * The measurements and settings of a device, from GET /config.
+     *
+     * @param dataKeys the measurement keys of the installed sensors, null if the device doesn't report them
+     * @param deactivatedSensors the virtual sensors that are switched off
+     * @param configurationKeys the keys of the configuration, nested keys as "parent.key"
+     */
+    private record DeviceCapabilities(@Nullable Set<String> dataKeys, Set<String> deactivatedSensors,
+            Set<String> configurationKeys) {
+    }
+
     private volatile boolean configurationRequested;
 
     final class ResultPair {
@@ -604,6 +642,9 @@ public class AirqHandler extends BaseThingHandler {
         ppmAndPpb = false;
         altitude = null;
         altitudeError = null;
+        capabilities = null;
+        sentEventKeys.clear();
+        measurementsReceived = false;
         configurationRequested = false;
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollData, 0, POLLING_PERIOD_DATA_MSEC,
                 TimeUnit.MILLISECONDS);
@@ -930,6 +971,15 @@ public class AirqHandler extends BaseThingHandler {
                 processMappings(decObj, MEASUREMENTS);
 
                 updateStatus(ThingStatus.ONLINE);
+                boolean newEvents = false;
+                for (String key : EVENT_KEYS) {
+                    newEvents |= decObj.has(key) && sentEventKeys.add(key);
+                }
+                // the channels are adjusted after the first measurement, so that its events are known
+                if (!measurementsReceived || newEvents) {
+                    measurementsReceived = true;
+                    updateChannels();
+                }
             } catch (JsonSyntaxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Syntax error while parsing response from device");
@@ -962,6 +1012,8 @@ public class AirqHandler extends BaseThingHandler {
             processMappings(decObj, CONFIGURATION);
             // earlier versions stored the industry flag as "Industry" next to the declared property "industry"
             getThing().setProperty("Industry", null);
+            capabilities = capabilitiesOf(decObj);
+            updateChannels();
         } catch (AirqException | JsonSyntaxException e) {
             logger.warn("Failed to retrieve configuration: {}", e.getMessage());
         } catch (InterruptedException e) {
@@ -973,12 +1025,184 @@ public class AirqHandler extends BaseThingHandler {
         }
     }
 
+    private static Map<String, String> measurementChannelKeys() {
+        Map<String, String> keys = new HashMap<>();
+        for (ChannelMapping mapping : MEASUREMENTS) {
+            if (mapping.channelId().isEmpty()) {
+                // the alarm states of the health index, which every device sends
+                continue;
+            }
+            String channel = mapping.groupId() + "#" + mapping.channelId();
+            keys.put(groupedChannelId(channel), mapping.dataKey());
+            if ("pair".equals(mapping.type())) {
+                keys.put(groupedChannelId(errorChannel(channel, "maxerr", "_maxerr")), mapping.dataKey());
+            } else if ("measurement".equals(mapping.type())) {
+                keys.put(groupedChannelId(errorChannel(channel, "maxerr", "-maxerr")), mapping.dataKey());
+            }
+        }
+        return Map.copyOf(keys);
+    }
+
+    private static Map<String, String> configurationChannelKeys() {
+        Map<String, String> keys = new HashMap<>();
+        for (ChannelMapping mapping : CONFIGURATION) {
+            if (!mapping.channelId().isEmpty() && !"property".equals(mapping.type())
+                    && !"proparr".equals(mapping.type())) {
+                keys.put(groupedChannelId(mapping.groupId() + "#" + mapping.channelId()), mapping.dataKey());
+            }
+        }
+        // the channels of the objects NightMode, WLAN config and Altitude; firmware without NightMode.Activated
+        // evaluates the night mode
+        for (String[] nested : new String[][] { { "settings#nightModeActivated", "NightMode" },
+                { "settings#nightModeStartDay", "NightMode.StartDay" },
+                { "settings#nightModeStartNight", "NightMode.StartNight" },
+                { "settings#nightModeBrightnessDay", "NightMode.BrightnessDay" },
+                { "settings#nightModeBrightnessNight", "NightMode.BrightnessNight" },
+                { "settings#nightModeFanNightOff", "NightMode.FanNightOff" },
+                { "settings#nightModeWifiNightOff", "NightMode.WifiNightOff" },
+                { "settings#nightModeAlarmNightOff", "NightMode.AlarmNightOff" },
+                { "settings#night-mode-last-time-switch", "NightMode.last_summer_winter_time_switch" },
+                { "status#wlanConfigGateway", "WLAN config.Gateway" }, { "status#wlanConfigMac", "WLAN config.MAC" },
+                { "status#wlanConfigSsid", "WLAN config.SSID" },
+                { "status#wlanConfigIPAddress", "WLAN config.IP address" },
+                { "status#wlanConfigNetMask", "WLAN config.Net Mask" },
+                { "status#wlanConfigBssid", "WLAN config.BSSID" }, { "status#wifi-rssi", "WLAN config.RSSI" },
+                { "settings#altitude-error", "Altitude" } }) {
+            keys.put(groupedChannelId(nested[0]), nested[1]);
+        }
+        return Map.copyOf(keys);
+    }
+
+    private static DeviceCapabilities capabilitiesOf(JsonObject configuration) {
+        Set<String> configurationKeys = new HashSet<>();
+        for (Entry<String, JsonElement> entry : configuration.entrySet()) {
+            configurationKeys.add(entry.getKey());
+            if (entry.getValue().isJsonObject()) {
+                entry.getValue().getAsJsonObject().keySet()
+                        .forEach(key -> configurationKeys.add(entry.getKey() + "." + key));
+            }
+        }
+        // the keys of the installed sensors; SensorInfo lists them as "Value Name", sensors lists most of them too,
+        // and only sensors lists pressure_rel on a real air-Q Science
+        Set<String> dataKeys = null;
+        JsonElement sensorInfo = configuration.get("SensorInfo");
+        if (sensorInfo != null && sensorInfo.isJsonObject()) {
+            dataKeys = new HashSet<>();
+            for (Entry<String, JsonElement> sensor : sensorInfo.getAsJsonObject().entrySet()) {
+                JsonElement valueName = sensor.getValue().isJsonObject()
+                        ? sensor.getValue().getAsJsonObject().get("Value Name")
+                        : null;
+                dataKeys.addAll(strings(valueName));
+            }
+            dataKeys.addAll(strings(configuration.get("sensors")));
+        }
+        return new DeviceCapabilities(dataKeys, Set.copyOf(strings(configuration.get("deactivated_sensors"))),
+                Set.copyOf(configurationKeys));
+    }
+
+    // a string or the strings of an array
+    private static List<String> strings(@Nullable JsonElement element) {
+        List<String> strings = new ArrayList<>();
+        if (element != null && element.isJsonArray()) {
+            for (JsonElement item : element.getAsJsonArray()) {
+                if (item.isJsonPrimitive() && item.getAsJsonPrimitive().isString()) {
+                    strings.add(item.getAsString());
+                }
+            }
+        } else if (element != null && element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+            strings.add(element.getAsString());
+        }
+        return strings;
+    }
+
+    private boolean isSupported(String channelId, DeviceCapabilities device) {
+        String configurationKey = CONFIGURATION_CHANNEL_KEYS.get(channelId);
+        if (configurationKey != null) {
+            return device.configurationKeys().contains(configurationKey);
+        }
+        String key = MEASUREMENT_CHANNEL_KEYS.get(channelId);
+        Set<String> dataKeys = device.dataKeys();
+        if (key == null || ALWAYS_SENT_KEYS.contains(key)) {
+            return true;
+        } else if (EVENT_KEYS.contains(key)) {
+            return sentEventKeys.contains(key);
+        } else if (VIRTUAL_SENSOR_KEYS.contains(key)) {
+            return !device.deactivatedSensors().contains(key);
+        } else if (dataKeys == null) {
+            // the device doesn't report its sensors
+            return true;
+        }
+        String sensorKey = DERIVED_KEYS.getOrDefault(key, key);
+        if (PARTICLE_COUNT_KEYS.contains(key) && device.deactivatedSensors().contains("pm_cnts")) {
+            return false;
+        }
+        return dataKeys.contains(sensorKey) && !device.deactivatedSensors().contains(key);
+    }
+
+    /**
+     * Removes the grouped channels of measurements and settings that the device doesn't have, and adds them again when
+     * the device reports them. The retained flat channels are not changed.
+     */
+    private synchronized void updateChannels() {
+        try {
+            updateChannels(capabilities);
+        } catch (RuntimeException e) {
+            // the measurements and the settings are still published to the existing channels
+            logger.warn("Failed to update the channels of {}: {}", getThing().getUID(), e.getMessage());
+            logger.debug("Failed to update the channels", e);
+        }
+    }
+
+    private void updateChannels(@Nullable DeviceCapabilities device) {
+        ThingHandlerCallback callback = getCallback();
+        if (device == null || !measurementsReceived || callback == null) {
+            return;
+        }
+        Thing thing = getThing();
+        List<Channel> grouped = new ArrayList<>();
+        for (String group : CHANNEL_GROUPS) {
+            List<ChannelBuilder> builders = callback.createChannelBuilders(new ChannelGroupUID(thing.getUID(), group),
+                    new ChannelGroupTypeUID(AirqBindingConstants.THING_TYPE_AIRQ.getBindingId(), group));
+            if (builders.isEmpty()) {
+                // the channel group type is not known (yet), its channels are not changed
+                return;
+            }
+            for (ChannelBuilder builder : builders) {
+                Channel definition = builder.build();
+                if (!config.removeUnsupportedChannels || isSupported(definition.getUID().getId(), device)) {
+                    Channel existing = thing.getChannel(definition.getUID());
+                    grouped.add(existing != null ? existing : definition);
+                }
+            }
+        }
+        List<Channel> current = thing.getChannels().stream().filter(channel -> isGrouped(channel.getUID())).toList();
+        Set<ChannelUID> currentUIDs = current.stream().map(Channel::getUID).collect(Collectors.toSet());
+        Set<ChannelUID> wantedUIDs = grouped.stream().map(Channel::getUID).collect(Collectors.toSet());
+        if (currentUIDs.equals(wantedUIDs)) {
+            return;
+        }
+        logger.debug("Updating the channels of {}: removing {}, adding {}", thing.getUID(),
+                currentUIDs.stream().filter(uid -> !wantedUIDs.contains(uid)).map(ChannelUID::getId).sorted().toList(),
+                wantedUIDs.stream().filter(uid -> !currentUIDs.contains(uid)).map(ChannelUID::getId).sorted().toList());
+        // the retained flat channels first, as before
+        List<Channel> channels = new ArrayList<>(
+                thing.getChannels().stream().filter(channel -> !isGrouped(channel.getUID())).toList());
+        channels.addAll(grouped);
+        updateThing(editThing().withoutChannels(thing.getChannels()).withChannels(channels).build());
+    }
+
+    // the retained flat channels have no group
+    private static boolean isGrouped(ChannelUID channel) {
+        String groupId = channel.getGroupId();
+        return groupId != null && CHANNEL_GROUPS.contains(groupId);
+    }
+
     private void processMappings(JsonObject data, List<ChannelMapping> mappings) {
         for (ChannelMapping mapping : mappings) {
             String channelId = mapping.groupId() + "#" + mapping.channelId();
             Unit<?> unit = mapping.unit();
-            if ("value".equals(mapping.type()) || "rssi".equals(mapping.type())) {
-                processValue(data, mapping.dataKey(), channelId, unit, "rssi".equals(mapping.type()));
+            if ("value".equals(mapping.type())) {
+                processValue(data, mapping.dataKey(), channelId, unit, false);
             } else if (unit == null) {
                 processType(data, mapping.dataKey(), channelId, mapping.type());
             } else if ("pair".equals(mapping.type())) {
@@ -1026,7 +1250,7 @@ public class AirqHandler extends BaseThingHandler {
         }
         BigDecimal value = reading.getAsBigDecimal();
         if (rssi && value.signum() == 0) {
-            // datenlesen.md: 0 dBm means that no connection is present
+            // datenlesen.md: an RSSI of 0 dBm means that no connection is present
             updateMappedState(channel, UnDefType.UNDEF);
         } else {
             updateMappedState(channel, unit == null ? new DecimalType(value) : new QuantityType<>(value, unit));
@@ -1383,6 +1607,9 @@ public class AirqHandler extends BaseThingHandler {
                         processType(jsonWlandata, "Net Mask", nestedChannel(channelName, "wlanConfigNetMask"),
                                 "string");
                         processType(jsonWlandata, "BSSID", nestedChannel(channelName, "wlanConfigBssid"), "string");
+                        // the RSSI of the Wi-Fi connection, also when the measurement wifi is deactivated as by default
+                        processValue(jsonWlandata, "RSSI", nestedChannel(channelName, "wifi-rssi"),
+                                Units.DECIBEL_MILLIWATTS, true);
                     } else {
                         logger.warn(
                                 "air-Q - airqHandler - processType(): Cannot extract WLAN data from this string: {}",

@@ -35,6 +35,13 @@
 				<label>Password</label>
 				<description>Password of air-Q Device.</description>
 			</parameter>
+			<parameter name="removeUnsupportedChannels" type="boolean">
+				<label>Remove Unsupported Channels</label>
+				<description>Removes the channels of measurements and settings that the device does not have. They are added again
+					when the device reports them.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 	<channel-group-type id="status">
@@ -69,9 +76,9 @@
 			<channel id="pressure" typeId="pressure"/>
 			<channel id="pressure-rel" typeId="pressure-rel"/>
 			<channel id="health-index" typeId="health-index"/>
-			<channel id="health" typeId="health"/>
+			<channel id="health" typeId="health-raw"/>
 			<channel id="performance-index" typeId="performance-index"/>
-			<channel id="performance" typeId="performance"/>
+			<channel id="performance" typeId="performance-raw"/>
 			<channel id="virus-free" typeId="virus-free"/>
 			<channel id="mold-free" typeId="mold-free"/>
 			<channel id="co2" typeId="co2"/>
@@ -446,6 +453,18 @@
 		<label>Performance Index Raw</label>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="health-raw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Health Index Raw</label>
+		<description>0 to 1000 for a normal rating, -200 during a gas alarm and -800 during a fire alarm.</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+	<channel-type id="performance-raw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Performance Index Raw</label>
+		<description>0 to 1000 for a normal rating.</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
 	<channel-type id="pm1" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fine Dust 1µm</label>
@@ -692,7 +711,7 @@
 	<channel-type id="wifi-rssi" advanced="true">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Wi-Fi Signal Strength</label>
-		<description>RSSI of the Wi-Fi connection, UNDEF while not connected.</description>
+		<description>RSSI of the Wi-Fi connection from the WLAN config, read every minute. UNDEF while not connected.</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="flow1" advanced="true">

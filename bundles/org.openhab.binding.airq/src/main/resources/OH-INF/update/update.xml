@@ -617,6 +617,12 @@
 			<update-channel id="so2" groupIds="measurements">
 				<type>airq:so2</type>
 			</update-channel>
+			<update-channel id="health" groupIds="measurements">
+				<type>airq:health-raw</type>
+			</update-channel>
+			<update-channel id="performance" groupIds="measurements">
+				<type>airq:performance-raw</type>
+			</update-channel>
 			<update-channel id="so2">
 				<type>airq:so2-number</type>
 			</update-channel>

@@ -64,6 +64,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -73,6 +74,8 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -429,25 +432,25 @@ class AirqHandlerTest {
                 OnOffType.OFF);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = { "-61", "[-61, 2]" })
-    void wifiSignalStrengthIsInDecibelMilliwatts(String wifi) throws Exception {
-        // datenlesen.md: the RSSI in dBm, typically -30 dBm (very good) to -90 dBm (very poor)
-        poll("{\"wifi\": " + wifi + "}");
+    @Test
+    void wifiSignalStrengthIsInDecibelMilliwatts() throws Exception {
+        // the WLAN config of a real air-Q; datenlesen.md: typically -30 dBm (very good) to -90 dBm (very poor)
+        readConfiguration("{\"WLAN config\": {\"RSSI\": -61, \"Channel\": 11, \"Status\": \"Got IP\"}}");
 
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#wifi-rssi"),
                 new QuantityType<>(-61, Units.DECIBEL_MILLIWATTS));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "{\"wifi\": 0}", "{}", "{\"wifi\": null}", "{\"wifi\": \"x\"}" })
-    void wifiSignalStrengthIsUndefinedWithoutConnection(String payload) throws Exception {
-        // datenlesen.md: 0 dBm means that no connection is present
-        poll(payload);
+    @ValueSource(strings = { "0", "null", "\"x\"" })
+    void wifiSignalStrengthIsUndefinedWithoutConnection(String rssi) throws Exception {
+        // datenlesen.md: an RSSI of 0 dBm means that no connection is present
+        readConfiguration("{\"WLAN config\": {\"RSSI\": " + rssi + ", \"SSID\": \"ssid\"}}");
 
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#wifi-rssi"), UnDefType.UNDEF);
-        requireNonNull(verify(callback)).statusUpdated(thing,
-                new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+        // the rest of the WLAN config is still read
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "status#wlan-config-ssid"),
+                new StringType("ssid"));
     }
 
     @ParameterizedTest
@@ -1445,8 +1448,10 @@ class AirqHandlerTest {
         }
         // version 6 changes the item types of channels that keep their group, moves the channels of version 5 to the
         // groups status, measurements, events, maxerr and settings, and adds the new channels
-        assertThat(changes, hasSize(253));
+        assertThat(changes, hasSize(255));
         assertThat(changes, hasItems("update-channel measurements#so2 airq:so2", "update-channel #so2 airq:so2-number",
+                "update-channel measurements#health airq:health-raw",
+                "update-channel measurements#performance airq:performance-raw",
                 "update-channel maxerr#co-maxerr airq:co-maxerr", "remove-channel general#sound-pressure",
                 "remove-channel general#password", "remove-channel #password", "remove-channel general#delete-key",
                 "remove-channel #deleteKey", "remove-channel general#error-bars", "remove-channel #errorBars",
@@ -1932,6 +1937,24 @@ class AirqHandlerTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "health", "performance" })
+    void rawIndicesArePlainNumbersAndTheFlatChannelsKeepTheirType(String index) throws Exception {
+        // datenlesen.md: an index from 0 to 1000 without a unit
+        Document thingTypes = xml("thing/thing-types.xml");
+        Element grouped = element(thingTypes,
+                "//channel-group-type[@id='measurements']/channels/channel[@id='" + index + "']");
+        assertThat(grouped.getAttribute("typeId"), is(index + "-raw"));
+        assertThat(element(thingTypes, "//channel-type[@id='" + index + "-raw']/item-type").getTextContent(),
+                is("Number"));
+        // the released flat channel of thing type version 4
+        assertThat(element(thingTypes, "//channel-type[@id='" + index + "']/item-type").getTextContent(),
+                is("Number:Dimensionless"));
+        Element upgrade = element(xml("update/update.xml"), "//instruction-set[@targetVersion='6']/update-channel[@id='"
+                + index + "' and @groupIds='measurements']");
+        assertThat(element(upgrade, "type").getTextContent(), is("airq:" + index + "-raw"));
+    }
+
     @Test
     void uptimeBelongsToStatusInMetadataAndUpgrade() throws Exception {
         assertThat(findElement(xml("thing/thing-types.xml"),
@@ -2049,12 +2072,305 @@ class AirqHandlerTest {
         assertThat(data.get("pass").getAsString(), is("secret"));
     }
 
+    // GET /config of a real air-Q Science with a radon sensor, network data replaced
+    private static final String SCIENCE_CONFIGURATION = """
+            {"SoundInfo": {}, "WLAN config": {"IP address": "ip", "Gateway": "gateway", "MAC": "mac",
+              "Net Mask": "mask", "RSSI": -58, "Channel": 11, "BSSID": "bssid", "SSID": "ssid", "Status": "Got IP"},
+             "AutoDriftCompensation": true, "SecondsMeasurementDelay": 120, "Industry": false, "RoomType": "office",
+             "boots": "1/0/0/0/5", "WLANssid": ["ssid"], "AutoUpdate": 0, "uptime": 21469,
+             "NightMode": {"Activated": false, "WifiNightOff": false, "StartDay": "07:00",
+              "last_summer_winter_time_switch": 0, "StartNight": "21:00", "AlarmNightOff": false,
+              "FanNightOff": false, "BrightnessNight": 6, "BrightnessDay": 6},
+             "daytime": true, "Altitude": [392, 10], "RoomHeight": 0.0,
+             "SensorInfo": {"pressure": {"Unit": "hPa", "Value Name": "pressure"},
+              "temperature": {"Unit": {"humidity": "%", "temperature": "degC", "dewpt": "degC",
+               "humidity_abs": "g/m^3"}, "Value Name": ["temperature", "humidity", "humidity_abs", "dewpt"]},
+              "tvoc": {"Unit": "ppb", "Molar Mass": 46.07, "Value Name": "tvoc"},
+              "radon": {"Unit": "Bq/m^3", "Value Name": "radon"}},
+             "BuildingStandard": "None", "logging": "Error", "geopos": {"lat": 0.0, "long": 0.0}, "WifiInfo": true,
+             "Wifi": true, "ppm&ppb": false, "cloud_connection": "CONNECTED", "cloudUpload": false, "GasAlarm": false,
+             "InitialCalFinished": true, "warmup-phase": false, "usercalib": {}, "type": "airQ Science", "units": {},
+             "Rejection": "50Hz", "devicename": "airQ Radon Science", "AlarmForwarding": false, "FireAlarm": false,
+             "Averaging": 30, "TimeServer": "pool.ntp.org",
+             "sensors": ["dewpt", "humidity", "humidity_abs", "pressure", "pressure_rel", "radon", "temperature",
+              "tvoc"],
+             "deactivated_sensors": ["fahrenheit", "measuretime", "mold", "pm_cnts", "uptime", "virus", "wifi"],
+             "country_code": "None", "RoomArea": 0.0}
+            """;
+    // the sensors of GET /config of a real air-Q Pro
+    private static final String PRO_CONFIGURATION = """
+            {"SensorInfo": {"pressure": {"Value Name": ["pressure", "pressure_rel"]}, "tvoc": {"Value Name": "tvoc"},
+              "particulates": {"Value Name": ["pm1", "pm2_5", "pm10", "cnt0_3", "cnt0_5", "cnt1", "cnt2_5", "cnt5",
+               "cnt10", "TypPS"]},
+              "co": {"Value Name": "co"}, "co2": {"Value Name": "co2"},
+              "temperature": {"Value Name": ["temperature", "humidity", "humidity_abs", "dewpt"]},
+              "ch2o_M10": {"Value Name": "ch2o_M10"}, "no2": {"Value Name": "no2"},
+              "sound": {"Value Name": ["sound", "sound_max"]}},
+             "sensors": ["ch2o_M10", "co", "co2", "dewpt", "humidity", "humidity_abs", "no2", "particulates",
+              "pressure", "pressure_rel", "sound", "sound_max", "temperature", "tvoc"],
+             "deactivated_sensors": ["mold", "pm_cnts", "virus", "fahrenheit", "measuretime", "uptime", "wifi"]}
+            """;
+    // 2. LifeData.md: measurements of the real air-Q Pro
+    private static final String PRO_MEASUREMENTS = """
+            {"co2": [1216.0, 86.5], "no2": [15.66, 3.4], "co": [0.136266, 0.03992], "ch2o_M10": [4.27, 2.7],
+             "humidity": [59.375, 4.85], "sound_max": [52.6, 2.8], "humidity_abs": [10.291, 0.7],
+             "timestamp": 1793046696000, "tvoc": [1330.0, 210.7], "pressure_rel": [1022.35, 2.26], "health": 894,
+             "dHdt": -0.01, "sound": [48.8, 3.3], "dCO2dt": 16.94, "pm2_5": [0, 10], "Status": "OK",
+             "pressure": [975.93, 1.0], "pm1": [0, 10], "uptime": 1068539, "temperature": [19.978, 0.54],
+             "measuretime": 2004, "dewpt": [12.007, 1.05], "performance": 321.32372, "pm10": [3, 10]}
+            """;
+
+    @Test
+    void channelsOfARadonScienceAreReducedToItsSensorsAndSettings() throws Exception {
+        Set<String> channels = channelsAfterPolling(SCIENCE_CONFIGURATION, """
+                {"temperature": [21.5, 0.5], "humidity": [45.0, 4.0], "humidity_abs": [8.5, 0.7],
+                 "dewpt": [9.2, 1.0], "pressure": [975.9, 1.0], "pressure_rel": [1022.4, 2.3], "tvoc": [120, 20],
+                 "radon": [12, 4], "health": 950, "performance": 800, "dHdt": 0.0, "timestamp": 1793046696000,
+                 "Status": "OK", "uptime": 21469, "measuretime": 2004}
+                """);
+
+        assertThat(channels, hasItems("measurements#temperature", "measurements#humidity-relative",
+                "measurements#humidity-absolute", "measurements#dewpt", "measurements#d-hdt", "measurements#pressure",
+                "measurements#tvoc", "measurements#radon", "maxerr#radon-maxerr", "measurements#health",
+                "measurements#health-index", "measurements#performance", "measurements#performance-index",
+                // only in "sensors", an altitude is set
+                "measurements#pressure-rel", "maxerr#pressure-rel-maxerr",
+                // sent although listed in deactivated_sensors
+                "status#uptime", "status#measure-time", "status#status", "status#timestamp", "events#fire-alarm-active",
+                "events#gas-alarm-active", "settings#altitude", "settings#country-code",
+                "settings#night-mode-last-time-switch", "status#wlan-config-ssid", "status#cloud-connection",
+                // from the WLAN config, although the measurement wifi is deactivated
+                "status#wifi-rssi",
+                // the retained flat channel of thing type version 4
+                "co"));
+        assertThat(channels,
+                not(anyOf(hasItem("measurements#co2"), hasItem("maxerr#co2-maxerr"), hasItem("measurements#d-co2dt"),
+                        hasItem("measurements#fine-dust-conc02-5"), hasItem("measurements#c2h4o"),
+                        hasItem("maxerr#c2h4o-maxerr"), hasItem("measurements#flow1"),
+                        hasItem("measurements#pm1-sps30"), hasItem("measurements#virus-free"),
+                        hasItem("maxerr#mold-free-maxerr"), hasItem("events#door-event"), hasItem("events#person"),
+                        // not in the configuration of this firmware
+                        hasItem("settings#advanced-data-processing"))));
+        assertThat(channels.stream().filter(channel -> channel.startsWith("measurements#")).toList(), hasSize(13));
+    }
+
+    @Test
+    void channelsOfAProFollowItsParticulateSensorAndTheDeactivatedCounts() throws Exception {
+        Set<String> channels = channelsAfterPolling(PRO_CONFIGURATION, PRO_MEASUREMENTS);
+
+        assertThat(channels, hasItems("measurements#co2", "measurements#d-co2dt", "measurements#co", "measurements#no2",
+                "measurements#ch2o-m10", "maxerr#ch2o-m10-maxerr", "measurements#sound", "measurements#sound-max",
+                "maxerr#sound-max-maxerr", "measurements#pressure-rel", "measurements#fine-dust-conc01",
+                "measurements#fine-dust-conc02-5", "measurements#fine-dust-conc10", "maxerr#fine-dust-conc10-maxerr"));
+        // pm_cnts is deactivated, a real air-Q Pro sends no counts although SensorInfo lists them
+        assertThat(channels,
+                not(anyOf(hasItem("measurements#fine-dust-cnt00-3"), hasItem("maxerr#fine-dust-cnt00-3-maxerr"),
+                        hasItem("measurements#avg-fine-dust-size"), hasItem("measurements#radon"),
+                        hasItem("measurements#o3"), hasItem("measurements#particulates"))));
+    }
+
+    @Test
+    void meanParticleSizeOfTheSps30FollowsPmCnts() throws Exception {
+        // datenlesen.md: TypPS_SPS30 is output with pm_cnts, the SPS30 concentrations and counts are not
+        String sps30 = PRO_CONFIGURATION.replace("\"no2\": {\"Value Name\": \"no2\"}",
+                "\"no2\": {\"Value Name\": \"no2\"}, \"sps30\": {\"Value Name\": [\"pm1_SPS30\", \"pm2_5_SPS30\","
+                        + " \"pm4_SPS30\", \"pm10_SPS30\", \"cnt0_5_SPS30\", \"cnt1_SPS30\", \"cnt2_5_SPS30\","
+                        + " \"cnt4_SPS30\", \"cnt10_SPS30\", \"TypPS_SPS30\"]}");
+
+        Set<String> channels = channelsAfterPolling(sps30, PRO_MEASUREMENTS);
+
+        assertThat(channels, hasItems("measurements#pm1-sps30", "measurements#pm4-sps30", "measurements#cnt0-5-sps30",
+                "measurements#cnt10-sps30"));
+        assertThat(channels, not(hasItem("measurements#avg-fine-dust-size-sps30")));
+        assertThat(channelsAfterPolling(sps30.replace("\"mold\", \"pm_cnts\", ", "\"mold\", "), PRO_MEASUREMENTS),
+                hasItem("measurements#avg-fine-dust-size-sps30"));
+    }
+
+    @Test
+    void aFailedChannelUpdateKeepsTheThingOnline() throws Exception {
+        AirqHandler pollingHandler = channelHandler(groupedThing(), PRO_CONFIGURATION);
+        doThrow(new IllegalStateException("registry not ready")).when(callback).createChannelBuilders(any(), any());
+        doReturn(PRO_MEASUREMENTS).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/data"));
+
+        pollingHandler.pollData();
+
+        verify(callback, never()).thingUpdated(any());
+        verify(callback, never()).statusUpdated(any(), argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
+        requireNonNull(verify(callback, atLeastOnce())).statusUpdated(any(),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+    }
+
+    @Test
+    void particleCountsAreKeptWhilePmCntsIsActive() throws Exception {
+        Set<String> channels = channelsAfterPolling(PRO_CONFIGURATION.replace("\"mold\", \"pm_cnts\", ", "\"mold\", "),
+                PRO_MEASUREMENTS);
+
+        assertThat(channels, hasItems("measurements#fine-dust-cnt00-3", "maxerr#fine-dust-cnt00-3-maxerr",
+                "measurements#fine-dust-cnt10", "measurements#avg-fine-dust-size"));
+    }
+
+    @Test
+    void onlyTheAlwaysSentChannelsRemainWithoutSensorsAndSettings() throws Exception {
+        // every channel depends on a sensor, a virtual sensor or a key of the configuration, except these
+        Set<String> channels = channelsAfterPolling("{\"SensorInfo\": {}}", "{\"Status\": \"OK\"}");
+
+        assertThat(channels,
+                containsInAnyOrder("co", "status#status", "status#uptime", "status#timestamp", "status#measure-time",
+                        "measurements#health", "measurements#health-index", "measurements#performance",
+                        "measurements#performance-index", "measurements#virus-free", "maxerr#virus-free-maxerr",
+                        "measurements#mold-free", "maxerr#mold-free-maxerr", "events#fire-alarm-active",
+                        "events#gas-alarm-active"));
+    }
+
+    @Test
+    void allMeasurementChannelsAreKeptWhenTheDeviceDoesNotReportItsSensors() throws Exception {
+        Set<String> channels = channelsAfterPolling("{\"Wifi\": true}", "{\"Status\": \"OK\"}");
+
+        assertThat(channels, hasItems("measurements#co2", "maxerr#c2h4o-maxerr", "measurements#flow4",
+                "measurements#fine-dust-cnt00-3", "settings#wifi"));
+        assertThat(channels, not(anyOf(hasItem("settings#altitude"), hasItem("events#door-event"))));
+    }
+
+    @Test
+    void eventChannelsAreAddedOnceTheDeviceSendsThem() throws Exception {
+        AirqHandler pollingHandler = channelHandler(groupedThing(), PRO_CONFIGURATION);
+        doReturn(PRO_MEASUREMENTS)
+                .doReturn(PRO_MEASUREMENTS.replace("\"Status\": \"OK\"", "\"Status\": \"OK\", \"door_event\": 0"))
+                .when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/data"));
+
+        pollingHandler.pollData();
+        assertThat(channelIds(pollingHandler.getThing()), not(hasItem("events#door-event")));
+        pollingHandler.pollData();
+        assertThat(channelIds(pollingHandler.getThing()), hasItem("events#door-event"));
+        // the next configuration keeps the channel
+        pollingHandler.getConfigData();
+        assertThat(channelIds(pollingHandler.getThing()), hasItem("events#door-event"));
+    }
+
+    @Test
+    void channelsOfAddedSensorsAreAddedAgainWithTheirExistingChannels() throws Exception {
+        AirqHandler pollingHandler = channelHandler(groupedThing(), SCIENCE_CONFIGURATION);
+        doReturn("{\"Status\": \"OK\"}").when(pollingHandler)
+                .getDecryptedContentString(ArgumentMatchers.endsWith("/data"));
+        pollingHandler.pollData();
+        Channel temperature = requireNonNull(
+                pollingHandler.getThing().getChannel(new ChannelUID(thingUID, "measurements#temperature")));
+        assertThat(channelIds(pollingHandler.getThing()), not(hasItem("measurements#co2")));
+
+        // a CO2 sensor was added
+        doReturn(SCIENCE_CONFIGURATION.replace("\"radon\": {\"Unit\": \"Bq/m^3\", \"Value Name\": \"radon\"}",
+                "\"radon\": {\"Value Name\": \"radon\"}, \"co2\": {\"Value Name\": \"co2\"}")).when(pollingHandler)
+                .getDecryptedContentString(ArgumentMatchers.endsWith("/config"));
+        pollingHandler.getConfigData();
+
+        assertThat(channelIds(pollingHandler.getThing()),
+                hasItems("measurements#co2", "maxerr#co2-maxerr", "measurements#d-co2dt"));
+        assertThat(pollingHandler.getThing().getChannel(new ChannelUID(thingUID, "measurements#temperature")),
+                sameInstance(temperature));
+    }
+
+    @Test
+    void channelsAreNotChangedWhenTheConfigurationCannotBeRead() throws Exception {
+        Thing groupedThing = groupedThing();
+        AirqHandler pollingHandler = channelHandler(groupedThing, "not json");
+        doReturn(PRO_MEASUREMENTS).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/data"));
+
+        pollingHandler.pollData();
+
+        verify(callback, never()).thingUpdated(any());
+        assertThat(pollingHandler.getThing().getChannels(), hasSize(groupedThing.getChannels().size()));
+    }
+
+    @Test
+    void channelsAreNotChangedWhileAChannelGroupTypeIsUnknown() throws Exception {
+        Thing groupedThing = groupedThing();
+        AirqHandler pollingHandler = channelHandler(groupedThing, SCIENCE_CONFIGURATION);
+        doReturn(List.of()).when(callback).createChannelBuilders(any(), eq(new ChannelGroupTypeUID("airq", "events")));
+        doReturn("{\"Status\": \"OK\"}").when(pollingHandler)
+                .getDecryptedContentString(ArgumentMatchers.endsWith("/data"));
+
+        pollingHandler.pollData();
+
+        verify(callback, never()).thingUpdated(any());
+        assertThat(pollingHandler.getThing().getChannels(), hasSize(groupedThing.getChannels().size()));
+    }
+
+    @Test
+    void allChannelsAreKeptAndAddedAgainWhenRemovalIsSwitchedOff() throws Exception {
+        Thing reducedThing = ThingBuilder.create(THING_TYPE_AIRQ, thingUID).withChannels(groupedThing().getChannels()
+                .stream().filter(channel -> !"measurements#co2".equals(channel.getUID().getId())).toList()).build();
+        AirqHandler pollingHandler = channelHandler(reducedThing, SCIENCE_CONFIGURATION);
+        pollingHandler.config.removeUnsupportedChannels = false;
+        doReturn("{\"Status\": \"OK\"}").when(pollingHandler)
+                .getDecryptedContentString(ArgumentMatchers.endsWith("/data"));
+
+        pollingHandler.pollData();
+
+        assertThat(channelIds(pollingHandler.getThing()), hasItems("measurements#co2", "events#door-event"));
+        assertThat(pollingHandler.getThing().getChannels(), hasSize(groupedThing().getChannels().size()));
+    }
+
+    private Set<String> channelsAfterPolling(String configuration, String measurements) throws Exception {
+        AirqHandler pollingHandler = channelHandler(groupedThing(), configuration);
+        doReturn(measurements).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/data"));
+        pollingHandler.pollData();
+        return channelIds(pollingHandler.getThing());
+    }
+
+    // a handler whose callback provides the channels of the channel groups of thing-types.xml
+    private AirqHandler channelHandler(Thing groupedThing, String configuration) throws Exception {
+        Map<String, List<Element>> groups = new LinkedHashMap<>();
+        Document metadata = xml("thing/thing-types.xml");
+        for (Element group : elements(metadata, "//channel-group-type")) {
+            groups.put(group.getAttribute("id"), elements(group, "channels/channel"));
+        }
+        doAnswer(invocation -> {
+            String groupId = ((ChannelGroupTypeUID) invocation.getArgument(1)).getId();
+            List<ChannelBuilder> builders = new ArrayList<>();
+            for (Element channel : groups.getOrDefault(groupId, List.of())) {
+                Element type = element(metadata, "//channel-type[@id='" + channel.getAttribute("typeId") + "']");
+                builders.add(ChannelBuilder
+                        .create(new ChannelUID(thingUID, groupId + "#" + channel.getAttribute("id")),
+                                element(type, "item-type").getTextContent())
+                        .withType(new ChannelTypeUID("airq", channel.getAttribute("typeId"))));
+            }
+            return builders;
+        }).when(callback).createChannelBuilders(any(), any());
+        AirqHandler pollingHandler = requireNonNull(
+                spy(new AirqHandler(groupedThing, requireNonNull(mock(HttpClient.class)))));
+        pollingHandler.setCallback(callback);
+        doReturn(configuration).when(pollingHandler).getDecryptedContentString(ArgumentMatchers.endsWith("/config"));
+        return pollingHandler;
+    }
+
+    // a Thing upgraded from version 4 with all grouped channels and one retained flat channel
+    private Thing groupedThing() throws Exception {
+        List<Channel> channels = new ArrayList<>();
+        channels.add(ChannelBuilder.create(new ChannelUID(thingUID, "co"), "Number:Density").build());
+        Document metadata = xml("thing/thing-types.xml");
+        for (Element group : elements(metadata, "//channel-group-type")) {
+            for (Element channel : elements(group, "channels/channel")) {
+                channels.add(
+                        ChannelBuilder
+                                .create(new ChannelUID(thingUID,
+                                        group.getAttribute("id") + "#" + channel.getAttribute("id")), "String")
+                                .build());
+            }
+        }
+        return ThingBuilder.create(THING_TYPE_AIRQ, thingUID).withChannels(channels).build();
+    }
+
+    private static Set<String> channelIds(Thing configuredThing) {
+        return configuredThing.getChannels().stream().map(channel -> channel.getUID().getId())
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
     @Test
     void everyChannelOfTheGroupsIsPublishedAndOnlyThose() throws Exception {
         // every key of the measurements and the configuration that the binding reads
         StringBuilder data = new StringBuilder("{\"Status\": \"OK\", \"timestamp\": 1793046696000, \"health\": 894,"
                 + " \"performance\": 321.3, \"dCO2dt\": 16.94, \"dHdt\": -0.01, \"measuretime\": 2004,"
-                + " \"uptime\": 1068539, \"TypPS\": 0.62, \"wifi\": -70");
+                + " \"uptime\": 1068539, \"TypPS\": 0.62");
         for (String key : List.of("acid_M100", "ash3", "br2", "c2h4", "c2h4o", "c3h8_MIPEX", "ch2o_M10", "ch4_MIPEX",
                 "ch4s", "cl2_M20", "clo2", "cnt0_3", "cnt0_5", "cnt0_5_SPS30", "cnt1", "cnt10", "cnt10_SPS30",
                 "cnt1_SPS30", "cnt2_5", "cnt2_5_SPS30", "cnt4_SPS30", "cnt5", "co", "co2", "cs2", "dewpt", "door_event",
@@ -2077,7 +2393,7 @@ class AirqHandlerTest {
                  "boots": "13/41/0/239/78", "Altitude": ["392", 10], "BuildingStandard": "None", "RoomHeight": 2.4,
                  "RoomArea": 20.0,
                  "WLAN config": {"IP address": "ip", "Gateway": "gateway", "MAC": "mac", "Net Mask": "mask",
-                  "BSSID": "bssid", "SSID": "ssid"},
+                  "BSSID": "bssid", "SSID": "ssid", "RSSI": -70},
                  "NightMode": {"Activated": false, "WifiNightOff": false, "StartDay": "07:00",
                   "last_summer_winter_time_switch": 0, "StartNight": "21:00", "AlarmNightOff": false,
                   "FanNightOff": false, "BrightnessNight": 6, "BrightnessDay": 6}}
