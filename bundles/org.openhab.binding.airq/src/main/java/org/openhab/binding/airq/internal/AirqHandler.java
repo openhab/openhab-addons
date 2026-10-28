@@ -831,7 +831,8 @@ public class AirqHandler extends BaseThingHandler {
             // nothing
         } catch (RuntimeException e) {
             // an uncaught exception would cancel the scheduled configuration job for good
-            logger.warn("Failed to process configuration: {}", e.getMessage(), e);
+            logger.warn("Failed to process configuration: {}", e.getMessage());
+            logger.debug("Failed to process configuration", e);
         }
     }
 
