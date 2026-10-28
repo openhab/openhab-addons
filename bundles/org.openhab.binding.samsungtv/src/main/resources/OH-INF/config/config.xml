@@ -71,8 +71,9 @@
 		</parameter>
 		<parameter name="ipControl" type="boolean">
 			<label>Use IP Control</label>
-			<description>Use Samsung IP Control (port 1516) for power state, the input source and to switch off from art mode. Enable IP Remote on
-				the TV first. The TV asks you to accept the connection the next time it is on and not in art mode.</description>
+			<description>Use Samsung IP Control (port 1516) for power state, the input source and to switch off from art mode.
+				Enable IP Remote on the TV first. The TV asks you to accept the connection the next time it
+				is on and not in art mode.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
