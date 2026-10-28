@@ -310,9 +310,12 @@ public class RemoteControllerService implements SamsungTvService {
                             // really switch off (long press of power), newer Frame TV's ignore this
                             sendKeys(KeyCode.KEY_POWER, 4000);
                         }
-                    } else {
-                        // switch TV off
+                    } else if (OnOffType.ON.equals(command)) {
+                        // KEY_POWER switches a Frame TV from TV mode to art mode
                         sendKeys(KeyCode.KEY_POWER);
+                    } else if (!handler.ipControlPowerOff()) {
+                        // switch off from TV mode, a short KEY_POWER would switch to art mode instead
+                        sendKeys(KeyCode.KEY_POWER, 4000);
                     }
                     if (getArtMode2022()) {
                         if (OnOffType.ON.equals(command)) {

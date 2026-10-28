@@ -187,7 +187,7 @@ Frame TV's have additional channels.
 
 ### artMode
 
-`artMode` is a Switch channel. When `power` is ON, `artMode` will be OFF. If the `artMode` channel is commanded `OFF`, then the TV will power down to standby/off mode (this takes 4 seconds).
+`artMode` is a Switch channel. When `power` is ON, `artMode` will be OFF. If the `artMode` channel is commanded `OFF`, then the TV will power down to standby/off mode (this takes 4 seconds), from art mode or from TV mode.
 If _"Use IP Control"_ is enabled, the TV is switched to standby over IP Control instead, which also works on newer Frame TVs that ignore the long press of the power key.
 Commanding ON to `artMode` will try to power up the TV in art mode, and commanding ON to `power` will try to power the TV up in ON mode, but see WOL limitations.
 
