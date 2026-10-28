@@ -135,8 +135,12 @@ class WebSocketArt extends WebSocketBase {
                 return Optional.ofNullable(value).orElse(getStatus());
             }
 
-            public int getIntValue() {
-                return Optional.of(Integer.valueOf(getValue())).orElse(0);
+            public Optional<Integer> getIntValue() {
+                try {
+                    return Optional.of(Integer.valueOf(getValue()));
+                } catch (NumberFormatException e) {
+                    return Optional.empty();
+                }
             }
 
             public String getCategoryId() {
@@ -152,7 +156,7 @@ class WebSocketArt extends WebSocketBase {
             }
 
             public int getRotationStatus() {
-                return Optional.ofNullable(Integer.valueOf(current_rotation_status)).orElse(0);
+                return current_rotation_status;
             }
 
             public String getType() {
@@ -399,7 +403,12 @@ class WebSocketArt extends WebSocketBase {
             }
             // remove returns and white space for ART_JSON channel
             valueReceived(ART_JSON, new StringType(msg.trim().replaceAll("\\n|\\\\n", "").replaceAll("\\s{2,}", " ")));
-            switch (data.getEvent()) {
+            String event = data.getEvent();
+            if (event.isEmpty() && data.getRotationStatus() > 0) {
+                // art API 2.03 (2021) replies to get_current_rotation without an event
+                event = "get_current_rotation";
+            }
+            switch (event) {
                 case "error":
                     logger.debug("{}: ERROR event: {}", host, msg);
                     break;
@@ -414,6 +423,8 @@ class WebSocketArt extends WebSocketBase {
                 case "send_image":
                 case "image_deleted":
                 case "set_artmode_status":
+                case "set_slideshow_status":
+                case "set_auto_rotation_status":
                 case "get_content_list":
                 case "recently_set_updated":
                 case "preview_started":
@@ -449,22 +460,22 @@ class WebSocketArt extends WebSocketBase {
                 case "set_brightness":
                 case "brightness_changed":
                 case "brightness":
-                    valueReceived(ART_BRIGHTNESS, new PercentType(data.getIntValue() * 10));
+                    data.getIntValue().ifPresent(v -> valueReceived(ART_BRIGHTNESS, new PercentType(v * 10)));
                     break;
                 case "set_color_temperature":
                 case "color_temperature_changed":
                 case "color_temperature":
-                    valueReceived(ART_COLOR_TEMPERATURE, new DecimalType(data.getIntValue()));
+                    data.getIntValue().ifPresent(v -> valueReceived(ART_COLOR_TEMPERATURE, new DecimalType(v)));
                     break;
                 case "get_artmode_status":
                 case "art_mode_changed":
                 case "artmode_status":
                     logger.debug("{}: {}: {}", host, data.getEvent(), data.getValue());
                     if ("off".equals(data.getValue())) {
-                        remoteControllerWebSocket.callback.powerUpdated(true, false);
+                        remoteControllerWebSocket.callback.powerUpdatedAsync(true, false);
                         remoteControllerWebSocket.callback.currentAppUpdated("");
                     } else {
-                        remoteControllerWebSocket.callback.powerUpdated(false, true);
+                        remoteControllerWebSocket.callback.powerUpdatedAsync(false, true);
                     }
                     if (!remoteControllerWebSocket.noApps()) {
                         remoteControllerWebSocket.updateCurrentApp();
@@ -537,7 +548,7 @@ class WebSocketArt extends WebSocketBase {
                     break;
                 case "go_to_standby":
                     logger.debug("{}: go_to_standby", host);
-                    remoteControllerWebSocket.callback.powerUpdated(false, false);
+                    remoteControllerWebSocket.callback.powerUpdatedAsync(false, false);
                     remoteControllerWebSocket.callback.setOffline();
                     stateMap.clear();
                     break;

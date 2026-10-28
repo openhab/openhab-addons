@@ -12,57 +12,82 @@
  */
 package org.openhab.binding.transit.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.transit.internal.net.dto.StopDeparturesResult.ScheduleItem;
+import org.openhab.binding.transit.internal.handler.TransitStopHandler.Departure;
+import org.openhab.binding.transit.internal.net.dto.StopDeparturesResult;
 
 import com.google.gson.Gson;
 
 /**
- * The {@link DepartureOrderingTest} is responsible for testing departure sorting.
+ * The {@link DepartureOrderingTest} tests how the stop handler merges and sorts the departures of several routes and
+ * stops.
  *
  * @author Michael - Initial contribution
  */
 @NonNullByDefault
 public class DepartureOrderingTest {
 
+    private final Gson gson = new Gson();
+
+    // two stops (as requested with a comma-separated globalStopId), the later departure is listed first
+    private static final String JSON = """
+            {
+              "route_departures": [
+                {
+                  "global_stop_id": "VVSDE:2298",
+                  "route_short_name": "43",
+                  "merged_itineraries": [
+                    {
+                      "itineraries": [ { "internal_itinerary_id": "44", "headsign": "Feuersee" } ],
+                      "schedule_items": [
+                        { "departure_time": 1700000600, "internal_itinerary_id": "44" },
+                        { "departure_time": 1600000000, "internal_itinerary_id": "44" }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "global_stop_id": "VVSDE:2394",
+                  "route_short_name": "U6",
+                  "merged_itineraries": [
+                    {
+                      "itineraries": [ { "internal_itinerary_id": "1", "headsign": "Flughafen" } ],
+                      "schedule_items": [
+                        { "departure_time": 1700000300, "internal_itinerary_id": "1" }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+            """;
+
     @Test
     public void testDepartureOrdering() {
-        Gson gson = new Gson();
+        StopDeparturesResult result = Objects.requireNonNull(gson.fromJson(JSON, StopDeparturesResult.class));
 
-        // Simulate API responses via Gson to avoid needing setters
-        ScheduleItem item1 = Objects
-                .requireNonNull(gson.fromJson("{ \"departure_time\": 1700000000 }", ScheduleItem.class));
-        ScheduleItem item2 = Objects
-                .requireNonNull(gson.fromJson("{ \"departure_time\": 1600000000 }", ScheduleItem.class));
+        List<Departure> departures = TransitStopHandler.flattenDepartures(result.getRouteDepartures(), 1700000000L);
 
-        List<ScheduleItem> departures = new ArrayList<>();
-        departures.add(item1);
-        departures.add(item2);
-
-        // Test sorting logic via the new getters
-        departures.sort(Comparator.comparing(a -> {
-            Instant t = a.getDepartureTime();
-            return t != null ? t.getEpochSecond() : 0L;
-        }));
-
-        assertNotNull(departures);
+        // the departure in the past is dropped, the others are sorted across both stops
         assertEquals(2, departures.size());
+        assertEquals("U6", departures.get(0).route().getRouteShortName());
+        assertEquals("VVSDE:2394", departures.get(0).route().getGlobalStopId());
+        assertEquals("Flughafen", departures.get(0).itinerary().getHeadsign(departures.get(0).schedule()));
+        assertEquals("43", departures.get(1).route().getRouteShortName());
+        assertEquals(1700000600L, departures.get(1).departureTime().getEpochSecond());
+    }
 
-        // Expectation: item2 (earlier) is now at the first position
-        Instant firstDeparture = Objects.requireNonNull(departures.get(0).getDepartureTime());
-        Instant secondDeparture = Objects.requireNonNull(departures.get(1).getDepartureTime());
-
-        assertEquals(1600000000L, firstDeparture.getEpochSecond());
-        assertEquals(1700000000L, secondDeparture.getEpochSecond());
+    @Test
+    public void testNormalizeList() {
+        assertEquals("VVSDE:2298,VVSDE:2394", TransitPollingHandler.normalizeList(" VVSDE:2298 , ,VVSDE:2394,"));
+        assertEquals("BC Transit West Kootenay|West Kootenay",
+                TransitPollingHandler.normalizeList(" BC Transit West Kootenay|West Kootenay "));
+        assertEquals("", TransitPollingHandler.normalizeList(" , "));
     }
 }

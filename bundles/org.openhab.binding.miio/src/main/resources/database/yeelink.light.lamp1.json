@@ -3,24 +3,13 @@
 		"id": [
 			"yeelink.light.lamp1",
 			"yeelink.light.lamp2",
-			"yeelink.light.lamp3",
 			"yeelink.light.lamp4",
-			"yeelink.light.lamp5",
 			"yeelink.light.lamp6",
 			"yeelink.light.lamp7",
 			"yeelink.light.lamp8",
-			"yeelink.light.lamp9",
-			"yeelink.light.lamp10",
 			"yeelink.light.strip4",
 			"yeelink.light.ct2",
-			"yeelink.light.mono1",
-			"yeelink.light.mono2",
-			"yeelink.light.mono4",
-			"yeelink.light.mono5",
-			"yeelink.light.mono6",
-			"yeelink.light.monoa",
-			"yeelink.light.monob",
-			"yeelink.light.virtual"
+			"yeelink.light.cta"
 		],
 		"channels": [
 			{
@@ -32,13 +21,15 @@
 				"actions": [
 					{
 						"command": "set_power",
-						"parameterType": "ONOFF"
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -50,6 +41,11 @@
 					{
 						"command": "set_bright",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessExisting"
 						}
@@ -57,6 +53,11 @@
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessOnOff"
 						}
@@ -64,8 +65,8 @@
 				],
 				"category": "light",
 				"tags": [
-					"Setpoint",
-					"Light"
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -98,9 +99,10 @@
 				"property": "ct",
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
 				"stateDescription": {
-					"minimum": 2700,
+					"minimum": 2500,
 					"maximum": 6500,
 					"step": 1,
 					"pattern": "%.0f K"
@@ -117,91 +119,7 @@
 						]
 					}
 				],
-				"category": "colorlight",
-				"tags": [
-					"Setpoint",
-					"Temperature"
-				]
-			},
-			{
-				"property": "color_mode",
-				"friendlyName": "Color Mode",
-				"channel": "colorMode",
-				"type": "Number",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 5,
-					"step": 1,
-					"options": [
-						{
-							"value": "0",
-							"label": "Default"
-						},
-						{
-							"value": "2",
-							"label": "CT mode"
-						},
-						{
-							"value": "1",
-							"label": "RGB mode"
-						},
-						{
-							"value": "3",
-							"label": "HSV mode"
-						},
-						{
-							"value": "4",
-							"label": "Color Flow mode"
-						},
-						{
-							"value": "5",
-							"label": "Night Light mode"
-						}
-					]
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_rgb",
-						"parameterType": "NONE",
-						"parameters": [
-							"$rgb$",
-							"smooth",
-							500
-						],
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "1"
-								}
-							]
-						}
-					},
-					{
-						"command": "set_ct_abx",
-						"parameterType": "NONE",
-						"parameters": [
-							"$ct$",
-							"smooth",
-							500
-						],
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "2"
-								}
-							]
-						}
-					}
-				],
-				"category": "settings",
-				"tags": [
-					"Control",
-					"Light"
-				],
-				"readmeComment": "Note, currently only supporting switching to RGB or CT mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
+				"category": "colorlight"
 			},
 			{
 				"property": "name",
@@ -217,6 +135,8 @@
 				],
 				"category": "text"
 			}
-		]
+		],
+		"experimental": false,
+		"readmeComment": "The color temperature range differs per model: 2500-4800 K (lamp2), 2600-5000 K (lamp4), 3000-5000 K (lamp7), 2700-6500 K (others)"
 	}
 }

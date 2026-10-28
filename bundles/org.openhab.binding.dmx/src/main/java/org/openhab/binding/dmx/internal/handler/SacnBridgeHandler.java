@@ -67,7 +67,7 @@ public class SacnBridgeHandler extends DmxOverEthernetHandler {
         receiverNodes.clear();
         if (("unicast".equals(configuration.mode))) {
             if (configuration.address.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Could not initialize unicast sender (address not set)");
                 return;
             } else {
@@ -75,7 +75,7 @@ public class SacnBridgeHandler extends DmxOverEthernetHandler {
                     receiverNodes = IpNode.fromString(configuration.address, SacnNode.DEFAULT_PORT);
                     logger.debug("using unicast mode to {} for {}", receiverNodes.toString(), this.thing.getUID());
                 } catch (IllegalArgumentException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                     return;
                 }
             }

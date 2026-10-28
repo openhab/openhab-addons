@@ -118,11 +118,11 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
                     connectionInit();
                     updateStatus(ThingStatus.ONLINE);
                 } catch (LinkyException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             } catch (Exception e) {
                 logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
     }
@@ -151,11 +151,6 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Shutting down Linky API bridge handler.");
         super.dispose();
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
     }
 
     public abstract String getToken(ThingBaseRemoteHandler handler) throws LinkyException;

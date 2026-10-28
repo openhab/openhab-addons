@@ -111,8 +111,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
     public void initialize() {
         KlipperConfiguration cfg = getConfigAs(KlipperConfiguration.class);
         if (cfg.hostname.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-hostname");
             return;
         }
         config = cfg;

@@ -57,6 +57,20 @@ public class Utils {
     }
 
     /**
+     * Get the model year from the model reported by the REST interface
+     *
+     * @param model model, eg "22_PONTUSM_FTV"
+     * @return model year, eg 22, or 0 if unknown
+     */
+    public static int getModelYear(String model) {
+        try {
+            return Integer.parseInt(model.split("_")[0]);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    /**
      * Build {@link Document} from {@link String} which contains XML content.
      *
      * @param xml

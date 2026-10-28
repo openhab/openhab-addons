@@ -85,8 +85,7 @@ public class RuuviHandler extends BeaconBluetoothHandler {
             if (!receivedStatus.getAndSet(false) && getThing().getStatus() == ThingStatus.ONLINE) {
                 getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked)
                         .forEach(c -> updateState(c, UnDefType.UNDEF));
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "No data received for some time");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No data received for some time");
             }
         }
     }
@@ -232,12 +231,12 @@ public class RuuviHandler extends BeaconBluetoothHandler {
                         // Update to ONLINE by super.onScanRecordReceived already, based on RSSI value
                         super.onScanRecordReceived(scanNotification);
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Received Ruuvi Tag data but no fields could be parsed");
                         return;
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats");
                     return;
                 }

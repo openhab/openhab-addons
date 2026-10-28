@@ -95,7 +95,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
             try {
                 powerLevels.parse(config.powerLevels);
             } catch (IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid power level entry");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid power level entry");
                 return;
             }
             String pretty = powerLevels.toString();
@@ -118,19 +118,23 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void updateStatus(ThingStatus thingStatus) {
-        this.updateStatus(thingStatus, ThingStatusDetail.NONE, null);
+        super.updateStatus(thingStatus);
+        notifyBridgeOfStatusChange(thingStatus);
     }
 
     @Override
-    public void updateStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail) {
-        this.updateStatus(thingStatus, thingStatusDetail, null);
+    protected void updateStatus(ThingStatus thingStatus, @Nullable String description) {
+        super.updateStatus(thingStatus, description);
+        notifyBridgeOfStatusChange(thingStatus);
     }
 
     @Override
-    public void updateStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
-            @Nullable String description) {
-        super.updateStatus(thingStatus, thingStatusDetail, description);
+    protected void updateStatus(ThingStatusDetail thingStatusDetail, @Nullable String description) {
+        super.updateStatus(thingStatusDetail, description);
+        notifyBridgeOfStatusChange(thing.getStatus());
+    }
 
+    private void notifyBridgeOfStatusChange(ThingStatus thingStatus) {
         if (getBridge() instanceof Bridge bridge) {
             if (bridge.getHandler() instanceof SenseEnergyMonitorHandler monitorHandler) {
                 monitorHandler.childStatusChange(this, thingStatus);
@@ -219,7 +223,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             goOnline();
         }
@@ -228,19 +232,18 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
     public boolean checkBridgeStatus() {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.bridge-missing");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return false;
         }
 
         SenseEnergyMonitorHandler bridgeHandler = (SenseEnergyMonitorHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             return false;
         }
 
         if (bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return false;
         }
 

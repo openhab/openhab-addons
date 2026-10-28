@@ -232,7 +232,7 @@ public class NetworkHandler extends BaseThingHandler
             case TCP_SERVICE:
                 Integer port = config.port;
                 if (port == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
                     return;
                 }
                 presenceDetection.setHostname(config.hostname);
@@ -244,7 +244,7 @@ public class NetworkHandler extends BaseThingHandler
                     uri = new URI(config.url);
                 } catch (URISyntaxException e) {
                     // The exception message contains the URL, which may contain credentials
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Configured URL is not valid: " + e.getReason() + " at index " + e.getIndex());
                     return;
                 }
@@ -252,7 +252,7 @@ public class NetworkHandler extends BaseThingHandler
                 String scheme = uri.getScheme();
                 // URI schemes are case-insensitive
                 if (host == null || !("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Configured URL must be an absolute http:// or https:// URL!");
                     return;
                 }

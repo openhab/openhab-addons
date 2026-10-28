@@ -117,8 +117,7 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
         listenningPort = config.getListenningPort();
 
         if (listenningPort == -1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/@listenning_port_not_defined");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/@listenning_port_not_defined");
             return;
         }
 
@@ -164,7 +163,7 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
             socket.register(selector, SelectionKey.OP_ACCEPT);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             return;
         }
 
@@ -248,7 +247,7 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
             }
         } catch (IOException ex) {
             logger.debug("IO Exception occurred in data reception loop", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ex.getMessage());
         } finally {
             try {
                 if (socket != null) {

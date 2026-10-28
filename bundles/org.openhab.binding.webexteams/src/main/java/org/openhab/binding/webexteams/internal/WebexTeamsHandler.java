@@ -109,26 +109,25 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
             try {
                 createBotOAuthClientService(config);
             } catch (WebexTeamsException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNotAuth");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNotAuth");
                 return;
             }
         } else if (!clientId.isBlank()) { // For integrations
             logger.debug("I think I'm a person.");
             if (clientSecret.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNoSecret");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNoSecret");
                 return;
             }
             createIntegrationOAuthClientService(config);
         } else { // If no bot or integration credentials, go offline
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorTokenOrId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorTokenOrId");
             return;
         }
 
         OAuthClientService localAuthService = this.authService;
         if (localAuthService == null) {
             logger.warn("authService not properly initialized");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "authService not properly initialized");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "authService not properly initialized");
             return;
         }
 
@@ -207,10 +206,10 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
             return user;
         } catch (RuntimeException | OAuthException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new WebexTeamsException("Failed to authorize", e);
         } catch (final OAuthResponseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new WebexTeamsException("OAuth exception", e);
         }
     }
@@ -271,8 +270,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
                 WebexTeamsApi client = this.client;
                 if (client == null) {
                     logger.warn("Client not properly initialized");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Client not properly initialized");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Client not properly initialized");
                     return false;
                 }
                 person = client.getPerson();
@@ -298,7 +296,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
                 return true;
             } catch (WebexTeamsException e) {
                 logger.warn("Failed to refresh: {}.  Did you authorize?", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             return false;
         }

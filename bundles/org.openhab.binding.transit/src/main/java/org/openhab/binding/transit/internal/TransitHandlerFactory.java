@@ -15,9 +15,12 @@ package org.openhab.binding.transit.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transit.internal.handler.TransitBridgeHandler;
+import org.openhab.binding.transit.internal.handler.TransitJourneyHandler;
+import org.openhab.binding.transit.internal.handler.TransitNetworkAlertsHandler;
 import org.openhab.binding.transit.internal.handler.TransitRouteDetailsHandler;
 import org.openhab.binding.transit.internal.handler.TransitStopHandler;
 import org.openhab.binding.transit.internal.handler.TransitTripDetailsHandler;
+import org.openhab.binding.transit.internal.handler.TransitVehiclesHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -47,10 +50,7 @@ public class TransitHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return TransitBindingConstants.THING_TYPE_BRIDGE.equals(thingTypeUID)
-                || TransitBindingConstants.THING_TYPE_STOP.equals(thingTypeUID)
-                || TransitBindingConstants.THING_TYPE_ROUTE_DETAILS.equals(thingTypeUID)
-                || TransitBindingConstants.THING_TYPE_TRIP_DETAILS.equals(thingTypeUID);
+        return TransitBindingConstants.SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
@@ -65,6 +65,12 @@ public class TransitHandlerFactory extends BaseThingHandlerFactory {
             return new TransitRouteDetailsHandler(thing);
         } else if (thingTypeUID.equals(TransitBindingConstants.THING_TYPE_TRIP_DETAILS)) {
             return new TransitTripDetailsHandler(thing);
+        } else if (thingTypeUID.equals(TransitBindingConstants.THING_TYPE_NETWORK_ALERTS)) {
+            return new TransitNetworkAlertsHandler(thing);
+        } else if (thingTypeUID.equals(TransitBindingConstants.THING_TYPE_JOURNEY)) {
+            return new TransitJourneyHandler(thing);
+        } else if (thingTypeUID.equals(TransitBindingConstants.THING_TYPE_VEHICLES)) {
+            return new TransitVehiclesHandler(thing);
         }
 
         return null;

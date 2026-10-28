@@ -106,8 +106,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         logger.debug("Initializing AirParif bridge handler.");
         config = getConfigAs(BridgeConfiguration.class);
         if (config.apikey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-unknown-apikey");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-apikey");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -178,7 +177,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         try { // This is only intended to validate communication with the server
             version = executeUri(VERSION_URI, Version.class);
         } catch (AirParifException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
 
@@ -186,7 +185,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         try { // This validates the api key value
             keyInfo = executeUri(KEY_INFO_URI, KeyInfo.class);
         } catch (AirParifException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
 
@@ -276,8 +275,8 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override

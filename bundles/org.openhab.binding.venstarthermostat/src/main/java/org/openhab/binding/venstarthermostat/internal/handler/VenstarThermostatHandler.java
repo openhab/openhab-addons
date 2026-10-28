@@ -272,7 +272,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
     protected void goOffline(ThingStatusDetail detail, String reason) {
         if (getThing().getStatus() != ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, detail, reason);
+            updateStatus(detail, reason);
         }
     }
 
@@ -292,7 +292,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             startUpdatesTask(0);
         } catch (Exception e) {
             log.debug("Could not conntect to URL  {}", config.url, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 

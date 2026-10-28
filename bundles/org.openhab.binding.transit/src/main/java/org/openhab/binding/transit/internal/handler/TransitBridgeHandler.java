@@ -16,7 +16,7 @@ import static org.openhab.binding.transit.internal.TransitBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -31,10 +31,17 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.transit.internal.action.TransitBridgeActions;
 import org.openhab.binding.transit.internal.config.TransitBridgeConfiguration;
+import org.openhab.binding.transit.internal.discovery.TransitStopDiscoveryService;
 import org.openhab.binding.transit.internal.net.TransitApiClient;
+import org.openhab.binding.transit.internal.net.TransitPlace;
+import org.openhab.binding.transit.internal.net.dto.EstimatePlanDurationResult;
+import org.openhab.binding.transit.internal.net.dto.NetworkAlertsResult;
+import org.openhab.binding.transit.internal.net.dto.PlanResult;
 import org.openhab.binding.transit.internal.net.dto.RouteDetailsResult;
 import org.openhab.binding.transit.internal.net.dto.StopDeparturesResult;
+import org.openhab.binding.transit.internal.net.dto.StopsResult;
 import org.openhab.binding.transit.internal.net.dto.TripDetailsResult;
+import org.openhab.binding.transit.internal.net.dto.VehiclesResult;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -67,8 +74,7 @@ public class TransitBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(TransitBridgeConfiguration.class);
 
         if (config.apiKey.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-api-key");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-api-key");
             return;
         }
 
@@ -94,10 +100,10 @@ public class TransitBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             } else if (statusCode == HttpStatus.UNAUTHORIZED_401 || statusCode == HttpStatus.FORBIDDEN_403) {
                 // invalid API key: no retry, the user has to fix the configuration
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.comm-error-auth-failed [\"" + statusCode + "\"]");
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error-unexpected-response [\"" + statusCode + "\"]");
                 long delay = statusCode == HttpStatus.TOO_MANY_REQUESTS_429 ? getRetryAfterSeconds(response)
                         : config.retryAfterSeconds;
@@ -106,13 +112,11 @@ public class TransitBridgeHandler extends BaseBridgeHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-timeout");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-timeout");
             scheduleVerification(config.retryAfterSeconds);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    cause != null ? cause.getMessage() : e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, cause != null ? cause.getMessage() : e.getMessage());
             scheduleVerification(config.retryAfterSeconds);
         }
     }
@@ -168,6 +172,36 @@ public class TransitBridgeHandler extends BaseBridgeHandler {
         return apiClient.fetchNearbyStops(config.apiKey, lat, lon);
     }
 
+    public StopsResult getNearbyStops(double lat, double lon) throws IOException, InterruptedException {
+        return apiClient.getNearbyStops(config.apiKey, lat, lon);
+    }
+
+    public String fetchSearchStops(double lat, double lon, String query) throws IOException, InterruptedException {
+        return apiClient.fetchSearchStops(config.apiKey, lat, lon, query);
+    }
+
+    public NetworkAlertsResult getNetworkAlerts(String networkIds) throws IOException, InterruptedException {
+        return apiClient.getNetworkAlerts(config.apiKey, networkIds);
+    }
+
+    public PlanResult getPlan(TransitPlace from, TransitPlace to) throws IOException, InterruptedException {
+        return apiClient.getPlan(config.apiKey, from, to);
+    }
+
+    public String fetchPlan(TransitPlace from, TransitPlace to) throws IOException, InterruptedException {
+        return apiClient.fetchPlan(config.apiKey, from, to);
+    }
+
+    public EstimatePlanDurationResult getEstimatePlanDuration(TransitPlace from, TransitPlace to)
+            throws IOException, InterruptedException {
+        return apiClient.getEstimatePlanDuration(config.apiKey, from, to);
+    }
+
+    public VehiclesResult getVehicles(String globalRouteId, @Nullable Integer directionId)
+            throws IOException, InterruptedException {
+        return apiClient.getVehicles(config.apiKey, globalRouteId, directionId);
+    }
+
     public String fetchStopDeparturesRaw(String globalStopId) throws IOException, InterruptedException {
         return apiClient.fetchStopDepartures(config.apiKey, globalStopId, getMaxDepartures());
     }
@@ -178,7 +212,7 @@ public class TransitBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.<Class<? extends ThingHandlerService>> singleton(TransitBridgeActions.class);
+        return Set.of(TransitBridgeActions.class, TransitStopDiscoveryService.class);
     }
 
     @Override

@@ -138,7 +138,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         } else {
             // delay the initialisation
             scheduleReinitialize(delay);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
         }
     }
 
@@ -197,7 +197,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 scheduleReinitialize(delay);
                 apiCallSuppressionUpdate(delay);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
             disposeGardena();
         }
     }
@@ -290,7 +290,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 }
                 gardenaThingHandler.updateStatus(device);
             } catch (GardenaException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
             } catch (AccountHandlerNotAvailableException ignore) {
             }
         }
@@ -312,7 +312,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             scheduleReinitialize(delay);
         }
         apiCallSuppressionUpdate(delay);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
         disposeGardena();
     }
 }

@@ -85,7 +85,7 @@ public class ChromecastHandler extends BaseThingHandler {
 
         final String ipAddress = config.ipAddress;
         if (ipAddress == null || ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Chromecast. IP address is not valid or missing.");
             return;
         }
@@ -143,8 +143,13 @@ public class ChromecastHandler extends BaseThingHandler {
     }
 
     @Override // Just exposing this for ChromecastStatusUpdater.
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+    }
+
+    @Override // Just exposing this for ChromecastStatusUpdater.
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override // Just exposing this for ChromecastStatusUpdater.
@@ -305,8 +310,7 @@ public class ChromecastHandler extends BaseThingHandler {
                     return;
                 }
                 logger.debug("Connect failed, trying to reconnect: {}", e.getMessage());
-                statusUpdater.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        e.getMessage());
+                statusUpdater.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduler.scheduleConnect();
             }
         }

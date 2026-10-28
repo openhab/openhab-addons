@@ -198,7 +198,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
             }
         } else {
             String msg = String.format("@text/offline.no-udn [ \"%s\" ]", thing.getLabel());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
         }
     }
 
@@ -399,7 +399,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
             upnpSubscribed = false;
             String msg = String.format("@text/offline.subscription-failed [ \"%1$s\", \"%2$s\" ]", service,
                     thing.getLabel());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
     }
 
@@ -410,7 +410,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
             initJob();
         } else {
             String msg = String.format("@text/offline.communication-lost [ \"%s\" ]", thing.getLabel());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
     }
 

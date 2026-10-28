@@ -22,6 +22,21 @@
 			<channel id="sleepTargetBrightness" typeId="sleepTargetBrightness"/>
 			<channel id="syncSend" typeId="syncSend"/>
 			<channel id="syncReceive" typeId="syncReceive"/>
+			<channel id="sleepRemaining" typeId="sleepRemaining"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="freeHeap" typeId="freeHeap"/>
+			<channel id="wifiSignal" typeId="wifiSignal"/>
+			<channel id="estimatedCurrent" typeId="estimatedCurrent"/>
+			<channel id="fps" typeId="fps"/>
+			<channel id="syncSendGroups" typeId="syncSendGroups"/>
+			<channel id="syncReceiveGroups" typeId="syncReceiveGroups"/>
+			<channel id="mainSegment" typeId="mainSegment"/>
+			<channel id="ledMap" typeId="ledMap"/>
+			<channel id="liveActive" typeId="liveActive"/>
+			<channel id="liveMode" typeId="liveMode"/>
+			<channel id="liveSource" typeId="liveSource"/>
+			<channel id="audioReactive" typeId="audioReactive"/>
+			<channel id="audioSyncMode" typeId="audioSyncMode"/>
 		</channels>
 		<properties>
 			<property name="macAddress"></property>
@@ -87,6 +102,20 @@
 			<channel id="reverse" typeId="reverse"/>
 			<channel id="grouping" typeId="grouping"/>
 			<channel id="spacing" typeId="spacing"/>
+			<channel id="whiteTemperature" typeId="whiteTemperature"/>
+			<channel id="custom1" typeId="custom1"/>
+			<channel id="custom2" typeId="custom2"/>
+			<channel id="custom3" typeId="custom3"/>
+			<channel id="option1" typeId="option1"/>
+			<channel id="option2" typeId="option2"/>
+			<channel id="option3" typeId="option3"/>
+			<channel id="freeze" typeId="freeze"/>
+			<channel id="selected" typeId="selected"/>
+			<channel id="segmentStart" typeId="segmentStart"/>
+			<channel id="segmentStop" typeId="segmentStop"/>
+			<channel id="segmentName" typeId="segmentName"/>
+			<channel id="mapping" typeId="mapping"/>
+			<channel id="soundSimulation" typeId="soundSimulation"/>
 		</channels>
 		<representation-property>segmentIndex</representation-property>
 		<config-description>
@@ -349,6 +378,242 @@
 		<item-type>Switch</item-type>
 		<label>Sync Receive</label>
 		<description>Allows UDP packets from other WLED lights to control this one.</description>
+	</channel-type>
+
+	<channel-type id="sleepRemaining" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Sleep Remaining</label>
+		<description>Time that is left until the sleep timer has finished, 0 when the sleep timer is not running.</description>
+		<category>Time</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Uptime</label>
+		<description>How long the WLED device has been running since it was last started. Needs firmware 0.14.0 or newer.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="freeHeap" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Free Heap</label>
+		<description>Free memory of the WLED device. Needs firmware 0.14.0 or newer.</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wifiSignal" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Wi-Fi Signal</label>
+		<description>Quality of the Wi-Fi signal that the WLED device receives. Needs firmware 0.14.0 or newer.</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>SignalStrength</tag>
+		</tags>
+		<state min="0" max="100" pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="estimatedCurrent" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Estimated Current</label>
+		<description>The current that WLED estimates the LEDs are using. Needs firmware 0.14.0 or newer.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fps" advanced="true">
+		<item-type>Number</item-type>
+		<label>Frames per Second</label>
+		<description>How many frames per second the WLED device is currently showing. Needs firmware 0.14.0 or newer.</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="whiteTemperature" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>White Temperature</label>
+		<description>Changes the white spectrum from warm (0%) to cold (100%). Only for LED strips that have CCT support.</description>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="custom1" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>FX Slider 1</label>
+		<description>First custom slider of the effect. What it does depends on the selected effect. Needs firmware 0.14.0 or
+			newer.</description>
+	</channel-type>
+
+	<channel-type id="custom2" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>FX Slider 2</label>
+		<description>Second custom slider of the effect. What it does depends on the selected effect. Needs firmware 0.14.0 or
+			newer.</description>
+	</channel-type>
+
+	<channel-type id="custom3" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>FX Slider 3</label>
+		<description>Third custom slider of the effect, it has 32 steps. What it does depends on the selected effect. Needs
+			firmware 0.14.0 or newer.</description>
+	</channel-type>
+
+	<channel-type id="option1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>FX Option 1</label>
+		<description>First option of the effect. What it does depends on the selected effect. Needs firmware 0.14.0 or newer.</description>
+	</channel-type>
+
+	<channel-type id="option2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>FX Option 2</label>
+		<description>Second option of the effect. What it does depends on the selected effect. Needs firmware 0.14.0 or newer.</description>
+	</channel-type>
+
+	<channel-type id="option3" advanced="true">
+		<item-type>Switch</item-type>
+		<label>FX Option 3</label>
+		<description>Third option of the effect. What it does depends on the selected effect. Needs firmware 0.14.0 or newer.</description>
+	</channel-type>
+
+	<channel-type id="freeze" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Freeze</label>
+		<description>Freezes the effect of this segment on the current frame. Needs firmware 0.14.0 or newer.</description>
+	</channel-type>
+
+	<channel-type id="selected" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Selected</label>
+		<description>Segments that are selected receive the commands that are sent without a segment, like with the WLED app.</description>
+	</channel-type>
+
+	<channel-type id="segmentStart" advanced="true">
+		<item-type>Number</item-type>
+		<label>Segment Start</label>
+		<description>The first LED of this segment, counting starts at 0.</description>
+		<state min="0" step="1" pattern="%d" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="segmentStop" advanced="true">
+		<item-type>Number</item-type>
+		<label>Segment Stop</label>
+		<description>The first LED after the end of this segment, so it is not part of the segment.</description>
+		<state min="0" step="1" pattern="%d" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="segmentName" advanced="true">
+		<item-type>String</item-type>
+		<label>Segment Name</label>
+		<description>The name of this segment. Needs firmware 0.13.0 or newer.</description>
+	</channel-type>
+
+	<channel-type id="syncSendGroups" advanced="true">
+		<item-type>Number</item-type>
+		<label>Sync Send Groups</label>
+		<description>The groups that this light sends its changes to as a bit mask, group 1 is 1, group 2 is 2, group 3 is 4
+			up to group 8 that is 128.</description>
+		<state min="0" max="255" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="syncReceiveGroups" advanced="true">
+		<item-type>Number</item-type>
+		<label>Sync Receive Groups</label>
+		<description>The groups that this light listens to as a bit mask, group 1 is 1, group 2 is 2, group 3 is 4 up to group
+			8 that is 128.</description>
+		<state min="0" max="255" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="mainSegment" advanced="true">
+		<item-type>Number</item-type>
+		<label>Main Segment</label>
+		<description>The number of the main segment, it is used by the web page and the apps of WLED.</description>
+		<state min="0" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="ledMap" advanced="true">
+		<item-type>Number</item-type>
+		<label>LED Map</label>
+		<description>Loads the LED map with this number, 0 is the ledmap.json and 1 to 9 are ledmap1.json to ledmap9.json. The
+			device does not report the active map, so this channel only sends. Needs firmware 0.14.0 or newer.</description>
+		<state min="0" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="liveActive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Live Data Active</label>
+		<description>ON when another device or app is sending live data to the lights, like a DDP, E1.31 or Art-Net stream.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="liveMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Live Data Mode</label>
+		<description>The protocol of the live data that the lights show.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="liveSource" advanced="true">
+		<item-type>String</item-type>
+		<label>Live Data Source</label>
+		<description>The IP address that sends the live data.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="audioReactive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Audio Reactive</label>
+		<description>Turns the AudioReactive usermod on or off. Needs a WLED version with the AudioReactive usermod.</description>
+	</channel-type>
+
+	<channel-type id="audioSyncMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Sync Mode</label>
+		<description>Sends the audio of this device to other WLED devices, or receives the audio from another one. Needs the
+			AudioReactive usermod.</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Send</option>
+				<option value="2">Receive</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="mapping" advanced="true">
+		<item-type>String</item-type>
+		<label>Mapping</label>
+		<description>How the effect is mapped on a 2D matrix. Needs firmware 0.14.0 or newer.</description>
+		<state>
+			<options>
+				<option value="0">Pixels</option>
+				<option value="1">Bar</option>
+				<option value="2">Arc</option>
+				<option value="3">Corner</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="soundSimulation" advanced="true">
+		<item-type>String</item-type>
+		<label>Sound Simulation</label>
+		<description>The simulated sound that sound reactive effects use when no audio is received. Needs firmware 0.14.0 or
+			newer.</description>
+		<state>
+			<options>
+				<option value="0">BeatSin</option>
+				<option value="1">WeWillRockYou</option>
+				<option value="2">10_3</option>
+				<option value="3">14_3</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

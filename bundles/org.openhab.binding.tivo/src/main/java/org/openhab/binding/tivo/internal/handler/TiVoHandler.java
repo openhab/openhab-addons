@@ -155,7 +155,7 @@ public class TiVoHandler extends BaseThingHandler {
 
     public void setStatusOffline() {
         lastConnectionStatus = ConnectionStatus.UNKNOWN;
-        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 "Power on device or check network configuration/connection.");
     }
 
@@ -393,7 +393,7 @@ public class TiVoHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                         break;
                     case STANDBY:
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                                 "STANDBY MODE: Send command TIVO to Remote Control Button (IRCODE) item to wakeup.");
                         break;
                     case UNKNOWN:

@@ -534,14 +534,19 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public void initialize() {
         super.initialize();
         if (isBridgedAccessory) {
-            if (getBridge() instanceof Bridge bridge && bridge.getStatus() == ThingStatus.ONLINE) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+                return;
+            }
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
                 scheduler.submit(() -> {
                     onConnectedThingAccessoriesLoaded();
                     enableEvents(true);
                     updateStatus(ThingStatus.ONLINE);
                 });
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         }
     }
@@ -1257,8 +1262,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 getScheduler().schedule(() -> doMigration(sourceUniqueId, sourceThing, targetBridge, targetThing),
                         MIGRATION_DELAY_SECONDS, TimeUnit.SECONDS);
                 logger.info("{} has embedded accessories; auto-migrating it", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "@text/status.migrating-accessory-to-bridge");
+                updateStatus(ThingStatus.UNKNOWN, "@text/status.migrating-accessory-to-bridge");
                 return true;
             } catch (Exception e) {
                 migrating.set(false);
@@ -1326,8 +1330,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             logger.warn("{} while auto-migrating {} to {}; try editing Thing-Type from 'accessory' to 'bridge'.",
                     e.getMessage(), oldThing.getUID(), newBridge.getUID());
             migrating.set(false);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "@text/status.migrating-accessory-to-bridge-failed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.migrating-accessory-to-bridge-failed");
             return;
         }
         String mac = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
