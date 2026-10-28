@@ -22,6 +22,8 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.naming.CommunicationException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
@@ -138,7 +140,7 @@ public class HomeWizardP1MeterHandlerTest extends HomeWizardHandlerTest {
             }
             doReturn(DataUtil.fromFile("response-batteries.json")).when(handler).getBatteriesData();
             doReturn(DataUtil.fromFile("response-system.json")).when(handler).getSystemData();
-        } catch (IOException ex) {
+        } catch (IOException | CommunicationException ex) {
             assertFalse(true);
         }
 
