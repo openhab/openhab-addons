@@ -50,6 +50,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingTypeUID;
@@ -421,6 +422,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                 }
                             }
                         }
+                        addChannelsForNewSensorValues(t);
                         ShellyComponents.updateDeviceStatus(t, deviceStatus);
                         ShellyComponents.updateSensors(getThing(), deviceStatus);
                         break;
@@ -526,6 +528,15 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             sensorData.sensor = new ShellySensorState();
             sensorData.sensor.isValid = true;
         }
+    }
+
+    /**
+     * BLU packets don't all carry the same values (e.g. a battery-only packet), so add a sensor channel as soon as its
+     * value shows up for the first time instead of deciding once on the first packet
+     */
+    private void addChannelsForNewSensorValues(ShellyBluHandler t) {
+        t.updateThingChannels(Map.of(),
+                ShellyChannelDefinitions.createSensorChannels(t.getThing(), t.getProfile(), sensorData));
     }
 
     private String getFirmwareVersion(Long firmware) {
