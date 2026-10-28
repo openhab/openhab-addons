@@ -153,7 +153,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         List<AwattarPrice> range = getPriceRange(bridgeHandler, timerange);
 
         if (config.consecutive) {
-            result = new AwattarConsecutiveBestPriceResult(range, config.length, zoneId);
+            result = new AwattarConsecutiveBestPriceResult(range, config.length, config.preferCheapStart, zoneId);
         } else {
             result = new AwattarNonConsecutiveBestPriceResult(range, config.length, config.inverted, zoneId);
         }
