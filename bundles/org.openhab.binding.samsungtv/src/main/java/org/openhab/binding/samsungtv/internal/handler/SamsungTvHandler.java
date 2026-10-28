@@ -350,8 +350,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     public void showConfiguration() {
-        logger.debug("{}: Configuration: {}, port: {}, token: {}, MAC: {}, subscription: {}", host,
-                configuration.getProtocol(), configuration.getPort(), configuration.getWebsocketToken(),
+        logger.debug("{}: Configuration: {}, port: {}, token set: {}, MAC: {}, subscription: {}", host,
+                configuration.getProtocol(), configuration.getPort(), !configuration.getWebsocketToken().isBlank(),
                 configuration.getMacAddress(), configuration.getSubscription());
         if (configuration.isWebsocketProtocol()) {
             if (configuration.getSmartThingsApiKey().isBlank()) {
@@ -981,7 +981,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             Configuration config = editConfiguration();
             config.put(key, value);
             updateConfiguration(config);
-            logger.debug("{}: Updated Configuration {}:{}", host, key, value);
+            logger.debug("{}: Updated Configuration {}:{}", host, key, Utils.loggableConfigValue(key, value));
             configuration = getConfigAs(SamsungTvConfiguration.class);
         }
     }
