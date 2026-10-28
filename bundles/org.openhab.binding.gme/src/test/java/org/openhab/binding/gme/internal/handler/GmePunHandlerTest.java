@@ -75,6 +75,7 @@ class GmePunHandlerTest {
             handler.dispose();
         }
     }
+
     @Test
     void reconnectDuringActivePollQueuesNewGenerationRefresh() throws Exception {
         ThingUID bridgeUID = new ThingUID(GmeBindingConstants.THING_TYPE_API, "account");
@@ -96,8 +97,7 @@ class GmePunHandlerTest {
         when(bridgeHandler.getRefreshInterval()).thenReturn(60);
         when(bridgeHandler.getGranularity()).thenReturn(GmeGranularity.PT60);
         when(bridgeHandler.getMarketZone()).thenReturn("");
-        when(authManager.requestMarketPrices(any(LocalDate.class), eq(GmeGranularity.PT60)))
-                .thenAnswer(invocation -> {
+        when(authManager.requestMarketPrices(any(LocalDate.class), eq(GmeGranularity.PT60))).thenAnswer(invocation -> {
                     if (requests.incrementAndGet() == 1) {
                         firstRequestStarted.countDown();
                         if (!releaseFirstRequest.await(5, TimeUnit.SECONDS)) {
@@ -119,12 +119,11 @@ class GmePunHandlerTest {
             handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
 
             releaseFirstRequest.countDown();
-            verify(authManager, timeout(5000).atLeast(2))
-                    .requestMarketPrices(any(LocalDate.class), eq(GmeGranularity.PT60));
+            verify(authManager, timeout(5000).atLeast(2)).requestMarketPrices(any(LocalDate.class),
+                    eq(GmeGranularity.PT60));
         } finally {
             releaseFirstRequest.countDown();
             handler.dispose();
         }
     }
-
 }
