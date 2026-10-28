@@ -385,8 +385,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (!isThingOffline() && (profile.alwaysOn || !profile.isInitialized() && !isThingOnline())) {
             ThingStatusDetail detail = getThingStatusDetail();
             if (detail != ThingStatusDetail.DUTY_CYCLE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        messages.get("status.config_pending"));
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, messages.get("status.config_pending"));
             }
         }
 
@@ -727,7 +726,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     // set or clear the update available marker
                     boolean updateAvailable = getBool(status.update.hasUpdate);
                     if (updateAvailable && !updateMarkerSet) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                        updateStatus(ThingStatus.ONLINE,
                                 messages.get("manager.action.checkupd.new", getString(status.update.newVersion)));
                         updateMarkerSet = true; // specifically set update marker flag only in this case
                     } else if (!updateAvailable && updateMarkerSet) {
@@ -759,13 +758,29 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
-        updateMarkerSet = false;
-        if (stopping) {
-            return;
+    protected void updateStatus(ThingStatus status) {
+        if (shouldUpdateStatus()) {
+            super.updateStatus(status);
         }
-        super.updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        if (shouldUpdateStatus()) {
+            super.updateStatus(status, description);
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        if (shouldUpdateStatus()) {
+            super.updateStatus(statusDetail, description);
+        }
+    }
+
+    private boolean shouldUpdateStatus() {
+        updateMarkerSet = false;
+        return !stopping;
     }
 
     // WebSocket events and in-flight polls may still arrive after dispose(), core would reject and log them
@@ -934,7 +949,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void setThingOfflineAndDisconnect(ThingStatusDetail detail, String messageKey, Object... arguments) {
         if (!isThingOffline()) {
-            updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey, arguments));
+            updateStatus(detail, messages.get(messageKey, arguments));
         }
         api.close(); // Gen2: disconnect WS/close http sessions
         watchdog = 0;
@@ -947,8 +962,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public void setThingStatus(ThingStatus status, ThingStatusDetail detail, String messageKey, Object... arguments) {
-        updateStatus(status, detail, messages.get(messageKey, arguments));
+    public void setThingStatus(ThingStatusDetail detail, String messageKey, Object... arguments) {
+        updateStatus(detail, messages.get(messageKey, arguments));
     }
 
     @Override
@@ -988,8 +1003,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Handler is shutting down, ignore", thingName);
             return;
         }
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                messages.get("offline.status-error-restarted"));
+        updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, messages.get("offline.status-error-restarted"));
         requestUpdates(0, true);
     }
 

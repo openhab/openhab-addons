@@ -121,7 +121,7 @@ public class HueSyncHandler extends BaseThingHandler {
             ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE, detail, description);
             this.handler.thing.setStatusInfo(statusInfo);
 
-            if (!(detail == ThingStatusDetail.CONFIGURATION_PENDING && tasks.containsKey(TASKS.REGISTER))) {
+            if (!(detail == ThingStatusDetail.AUTHORIZATION_PENDING && tasks.containsKey(TASKS.REGISTER))) {
                 scheduler.execute(initializeHandler());
             }
         }
@@ -130,7 +130,8 @@ public class HueSyncHandler extends BaseThingHandler {
             ThingStatusDetail detail;
             switch (innerException.getResponse().getStatus()) {
                 case HttpStatus.BAD_REQUEST_400 -> {
-                    detail = ThingStatusDetail.CONFIGURATION_PENDING;
+                    detail = tasks.containsKey(TASKS.REGISTER) ? ThingStatusDetail.AUTHORIZATION_PENDING
+                            : ThingStatusDetail.CONFIGURATION_ERROR;
                 }
                 case HttpStatus.UNAUTHORIZED_401 -> {
                     detail = ThingStatusDetail.CONFIGURATION_ERROR;

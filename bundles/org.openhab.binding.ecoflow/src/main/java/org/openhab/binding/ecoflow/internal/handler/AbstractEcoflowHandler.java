@@ -85,9 +85,13 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        final EcoflowApiHandler apiHandler = getApiHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        final EcoflowApiHandler apiHandler = getApiHandler(bridge);
         if (apiHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
@@ -112,15 +116,23 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         serialNumber = getConfigAs(EcoflowDeltaConfiguration.class).serialNumber;
         if (serialNumber.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.config-error-no-serial");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.config-error-no-serial");
         } else {
             logger.debug("{}: Initializing handler", serialNumber);
             initTask.setNamePrefix(serialNumber);
             mqttMessageWatchdogTask.setNamePrefix(serialNumber);
-            updateStatus(ThingStatus.UNKNOWN);
+            if (bridge.getStatus() == ThingStatus.OFFLINE) {
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
             // Now wait for MQTT connection callback
         }
     }
@@ -138,9 +150,13 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
     }
 
     private void initDevice() {
-        final EcoflowApiHandler apiHandler = getApiHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        final EcoflowApiHandler apiHandler = getApiHandler(bridge);
         if (apiHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
@@ -149,8 +165,7 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
             Optional<DeviceListResponseEntry> deviceStatusOpt = api.getDeviceList().stream()
                     .filter(d -> d.serialNumber.equals(serialNumber)).findFirst();
             if (!deviceStatusOpt.isPresent()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-device-not-present");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-device-not-present");
                 return;
             }
 
@@ -159,9 +174,9 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         } catch (EcoflowApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -271,7 +286,11 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
 
     private @Nullable EcoflowApiHandler getApiHandler() {
         final Bridge bridge = getBridge();
-        if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
+        return bridge == null ? null : getApiHandler(bridge);
+    }
+
+    private @Nullable EcoflowApiHandler getApiHandler(Bridge bridge) {
+        if (bridge.getStatus() != ThingStatus.ONLINE) {
             return null;
         }
         if (bridge.getHandler() instanceof EcoflowApiHandler handler) {

@@ -41,7 +41,7 @@ public class SerialBusHandler extends BusHandler {
         if (result.code == ThingStatusDetail.NONE) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, result.code, result.message);
+            updateStatus(result.code, result.message);
         }
     }
 

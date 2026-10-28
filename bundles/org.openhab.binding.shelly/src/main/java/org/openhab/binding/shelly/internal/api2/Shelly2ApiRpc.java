@@ -94,7 +94,6 @@ import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
@@ -665,21 +664,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     break;
                 case SHELLY2_EVENT_OTASTART:
                     logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
-                    getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
-                            "offline.status-error-fwupgrade");
+                    getThing().setThingStatus(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
                     break;
                 case SHELLY2_EVENT_OTAPROGRESS:
                     logger.debug("{}: Firmware update in progress: {}", thingName, getString(e.msg));
                     break;
                 case SHELLY2_EVENT_OTADONE:
                     logger.debug("{}: Firmware update completed with status {}", thingName, getString(e.msg));
-                    getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
-                            "offline.status-error-fwcompleted");
+                    getThing().setThingStatus(ThingStatusDetail.DUTY_CYCLE, "offline.status-error-fwcompleted");
                     break;
                 case SHELLY2_EVENT_RESTART:
                     logger.debug("{}: Device was restarted: {}", thingName, getString(e.msg));
-                    getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
-                            "offline.status-error-restarted");
+                    getThing().setThingStatus(ThingStatusDetail.DUTY_CYCLE, "offline.status-error-restarted");
                     getThing().postEvent(ALARM_TYPE_RESTARTED, true);
                     break;
                 case SHELLY2_EVENT_SLEEP:

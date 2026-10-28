@@ -140,13 +140,13 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
                 if (bridgeStatus == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address is not known!");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address is not known!");
         }
     }
 

@@ -95,12 +95,12 @@ public class EGateHandler extends BaseBridgeHandler {
                 logger.debug("Egate successfully connected {}", egateSocket.toString());
             } catch (IOException e) {
                 logger.debug("IOException in initialize: {} host {} port {}", e.toString(), host, port);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
                 egateSocket = null;
             }
             pollingJob = scheduler.scheduleWithFixedDelay(this::pollingConfig, 0, 30, TimeUnit.SECONDS);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to dominoswiss eGate gateway. host IP address or port are not set.");
         }
     }
@@ -265,7 +265,7 @@ public class EGateHandler extends BaseBridgeHandler {
                     logger.debug("EGate Handler started automatic refresh, status: {} ",
                             getThing().getStatus().toString());
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
         }
@@ -288,7 +288,7 @@ public class EGateHandler extends BaseBridgeHandler {
                     onData(input);
                 }
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Error while reading command from Dominoswiss eGate Server " + e.toString());
             }
         };

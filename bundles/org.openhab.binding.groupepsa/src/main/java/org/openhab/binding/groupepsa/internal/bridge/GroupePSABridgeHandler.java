@@ -82,11 +82,10 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
             if (vehicles != null) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error-query-vehicles-failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-query-vehicles-failed");
             }
         } catch (GroupePSACommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -112,19 +111,17 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
         final Integer pollingIntervalM = bridgeConfiguration.getPollingInterval();
 
         if (vendor.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-vendor");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-vendor");
         } else if (userName.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
         } else if (password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-password");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-password");
         } else if (clientId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-clientid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-clientid");
         } else if (clientSecret.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/conf-error-no-clientsecret");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-clientsecret");
         } else if (pollingIntervalM < 1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/conf-error-invalid-polling-interval");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-invalid-polling-interval");
         } else {
             VendorConstants localVendorConstants = VendorConstants.valueOf(vendor);
             vendorConstants = localVendorConstants;

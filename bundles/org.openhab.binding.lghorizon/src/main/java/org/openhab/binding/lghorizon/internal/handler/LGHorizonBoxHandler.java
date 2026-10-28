@@ -89,8 +89,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     public void initialize() {
         LGHorizonBoxConfiguration config = getConfigAs(LGHorizonBoxConfiguration.class);
         if (config.deviceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.box-missing-device-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.box-missing-device-id");
             return;
         }
         this.deviceId = config.deviceId;
@@ -98,7 +97,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
 
         LGHorizonAccountHandler account = getAccountHandler();
         if (account == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            logger.debug("The bridge handler was unexpected null, for thing: {}", getThing().getUID());
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -362,7 +361,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         if (reachable) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.box-reports-state [\"" + rawState + "\"]");
         }
     }

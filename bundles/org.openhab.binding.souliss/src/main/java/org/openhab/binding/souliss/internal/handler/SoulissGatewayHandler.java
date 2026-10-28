@@ -184,7 +184,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         if (++countPingKo > 3) {
             var bridgeHandler = bridge.getHandler();
             if (bridgeHandler != null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Gateway " + bridgeHandler.getThing().getUID() + " do not respond to " + countPingKo + " ping");
             }
         }

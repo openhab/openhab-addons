@@ -86,7 +86,7 @@ public class GardenaThingHandler extends BaseThingHandler {
             updateProperties(device);
             updateStatus(device);
         } catch (GardenaException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
         } catch (AccountHandlerNotAvailableException ex) {
             // ignore
         }
@@ -307,7 +307,11 @@ public class GardenaThingHandler extends BaseThingHandler {
         }
 
         if (oldStatus != newStatus || thing.getStatusInfo().getStatusDetail() != newDetail) {
-            updateStatus(newStatus, newDetail);
+            if (newDetail == ThingStatusDetail.NONE) {
+                updateStatus(newStatus);
+            } else {
+                updateStatus(newDetail);
+            }
         }
     }
 
@@ -345,16 +349,20 @@ public class GardenaThingHandler extends BaseThingHandler {
      * Returns the Gardena smart system implementation if the bridge is available.
      */
     private GardenaSmart getGardenaSmart() throws AccountHandlerNotAvailableException {
-        final Bridge bridge;
+        final Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            throw new AccountHandlerNotAvailableException("Gardena AccountHandler not yet available!");
+        }
         final ThingHandler handler;
-        if ((bridge = getBridge()) != null && (handler = bridge.getHandler()) != null) {
+        if ((handler = bridge.getHandler()) != null) {
             final GardenaSmart gardenaSmart = ((GardenaAccountHandler) handler).getGardenaSmart();
             if (gardenaSmart != null) {
                 return gardenaSmart;
             }
         }
         if (thing.getStatus() != ThingStatus.INITIALIZING) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         throw new AccountHandlerNotAvailableException("Gardena AccountHandler not yet available!");
     }
