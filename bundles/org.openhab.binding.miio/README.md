@@ -303,7 +303,8 @@ Currently the miio binding supports more than 560 different models.
 | Mi IH Rice Cooker 4L               | miio:unsupported | chunmi.cooker.normal4  | No           |            |
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press1   | No           |            |
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press2   | No           |            |
-| Gosund Smart Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes          |            |
+| Gosund Smart Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes          | Indicator light, child lock, power-on state and power metering follow the Mi Home plugin; they are not in the MIoT spec and may not be available on every plug. |
+| Gosund Smart Plug CP1              | miio:basic       | [cuco.plug.cp1d](#cuco-plug-cp1d) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          |            |
 | Mi Smart Antibacterial Humidifier  | miio:basic       | [deerma.humidifier.jsq](#deerma-humidifier-jsq) | Yes          |            |
 | Mi Smart Humidifier S              | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes          |            |
@@ -534,6 +535,7 @@ Currently the miio binding supports more than 560 different models.
 | Philips ZhiYi Ceiling lamp         | miio:basic       | [philips.light.zyceiling](#philips-light-zyceiling) | Yes          |            |
 | Philips ZhiYi Desk Lamp            | miio:basic       | [philips.light.zysread](#philips-light-zysread) | Yes          |            |
 | Philips ZhiYi Strip                | miio:basic       | [philips.light.zystrip](#philips-light-zystrip) | Yes          |            |
+| Xiaomi Smart Plug 2                | miio:basic       | [qmi.plug.tw02](#qmi-plug-tw02) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | CHINGMI Smart Power Strip v1       | miio:basic       | [qmi.powerstrip.v1](#qmi-powerstrip-v1) | Yes          |            |
 | Rockrobo Xiaowa Sweeper v2         | miio:unsupported | roborock.sweeper.e2v2  | No           |            |
 | Rockrobo Xiaowa Sweeper v3         | miio:unsupported | roborock.sweeper.e2v3  | No           |            |
@@ -607,6 +609,9 @@ Currently the miio binding supports more than 560 different models.
 | ROIDMI EVE CC                      | miio:basic       | [roidmi.vacuum.v62](#roidmi-vacuum-v62) | Experimental | Use the `clean_rooms` channel with comma separated room ids to clean specific rooms. Resetting the map deletes the saved map with its rooms and zones, so it is not offered as an action; send `action{"did":"actions","siid":10,"aiid":10,"in":[]}` on the `actions#commands` channel to do it.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | ROIDMI VACUUM EVE ROOK             | miio:basic       | [roidmi.vacuum.v63](#roidmi-vacuum-v63) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | ROIDMI EVA                         | miio:basic       | [roidmi.vacuum.v66](#roidmi-vacuum-v66) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| One Intelligent switch(WIFI)       | miio:basic       | [090615.switch.switch01](#090615-switch-switch01) | Yes          |            |
+| Two Intelligent Switch (WIFI)      | miio:basic       | [090615.switch.switch02](#090615-switch-switch02) | Yes          |            |
+| Three Intelligent switch(WIFI)     | miio:basic       | [090615.switch.switch03](#090615-switch-switch03) | Yes          |            |
 | PTX OneKey Switch (WIFI)           | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes          |            |
 | PTX Twokey switch(wifi)            | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes          |            |
 | PTX ThreeKey Switch (WIFI)         | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes          |            |
@@ -1121,19 +1126,21 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Power                                    |            |
+| power                      | Switch               | Power                                    |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| working-time               | Number:Time          | Working Time                             |            |
-| on1                        | Switch               | Indicator Light - Switch Status          |            |
-| power-consumption          | Number:Energy        | Daily Power Consumption                  |            |
-| electric-current           | Number:ElectricCurrent | Power Consumption - Electric Current     |            |
-| voltage                    | Number:ElectricPotential | Power Consumption - Voltage              |            |
-| electric-power             | Number:Power         | Current Power Consumption - Electric Power |            |
-| on-duration                | Number:Time          | Imilab Timer - On Duration               |            |
-| off-duration               | Number:Time          | Imilab Timer - Off Duration              |            |
-| countdown                  | Number:Time          | Imilab Timer - Countdown                 |            |
-| task-switch                | Switch               | Imilab Timer - Task Switch               |            |
-| countdown-info             | Switch               | Imilab Timer - Countdown Info            |            |
+| working_time               | Number:Time          | Working Time                             |            |
+| led                        | Switch               | Indicator Light                          |            |
+| power_consumption          | Number:Energy        | Energy Consumption                       |            |
+| electric_current           | Number:ElectricCurrent | Current                                  |            |
+| voltage                    | Number:ElectricPotential | Voltage                                  |            |
+| electric_power             | Number:Power         | Active Power                             |            |
+| on_duration                | Number:Time          | Loop On Duration                         |            |
+| off_duration               | Number:Time          | Loop Off Duration                        |            |
+| countdown                  | Number:Time          | Countdown                                |            |
+| loop_task                  | Switch               | Loop Task                                | When on, the plug switches itself on and off by the set durations. Set Loop On Duration and Loop Off Duration first. |
+| countdown_active           | Switch               | Countdown Active                         |            |
+| max_power_limit            | Switch               | Max Power Limit                          | When on, the plug switches itself off when the power is greater than Max Power. Firmware 2.1.8_0028 or newer. |
+| max_power                  | Number:Power         | Max Power                                | Firmware 2.1.8_0036 or newer. |
 | bt-gw                      | String               | BT Gateway                               | Value mapping `["disable"="Disable","enable"="Enable"]` |
 | bt-gw-devices              | String               | Connected BT Gateway Devices             | Note, refreshes every 2nd refresh. Channel requires cloud connectivity to function. Sample widget to visualise the (json) output available from the widget market |
 
@@ -1143,25 +1150,24 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| led                        | Switch               | Indicator light                          |            |
+| led                        | Switch               | Indicator Light                          |            |
 
 ### Mi Smart Plug (WiFi) (<a name="chuangmi-plug-hmi206">chuangmi.plug.hmi206</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    | If this channel does not respond to on/off upgrade firmware |
-| usb                        | Switch               | USB                                      |            |
+| power                      | Switch               | Power                                    |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| led                        | Switch               | Wifi LED                                 |            |
+| led                        | Switch               | Indicator Light                          |            |
 
 ### Mi Smart Wi-Fi Plug (Bluetooth Gateway) (<a name="chuangmi-plug-hmi208">chuangmi.plug.hmi208</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    | If this channel does not respond to on/off upgrade firmware |
+| power                      | Switch               | Power                                    |            |
 | usb                        | Switch               | USB                                      |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| led                        | Switch               | Wifi LED                                 |            |
+| led                        | Switch               | Indicator Light                          |            |
 
 ### Mi Plug Mini (<a name="chuangmi-plug-m1">chuangmi.plug.m1</a>) Channels
 
@@ -1169,7 +1175,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| led                        | Switch               | Indicator light                          |            |
+| led                        | Switch               | Indicator Light                          |            |
 
 ### Mi Smart Plug (Wi-Fi) Basic (<a name="chuangmi-plug-m3">chuangmi.plug.m3</a>) Channels
 
@@ -1177,7 +1183,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| led                        | Switch               | Indicator light                          |            |
+| led                        | Switch               | Indicator Light                          |            |
 
 ### Mi Smart Power Plug (<a name="chuangmi-plug-v1">chuangmi.plug.v1</a>) Channels
 
@@ -1201,40 +1207,50 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | power                      | Switch               | Power                                    | If this channel does not respond to on/off upgrade firmware |
 | usb                        | Switch               | USB                                      |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| led                        | Switch               | Wifi LED                                 |            |
+| led                        | Switch               | Indicator Light                          |            |
+| electric_power             | Number:Power         | Active Power                             |            |
 
 ### Gosund Smart Plug (<a name="cuco-plug-cp1">cuco.plug.cp1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| FirmwareRevision           | String               | Device Information-CurrentFirmware Version |            |
-| Manufacturer               | String               | Device Information-Device Manufacturer   |            |
-| Model                      | String               | Device Information-Device Model          |            |
-| SerialNumber               | String               | Device Information-Device Serial Number  |            |
-| On                         | Switch               | Switch-Switch Status                     |            |
+| power                      | Switch               | Power                                    |            |
+| led                        | Switch               | Indicator Light                          |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| default_power_on_state     | Number               | Power-On State                           | Value mapping `["0"="On","1"="Off","2"="Memory"]` |
+| electric_power             | Number:Power         | Active Power                             |            |
+| voltage                    | Number:ElectricPotential | Voltage                                  |            |
+| electric_current           | Number:ElectricCurrent | Current                                  |            |
+
+### Gosund Smart Plug CP1 (<a name="cuco-plug-cp1d">cuco.plug.cp1d</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["switch-toggle"="Toggle"]` |
+| power                      | Switch               | Power                                    |            |
+| led                        | Switch               | Indicator Light                          |            |
 
 ### Xiaomi Smart Plug 2 (Wi-Fi) (<a name="cuco-plug-v2eur">cuco.plug.v2eur</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["switch-toggle"="Switch Toggle"]` |
-| on                         | Switch               | Switch - Switch Status                   |            |
-| default_power_on_state     | Number               | Switch - Default Power On State          |            |
-| fault                      | Number               | Switch - Device Fault                    | Value mapping `["0"="No Faults","1"="Over Temperature","2"="Overload"]` |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| power_consumption          | Number               | Power Consumption - Power Consumption    |            |
-| electric_power             | Number:Power         | Power Consumption - Electric Power       |            |
-| on1                        | Switch               | Indicator Light - Switch Status          |            |
-| delay                      | Switch               | Delay - Delay                            |            |
-| delay_time                 | Number:Time          | Delay - Delay Time                       |            |
-| delay_remain_time          | Number:Time          | Delay - Delay Remain Time                |            |
-| on2                        | Switch               | Charging Protection - On                 |            |
-| power                      | Number               | Charging Protection - Power              |            |
-| protect_time               | Number:Time          | Charging Protection - Protect Time       |            |
-| status                     | Switch               | Cycle - Status                           |            |
-| data_value                 | String               | Cycle - Data Value                       |            |
-| on3                        | Switch               | Max Power Limit - On                     |            |
-| power1                     | Number:Power         | Max Power Limit - Power                  |            |
+| actions                    | String               | Actions                                  | Value mapping `["switch-toggle"="Toggle"]` |
+| power                      | Switch               | Power                                    |            |
+| default_power_on_state     | Number               | Power-On State                           | Value mapping `["0"="Memory","1"="On","2"="Off"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Over Temperature","2"="Overload"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| power_consumption          | Number:Energy        | Energy Consumption                       |            |
+| electric_power             | Number:Power         | Active Power                             |            |
+| led                        | Switch               | Indicator Light                          |            |
+| delay                      | Switch               | Double-Press Countdown                   |            |
+| delay_time                 | Number:Time          | Countdown Time                           |            |
+| delay_remain_time          | Number:Time          | Countdown Remaining Time                 |            |
+| charging_protection        | Switch               | Charging Protection                      | When on, the plug switches itself off when the power stays below Charging Protection Threshold for Charging Protection Duration. |
+| charging_protection_power  | Number:Power         | Charging Protection Threshold            |            |
+| charging_protection_time   | Number:Time          | Charging Protection Duration             |            |
+| loop_task                  | Switch               | Loop Task                                | When on, the plug runs the loop task set in the Mi Home app (switches itself on and off). |
+| max_power_limit            | Switch               | Max Power Limit                          | When on, the plug switches itself off when the power is greater than Max Power. |
+| max_power                  | Number:Power         | Max Power                                |            |
 
 ### Mi Smart Antibacterial Humidifier (<a name="deerma-humidifier-jsq">deerma.humidifier.jsq</a>) Channels
 
@@ -6793,19 +6809,38 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | switch_en                  | Switch               | Wall Switch Scenes                       | Enables switching between scenes with the wall switch |
 | delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
+### Xiaomi Smart Plug 2 (<a name="qmi-plug-tw02">qmi.plug.tw02</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["switch-toggle"="Toggle"]` |
+| power                      | Switch               | Power                                    |            |
+| led                        | Switch               | Indicator Light                          |            |
+| power_consumption          | Number:Energy        | Energy Consumption                       |            |
+| electric_power             | Number:Power         | Active Power                             |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| loop_task                  | Switch               | Loop Task                                | When on, the plug switches itself on and off by the set durations. Set Loop On Duration and Loop Off Duration first. |
+| on_duration                | Number:Time          | Loop On Duration                         |            |
+| off_duration               | Number:Time          | Loop Off Duration                        |            |
+| countdown_enable           | Switch               | Countdown                                |            |
+| countdown_time             | Number:Time          | Countdown Time                           |            |
+| countdown_remaining_time   | Number:Time          | Countdown Remaining Time                 |            |
+| countdown_end_state        | Switch               | Countdown End State                      | Power state set when the countdown ends. |
+| charging_protection        | Switch               | Charging Protection                      | When on, the plug switches itself off when the power stays below Charging Protection Threshold for Charging Protection Duration. |
+| charging_protection_power  | Number:Power         | Charging Protection Threshold            |            |
+| charging_protection_time   | Number:Time          | Charging Protection Duration             |            |
+
 ### CHINGMI Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | String               | Mode                                     | Value mapping `["normal"="Normal","green"="Green"]` |
-| powerUsage                 | Number:Power         | Power Consumption                        |            |
+| mode                       | String               | Mode                                     | Value mapping `["normal"="Normal","green"="Power Saving"]` |
+| electric_power             | Number:Power         | Active Power                             |            |
 | voltage                    | Number:ElectricPotential | Voltage                                  |            |
-| led                        | Switch               | wifi LED                                 |            |
-| power_price                | Number               | Power Price                              |            |
-| power_factor               | Number               | Power Factor                             |            |
-| current                    | Number:ElectricCurrent | Current                                  |            |
-| elec_leakage               | Number:ElectricCurrent | Electic Leakage                          |            |
+| power_factor               | Number:Dimensionless | Power Factor                             |            |
+| electric_current           | Number:ElectricCurrent | Current                                  |            |
+| leakage_current            | Number:ElectricCurrent | Leakage Current                          |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
 
 ### ROIDMI EVE (<a name="roidmi-vacuum-r1b">roidmi.vacuum.r1b</a>) Channels
@@ -7083,32 +7118,69 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | air_time_mode              | Number               | Base Station - Mop Drying Time           | Base station firmware before 1.6.0. Value mapping `["1"="6 Hours","2"="9 Hours","3"="12 Hours"]` |
 | air_time_mode_slider       | Number               | Base Station - Mop Drying Time Level     | Base station firmware 1.6.0 and later: drying time in steps of 2 hours (0-12 = 0-24 hours) |
 
+### One Intelligent switch(WIFI) (<a name="090615-switch-switch01">090615.switch.switch01</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| switch1state               | Switch               | Switch 1                                 |            |
+| switch1name                | String               | Switch Name 1                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| backlight                  | Switch               | Backlight                                | Write only: the device reports the backlight only in an unnamed status list. |
+
+### Two Intelligent Switch (WIFI) (<a name="090615-switch-switch02">090615.switch.switch02</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| switch1state               | Switch               | Switch 1                                 |            |
+| switch2state               | Switch               | Switch 2                                 |            |
+| switch1name                | String               | Switch Name 1                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| switch2name                | String               | Switch Name 2                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| all                        | Switch               | All Switches                             | Switches all gangs on or off. Write only. |
+| backlight                  | Switch               | Backlight                                | Write only: the device reports the backlight only in an unnamed status list. |
+
+### Three Intelligent switch(WIFI) (<a name="090615-switch-switch03">090615.switch.switch03</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| switch1state               | Switch               | Switch 1                                 |            |
+| switch2state               | Switch               | Switch 2                                 |            |
+| switch3state               | Switch               | Switch 3                                 |            |
+| switch1name                | String               | Switch Name 1                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| switch2name                | String               | Switch Name 2                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| switch3name                | String               | Switch Name 3                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| all                        | Switch               | All Switches                             | Switches all gangs on or off. Write only. |
+| backlight                  | Switch               | Backlight                                | Write only: the device reports the backlight only in an unnamed status list. |
+
 ### PTX OneKey Switch (WIFI) (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| switch1state               | Number               | Switch 1                                 |            |
-| switch1name                | String               | Switch Name 1                            |            |
+| switch1state               | Switch               | Switch 1                                 |            |
+| switch1name                | String               | Switch Name 1                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| backlight                  | Switch               | Backlight                                | Write only: the device reports the backlight only in an unnamed status list. |
 
 ### PTX Twokey switch(wifi) (<a name="090615-switch-xswitch02">090615.switch.xswitch02</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| switch1state               | Number               | Switch 1                                 |            |
-| switch2state               | Number               | Switch 2                                 |            |
-| switch1name                | String               | Switch Name 1                            |            |
-| switch2name                | String               | Switch Name 2                            |            |
+| switch1state               | Switch               | Switch 1                                 |            |
+| switch2state               | Switch               | Switch 2                                 |            |
+| switch1name                | String               | Switch Name 1                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| switch2name                | String               | Switch Name 2                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| all                        | Switch               | All Switches                             | Switches all gangs on or off. Write only. |
+| backlight                  | Switch               | Backlight                                | Write only: the device reports the backlight only in an unnamed status list. |
 
 ### PTX ThreeKey Switch (WIFI) (<a name="090615-switch-xswitch03">090615.switch.xswitch03</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| switch1state               | Number               | Switch 1                                 |            |
-| switch2state               | Number               | Switch 2                                 |            |
-| switch3state               | Number               | Switch 3                                 |            |
-| switch1name                | String               | Switch Name 1                            |            |
-| switch2name                | String               | Switch Name 2                            |            |
-| switch3name                | String               | Switch Name 3                            |            |
+| switch1state               | Switch               | Switch 1                                 |            |
+| switch2state               | Switch               | Switch 2                                 |            |
+| switch3state               | Switch               | Switch 3                                 |            |
+| switch1name                | String               | Switch Name 1                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| switch2name                | String               | Switch Name 2                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| switch3name                | String               | Switch Name 3                            | Non-ASCII characters of names set in the Mi Home app are shown as u codes. |
+| all                        | Switch               | All Switches                             | Switches all gangs on or off. Write only. |
+| backlight                  | Switch               | Backlight                                | Write only: the device reports the backlight only in an unnamed status list. |
 
 ### SCISHARE Smart Capsule Coffee Machine (<a name="scishare-coffee-s1102">scishare.coffee.s1102</a>) Channels
 
@@ -13816,14 +13888,14 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| powerUsage                 | Number               | Power Consumption                        |            |
-| led                        | Switch               | wifi LED                                 |            |
-| power_price                | Number               | power_price                              |            |
-| current                    | Number               | Current                                  |            |
+| electric_power             | Number:Power         | Active Power                             |            |
+| led                        | Switch               | Indicator Light                          |            |
+| power_price                | Number               | Power Price                              | Price per kWh in hundredths of the currency unit (52 is 0.52), used by the Mi Home app for the cost statistics. |
+| electric_current           | Number:ElectricCurrent | Current                                  |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| lp_autooff                 | Number               | Low Power Auto Off                       |            |
-| lp_autooff_delay           | Number               | Low Power Limit Time                     |            |
-| lp_threshold               | Number               | Low Power Threshold                      |            |
+| lp_autooff                 | Switch               | Low Power Auto Off                       | When on, the power strip switches itself off when the power stays below Low Power Threshold for Low Power Delay. Sends all three low power values together, so link all three channels. |
+| lp_autooff_delay           | Number:Time          | Low Power Delay                          | 5 to 60 minutes. Sends all three low power values together, so link all three channels. |
+| lp_threshold               | Number:Power         | Low Power Threshold                      | 2 to 99 W. Sends all three low power values together, so link all three channels. |
 
 ## Example Item File Roborock Vacuum
 
@@ -14082,19 +14154,21 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 
 ```java
 Group G_plug "Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway)" <status>
-Switch on "Power" (G_plug) {channel="miio:basic:plug:on"}
+Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
-Number:Time working_time "Working Time" (G_plug) {channel="miio:basic:plug:working-time"}
-Switch on1 "Indicator Light - Switch Status" (G_plug) {channel="miio:basic:plug:on1"}
-Number:Energy power_consumption "Daily Power Consumption" (G_plug) {channel="miio:basic:plug:power-consumption"}
-Number:ElectricCurrent electric_current "Power Consumption - Electric Current" (G_plug) {channel="miio:basic:plug:electric-current"}
-Number:ElectricPotential voltage "Power Consumption - Voltage" (G_plug) {channel="miio:basic:plug:voltage"}
-Number:Power electric_power "Current Power Consumption - Electric Power" (G_plug) {channel="miio:basic:plug:electric-power"}
-Number:Time on_duration "Imilab Timer - On Duration" (G_plug) {channel="miio:basic:plug:on-duration"}
-Number:Time off_duration "Imilab Timer - Off Duration" (G_plug) {channel="miio:basic:plug:off-duration"}
-Number:Time countdown "Imilab Timer - Countdown" (G_plug) {channel="miio:basic:plug:countdown"}
-Switch task_switch "Imilab Timer - Task Switch" (G_plug) {channel="miio:basic:plug:task-switch"}
-Switch countdown_info "Imilab Timer - Countdown Info" (G_plug) {channel="miio:basic:plug:countdown-info"}
+Number:Time working_time "Working Time" (G_plug) {channel="miio:basic:plug:working_time"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
+Number:Energy power_consumption "Energy Consumption" (G_plug) {channel="miio:basic:plug:power_consumption"}
+Number:ElectricCurrent electric_current "Current" (G_plug) {channel="miio:basic:plug:electric_current"}
+Number:ElectricPotential voltage "Voltage" (G_plug) {channel="miio:basic:plug:voltage"}
+Number:Power electric_power "Active Power" (G_plug) {channel="miio:basic:plug:electric_power"}
+Number:Time on_duration "Loop On Duration" (G_plug) {channel="miio:basic:plug:on_duration"}
+Number:Time off_duration "Loop Off Duration" (G_plug) {channel="miio:basic:plug:off_duration"}
+Number:Time countdown "Countdown" (G_plug) {channel="miio:basic:plug:countdown"}
+Switch loop_task "Loop Task" (G_plug) {channel="miio:basic:plug:loop_task"}
+Switch countdown_active "Countdown Active" (G_plug) {channel="miio:basic:plug:countdown_active"}
+Switch max_power_limit "Max Power Limit" (G_plug) {channel="miio:basic:plug:max_power_limit"}
+Number:Power max_power "Max Power" (G_plug) {channel="miio:basic:plug:max_power"}
 String bt_gw "BT Gateway" (G_plug) {channel="miio:basic:plug:bt-gw"}
 String bt_gw_devices "Connected BT Gateway Devices" (G_plug) {channel="miio:basic:plug:bt-gw-devices"}
 ```
@@ -14107,7 +14181,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Smart Plug WiFi" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
-Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
 ### Mi Smart Plug (WiFi) (chuangmi.plug.hmi206) item file lines
@@ -14117,9 +14191,8 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 ```java
 Group G_plug "Mi Smart Plug (WiFi)" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
-Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
-Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
 ### Mi Smart Wi-Fi Plug (Bluetooth Gateway) (chuangmi.plug.hmi208) item file lines
@@ -14131,7 +14204,7 @@ Group G_plug "Mi Smart Wi-Fi Plug (Bluetooth Gateway)" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
-Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
 ### Mi Plug Mini (chuangmi.plug.m1) item file lines
@@ -14142,7 +14215,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Plug Mini" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
-Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
 ### Mi Smart Plug (Wi-Fi) Basic (chuangmi.plug.m3) item file lines
@@ -14153,7 +14226,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Smart Plug (Wi-Fi) Basic" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
-Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
 ### Mi Smart Power Plug (chuangmi.plug.v1) item file lines
@@ -14186,7 +14259,8 @@ Group G_plug "MIJIA Smart  Plug Enhanced" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
-Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
+Number:Power electric_power "Active Power" (G_plug) {channel="miio:basic:plug:electric_power"}
 ```
 
 ### Gosund Smart Plug (cuco.plug.cp1) item file lines
@@ -14195,11 +14269,24 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 
 ```java
 Group G_plug "Gosund Smart Plug" <status>
-String FirmwareRevision "Device Information-CurrentFirmware Version" (G_plug) {channel="miio:basic:plug:FirmwareRevision"}
-String Manufacturer "Device Information-Device Manufacturer" (G_plug) {channel="miio:basic:plug:Manufacturer"}
-String Model "Device Information-Device Model" (G_plug) {channel="miio:basic:plug:Model"}
-String SerialNumber "Device Information-Device Serial Number" (G_plug) {channel="miio:basic:plug:SerialNumber"}
-Switch On "Switch-Switch Status" (G_plug) {channel="miio:basic:plug:On"}
+Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
+Switch physical_controls_locked "Child Lock" (G_plug) {channel="miio:basic:plug:physical_controls_locked"}
+Number default_power_on_state "Power-On State" (G_plug) {channel="miio:basic:plug:default_power_on_state"}
+Number:Power electric_power "Active Power" (G_plug) {channel="miio:basic:plug:electric_power"}
+Number:ElectricPotential voltage "Voltage" (G_plug) {channel="miio:basic:plug:voltage"}
+Number:ElectricCurrent electric_current "Current" (G_plug) {channel="miio:basic:plug:electric_current"}
+```
+
+### Gosund Smart Plug CP1 (cuco.plug.cp1d) item file lines
+
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_plug "Gosund Smart Plug CP1" <status>
+String actions "Actions" (G_plug) {channel="miio:basic:plug:actions"}
+Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
 ### Xiaomi Smart Plug 2 (Wi-Fi) (cuco.plug.v2eur) item file lines
@@ -14209,23 +14296,22 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 ```java
 Group G_plug "Xiaomi Smart Plug 2 (Wi-Fi)" <status>
 String actions "Actions" (G_plug) {channel="miio:basic:plug:actions"}
-Switch on "Switch - Switch Status" (G_plug) {channel="miio:basic:plug:on"}
-Number default_power_on_state "Switch - Default Power On State" (G_plug) {channel="miio:basic:plug:default_power_on_state"}
-Number fault "Switch - Device Fault" (G_plug) {channel="miio:basic:plug:fault"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_plug) {channel="miio:basic:plug:physical_controls_locked"}
-Number power_consumption "Power Consumption - Power Consumption" (G_plug) {channel="miio:basic:plug:power_consumption"}
-Number:Power electric_power "Power Consumption - Electric Power" (G_plug) {channel="miio:basic:plug:electric_power"}
-Switch on1 "Indicator Light - Switch Status" (G_plug) {channel="miio:basic:plug:on1"}
-Switch delay "Delay - Delay" (G_plug) {channel="miio:basic:plug:delay"}
-Number:Time delay_time "Delay - Delay Time" (G_plug) {channel="miio:basic:plug:delay_time"}
-Number:Time delay_remain_time "Delay - Delay Remain Time" (G_plug) {channel="miio:basic:plug:delay_remain_time"}
-Switch on2 "Charging Protection - On" (G_plug) {channel="miio:basic:plug:on2"}
-Number power "Charging Protection - Power" (G_plug) {channel="miio:basic:plug:power"}
-Number:Time protect_time "Charging Protection - Protect Time" (G_plug) {channel="miio:basic:plug:protect_time"}
-Switch status "Cycle - Status" (G_plug) {channel="miio:basic:plug:status"}
-String data_value "Cycle - Data Value" (G_plug) {channel="miio:basic:plug:data_value"}
-Switch on3 "Max Power Limit - On" (G_plug) {channel="miio:basic:plug:on3"}
-Number:Power power1 "Max Power Limit - Power" (G_plug) {channel="miio:basic:plug:power1"}
+Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
+Number default_power_on_state "Power-On State" (G_plug) {channel="miio:basic:plug:default_power_on_state"}
+Number fault "Fault" (G_plug) {channel="miio:basic:plug:fault"}
+Switch physical_controls_locked "Child Lock" (G_plug) {channel="miio:basic:plug:physical_controls_locked"}
+Number:Energy power_consumption "Energy Consumption" (G_plug) {channel="miio:basic:plug:power_consumption"}
+Number:Power electric_power "Active Power" (G_plug) {channel="miio:basic:plug:electric_power"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
+Switch delay "Double-Press Countdown" (G_plug) {channel="miio:basic:plug:delay"}
+Number:Time delay_time "Countdown Time" (G_plug) {channel="miio:basic:plug:delay_time"}
+Number:Time delay_remain_time "Countdown Remaining Time" (G_plug) {channel="miio:basic:plug:delay_remain_time"}
+Switch charging_protection "Charging Protection" (G_plug) {channel="miio:basic:plug:charging_protection"}
+Number:Power charging_protection_power "Charging Protection Threshold" (G_plug) {channel="miio:basic:plug:charging_protection_power"}
+Number:Time charging_protection_time "Charging Protection Duration" (G_plug) {channel="miio:basic:plug:charging_protection_time"}
+Switch loop_task "Loop Task" (G_plug) {channel="miio:basic:plug:loop_task"}
+Switch max_power_limit "Max Power Limit" (G_plug) {channel="miio:basic:plug:max_power_limit"}
+Number:Power max_power "Max Power" (G_plug) {channel="miio:basic:plug:max_power"}
 ```
 
 ### Mi Smart Antibacterial Humidifier (deerma.humidifier.jsq) item file lines
@@ -20451,6 +20537,30 @@ Switch switch_en "Wall Switch Scenes" (G_light) {channel="miio:basic:light:switc
 Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
+### Xiaomi Smart Plug 2 (qmi.plug.tw02) item file lines
+
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_plug "Xiaomi Smart Plug 2" <status>
+String actions "Actions" (G_plug) {channel="miio:basic:plug:actions"}
+Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
+Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
+Number:Energy power_consumption "Energy Consumption" (G_plug) {channel="miio:basic:plug:power_consumption"}
+Number:Power electric_power "Active Power" (G_plug) {channel="miio:basic:plug:electric_power"}
+Switch physical_controls_locked "Child Lock" (G_plug) {channel="miio:basic:plug:physical_controls_locked"}
+Switch loop_task "Loop Task" (G_plug) {channel="miio:basic:plug:loop_task"}
+Number:Time on_duration "Loop On Duration" (G_plug) {channel="miio:basic:plug:on_duration"}
+Number:Time off_duration "Loop Off Duration" (G_plug) {channel="miio:basic:plug:off_duration"}
+Switch countdown_enable "Countdown" (G_plug) {channel="miio:basic:plug:countdown_enable"}
+Number:Time countdown_time "Countdown Time" (G_plug) {channel="miio:basic:plug:countdown_time"}
+Number:Time countdown_remaining_time "Countdown Remaining Time" (G_plug) {channel="miio:basic:plug:countdown_remaining_time"}
+Switch countdown_end_state "Countdown End State" (G_plug) {channel="miio:basic:plug:countdown_end_state"}
+Switch charging_protection "Charging Protection" (G_plug) {channel="miio:basic:plug:charging_protection"}
+Number:Power charging_protection_power "Charging Protection Threshold" (G_plug) {channel="miio:basic:plug:charging_protection_power"}
+Number:Time charging_protection_time "Charging Protection Duration" (G_plug) {channel="miio:basic:plug:charging_protection_time"}
+```
+
 ### CHINGMI Smart Power Strip v1 (qmi.powerstrip.v1) item file lines
 
 note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -20459,13 +20569,11 @@ note: Autogenerated example. Replace the id (powerstrip) in the channel with you
 Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
 String mode "Mode" (G_powerstrip) {channel="miio:basic:powerstrip:mode"}
-Number:Power powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
+Number:Power electric_power "Active Power" (G_powerstrip) {channel="miio:basic:powerstrip:electric_power"}
 Number:ElectricPotential voltage "Voltage" (G_powerstrip) {channel="miio:basic:powerstrip:voltage"}
-Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
-Number power_price "Power Price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
-Number power_factor "Power Factor" (G_powerstrip) {channel="miio:basic:powerstrip:power_factor"}
-Number:ElectricCurrent current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
-Number:ElectricCurrent elec_leakage "Electic Leakage" (G_powerstrip) {channel="miio:basic:powerstrip:elec_leakage"}
+Number:Dimensionless power_factor "Power Factor" (G_powerstrip) {channel="miio:basic:powerstrip:power_factor"}
+Number:ElectricCurrent electric_current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:electric_current"}
+Number:ElectricCurrent leakage_current "Leakage Current" (G_powerstrip) {channel="miio:basic:powerstrip:leakage_current"}
 Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
 ```
 
@@ -20762,14 +20870,56 @@ Number air_time_mode "Base Station - Mop Drying Time" (G_vacuum) {channel="miio:
 Number air_time_mode_slider "Base Station - Mop Drying Time Level" (G_vacuum) {channel="miio:basic:vacuum:air_time_mode_slider"}
 ```
 
+### One Intelligent switch(WIFI) (090615.switch.switch01) item file lines
+
+note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_switch "One Intelligent switch(WIFI)" <status>
+Switch switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
+String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch1name"}
+Switch backlight "Backlight" (G_switch) {channel="miio:basic:switch:backlight"}
+```
+
+### Two Intelligent Switch (WIFI) (090615.switch.switch02) item file lines
+
+note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_switch "Two Intelligent Switch (WIFI)" <status>
+Switch switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
+Switch switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
+String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch1name"}
+String switch2name "Switch Name 2" (G_switch) {channel="miio:basic:switch:switch2name"}
+Switch all "All Switches" (G_switch) {channel="miio:basic:switch:all"}
+Switch backlight "Backlight" (G_switch) {channel="miio:basic:switch:backlight"}
+```
+
+### Three Intelligent switch(WIFI) (090615.switch.switch03) item file lines
+
+note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_switch "Three Intelligent switch(WIFI)" <status>
+Switch switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
+Switch switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
+Switch switch3state "Switch 3" (G_switch) {channel="miio:basic:switch:switch3state"}
+String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch1name"}
+String switch2name "Switch Name 2" (G_switch) {channel="miio:basic:switch:switch2name"}
+String switch3name "Switch Name 3" (G_switch) {channel="miio:basic:switch:switch3name"}
+Switch all "All Switches" (G_switch) {channel="miio:basic:switch:all"}
+Switch backlight "Backlight" (G_switch) {channel="miio:basic:switch:backlight"}
+```
+
 ### PTX OneKey Switch (WIFI) (090615.switch.xswitch01) item file lines
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_switch "PTX OneKey Switch (WIFI)" <status>
-Number switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
+Switch switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
 String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch1name"}
+Switch backlight "Backlight" (G_switch) {channel="miio:basic:switch:backlight"}
 ```
 
 ### PTX Twokey switch(wifi) (090615.switch.xswitch02) item file lines
@@ -20778,10 +20928,12 @@ note: Autogenerated example. Replace the id (switch) in the channel with your ow
 
 ```java
 Group G_switch "PTX Twokey switch(wifi)" <status>
-Number switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
-Number switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
+Switch switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
+Switch switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
 String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch1name"}
 String switch2name "Switch Name 2" (G_switch) {channel="miio:basic:switch:switch2name"}
+Switch all "All Switches" (G_switch) {channel="miio:basic:switch:all"}
+Switch backlight "Backlight" (G_switch) {channel="miio:basic:switch:backlight"}
 ```
 
 ### PTX ThreeKey Switch (WIFI) (090615.switch.xswitch03) item file lines
@@ -20790,12 +20942,14 @@ note: Autogenerated example. Replace the id (switch) in the channel with your ow
 
 ```java
 Group G_switch "PTX ThreeKey Switch (WIFI)" <status>
-Number switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
-Number switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
-Number switch3state "Switch 3" (G_switch) {channel="miio:basic:switch:switch3state"}
+Switch switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
+Switch switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
+Switch switch3state "Switch 3" (G_switch) {channel="miio:basic:switch:switch3state"}
 String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch1name"}
 String switch2name "Switch Name 2" (G_switch) {channel="miio:basic:switch:switch2name"}
 String switch3name "Switch Name 3" (G_switch) {channel="miio:basic:switch:switch3name"}
+Switch all "All Switches" (G_switch) {channel="miio:basic:switch:all"}
+Switch backlight "Backlight" (G_switch) {channel="miio:basic:switch:backlight"}
 ```
 
 ### SCISHARE Smart Capsule Coffee Machine (scishare.coffee.s1102) item file lines
@@ -28247,14 +28401,14 @@ note: Autogenerated example. Replace the id (powerstrip) in the channel with you
 ```java
 Group G_powerstrip "Mi Smart Power Strip" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
-Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
-Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
-Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
-Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
+Number:Power electric_power "Active Power" (G_powerstrip) {channel="miio:basic:powerstrip:electric_power"}
+Switch led "Indicator Light" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
+Number power_price "Power Price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
+Number:ElectricCurrent electric_current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:electric_current"}
 Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
-Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
-Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
-Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
+Switch lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
+Number:Time lp_autooff_delay "Low Power Delay" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
+Number:Power lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
 ### Country Servers
