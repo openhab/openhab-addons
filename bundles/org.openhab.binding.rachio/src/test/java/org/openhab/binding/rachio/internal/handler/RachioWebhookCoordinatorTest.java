@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -56,6 +58,8 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookMode;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookTarget;
 import org.openhab.binding.rachio.internal.handler.RachioBridgeHandler.RefreshReason;
+import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.CloudWebhookException;
+import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.CloudWebhookLease;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.rest.Webhook;
@@ -80,6 +84,7 @@ import com.google.gson.Gson;
  *
  * @author Kovacs Istvan - Initial contribution
  * @author Leo Siepel - Stabilize webhook lifecycle tests
+ * @author Kovacs Istvan - Cloud webhook recovery regression tests
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })
@@ -694,6 +699,244 @@ class RachioWebhookCoordinatorTest {
         } finally {
             firstHandler.dispose();
             secondHandler.dispose();
+        }
+    }
+
+    @Test
+    void providerReconciliationDoesNotClearWebhookAcquiredAfterItsStateSnapshot() throws Exception {
+        String webhookUrl = "https://cloud.example.org/rachio/second";
+        WebhookService webhookService = cloudWebhookService(webhookUrl);
+        AtomicReference<@Nullable WebhookService> webhookServiceReference = new AtomicReference<>();
+        RachioCloudWebhookRegistry registry = Mockito.spy(new RachioCloudWebhookRegistry(webhookServiceReference::get));
+        RachioBridgeHandler handler = cloudWebhookHandler("bridge", registry);
+        RachioApi api = Mockito.mock(RachioApi.class);
+        setField(handler, "rachioApi", api);
+        Mockito.when(api.getDevices()).thenReturn(new HashMap<>());
+        addConfiguredControllerHandler(handler, "controller-id");
+
+        CountDownLatch providerInvalidationStarted = new CountDownLatch(1);
+        CountDownLatch allowProviderInvalidation = new CountDownLatch(1);
+        Mockito.doAnswer(invocation -> {
+            providerInvalidationStarted.countDown();
+            assertThat(allowProviderInvalidation.await(10, TimeUnit.SECONDS), is(true));
+            invocation.callRealMethod();
+            return null;
+        }).when(registry).invalidateCachedWebhook(Mockito.anyLong());
+
+        try {
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(""));
+            webhookServiceReference.set(webhookService);
+            registry.onProviderChanged(null, webhookService);
+            handler.onCloudWebhookProviderChanged();
+
+            assertThat(providerInvalidationStarted.await(5, TimeUnit.SECONDS), is(true));
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(webhookUrl));
+            allowProviderInvalidation.countDown();
+
+            verify(api, Mockito.timeout(5000)).registerWebHook(Mockito.eq("controller-id"), Mockito.eq(webhookUrl),
+                    Mockito.anyString(), Mockito.anyString(), Mockito.nullable(String.class), Mockito.anyBoolean(),
+                    Mockito.eq(RequestPurpose.BACKGROUND_REFRESH));
+            verify(webhookService, Mockito.times(1)).requestWebhook("/rachio/webhook");
+            verify(webhookService, never()).removeWebhook("/rachio/webhook");
+        } finally {
+            allowProviderInvalidation.countDown();
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void failedCloudWebhookAcquisitionRetriesAndRegistersController() throws Exception {
+        String webhookUrl = "https://cloud.example.org/rachio/recovered";
+        WebhookService service = cloudWebhookService(webhookUrl);
+        Mockito.when(service.requestWebhook("/rachio/webhook"))
+                .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("cloud reconnecting")))
+                .thenReturn(CompletableFuture.completedFuture(
+                        new Webhook(URI.create(webhookUrl).toURL(), Instant.now().plusSeconds(24 * 60 * 60))));
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service);
+        ScheduledExecutorService scheduler = Mockito.mock(ScheduledExecutorService.class);
+        ScheduledFuture<?> retryFuture = mockCloudWebhookRetry(scheduler);
+        RachioBridgeHandler handler = cloudWebhookHandler("bridge", registry, scheduler);
+        RachioApi api = Mockito.mock(RachioApi.class);
+        setField(handler, "rachioApi", api);
+        addConfiguredControllerHandler(handler, "controller-id");
+
+        try {
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(""));
+            Runnable retry = scheduledCloudWebhookRetry(scheduler);
+
+            retry.run();
+
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(webhookUrl));
+            verify(api).registerWebHook("controller-id", webhookUrl, "", "", null, false,
+                    RequestPurpose.BACKGROUND_REFRESH);
+            verify(service, Mockito.times(2)).requestWebhook("/rachio/webhook");
+            verify(service, never()).removeWebhook("/rachio/webhook");
+            verify(retryFuture, never()).cancel(Mockito.anyBoolean());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void repeatedCloudWebhookFailuresKeepOnlyOneScheduledRetry() throws Exception {
+        WebhookService service = cloudWebhookService("https://cloud.example.org/rachio/webhook");
+        Mockito.when(service.requestWebhook("/rachio/webhook"))
+                .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("cloud reconnecting")));
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service);
+        ScheduledExecutorService scheduler = Mockito.mock(ScheduledExecutorService.class);
+        mockCloudWebhookRetry(scheduler);
+        RachioBridgeHandler handler = cloudWebhookHandler("bridge", registry, scheduler);
+        setField(handler, "rachioApi", Mockito.mock(RachioApi.class));
+        addConfiguredControllerHandler(handler, "controller-id");
+
+        try {
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(""));
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(""));
+            Runnable retry = scheduledCloudWebhookRetry(scheduler);
+
+            retry.run();
+
+            verify(scheduler, Mockito.times(2)).schedule(Mockito.any(Runnable.class), Mockito.eq(30L),
+                    Mockito.eq(TimeUnit.SECONDS));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void successfulAcquisitionCancelsRetryAndStaleRetryKeepsNewWebhook() throws Exception {
+        String webhookUrl = "https://cloud.example.org/rachio/recovered";
+        WebhookService service = cloudWebhookService(webhookUrl);
+        Mockito.when(service.requestWebhook("/rachio/webhook"))
+                .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("cloud reconnecting")))
+                .thenReturn(CompletableFuture.completedFuture(
+                        new Webhook(URI.create(webhookUrl).toURL(), Instant.now().plusSeconds(24 * 60 * 60))));
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service);
+        ScheduledExecutorService scheduler = Mockito.mock(ScheduledExecutorService.class);
+        ScheduledFuture<?> retryFuture = mockCloudWebhookRetry(scheduler);
+        RachioBridgeHandler handler = cloudWebhookHandler("bridge", registry, scheduler);
+
+        try {
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(""));
+            Runnable retry = scheduledCloudWebhookRetry(scheduler);
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(webhookUrl));
+
+            retry.run();
+
+            verify(retryFuture).cancel(false);
+            verify(service, Mockito.times(2)).requestWebhook("/rachio/webhook");
+            verify(service, never()).removeWebhook("/rachio/webhook");
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(webhookUrl));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void staleCloudWebhookAcquisitionFailureDoesNotOverwriteNewSuccess() throws Exception {
+        String webhookUrl = "https://cloud.example.org/rachio/recovered";
+        RachioCloudWebhookRegistry registry = Mockito.mock(RachioCloudWebhookRegistry.class);
+        ScheduledExecutorService scheduler = Mockito.mock(ScheduledExecutorService.class);
+        RachioBridgeHandler handler = cloudWebhookHandler("bridge", registry, scheduler);
+        CountDownLatch firstAcquisitionStarted = new CountDownLatch(1);
+        CountDownLatch allowFirstFailure = new CountDownLatch(1);
+        Mockito.doAnswer(invocation -> {
+            firstAcquisitionStarted.countDown();
+            assertThat(allowFirstFailure.await(10, TimeUnit.SECONDS), is(true));
+            throw new CloudWebhookException("first acquisition timed out");
+        }).doReturn(new CloudWebhookLease(webhookUrl, Instant.now().plusSeconds(24 * 60 * 60), 1, 1)).when(registry)
+                .acquire(Mockito.anyString());
+        CompletableFuture<String> firstAcquisition = CompletableFuture
+                .supplyAsync(handler::getModernWebhookUrlForRegistration);
+
+        try {
+            assertThat(firstAcquisitionStarted.await(5, TimeUnit.SECONDS), is(true));
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(webhookUrl));
+            assertThat(webhookProperty(handler, PROPERTY_WEBHOOK_REGISTRATION_STATE), is("cloud URL ready"));
+
+            allowFirstFailure.countDown();
+            assertThat(firstAcquisition.get(5, TimeUnit.SECONDS), is(""));
+
+            assertThat(webhookProperty(handler, PROPERTY_WEBHOOK_REGISTRATION_STATE), is("cloud URL ready"));
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(webhookUrl));
+            verify(scheduler, never()).schedule(Mockito.any(Runnable.class), Mockito.eq(30L),
+                    Mockito.eq(TimeUnit.SECONDS));
+        } finally {
+            allowFirstFailure.countDown();
+            try {
+                firstAcquisition.get(5, TimeUnit.SECONDS);
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @Test
+    void disposalCancelsCloudWebhookRetry() throws Exception {
+        WebhookService service = cloudWebhookService("https://cloud.example.org/rachio/webhook");
+        Mockito.when(service.requestWebhook("/rachio/webhook"))
+                .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("cloud reconnecting")));
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service);
+        ScheduledExecutorService scheduler = Mockito.mock(ScheduledExecutorService.class);
+        ScheduledFuture<?> retryFuture = mockCloudWebhookRetry(scheduler);
+        RachioBridgeHandler handler = cloudWebhookHandler("bridge", registry, scheduler);
+
+        assertThat(handler.getModernWebhookUrlForRegistration(), is(""));
+        Runnable retry = scheduledCloudWebhookRetry(scheduler);
+
+        handler.dispose();
+        retry.run();
+
+        verify(retryFuture).cancel(false);
+        verify(service, Mockito.times(1)).requestWebhook("/rachio/webhook");
+    }
+
+    @Test
+    void disablingAutomaticWebhooksCancelsCloudWebhookRetry() throws Exception {
+        WebhookService service = cloudWebhookService("https://cloud.example.org/rachio/webhook");
+        Mockito.when(service.requestWebhook("/rachio/webhook"))
+                .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("cloud reconnecting")));
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service);
+        ScheduledExecutorService scheduler = Mockito.mock(ScheduledExecutorService.class);
+        ScheduledFuture<?> retryFuture = mockCloudWebhookRetry(scheduler);
+        RachioBridgeHandler handler = cloudWebhookHandler("bridge", registry, scheduler);
+
+        try {
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(""));
+            Runnable retry = scheduledCloudWebhookRetry(scheduler);
+            setField(handler, "thingConfig", new RachioConfiguration());
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(""));
+
+            retry.run();
+
+            verify(retryFuture).cancel(false);
+            verify(service, Mockito.times(1)).requestWebhook("/rachio/webhook");
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void providerChangeCancelsCloudWebhookRetry() throws Exception {
+        WebhookService service = cloudWebhookService("https://cloud.example.org/rachio/webhook");
+        Mockito.when(service.requestWebhook("/rachio/webhook"))
+                .thenReturn(CompletableFuture.failedFuture(new IllegalStateException("cloud reconnecting")));
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service);
+        ScheduledExecutorService scheduler = Mockito.mock(ScheduledExecutorService.class);
+        ScheduledFuture<?> retryFuture = mockCloudWebhookRetry(scheduler);
+        RachioBridgeHandler handler = cloudWebhookHandler("bridge", registry, scheduler);
+
+        try {
+            assertThat(handler.getModernWebhookUrlForRegistration(), is(""));
+            Runnable retry = scheduledCloudWebhookRetry(scheduler);
+
+            handler.onCloudWebhookProviderChanged();
+            retry.run();
+
+            verify(retryFuture).cancel(false);
+            verify(service, Mockito.times(1)).requestWebhook("/rachio/webhook");
+        } finally {
+            handler.dispose();
         }
     }
 
@@ -1510,6 +1753,26 @@ class RachioWebhookCoordinatorTest {
         setField(handler, "thingConfig", config);
         Mockito.doReturn(new HashMap<>()).when(handler).getDevices();
         return handler;
+    }
+
+    private RachioBridgeHandler cloudWebhookHandler(String id, RachioCloudWebhookRegistry registry,
+            ScheduledExecutorService scheduler) throws ReflectiveOperationException {
+        RachioBridgeHandler handler = cloudWebhookHandler(id, registry);
+        setField(handler, "webhookCoordinator", new RachioWebhookCoordinator(registry, scheduler));
+        return handler;
+    }
+
+    private ScheduledFuture<?> mockCloudWebhookRetry(ScheduledExecutorService scheduler) {
+        ScheduledFuture<?> future = Mockito.mock(ScheduledFuture.class);
+        Mockito.doReturn(future).when(scheduler).schedule(Mockito.any(Runnable.class), Mockito.eq(30L),
+                Mockito.eq(TimeUnit.SECONDS));
+        return future;
+    }
+
+    private Runnable scheduledCloudWebhookRetry(ScheduledExecutorService scheduler) {
+        ArgumentCaptor<Runnable> retryCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).schedule(retryCaptor.capture(), Mockito.eq(30L), Mockito.eq(TimeUnit.SECONDS));
+        return retryCaptor.getValue();
     }
 
     private void enableModernWebhookMode(RachioBridgeHandler handler) throws ReflectiveOperationException {
