@@ -98,14 +98,14 @@ class GmePunHandlerTest {
         when(bridgeHandler.getGranularity()).thenReturn(GmeGranularity.PT60);
         when(bridgeHandler.getMarketZone()).thenReturn("");
         when(authManager.requestMarketPrices(any(LocalDate.class), eq(GmeGranularity.PT60))).thenAnswer(invocation -> {
-                if (requests.incrementAndGet() == 1) {
-                    firstRequestStarted.countDown();
-                    if (!releaseFirstRequest.await(5, TimeUnit.SECONDS)) {
-                        throw new IllegalStateException("Timed out waiting for first request");
-                    }
+            if (requests.incrementAndGet() == 1) {
+                firstRequestStarted.countDown();
+                if (!releaseFirstRequest.await(5, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("Timed out waiting for first request");
                 }
-                return List.of();
-            });
+            }
+            return List.of();
+        });
 
         GmePunHandler handler = new GmePunHandler(thing);
         handler.setCallback(callback);
