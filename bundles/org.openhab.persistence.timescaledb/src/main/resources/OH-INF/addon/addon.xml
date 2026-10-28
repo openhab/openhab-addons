@@ -8,6 +8,8 @@
 	<description>This is the persistence add-on for TimescaleDB.</description>
 	<connection>local</connection>
 
+	<service-id>org.openhab.timescaledb</service-id>
+
 	<config-description-ref uri="persistence:timescaledb"/>
 
 </addon:addon>
