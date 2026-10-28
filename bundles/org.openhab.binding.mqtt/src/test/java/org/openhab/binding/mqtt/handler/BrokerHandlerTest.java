@@ -14,7 +14,9 @@ package org.openhab.binding.mqtt.handler;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -94,6 +96,46 @@ public class BrokerHandlerTest extends JavaTest {
         when(thingMock.getConfiguration()).thenReturn(config);
         handler.initialize();
         verify(handler).createBrokerConnection();
+    }
+
+    private BrokerHandlerConfig clientCertConfig(boolean secure, boolean hostnameValidated, boolean certificatePin,
+            boolean publicKeyPin) {
+        BrokerHandlerConfig config = new BrokerHandlerConfig();
+        config.secure = secure;
+        config.hostnameValidated = hostnameValidated;
+        config.certificatepin = certificatePin;
+        config.publickeypin = publicKeyPin;
+        config.clientKeystore = "/nonexistent/client.p12";
+        return config;
+    }
+
+    @Test
+    public void clientCertificateRefusedWithoutBrokerVerification() {
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.assignClientCertificate(clientCertConfig(true, false, false, false), mockedConnection));
+        assertTrue(e.getMessage().contains("requires hostname validation"));
+        verify(mockedConnection, never()).setKeyManagerFactory(any());
+    }
+
+    @Test
+    public void clientCertificateNotRefusedWithHostnameValidationOrPinning() {
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+        // Not refused by the verification check: loading the (missing) keystore fails instead
+        for (BrokerHandlerConfig config : new BrokerHandlerConfig[] { clientCertConfig(true, true, false, false),
+                clientCertConfig(true, false, true, false), clientCertConfig(true, false, false, true) }) {
+            IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                    () -> handler.assignClientCertificate(config, mockedConnection));
+            assertTrue(e.getMessage().startsWith("Unable to load client keystore"));
+        }
+    }
+
+    @Test
+    public void clientCertificateIgnoredIfNotSecure() {
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+        assertDoesNotThrow(
+                () -> handler.assignClientCertificate(clientCertConfig(false, false, false, false), mockedConnection));
+        verify(mockedConnection, never()).setKeyManagerFactory(any());
     }
 
     @Disabled("Temporarily disabled as broken since May 2022")
