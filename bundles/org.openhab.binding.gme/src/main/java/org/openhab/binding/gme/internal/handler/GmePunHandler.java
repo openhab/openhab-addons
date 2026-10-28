@@ -80,6 +80,8 @@ public class GmePunHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GmePunHandler.class);
     private final AtomicBoolean refreshInProgress = new AtomicBoolean();
+    private boolean pendingRefresh;
+    private boolean pendingForceRefresh;
     private final AtomicLong lifecycleGeneration = new AtomicLong();
 
     private @Nullable GmeApiBridgeHandler bridgeHandler;
@@ -317,8 +319,12 @@ public class GmePunHandler extends BaseThingHandler {
     }
 
     private void refreshPrices(boolean forceRefresh) {
-        if (!refreshInProgress.compareAndSet(false, true)) {
-            return;
+        synchronized (this) {
+            if (!refreshInProgress.compareAndSet(false, true)) {
+                pendingRefresh = true;
+                pendingForceRefresh |= forceRefresh;
+                return;
+            }
         }
 
         long generation = lifecycleGeneration.get();
@@ -532,9 +538,25 @@ public class GmePunHandler extends BaseThingHandler {
                             "@text/status.gme.price-retrieval-failed [\"" + e.getMessage() + "\"]");
                 }
             } finally {
-                refreshInProgress.set(false);
+                boolean runPending;
+                boolean forcePending;
+                synchronized (GmePunHandler.this) {
+                    runPending = pendingRefresh;
+                    forcePending = pendingForceRefresh;
+                    pendingRefresh = false;
+                    pendingForceRefresh = false;
+                    refreshInProgress.set(false);
+                }
+                if (runPending && isCurrentGeneration(lifecycleGeneration.get()) && isBridgeOnline()) {
+                    refreshPrices(forcePending);
+                }
             }
         });
+    }
+
+    private boolean isBridgeOnline() {
+        Bridge bridge = getBridge();
+        return bridge != null && bridge.getStatus() == ThingStatus.ONLINE;
     }
 
     private boolean isCurrentGeneration(long generation) {
