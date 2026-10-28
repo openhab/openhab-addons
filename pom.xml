@@ -171,6 +171,21 @@ Import-Package: \
     </dependencies>
   </dependencyManagement>
 
+  <repositories>
+    <!-- jupnp 4.0.0-SNAPSHOT is only published to Maven Central snapshots, remove once jupnp 4.0.0 is released -->
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>central-snapshots</id>
+      <name>Maven Central Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+    </repository>
+  </repositories>
+
   <build>
     <pluginManagement>
       <plugins>
