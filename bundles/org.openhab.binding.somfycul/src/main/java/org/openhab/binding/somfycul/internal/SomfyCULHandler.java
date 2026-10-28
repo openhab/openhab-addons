@@ -99,7 +99,7 @@ public class SomfyCULHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {
                 logger.warn("Failed to initialize SomfyCULHandler for {}: {}", getThing().getUID(), e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         i18nProvider.getText(bundle, "offline.init-error", "Initialization failed: {0}",
                                 localeProvider.getLocale(), e.getMessage()));
             }

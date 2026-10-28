@@ -218,7 +218,7 @@ public abstract class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
                         return;
                     }
                     if (th instanceof TimeoutException) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, th.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, th.getMessage());
                     }
                     if (!alwaysConnected) {
                         scheduleDisconnect();
@@ -275,11 +275,11 @@ public abstract class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
                 if (device.getConnectionState() == ConnectionState.CONNECTED) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is not connected.");
+                    updateStatus(ThingStatus.OFFLINE, "Device is not connected.");
                 }
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -311,7 +311,7 @@ public abstract class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
             case DISCONNECTED:
                 cancel(pendingDisconnect, false);
                 if (alwaysConnected) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 }
                 break;
             default:

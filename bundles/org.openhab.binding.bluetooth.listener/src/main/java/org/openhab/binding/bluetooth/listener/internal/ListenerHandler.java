@@ -80,7 +80,7 @@ public class ListenerHandler extends BeaconBluetoothHandler {
     private void heartbeat() {
         ListenerConfiguration config = this.config;
         if (!receivedStatus.getAndSet(false) && getThing().getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.communication-error [\"" + (config != null ? config.dataTimeout : "null") + "\"]");
             scanTime = 0;
         }

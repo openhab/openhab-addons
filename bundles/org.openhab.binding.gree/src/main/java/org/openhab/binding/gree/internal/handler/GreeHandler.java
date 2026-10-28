@@ -87,7 +87,7 @@ public class GreeHandler extends BaseThingHandler {
         if (config.ipAddress.isBlank() || (config.refreshInterval < 0)) {
             String message = messages.get("thinginit.invconf");
             logger.warn("{}: {}", thingId, message);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
             return;
         }
 
@@ -131,7 +131,7 @@ public class GreeHandler extends BaseThingHandler {
         }
 
         if (getThing().getStatus() != ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 
@@ -160,7 +160,7 @@ public class GreeHandler extends BaseThingHandler {
                     } else {
                         String message = logInfo(
                                 messages.get("command.exception", command, channelId) + ": " + e.getMessageString());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
                     }
                 } catch (IllegalArgumentException e) {
                     logInfo("command.invarg", command, channelId);
@@ -393,7 +393,7 @@ public class GreeHandler extends BaseThingHandler {
 
                     apiRetries++;
                     if (apiRetries > MAX_API_RETRIES) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
                         apiRetries = 0;
                     }
                 }

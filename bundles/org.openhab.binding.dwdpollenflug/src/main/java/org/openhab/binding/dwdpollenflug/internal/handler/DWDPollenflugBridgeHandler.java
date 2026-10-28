@@ -90,8 +90,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.UNKNOWN);
             startPolling();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Refresh interval has to be at least 15 minutes.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval has to be at least 15 minutes.");
         }
     }
 
@@ -123,10 +122,9 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         requestRefresh().handle((resultPollenflug, pollException) -> {
             if (resultPollenflug == null) {
                 if (pollException == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            pollException.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, pollException.getMessage());
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);

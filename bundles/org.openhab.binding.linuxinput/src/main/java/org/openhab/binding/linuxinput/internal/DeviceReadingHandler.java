@@ -18,7 +18,6 @@ import java.util.concurrent.CancellationException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.slf4j.Logger;
@@ -61,7 +60,7 @@ public abstract class DeviceReadingHandler extends BaseThingHandler {
                             handleEventsInThread();
                         } catch (IOException e) {
                             logger.warn("Could not read event", e);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     }, "events", thing);
                     thread.start();
@@ -90,7 +89,7 @@ public abstract class DeviceReadingHandler extends BaseThingHandler {
     }
 
     private void handleSetupError(Exception e) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
     }
 
     @Override

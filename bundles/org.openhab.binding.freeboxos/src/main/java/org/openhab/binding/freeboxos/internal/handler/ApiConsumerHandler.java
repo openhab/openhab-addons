@@ -188,21 +188,21 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
 
     private @Nullable FreeboxOsHandler checkBridgeHandler() {
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof FreeboxOsHandler fbOsHandler) {
-                if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    if (statusDrivenByBridge) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                    return fbOsHandler;
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return null;
+        }
+        BridgeHandler handler = bridge.getHandler();
+        if (handler instanceof FreeboxOsHandler fbOsHandler) {
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
+                if (statusDrivenByBridge) {
+                    updateStatus(ThingStatus.ONLINE);
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
+                return fbOsHandler;
             }
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         return null;
     }
@@ -235,7 +235,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
             try {
                 internalPoll();
             } catch (FreeboxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }, 0, refreshInterval, TimeUnit.SECONDS);
     }
@@ -346,8 +346,8 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override

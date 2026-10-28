@@ -159,8 +159,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         Node node = handler.requestNodeDetails(config.id);
         if (node == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-node-details");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-node-details");
             return;
         }
         if (!node.ready) {
@@ -173,8 +172,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             result = typeGenerator.generate(thing.getUID(), node, true);
         } catch (Exception e) {
             logger.warn("Node {}. Error generating type information during configuration update", config.id, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.build-channels-failed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.build-channels-failed");
             return;
         }
 
@@ -475,11 +473,14 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         ZwaveJSNodeConfiguration config = this.config = getConfigAs(ZwaveJSNodeConfiguration.class);
 
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.id-invalid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.id-invalid");
             return;
         }
 
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
 
         executorService.execute(() -> internalInitialize(initializationGeneration));
@@ -516,7 +517,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
-            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
             return;
         }
 
@@ -763,7 +764,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     @Override
     public void onNodeDead(Event event) {
         logger.trace("Node {}. Dead", config.id);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.dead-node");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.dead-node");
     }
 
     @Override
@@ -773,7 +774,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             nodeDefinitionUpdateGeneration++;
             updateStatusAfterNodeDefinitionChange = false;
             cancelPendingNodeDefinitionUpdate();
-            updateStatus(ThingStatus.OFFLINE, "@text/offline.conf-error.node-removed");
+            updateStatus(ThingStatusDetail.GONE, "@text/offline.conf-error.node-removed");
         }
     }
 

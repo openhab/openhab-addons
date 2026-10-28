@@ -107,7 +107,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
             updateStatus(ThingStatus.ONLINE);
             return true;
         } catch (TellstickException | InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return false;
     }

@@ -70,14 +70,17 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
     protected void handleCommand(final ChannelUID channelUID, final Command command, final MillheatModel model) {
         final Optional<Heater> optionalHeater = model.findHeaterByMacOrId(config.macAddress, config.heaterId);
         if (optionalHeater.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+            updateStatus(ThingStatusDetail.GONE);
             return;
         }
         final Heater heater = optionalHeater.get();
         // Readings are still published while offline, since they remain the best available, but
         // the thing status marks them as potentially stale.
-        updateStatus(heater.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE,
-                heater.isOnline() ? ThingStatusDetail.NONE : ThingStatusDetail.COMMUNICATION_ERROR);
+        if (heater.isOnline()) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
+        }
 
         final String channelId = channelUID.getId();
         final boolean refresh = command instanceof RefreshType;
@@ -163,7 +166,7 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
         final boolean hasId = configuredHeaterId != null && !configuredHeaterId.isBlank();
         final boolean hasMac = configuredMac != null && !configuredMac.isBlank();
         if (!hasId && !hasMac) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Either MAC address or heater ID is required. Heater IDs changed to UUIDs with the new Mill cloud API, so a numeric ID from an older configuration will not work; re-run discovery.");
             return;
         }

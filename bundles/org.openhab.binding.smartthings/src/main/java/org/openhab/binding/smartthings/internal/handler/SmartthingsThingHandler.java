@@ -238,8 +238,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     private boolean validateConfig(SmartthingsThingConfig config) {
         String name = config.smartthingsName;
         if (name.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Smartthings device name is missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Smartthings device name is missing");
             return false;
         }
 

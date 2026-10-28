@@ -90,7 +90,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
 
                 @Override
                 public void onOffline(@Nullable String errorMessage) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage + ".");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMessage + ".");
                 }
 
                 @Override
@@ -108,7 +108,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
 
             updateStatus(ThingStatus.UNKNOWN);
         } catch (LcnException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage + e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, errorMessage + e.getMessage());
         }
     }
 

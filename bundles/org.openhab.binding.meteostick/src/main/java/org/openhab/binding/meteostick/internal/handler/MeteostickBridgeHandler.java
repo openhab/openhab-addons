@@ -150,7 +150,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
 
         SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
         if (portIdentifier == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Serial Error: Port " + serialPortName + " does not exist");
             return false;
         }
@@ -175,13 +175,13 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
 
             success = true;
         } catch (PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Serial Error: Port " + serialPortName + " in use");
         } catch (UnsupportedCommOperationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Serial Error: Unsupported comm operation on port " + serialPortName);
         } catch (TooManyListenersException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Serial Error: Too many listeners on port " + serialPortName);
         }
 
@@ -335,7 +335,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
             } else {
                 detail = "No data received since " + lastData.toString();
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, detail);
         };
 
         if (offlineTimerJob != null) {

@@ -218,13 +218,13 @@ public class NtpHandler extends BaseThingHandler {
             logger.debug(
                     "{} The given hostname '{}' of the timeserver is unknown -> returning current sytem time instead. ({})",
                     getThing().getUID(), hostname, uhe.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-unknown-host [\"" + hostname + "\"]");
         } catch (IOException ioe) {
             logger.debug(
                     "{} Couldn't establish network connection to host '{}' -> returning current sytem time instead. ({})",
                     getThing().getUID(), hostname, ioe.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-connection [\"" + hostname + "\"]");
         }
 

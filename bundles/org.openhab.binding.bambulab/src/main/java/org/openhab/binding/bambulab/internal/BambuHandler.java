@@ -30,16 +30,17 @@ import org.slf4j.Logger;
 public interface BambuHandler {
     /**
      * Same as
-     * {@link org.openhab.core.thing.binding.BaseThingHandler#updateStatus(ThingStatus, ThingStatusDetail, String)}
+     * {@link org.openhab.core.thing.binding.BaseThingHandler#updateStatus(ThingStatusDetail, String)}
      *
-     * @see org.openhab.core.thing.binding.BaseThingHandler#updateStatus(ThingStatus, ThingStatusDetail, String)
+     * @see org.openhab.core.thing.binding.BaseThingHandler#updateStatus(ThingStatusDetail, String)
      */
-    void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
+    void updateStatus(ThingStatusDetail statusDetail, @Nullable String description);
 
     /**
-     * Same as {@link org.openhab.core.thing.binding.BaseThingHandler#updateStatus(ThingStatus, ThingStatusDetail)}
+     * Same as
+     * {@link org.openhab.core.thing.binding.BaseThingHandler#updateState(org.openhab.core.thing.ChannelUID, State)}
      *
-     * @see org.openhab.core.thing.binding.BaseThingHandler#updateStatus(ThingStatus, ThingStatusDetail)
+     * @see org.openhab.core.thing.binding.BaseThingHandler#updateState(org.openhab.core.thing.ChannelUID, State)
      */
     void updateState(String channelUID, State state);
 

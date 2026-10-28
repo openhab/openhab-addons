@@ -240,7 +240,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                     logger.error("Command {}, {} not supported by {}!", id, command, channelUID);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -456,7 +456,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
             // Start the status updater
             startAutomaticRefresh(refresh);
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 

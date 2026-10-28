@@ -69,8 +69,7 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
         if (adapters.stream().map(BluetoothAdapter::getUID).anyMatch(this::isGroupMember)) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "No Physical Bluetooth adapters found");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No Physical Bluetooth adapters found");
         }
     }
 
@@ -78,8 +77,7 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
         if (adapters.stream().anyMatch(this::isRoamingMember)) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "No Physical Bluetooth adapters found");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No Physical Bluetooth adapters found");
         }
     }
 

@@ -187,8 +187,17 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         useAdvancedStates = Objects
                 .requireNonNullElse((boolean) getConfig().get(TeslaBindingConstants.CONFIG_USEDADVANCEDSTATES), false);
         Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof TeslaAccountHandler teslaAccountHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
+            return;
+        }
+        var bridgeHandler = bridge.getHandler();
+        if (bridgeHandler == null) {
+            logger.debug("Bridge handler unavailable for Thing {}", getThing().getUID());
+            return;
+        }
+        if (!(bridgeHandler instanceof TeslaAccountHandler teslaAccountHandler)) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Tesla account bridge handler is unavailable");
             return;
         }
         account = teslaAccountHandler;
@@ -528,13 +537,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
-        super.updateStatus(status, statusDetail);
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     public void requestData(String command) {
@@ -674,7 +678,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             TeslaAccountHandler.API_ERROR_INTERVAL_SECONDS);
                 }
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000
                     * TeslaAccountHandler.API_ERROR_INTERVAL_SECONDS) {
                 logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
@@ -864,7 +868,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
                 }
             } catch (ProcessingException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
         return null;
@@ -1259,7 +1263,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                                     logger.warn(
                                             "Event : Reached the maximum number of errors ({}) for the current interval ({} seconds)",
                                             EVENT_MAXIMUM_ERRORS_IN_INTERVAL, EVENT_ERROR_INTERVAL_SECONDS);
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                                     eventEndpoint.closeConnection();
                                 }
 
