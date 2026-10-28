@@ -15,6 +15,11 @@ package org.openhab.binding.gme.internal.handler;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -25,6 +30,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -69,4 +75,56 @@ class GmePunHandlerTest {
             handler.dispose();
         }
     }
+    @Test
+    void reconnectDuringActivePollQueuesNewGenerationRefresh() throws Exception {
+        ThingUID bridgeUID = new ThingUID(GmeBindingConstants.THING_TYPE_API, "account");
+        Thing thing = ThingBuilder.create(GmeBindingConstants.THING_TYPE_PUN, "price").withBridge(bridgeUID).build();
+
+        Bridge bridge = mock(Bridge.class);
+        GmeApiBridgeHandler bridgeHandler = mock(GmeApiBridgeHandler.class);
+        GmeAuthManager authManager = mock(GmeAuthManager.class);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        AtomicReference<ThingStatus> bridgeStatus = new AtomicReference<>(ThingStatus.ONLINE);
+        AtomicInteger requests = new AtomicInteger();
+        CountDownLatch firstRequestStarted = new CountDownLatch(1);
+        CountDownLatch releaseFirstRequest = new CountDownLatch(1);
+
+        when(callback.getBridge(bridgeUID)).thenReturn(bridge);
+        when(bridge.getStatus()).thenAnswer(invocation -> bridgeStatus.get());
+        when(bridge.getHandler()).thenReturn(bridgeHandler);
+        when(bridgeHandler.getAuthManager()).thenReturn(authManager);
+        when(bridgeHandler.getRefreshInterval()).thenReturn(60);
+        when(bridgeHandler.getGranularity()).thenReturn(GmeGranularity.PT60);
+        when(bridgeHandler.getMarketZone()).thenReturn("");
+        when(authManager.requestMarketPrices(any(LocalDate.class), eq(GmeGranularity.PT60)))
+                .thenAnswer(invocation -> {
+                    if (requests.incrementAndGet() == 1) {
+                        firstRequestStarted.countDown();
+                        if (!releaseFirstRequest.await(5, TimeUnit.SECONDS)) {
+                            throw new IllegalStateException("Timed out waiting for first request");
+                        }
+                    }
+                    return List.of();
+                });
+
+        GmePunHandler handler = new GmePunHandler(thing);
+        handler.setCallback(callback);
+        try {
+            handler.initialize();
+            org.junit.jupiter.api.Assertions.assertTrue(firstRequestStarted.await(5, TimeUnit.SECONDS));
+
+            bridgeStatus.set(ThingStatus.OFFLINE);
+            handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, null));
+            bridgeStatus.set(ThingStatus.ONLINE);
+            handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+
+            releaseFirstRequest.countDown();
+            verify(authManager, timeout(5000).atLeast(2))
+                    .requestMarketPrices(any(LocalDate.class), eq(GmeGranularity.PT60));
+        } finally {
+            releaseFirstRequest.countDown();
+            handler.dispose();
+        }
+    }
+
 }
