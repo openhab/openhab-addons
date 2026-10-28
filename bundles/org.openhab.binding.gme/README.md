@@ -12,10 +12,10 @@ It can be used for energy monitoring and automation scenarios such as load shift
 
 The binding supports the following Thing types:
 
-| Thing Type UID | Type   | Description                                                      |
-|----------------|--------|------------------------------------------------------------------|
-| `api`          | Bridge | Connection to a GME API account and common API configuration     |
-| `pun`          | Thing  | PUN and zonal electricity market prices                          |
+| Thing Type UID | Type   | Description                                                  |
+|----------------|--------|--------------------------------------------------------------|
+| `api`          | Bridge | Connection to a GME API account and common API configuration |
+| `pun`          | Thing  | PUN and zonal electricity market prices                      |
 
 The `pun` Thing must be associated with a `gme:api` Bridge.
 
@@ -25,26 +25,26 @@ The `pun` Thing must be associated with a `gme:api` Bridge.
 
 The API Bridge manages authentication with GME and configuration shared by the price Things.
 
-| Name | Type | Description | Default | Required | Advanced |
-|------|------|-------------|---------|----------|----------|
-| `username` | text | Username for the GME API | N/A | yes | no |
-| `password` | text | Password for the GME API | N/A | yes | no |
-| `initialPasswordChangedAt` | text | Optional initial password change date in `YYYY-MM-DD` format | N/A | no | yes |
-| `marketZone` | text | Italian electricity market zone used for zonal prices | N/A | no | no |
-| `granularity` | text | GME MGP market granularity: `PT60`, `PT30` or `PT15` | `PT60` | no | no |
-| `refreshInterval` | integer | Interval in minutes for refreshing the current-day market dataset from GME | 60 | no | yes |
+| Name                       | Type    | Description                                                                | Default | Required | Advanced |
+|----------------------------|---------|----------------------------------------------------------------------------|---------|----------|----------|
+| `username`                 | text    | Username for the GME API                                                   | N/A     | yes      | no       |
+| `password`                 | text    | Password for the GME API                                                   | N/A     | yes      | no       |
+| `initialPasswordChangedAt` | text    | Optional initial password change date in `YYYY-MM-DD` format               | N/A     | no       | yes      |
+| `marketZone`               | text    | Italian electricity market zone used for zonal prices                      | N/A     | no       | no       |
+| `granularity`              | text    | GME MGP market granularity: `PT60`, `PT30` or `PT15`                       | `PT60`  | no       | no       |
+| `refreshInterval`          | integer | Interval in minutes for refreshing the current-day market dataset from GME | 60      | no       | yes      |
 
 The following market zones are supported:
 
-| Value | Market Zone |
-|-------|-------------|
-| `NORD` | Northern Italy |
+| Value  | Market Zone            |
+|--------|------------------------|
+| `NORD` | Northern Italy         |
 | `CNOR` | Central-Northern Italy |
 | `CSUD` | Central-Southern Italy |
-| `SUD` | Southern Italy |
-| `CALA` | Calabria |
-| `SICI` | Sicily |
-| `SARD` | Sardinia |
+| `SUD`  | Southern Italy         |
+| `CALA` | Calabria               |
+| `SICI` | Sicily                 |
+| `SARD` | Sardinia               |
 
 The configured market zone affects only zonal price channels.
 
@@ -78,19 +78,18 @@ An authentication failure does not change the stored password change date.
 ### `pun` Thing Configuration
 
 The PUN Thing does not require additional configuration.
-
 It obtains authentication, refresh interval, market zone and market granularity information from its parent `api` Bridge.
 
 ## Channels
 
 ### `api` Bridge Channels
 
-| Channel | Type | Read/Write | Description |
-|---------|------|------------|-------------|
-| `password-last-changed` | DateTime | R | Date and time when the current password was first observed or successfully changed |
-| `password-expiry` | DateTime | R | Estimated expiry date and time of the current GME API password |
-| `password-days-remaining` | Number | R | Estimated number of days remaining before password expiry |
-| `password-status` | String | R | Password lifecycle status: `OK`, `CHANGE_SOON` or `EXPIRED` |
+| Channel                   | Type     | Read/Write | Description                                                                        |
+|---------------------------|----------|------------|------------------------------------------------------------------------------------|
+| `password-last-changed`   | DateTime | R          | Date and time when the current password was first observed or successfully changed |
+| `password-expiry`         | DateTime | R          | Estimated expiry date and time of the current GME API password                     |
+| `password-days-remaining` | Number   | R          | Estimated number of days remaining before password expiry                          |
+| `password-status`         | String   | R          | Password lifecycle status: `OK`, `CHANGE_SOON` or `EXPIRED`                        |
 
 The password status becomes `CHANGE_SOON` after five months.
 
@@ -98,26 +97,26 @@ The estimated password expiry is six months after the tracked password change da
 
 ### `pun` Price Channels
 
-| Channel | Type | Read/Write | Description |
-|---------|------|------------|-------------|
-| `market#current-price` | Number:EnergyPrice | R | Current PUN price for the active market interval |
-| `market#next-price` | Number:EnergyPrice | R | Next PUN price for the following market interval |
-| `today#prices` | Number:EnergyPrice | R | Today's PUN prices as a time series at the configured market granularity |
-| `tomorrow#prices` | Number:EnergyPrice | R | Tomorrow's PUN prices as a time series at the configured market granularity |
-| `today#zonal-prices` | Number:EnergyPrice | R | Today's prices for the configured market zone as a time series at the configured market granularity |
-| `tomorrow#zonal-prices` | Number:EnergyPrice | R | Tomorrow's prices for the configured market zone as a time series at the configured market granularity |
-| `today#average` | Number:EnergyPrice | R | Average PUN price for today |
-| `today#min` | Number:EnergyPrice | R | Minimum PUN price for today |
-| `today#max` | Number:EnergyPrice | R | Maximum PUN price for today |
-| `today#min-time` | DateTime | R | Start time of today's minimum-price period |
-| `today#max-time` | DateTime | R | Start time of today's maximum-price period |
-| `tomorrow#average` | Number:EnergyPrice | R | Average PUN price for tomorrow |
-| `tomorrow#min` | Number:EnergyPrice | R | Minimum PUN price for tomorrow |
-| `tomorrow#max` | Number:EnergyPrice | R | Maximum PUN price for tomorrow |
-| `tomorrow#min-time` | DateTime | R | Start time of tomorrow's minimum-price period |
-| `tomorrow#max-time` | DateTime | R | Start time of tomorrow's maximum-price period |
-| `market#tomorrow-available` | Switch | R | Indicates whether tomorrow's market data are available |
-| `market#last-update` | DateTime | R | Time of the most recent successful market data update |
+| Channel                     | Type               | Read/Write | Description                                                                                            |
+|-----------------------------|--------------------|------------|--------------------------------------------------------------------------------------------------------|
+| `market#current-price`      | Number:EnergyPrice | R          | Current PUN price for the active market interval                                                       |
+| `market#next-price`         | Number:EnergyPrice | R          | Next PUN price for the following market interval                                                       |
+| `today#prices`              | Number:EnergyPrice | R          | Today's PUN prices as a time series at the configured market granularity                               |
+| `tomorrow#prices`           | Number:EnergyPrice | R          | Tomorrow's PUN prices as a time series at the configured market granularity                            |
+| `today#zonal-prices`        | Number:EnergyPrice | R          | Today's prices for the configured market zone as a time series at the configured market granularity    |
+| `tomorrow#zonal-prices`     | Number:EnergyPrice | R          | Tomorrow's prices for the configured market zone as a time series at the configured market granularity |
+| `today#average`             | Number:EnergyPrice | R          | Average PUN price for today                                                                            |
+| `today#min`                 | Number:EnergyPrice | R          | Minimum PUN price for today                                                                            |
+| `today#max`                 | Number:EnergyPrice | R          | Maximum PUN price for today                                                                            |
+| `today#min-time`            | DateTime           | R          | Start time of today's minimum-price period                                                             |
+| `today#max-time`            | DateTime           | R          | Start time of today's maximum-price period                                                             |
+| `tomorrow#average`          | Number:EnergyPrice | R          | Average PUN price for tomorrow                                                                         |
+| `tomorrow#min`              | Number:EnergyPrice | R          | Minimum PUN price for tomorrow                                                                         |
+| `tomorrow#max`              | Number:EnergyPrice | R          | Maximum PUN price for tomorrow                                                                         |
+| `tomorrow#min-time`         | DateTime           | R          | Start time of tomorrow's minimum-price period                                                          |
+| `tomorrow#max-time`         | DateTime           | R          | Start time of tomorrow's maximum-price period                                                          |
+| `market#tomorrow-available` | Switch             | R          | Indicates whether tomorrow's market data are available                                                 |
+| `market#last-update`        | DateTime           | R          | Time of the most recent successful market data update                                                  |
 
 Energy prices are exposed as `Number:EnergyPrice` values in `EUR/kWh`.
 
