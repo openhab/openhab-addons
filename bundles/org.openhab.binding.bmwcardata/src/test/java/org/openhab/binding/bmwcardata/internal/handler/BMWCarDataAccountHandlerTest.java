@@ -195,6 +195,32 @@ class BMWCarDataAccountHandlerTest {
     }
 
     @Test
+    void containerIsIdentifiedByItsDescriptors() {
+        String purpose = BMWCarDataAccountHandler.containerPurpose(List.of("vehicle.a", "vehicle.b"));
+        assertEquals(purpose, BMWCarDataAccountHandler.containerPurpose(List.of("vehicle.b", "vehicle.a")));
+        assertNotEquals(purpose, BMWCarDataAccountHandler.containerPurpose(List.of("vehicle.a", "vehicle.c")));
+        assertEquals(BMWCarDataAccountHandler.containerPurpose(VehicleChannel.descriptors()),
+                BMWCarDataAccountHandler.CONTAINER_PURPOSE);
+    }
+
+    @Test
+    void containerOfAnEarlierVersionIsReplaced() throws Exception {
+        // stored by a version that identified the container by a revision number
+        storage.put("container", "container-1|openHAB BMW CarData binding rev 6");
+        authorize(false);
+        respond(status(200, """
+                {"containers":[{"containerId":"container-1","name":"openHAB",\
+                "purpose":"openHAB BMW CarData binding rev 6","state":"ACTIVE"}]}"""), status(204, ""),
+                status(200, "{\"containerId\":\"container-2\"}"), status(200, TELEMATIC_DATA));
+
+        runJobs(PERIODIC_DELAY);
+
+        assertEquals("container-2|" + BMWCarDataAccountHandler.CONTAINER_PURPOSE, storage.get("container"));
+        assertEquals(1, requests("/containers/container-1"));
+        assertTrue(responses.isEmpty());
+    }
+
+    @Test
     void containerLimitIsReportedClearly() throws Exception {
         storage.remove("container");
         authorize(false);

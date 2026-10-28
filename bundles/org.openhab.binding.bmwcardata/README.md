@@ -115,6 +115,7 @@ The stream is not affected by this limit, so the binding uses the API only to co
 - The static vehicle data shown as Thing properties is read once per vehicle, and the binding sets up its own telematic data container named `openHAB` on first use, which costs a few requests.
   A vehicle goes `ONLINE` once its static data is known; if it cannot be read, e.g. while the request budget is used up, the vehicle stays `OFFLINE` and the binding tries again after 15 minutes.
   If BMW no longer accepts the container, e.g. because it was deleted, the binding sets up a new one at the next read.
+  The same happens once after an update of the binding that reads other data points.
   BMW allows 10 containers per customer; if all are used by other tools, the vehicles report this, and one has to be deleted.
 - The vehicle image is read once per vehicle, and only when an item is linked to the `status#image` channel.
   Like the static data, it is kept, so it costs no further requests after a restart; if it cannot be read, e.g. while the request budget is used up, the binding tries again after 15 minutes.

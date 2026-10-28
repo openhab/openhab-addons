@@ -13,14 +13,19 @@
 package org.openhab.binding.bmwcardata.internal.handler;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -87,8 +92,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
 
     private static final String CONTAINER_NAME = "openHAB";
     private static final String CONTAINER_PURPOSE_PREFIX = "openHAB BMW CarData binding";
-    // bump the revision whenever the descriptors of VehicleChannel change, so that the container is replaced
-    static final String CONTAINER_PURPOSE = CONTAINER_PURPOSE_PREFIX + " rev 6";
+    // identifies the container by its descriptors, so that it is replaced whenever they change; containers of earlier
+    // versions carry a revision number instead and are replaced as well
+    static final String CONTAINER_PURPOSE = containerPurpose(VehicleChannel.descriptors());
     private static final Duration REFRESH_MARGIN = Duration.ofMinutes(5);
     private static final long RETRY_DELAY_SECONDS = 60;
     private static final long STREAM_STOP_TIMEOUT_SECONDS = 10;
@@ -698,6 +704,20 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         }
     }
 
+    /**
+     * @return the purpose of a container with the given descriptors, with a hash of them independent of their order
+     */
+    static String containerPurpose(Collection<String> descriptors) {
+        String joined = String.join("\n", new TreeSet<>(descriptors));
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256").digest(joined.getBytes(StandardCharsets.UTF_8));
+            return CONTAINER_PURPOSE_PREFIX + " " + HexFormat.of().formatHex(hash, 0, 8);
+        } catch (NoSuchAlgorithmException e) {
+            // every Java platform supports SHA-256
+            throw new IllegalStateException(e);
+        }
+    }
+
     private String getOrCreateContainer(BMWCarDataApi api) throws BMWCarDataException {
         // the lock is held during the requests to avoid that concurrent polls create duplicate containers
         synchronized (containerLock) {
@@ -705,7 +725,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             if (id != null) {
                 return id;
             }
-            // the stored id saves listing the containers after each restart; it is bound to the container revision
+            // the stored id saves listing the containers after each restart; it is bound to the descriptors by the
+            // purpose
             String stored = storage.get(STORAGE_KEY_CONTAINER);
             String suffix = "|" + CONTAINER_PURPOSE;
             if (stored != null && stored.endsWith(suffix)) {
