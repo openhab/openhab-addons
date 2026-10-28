@@ -68,6 +68,7 @@ public class ShellyMDNSDiscoveryParticipantTest {
         createParticipant(thingTable).createResult(mockService());
 
         verify(thing).requestUpdates(1, true);
+        verify(thing, never()).restartWatchdog();
     }
 
     @Test
@@ -90,6 +91,7 @@ public class ShellyMDNSDiscoveryParticipantTest {
         createParticipant(thingTable).createResult(mockService());
 
         verify(thing, never()).requestUpdates(anyInt(), anyBoolean());
+        verify(thing, never()).restartWatchdog();
     }
 
     @Test
@@ -103,6 +105,7 @@ public class ShellyMDNSDiscoveryParticipantTest {
         createParticipant(thingTable).createResult(mockService());
 
         verify(thing, never()).requestUpdates(anyInt(), anyBoolean());
+        verify(thing).restartWatchdog();
     }
 
     @Test
@@ -115,6 +118,7 @@ public class ShellyMDNSDiscoveryParticipantTest {
         createParticipant(thingTable).createResult(mockService());
 
         verify(thing).requestUpdates(1, true);
+        verify(thing).restartWatchdog();
     }
 
     @Test
@@ -127,6 +131,7 @@ public class ShellyMDNSDiscoveryParticipantTest {
         createParticipant(thingTable).createResult(mockService());
 
         verify(thing).requestUpdates(1, true);
+        verify(thing, never()).restartWatchdog();
     }
 
     @Test
