@@ -629,6 +629,9 @@
 			<update-channel id="so2" groupIds="measurements">
 				<type>airq:so2</type>
 			</update-channel>
+			<update-channel id="so2">
+				<type>airq:so2-number</type>
+			</update-channel>
 			<update-channel id="co-maxerr" groupIds="maxerr">
 				<type>airq:co-maxerr</type>
 			</update-channel>
@@ -686,6 +689,12 @@
 			</add-channel>
 			<add-channel id="daytime" groupIds="general">
 				<type>airq:daytime</type>
+			</add-channel>
+			<add-channel id="fire-alarm-active" groupIds="measurements">
+				<type>airq:fire-alarm-active</type>
+			</add-channel>
+			<add-channel id="gas-alarm-active" groupIds="measurements">
+				<type>airq:gas-alarm-active</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

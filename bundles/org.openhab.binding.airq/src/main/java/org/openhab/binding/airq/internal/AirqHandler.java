@@ -152,11 +152,12 @@ public class AirqHandler extends BaseThingHandler {
             Map.entry("nightModeFanNightOff", "night-mode-fan-night-off"),
             Map.entry("nightModeWifiNightOff", "night-mode-wifi-night-off"),
             Map.entry("nightModeActivated", "night-mode-activated"),
-            Map.entry("nightModeAlarmNightOff", "night-mode-alarm-night-off"), Map.entry("deviceName", "device-name"),
-            Map.entry("roomType", "room-type"), Map.entry("logLevel", "log-level"),
-            Map.entry("fireAlarm", "fire-alarm"), Map.entry("wlanConfigGateway", "wlan-config-gateway"),
-            Map.entry("wlanConfigMac", "wlan-config-mac"), Map.entry("wlanConfigSsid", "wlan-config-ssid"),
-            Map.entry("wlanConfigIPAddress", "wlan-config-ip-address"),
+            Map.entry("nightModeAlarmNightOff", "night-mode-alarm-night-off"),
+            Map.entry("fireAlarmActive", "fire-alarm-active"), Map.entry("gasAlarmActive", "gas-alarm-active"),
+            Map.entry("deviceName", "device-name"), Map.entry("roomType", "room-type"),
+            Map.entry("logLevel", "log-level"), Map.entry("fireAlarm", "fire-alarm"),
+            Map.entry("wlanConfigGateway", "wlan-config-gateway"), Map.entry("wlanConfigMac", "wlan-config-mac"),
+            Map.entry("wlanConfigSsid", "wlan-config-ssid"), Map.entry("wlanConfigIPAddress", "wlan-config-ip-address"),
             Map.entry("wlanConfigNetMask", "wlan-config-net-mask"), Map.entry("wlanConfigBssid", "wlan-config-bssid"),
             Map.entry("cloudUpload", "cloud-upload"), Map.entry("averagingRhythm", "averaging-rhythm"),
             Map.entry("powerFreqSuppression", "power-freq-suppression"),
@@ -193,11 +194,12 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("so2", "so2", "pair", Units.MICROGRAM_PER_CUBICMETRE),
             new ChannelMapping("sound", "sound", "pair", Units.DECIBEL),
             new ChannelMapping("temperature", "temperature", "pair", SIUnits.CELSIUS),
-            new ChannelMapping("Status", "status", "string", null, "general"),
+            new ChannelMapping("Status", "status", "status", null, "general"),
             new ChannelMapping("TypPS", "avgFineDustSize", "quantity", AirqUnits.MICROMETRE),
             new ChannelMapping("dCO2dt", "dCO2dt", "number"), new ChannelMapping("dHdt", "dHdt", "number"),
             new ChannelMapping("door_event", "doorEvent", "number"),
             new ChannelMapping("health", "healthIndex", "index"), new ChannelMapping("health", "health", "number"),
+            new ChannelMapping("health", "", "alarm"),
             new ChannelMapping("measuretime", "measureTime", "numberMilliseconds"),
             new ChannelMapping("performance", "performanceIndex", "index"),
             new ChannelMapping("performance", "performance", "number"),
@@ -265,7 +267,7 @@ public class AirqHandler extends BaseThingHandler {
     private static final Map<String, Unit<?>> PPM_AND_PPB_UNITS = Map.of("co", Units.PARTS_PER_MILLION, "no2",
             Units.PARTS_PER_BILLION, "o3", Units.PARTS_PER_BILLION, "so2", Units.PARTS_PER_BILLION);
     private static final Set<String> MEASUREMENT_KEYS = MEASUREMENTS.stream()
-            .filter(mapping -> !"string".equals(mapping.type())).map(ChannelMapping::dataKey)
+            .filter(mapping -> !"status".equals(mapping.type())).map(ChannelMapping::dataKey)
             .collect(Collectors.toUnmodifiableSet());
     private final Logger logger = LoggerFactory.getLogger(AirqHandler.class);
     private final Gson gson = new Gson();
@@ -1026,6 +1028,20 @@ public class AirqHandler extends BaseThingHandler {
         return sanitized;
     }
 
+    // datenlesen.md: the health index is -200 during a gas alarm and -800 during a fire alarm
+    private void updateAlarms(String parentChannelId, @Nullable JsonElement health) {
+        if (health == null || !isNumeric(health)) {
+            updateMappedState(nestedChannel(parentChannelId, "fireAlarmActive"), UnDefType.UNDEF);
+            updateMappedState(nestedChannel(parentChannelId, "gasAlarmActive"), UnDefType.UNDEF);
+        } else {
+            BigDecimal value = health.getAsBigDecimal();
+            updateMappedState(nestedChannel(parentChannelId, "fireAlarmActive"),
+                    OnOffType.from(value.compareTo(BigDecimal.valueOf(-800)) == 0));
+            updateMappedState(nestedChannel(parentChannelId, "gasAlarmActive"),
+                    OnOffType.from(value.compareTo(BigDecimal.valueOf(-200)) == 0));
+        }
+    }
+
     private static boolean isNumeric(JsonElement value) {
         return value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber();
     }
@@ -1037,9 +1053,32 @@ public class AirqHandler extends BaseThingHandler {
             updateMappedState(channelName, UnDefType.UNDEF);
             if (type.contentEquals("pair")) {
                 updateMappedState(errorChannel(channelName, "maxerr", "_maxerr"), UnDefType.UNDEF);
+            } else if ("alarm".equals(type)) {
+                updateAlarms(channelName, null);
             }
         } else {
             switch (type) {
+                case "alarm":
+                    updateAlarms(channelName, dec.get(airqName));
+                    break;
+                case "status":
+                    // datenlesen.md: "OK", or an object with the message of each sensor that has no reliable data
+                    JsonElement status = dec.get(airqName);
+                    if (status.isJsonObject()) {
+                        List<String> messages = new ArrayList<>();
+                        for (Entry<String, JsonElement> entry : status.getAsJsonObject().entrySet()) {
+                            JsonElement message = entry.getValue();
+                            messages.add(entry.getKey() + ": "
+                                    + (message.isJsonPrimitive() ? message.getAsString() : message.toString()));
+                        }
+                        updateMappedState(channelName, new StringType(String.join(", ", messages)));
+                    } else if (status.isJsonPrimitive()) {
+                        updateMappedState(channelName, new StringType(status.getAsString()));
+                    } else {
+                        updateMappedState(channelName, UnDefType.UNDEF);
+                        logger.debug("Ignoring malformed value for channel {}", channelName);
+                    }
+                    break;
                 case "boolean":
                     String itemval = dec.get(airqName).toString();
                     if (itemval.contentEquals("true") || itemval.contentEquals("1")) {

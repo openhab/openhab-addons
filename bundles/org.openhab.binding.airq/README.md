@@ -59,7 +59,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 
 | channel                    | type                               | rw    | description                                                                              |
 |----------------------------|------------------------------------|-------|------------------------------------------------------------------------------------------|
-| status                     | String                             |       | Status of the sensors (usually "OK")                                                     |
+| status                     | String                             |       | "OK", or "sensor: message" for each sensor that has no reliable data                     |
 | avg-fine-dust-size         | Number:Length                      |       | Average size of Fine Dust [experimental]                                                 |
 | fine-dust-cnt00-3          | Number:Dimensionless               |       | Fine Dust >0,3 µm                                                                        |
 | fine-dust-cnt00-5          | Number:Dimensionless               |       | Fine Dust >0,5 µm                                                                        |
@@ -74,8 +74,10 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | dewpt                      | Number:Temperature                 |       | Dew Point                                                                                |
 | door-event                 | Number                             |       | Door Event (experimental, might not work reliably)                                       |
 | h2s                        | Number:Density                     |       | Hydrogen sulfide (H₂S)                                                                   |
-| health-index               | Number:Dimensionless               |       | Health Index in percent                                                                  |
+| health-index               | Number:Dimensionless               |       | Health Index in percent, -20 % during a gas alarm and -80 % during a fire alarm          |
 | health                     | Number:Dimensionless               |       | Health Index (0 to 1000, -200 for gas alarm, -800 for fire alarm)                        |
+| fire-alarm-active          | Switch                             |       | ON while the device raises a fire alarm                                                  |
+| gas-alarm-active           | Switch                             |       | ON while the device raises a gas alarm                                                   |
 | humidity-relative          | Number:Dimensionless               |       | Humidity in percent                                                                      |
 | humidity-absolute          | Number:Density                     |       | Absolute Humidity                                                                        |
 | measure-time               | Number:Time                        |       | Milliseconds needed for measurement                                                      |
@@ -261,6 +263,8 @@ Number                airQ_dHdt                   "Change of Humidity"          
 Number:Temperature    airQ_dewpt                  "Dew Point"                             {channel="airq:airq:1:measurements#dewpt"}
 Number                airQ_doorEvent              "Door Event (exp.)"                     {channel="airq:airq:1:measurements#door-event"}
 Number:Dimensionless  airQ_health                 "Health Index"                          {channel="airq:airq:1:measurements#health"}
+Switch                airQ_fireAlarmActive        "Fire Alarm Active"                     {channel="airq:airq:1:measurements#fire-alarm-active"}
+Switch                airQ_gasAlarmActive         "Gas Alarm Active"                      {channel="airq:airq:1:measurements#gas-alarm-active"}
 Number:Dimensionless  airQ_humidityRelative       "Humidity"                              {channel="airq:airq:1:measurements#humidity-relative"}
 Number:Density        airQ_humidityAbsolute       "Absolute Humidity"                     {channel="airq:airq:1:measurements#humidity-absolute"}
 Number:Time           airQ_measureTime            "Time needed for measurement"           {unit="ms",channel="airq:airq:1:measurements#measure-time"}
