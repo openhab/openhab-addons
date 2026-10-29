@@ -1,8 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.humidifier.v1",
-			"zhimi.humidifier.ca1"
+			"zhimi.humidifier.v1"
 		],
 		"channels": [
 			{
@@ -19,7 +18,8 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -27,8 +27,23 @@
 				"friendlyName": "Mode",
 				"channel": "mode",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "silent",
+							"label": "Silent"
+						},
+						{
+							"value": "medium",
+							"label": "Medium"
+						},
+						{
+							"value": "high",
+							"label": "High"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_mode",
@@ -38,9 +53,12 @@
 						}
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Control"
-				]
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"silent\"\u003d\"Silent\",\"medium\"\u003d\"Medium\",\"high\"\u003d\"High\"]`"
 			},
 			{
 				"property": "humidity",
@@ -48,8 +66,11 @@
 				"channel": "humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "humidity",
 				"tags": [
@@ -59,16 +80,27 @@
 			},
 			{
 				"property": "limit_hum",
-				"friendlyName": "Humidity Set",
-				"channel": "setHumidity",
-				"type": "Number",
+				"friendlyName": "Target Humidity",
+				"channel": "target_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 80,
+					"step": 10,
+					"pattern": "%.0f %%"
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_limit_hum",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "humidity",
+				"tags": [
+					"Setpoint",
+					"Humidity"
 				]
 			},
 			{
@@ -76,99 +108,121 @@
 				"friendlyName": "Air Quality Index",
 				"channel": "aqi",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "smoke",
 				"tags": [
 					"Measurement"
 				]
 			},
 			{
 				"property": "trans_level",
-				"friendlyName": "Trans_level",
-				"channel": "translevel",
+				"friendlyName": "Transmission Level",
+				"channel": "trans_level",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "led_b",
-				"friendlyName": "LED Brightness",
-				"channel": "bright",
-				"type": "Dimmer",
+				"friendlyName": "Indicator Light",
+				"channel": "led_brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Bright"
+						},
+						{
+							"value": "1",
+							"label": "Dim"
+						},
+						{
+							"value": "2",
+							"label": "Off"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_led_b",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Off\"]`"
 			},
 			{
 				"property": "buzzer",
-				"friendlyName": "Buzzer Status",
+				"friendlyName": "Notification Sound",
 				"channel": "buzzer",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
-				]
-			},
-			{
-				"property": "depth",
-				"friendlyName": "Depth",
-				"channel": "depth",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "dry",
-				"friendlyName": "Dry",
-				"channel": "dry",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": [
-					{
-						"command": "set_dry",
-						"parameterType": "ONOFF"
-					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "use_time",
 				"friendlyName": "Run Time",
-				"channel": "usedhours",
+				"channel": "use_time",
 				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "speed",
 				"friendlyName": "Motor Speed",
-				"channel": "motorspeed",
+				"channel": "speed",
 				"type": "Number",
 				"stateDescription": {
-					"pattern": "%.0f rpm"
+					"pattern": "%.0f RPM",
+					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "temp_dec",
@@ -182,7 +236,6 @@
 				},
 				"refresh": true,
 				"transformation": "/10",
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "temperature",
 				"tags": [
@@ -193,17 +246,22 @@
 			{
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
-				"channel": "childlock",
+				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			}
-		]
+		],
+		"experimental": false
 	}
 }
