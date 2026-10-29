@@ -87,4 +87,15 @@ class Shelly2DebugLogSocketTest {
         verify(session).close(anyInt(), anyString());
         verify(listener, never()).onDebugLogClosed(any());
     }
+
+    @Test
+    void sessionConnectingAfterDisconnectIsClosedAndIgnored() {
+        socket.disconnect();
+
+        socket.onConnect(session);
+        socket.onClose(session, 1000, "Socket closed");
+
+        verify(session).close(anyInt(), anyString());
+        verify(listener, never()).onDebugLogClosed(any());
+    }
 }

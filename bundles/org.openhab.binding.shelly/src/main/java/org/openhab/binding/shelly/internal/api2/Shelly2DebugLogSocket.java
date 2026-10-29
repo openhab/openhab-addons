@@ -66,6 +66,7 @@ public class Shelly2DebugLogSocket {
 
     // All access must be guarded by "this"
     private @Nullable Session session;
+    private boolean disconnected;
 
     public Shelly2DebugLogSocket(String thingName, @Nullable InetSocketAddress deviceSocketAddr,
             WebSocketClient webSocketClient, Shelly2DebugLogListener listener) {
@@ -114,6 +115,7 @@ public class Shelly2DebugLogSocket {
         synchronized (this) {
             session = this.session;
             this.session = null;
+            disconnected = true;
         }
         if (session != null && session.isOpen()) {
             session.close(StatusCode.NORMAL, "Socket closed");
@@ -122,8 +124,18 @@ public class Shelly2DebugLogSocket {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
+        boolean abandoned;
         synchronized (this) {
-            this.session = session;
+            // connect() is asynchronous, so disconnect() may already have abandoned this socket
+            abandoned = disconnected;
+            if (!abandoned) {
+                this.session = session;
+            }
+        }
+        if (abandoned) {
+            logger.debug("{}: Closing Debug Log WebSocket connected after disconnect", thingName);
+            session.close(StatusCode.NORMAL, "Socket closed");
+            return;
         }
         if (logger.isDebugEnabled()) {
             logger.debug("{}: Debug Log WebSocket connected {}<-{}", thingName, session.getLocalAddress(),

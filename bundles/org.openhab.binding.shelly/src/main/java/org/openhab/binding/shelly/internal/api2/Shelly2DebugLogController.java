@@ -47,6 +47,7 @@ public class Shelly2DebugLogController implements Shelly2DebugLogListener {
 
     // All access must be guarded by "this"
     private @Nullable Shelly2DebugLogSocket socket;
+    private boolean deviceArmed;
 
     public Shelly2DebugLogController(String thingName, Shelly2ApiRpc api, ShellyApiConfiguration config,
             WebSocketClient client) {
@@ -56,19 +57,23 @@ public class Shelly2DebugLogController implements Shelly2DebugLogListener {
         this.client = client;
     }
 
-    public synchronized void setEnabled(boolean enable) throws ShellyApiException {
+    public void setEnabled(boolean enable) throws ShellyApiException {
         try {
             Shelly2SysSetConfigParams params = new Shelly2SysSetConfigParams();
             params.config = new Shelly2SysConfig();
             params.config.debug = new Shelly2SysConfigDebug();
             params.config.debug.websocket = new Shelly2SysConfigDebugWebSocket();
             params.config.debug.websocket.enable = enable;
+            // not under this lock: apiRequest() may lock the api (reconnect), which close()/resume() callers hold
+            // while taking this lock
             api.apiRequest(SHELLYRPC_METHOD_SYS_SETCONFIG, params, Shelly2WsConfigResult.class);
-
-            if (enable) {
-                open();
-            } else {
-                closeSocket();
+            synchronized (this) {
+                deviceArmed = enable;
+                if (enable) {
+                    open();
+                } else {
+                    closeSocket();
+                }
             }
         } finally {
             publishState();
@@ -83,6 +88,7 @@ public class Shelly2DebugLogController implements Shelly2DebugLogListener {
      * The device keeps {@code debug.websocket.enable} across restarts, so streaming is resumed after a re-init.
      */
     public synchronized void resume() {
+        deviceArmed = true;
         try {
             open();
         } catch (ShellyApiException e) {
@@ -92,10 +98,15 @@ public class Shelly2DebugLogController implements Shelly2DebugLogListener {
 
     /**
      * Closes the socket. When the thing is being disabled/removed, the device is disarmed as well instead of
-     * streaming with nothing listening until it reboots.
+     * streaming with nothing listening. This depends on the device setting, not the socket, since a dropped or
+     * failed connection leaves the device armed.
      */
-    public synchronized void close(boolean thingStopping) {
-        if (thingStopping && socket != null) {
+    public void close(boolean thingStopping) {
+        boolean disarm;
+        synchronized (this) {
+            disarm = thingStopping && deviceArmed;
+        }
+        if (disarm) {
             try {
                 setEnabled(false);
             } catch (ShellyApiException e) {
@@ -103,7 +114,9 @@ public class Shelly2DebugLogController implements Shelly2DebugLogListener {
                         e.getMessage());
             }
         }
-        closeSocket();
+        synchronized (this) {
+            closeSocket();
+        }
     }
 
     private void open() throws ShellyApiException {
@@ -130,9 +143,13 @@ public class Shelly2DebugLogController implements Shelly2DebugLogListener {
     }
 
     private void publishState() {
+        boolean streaming;
+        synchronized (this) {
+            streaming = socket != null;
+        }
         try {
             api.getThing().updateChannel(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_DEBUG),
-                    OnOffType.from(socket != null), true);
+                    OnOffType.from(streaming), true);
         } catch (ShellyApiException e) {
             // thing already disposed
         }
