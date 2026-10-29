@@ -160,6 +160,7 @@
 	</channel-group-type>
 	<channel-group-type id="maxerr">
 		<label>Maximum Errors</label>
+		<description>Worst-case error (±) of each measurement, in the unit of the measurement.</description>
 		<channels>
 			<channel id="temperature-maxerr" typeId="temperature-maxerr"/>
 			<channel id="humidity-relative-maxerr" typeId="humidity-maxerr"/>
@@ -300,8 +301,8 @@
 			<channel id="night-mode-wifi-night-off" typeId="nightmode-wifi-night-off"/>
 			<channel id="night-mode-alarm-night-off" typeId="nightmode-alarm-night-off"/>
 			<channel id="night-mode-last-time-switch" typeId="nightmode-last-time-switch"/>
-			<channel id="fire-alarm" typeId="fire-alarm"/>
-			<channel id="gas-alarm" typeId="gas-alarm"/>
+			<channel id="fire-alarm-enabled" typeId="fire-alarm"/>
+			<channel id="gas-alarm-enabled" typeId="gas-alarm"/>
 			<channel id="alarm-forwarding" typeId="alarm-forwarding"/>
 			<channel id="sound-info" typeId="sound-info"/>
 			<channel id="averaging" typeId="averaging"/>
@@ -319,6 +320,7 @@
 	<channel-type id="status" advanced="false">
 		<item-type>String</item-type>
 		<label>Status of Sensors</label>
+		<description>OK, or a message for each sensor without reliable data, e.g. during the warm-up phase.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="typps" advanced="false">
@@ -328,32 +330,38 @@
 	</channel-type>
 	<channel-type id="cnt0-3" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 0.3µm</label>
+		<label>Fine Dust Count 0.3 µm</label>
+		<description>Number of particles larger than 0.3 µm per 100 ml of air.</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt0-5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fine Dust Count 0.5 µm</label>
+		<description>Number of particles larger than 0.5 µm per 100 ml of air.</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt1" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 1µm</label>
+		<label>Fine Dust Count 1 µm</label>
+		<description>Number of particles larger than 1 µm per 100 ml of air.</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt2-5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 2.5µm</label>
+		<label>Fine Dust Count 2.5 µm</label>
+		<description>Number of particles larger than 2.5 µm per 100 ml of air.</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 5µm</label>
+		<label>Fine Dust Count 5 µm</label>
+		<description>Number of particles larger than 5 µm per 100 ml of air.</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt10" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 10µm</label>
+		<label>Fine Dust Count 10 µm</label>
+		<description>Number of particles larger than 10 µm per 100 ml of air.</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="co" advanced="false">
@@ -368,12 +376,14 @@
 	</channel-type>
 	<channel-type id="dco2dt" advanced="false">
 		<item-type>Number</item-type>
-		<label>Change of CO₂ Concentr.</label>
+		<label>Change of CO₂ Concentration</label>
+		<description>Change of the CO₂ concentration in ppb/s; 0 during the first 200 seconds.</description>
 		<state readOnly="true" pattern="%.2f ppb/s"></state>
 	</channel-type>
 	<channel-type id="dhdt" advanced="false">
 		<item-type>Number</item-type>
 		<label>Change of Humidity</label>
+		<description>Change of the absolute humidity in mg/m³/s.</description>
 		<state readOnly="true" pattern="%.2f mg/m³/s"></state>
 	</channel-type>
 	<channel-type id="dewpt" advanced="false">
@@ -383,7 +393,8 @@
 	</channel-type>
 	<channel-type id="door" advanced="false">
 		<item-type>Number</item-type>
-		<label>Door Event (exp)</label>
+		<label>Door Event</label>
+		<description>Experimental, may not be reliable; requires advanced data processing.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="h2s" advanced="false">
@@ -394,23 +405,25 @@
 	<channel-type id="health-index" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Health Index</label>
+		<description>0 to 100 % for a normal rating, -20 % during a gas alarm and -80 % during a fire alarm.</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="health" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Health Index Raw</label>
+		<description>0 to 1000 for a normal rating, -200 during a gas alarm and -800 during a fire alarm.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="fire-alarm-active" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Fire Alarm Active</label>
-		<description>ON while the device raises a fire alarm.</description>
+		<description>ON while the device raises a fire alarm, UNDEF while the fire alarm is disabled.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="gas-alarm-active" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Gas Alarm Active</label>
-		<description>ON while the device raises a gas alarm.</description>
+		<description>ON while the device raises a gas alarm, UNDEF while the gas alarm is disabled.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="humidity" advanced="false">
@@ -421,11 +434,13 @@
 	<channel-type id="humidity-abs" advanced="false">
 		<item-type unitHint="g/m³">Number:Density</item-type>
 		<label>Absolute Humidity</label>
+		<description>Mass of water vapour per volume of air.</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="mtime" advanced="true">
 		<item-type unitHint="ms">Number:Time</item-type>
 		<label>Time Needed for Measurement</label>
+		<description>Duration of one measurement cycle; grows with the number of sensors.</description>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="no2" advanced="false">
@@ -446,11 +461,13 @@
 	<channel-type id="performance-index" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Performance Index</label>
+		<description>0 to 100 % for a normal rating.</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="performance" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Performance Index Raw</label>
+		<description>0 to 1000 for a normal rating.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="health-raw" advanced="true">
@@ -467,22 +484,26 @@
 	</channel-type>
 	<channel-type id="pm1" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Fine Dust 1µm</label>
+		<label>Fine Dust 1 µm</label>
+		<description>Mass concentration of particles up to 1 µm.</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pm10" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Fine Dust 10µm</label>
+		<label>Fine Dust 10 µm</label>
+		<description>Mass concentration of particles up to 10 µm.</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pm2-5" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Fine Dust 2.5µm</label>
+		<label>Fine Dust 2.5 µm</label>
+		<description>Mass concentration of particles up to 2.5 µm.</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pressure" advanced="false">
 		<item-type unitHint="hPa">Number:Pressure</item-type>
 		<label>Barometric Pressure</label>
+		<description>Absolute air pressure at the location of the device.</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="radon" advanced="false">
@@ -496,12 +517,13 @@
 	</channel-type>
 	<channel-type id="so2" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>SO₂ Concentration</label>
+		<label>Sulfur Dioxide (SO₂)</label>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="sound" advanced="false">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Noise</label>
+		<description>A-weighted sound level, averaged.</description>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="temperature" advanced="false">
@@ -512,6 +534,7 @@
 	<channel-type id="timestamp" advanced="false">
 		<item-type>DateTime</item-type>
 		<label>Time Stamp</label>
+		<description>Time of the last measurement.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="tvoc" advanced="false">
@@ -527,11 +550,13 @@
 	<channel-type id="virus-free" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Virus-Free Index</label>
+		<description>Aerosol load with CO₂ as indicator; 100 % is fine, 0 % means insufficient ventilation.</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="mold-free" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Mold-Free Index</label>
+		<description>Mold risk from the long-term humidity; 100 % is fine, 0 % means insufficient ventilation.</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="c2h4o" advanced="true">
@@ -647,11 +672,13 @@
 	<channel-type id="tvoc-ionsc" advanced="true">
 		<item-type unitHint="ppb">Number:Dimensionless</item-type>
 		<label>Industrial VOC</label>
+		<description>VOC measured with the ION Science PID sensor.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure-rel" advanced="true">
 		<item-type unitHint="hPa">Number:Pressure</item-type>
 		<label>Relative Barometric Pressure</label>
+		<description>Air pressure reduced to sea level (QNH); requires the altitude setting.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Pressure</tag>
@@ -661,7 +688,7 @@
 	<channel-type id="sound-max" advanced="true">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Maximum Noise</label>
-		<description>Maximum A-weighted sound pressure level.</description>
+		<description>Maximum noise in the data rate interval; shows short loud events that averaging hides.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>SoundVolume</tag>
@@ -695,102 +722,110 @@
 	</channel-type>
 	<channel-type id="person" advanced="false">
 		<item-type>Number</item-type>
-		<label>Person (exp)</label>
+		<label>Person</label>
+		<description>Experimental, may not be reliable; requires advanced data processing.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="window-event" advanced="false">
 		<item-type>Number</item-type>
-		<label>Window Event (exp)</label>
+		<label>Window Event</label>
+		<description>Experimental, may not be reliable; requires advanced data processing.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="window-open" advanced="false">
 		<item-type>Number</item-type>
-		<label>Window Open (exp)</label>
+		<label>Window Open</label>
+		<description>Experimental, may not be reliable; requires advanced data processing.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="wifi-rssi" advanced="true">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Wi-Fi Signal Strength</label>
-		<description>RSSI of the Wi-Fi connection from the WLAN config, read every minute. UNDEF while not connected.</description>
+		<description>Signal strength of the Wi-Fi connection, UNDEF while not connected.</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="flow1" advanced="true">
 		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>Air Flow 1</label>
-		<description>In standard litres per minute, at 20 °C and 1013 hPa.</description>
+		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="flow2" advanced="true">
 		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>Air Flow 2</label>
-		<description>In standard litres per minute, at 20 °C and 1013 hPa.</description>
+		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="flow3" advanced="true">
 		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>Air Flow 3</label>
-		<description>In standard litres per minute, at 20 °C and 1013 hPa.</description>
+		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="flow4" advanced="true">
 		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>Air Flow 4</label>
-		<description>In standard litres per minute, at 20 °C and 1013 hPa.</description>
+		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="pm1-sps30" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Fine Dust 1µm (SPS30)</label>
+		<label>Fine Dust 1 µm (SPS30)</label>
+		<description>Mass concentration of particles up to 1 µm, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm2-5-sps30" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Fine Dust 2.5µm (SPS30)</label>
+		<label>Fine Dust 2.5 µm (SPS30)</label>
+		<description>Mass concentration of particles up to 2.5 µm, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm4-sps30" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Fine Dust 4µm (SPS30)</label>
+		<label>Fine Dust 4 µm (SPS30)</label>
+		<description>Mass concentration of particles up to 4 µm, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm10-sps30" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Fine Dust 10µm (SPS30)</label>
+		<label>Fine Dust 10 µm (SPS30)</label>
+		<description>Mass concentration of particles up to 10 µm, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="cnt0-5-sps30" advanced="true">
 		<item-type>Number</item-type>
-		<label>Fine Dust Count 0.5µm (SPS30)</label>
-		<description>Particles larger than 0.5 µm per cm³.</description>
+		<label>Fine Dust Count 0.5 µm (SPS30)</label>
+		<description>Number of particles larger than 0.5 µm per cm³, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="cnt1-sps30" advanced="true">
 		<item-type>Number</item-type>
-		<label>Fine Dust Count 1µm (SPS30)</label>
-		<description>Particles larger than 1 µm per cm³.</description>
+		<label>Fine Dust Count 1 µm (SPS30)</label>
+		<description>Number of particles larger than 1 µm per cm³, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="cnt2-5-sps30" advanced="true">
 		<item-type>Number</item-type>
-		<label>Fine Dust Count 2.5µm (SPS30)</label>
-		<description>Particles larger than 2.5 µm per cm³.</description>
+		<label>Fine Dust Count 2.5 µm (SPS30)</label>
+		<description>Number of particles larger than 2.5 µm per cm³, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="cnt4-sps30" advanced="true">
 		<item-type>Number</item-type>
-		<label>Fine Dust Count 4µm (SPS30)</label>
-		<description>Particles larger than 4 µm per cm³.</description>
+		<label>Fine Dust Count 4 µm (SPS30)</label>
+		<description>Number of particles larger than 4 µm per cm³, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="cnt10-sps30" advanced="true">
 		<item-type>Number</item-type>
-		<label>Fine Dust Count 10µm (SPS30)</label>
-		<description>Particles larger than 10 µm per cm³.</description>
+		<label>Fine Dust Count 10 µm (SPS30)</label>
+		<description>Number of particles larger than 10 µm per cm³, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="typps-sps30" advanced="true">
 		<item-type unitHint="µm">Number:Length</item-type>
 		<label>Average Size of Fine Dust (SPS30)</label>
+		<description>Mean particle size, measured by the optional SPS30 sensor.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="density-maxerr" advanced="true">
@@ -821,32 +856,32 @@
 	<!-- Maximum error -->
 	<channel-type id="cnt0-3-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;0,3µm</label>
+		<label>Max. Error Fine Dust Count 0.3 µm</label>
 		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt0-5-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;0,5µm</label>
+		<label>Max. Error Fine Dust Count 0.5 µm</label>
 		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt1-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;1µm</label>
+		<label>Max. Error Fine Dust Count 1 µm</label>
 		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt2-5-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;2,5µm</label>
+		<label>Max. Error Fine Dust Count 2.5 µm</label>
 		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt5-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;5µm</label>
+		<label>Max. Error Fine Dust Count 5 µm</label>
 		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt10-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;10µm</label>
+		<label>Max. Error Fine Dust Count 10 µm</label>
 		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="co-maxerr" advanced="true">
@@ -896,17 +931,17 @@
 	</channel-type>
 	<channel-type id="pm1-maxerr" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Max. Error Fine Dust Conc. &gt;1µm</label>
+		<label>Max. Error Fine Dust 1 µm</label>
 		<state readOnly="true" pattern="± %.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm10-maxerr" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Max. Error Fine Dust Conc. &gt;10µm</label>
+		<label>Max. Error Fine Dust 10 µm</label>
 		<state readOnly="true" pattern="± %.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm2-5-maxerr" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Max. Error Fine Dust Conc. &gt;2,5µm</label>
+		<label>Max. Error Fine Dust 2.5 µm</label>
 		<state readOnly="true" pattern="± %.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure-maxerr" advanced="true">
@@ -943,24 +978,24 @@
 	<channel-type id="virus-free-maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Virus-Free</label>
-		<description>Maximum tolerated error in the Virus-Free Index measurement.</description>
 		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="mold-free-maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Mold-Free</label>
-		<description>Maximum tolerated error in the Mold-Free Index measurement.</description>
 		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<!-- settings -->
 	<channel-type id="wifi" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use WLAN</label>
+		<description>Read-only, so the device cannot be taken off the network.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="wla-nssid" advanced="true">
 		<item-type>String</item-type>
 		<label>Configured WLAN Networks</label>
+		<description>Networks the device connects to; add networks with the setWifi action.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pass" advanced="true">
@@ -975,6 +1010,7 @@
 	<channel-type id="time-server" advanced="true">
 		<item-type>String</item-type>
 		<label>Time Server</label>
+		<description>NTP server the device synchronises its clock with every six hours.</description>
 	</channel-type>
 	<channel-type id="geopos" advanced="false">
 		<item-type>Location</item-type>
@@ -995,11 +1031,13 @@
 	<channel-type id="nightmode-brightness-day" advanced="false">
 		<item-type>Number</item-type>
 		<label>Day Brightness of LED</label>
+		<description>0 (off) to 10.</description>
 		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmode-brightness-night" advanced="false">
 		<item-type>Number</item-type>
 		<label>Night Brightness of LED</label>
+		<description>0 (off) to 10.</description>
 		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmode-fan-night-off" advanced="false">
@@ -1009,16 +1047,17 @@
 	<channel-type id="nightmode-wifi-night-off" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Switch Off WLAN at Night</label>
+		<description>The device cannot be reached at night; the cloud upload is buffered until the morning.</description>
 	</channel-type>
 	<channel-type id="nightmode-activated" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Night Mode</label>
-		<description>Whether the night mode is used. The other night mode settings are kept while it is off.</description>
+		<description>Whether the night mode is used; the other night mode settings are kept while it is off.</description>
 	</channel-type>
 	<channel-type id="nightmode-alarm-night-off" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Switch Off Acoustic Signals at Night</label>
-		<description>Suppresses the configured acoustic signals at night. Fire and gas alarms are still given.</description>
+		<description>Suppresses the acoustic signals at night; fire and gas alarms are still given.</description>
 	</channel-type>
 	<channel-type id="daytime" advanced="false">
 		<item-type>Switch</item-type>
@@ -1033,6 +1072,7 @@
 	<channel-type id="room-type" advanced="false">
 		<item-type>String</item-type>
 		<label>Room Type</label>
+		<description>Helps the device recognise situations typical for the room.</description>
 		<state>
 			<options>
 				<option value="living-room">Living Room</option>
@@ -1057,6 +1097,14 @@
 	<channel-type id="logging" advanced="true">
 		<item-type>String</item-type>
 		<label>Logging Level</label>
+		<description>Detail of the device log on the SD card: Error, Warning or Info.</description>
+		<state>
+			<options>
+				<option value="Error">Error</option>
+				<option value="Warning">Warning</option>
+				<option value="Info">Info</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="delete-key" advanced="true">
 		<item-type>String</item-type>
@@ -1065,7 +1113,8 @@
 	</channel-type>
 	<channel-type id="fire-alarm" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Fire Alarm</label>
+		<label>Fire Alarm Enabled</label>
+		<description>Alarm for CO above 200 mg/m³, PM1 above 400 µg/m³ or a temperature above 70 °C.</description>
 	</channel-type>
 	<channel-type id="wlan-config-gateway" advanced="true">
 		<item-type>String</item-type>
@@ -1095,6 +1144,7 @@
 	<channel-type id="wlan-config-bssid" advanced="true">
 		<item-type>String</item-type>
 		<label>Network BSSID</label>
+		<description>MAC address of the access point the device is connected to.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="cloud-upload" advanced="false">
@@ -1103,54 +1153,63 @@
 	</channel-type>
 	<channel-type id="seconds-measurement-delay" advanced="true">
 		<item-type unitHint="s">Number:Time</item-type>
-		<label>Rhythm Historic Average</label>
+		<label>Data Rate</label>
+		<description>Interval at which the current average is stored and uploaded to the cloud.</description>
 		<state min="0" step="1" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="rejection" advanced="true">
 		<item-type>String</item-type>
 		<label>Power Frequency</label>
+		<description>Mains frequency filter for noise and gas sensors: 50Hz, 60Hz or 50Hz+60Hz.</description>
+		<state>
+			<options>
+				<option value="50Hz">50 Hz</option>
+				<option value="60Hz">60 Hz</option>
+				<option value="50Hz+60Hz">50 Hz and 60 Hz</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="auto-drift-compensation" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Compensate Automatic Drift</label>
+		<description>Compensates the slow drift of the sensors over time and from high humidity.</description>
 	</channel-type>
 	<channel-type id="auto-update" advanced="false">
 		<item-type unitHint="d">Number:Time</item-type>
 		<label>Automatic Firmware Update Interval</label>
-		<description>Days between automatic firmware update checks; 0 disables automatic updates. The device restarts
-			after
-			installing an update.</description>
+		<description>Days between automatic firmware updates, 0 = off (default 90); an update restarts it.</description>
 		<state min="0" step="1" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="advanced-data-processing" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Advanced Data Processing</label>
+		<description>Enables the detection of events such as open windows or persons.</description>
 	</channel-type>
 	<channel-type id="ppm-and-ppb" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Values in Particles</label>
-		<description>Deprecated: reports CO in ppm and NO₂, O₃ and SO₂ in ppb. The device ignores it for sensors with a unit
-			set in its units setting.</description>
+		<label>Gases in ppm and ppb</label>
+		<description>Deprecated: CO in ppm, NO₂, O₃ and SO₂ in ppb, unless units are configured on the device.</description>
 	</channel-type>
 	<channel-type id="gas-alarm" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Gas Alarm</label>
+		<label>Gas Alarm Enabled</label>
+		<description>Alarm for concentrations hazardous to health, e.g. O₂ below 13 % or NO₂ above 20 mg/m³.</description>
 	</channel-type>
 	<channel-type id="sound-info" advanced="false">
 		<item-type>String</item-type>
 		<label>Sound Info</label>
-		<description>Acoustic signals configured for measurement thresholds: sensor, threshold, direction, frequency,
-			volume,
-			duration and repetition.</description>
+		<description>Acoustic signals for thresholds, with frequency, volume, duration and repetition.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="alarm-forwarding" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Share Alarms With Other air-Q</label>
+		<description>Forwards fire and gas alarms to the other air-Q devices in the household.</description>
 	</channel-type>
 	<channel-type id="usercalib" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Sensor Calibration</label>
+		<description>Last user calibration of each sensor, as "sensor: offset=value [dd.MM.yyyy HH:mm:ss]".</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="initial-cal-finished" advanced="true">
@@ -1161,7 +1220,7 @@
 	<channel-type id="averaging" advanced="true">
 		<item-type>Number</item-type>
 		<label>Averaging Window</label>
-		<description>Number of measurements the device averages over; 1 disables averaging.</description>
+		<description>Number of measurements the device averages over; 1 disables averaging (default 30).</description>
 		<state min="1" step="1" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="error-bars" advanced="true">
@@ -1170,7 +1229,8 @@
 	</channel-type>
 	<channel-type id="warmup-phase" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Send data as in Warmup Phase</label>
+		<label>Warm-up Phase</label>
+		<description>ON while the gas and VOC sensors warm up, up to 60 minutes after power-on; OFF ends it.</description>
 	</channel-type>
 	<channel-type id="nightmode-last-time-switch" advanced="true">
 		<item-type>Number</item-type>
@@ -1193,8 +1253,7 @@
 	<channel-type id="altitude" advanced="true">
 		<item-type unitHint="m">Number:Length</item-type>
 		<label>Altitude</label>
-		<description>Height above sea level, needed for the relative air pressure. UNDEF while not set. The device has to be
-			restarted before a new altitude takes effect.</description>
+		<description>Height above sea level for the relative pressure, UNDEF if not set; needs a restart.</description>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="altitude-error" advanced="true">
@@ -1206,7 +1265,7 @@
 	<channel-type id="building-standard" advanced="true">
 		<item-type>String</item-type>
 		<label>Building Standard</label>
-		<description>Evaluates the VOCs according to the requirements of a building standard.</description>
+		<description>VOC evaluation according to a building standard: None, WELL or RESET.</description>
 		<state>
 			<options>
 				<option value="None">None</option>
@@ -1218,7 +1277,7 @@
 	<channel-type id="country-code" advanced="true">
 		<item-type>String</item-type>
 		<label>Country</label>
-		<description>Time zone for the switch between summer and winter time in night mode, and the cloud endpoint.</description>
+		<description>Time zone for the summer/winter time switch in night mode, and the cloud endpoint.</description>
 		<state>
 			<options>
 				<option value="AT">Austria</option>
@@ -1432,7 +1491,7 @@
 	</channel-type>
 	<channel-type id="so2-number" advanced="false">
 		<item-type>Number</item-type>
-		<label>SO₂ Concentration</label>
+		<label>Sulfur Dioxide (SO₂)</label>
 		<state readOnly="true" pattern="%.2f µg/m³"></state>
 	</channel-type>
 	<channel-type id="sound_maxerr" advanced="true">

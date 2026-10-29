@@ -166,7 +166,7 @@ public class AirqHandler extends BaseThingHandler {
             Map.entry("nightModeAlarmNightOff", "night-mode-alarm-night-off"),
             Map.entry("fireAlarmActive", "fire-alarm-active"), Map.entry("gasAlarmActive", "gas-alarm-active"),
             Map.entry("deviceName", "device-name"), Map.entry("roomType", "room-type"),
-            Map.entry("logLevel", "log-level"), Map.entry("fireAlarm", "fire-alarm"),
+            Map.entry("logLevel", "log-level"), Map.entry("fireAlarm", "fire-alarm-enabled"),
             Map.entry("wlanConfigGateway", "wlan-config-gateway"), Map.entry("wlanConfigMac", "wlan-config-mac"),
             Map.entry("wlanConfigSsid", "wlan-config-ssid"), Map.entry("wlanConfigIPAddress", "wlan-config-ip-address"),
             Map.entry("wlanConfigNetMask", "wlan-config-net-mask"), Map.entry("wlanConfigBssid", "wlan-config-bssid"),
@@ -174,7 +174,7 @@ public class AirqHandler extends BaseThingHandler {
             Map.entry("powerFreqSuppression", "power-freq-suppression"),
             Map.entry("autoDriftCompensation", "auto-drift-compensation"), Map.entry("autoUpdate", "auto-update"),
             Map.entry("advancedDataProcessing", "advanced-data-processing"), Map.entry("ppm_and_ppb", "ppm-and-ppb"),
-            Map.entry("gasAlarm", "gas-alarm"), Map.entry("soundPressure", "sound-info"),
+            Map.entry("gasAlarm", "gas-alarm-enabled"), Map.entry("soundPressure", "sound-info"),
             Map.entry("alarmForwarding", "alarm-forwarding"), Map.entry("userCalib", "user-calib"),
             Map.entry("initialCalFinished", "initial-cal-finished"), Map.entry("warmupPhase", "warmup-phase"));
 
@@ -350,6 +350,9 @@ public class AirqHandler extends BaseThingHandler {
     // keys configured with a unit the binding doesn't know, their readings can't be interpreted
     private volatile Set<String> unknownUnits = Set.of();
     private volatile boolean ppmAndPpb;
+    // alarm.md: the device raises a fire or gas alarm only while it is enabled, both are off by default
+    private volatile boolean fireAlarmEnabled;
+    private volatile boolean gasAlarmEnabled;
     // the Altitude setting is written as a pair, a command for one half keeps the other one
     private volatile @Nullable BigDecimal altitude;
     private volatile @Nullable BigDecimal altitudeError;
@@ -510,7 +513,9 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "fireAlarm":
                     newobj.addProperty("FireAlarm", command == OnOffType.ON);
-                    changeSettings(newobj);
+                    if (changeSettings(newobj)) {
+                        fireAlarmEnabled = command == OnOffType.ON;
+                    }
                     break;
                 case "cloudUpload":
                     newobj.addProperty("cloudUpload", command == OnOffType.ON);
@@ -526,7 +531,9 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "gasAlarm":
                     newobj.addProperty("GasAlarm", command == OnOffType.ON);
-                    changeSettings(newobj);
+                    if (changeSettings(newobj)) {
+                        gasAlarmEnabled = command == OnOffType.ON;
+                    }
                     break;
                 case "alarmForwarding":
                     newobj.addProperty("AlarmForwarding", command == OnOffType.ON);
@@ -640,6 +647,8 @@ public class AirqHandler extends BaseThingHandler {
         unknownUnits = Set.of();
         molarMasses = Map.of();
         ppmAndPpb = false;
+        fireAlarmEnabled = false;
+        gasAlarmEnabled = false;
         altitude = null;
         altitudeError = null;
         capabilities = null;
@@ -1355,7 +1364,8 @@ public class AirqHandler extends BaseThingHandler {
         return converted == null ? null : converted.toBigDecimal();
     }
 
-    // reads the configured units, the deprecated ppm&ppb setting, and the molar masses of the gas sensors
+    // reads the configured units, the deprecated ppm&ppb setting, the enabled alarms and the molar masses of the gas
+    // sensors
     private void readUnits(JsonObject configuration) {
         Map<String, Unit<?>> units = new HashMap<>();
         Set<String> unknown = new HashSet<>();
@@ -1388,9 +1398,9 @@ public class AirqHandler extends BaseThingHandler {
                 }
             }
         }
-        JsonElement legacy = configuration.get("ppm&ppb");
-        ppmAndPpb = legacy != null && legacy.isJsonPrimitive()
-                && ("true".equals(legacy.getAsString()) || "1".equals(legacy.getAsString()));
+        ppmAndPpb = isTrue(configuration.get("ppm&ppb"));
+        fireAlarmEnabled = isTrue(configuration.get("FireAlarm"));
+        gasAlarmEnabled = isTrue(configuration.get("GasAlarm"));
         configuredUnits = Map.copyOf(units);
         unknownUnits = Set.copyOf(unknown);
         molarMasses = Map.copyOf(masses);
@@ -1415,20 +1425,26 @@ public class AirqHandler extends BaseThingHandler {
 
     // datenlesen.md: the health index is -200 during a gas alarm and -800 during a fire alarm
     private void updateAlarms(String parentChannelId, @Nullable JsonElement health) {
-        if (health == null || !isNumeric(health)) {
-            updateMappedState(nestedChannel(parentChannelId, "fireAlarmActive"), UnDefType.UNDEF);
-            updateMappedState(nestedChannel(parentChannelId, "gasAlarmActive"), UnDefType.UNDEF);
-        } else {
-            BigDecimal value = health.getAsBigDecimal();
-            updateMappedState(nestedChannel(parentChannelId, "fireAlarmActive"),
-                    OnOffType.from(value.compareTo(BigDecimal.valueOf(-800)) == 0));
-            updateMappedState(nestedChannel(parentChannelId, "gasAlarmActive"),
-                    OnOffType.from(value.compareTo(BigDecimal.valueOf(-200)) == 0));
+        BigDecimal value = health != null && isNumeric(health) ? health.getAsBigDecimal() : null;
+        updateMappedState(nestedChannel(parentChannelId, "fireAlarmActive"), alarmState(fireAlarmEnabled, value, -800));
+        updateMappedState(nestedChannel(parentChannelId, "gasAlarmActive"), alarmState(gasAlarmEnabled, value, -200));
+    }
+
+    // a disabled alarm is never raised, OFF would pretend that the device watches for it
+    private static State alarmState(boolean enabled, @Nullable BigDecimal health, int alarmCode) {
+        if (!enabled || health == null) {
+            return UnDefType.UNDEF;
         }
+        return OnOffType.from(health.compareTo(BigDecimal.valueOf(alarmCode)) == 0);
     }
 
     private static boolean isNumeric(JsonElement value) {
         return value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber();
+    }
+
+    private static boolean isTrue(@Nullable JsonElement value) {
+        return value != null && value.isJsonPrimitive()
+                && ("true".equals(value.getAsString()) || "1".equals(value.getAsString()));
     }
 
     // a number, also when it is sent as a string

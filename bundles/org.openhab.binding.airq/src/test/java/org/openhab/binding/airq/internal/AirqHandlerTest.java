@@ -401,7 +401,7 @@ class AirqHandlerTest {
     void healthIndexReportsGasAndFireAlarms(int health, double percent, OnOffType fire, OnOffType gas)
             throws Exception {
         // datenlesen.md: health is 0 to 1000, -200 for gas alarm, -800 for fire alarm
-        poll("{\"health\": " + health + "}");
+        poll(thing, ALARMS_ENABLED, "{\"health\": " + health + "}");
 
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#health"),
                 new DecimalType(health));
@@ -413,7 +413,7 @@ class AirqHandlerTest {
     @ParameterizedTest
     @ValueSource(strings = { "{}", "{\"health\": null}" })
     void alarmsAreUndefinedWithoutHealthIndex(String payload) throws Exception {
-        poll(payload);
+        poll(thing, ALARMS_ENABLED, payload);
 
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#fire-alarm-active"),
                 UnDefType.UNDEF);
@@ -424,12 +424,65 @@ class AirqHandlerTest {
     @Test
     void liveDataReportsNoAlarm() throws Exception {
         // 2. LifeData.md: "health":894
-        poll(LIVE_DATA);
+        poll(thing, ALARMS_ENABLED, LIVE_DATA);
 
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#fire-alarm-active"),
                 OnOffType.OFF);
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#gas-alarm-active"),
                 OnOffType.OFF);
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = ';', value = { "{}; 894", "{\"FireAlarm\": false, \"GasAlarm\": false}; 894",
+            "{\"FireAlarm\": false, \"GasAlarm\": false}; -200", "{\"FireAlarm\": false, \"GasAlarm\": false}; -800" })
+    void disabledAlarmsAreUndefined(String configuration, int health) throws Exception {
+        // alarm.md: FireAlarm and GasAlarm are false by default, a disabled alarm is never raised
+        poll(thing, configuration, "{\"health\": " + health + "}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#fire-alarm-active"),
+                UnDefType.UNDEF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#gas-alarm-active"),
+                UnDefType.UNDEF);
+    }
+
+    @Test
+    void anAlarmEnabledByCommandIsReportedWithTheNextMeasurement() throws Exception {
+        String password = "secret";
+        JsonObject configuration = new JsonObject();
+        configuration.addProperty("content", handler.encrypt("{}".getBytes(StandardCharsets.UTF_8), password));
+        JsonObject data = new JsonObject();
+        data.addProperty("content", handler.encrypt("{\"health\": 894}".getBytes(StandardCharsets.UTF_8), password));
+        JsonObject response = new JsonObject();
+        response.addProperty("content", handler.encrypt("{}".getBytes(StandardCharsets.UTF_8), password));
+        AirqHandler commandHandler = new AirqHandler(thing, requireNonNull(mock(HttpClient.class))) {
+            @Override
+            protected Result getData(String address, String method, @Nullable String body) {
+                if ("POST".equals(method)) {
+                    return new Result(response.toString(), 200);
+                }
+                return new Result((address.endsWith("/config") ? configuration : data).toString(), 200);
+            }
+        };
+        commandHandler.setCallback(callback);
+        commandHandler.config.password = password;
+        ChannelUID fireAlarmActive = new ChannelUID(thingUID, "events#fire-alarm-active");
+
+        commandHandler.pollData();
+        requireNonNull(verify(callback)).stateUpdated(fireAlarmActive, UnDefType.UNDEF);
+        commandHandler.handleCommand(new ChannelUID(thingUID, "settings#fire-alarm-enabled"), OnOffType.ON);
+        commandHandler.pollData();
+
+        requireNonNull(verify(callback)).stateUpdated(fireAlarmActive, OnOffType.OFF);
+    }
+
+    @Test
+    void onlyTheEnabledAlarmIsReported() throws Exception {
+        poll(thing, "{\"FireAlarm\": true, \"GasAlarm\": false}", "{\"health\": 894}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#fire-alarm-active"),
+                OnOffType.OFF);
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "events#gas-alarm-active"),
+                UnDefType.UNDEF);
     }
 
     @Test
@@ -1152,7 +1205,8 @@ class AirqHandlerTest {
 
     @ParameterizedTest
     @CsvSource({ "wifiInfo, WifiInfo", "settings#wifi-info, WifiInfo", "fireAlarm, FireAlarm",
-            "settings#fire-alarm, FireAlarm", "cloudUpload, cloudUpload", "settings#cloud-upload, cloudUpload" })
+            "settings#fire-alarm-enabled, FireAlarm", "cloudUpload, cloudUpload",
+            "settings#cloud-upload, cloudUpload" })
     void renamedCommandsAndLegacyCommandsUseOriginalDeviceKeys(String channel, String key) throws Exception {
         JsonObject settings = requireNonNull(sendSettings(new ChannelUID(thingUID, channel), OnOffType.ON));
 
@@ -1210,11 +1264,12 @@ class AirqHandlerTest {
 
     static Stream<Arguments> settingCommands() {
         Stream<Arguments> switches = Stream.of(new String[] { "wifi-info", "WifiInfo" },
-                new String[] { "fire-alarm", "FireAlarm" }, new String[] { "cloud-upload", "cloudUpload" },
+                new String[] { "fire-alarm-enabled", "FireAlarm" }, new String[] { "cloud-upload", "cloudUpload" },
                 new String[] { "auto-drift-compensation", "AutoDriftCompensation" },
                 new String[] { "advanced-data-processing", "AdvancedDataProcessing" },
-                new String[] { "gas-alarm", "GasAlarm" }, new String[] { "alarm-forwarding", "AlarmForwarding" },
-                new String[] { "ppm-and-ppb", "ppm&ppb" }, new String[] { "night-mode-fan-night-off", "FanNightOff" },
+                new String[] { "gas-alarm-enabled", "GasAlarm" },
+                new String[] { "alarm-forwarding", "AlarmForwarding" }, new String[] { "ppm-and-ppb", "ppm&ppb" },
+                new String[] { "night-mode-fan-night-off", "FanNightOff" },
                 new String[] { "night-mode-wifi-night-off", "WifiNightOff" })
                 .flatMap(mapping -> Stream.of(OnOffType.ON, OnOffType.OFF).map(command -> {
                     JsonObject value = new JsonObject();
@@ -1748,6 +1803,30 @@ class AirqHandlerTest {
     }
 
     @Test
+    void readmeDescribesEachChannelLikeItsChannelType() throws Exception {
+        // | channel | type | rw | description |, the maximum errors are described together
+        Map<String, List<String>> rows = new LinkedHashMap<>();
+        for (String line : Files.readAllLines(Path.of("README.md"), StandardCharsets.UTF_8)) {
+            String[] cells = line.split("\\|");
+            if (cells.length == 5 && cells[0].isEmpty() && cells[1].trim().matches("[a-z0-9-]+")) {
+                rows.put(cells[1].trim(), List.of(cells[2].trim(), cells[4].trim()));
+            }
+        }
+        Document thingTypes = xml("thing/thing-types.xml");
+        for (String group : List.of("status", "measurements", "events", "settings")) {
+            for (Element channel : elements(thingTypes, "//channel-group-type[@id='" + group + "']/channels/channel")) {
+                String id = channel.getAttribute("id");
+                Element type = element(thingTypes, "//channel-type[@id='" + channel.getAttribute("typeId") + "']");
+                Element description = findElement(type, "description");
+                String text = (description != null ? description : element(type, "label")).getTextContent()
+                        .replaceAll("\\s+", " ").replaceAll("\\.$", "");
+
+                assertThat(id, rows.get(id), is(List.of(element(type, "item-type").getTextContent(), text)));
+            }
+        }
+    }
+
+    @Test
     void newUpdateInstructionsUseTheMicroSign() throws Exception {
         // released instruction sets (up to version 4) must not be changed and keep their labels
         List<Element> instructionSets = elements(xml("update/update.xml"), "//instruction-set[@targetVersion >= 5]");
@@ -2073,6 +2152,8 @@ class AirqHandlerTest {
     }
 
     // GET /config of a real air-Q Science with a radon sensor, network data replaced
+    // alarm.md: the fire and gas alarm settings
+    private static final String ALARMS_ENABLED = "{\"FireAlarm\": true, \"GasAlarm\": true}";
     private static final String SCIENCE_CONFIGURATION = """
             {"SoundInfo": {}, "WLAN config": {"IP address": "ip", "Gateway": "gateway", "MAC": "mac",
               "Net Mask": "mask", "RSSI": -58, "Channel": 11, "BSSID": "bssid", "SSID": "ssid", "Status": "Got IP"},

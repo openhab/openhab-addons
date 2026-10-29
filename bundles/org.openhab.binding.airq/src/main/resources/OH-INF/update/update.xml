@@ -1153,10 +1153,10 @@
 			<add-channel id="night-mode-last-time-switch" groupIds="settings">
 				<type>airq:nightmode-last-time-switch</type>
 			</add-channel>
-			<add-channel id="fire-alarm" groupIds="settings">
+			<add-channel id="fire-alarm-enabled" groupIds="settings">
 				<type>airq:fire-alarm</type>
 			</add-channel>
-			<add-channel id="gas-alarm" groupIds="settings">
+			<add-channel id="gas-alarm-enabled" groupIds="settings">
 				<type>airq:gas-alarm</type>
 			</add-channel>
 			<add-channel id="alarm-forwarding" groupIds="settings">
