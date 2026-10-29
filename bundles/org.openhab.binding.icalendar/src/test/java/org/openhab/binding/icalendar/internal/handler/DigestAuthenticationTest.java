@@ -13,6 +13,7 @@
 package org.openhab.binding.icalendar.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -108,5 +109,18 @@ public class DigestAuthenticationTest {
                 DigestAuthentication.findChallenge(List.of("Basic realm=\"x\", digest realm=\"r2\", nonce=\"n\"")));
         assertNull(DigestAuthentication.findChallenge(List.of("Basic realm=\"x\"")));
         assertNull(DigestAuthentication.findChallenge(List.of()));
+    }
+
+    @Test
+    public void testIsSameOrigin() {
+        URI configured = URI.create("https://example.org/cal.ics");
+        assertTrue(DigestAuthentication.isSameOrigin(configured, URI.create("https://example.org/other/cal.ics")));
+        assertTrue(DigestAuthentication.isSameOrigin(configured, URI.create("HTTPS://EXAMPLE.ORG:443/cal.ics")));
+        assertTrue(DigestAuthentication.isSameOrigin(URI.create("http://example.org/a"),
+                URI.create("http://example.org:80/b")));
+        assertFalse(DigestAuthentication.isSameOrigin(configured, URI.create("http://example.org/cal.ics")));
+        assertFalse(DigestAuthentication.isSameOrigin(configured, URI.create("https://evil.example.com/cal.ics")));
+        assertFalse(DigestAuthentication.isSameOrigin(configured, URI.create("https://example.org:8443/cal.ics")));
+        assertFalse(DigestAuthentication.isSameOrigin(configured, URI.create("/relative")));
     }
 }

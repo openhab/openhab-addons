@@ -153,20 +153,27 @@ class PullJob implements Runnable {
             if (challenge != null) {
                 // authenticate for the URI which actually answered (redirects are followed)
                 final URI target = response.getRequest().getURI();
-                final String authorization = DigestAuthentication.createAuthorization(challenge,
-                        HttpMethod.GET.asString(), target, currentUsername, currentPassword);
-                if (authorization != null) {
-                    logger.debug("Server requested digest authentication for \"{}\", retrying.", target);
-                    request.abort(new IllegalStateException("Retrying with digest authentication"));
-                    request = createRequest(target, authorization);
-                    asyncListener = new InputStreamResponseListener();
-                    response = sendRequest(request, asyncListener);
-                    if (response == null) {
-                        return;
-                    }
+                if (!DigestAuthentication.isSameOrigin(sourceURI, target)) {
+                    // never send credentials to another origin than the configured one
+                    logger.warn(
+                            "Server \"{}\" requested digest authentication after a redirect from \"{}\". Not sending credentials to a different origin.",
+                            target, sourceURI);
                 } else {
-                    logger.warn("Server requested digest authentication for \"{}\" with an unsupported method.",
-                            target);
+                    final String authorization = DigestAuthentication.createAuthorization(challenge,
+                            HttpMethod.GET.asString(), target, currentUsername, currentPassword);
+                    if (authorization != null) {
+                        logger.debug("Server requested digest authentication for \"{}\", retrying.", target);
+                        request.abort(new IllegalStateException("Retrying with digest authentication"));
+                        request = createRequest(target, authorization);
+                        asyncListener = new InputStreamResponseListener();
+                        response = sendRequest(request, asyncListener);
+                        if (response == null) {
+                            return;
+                        }
+                    } else {
+                        logger.warn("Server requested digest authentication for \"{}\" with an unsupported method.",
+                                target);
+                    }
                 }
             }
         }

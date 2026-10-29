@@ -51,6 +51,33 @@ final class DigestAuthentication {
     }
 
     /**
+     * Checks if both URIs belong to the same origin (scheme, host and effective port).
+     * Credentials must only be sent to the origin they were configured for.
+     *
+     * @param configured the URI the credentials were configured for
+     * @param target the URI which should receive the credentials
+     * @return <code>true</code> if both URIs have the same origin
+     */
+    static boolean isSameOrigin(URI configured, URI target) {
+        final String configuredScheme = configured.getScheme();
+        final String targetScheme = target.getScheme();
+        final String configuredHost = configured.getHost();
+        final String targetHost = target.getHost();
+        if (configuredScheme == null || targetScheme == null || configuredHost == null || targetHost == null) {
+            return false;
+        }
+        return configuredScheme.equalsIgnoreCase(targetScheme) && configuredHost.equalsIgnoreCase(targetHost)
+                && effectivePort(configured) == effectivePort(target);
+    }
+
+    private static int effectivePort(URI uri) {
+        if (uri.getPort() >= 0) {
+            return uri.getPort();
+        }
+        return "https".equalsIgnoreCase(uri.getScheme()) ? 443 : 80;
+    }
+
+    /**
      * Searches the values of all <code>WWW-Authenticate</code> headers for a digest challenge.
      *
      * @param headerValues the values of the <code>WWW-Authenticate</code> headers of a response
