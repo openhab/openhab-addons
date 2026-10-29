@@ -110,6 +110,11 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
     public void handleCommand(ChannelUID channelUID, Command command) {
         ChannelHandler itemValueConverter = channels.get(channelUID);
         if (itemValueConverter == null) {
+            if (command instanceof RefreshType && (CHANNEL_LAST_SUCCESS.equals(channelUID.getId())
+                    || CHANNEL_LAST_FAILURE.equals(channelUID.getId()))) {
+                // built-in channels, updated after each request
+                return;
+            }
             logger.warn("Cannot find channel implementation for channel {}.", channelUID);
             return;
         }
