@@ -94,8 +94,7 @@ public class UniFiControllerBridgeHandler extends BaseBridgeHandler {
         throttledReconnectAttempt = 0;
 
         if (config.host.isBlank() || config.username.isBlank() || config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Host, username, and password are required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Host, username, and password are required");
             sessionFuture.completeExceptionally(new UniFiException("Missing configuration"));
             return;
         }
@@ -106,8 +105,7 @@ public class UniFiControllerBridgeHandler extends BaseBridgeHandler {
             client.start();
         } catch (Exception e) {
             logger.debug("Failed to start HTTP client for {}: {}", thing.getUID(), e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Failed to start HTTP client: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Failed to start HTTP client: " + e.getMessage());
             sessionFuture.completeExceptionally(new UniFiException("Failed to start HTTP client", e));
             return;
         }
@@ -174,8 +172,7 @@ public class UniFiControllerBridgeHandler extends BaseBridgeHandler {
                 if (!sessionFuture.isDone()) {
                     sessionFuture.completeExceptionally(cause);
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error-auth-rejected");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-auth-rejected");
                 return;
             case THROTTLED:
                 scheduleReconnect(true);
@@ -206,13 +203,12 @@ public class UniFiControllerBridgeHandler extends BaseBridgeHandler {
             throttledReconnectAttempt++;
             logger.debug("Scheduling reconnect in {} seconds (throttled, attempt {})", delay,
                     throttledReconnectAttempt);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.login-throttled");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.login-throttled");
         } else {
             delay = Math.min((int) Math.pow(2, reconnectAttempt) * 5, MAX_RECONNECT_DELAY_SECONDS);
             reconnectAttempt++;
             logger.debug("Scheduling reconnect in {} seconds (attempt {})", delay, reconnectAttempt);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-retrying");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-retrying");
         }
         reconnectTask = scheduler.schedule(this::attemptConnect, delay, TimeUnit.SECONDS);
     }

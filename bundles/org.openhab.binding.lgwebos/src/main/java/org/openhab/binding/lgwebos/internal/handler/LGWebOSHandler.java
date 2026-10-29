@@ -132,8 +132,7 @@ public class LGWebOSHandler extends BaseThingHandler
         logger.trace("Handler initialized with config {}", c);
         String host = c.getHost();
         if (host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-unknown-host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-host");
             return;
         }
 
@@ -141,7 +140,7 @@ public class LGWebOSHandler extends BaseThingHandler
         s.setListener(this);
         socket = s;
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.tv-off");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.tv-off");
 
         startReconnectJob();
     }
@@ -286,7 +285,7 @@ public class LGWebOSHandler extends BaseThingHandler
                 postUpdate(CHANNEL_POWER, OnOffType.OFF);
                 break;
             case DISCONNECTED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.tv-off");
+                updateStatus(ThingStatus.OFFLINE, "@text/offline.tv-off");
                 channelHandlers.forEach((k, v) -> {
                     v.onDeviceRemoved(k, this);
                     v.removeAnySubscription(this);
@@ -299,7 +298,7 @@ public class LGWebOSHandler extends BaseThingHandler
                 stopReconnectJob();
                 break;
             case REGISTERING:
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.registering");
+                updateStatus(ThingStatus.ONLINE, "@text/online.registering");
                 findMacAddress();
                 break;
             case REGISTERED:
@@ -331,7 +330,7 @@ public class LGWebOSHandler extends BaseThingHandler
             case CONNECTING:
             case REGISTERING:
             case REGISTERED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("@text/offline.comm-error-connexion-failed [ \"%s\" ]", error));
                 break;
         }

@@ -137,14 +137,18 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
     @Override
     public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(LinkTapDeviceConfiguration.class);
-        if (!(getBridgeHandler() instanceof LinkTapBridgeHandler bridgeHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    getLocalizedText("polling-device.error.bridge-unset"));
+        if (!(bridge.getHandler() instanceof LinkTapBridgeHandler bridgeHandler)) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, getLocalizedText("polling-device.error.bridge-unset"));
             return;
         } else if (ThingStatus.OFFLINE.equals(bridgeHandler.getThing().getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -159,7 +163,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
         initPending = true;
         String deviceId = getValidatedIdString();
         if (MARKER_INVALID_DEVICE_KEY.equals(deviceId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     getLocalizedText("polling-device.error.device-unknown-in-bridge"));
             if (!registeredDeviceId.isBlank()) {
                 deregisterDevice();
@@ -182,22 +186,25 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
             startStatusPolling();
             initPending = false;
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     getLocalizedText("polling-device.error.unknown-device-id"));
         }
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-        scheduler.execute(() -> {
-            if (initPending && ThingStatus.ONLINE.equals(status)) {
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+        if (status == ThingStatus.ONLINE) {
+            scheduler.execute(() -> {
+                if (!initPending) {
+                    return;
+                }
                 final BridgeHandler handler = getBridgeHandler();
                 if (handler instanceof LinkTapBridgeHandler linkTapBridge) {
                     initAfterBridge(linkTapBridge);
                 }
-            }
-        });
+            });
+        }
     }
 
     protected abstract void runStartInit();
@@ -227,7 +234,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
         if (frame instanceof DeviceCmdReq devCmdReq) {
             final String deviceAddr = getValidatedIdString();
             if (deviceAddr.equals(MARKER_INVALID_DEVICE_KEY)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         getLocalizedText("polling-device.error.unknown-device"));
                 return EMPTY_STRING;
             }
@@ -236,20 +243,18 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
         final Bridge parentBridge = getBridge();
         if (parentBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    getLocalizedText("polling-device.error.bridge-unset"));
+            logger.debug("Bridge unavailable while sending request for Thing: {}", thing.getUID());
             return EMPTY_STRING;
         }
         final LinkTapBridgeHandler parentBridgeHandler = (LinkTapBridgeHandler) parentBridge.getHandler();
         if (parentBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    getLocalizedText("polling-device.error.bridge-unset"));
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, getLocalizedText("polling-device.error.bridge-unset"));
             return EMPTY_STRING;
         }
         try {
             return parentBridgeHandler.sendRequest(frame);
         } catch (final DeviceIdException die) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getLocalizedText(die.getI18Key()));
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, getLocalizedText(die.getI18Key()));
         }
         return EMPTY_STRING;
     }

@@ -187,7 +187,7 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_REMAINING_DURATION:
                 derivedCloseTime = deriveCloseTime(
-                        message.value instanceof Number remaining ? remaining.intValue() : null);
+                        message.value instanceof Number remaining ? remaining.longValue() : null);
                 updateCloseTime();
                 break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_DEFAULT_OPEN_DURATION:
@@ -303,7 +303,7 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
      * Derives the close time as RemainingDuration is reported. The duration is an offset from that report, so it is
      * converted once, here, rather than re-based on a later clock reading.
      */
-    private @Nullable Instant deriveCloseTime(@Nullable Integer remaining) {
+    private @Nullable Instant deriveCloseTime(@Nullable Long remaining) {
         return remaining == null || remaining <= 0 ? null : Instant.now().plusSeconds(remaining);
     }
 

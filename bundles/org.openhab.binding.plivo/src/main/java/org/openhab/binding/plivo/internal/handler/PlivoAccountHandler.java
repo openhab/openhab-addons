@@ -76,15 +76,13 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
 
         String authId = config.authId;
         if (authId == null || authId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.missing-auth-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.missing-auth-id");
             return;
         }
 
         String authToken = config.authToken;
         if (authToken == null || authToken.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.missing-auth-token");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.missing-auth-token");
             return;
         }
 
@@ -205,7 +203,7 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
     private void asyncValidateAccount() {
         PlivoApiClient client = apiClient;
         if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.api-client-not-initialized");
             return;
         }
@@ -221,20 +219,20 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
                 }
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.configuration-error.account-invalid");
             }
         } catch (PlivoApiException e) {
             if (e.isConfigurationError()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             logger.warn("Could not validate the Plivo account for {}: {}", getThing().getUID(), e.getMessage());
         } catch (RuntimeException e) {
             // This runs on the scheduler, where an unchecked exception would otherwise be swallowed
             // by the Future and leave the bridge stuck in UNKNOWN with nothing in the log.
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.warn("Unexpected error validating the Plivo account for {}", getThing().getUID(), e);
         }
     }

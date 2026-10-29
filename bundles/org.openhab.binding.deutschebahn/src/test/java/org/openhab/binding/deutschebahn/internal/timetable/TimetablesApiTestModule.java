@@ -55,6 +55,7 @@ public final class TimetablesApiTestModule {
     }
 
     public TimetablesV1ApiFactory getApiFactory() {
-        return (String clientId, String clientSecret, HttpCallable httpCallable) -> api;
+        return (String clientId, String clientSecret, HttpCallable httpCallable,
+                TimetableTimeConverter timeConverter) -> api;
     }
 }

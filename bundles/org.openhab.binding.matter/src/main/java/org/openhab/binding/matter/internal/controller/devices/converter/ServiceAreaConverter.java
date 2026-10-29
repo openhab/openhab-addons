@@ -42,7 +42,7 @@ import org.openhab.core.types.StateDescription;
 @NonNullByDefault
 public class ServiceAreaConverter extends GenericConverter<ServiceAreaCluster> {
 
-    private List<Integer> selectedAreasCache = new ArrayList<>();
+    private List<Long> selectedAreasCache = new ArrayList<>();
 
     public ServiceAreaConverter(ServiceAreaCluster cluster, MatterBaseThingHandler handler, int endpointNumber,
             String labelPrefix) {
@@ -78,14 +78,14 @@ public class ServiceAreaConverter extends GenericConverter<ServiceAreaCluster> {
             return;
         }
 
-        int areaId = Integer.parseInt(id.substring(CHANNEL_ID_SERVICEAREA_SELECTEDAREA_PREFIX.length()));
-        List<Integer> selected = new ArrayList<>(selectedAreasCache);
+        long areaId = Long.parseLong(id.substring(CHANNEL_ID_SERVICEAREA_SELECTEDAREA_PREFIX.length()));
+        List<Long> selected = new ArrayList<>(selectedAreasCache);
         if (onOff == OnOffType.ON) {
             if (!selected.contains(areaId)) {
                 selected.add(areaId);
             }
         } else {
-            selected.remove(Integer.valueOf(areaId));
+            selected.remove(Long.valueOf(areaId));
         }
         selectedAreasCache = selected;
         ClusterCommand cc = ServiceAreaCluster.selectAreas(selectedAreasCache);
@@ -97,10 +97,10 @@ public class ServiceAreaConverter extends GenericConverter<ServiceAreaCluster> {
     public void onEvent(AttributeChangedMessage message) {
         if (ServiceAreaCluster.ATTRIBUTE_SELECTED_AREAS.equals(message.path.attributeName)) {
             if (message.value instanceof List<?> list) {
-                List<Integer> newSel = new ArrayList<>();
+                List<Long> newSel = new ArrayList<>();
                 for (Object o : list) {
                     if (o instanceof Number n) {
-                        newSel.add(n.intValue());
+                        newSel.add(n.longValue());
                     }
                 }
                 selectedAreasCache = newSel;

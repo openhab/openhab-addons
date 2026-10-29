@@ -94,7 +94,7 @@ public class SerialBus extends Bus {
         }
 
         if (error != null) {
-            return new Result(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, error);
+            return new Result(ThingStatusDetail.COMMUNICATION_ERROR, error);
         }
 
         this.serialPort = commPort;

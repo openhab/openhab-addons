@@ -205,8 +205,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     public void initialize() {
         config = getConfigAs(DirigeraConfiguration.class);
         if (config.ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/dirigera.device.status.missing-ip");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/dirigera.device.status.missing-ip");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.execute(this::doInitialize);
@@ -226,8 +225,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             String challenge = generateCodeChallenge(codeVerifier);
             String code = getCode(challenge);
             if (!code.isBlank()) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY,
-                        "@text/dirigera.gateway.status.pairing-button");
+                updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/dirigera.gateway.status.pairing-button");
                 /**
                  * Approx 3 minutes possible to push DIRIGERA button
                  */
@@ -264,8 +262,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             updater = scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES);
         } else {
             // status "retry pairing" if token is still blank
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY,
-                    "@text/dirigera.gateway.status.pairing-retry");
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/dirigera.gateway.status.pairing-retry");
         }
     }
 
@@ -371,7 +368,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             int responseStatus = response.getStatus();
             if (responseStatus != 200) {
                 String reason = response.getReason();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/dirigera.gateway.status.comm-error" + " [\"" + responseStatus + " - " + reason + "\"]");
                 return "";
             }
@@ -380,7 +377,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             String code = codeResponse.getString("code");
             return code;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/dirigera.gateway.status.comm-error" + " [\"" + e.getMessage() + "\"]");
             return "";
         }
@@ -718,7 +715,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 logger.debug("DIRIGERA HANDLER Watchdog Ping Pong Panic - {} pings not answered", pingPongMap.size());
                 websocket.stop();
                 String message = "ping not answered";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
                 scheduler.execute(this::connectGateway);
             } else {
@@ -727,7 +724,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             }
         } else {
             String message = "try to recover";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
             scheduler.execute(this::connectGateway);
         }
@@ -755,7 +752,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         } else {
             String message = gatewayInfo.getInt(DirigeraAPI.HTTP_ERROR_STATUS) + " - "
                     + gatewayInfo.getString(DirigeraAPI.HTTP_ERROR_MESSAGE);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
         }
     }
@@ -767,7 +764,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         } else {
             String message = gatewayInfo.getInt(DirigeraAPI.HTTP_ERROR_STATUS) + " - "
                     + gatewayInfo.getString(DirigeraAPI.HTTP_ERROR_MESSAGE);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
         }
     }
@@ -776,10 +773,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         if (config.id.isBlank()) {
             List<String> gatewayList = model().getDevicesForTypes(List.of(DEVICE_TYPE_GATEWAY));
             if (gatewayList.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/dirigera.gateway.status.no-gateway");
+                updateStatus(ThingStatus.OFFLINE, "@text/dirigera.gateway.status.no-gateway");
             } else if (gatewayList.size() > 1) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "@text/dirigera.gateway.status.ambiguous-gateway");
+                updateStatus(ThingStatus.OFFLINE, "@text/dirigera.gateway.status.ambiguous-gateway");
             } else {
                 String id = gatewayList.get(0);
                 Configuration configUpdate = editConfiguration();
@@ -798,7 +794,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             logger.trace("DIRIGERA HANDLER ONLINE!");
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/dirigera.gateway.status.comm-error" + " [\"" + reason + "\"]");
         }
     }
@@ -913,7 +909,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         int status = model().update();
         if (status != 200) {
             logger.warn("DIRIGERA HANDLER Model update failed {}", status);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/dirigera.gateway.status.comm-error" + " [\"" + status + "\"]");
             return;
         }

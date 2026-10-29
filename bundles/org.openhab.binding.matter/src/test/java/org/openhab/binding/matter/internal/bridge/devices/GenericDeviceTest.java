@@ -13,12 +13,18 @@
 package org.openhab.binding.matter.internal.bridge.devices;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,6 +40,7 @@ import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MetaDataMapping;
 import org.openhab.binding.matter.internal.util.ValueUtils;
 import org.openhab.core.items.GenericItem;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
@@ -106,6 +113,8 @@ class GenericDeviceTest {
         numberItem = new NumberItem("testNumber");
         when(metadataRegistry.get(any(MetadataKey.class))).thenReturn(metadata);
         when(client.addEndpoint(any(BridgedEndpoint.class))).thenReturn(CompletableFuture.completedFuture("success"));
+        when(client.setEndpointState(anyString(), anyString(), anyString(), any()))
+                .thenReturn(CompletableFuture.completedFuture(null));
 
         device = new TestGenericDevice(metadataRegistry, client, numberItem);
     }
@@ -161,19 +170,124 @@ class GenericDeviceTest {
 
     @Test
     void testActivateBridgedEndpointValues() {
-        BridgedEndpoint endpoint = device.activateBridgedEndpoint();
+        BridgedEndpoint endpoint = device.activateBridgedEndpoint(d -> true);
         assertEquals("TestDevice", endpoint.deviceType);
         assertEquals("testNumber", endpoint.id);
         assertEquals("Test Label", endpoint.nodeLabel);
         assertEquals("testNumber", endpoint.productName);
         assertEquals("Type Number", endpoint.productLabel);
         assertEquals(String.valueOf(numberItem.getName().hashCode()), endpoint.serialNumber);
+        assertTrue(endpoint.reachable);
+    }
+
+    @Test
+    void testActivateBridgedEndpointUnreachable() {
+        assertFalse(device.activateBridgedEndpoint(d -> false).reachable);
+    }
+
+    @Test
+    void testStructureUnchangedByLabelAndState() {
+        device.activateBridgedEndpoint(d -> true);
+        Metadata relabeled = new Metadata(new MetadataKey("matter", "test"), "attr1,attr2",
+                Map.of("label", "Other Label", "fixedLabels", "ON=1, OFF=0", "cluster.attribute", "value"));
+        when(metadataRegistry.get(any(MetadataKey.class))).thenReturn(relabeled);
+        numberItem.setState(new DecimalType(5));
+        assertFalse(device.structureChanged());
+        assertEquals("Other Label", device.label());
+    }
+
+    @Test
+    void testStructureChangedByMetadata() {
+        device.activateBridgedEndpoint(d -> true);
+        Metadata changed = new Metadata(new MetadataKey("matter", "test"), "attr1,attr2",
+                Map.of("label", "Test Label", "fixedLabels", "ON=1, OFF=0", "cluster.attribute", "other"));
+        when(metadataRegistry.get(any(MetadataKey.class))).thenReturn(changed);
+        assertTrue(device.structureChanged());
+    }
+
+    @Test
+    void testUpdateLabelSendsOnlyChanges() {
+        device.activateBridgedEndpoint(d -> true);
+        device.updateLabel("Test Label");
+        verify(client, never()).setEndpointState(anyString(), anyString(), anyString(), any());
+
+        device.updateLabel("A label that is longer than thirty-two characters");
+        verify(client).setEndpointState("testNumber", "bridgedDeviceBasicInformation", "nodeLabel",
+                "A label that is longer than thir");
+    }
+
+    @Test
+    void testUpdateReachableSendsOnlyChanges() {
+        device.activateBridgedEndpoint(d -> true);
+        device.updateReachable(d -> true);
+        verify(client, never()).setEndpointState(anyString(), anyString(), anyString(), any());
+
+        device.updateReachable(d -> false);
+        device.updateReachable(d -> false);
+        verify(client, times(1)).setEndpointState("testNumber", "bridgedDeviceBasicInformation", "reachable", false);
+    }
+
+    @Test
+    void testUpdateReachableIgnoredBeforeActivation() {
+        device.updateReachable(d -> false);
+        verify(client, never()).setEndpointState(anyString(), anyString(), anyString(), any());
+    }
+
+    @Test
+    void testNoUpdatesAfterDeactivate() {
+        device.activateBridgedEndpoint(d -> true);
+        device.deactivate();
+        device.updateReachable(d -> false);
+        device.updateLabel("Other Label");
+        verify(client, never()).setEndpointState(anyString(), anyString(), anyString(), any());
+    }
+
+    @Test
+    void testUsesSameItems() {
+        assertTrue(device.usesSameItems(new TestGenericDevice(metadataRegistry, client, numberItem)));
+        // an edited item is a new object with the same name
+        assertFalse(
+                device.usesSameItems(new TestGenericDevice(metadataRegistry, client, new NumberItem("testNumber"))));
+    }
+
+    @Test
+    void testTakeOverSendsOnlyChangedLabel() {
+        device.activateBridgedEndpoint(d -> false);
+        TestGenericDevice edited = new TestGenericDevice(metadataRegistry, client, new NumberItem("testNumber"));
+        edited.activateBridgedEndpoint(d -> true);
+        edited.takeOver(device);
+        verify(client, never()).setEndpointState(anyString(), anyString(), anyString(), any());
+
+        // the endpoint still reports the old device's reachable flag, so the new value is sent
+        edited.updateReachable(d -> true);
+        verify(client).setEndpointState("testNumber", "bridgedDeviceBasicInformation", "reachable", true);
+    }
+
+    @Test
+    void testTakeOverSendsNewLabel() {
+        device.activateBridgedEndpoint(d -> true);
+        Metadata relabeled = new Metadata(new MetadataKey("matter", "test"), "attr1,attr2",
+                Map.of("label", "Other Label", "fixedLabels", "ON=1, OFF=0", "cluster.attribute", "value"));
+        when(metadataRegistry.get(any(MetadataKey.class))).thenReturn(relabeled);
+        TestGenericDevice edited = new TestGenericDevice(metadataRegistry, client, new NumberItem("testNumber"));
+        edited.activateBridgedEndpoint(d -> true);
+        edited.takeOver(device);
+        verify(client).setEndpointState("testNumber", "bridgedDeviceBasicInformation", "nodeLabel", "Other Label");
+    }
+
+    @Test
+    void testGroupStateItemsAreMembers() {
+        GroupItem group = new GroupItem("testGroup");
+        NumberItem member = new NumberItem("member");
+        group.addMember(member);
+        TestGenericDevice groupDevice = new TestGenericDevice(metadataRegistry, client, group);
+        assertEquals(List.of(member), List.copyOf(groupDevice.stateItems()));
     }
 
     @Test
     void testActivateBridgedEndpointTwiceThrows() {
-        device.activateBridgedEndpoint();
-        assertThrows(IllegalStateException.class, () -> device.activateBridgedEndpoint());
+        device.activateBridgedEndpoint(d -> true);
+        assertThrows(IllegalStateException.class, () -> device.activateBridgedEndpoint(d -> true));
     }
 
     @Test

@@ -198,6 +198,10 @@
 		<item-type>Switch</item-type>
 		<label>Thermostat Enabled</label>
 		<description>Enable or disable the Wall Display thermostat</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 

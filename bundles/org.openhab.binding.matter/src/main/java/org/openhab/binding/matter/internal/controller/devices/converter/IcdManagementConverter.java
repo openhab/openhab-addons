@@ -12,18 +12,31 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import java.util.Collections;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ICDMANAGEMENT_CHECKINREGISTERED;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ICDMANAGEMENT_LASTCHECKIN;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ICDMANAGEMENT_CHECKINREGISTERED;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ICDMANAGEMENT_LASTCHECKIN;
+
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IcdManagementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdState;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.handler.NodeHandler;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.UnDefType;
 
 /**
  * A converter for translating {@link IcdManagementCluster} attributes into Thing properties.
@@ -33,8 +46,10 @@ import org.openhab.core.types.StateDescription;
  * as a defensive fallback when the bridge does not forward {@code PhysicalDeviceProperties}
  * on Connected events (e.g., when running against an older matter-server build).
  *
- * Read-only: no channels are exposed. {@code registeredClients} and {@code icdCounter} are
- * intentionally skipped (noisy / privacy / rapidly changing).
+ * Devices that support long idle times (LIT) wake up regularly to check in with registered controllers. For them
+ * this converter adds channels for the check-in registration and the last check-in, which matter.js reports
+ * separately from the cluster attributes. {@code registeredClients} and {@code icdCounter} are intentionally skipped
+ * (noisy / privacy / rapidly changing).
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -48,7 +63,34 @@ public class IcdManagementConverter extends GenericConverter<IcdManagementCluste
 
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
-        return Collections.emptyMap();
+        Map<Channel, @Nullable StateDescription> channels = new HashMap<>();
+        if (supportsCheckIn()) {
+            channels.put(
+                    ChannelBuilder.create(new ChannelUID(channelGroupUID, CHANNEL_ID_ICDMANAGEMENT_CHECKINREGISTERED),
+                            CoreItemFactory.SWITCH).withType(CHANNEL_ICDMANAGEMENT_CHECKINREGISTERED).build(),
+                    null);
+            channels.put(ChannelBuilder.create(new ChannelUID(channelGroupUID, CHANNEL_ID_ICDMANAGEMENT_LASTCHECKIN),
+                    CoreItemFactory.DATETIME).withType(CHANNEL_ICDMANAGEMENT_LASTCHECKIN).build(), null);
+        }
+        return channels;
+    }
+
+    /**
+     * Whether the device sends check-ins, which only devices that support long idle times do
+     */
+    public boolean supportsCheckIn() {
+        IcdManagementCluster.FeatureMap features = initializingCluster.featureMap;
+        return features != null && features.longIdleTimeSupport;
+    }
+
+    public void updateIcdState(IcdState state) {
+        if (!supportsCheckIn()) {
+            return;
+        }
+        updateState(CHANNEL_ID_ICDMANAGEMENT_CHECKINREGISTERED, OnOffType.from(state.registered));
+        Long lastCheckIn = state.lastCheckIn;
+        updateState(CHANNEL_ID_ICDMANAGEMENT_LASTCHECKIN,
+                lastCheckIn != null ? new DateTimeType(Instant.ofEpochMilli(lastCheckIn)) : UnDefType.UNDEF);
     }
 
     @Override

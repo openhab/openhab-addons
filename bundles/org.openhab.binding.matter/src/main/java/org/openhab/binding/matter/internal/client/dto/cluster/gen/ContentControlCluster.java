@@ -100,7 +100,7 @@ public class ContentControlCluster extends BaseCluster {
      * Indicates the amount of time (in seconds) which the User is allowed to spend watching TV within one day when the
      * Content Control feature is activated.
      */
-    public Integer screenDailyTime; // 5 elapsed-s R V
+    public Long screenDailyTime; // 5 elapsed-s R V
     /**
      * Indicates the remaining screen time (in seconds) which the User is allowed to spend watching TV for the current
      * day when the Content Control feature is activated. When this value equals 0, the media device shall terminate the
@@ -108,7 +108,7 @@ public class ContentControlCluster extends BaseCluster {
      * This attribute shall be updated when the AddBonusTime command is received and processed successfully (with the
      * correct PIN).
      */
-    public Integer remainingScreenTime; // 6 elapsed-s R V
+    public Long remainingScreenTime; // 6 elapsed-s R V
     /**
      * Indicates whether the playback of unrated content is allowed when the Content Control feature is activated. If
      * this attribute equals FALSE, then playback of unrated content shall be permitted. Otherwise, the media device
@@ -333,43 +333,43 @@ public class ContentControlCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * Supports managing screen time limits.
+         * Supports managing screen time limits
          */
         public boolean screenTime;
         /**
          * 
-         * Supports managing a PIN code which is used for restricting access to configuration of this feature.
+         * Supports managing a PIN code which is used for restricting access to configuration of this feature
          */
         public boolean pinManagement;
         /**
          * 
-         * Supports managing content controls for unrated content.
+         * Supports managing content controls for unrated content
          */
         public boolean blockUnrated;
         /**
          * 
-         * Supports managing content controls based upon rating threshold for on demand content.
+         * Supports managing content controls based upon rating threshold for on demand content
          */
         public boolean onDemandContentRating;
         /**
          * 
-         * Supports managing content controls based upon rating threshold for scheduled content.
+         * Supports managing content controls based upon rating threshold for scheduled content
          */
         public boolean scheduledContentRating;
         /**
          * 
-         * Supports managing a set of channels that are prohibited.
+         * Supports managing a set of channels that are prohibited
          */
         public boolean blockChannels;
         /**
          * 
-         * Supports managing a set of applications that are prohibited.
+         * Supports managing a set of applications that are prohibited
          */
         public boolean blockApplications;
         /**
          * 
          * Supports managing content controls based upon setting time window in which all contents and applications
-         * SHALL be blocked.
+         * SHALL be blocked
          */
         public boolean blockContentTimeWindow;
 
@@ -459,7 +459,7 @@ public class ContentControlCluster extends BaseCluster {
      * - It has been provided with the PIN value to expect via an out of band mechanism, and
      * - The client has provided a PINCode that matches the expected PIN value.
      */
-    public static ClusterCommand addBonusTime(String pinCode, Integer bonusTime) {
+    public static ClusterCommand addBonusTime(String pinCode, Long bonusTime) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (pinCode != null) {
             map.put("pinCode", pinCode);
@@ -475,7 +475,7 @@ public class ContentControlCluster extends BaseCluster {
      * Upon receipt of the SetScreenDailyTime command, the media device shall set the ScreenDailyTime attribute to the
      * ScreenTime value.
      */
-    public static ClusterCommand setScreenDailyTime(Integer screenTime) {
+    public static ClusterCommand setScreenDailyTime(Long screenTime) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (screenTime != null) {
             map.put("screenTime", screenTime);

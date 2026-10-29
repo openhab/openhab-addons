@@ -110,7 +110,7 @@ public class BasicInformationCluster extends BaseCluster {
      * "Availability of Software Images"). Nodes may query this field to determine the currently running version of
      * software on another given Node.
      */
-    public Integer softwareVersion; // 9 uint32 R V
+    public Long softwareVersion; // 9 uint32 R V
     /**
      * This attribute shall contain a current human-readable representation for the software running on the Node. This
      * version information may be conveyed to users. The maximum length of the SoftwareVersionString attribute is 64
@@ -136,7 +136,7 @@ public class BasicInformationCluster extends BaseCluster {
     /**
      * This attribute shall specify a link to a product specific web page. The specified URL SHOULD resolve to a
      * maintained web page available for the lifetime of the product. The syntax of this attribute shall follow the
-     * syntax as specified in RFC 1738 and shall use the https scheme. The maximum length of this attribute is 256 ASCII
+     * syntax as specified in RFC1738 and shall use the https scheme. The maximum length of this attribute is 256 ASCII
      * characters.
      */
     public String productUrl; // 13 string R V
@@ -218,7 +218,7 @@ public class BasicInformationCluster extends BaseCluster {
      * Comparison of SpecificationVersion shall always include the total value over 32 bits, without masking reserved
      * parts.
      */
-    public Integer specificationVersion; // 21 uint32 R V
+    public Long specificationVersion; // 21 uint32 R V
     /**
      * Indicates the maximum number of elements in a single InvokeRequests list (see Section 8.8.2, "Invoke Request
      * Action") that the Node is able to process. Note that since this attribute may change over time, both increasing
@@ -232,7 +232,7 @@ public class BasicInformationCluster extends BaseCluster {
      * This attribute shall contain the current version number for the configuration of the Node. A larger value of
      * ConfigurationVersion shall indicate a newer configuration than a lower value.
      */
-    public Integer configurationVersion; // 24 uint32 R V
+    public Long configurationVersion; // 24 uint32 R V
 
     // Structs
     /**
@@ -244,9 +244,9 @@ public class BasicInformationCluster extends BaseCluster {
         /**
          * This field shall be set to the same value as the one available in the SoftwareVersion attribute.
          */
-        public Integer softwareVersion; // uint32
+        public Long softwareVersion; // uint32
 
-        public StartUp(Integer softwareVersion) {
+        public StartUp(Long softwareVersion) {
             this.softwareVersion = softwareVersion;
         }
     }

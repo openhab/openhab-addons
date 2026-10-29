@@ -23,6 +23,7 @@ import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -108,7 +109,11 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
 
     protected Partition getPartition() {
         int index = calculateEntityIndex();
-        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
+        Bridge bridgeThing = getBridge();
+        if (bridgeThing == null) {
+            return null;
+        }
+        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) bridgeThing.getHandler();
         ParadoxPanel panel = bridge.getPanel();
         List<Partition> partitions = panel.getPartitions();
         if (partitions == null) {

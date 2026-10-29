@@ -49,11 +49,11 @@ public class DescriptorCluster extends BaseCluster {
     /**
      * This attribute shall list each cluster ID for the server clusters present on the endpoint instance.
      */
-    public List<Integer> serverList; // 1 list R V
+    public List<Long> serverList; // 1 list R V
     /**
      * This attribute shall list each cluster ID for the client clusters present on the endpoint instance.
      */
-    public List<Integer> clientList; // 2 list R V
+    public List<Long> clientList; // 2 list R V
     /**
      * This attribute indicates composition of the device type instance. Device type instance composition shall include
      * the endpoints in this list.
@@ -96,14 +96,14 @@ public class DescriptorCluster extends BaseCluster {
          * This shall indicate the device type definition. The endpoint shall conform to the device type definition and
          * cluster specifications required by the device type.
          */
-        public Integer deviceType; // devtype-id
+        public Long deviceType; // devtype-id
         /**
          * This is the implemented revision of the device type definition. The endpoint shall conform to this revision
          * of the device type.
          */
         public Integer revision; // uint16
 
-        public DeviceTypeStruct(Integer deviceType, Integer revision) {
+        public DeviceTypeStruct(Long deviceType, Integer revision) {
             this.deviceType = deviceType;
             this.revision = revision;
         }

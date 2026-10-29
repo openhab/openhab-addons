@@ -56,7 +56,7 @@ public interface ShellyThingInterface {
 
     void setThingOfflineAndDisconnect(ThingStatusDetail detail, String messageKey, Object... arguments);
 
-    void setThingStatus(ThingStatus status, ThingStatusDetail detail, String messageKey, Object... arguments);
+    void setThingStatus(ThingStatusDetail detail, String messageKey, Object... arguments);
 
     boolean isStopping();
 

@@ -36,6 +36,7 @@ public class HeatingCircuitBlockParser extends AbstractBaseParser {
         block.heatingcircuitRoomDeviceTemperature = extractInt16(raw, 4, (short) 0);
         block.heatingcircuitSetpointFlowLineTemperature = extractInt16(raw, 5, (short) 0);
         block.heatingcircuitOperatingMode = extractInt16(raw, 6, (short) 0);
+        block.heatingcircuitTargetTemperatureFlowLine = extractInt16(raw, 7, (short) 0);
         return block;
     }
 }

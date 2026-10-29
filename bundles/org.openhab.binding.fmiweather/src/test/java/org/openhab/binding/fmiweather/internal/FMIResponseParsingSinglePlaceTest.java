@@ -34,7 +34,7 @@ import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedRes
 import org.xml.sax.SAXException;
 
 /**
- * Test cases for {@link {@link org.openhab.binding.fmiweather.internal.client.Client#parseMultiPointCoverageXml}
+ * Test cases for {@link org.openhab.binding.fmiweather.internal.client.Client#parseMultiPointCoverageXml}
  * with an xml response having single place and multiple parameters and timestamps
  *
  * @author Sami Salonen - Initial contribution

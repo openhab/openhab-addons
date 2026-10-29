@@ -2385,6 +2385,14 @@
 			<channel id="enableEmail" typeId="enableEmail"/>
 			<channel id="enablePush" typeId="enablePush"/>
 			<channel id="autoTracking" typeId="autoTracking"/>
+			<channel id="cameraOnline" typeId="cameraOnline"/>
+			<channel id="cameraSleeping" typeId="cameraSleeping"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
+			<channel id="batteryCharging" typeId="batteryCharging"/>
+			<channel id="storageUsage" typeId="storageUsage"/>
+			<channel id="storageError" typeId="storageError"/>
+			<channel id="speakerVolume" typeId="system.volume"/>
 		</channels>
 
 		<properties>
@@ -2654,6 +2662,16 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="channelStatusInterval" type="integer" min="0" unit="s" groupName="Settings">
+				<label>Connection State Interval</label>
+				<description>Seconds between two requests of the cameraOnline and cameraSleeping channels. The NVR or Home Hub
+					answers without waking up battery powered cameras. 0 only reads them at startup and every 5 minutes together
+					with
+					the other status channels.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="onvifMediaProfile" type="integer" required="true" min="0" max="5" groupName="Settings">
 				<label>ONVIF Media Profile</label>
 				<description>Cameras can supply more than one stream at different resolutions and formats. 0 selects the main-stream
@@ -2909,6 +2927,43 @@
 		<item-type>Switch</item-type>
 		<label>Too Blurry Alarm</label>
 		<description>Image is out of focus.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cameraOnline">
+		<item-type>Switch</item-type>
+		<label>Camera Online</label>
+		<description>Reolink NVR / Home Hub: the camera is connected. Battery cameras stay online while they sleep.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cameraSleeping" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Camera Sleeping</label>
+		<description>Reolink NVR / Home Hub: the battery camera is in power saving sleep mode.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="batteryCharging" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Battery Charging</label>
+		<description>The battery is being charged, e.g. by a solar panel or power adapter.</description>
+		<category>Battery</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="storageUsage" advanced="true">
+		<item-type>Number</item-type>
+		<label>Storage Usage</label>
+		<description>Used space of the SD card or storage of the camera / NVR / Home Hub.</description>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="storageError" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Storage Error</label>
+		<description>A storage device of the camera / NVR / Home Hub is not mounted or not formatted.</description>
 		<category>Alarm</category>
 		<state readOnly="true"/>
 	</channel-type>

@@ -98,7 +98,7 @@ public class YamahaReceiverHandlerTest extends AbstractXMLProtocolTest {
 
         List<ThingStatusInfo> thingStatusInfo = statusInfoCaptor.getAllValues();
         // the first one will be OFFLINE
-        assertThat(thingStatusInfo.get(0).getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        assertThat(thingStatusInfo.get(0).getStatus(), is(equalTo(ThingStatus.UNKNOWN)));
         // depending on the internal timer, several status updates and especially the last one will be ONLINE
         assertThat(thingStatusInfo.get(thingStatusInfo.size() - 1).getStatus(), is(equalTo(ThingStatus.ONLINE)));
     }

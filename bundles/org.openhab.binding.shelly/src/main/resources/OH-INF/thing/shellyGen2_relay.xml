@@ -185,6 +185,20 @@
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
+	<thing-type id="shellyplusplugpm">
+		<label>Shelly Plug PM Gen3</label>
+		<description>Shelly Plug PM Gen3. Plug with Power Meter, no relay</description>
+		<category>PowerOutlet</category>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
 	<thing-type id="shellyplusstrip">
 		<label>ShellyPlus Power Strip</label>
 		<description>Shelly Plus Power Strip 4</description>
@@ -380,6 +394,29 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyprocb">
+		<label>Shelly Pro CB</label>
+		<description>Shelly Pro 1CB/2CB/3CB/4CB - Circuit Breaker with Voltmeter</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="meter1" typeId="meter">
+				<label>Voltmeter 1</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Voltmeter 2</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>Voltmeter 3</label>
+			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 

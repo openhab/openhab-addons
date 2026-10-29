@@ -62,8 +62,14 @@ public class ShellyComponentBattery {
         if (bat == null) {
             bat = sdata.bat1 = new ShellySensorBat();
         }
-        bat.voltage = getDouble(battery.volt);
-        bat.value = getDouble(battery.percent);
+        Double volt = battery.volt;
+        if (volt != null) {
+            bat.voltage = volt;
+        }
+        Double percent = battery.percent;
+        if (percent != null) {
+            bat.value = percent;
+        }
     }
 
     /**

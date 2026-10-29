@@ -134,9 +134,11 @@ public class WolSend {
             sendWOL();
         }
         // after RemoteService up again to ensure state is properly set
-        Optional<SamsungTvService> service = handler.findServiceInstance(RemoteControllerService.SERVICE_NAME);
+        // the websocket service is kept while 2022 and later Frame TV's are in standby, so wait until it is connected
+        Optional<SamsungTvService> service = handler.findServiceInstance(RemoteControllerService.SERVICE_NAME)
+                .filter(s -> s.isUpnp() || s.checkConnection());
         service.ifPresent(s -> {
-            logger.debug("{}: RemoteControllerService found after {} attempts", host, wolCount);
+            logger.debug("{}: RemoteControllerService connected after {} attempts", host, wolCount);
             // do not resend command if artMode command as TV wakes up in artMode
             if (!channel.equals(ART_MODE)) {
                 sendCommand((RemoteControllerService) s);

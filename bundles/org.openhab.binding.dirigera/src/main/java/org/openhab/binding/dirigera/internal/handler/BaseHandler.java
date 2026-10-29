@@ -74,8 +74,6 @@ import org.slf4j.LoggerFactory;
 public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHandler {
     private static final ThingStatusInfo UNKNOWN_INITIALZING = new ThingStatusInfo(ThingStatus.UNKNOWN,
             ThingStatusDetail.NONE, null);
-    private static final ThingStatusInfo UNKNOWN_NOT_READY = new ThingStatusInfo(ThingStatus.UNKNOWN,
-            ThingStatusDetail.NOT_YET_READY, null);
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
     private List<PowerListener> powerListeners = new ArrayList<>();
     private @Nullable ScheduledFuture<?> initializationFuture;
@@ -141,23 +139,20 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                     gateway = gw;
                     checkBridge();
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/dirigera.device.status.wrong-bridge-type");
                     return;
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/dirigera.device.missing-bridge-handler");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/dirigera.device.missing-bridge-handler");
                 return;
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/dirigera.device.status.missing-bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/dirigera.device.status.missing-bridge");
             return;
         }
         if (config.id.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/dirigera.device.status.id-mandatory");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/dirigera.device.status.id-mandatory");
             return;
         }
     }
@@ -183,10 +178,10 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         // ONLINE(OFFLINE response, if
         if (ThingStatus.ONLINE.equals(gateway().getThing().getStatus())
                 && !ThingStatus.ONLINE.equals(handlerStatusInfo.getStatus())) {
-            updateStatus(UNKNOWN_INITIALZING.getStatus(), UNKNOWN_INITIALZING.getStatusDetail(), null);
+            updateStatus(ThingStatus.UNKNOWN);
             initializationFuture = scheduler.schedule(child::initializeDevice, 0, TimeUnit.SECONDS);
         } else {
-            updateStatus(UNKNOWN_NOT_READY.getStatus(), UNKNOWN_NOT_READY.getStatusDetail(), null);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -486,8 +481,7 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
             if (update.getBoolean(JSON_KEY_REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/dirigera.device.status.not-reachable");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/dirigera.device.status.not-reachable");
                 /**
                  * If device is not reachable set especially power channel to UNDEF. For OFFLINE maybe it's "real"
                  * communication problems between device and hub or the power is cut off e.g. using a light switch.
@@ -600,12 +594,11 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         if (!thing.getThingTypeUID().equals(modelTTUID)) {
             // check if id is present in model
             if (THING_TYPE_NOT_FOUND.equals(modelTTUID)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                updateStatus(ThingStatusDetail.GONE,
                         "@text/dirigera.device.status.id-not-found" + " [\"" + config.id + "\"]");
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/dirigera.device.status.ttuid-mismatch" + " [\"" + thing.getThingTypeUID() + "\",\""
-                                + modelTTUID + "\"]");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/dirigera.device.status.ttuid-mismatch"
+                        + " [\"" + thing.getThingTypeUID() + "\",\"" + modelTTUID + "\"]");
             }
             return false;
         }

@@ -163,7 +163,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the number of seconds that the power adjustment session lasted before ending.
          */
-        public Integer duration; // elapsed-s
+        public Long duration; // elapsed-s
         /**
          * This field shall indicate the approximate energy used by the ESA during the session.
          * For example, if the ESA was on and was adjusted to be switched off, then this shall be 0 mWh. If this was a
@@ -172,7 +172,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public BigInteger energyUse; // energy-mWh
 
-        public PowerAdjustEnd(CauseEnum cause, Integer duration, BigInteger energyUse) {
+        public PowerAdjustEnd(CauseEnum cause, Long duration, BigInteger energyUse) {
             this.cause = cause;
             this.duration = duration;
             this.energyUse = energyUse;
@@ -262,15 +262,15 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * adjustment. Manufacturers may use this to as an anti-cycling capability to avoid controllers from rapidly
          * making power adjustments.
          */
-        public Integer minDuration; // elapsed-s
+        public Long minDuration; // elapsed-s
         /**
          * This field shall indicate the maximum duration, in seconds, that a controller may invoke an ESA power
          * adjustment. Manufacturers may use this to protect the user experience, to avoid over heating of the ESA,
          * ensuring that there is sufficient headroom to use or store energy in the ESA or for any other reason.
          */
-        public Integer maxDuration; // elapsed-s
+        public Long maxDuration; // elapsed-s
 
-        public PowerAdjustStruct(BigInteger minPower, BigInteger maxPower, Integer minDuration, Integer maxDuration) {
+        public PowerAdjustStruct(BigInteger minPower, BigInteger maxPower, Long minDuration, Long maxDuration) {
             this.minPower = minPower;
             this.maxPower = maxPower;
             this.minDuration = minDuration;
@@ -315,7 +315,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * re-subscription allows the EMS to learn about any new forecasts.
          * The value of ForecastID is allowed to wrap.
          */
-        public Integer forecastId; // uint32
+        public Long forecastId; // uint32
         /**
          * This field shall indicate which element of the Slots list is currently active in the Forecast sequence. A
          * null value indicates that the sequence has not yet started.
@@ -324,22 +324,22 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the planned start time, in UTC, for the entire Forecast.
          */
-        public Integer startTime; // epoch-s
+        public Long startTime; // epoch-s
         /**
          * This field shall indicate the planned end time, in UTC, for the entire Forecast.
          */
-        public Integer endTime; // epoch-s
+        public Long endTime; // epoch-s
         /**
          * This field shall indicate the earliest start time, in UTC, that the entire Forecast can be shifted to.
          * A null value indicates that it can be started immediately.
          */
-        public Integer earliestStartTime; // epoch-s
+        public Long earliestStartTime; // epoch-s
         /**
          * This field shall indicate the latest end time, in UTC, for the entire Forecast.
          * e.g. for an EVSE charging session, this may indicate the departure time for the vehicle, by which time the
          * charging session must end.
          */
-        public Integer latestEndTime; // epoch-s
+        public Long latestEndTime; // epoch-s
         /**
          * This field shall indicate that some part of the Forecast can be paused. It aims to allow a client to read
          * this flag and if it is false, then none of the slots contain SlotIsPausable set to true. This can save a
@@ -356,8 +356,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public ForecastUpdateReasonEnum forecastUpdateReason; // ForecastUpdateReasonEnum
 
-        public ForecastStruct(Integer forecastId, Integer activeSlotNumber, Integer startTime, Integer endTime,
-                Integer earliestStartTime, Integer latestEndTime, Boolean isPausable, List<SlotStruct> slots,
+        public ForecastStruct(Long forecastId, Integer activeSlotNumber, Long startTime, Long endTime,
+                Long earliestStartTime, Long latestEndTime, Boolean isPausable, List<SlotStruct> slots,
                 ForecastUpdateReasonEnum forecastUpdateReason) {
             this.forecastId = forecastId;
             this.activeSlotNumber = activeSlotNumber;
@@ -378,15 +378,15 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the minimum time (in seconds) that the appliance expects to be in this slot for.
          */
-        public Integer minDuration; // elapsed-s
+        public Long minDuration; // elapsed-s
         /**
          * This field shall indicate the maximum time (in seconds) that the appliance expects to be in this slot for.
          */
-        public Integer maxDuration; // elapsed-s
+        public Long maxDuration; // elapsed-s
         /**
          * This field shall indicate the expected time (in seconds) that the appliance expects to be in this slot for.
          */
-        public Integer defaultDuration; // elapsed-s
+        public Long defaultDuration; // elapsed-s
         /**
          * This field shall indicate the time (in seconds) that has already elapsed whilst in this slot. If the slot has
          * not yet been started, then it shall be 0. Once the slot has been completed, then this reflects how much time
@@ -395,7 +395,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * this value may change every 1 second.
          * When the Forecast attribute is read, then this value shall be the most recent value.
          */
-        public Integer elapsedSlotTime; // elapsed-s
+        public Long elapsedSlotTime; // elapsed-s
         /**
          * This field shall indicate the time (in seconds) that is estimated to be remaining.
          * Note that it may not align to the DefaultDuration - ElapsedSlotTime since an appliance may have revised its
@@ -405,7 +405,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * Note that if the ESA is currently paused, then this value shall NOT change.
          * When the Forecast attribute is read, then this value shall be the most recent value.
          */
-        public Integer remainingSlotTime; // elapsed-s
+        public Long remainingSlotTime; // elapsed-s
         /**
          * This field shall indicate whether this slot can be paused.
          */
@@ -415,11 +415,11 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * controllers trying to pause ESAs for short periods and then resuming operation in a cyclic fashion which may
          * damage or cause excess energy to be consumed with restarting of an operation.
          */
-        public Integer minPauseDuration; // elapsed-s
+        public Long minPauseDuration; // elapsed-s
         /**
          * This field shall indicate the longest period that the slot can be paused for.
          */
-        public Integer maxPauseDuration; // elapsed-s
+        public Long maxPauseDuration; // elapsed-s
         /**
          * This field shall indicate a manufacturer defined value indicating the state of the ESA.
          * This may be used by an observing EMS which also has access to the metering data to ascertain the typical
@@ -497,7 +497,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * from being damaged by short cycling times.
          * For example, a heat pump compressor may have a minimum cycle time of order a few minutes.
          */
-        public Integer minDurationAdjustment; // elapsed-s
+        public Long minDurationAdjustment; // elapsed-s
         /**
          * This field shall indicate the maximum time, in seconds, that the slot can be requested to extended to.
          * For example, if the slot indicates a NominalPower of 0W (indicating it is expecting to be off), this allows
@@ -506,13 +506,13 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * which can be discharged, it may equally indicate the maximum time the battery could be discharged for (at the
          * MaxPowerAdjustment power level).
          */
-        public Integer maxDurationAdjustment; // elapsed-s
+        public Long maxDurationAdjustment; // elapsed-s
 
-        public SlotStruct(Integer minDuration, Integer maxDuration, Integer defaultDuration, Integer elapsedSlotTime,
-                Integer remainingSlotTime, Boolean slotIsPausable, Integer minPauseDuration, Integer maxPauseDuration,
+        public SlotStruct(Long minDuration, Long maxDuration, Long defaultDuration, Long elapsedSlotTime,
+                Long remainingSlotTime, Boolean slotIsPausable, Long minPauseDuration, Long maxPauseDuration,
                 Integer manufacturerEsaState, BigInteger nominalPower, BigInteger minPower, BigInteger maxPower,
                 BigInteger nominalEnergy, List<CostStruct> costs, BigInteger minPowerAdjustment,
-                BigInteger maxPowerAdjustment, Integer minDurationAdjustment, Integer maxDurationAdjustment) {
+                BigInteger maxPowerAdjustment, Long minDurationAdjustment, Long maxDurationAdjustment) {
             this.minDuration = minDuration;
             this.maxDuration = maxDuration;
             this.defaultDuration = defaultDuration;
@@ -553,9 +553,9 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * slot duration to. It shall be between the MinDurationAdjustment and MaxDurationAdjustment for the slot as
          * advertised by the ESA.
          */
-        public Integer duration; // elapsed-s
+        public Long duration; // elapsed-s
 
-        public SlotAdjustmentStruct(Integer slotIndex, BigInteger nominalPower, Integer duration) {
+        public SlotAdjustmentStruct(Integer slotIndex, BigInteger nominalPower, Long duration) {
             this.slotIndex = slotIndex;
             this.nominalPower = nominalPower;
             this.duration = duration;
@@ -573,11 +573,11 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * new Forecast.
          * This value is in UTC and shall be in the future.
          */
-        public Integer startTime; // epoch-s
+        public Long startTime; // epoch-s
         /**
          * This field shall indicate the duration of the constraint in seconds.
          */
-        public Integer duration; // elapsed-s
+        public Long duration; // elapsed-s
         /**
          * This field shall indicate the nominal power that client wishes the ESA to operate at during the constrained
          * period. It shall be between the AbsMinPower and AbsMaxPower attributes as advertised by the ESA if it
@@ -601,7 +601,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public Integer loadControl; // int8
 
-        public ConstraintsStruct(Integer startTime, Integer duration, BigInteger nominalPower, BigInteger maximumEnergy,
+        public ConstraintsStruct(Long startTime, Long duration, BigInteger nominalPower, BigInteger maximumEnergy,
                 Integer loadControl) {
             this.startTime = startTime;
             this.duration = duration;
@@ -978,7 +978,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     /**
      * Allows a client to request an adjustment in the power consumption of an ESA for a specified duration.
      */
-    public static ClusterCommand powerAdjustRequest(BigInteger power, Integer duration, AdjustmentCauseEnum cause) {
+    public static ClusterCommand powerAdjustRequest(BigInteger power, Long duration, AdjustmentCauseEnum cause) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (power != null) {
             map.put("power", power);
@@ -1003,7 +1003,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * Allows a client to adjust the start time of a Forecast sequence that has not yet started operation (i.e. where
      * the current Forecast StartTime is in the future).
      */
-    public static ClusterCommand startTimeAdjustRequest(Integer requestedStartTime, AdjustmentCauseEnum cause) {
+    public static ClusterCommand startTimeAdjustRequest(Long requestedStartTime, AdjustmentCauseEnum cause) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (requestedStartTime != null) {
             map.put("requestedStartTime", requestedStartTime);
@@ -1017,7 +1017,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     /**
      * Allows a client to temporarily pause an operation and reduce the ESAs energy demand.
      */
-    public static ClusterCommand pauseRequest(Integer duration, AdjustmentCauseEnum cause) {
+    public static ClusterCommand pauseRequest(Long duration, AdjustmentCauseEnum cause) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (duration != null) {
             map.put("duration", duration);
@@ -1038,7 +1038,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     /**
      * Allows a client to modify a Forecast within the limits allowed by the ESA.
      */
-    public static ClusterCommand modifyForecastRequest(Integer forecastId, List<SlotAdjustmentStruct> slotAdjustments,
+    public static ClusterCommand modifyForecastRequest(Long forecastId, List<SlotAdjustmentStruct> slotAdjustments,
             AdjustmentCauseEnum cause) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (forecastId != null) {

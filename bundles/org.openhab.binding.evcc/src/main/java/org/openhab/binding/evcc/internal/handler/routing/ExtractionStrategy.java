@@ -20,6 +20,8 @@ import com.google.gson.JsonElement;
 /**
  * Strategy for extracting data from incoming websocket messages.
  * Implementations handle different data structures (arrays, maps, nested objects).
+ *
+ * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public interface ExtractionStrategy {

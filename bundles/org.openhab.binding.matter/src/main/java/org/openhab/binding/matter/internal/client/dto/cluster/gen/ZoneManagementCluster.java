@@ -248,22 +248,22 @@ public class ZoneManagementCluster extends BaseCluster {
          * This field shall indicate the initial duration in seconds after triggering activity is first detected before
          * the Node could generate a ZoneStopped event.
          */
-        public Integer initialDuration; // elapsed-s
+        public Long initialDuration; // elapsed-s
         /**
          * This field shall indicate the duration in seconds that the TriggerDetectedDuration value is to be extended by
          * if the triggering activity is still detected during this period.
          */
-        public Integer augmentationDuration; // elapsed-s
+        public Long augmentationDuration; // elapsed-s
         /**
          * This field shall indicate the maximum duration in seconds after the initial triggering activity detection
          * that additional triggering activity will be detected.
          */
-        public Integer maxDuration; // elapsed-s
+        public Long maxDuration; // elapsed-s
         /**
          * This field shall indicate the duration in seconds after a ZoneStopped event is generated that the Node shall
          * NOT generate any ZoneTriggered events.
          */
-        public Integer blindDuration; // elapsed-s
+        public Long blindDuration; // elapsed-s
         /**
          * This field shall indicate the per-zone sensitivity of the underlying zone triggering detection mechanism. The
          * higher the value, the more sensitive the detection. The actual meaning of the values is
@@ -271,8 +271,8 @@ public class ZoneManagementCluster extends BaseCluster {
          */
         public Integer sensitivity; // uint8
 
-        public ZoneTriggerControlStruct(Integer zoneId, Integer initialDuration, Integer augmentationDuration,
-                Integer maxDuration, Integer blindDuration, Integer sensitivity) {
+        public ZoneTriggerControlStruct(Integer zoneId, Long initialDuration, Long augmentationDuration,
+                Long maxDuration, Long blindDuration, Integer sensitivity) {
             this.zoneId = zoneId;
             this.initialDuration = initialDuration;
             this.augmentationDuration = augmentationDuration;

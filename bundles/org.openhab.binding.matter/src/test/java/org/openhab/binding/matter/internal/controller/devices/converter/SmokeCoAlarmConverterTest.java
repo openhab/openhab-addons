@@ -70,7 +70,7 @@ class SmokeCoAlarmConverterTest extends BaseMatterConverterTest {
         mockCluster.interconnectCoAlarm = AlarmStateEnum.NORMAL;
         mockCluster.contaminationState = ContaminationStateEnum.NORMAL;
         mockCluster.smokeSensitivityLevel = SensitivityEnum.STANDARD;
-        mockCluster.expiryDate = 1735689600; // 2025-01-01
+        mockCluster.expiryDate = 1735689600L; // 2025-01-01
         mockCluster.featureMap = new SmokeCoAlarmCluster.FeatureMap(true, true);
         converter = new SmokeCoAlarmConverter(mockCluster, mockHandler, 1, "TestLabel");
     }

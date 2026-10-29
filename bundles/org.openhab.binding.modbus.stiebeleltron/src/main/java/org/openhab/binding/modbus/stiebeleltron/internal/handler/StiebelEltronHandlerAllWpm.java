@@ -248,6 +248,8 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
         ModbusCommunicationInterface mycomms = StiebelEltronHandlerAllWpm.this.comms;
 
+        logger.trace("Modbus writing to address {}, Int16 value = {}", address, shortValue);
+
         if (myconfig == null || mycomms == null) {
             throw new IllegalStateException("writeInt16 called without proper configuration");
         }
@@ -307,6 +309,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("handleCommand({}, {})", channelUID, command);
         if (RefreshType.REFRESH == command) {
             String groupId = channelUID.getGroupId();
             if (groupId != null) {
@@ -342,7 +345,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             try {
                 if (GROUP_SYSTEM_PARAMETER_ALLWPM.equals(channelUID.getGroupId())) {
                     switch (channelUID.getIdWithoutGroup()) {
-                        case CHANNEL_OPERATION_MODE:
+                        case CHANNEL_OPERATING_MODE:
                             writeInt16(1500, getInt16Value(command));
                             break;
                         case CHANNEL_HC1_COMFORT_TEMPERATURE:
@@ -435,6 +438,10 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                                 logger.warn("Command 'Service Key' ignored!");
                             }
                             break;
+                        default:
+                            logger.debug("Incomplete implementation - Unhandled channel: {}",
+                                    channelUID.getIdWithoutGroup());
+                            break;
                     }
                 } else if (GROUP_SG_READY_ENERGY_MANAGEMENT_SETTINGS.equals(channelUID.getGroupId())) {
                     switch (channelUID.getIdWithoutGroup()) {
@@ -458,6 +465,8 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                             writeInt16(4002, input2);
                             break;
                     }
+                } else {
+                    logger.debug("Incomplete implementation - Unsupported channel UID {}", channelUID);
                 }
 
             } catch (StiebelEltronException error) {
@@ -466,7 +475,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                 }
                 String statusMsg = String.format("@text/offline.com-error [ \"%s\", \"%s\" ]",
                         error.getClass().getName(), error.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
             }
         }
     }
@@ -494,7 +503,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
             return;
         }
 
@@ -507,7 +516,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
 
         if (comms == null) {
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("@text/offline.bridge-not-initialized [ \"%s\" ]", label));
             return;
         }
@@ -516,13 +525,13 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         if (debug) {
             String statusMsg = String.format("@text/offline.com-error [ \"%s\", \"%s\" ]", "com-error",
                     StiebelEltronHandlerAllWpm.class.getName());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
             statusMsg = String.format("@text/offline.com-error-read [ \"%s\", \"%s\" ]", "read-error",
                     StiebelEltronHandlerAllWpm.class.getName());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
             statusMsg = String.format("@text/offline.com-error-write [ \"%s\", \"%s\" ]", "write-error",
                     StiebelEltronHandlerAllWpm.class.getName());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
         }
 
         StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
@@ -1581,7 +1590,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         }
         String statusMsg = String.format("@text/offline.com-error-read [ \"%s\", \"%s\" ]",
                 failure.getCause().getMessage(), failure.getCause().getClass().getName());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**
@@ -1594,7 +1603,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         }
         String statusMsg = String.format("@text/offline.com-error-write [ \"%s\", \"%s\" ]",
                 failure.getCause().getMessage(), failure.getCause().getClass().getName());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**

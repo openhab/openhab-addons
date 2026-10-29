@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 
 /**
  * Parses a {@link FilterToken}-Sequence into a {@link TimetableStopPredicate}.
@@ -32,9 +33,11 @@ public final class FilterParser {
 
         @Nullable
         private final State previousState;
+        protected final TimetableTimeConverter timeConverter;
 
-        public State(@Nullable State previousState) {
+        public State(@Nullable State previousState, TimetableTimeConverter timeConverter) {
             this.previousState = previousState;
+            this.timeConverter = timeConverter;
         }
 
         private final State handle(FilterToken token) throws FilterParserException {
@@ -45,7 +48,7 @@ public final class FilterParser {
 
         @Override
         public final State handle(ChannelNameEquals channelEquals) throws FilterParserException {
-            final TimetableStopByStringEventAttributeFilter predicate = channelEquals.mapToPredicate();
+            final TimetableStopByStringEventAttributeFilter predicate = channelEquals.mapToPredicate(timeConverter);
             return this.handleChildResult(predicate);
         }
 
@@ -76,8 +79,8 @@ public final class FilterParser {
         @Nullable
         private TimetableStopPredicate result;
 
-        public InitialState() {
-            super(null);
+        public InitialState(TimetableTimeConverter timeConverter) {
+            super(null, timeConverter);
         }
 
         @Override
@@ -88,7 +91,7 @@ public final class FilterParser {
                 throw new FilterParserException(
                         "Invalid filter: first argument missing for '|' at " + operator.getPosition());
             }
-            return new OrState(this, currentResult);
+            return new OrState(this, currentResult, timeConverter);
         }
 
         @Override
@@ -99,13 +102,13 @@ public final class FilterParser {
                 throw new FilterParserException(
                         "Invalid filter: first argument missing for '&' at " + operator.getPosition());
             }
-            return new AndState(this, currentResult);
+            return new AndState(this, currentResult, timeConverter);
         }
 
         @Override
         public State handle(BracketOpenToken token) throws FilterParserException {
             this.result = null;
-            return new SubQueryState(this);
+            return new SubQueryState(this, timeConverter);
         }
 
         @Override
@@ -140,8 +143,8 @@ public final class FilterParser {
 
         private final TimetableStopPredicate first;
 
-        public AndState(State previousState, final TimetableStopPredicate first) {
-            super(previousState);
+        public AndState(State previousState, final TimetableStopPredicate first, TimetableTimeConverter timeConverter) {
+            super(previousState, timeConverter);
             this.first = first;
         }
 
@@ -159,7 +162,7 @@ public final class FilterParser {
 
         @Override
         public State handle(BracketOpenToken token) throws FilterParserException {
-            return new SubQueryState(this);
+            return new SubQueryState(this, timeConverter);
         }
 
         @Override
@@ -186,8 +189,8 @@ public final class FilterParser {
 
         private final TimetableStopPredicate first;
 
-        public OrState(State previousState, final TimetableStopPredicate first) {
-            super(previousState);
+        public OrState(State previousState, final TimetableStopPredicate first, TimetableTimeConverter timeConverter) {
+            super(previousState, timeConverter);
             this.first = first;
         }
 
@@ -205,7 +208,7 @@ public final class FilterParser {
 
         @Override
         public State handle(BracketOpenToken token) throws FilterParserException {
-            return new SubQueryState(this);
+            return new SubQueryState(this, timeConverter);
         }
 
         @Override
@@ -233,8 +236,8 @@ public final class FilterParser {
         @Nullable
         private TimetableStopPredicate currentResult;
 
-        public SubQueryState(State previousState) {
-            super(previousState);
+        public SubQueryState(State previousState, TimetableTimeConverter timeConverter) {
+            super(previousState, timeConverter);
         }
 
         @Override
@@ -244,7 +247,7 @@ public final class FilterParser {
                 throw new FilterParserException(
                         "Operator '|' at " + operator.getPosition() + " must not be first element in subquery.");
             }
-            return new OrState(this, result);
+            return new OrState(this, result, timeConverter);
         }
 
         @Override
@@ -254,12 +257,12 @@ public final class FilterParser {
                 throw new FilterParserException(
                         "Operator '&' at" + operator.getPosition() + " must not be first element in subquery.");
             }
-            return new AndState(this, result);
+            return new AndState(this, result, timeConverter);
         }
 
         @Override
         public State handle(BracketOpenToken token) throws FilterParserException {
-            return new SubQueryState(this);
+            return new SubQueryState(this, timeConverter);
         }
 
         @Override
@@ -289,8 +292,9 @@ public final class FilterParser {
     /**
      * Parses the given {@link FilterToken} into a {@link TimetableStopPredicate}.
      */
-    public static TimetableStopPredicate parse(final List<FilterToken> tokens) throws FilterParserException {
-        State state = new InitialState();
+    public static TimetableStopPredicate parse(final List<FilterToken> tokens, TimetableTimeConverter timeConverter)
+            throws FilterParserException {
+        State state = new InitialState(timeConverter);
         for (FilterToken token : tokens) {
             state = state.handle(token);
         }

@@ -12,11 +12,18 @@
  */
 package org.openhab.binding.matter.internal.bridge.devices;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,7 +31,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.BridgedEndpoint;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.BridgedDeviceBasicInformationCluster;
 import org.openhab.core.items.GenericItem;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
@@ -41,6 +50,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class BaseDevice implements StateChangeListener {
+    private static final int MAX_LABEL_LENGTH = 32;
+
     // The "source" sent with command events so rules can identify them as coming from Matter
     public static final String MATTER_SOURCE = "org.openhab.binding.matter";
 
@@ -51,6 +62,9 @@ public abstract class BaseDevice implements StateChangeListener {
     protected final MatterBridgeClient client;
     protected final MetadataRegistry metadataRegistry;
     protected boolean activated = false;
+    private List<Object> activatedStructure = List.of();
+    private String activatedLabel = "";
+    private boolean reachable = true;
 
     public BaseDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem primaryItem) {
         this.metadataRegistry = metadataRegistry;
@@ -73,6 +87,25 @@ public abstract class BaseDevice implements StateChangeListener {
      * Dispose of the device, inherited classes should unregister the device and remove the listeners
      */
     public abstract void dispose();
+
+    /**
+     * Stops sending updates to the endpoint, then disposes the device. Use this rather than {@link #dispose()} once
+     * the device is activated, so a reachable or label update running on another thread cannot reach an endpoint that
+     * now belongs to a replacement device.
+     */
+    public void deactivate() {
+        synchronized (this) {
+            activated = false;
+        }
+        dispose();
+    }
+
+    /**
+     * Sends the current state of the device's items to the endpoint
+     */
+    protected void sendCurrentState() {
+        updateState(primaryItem, primaryItem.getState());
+    }
 
     /**
      * Handle openHAB item state changes
@@ -99,14 +132,143 @@ public abstract class BaseDevice implements StateChangeListener {
         updateState(item, state);
     }
 
-    public BridgedEndpoint activateBridgedEndpoint() {
+    /**
+     * Activate the device and build its endpoint.
+     *
+     * @param isReachable decides the endpoint's initial reachable flag, tested after the device is activated
+     * @return the endpoint to add to the bridge
+     */
+    public BridgedEndpoint activateBridgedEndpoint(Predicate<BaseDevice> isReachable) {
         if (activated) {
             throw new IllegalStateException("Device already registered");
         }
+        activatedStructure = structure();
         MatterDeviceOptions options = activate();
         activated = true;
+        activatedLabel = options.label;
+        reachable = isReachable.test(this);
         return new BridgedEndpoint(deviceType(), primaryItem.getName(), options.label, primaryItem.getName(),
-                "Type " + primaryItem.getType(), String.valueOf(primaryItem.getName().hashCode()), options.clusters);
+                "Type " + primaryItem.getType(), String.valueOf(primaryItem.getName().hashCode()), options.clusters,
+                reachable);
+    }
+
+    /**
+     * The inputs that decide the endpoint's device type and clusters. Item states and labels are left out, as they
+     * can change without rebuilding the endpoint.
+     */
+    public List<Object> structure() {
+        List<Object> structure = new ArrayList<>();
+        structure.add(deviceType());
+        for (Item item : structureItems()) {
+            structure.add(item.getName());
+            structure.add(item.getType());
+            if (item instanceof GroupItem groupItem) {
+                Item baseItem = groupItem.getBaseItem();
+                structure.add(baseItem != null ? baseItem.getType() : "");
+            }
+            Metadata metadata = metadataRegistry.get(new MetadataKey("matter", item.getUID()));
+            if (metadata != null) {
+                Map<String, Object> config = new TreeMap<>(metadata.getConfiguration());
+                config.remove("label");
+                structure.add(metadata.getValue());
+                structure.add(config);
+            }
+        }
+        return structure;
+    }
+
+    /**
+     * Whether the endpoint has to be rebuilt to match the current items and metadata.
+     */
+    public boolean structureChanged() {
+        return !activatedStructure.equals(structure());
+    }
+
+    /**
+     * Whether both devices are built from the same item objects. Editing an item replaces its object in the item
+     * registry, and the old object no longer gets state updates or sends commands.
+     */
+    public boolean usesSameItems(BaseDevice other) {
+        Set<Item> items = Collections.newSetFromMap(new IdentityHashMap<>());
+        items.addAll(structureItems());
+        List<Item> otherItems = other.structureItems();
+        return items.size() == otherItems.size() && otherItems.stream().allMatch(items::contains);
+    }
+
+    /**
+     * Takes over the endpoint of a device with the same structure, built from item objects that have since been
+     * replaced. Sends the label and item states, as the endpoint still has the old device's values.
+     *
+     * @return a future that completes when the label is set
+     */
+    public CompletableFuture<Void> takeOver(BaseDevice previous) {
+        String label;
+        synchronized (this) {
+            label = activatedLabel;
+            activatedLabel = previous.activatedLabel;
+            reachable = previous.reachable;
+        }
+        sendCurrentState();
+        return updateLabel(label);
+    }
+
+    /**
+     * The items whose name, type or metadata shape the endpoint
+     */
+    protected List<Item> structureItems() {
+        return List.of(primaryItem);
+    }
+
+    /**
+     * The items whose states the endpoint reports. For a group these are its members, as those are the items linked to
+     * Things.
+     */
+    public Collection<GenericItem> stateItems() {
+        if (primaryItem instanceof GroupItem groupItem) {
+            return groupItem.getAllMembers().stream().filter(GenericItem.class::isInstance).map(GenericItem.class::cast)
+                    .toList();
+        }
+        return List.of(primaryItem);
+    }
+
+    /**
+     * The label the endpoint gets from the current item and metadata
+     */
+    public String label() {
+        return metaDataMapping(primaryItem).label;
+    }
+
+    /**
+     * Set the endpoint's label, if it changed since it was activated.
+     *
+     * @return a future that completes when the label is set
+     */
+    public synchronized CompletableFuture<Void> updateLabel(String label) {
+        if (!activated || label.equals(activatedLabel)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        activatedLabel = label;
+        return setEndpointState(BridgedDeviceBasicInformationCluster.CLUSTER_PREFIX,
+                BridgedDeviceBasicInformationCluster.ATTRIBUTE_NODE_LABEL,
+                label.substring(0, Math.min(label.length(), MAX_LABEL_LENGTH)));
+    }
+
+    /**
+     * Set the endpoint's reachable flag, if it changed. The flag is worked out while holding this device's lock, so
+     * updates from different threads are sent in the order they were worked out.
+     */
+    public synchronized void updateReachable(Predicate<BaseDevice> isReachable) {
+        if (!activated) {
+            return;
+        }
+        boolean reachable = isReachable.test(this);
+        if (this.reachable == reachable) {
+            return;
+        }
+        this.reachable = reachable;
+        logger.debug("{} reachable: {}", primaryItem.getName(), reachable);
+        setEndpointState(BridgedDeviceBasicInformationCluster.CLUSTER_PREFIX,
+                BridgedDeviceBasicInformationCluster.ATTRIBUTE_REACHABLE, reachable);
     }
 
     public String getName() {

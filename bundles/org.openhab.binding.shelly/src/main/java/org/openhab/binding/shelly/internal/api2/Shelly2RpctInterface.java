@@ -34,7 +34,7 @@ public interface Shelly2RpctInterface {
 
     void onPong();
 
-    void onClose(boolean inbound, int statusCode, String reason);
+    void onClose(long connectionId, boolean inbound, int statusCode, String reason);
 
-    void onError(Throwable cause);
+    void onError(long connectionId, Throwable cause);
 }

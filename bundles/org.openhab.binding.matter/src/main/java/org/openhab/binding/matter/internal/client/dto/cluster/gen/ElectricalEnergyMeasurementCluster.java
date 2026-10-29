@@ -171,7 +171,7 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          * Otherwise, if the server had not yet determined the time in UTC at or before the beginning of the measurement
          * period, or does not have the capability of determining the time in UTC, this field shall be omitted.
          */
-        public Integer startTimestamp; // epoch-s
+        public Long startTimestamp; // epoch-s
         /**
          * This field shall indicate the timestamp in UTC of the end of the period during which the value of the Energy
          * field was measured.
@@ -180,7 +180,7 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          * Otherwise, if the server had not yet determined the time in UTC by the end of the measurement period, or does
          * not have the capability of determining the time in UTC, this field shall be omitted.
          */
-        public Integer endTimestamp; // epoch-s
+        public Long endTimestamp; // epoch-s
         /**
          * This field shall indicate the time elapsed since boot at the beginning of the period during which the value
          * of the Energy field was measured.
@@ -223,7 +223,7 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          */
         public BigInteger reactiveEnergy; // energy-mVARh
 
-        public EnergyMeasurementStruct(BigInteger energy, Integer startTimestamp, Integer endTimestamp,
+        public EnergyMeasurementStruct(BigInteger energy, Long startTimestamp, Long endTimestamp,
                 BigInteger startSystime, BigInteger endSystime, BigInteger apparentEnergy, BigInteger reactiveEnergy) {
             this.energy = energy;
             this.startTimestamp = startTimestamp;
@@ -251,7 +251,7 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          * If the timestamp in UTC when the value of the Energy field on the CumulativeEnergyImported attribute was most
          * recently zero cannot currently be determined, a value of null shall be returned.
          */
-        public Integer importedResetTimestamp; // epoch-s
+        public Long importedResetTimestamp; // epoch-s
         /**
          * This field shall indicate the timestamp in UTC when the value of the Energy field on the
          * CumulativeEnergyExported attribute was most recently zero.
@@ -263,7 +263,7 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          * If the timestamp in UTC when the value of the Energy field on the CumulativeEnergyExported attribute was most
          * recently zero cannot currently be determined, a value of null shall be returned.
          */
-        public Integer exportedResetTimestamp; // epoch-s
+        public Long exportedResetTimestamp; // epoch-s
         /**
          * This field shall indicate the time elapsed since boot when the value of the Energy field on the
          * CumulativeEnergyImported attribute was most recently zero.
@@ -287,7 +287,7 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          */
         public BigInteger exportedResetSystime; // systime-ms
 
-        public CumulativeEnergyResetStruct(Integer importedResetTimestamp, Integer exportedResetTimestamp,
+        public CumulativeEnergyResetStruct(Long importedResetTimestamp, Long exportedResetTimestamp,
                 BigInteger importedResetSystime, BigInteger exportedResetSystime) {
             this.importedResetTimestamp = importedResetTimestamp;
             this.exportedResetTimestamp = exportedResetTimestamp;

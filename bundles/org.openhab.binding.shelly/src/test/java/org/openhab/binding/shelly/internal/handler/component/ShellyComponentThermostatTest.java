@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,7 +45,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -129,27 +129,33 @@ public class ShellyComponentThermostatTest {
         assertEquals(fullStatus, status.thermostat == null);
     }
 
-    static Stream<Arguments> targetTempCommands() {
-        return Stream.of(Arguments.of(new DecimalType(21.5)), Arguments.of(new QuantityType<>(21.5, SIUnits.CELSIUS)),
-                Arguments.of(new QuantityType<>(70.7, ImperialUnits.FAHRENHEIT)));
+    static Stream<Arguments> thermostatCommands() {
+        return Stream.of(Arguments.of(CHANNEL_CONTROL_SETTEMP, new DecimalType(21.5), null, 21.5),
+                Arguments.of(CHANNEL_CONTROL_SETTEMP, new QuantityType<>(70.7, ImperialUnits.FAHRENHEIT), null, 21.5),
+                Arguments.of(CHANNEL_THERMOSTAT_ENABLE, OnOffType.OFF, false, null));
     }
 
     @ParameterizedTest
-    @MethodSource("targetTempCommands")
-    void targetTempCommandSetsThermostatConfigInCelsius(Command command) throws Exception {
+    @MethodSource("thermostatCommands")
+    void commandSetsThermostatConfig(String channel, Command command, @Nullable Boolean enable,
+            @Nullable Double targetC) throws Exception {
         Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
         ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
         when(handler.getApi()).thenReturn(api);
 
-        ShellyComponentThermostat.handleCommand(handler, CHANNEL_CONTROL_SETTEMP, command);
+        ShellyComponentThermostat.handleCommand(handler, channel, command);
 
         ArgumentCaptor<Shelly2RpcRequest> request = ArgumentCaptor.forClass(Shelly2RpcRequest.class);
         verify(api).apiRequest(request.capture());
         assertEquals(SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG, request.getValue().method);
         assertEquals(0, request.getValue().params.id);
-        Double targetC = request.getValue().params.config.targetC;
-        assertNotNull(targetC);
-        assertEquals(21.5, targetC, 0.01);
-        assertNull(request.getValue().params.config.enable);
+        assertEquals(enable, request.getValue().params.config.enable);
+        Double actualC = request.getValue().params.config.targetC;
+        if (targetC == null) {
+            assertNull(actualC);
+        } else {
+            assertNotNull(actualC);
+            assertEquals(targetC, actualC, 0.01);
+        }
     }
 }

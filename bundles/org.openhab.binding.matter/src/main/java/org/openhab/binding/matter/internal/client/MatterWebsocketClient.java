@@ -52,10 +52,12 @@ import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventTriggered;
 import org.openhab.binding.matter.internal.client.dto.ws.Event;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Message;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateStatusMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.binding.matter.internal.client.dto.ws.Request;
 import org.openhab.binding.matter.internal.client.dto.ws.Response;
@@ -266,8 +268,8 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                 }
                 logger.debug("result type: {} ", response.type);
                 if (response.type != ResponseType.RESULT_SUCCESS) {
-                    future.completeExceptionally(
-                            new MatterRequestException(response.error, MatterErrorCode.fromErrorId(response.errorId)));
+                    future.completeExceptionally(new MatterRequestException(response.error,
+                            MatterErrorCode.fromErrorId(response.errorId), true));
                 } else {
                     future.complete(response.result);
                 }
@@ -280,8 +282,14 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                 switch (event.type) {
                     case "attributeChanged":
                         logger.debug("attributeChanged message {}", event.data);
-                        AttributeChangedMessage changedMessage = gson.fromJson(event.data,
-                                AttributeChangedMessage.class);
+                        AttributeChangedMessage changedMessage;
+                        try {
+                            changedMessage = gson.fromJson(event.data, AttributeChangedMessage.class);
+                        } catch (JsonParseException e) {
+                            // otherwise lost silently, as nothing reads the result of the submitted task
+                            logger.debug("Could not deserialize AttributeChangedMessage {}", event.data, e);
+                            return;
+                        }
                         if (changedMessage == null) {
                             logger.debug("invalid AttributeChangedMessage");
                             return;
@@ -386,6 +394,37 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                             }
                         }
                         break;
+                    case "otaUpdateStatus":
+                        logger.debug("otaUpdateStatus message {}", event.data);
+                        OtaUpdateStatusMessage otaStatusMessage = gson.fromJson(event.data,
+                                OtaUpdateStatusMessage.class);
+                        if (otaStatusMessage == null || otaStatusMessage.status == null) {
+                            logger.debug("invalid OtaUpdateStatusMessage");
+                            return;
+                        }
+                        for (MatterClientListener listener : clientListeners) {
+                            try {
+                                listener.onEvent(otaStatusMessage);
+                            } catch (Exception e) {
+                                logger.debug("Error notifying listener", e);
+                            }
+                        }
+                        break;
+                    case "icdState":
+                        logger.debug("icdState message {}", event.data);
+                        IcdStateMessage icdStateMessage = gson.fromJson(event.data, IcdStateMessage.class);
+                        if (icdStateMessage == null) {
+                            logger.debug("invalid IcdStateMessage");
+                            return;
+                        }
+                        for (MatterClientListener listener : clientListeners) {
+                            try {
+                                listener.onEvent(icdStateMessage);
+                            } catch (Exception e) {
+                                logger.debug("Error notifying listener", e);
+                            }
+                        }
+                        break;
                     case "ready":
                         for (MatterClientListener listener : clientListeners) {
                             listener.onReady();
@@ -429,7 +468,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         Session session = this.session;
         if (session == null) {
             logger.debug("Could not send {} {} : no valid session", namespace, functionName);
-            responseFuture.completeExceptionally(new MatterRequestException("No valid session", null));
+            responseFuture.completeExceptionally(new MatterRequestException("No valid session", null, false));
             return responseFuture;
         }
         String requestId = UUID.randomUUID().toString();
@@ -592,7 +631,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                     // Use reflection to find the field type
                     Field field = getField(clusterClass, path.attributeName);
                     if (field != null) {
-                        value = context.deserialize(valueElement, field.getType());
+                        value = context.deserialize(valueElement, field.getGenericType());
                     }
                 } catch (NoSuchFieldException e) {
                     logger.debug("Field not found for attribute: {}", path.attributeName, e);

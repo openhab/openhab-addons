@@ -84,7 +84,11 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
             @Override
             public void updateThingStatus(ThingStatus status, ThingStatusDetail statusDetail,
                     @Nullable String description) {
-                updateStatus(status, statusDetail, description);
+                if (statusDetail == ThingStatusDetail.NONE) {
+                    updateStatus(status, description);
+                } else {
+                    updateStatus(statusDetail, description);
+                }
                 if (status == ThingStatus.ONLINE) {
                     refreshConfigAndStatus();
                 }

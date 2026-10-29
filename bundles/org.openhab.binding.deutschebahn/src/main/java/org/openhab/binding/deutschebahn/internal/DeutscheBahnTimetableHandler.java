@@ -35,6 +35,7 @@ import org.openhab.binding.deutschebahn.internal.filter.FilterParserException;
 import org.openhab.binding.deutschebahn.internal.filter.FilterScannerException;
 import org.openhab.binding.deutschebahn.internal.filter.TimetableStopPredicate;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetableLoader;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Api;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1ApiFactory;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
@@ -119,6 +120,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     private final TimetablesV1ApiFactory timetablesV1ApiFactory;
 
     private final Supplier<Date> currentTimeProvider;
+    private final TimetableTimeConverter timeConverter;
 
     private final ScheduledExecutorService executorService;
 
@@ -129,10 +131,12 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
             final Bridge bridge, //
             final TimetablesV1ApiFactory timetablesV1ApiFactory, //
             final Supplier<Date> currentTimeProvider, //
+            final TimetableTimeConverter timeConverter, //
             @Nullable final ScheduledExecutorService executorService) {
         super(bridge);
         this.timetablesV1ApiFactory = timetablesV1ApiFactory;
         this.currentTimeProvider = currentTimeProvider;
+        this.timeConverter = timeConverter;
         this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
@@ -142,7 +146,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
             this.updateStatus(ThingStatus.ONLINE);
             return stops;
         } catch (final IOException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -162,11 +166,12 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
             final TimetablesV1Api api = this.timetablesV1ApiFactory.create( //
                     config.clientId, //
                     config.clientSecret, //
-                    HttpUtil::executeUrl //
+                    HttpUtil::executeUrl, //
+                    timeConverter //
             );
 
             final TimetableStopFilter stopFilter = config.getTrainFilterFilter();
-            final TimetableStopPredicate additionalFilter = config.getAdditionalFilter();
+            final TimetableStopPredicate additionalFilter = config.getAdditionalFilter(timeConverter);
 
             final TimetableStopPredicate combinedFilter;
             if (additionalFilter == null) {
@@ -183,6 +188,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
                     combinedFilter, //
                     eventSelection, //
                     currentTimeProvider, //
+                    timeConverter, //
                     config.evaNo, //
                     1); // will be updated on first call
 
@@ -193,10 +199,10 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
                 this.restartJob();
             });
         } catch (FilterScannerException | FilterParserException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (JAXBException e) {
             this.logger.error("Error initializing api", e);
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -247,7 +253,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     private void updateChannels() {
         final TimetableLoader currentLoader = this.loader;
         if (currentLoader == null) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+            this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
         final GroupedThings groupedThings = this.groupThingsPerPosition();

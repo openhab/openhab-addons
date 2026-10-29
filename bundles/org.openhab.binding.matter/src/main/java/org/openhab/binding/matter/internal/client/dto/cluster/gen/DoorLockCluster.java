@@ -106,11 +106,11 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * This attribute shall hold the number of door open events that have occurred since it was last zeroed.
      */
-    public Integer doorOpenEvents; // 4 uint32 RW VM
+    public Long doorOpenEvents; // 4 uint32 RW VM
     /**
      * This attribute shall hold the number of door closed events that have occurred since it was last zeroed.
      */
-    public Integer doorClosedEvents; // 5 uint32 RW VM
+    public Long doorClosedEvents; // 5 uint32 RW VM
     /**
      * This attribute shall hold the number of minutes the door has been open since the last time it transitioned from
      * closed to open.
@@ -187,7 +187,7 @@ public class DoorLockCluster extends BaseCluster {
      * If set, unlock operations from any source will be timed. For one time unlock with timeout use the specific
      * command.
      */
-    public Integer autoRelockTime; // 35 uint32 R[W] VM
+    public Long autoRelockTime; // 35 uint32 R[W] VM
     /**
      * Indicates the sound volume on a door lock as defined by SoundVolumeEnum.
      */
@@ -291,39 +291,39 @@ public class DoorLockCluster extends BaseCluster {
      */
     public Integer expiringUserTimeout; // 53 uint16 R[W] VA
     /**
-     * Indicates the verification key component of the Reader's key pair as defined in [[Aliro]](#ref_Aliro). The value,
-     * if not null, shall be an uncompressed elliptic curve public key as defined in section 2.3.3 of SEC 1.
+     * Indicates the verification key component of the Reader's key pair as defined in Aliro. The value, if not null,
+     * shall be an uncompressed elliptic curve public key as defined in section 2.3.3 of SEC 1.
      * Null if no Reader key pair has been configured on the lock. See Section 5.2.10.26, "SetAliroReaderConfig
      * Command".
      */
     public OctetString aliroReaderVerificationKey; // 128 octstr R A
     /**
-     * Indicates the reader_group_identifier as defined in [[Aliro]](#ref_Aliro).
+     * Indicates the reader_group_identifier as defined in Aliro.
      * Null if no reader_group_identifier has been configured on the lock. See Section 5.2.10.26, "SetAliroReaderConfig
      * Command".
      */
     public OctetString aliroReaderGroupIdentifier; // 129 octstr R A
     /**
-     * Indicates the reader_group_sub_identifier as defined in [[Aliro]](#ref_Aliro).
+     * Indicates the reader_group_sub_identifier as defined in Aliro.
      */
     public OctetString aliroReaderGroupSubIdentifier; // 130 octstr R A
     /**
-     * Indicates the list of protocol versions supported for expedited transactions as defined in [[Aliro]](#ref_Aliro).
+     * Indicates the list of protocol versions supported for expedited transactions as defined in Aliro.
      */
     public List<OctetString> aliroExpeditedTransactionSupportedProtocolVersions; // 131 list R A
     /**
-     * Indicates the Group Resolving Key as defined in [[Aliro]](#ref_Aliro).
+     * Indicates the Group Resolving Key as defined in Aliro.
      * Null if no group resolving key has been configured on the lock. See Section 5.2.10.26, "SetAliroReaderConfig
      * Command".
      */
     public OctetString aliroGroupResolvingKey; // 132 octstr R A
     /**
      * Indicates the list of protocol versions supported for the Bluetooth LE + UWB Access Control Flow as defined in
-     * [[Aliro]](#ref_Aliro).
+     * Aliro.
      */
     public List<OctetString> aliroSupportedBleuwbProtocolVersions; // 133 list R A
     /**
-     * Indicates the version of the Bluetooth LE advertisement as defined in [[Aliro]](#ref_Aliro).
+     * Indicates the version of the Bluetooth LE advertisement as defined in Aliro.
      */
     public Integer aliroBleAdvertisingVersion; // 134 uint8 R A
     /**
@@ -1367,14 +1367,13 @@ public class DoorLockCluster extends BaseCluster {
         public boolean unbolting;
         /**
          * 
-         * Locks that support this feature implement the Aliro specification as defined in [[Aliro]](#ref_Aliro) and
-         * support Matter as a method for provisioning Aliro credentials.
+         * Locks that support this feature implement the Aliro specification as defined in Aliro and support Matter as a
+         * method for provisioning Aliro credentials.
          */
         public boolean aliroProvisioning;
         /**
          * 
-         * Locks that support this feature implement the Bluetooth LE + UWB Access Control Flow as defined in
-         * [[Aliro]](#ref_Aliro).
+         * Locks that support this feature implement the Bluetooth LE + UWB Access Control Flow as defined in Aliro.
          */
         public boolean aliroBleuwb;
 
@@ -1522,8 +1521,8 @@ public class DoorLockCluster extends BaseCluster {
      * The associated UserType may be changed to ScheduleRestrictedUser by the lock when a Year Day schedule is set.
      * Return status shall be one of the following values:
      */
-    public static ClusterCommand setYearDaySchedule(Integer yearDayIndex, Integer userIndex, Integer localStartTime,
-            Integer localEndTime) {
+    public static ClusterCommand setYearDaySchedule(Integer yearDayIndex, Integer userIndex, Long localStartTime,
+            Long localEndTime) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (yearDayIndex != null) {
             map.put("yearDayIndex", yearDayIndex);
@@ -1574,7 +1573,7 @@ public class DoorLockCluster extends BaseCluster {
      * Mode.
      * Return status shall be one of the following values:
      */
-    public static ClusterCommand setHolidaySchedule(Integer holidayIndex, Integer localStartTime, Integer localEndTime,
+    public static ClusterCommand setHolidaySchedule(Integer holidayIndex, Long localStartTime, Long localEndTime,
             OperatingModeEnum operatingMode) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (holidayIndex != null) {
@@ -1621,12 +1620,12 @@ public class DoorLockCluster extends BaseCluster {
      * one of the following values:
      * - SUCCESS, if setting User was successful.
      * - FAILURE, if some unexpected internal error occurred setting User.
-     * - OCCUPIED, if OperationType is Add and UserIndex points to an occupied slot.
+     * - Occupied, if OperationType is Add and UserIndex points to an occupied slot.
      * - INVALID_COMMAND, if one or more fields violate constraints or are invalid or if OperationType is Modify and
      * UserIndex points to an available slot.
      */
     public static ClusterCommand setUser(DataOperationTypeEnum operationType, Integer userIndex, String userName,
-            Integer userUniqueId, UserStatusEnum userStatus, UserTypeEnum userType, CredentialRuleEnum credentialRule) {
+            Long userUniqueId, UserStatusEnum userStatus, UserTypeEnum userType, CredentialRuleEnum credentialRule) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (operationType != null) {
             map.put("operationType", operationType);
@@ -1756,8 +1755,7 @@ public class DoorLockCluster extends BaseCluster {
     }
 
     /**
-     * This command allows communicating an Aliro Reader configuration, as defined in [[Aliro]](#ref_Aliro), to the
-     * lock.
+     * This command allows communicating an Aliro Reader configuration, as defined in Aliro, to the lock.
      */
     public static ClusterCommand setAliroReaderConfig(OctetString signingKey, OctetString verificationKey,
             OctetString groupIdentifier, OctetString groupResolvingKey) {

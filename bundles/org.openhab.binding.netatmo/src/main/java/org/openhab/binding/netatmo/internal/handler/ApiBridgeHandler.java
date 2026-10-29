@@ -148,7 +148,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         ConfigurationLevel confLevel = configuration.check();
         if (!ConfigurationLevel.COMPLETED.equals(confLevel)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, confLevel.message);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, confLevel.message);
             return;
         }
 
@@ -231,7 +231,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private void startAuthorizationFlow() {
         GrantServlet grantServlet = this.grantServlet = new GrantServlet(this, httpService);
         grantServlet.startListening();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
                         .formatted(grantServlet.getPath()));
         connectApi.dispose();
@@ -248,7 +248,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private void prepareReconnection(String message, Duration delay, @Nullable String code,
             @Nullable String redirectUri) {
         if (!ThingStatus.OFFLINE.equals(thing.getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
         connectApi.dispose();
         freeConnectJob();
@@ -395,7 +395,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             throw exception;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             throw new NetatmoException(e, "Request interrupted");
         } catch (TimeoutException | ExecutionException e) {
             if (retryCount > 0) {

@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * @param source name of the source (e.g., "things")
  * @param oldEntity map representation of the entity before change, or null if added
  * @param newEntity map representation of the entity after change, or null if removed
+ *
+ * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
 public record EntityChange(String source, @Nullable Map<String, @Nullable Object> oldEntity,

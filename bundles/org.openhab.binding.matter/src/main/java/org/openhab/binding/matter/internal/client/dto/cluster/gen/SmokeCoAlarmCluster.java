@@ -122,7 +122,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      * EndOfServiceAlert may be delayed by up to 24 hours after the ExpiryDate. Similarly, clients may delay any actions
      * based on the ExpiryDate by up to 24 hours to best align with the local time zone.
      */
-    public Integer expiryDate; // 12 epoch-s R V
+    public Long expiryDate; // 12 epoch-s R V
     public Boolean unmounted; // 13 bool R V
 
     // Structs

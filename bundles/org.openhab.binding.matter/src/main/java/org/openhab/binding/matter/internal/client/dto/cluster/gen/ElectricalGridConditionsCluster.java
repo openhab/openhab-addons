@@ -77,12 +77,12 @@ public class ElectricalGridConditionsCluster extends BaseCluster {
         /**
          * This field shall indicate the beginning timestamp in UTC of the period.
          */
-        public Integer periodStart; // epoch-s
+        public Long periodStart; // epoch-s
         /**
          * This field shall indicate the ending timestamp in UTC of the period. This shall be greater than PeriodStart.
          * If this field is null, then the period has no definite end.
          */
-        public Integer periodEnd; // epoch-s
+        public Long periodEnd; // epoch-s
         /**
          * This field shall indicate the estimated carbon intensity in grams of CO2 equivalent per kWh of the grid. This
          * is not impacted by any local generation.
@@ -122,7 +122,7 @@ public class ElectricalGridConditionsCluster extends BaseCluster {
          */
         public ThreeLevelEnum localCarbonLevel; // ThreeLevelEnum
 
-        public ElectricalGridConditionsStruct(Integer periodStart, Integer periodEnd, Integer gridCarbonIntensity,
+        public ElectricalGridConditionsStruct(Long periodStart, Long periodEnd, Integer gridCarbonIntensity,
                 ThreeLevelEnum gridCarbonLevel, Integer localCarbonIntensity, ThreeLevelEnum localCarbonLevel) {
             this.periodStart = periodStart;
             this.periodEnd = periodEnd;

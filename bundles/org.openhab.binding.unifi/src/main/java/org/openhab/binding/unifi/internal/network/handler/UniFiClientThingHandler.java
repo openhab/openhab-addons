@@ -29,7 +29,6 @@ import static org.openhab.binding.unifi.internal.network.UniFiBindingConstants.C
 import static org.openhab.binding.unifi.internal.network.UniFiBindingConstants.CHANNEL_RSSI;
 import static org.openhab.binding.unifi.internal.network.UniFiBindingConstants.CHANNEL_SITE;
 import static org.openhab.binding.unifi.internal.network.UniFiBindingConstants.CHANNEL_UPTIME;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.time.Instant;
@@ -81,7 +80,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
         // mgb: called when the config changes
         logger.debug("Initializing the UniFi Client Handler with config = {}", config);
         if (!config.isValid()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/error.thing.client.offline.configuration_error");
+            updateStatus(CONFIGURATION_ERROR, "@text/error.thing.client.offline.configuration_error");
             return false;
         }
         this.config = config;

@@ -25,7 +25,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -53,8 +52,7 @@ public class DDWRTFirewallRuleHandler extends DDWRTBaseHandler<DDWRTFirewallRule
     protected boolean initialize(DDWRTFirewallRuleConfiguration config) {
         this.config = config;
         if (config.ruleId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-ruleid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-ruleid");
             return false;
         }
         return true;

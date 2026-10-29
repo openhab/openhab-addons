@@ -49,11 +49,11 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
      * This attribute shall remain unchanged during the operation of the oven unless the value is changed via a command
      * or out-of-band action.
      */
-    public Integer cookTime; // 0 elapsed-s R V
+    public Long cookTime; // 0 elapsed-s R V
     /**
      * Indicates the maximum value to which the CookTime attribute can be set.
      */
-    public Integer maxCookTime; // 1 elapsed-s R V
+    public Long maxCookTime; // 1 elapsed-s R V
     /**
      * Indicates the power level associated with the operation of the device.
      * If the MinPower, MaxPower, and PowerStep attributes are not supported:
@@ -135,7 +135,7 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
      * This command is used to set the cooking parameters associated with the operation of the device. This command
      * supports the following fields:
      */
-    public static ClusterCommand setCookingParameters(Integer cookMode, Integer cookTime, Integer powerSetting,
+    public static ClusterCommand setCookingParameters(Integer cookMode, Long cookTime, Integer powerSetting,
             Integer wattSettingIndex, Boolean startAfterSetting) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (cookMode != null) {
@@ -160,7 +160,7 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
      * This command is used to add more time to the CookTime attribute of the server.
      * This command supports these fields:
      */
-    public static ClusterCommand addMoreTime(Integer timeToAdd) {
+    public static ClusterCommand addMoreTime(Long timeToAdd) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (timeToAdd != null) {
             map.put("timeToAdd", timeToAdd);

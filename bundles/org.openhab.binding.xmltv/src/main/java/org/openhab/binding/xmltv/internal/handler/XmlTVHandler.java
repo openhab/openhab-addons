@@ -89,21 +89,21 @@ public class XmlTVHandler extends BaseBridgeHandler {
                         currentXmlFile = xmlFile;
                         updateStatus(ThingStatus.ONLINE);
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "@text/file-outdated");
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/file-outdated");
                     }
                     xsr.close();
                 } catch (JAXBException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 }
             } catch (XMLStreamException | FileNotFoundException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } finally {
                 try {
                     if (xsr != null) {
                         xsr.close();
                     }
                 } catch (XMLStreamException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 }
             }
         }, 0, config.refresh, TimeUnit.HOURS);

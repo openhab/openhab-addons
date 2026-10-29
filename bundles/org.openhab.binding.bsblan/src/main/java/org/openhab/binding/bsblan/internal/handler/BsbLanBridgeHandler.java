@@ -79,14 +79,13 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         // validate 'host' configuration
         String host = bridgeConfig.host;
         if (host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter 'host' is mandatory and must be configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Parameter 'host' is mandatory and must be configured");
             return;
         }
 
         // validate 'refreshInterval' configuration
         if (bridgeConfig.refreshInterval < MIN_REFRESH_INTERVAL) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("Parameter 'refreshInterval' must be at least %d seconds", MIN_REFRESH_INTERVAL));
             return;
         }
@@ -136,7 +135,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         // Windows).
         // Therefore we check status depending on the response.
         if (cachedParameterQueryResponse == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Did not receive a response from BSB-LAN device. Check your configuration and if device is online.");
             // continue processing, so things can go to OFFLINE too
         } else {

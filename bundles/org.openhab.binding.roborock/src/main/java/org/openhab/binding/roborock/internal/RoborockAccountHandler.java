@@ -256,8 +256,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         disposed = false;
         RoborockAccountConfiguration localConfig = config = getConfigAs(RoborockAccountConfiguration.class);
         if (localConfig.email.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-email");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-email");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -328,8 +327,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         mqttWatchdogTask.cancel();
         disconnectMqttClient();
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "Session expired. Requesting new 2FA code...");
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Session expired. Requesting new 2FA code...");
 
         sessionStorage.remove("token");
         sessionStorage.remove("rriot");
@@ -370,7 +368,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     baseUri = EU_IOT_BASE_URL;
                 }
             } catch (RoborockException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
                 return;
             }
         }
@@ -393,7 +391,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     } else {
                         webTargets.requestCode(baseUri, localConfig.email);
                     }
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "A new 2FA verification code has been sent to your email. Please enter it in the 'twofa' configuration setting.");
                     return;
                 } else {
@@ -423,7 +421,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     if (code == 200) {
                         Login loginResponse = gson.fromJson(response, Login.class);
                         if (loginResponse == null) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                     "@text/offline.comm-error.login-failed " + message);
                             return;
                         }
@@ -432,13 +430,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                         token = loginResponse.data.token;
                         rriot = loginResponse.data.rriot;
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/offline.comm-error.login-failed " + message);
                         return;
                     }
                 }
             } catch (RoborockException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
                 return;
             }
         }
@@ -472,8 +470,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("Bridge connected to MQTT");
             updateStatus(ThingStatus.ONLINE);
         } catch (MqttException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.no-mqtt");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-mqtt");
         }
     }
 
@@ -502,12 +499,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             localMqttClient.connect(connOpts);
             mqttWatchdog.reset(Instant.now());
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.comm-error.mqtt-url-bad");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.comm-error.mqtt-url-bad");
             throw new MqttException(e);
         } catch (MqttException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.mqtt-login-fail");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.mqtt-login-fail");
             throw e;
         }
     }
@@ -536,8 +531,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (MqttException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.mqtt-subscribe-fail");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.mqtt-subscribe-fail");
         }
     }
 
@@ -732,8 +726,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             updateStatus(ThingStatus.ONLINE);
         } catch (MqttException e) {
             logger.warn("MQTT recycle attempt failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.no-mqtt");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-mqtt");
         }
     }
 

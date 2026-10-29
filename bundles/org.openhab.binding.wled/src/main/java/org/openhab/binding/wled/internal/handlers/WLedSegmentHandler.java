@@ -17,8 +17,11 @@ import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.wled.internal.WLedHelper;
 import org.openhab.binding.wled.internal.WLedSegmentConfiguration;
 import org.openhab.binding.wled.internal.api.ApiException;
 import org.openhab.binding.wled.internal.api.WledApi;
@@ -50,6 +53,12 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class WLedSegmentHandler extends BaseThingHandler {
+    private static final Map<String, String> ALWAYS_CHANNELS = Map.of(CHANNEL_SELECTED, "Switch", CHANNEL_SEGMENT_START,
+            "Number", CHANNEL_SEGMENT_STOP, "Number", CHANNEL_SEGMENT_NAME, "String");
+    private static final Map<String, String> FIRMWARE_0_14_CHANNELS = Map.of(CHANNEL_CUSTOM_1, "Dimmer",
+            CHANNEL_CUSTOM_2, "Dimmer", CHANNEL_CUSTOM_3, "Dimmer", CHANNEL_OPTION_1, "Switch", CHANNEL_OPTION_2,
+            "Switch", CHANNEL_OPTION_3, "Switch", CHANNEL_FREEZE, "Switch", CHANNEL_MAPPING, "String",
+            CHANNEL_SOUND_SIMULATION, "String");
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private WLedSegmentConfiguration config = new WLedSegmentConfiguration();
     private BigDecimal masterBrightness255 = BigDecimal.ZERO;
@@ -80,6 +89,44 @@ public class WLedSegmentHandler extends BaseThingHandler {
             removeChannels.add(channel);
         }
         removeChannels(removeChannels);
+    }
+
+    /**
+     * Adds the channels that were introduced after the Thing was created and removes the ones that the firmware or the
+     * LEDs of the device can not use.
+     */
+    private void syncChannels(WLedBridgeHandler bridgeHandler) {
+        boolean hasFirmware014 = bridgeHandler.firmwareVersion >= FIRMWARE_0_14;
+        List<Channel> addChannels = new ArrayList<>();
+        List<Channel> removeChannels = new ArrayList<>();
+        for (Entry<String, String> entry : ALWAYS_CHANNELS.entrySet()) {
+            if (getThing().getChannel(entry.getKey()) == null) {
+                addChannels.add(WLedHelper.buildChannel(getThing().getUID(), entry.getKey(), entry.getValue()));
+            }
+        }
+        for (Entry<String, String> entry : FIRMWARE_0_14_CHANNELS.entrySet()) {
+            Channel existing = getThing().getChannel(entry.getKey());
+            if (hasFirmware014 && existing == null) {
+                addChannels.add(WLedHelper.buildChannel(getThing().getUID(), entry.getKey(), entry.getValue()));
+            } else if (!hasFirmware014 && existing != null) {
+                removeChannels.add(existing);
+            }
+        }
+        Channel cctChannel = getThing().getChannel(CHANNEL_WHITE_TEMPERATURE);
+        if (bridgeHandler.hasCct && cctChannel == null) {
+            addChannels.add(WLedHelper.buildChannel(getThing().getUID(), CHANNEL_WHITE_TEMPERATURE, "Dimmer"));
+        } else if (!bridgeHandler.hasCct && cctChannel != null) {
+            removeChannels.add(cctChannel);
+        }
+        if (addChannels.isEmpty() && removeChannels.isEmpty()) {
+            return;
+        }
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withoutChannels(removeChannels);
+        for (Channel channel : addChannels) {
+            thingBuilder.withChannel(channel);
+        }
+        updateThing(thingBuilder.build());
     }
 
     private void removeChannels(List<Channel> removeChannels) {
@@ -213,11 +260,79 @@ public class WLedSegmentHandler extends BaseThingHandler {
                 case CHANNEL_FX:
                     localApi.setEffect(command.toString(), config.segmentIndex);
                     break;
+                case CHANNEL_WHITE_TEMPERATURE:
+                    if (command instanceof PercentType percentCommand) {
+                        localApi.setWhiteTemperature(percentCommand, config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_CUSTOM_1:
+                    if (command instanceof PercentType percentCommand) {
+                        localApi.setCustomSlider(1, percentCommand, config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_CUSTOM_2:
+                    if (command instanceof PercentType percentCommand) {
+                        localApi.setCustomSlider(2, percentCommand, config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_CUSTOM_3:
+                    if (command instanceof PercentType percentCommand) {
+                        localApi.setCustomSlider(3, percentCommand, config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_OPTION_1:
+                    if (command instanceof OnOffType) {
+                        localApi.setOption(1, OnOffType.ON.equals(command), config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_OPTION_2:
+                    if (command instanceof OnOffType) {
+                        localApi.setOption(2, OnOffType.ON.equals(command), config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_OPTION_3:
+                    if (command instanceof OnOffType) {
+                        localApi.setOption(3, OnOffType.ON.equals(command), config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_FREEZE:
+                    if (command instanceof OnOffType) {
+                        localApi.setFreeze(OnOffType.ON.equals(command), config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_SELECTED:
+                    if (command instanceof OnOffType) {
+                        localApi.setSelected(OnOffType.ON.equals(command), config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_SEGMENT_START:
+                    if (command instanceof DecimalType decimalCommand) {
+                        localApi.setSegmentStart(decimalCommand.intValue(), config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_SEGMENT_STOP:
+                    if (command instanceof DecimalType decimalCommand) {
+                        localApi.setSegmentStop(decimalCommand.intValue(), config.segmentIndex);
+                    }
+                    break;
+                case CHANNEL_MAPPING:
+                    localApi.setMapping(command.toString(), config.segmentIndex);
+                    break;
+                case CHANNEL_SOUND_SIMULATION:
+                    localApi.setSoundSimulation(command.toString(), config.segmentIndex);
+                    break;
+                case CHANNEL_SEGMENT_NAME:
+                    localApi.setSegmentName(command.toString(), config.segmentIndex);
+                    break;
                 case CHANNEL_SPEED:
-                    localApi.setFxSpeed((PercentType) command, config.segmentIndex);
+                    if (command instanceof PercentType percentCommand) {
+                        localApi.setFxSpeed(percentCommand, config.segmentIndex);
+                    }
                     break;
                 case CHANNEL_INTENSITY:
-                    localApi.setFxIntencity((PercentType) command, config.segmentIndex);
+                    if (command instanceof PercentType percentCommand) {
+                        localApi.setFxIntencity(percentCommand, config.segmentIndex);
+                    }
                     break;
             }
         } catch (ApiException e) {
@@ -275,29 +390,45 @@ public class WLedSegmentHandler extends BaseThingHandler {
         config = getConfigAs(WLedSegmentConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge is selected.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge is selected.");
         } else {
             WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
             if (localBridgeHandler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                logger.debug("Bridge handler unavailable for Thing {}", getThing().getUID());
                 return;
             }
             WledApi localAPI = localBridgeHandler.api;
             if (localAPI != null) {
                 updateStatus(ThingStatus.ONLINE);
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    // only update the providers once the bridge is ready, otherwise this will be done once it goes
-                    // online via bridgeStatusChanged()
+                    // only update the providers and channels once the bridge is ready, otherwise this will be done
+                    // once it goes online via bridgeStatusChanged()
                     updateStateDescriptionProviders();
-                }
-                if (!localBridgeHandler.hasWhite) {
-                    logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
-                    removeWhiteChannels();
+                    reconcileChannels();
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                logger.debug("Bridge handler API unavailable for Thing {}", getThing().getUID());
             }
         }
+    }
+
+    /**
+     * The firmware and the LEDs of the device are only known after the bridge has connected to it.
+     */
+    private void reconcileChannels() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return;
+        }
+        WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
+        if (localBridgeHandler == null || localBridgeHandler.api == null) {
+            return;
+        }
+        if (!localBridgeHandler.hasWhite) {
+            logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
+            removeWhiteChannels();
+        }
+        syncChannels(localBridgeHandler);
     }
 
     private void updateStateDescriptionProviders() {
@@ -324,6 +455,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
             // if the handler has been started before the WLED controller is available, we have to fill the providers
             // again once the bridge goes ONLINE
             updateStateDescriptionProviders();
+            reconcileChannels();
         }
     }
 }

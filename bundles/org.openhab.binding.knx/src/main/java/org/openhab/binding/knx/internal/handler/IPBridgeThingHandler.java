@@ -101,7 +101,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             if (cause == null) {
                 cause = e;
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     KNXTranslationProvider.I18N.getLocalizedException(cause));
             return;
         }
@@ -130,16 +130,14 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
             if (!securityAvailable) {
                 logger.warn("Bridge {} missing security configuration for secure tunnel", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/error.knx-secure-tunnel-config-missing");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.knx-secure-tunnel-config-missing");
                 return;
             }
             boolean tunnelOk = ((secureTunnel.user > 0) && (secureTunnel.devKey.length == 16)
                     && (secureTunnel.userKey.length == 16));
             if (!tunnelOk) {
                 logger.warn("Bridge {} incomplete security configuration for secure tunnel", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/error.knx-secure-tunnel-config-incomplete");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.knx-secure-tunnel-config-incomplete");
                 return;
             }
 
@@ -160,21 +158,20 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
             if (!securityAvailable) {
                 logger.warn("Bridge {} missing security configuration for secure routing", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/error.knx-secure-routing-config-missing");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.knx-secure-routing-config-missing");
                 return;
             }
             if (secureRouting.backboneGroupKey.length != 16) {
                 // failed to read shared backbone group key from config or keyring
                 logger.warn("Bridge {} invalid security configuration for secure routing", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.knx-secure-routing-backbonegroupkey-invalid");
                 return;
             }
             logger.debug("KNX secure routing needs a few seconds to establish connection");
         } else {
             logger.debug("Bridge {} unknown connection type", thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     MessageFormat.format("@text/knx-unknown-ip-connection-type", connectionTypeString));
             return;
         }

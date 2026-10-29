@@ -13,7 +13,6 @@
 package org.openhab.binding.icloud.internal.handler;
 
 import static org.openhab.binding.icloud.internal.ICloudBindingConstants.*;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 
@@ -76,7 +75,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
             if (deviceInformationRecord.getDeviceStatus() == 200) {
                 updateStatus(ONLINE);
             } else {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Reported offline by iCloud webservice");
+                updateStatus(COMMUNICATION_ERROR, "Reported offline by iCloud webservice");
             }
 
             updateState(BATTERY_STATUS, new StringType(deviceInformationRecord.getBatteryStatus()));
@@ -91,7 +90,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
                 updateLocationRelatedStates(deviceInformationRecord);
             }
         } else {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "The device is not included in the current account");
+            updateStatus(CONFIGURATION_ERROR, "The device is not included in the current account");
         }
     }
 
@@ -101,22 +100,21 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         this.deviceId = configuration.deviceId;
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            ICloudAccountBridgeHandler handler = (ICloudAccountBridgeHandler) bridge.getHandler();
-            if (handler != null) {
-                handler.registerListener(this);
-                if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    handler.refreshData();
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                }
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        ICloudAccountBridgeHandler handler = (ICloudAccountBridgeHandler) bridge.getHandler();
+        if (handler != null) {
+            handler.registerListener(this);
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
+                handler.refreshData();
+                updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "Bridge handler is not configured");
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not configured");
+            updateStatus(ThingStatus.UNKNOWN, "Bridge handler is not configured");
         }
     }
 

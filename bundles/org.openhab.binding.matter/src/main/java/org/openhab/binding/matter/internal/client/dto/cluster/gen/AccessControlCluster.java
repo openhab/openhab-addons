@@ -245,7 +245,7 @@ public class AccessControlCluster extends BaseCluster {
         public String instruction; // string
         /**
          * This field shall indicate the URL for the service associated with the device maker which the user can visit
-         * to manage fabric limitations. The syntax of this field shall follow the syntax as specified in RFC 1738 and
+         * to manage fabric limitations. The syntax of this field shall follow the syntax as specified in RFC1738 and
          * shall use the https scheme for internet-hosted URLs.
          * - The URL may embed the token, fabric index, fabric vendor, or other information transparently in order to
          * pass context about the originating ReviewFabricRestrictions command to the service associated with the URL.
@@ -314,11 +314,11 @@ public class AccessControlCluster extends BaseCluster {
     }
 
     public static class AccessControlTargetStruct {
-        public Integer cluster; // cluster-id
+        public Long cluster; // cluster-id
         public Integer endpoint; // endpoint-no
-        public Integer deviceType; // devtype-id
+        public Long deviceType; // devtype-id
 
-        public AccessControlTargetStruct(Integer cluster, Integer endpoint, Integer deviceType) {
+        public AccessControlTargetStruct(Long cluster, Integer endpoint, Long deviceType) {
             this.cluster = cluster;
             this.endpoint = endpoint;
             this.deviceType = deviceType;
@@ -334,7 +334,6 @@ public class AccessControlCluster extends BaseCluster {
          * When a Node is granted a particular privilege, it is also implicitly granted all logically lower privilege
          * levels as well. The following diagram illustrates how the higher privilege levels subsume the lower privilege
          * levels:
-         * !Diagram
          * Individual clusters shall define whether attributes are readable, writable, or both readable and writable.
          * Clusters also shall define which privilege is minimally required to be able to perform a particular read or
          * write action on those attributes, or invoke particular commands. Device type specifications may further
@@ -448,9 +447,9 @@ public class AccessControlCluster extends BaseCluster {
          * A null value shall indicate the wildcard value for the given value of Type (i.e. all elements associated with
          * the Type under the associated endpoint and cluster for the containing AccessRestrictionEntryStruct).
          */
-        public Integer id; // uint32
+        public Long id; // uint32
 
-        public AccessRestrictionStruct(AccessRestrictionTypeEnum type, Integer id) {
+        public AccessRestrictionStruct(AccessRestrictionTypeEnum type, Long id) {
             this.type = type;
             this.id = id;
         }
@@ -469,7 +468,7 @@ public class AccessControlCluster extends BaseCluster {
          * This field shall indicate the cluster having associated access restrictions under the entry's Endpoint,
          * scoped to the associated fabric of the list containing the entry.
          */
-        public Integer cluster; // cluster-id
+        public Long cluster; // cluster-id
         /**
          * This field shall indicate the set of restrictions applying to the Cluster under the given Endpoint, scoped to
          * the associated fabric of the list containing the entry.
@@ -478,8 +477,8 @@ public class AccessControlCluster extends BaseCluster {
         public List<AccessRestrictionStruct> restrictions; // list
         public Integer fabricIndex; // FabricIndex
 
-        public AccessRestrictionEntryStruct(Integer endpoint, Integer cluster,
-                List<AccessRestrictionStruct> restrictions, Integer fabricIndex) {
+        public AccessRestrictionEntryStruct(Integer endpoint, Long cluster, List<AccessRestrictionStruct> restrictions,
+                Integer fabricIndex) {
             this.endpoint = endpoint;
             this.cluster = cluster;
             this.restrictions = restrictions;
@@ -500,7 +499,7 @@ public class AccessControlCluster extends BaseCluster {
          * This field shall indicate the cluster having associated access restrictions under the entry's Endpoint,
          * scoped to the associated fabric of the list containing the entry.
          */
-        public Integer cluster; // cluster-id
+        public Long cluster; // cluster-id
         /**
          * This field shall indicate the set of restrictions applying to the Cluster under the given Endpoint, scoped to
          * the associated fabric of the list containing the entry.
@@ -508,7 +507,7 @@ public class AccessControlCluster extends BaseCluster {
          */
         public List<AccessRestrictionStruct> restrictions; // list
 
-        public CommissioningAccessRestrictionEntryStruct(Integer endpoint, Integer cluster,
+        public CommissioningAccessRestrictionEntryStruct(Integer endpoint, Long cluster,
                 List<AccessRestrictionStruct> restrictions) {
             this.endpoint = endpoint;
             this.cluster = cluster;

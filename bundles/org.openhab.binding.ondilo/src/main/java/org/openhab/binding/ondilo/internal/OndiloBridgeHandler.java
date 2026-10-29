@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link OndiloBridgeHandler} Handler for the Ondilo Bridge (account-level, manages OAuth2 and device discovery)
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class OndiloBridgeHandler extends BaseBridgeHandler {
@@ -86,7 +86,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         logger.trace("Start initialization of Ondilo Bridge Handler");
 
         if (!isValidUrl(openHABURL)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, I18N_URL_INVALID);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, I18N_URL_INVALID);
             return;
         }
         updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
@@ -135,11 +135,9 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         registerOAuthService(clientSecret, this);
         try {
             String url = oAuthService.getAuthorizationUrl(redirectURI, "api", clientSecret);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    I18N_OAUTH2_PENDING + " [\"" + url + "\"]");
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, I18N_OAUTH2_PENDING + " [\"" + url + "\"]");
         } catch (OAuthException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    I18N_OAUTH2_ERROR + " [\"" + e.getMessage() + "\"]");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, I18N_OAUTH2_ERROR + " [\"" + e.getMessage() + "\"]");
         }
     }
 
@@ -153,11 +151,10 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
                     redirectURI);
         } catch (InterruptedIOException e) {
             Thread.currentThread().interrupt();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, I18N_OAUTH2_INTERRUPTED);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, I18N_OAUTH2_INTERRUPTED);
             return;
         } catch (OAuthException | IOException | OAuthResponseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    I18N_OAUTH2_ERROR + " [\"" + e.getMessage() + "\"]");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, I18N_OAUTH2_ERROR + " [\"" + e.getMessage() + "\"]");
             return;
         }
         logger.info("Ondilo Account successfully authorized with access token");

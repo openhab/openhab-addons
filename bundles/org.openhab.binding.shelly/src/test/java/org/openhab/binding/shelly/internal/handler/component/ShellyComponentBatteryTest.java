@@ -71,17 +71,20 @@ public class ShellyComponentBatteryTest {
     }
 
     @Test
-    void extBatteryFillsAttachedSensorBattery() {
+    void extBatteryKeepsValuesMissingInPartialUpdate() {
         ShellyStatusSensor sdata = new ShellyStatusSensor();
         Shelly2DeviceStatusPower power = new Shelly2DeviceStatusPower();
         power.battery = new Shelly2DeviceStatusBattery();
         power.battery.percent = 74.0;
         power.battery.volt = 2.9;
+        ShellyComponentBattery.fillExtStatus(sdata, power, true);
 
+        power.battery = new Shelly2DeviceStatusBattery();
+        power.battery.volt = 2.8;
         ShellyComponentBattery.fillExtStatus(sdata, power, false);
 
         assertEquals(74.0, sdata.bat1.value, 0.0001);
-        assertEquals(2.9, sdata.bat1.voltage, 0.0001);
+        assertEquals(2.8, sdata.bat1.voltage, 0.0001);
         assertNull(sdata.bat);
     }
 

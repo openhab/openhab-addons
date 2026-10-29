@@ -111,6 +111,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                                              |
 | shellyplugusg4       | Shelly Plug US Gen4                                      | S4PL-00116US                                                              |
 | shellyplusplugcpm    | Shelly Plus Plug CPM (EU C-type, Gen4)                   | S4PL-00116EU                                                              |
+| shellyplusplugpm     | Shelly Plug PM Gen3 (power meter, no relay)              | S3PL-30116EU                                                              |
 | shellyplusstrip      | Shelly Plus Power Strip 4                                | S4PL-00416EU, S4PL-10416EU                                                |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X, S4SN-0A24X                                        |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                                                |
@@ -127,7 +128,8 @@ See section [Discovery](#discovery) for details.
 | shellyprorgbwwpm     | Shelly Pro RGBWW PM                                      | SPDC-0D5PE16EU                                                            |
 | shellyplusduobulb    | Shelly Duo Bulb E27 Gen3                                 | S3BL-D010009AEU                                                           |
 | shellypluscolorbulb  | Shelly Multicolor Bulb E27 Gen3                          | S3BL-C010007AEU                                                           |
-| shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1, SAWD-2A1XX10EU1, SAWD-5A1XX10EU0, SAWD-3A1XE10EU2        |
+| shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
+| shellywalldisplay    | Shelly Wall Display X1i, X2, X2i, XL                     | SAWD-6A1XX10EU0, SAWD-2A1XX10EU1, SAWD-5A1XX10EU0, SAWD-3A1XE10EU2        |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
 | shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
 
@@ -142,23 +144,24 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly Pro Series (Generation 2+3)
 
-| thing-type          | Model                                                              | Vendor ID                                                |
-| ------------------- | ------------------------------------------------------------------ | -------------------------------------------------------- |
-| shellypro1          | Shelly Pro 1 with 1x relay                                         | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU           |
-| shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter                        | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU           |
-| shellypro1cb        | Shelly Pro 1 Circuit Breaker with 1x relay + volt meter            | SPCB-01VENEU                                             |
-| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                             | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU           |
-| shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode            | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU           |
-| shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode           | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU           |
-| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                          | SPSW-003XE16EU                                           |
-| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter                        | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU, SPSW-204PE16EU |
-| shellyproem50       | Shelly Pro EM-50 - 2 channel, single phase energy meter            | SPEM-002CEBEU50                                          |
-| shellypro3em        | Shelly Pro 3EM - 3-phase energy meter                              | SPEM-003CEBEU, SPEM-003CEBEU120                          |
-| shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter          | SPEM-003CEBEU63                                          |
-| shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                          | SPEM-003CEBEU400                                         |
-| shellyprodimmer1pm  | Shelly Pro Dimmer 1PM - Smart dimmer with power monitoring         | SPDM-001PE01EU                                           |
-| shellyprodm2pm      | Shelly Pro Dimmer 2PM - Dual channel smart dimmer with power meter | SPDM-002PE01EU                                           |
-| shellyprodimmer10v  | Shelly Pro Dimmer 0/1-10V PM - 0/1-10V dimming driver controller   | SPCC-001PE10EU                                           |
+| thing-type          | Model                                                                            | Vendor ID                                                |
+| ------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| shellypro1          | Shelly Pro 1 with 1x relay                                                       | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU           |
+| shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter                                      | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU           |
+| shellyprocb         | Shelly Pro 1CB/2CB/3CB/4CB Circuit Breaker with 1x breaker + 1-3x volt meter    | SPCB-01VENEU, SPCB-02VENEU, SPCB-03VENEU, SPCB-04VENEU   |
+| shellypro1cb        | Shelly Pro 1 Circuit Breaker (legacy thing type, use shellyprocb for new things) | SPCB-01VENEU                                             |
+| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                                           | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU           |
+| shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode                          | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU           |
+| shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode                         | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU           |
+| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                                        | SPSW-003XE16EU                                           |
+| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter                                      | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU, SPSW-204PE16EU |
+| shellyproem50       | Shelly Pro EM-50 - 2 channel, single phase energy meter                          | SPEM-002CEBEU50                                          |
+| shellypro3em        | Shelly Pro 3EM - 3-phase energy meter                                            | SPEM-003CEBEU, SPEM-003CEBEU120                          |
+| shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter                        | SPEM-003CEBEU63                                          |
+| shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                                        | SPEM-003CEBEU400                                         |
+| shellyprodimmer1pm  | Shelly Pro Dimmer 1PM - Smart dimmer with power monitoring                       | SPDM-001PE01EU                                           |
+| shellyprodm2pm      | Shelly Pro Dimmer 2PM - Dual channel smart dimmer with power meter               | SPDM-002PE01EU                                           |
+| shellyprodimmer10v  | Shelly Pro Dimmer 0/1-10V PM - 0/1-10V dimming driver controller                 | SPCC-001PE10EU                                           |
 
 ### Shelly BLU
 
@@ -268,7 +271,7 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 `Note:`
 
 - During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
-- Shelly BLU Motion: It may take some time until channels like Lux show up.
+- BLU devices don't report all values in every packet. A channel is created once the device reports its value for the first time, e.g. open/close the window or trigger the motion sensor.
 - Ecowitt WS90: The WS90 is solar-powered and broadcasts continuously — no button press is required to add it to the Inbox.
   It will appear automatically once it is within range of a configured BLU gateway.
 
@@ -516,7 +519,7 @@ The accumulated channels are only available for devices with more than 1 meter.
 The LED channels are available for the Plug-S with firmware 1.6x and for various other devices with firmware 1.8 or newer.
 The binding detects them automatically.
 
-Mains-powered devices with an attached battery-operated sensor (e.g. the Wall Display with an external H&T sensor) report that sensor's battery as Gen2 `devicepower:1`.
+Mains-powered devices with an attached battery-operated sensor (e.g. the Wall Display with an external H&T sensor) also report the battery of that sensor.
 In this case the binding adds the channels `batteryLevel` (Number, battery level in percent) and `lowBattery` (Switch, ON when the battery is low) to the `sensors` group.
 Those channels only appear while the device actually reports a battery for the attached sensor.
 
@@ -2073,6 +2076,7 @@ In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color c
 | Group   | Channel       | Type         | read-only | Advanced | Description                                                             |
 | ------- | ------------- | ------------ | --------- | -------- | ----------------------------------------------------------------------- |
 | control | power         | Switch       | r/w       | yes      | Switch light ON/OFF                                                     |
+|         | brightness    | Multiple (*) | r/w       | yes      | Dimming control according to openHAB Light Control Convention           |
 |         | autoOn        | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds  |
 |         | autoOff       | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds  |
 |         | timerActive   | Switch       | yes       |          | ON: An auto-on/off timer is active                                      |
@@ -2182,6 +2186,27 @@ totalEnergy might reset on restart depending on device type and firmware version
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
 
+### Shelly Plug PM Gen3 (thing-type: shellyplusplugpm)
+
+The Plug PM Gen3 measures power only, it has no relay to switch.
+
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+|       | voltage           | Number   | yes       | Voltage in Volt (V)                                                                                |
+|       | current           | Number   | yes       | Current in Ampere (A)                                                                              |
+|       | frequency         | Number   | yes       | Grid frequency in Hertz (Hz)                                                                       |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
+
 ### Shelly EM Mini (thing-type: shellyemmini)
 
 | Group  | Channel        | Type         | read-only | Description                                                                       |
@@ -2269,13 +2294,17 @@ There are no additional channels besides the device group.
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
 
-### Shelly Pro 1CB (thing-type: shellypro1cb)
+### Shelly Pro CB (thing-type: shellyprocb, shellypro1cb)
 
 | Group | Channel    | Type   | read-only | Description                                                       |
 | ----- | ---------- | ------ | --------- | ----------------------------------------------------------------- |
 | relay | output     | Switch | r/w       | Controls the relay's output channel (on/off)                      |
 |       | outputName | String | yes       | Logical name of this relay output as configured in the Shelly App |
 | meter | voltage    | Number | yes       | RMS voltage, Volts                                                |
+
+All models have a single circuit breaker in group `relay`.
+A model with one voltmeter reports the voltage in group `meter`, a model with several voltmeters uses `meter1`..`meter3`.
+New things are created as `shellyprocb`, existing `shellypro1cb` things keep working.
 
 ### Shelly Pro 2 (thing-type: shellypro2-relay)
 
@@ -2546,6 +2575,7 @@ See notes on discovery of Shelly BLU devices above.
 | Group   | Channel       | Type   | read-only | Description                                                                         |
 | ------- | ------------- | ------ | --------- | ----------------------------------------------------------------------------------- |
 | sensors | motion        | Switch | yes       | ON: Motion detected                                                                 |
+|         | lux           | Number | yes       | Brightness in Lux                                                                   |
 | battery | batteryLevel  | Number | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
@@ -2678,30 +2708,18 @@ end
 | control | thermostatEnable   | Switch   | r/w       | Enable or disable the Wall Display thermostat                                     |
 |         | targetTemp         | Number   | r/w       | Thermostat target temperature in °C                                               |
 
-The `media` channel group is only available on devices reporting a Media RPC
-component (e.g. Wall Display when a speaker/radio is configured). Media
-library and radio favorite ids must be looked up via the Shelly app or API;
-there is no channel to browse them. `title`, `artist`, `album` and `mediaType`
-are UNDEF while the device doesn't report them, e.g. when playback is stopped.
+The `media` group is only available while the media player is configured on the Wall Display.
+Media library and radio favorite ids can be looked up in the Shelly app; there is no channel to browse them.
+`title`, `artist`, `album` and `mediaType` are UNDEF while nothing is playing.
+Enabling the media player in the Shelly app adds these channels with the next status update, so the Thing doesn't need to be re-created.
 
 The `control` group is labeled `Thermostat Control` on the Wall Display.
-Its `thermostatEnable`/`targetTemp` channels are only
-available on devices reporting a Thermostat RPC component (e.g. Wall Display
-when a virtual thermostat is configured in the Shelly app). The thermostat's
-current temperature and controlled output are already reflected by the
-existing `sensors#temperature` and `relay#output` channels.
+Its `thermostatEnable` and `targetTemp` channels are only available while the thermostat is enabled in the Shelly app.
+The thermostat's current temperature and controlled output are shown by the existing `sensors#temperature` and `relay#output` channels.
+Enabling or disabling the thermostat in the Shelly app adds or removes these channels with the next status update, so the Thing doesn't need to be re-created.
 
-The `media` and `control` channels are added as soon as the corresponding
-component shows up in the device status, so enabling the media player or the
-thermostat in the Shelly app makes the channels appear on the next status
-update - the Thing does not need to be deleted and re-discovered.
-
-The `sensors` group's `batteryLevel`/`lowBattery` channels are only available
-when a battery-operated sensor is attached to the Wall Display. Like the
-`media`/`control` channels above, they are added as soon as the attached
-sensor's battery is reported, so pairing a sensor after the Thing was
-already created is picked up on the next status update. They are removed
-again once the device no longer reports the sensor's battery (sensor unpaired).
+The `sensors` group's `batteryLevel` and `lowBattery` channels are only available while a battery-operated sensor is attached to the Wall Display.
+Pairing a sensor after the Thing was created adds them with the next status update, unpairing the sensor removes them again.
 
 ## Full Example
 

@@ -94,10 +94,10 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
             if (this.submenu != null && this.tabmenu != null) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+                updateStatus(ThingStatus.UNKNOWN);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

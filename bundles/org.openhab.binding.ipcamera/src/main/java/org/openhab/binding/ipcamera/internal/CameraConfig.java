@@ -53,6 +53,7 @@ public class CameraConfig {
     private int ptzPanMax = 6000;
     private int ptzTiltMin = 150;
     private int ptzTiltMax = 1400;
+    private int channelStatusInterval = 60;
     private int gifPreroll;
 
     public int getOnvifMediaProfile() {
@@ -125,6 +126,10 @@ public class CameraConfig {
 
     public int getPtzTiltMax() {
         return ptzTiltMax;
+    }
+
+    public int getChannelStatusInterval() {
+        return channelStatusInterval;
     }
 
     public String getAlarmInputUrl() {
