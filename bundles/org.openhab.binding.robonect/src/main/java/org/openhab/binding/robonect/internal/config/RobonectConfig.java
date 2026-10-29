@@ -32,9 +32,7 @@ public class RobonectConfig {
 
     private String timezone;
 
-    private boolean detailedInfo;
-
-    private int detailedInfoInterval = 10;
+    private int detailedPollInterval;
 
     private boolean ajaxUiScraping;
 
@@ -64,12 +62,8 @@ public class RobonectConfig {
         return timezone;
     }
 
-    public boolean isDetailedInfo() {
-        return detailedInfo;
-    }
-
-    public int getDetailedInfoInterval() {
-        return detailedInfoInterval;
+    public int getDetailedPollInterval() {
+        return detailedPollInterval;
     }
 
     public boolean isAjaxUiScraping() {

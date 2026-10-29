@@ -657,15 +657,13 @@
 				<default>Europe/Berlin</default>
 				<description>The timezone configured on the robot (e.g. Europe/Berlin).</description>
 			</parameter>
-			<parameter name="detailedInfo" type="boolean" required="false">
-				<label>Detailed Information</label>
-				<default>false</default>
-				<description>Periodically request additional mower information.</description>
-			</parameter>
-			<parameter name="detailedInfoInterval" type="integer" required="false" min="1">
-				<label>Detailed Information Interval</label>
-				<default>10</default>
-				<description>The number of normal polling cycles between detailed information requests.</description>
+			<parameter name="detailedPollInterval" type="integer" required="false" min="0" unit="s">
+				<label>Detailed Polling Interval</label>
+				<default>0</default>
+				<description>The interval in seconds between detailed information polls, independent of the normal polling
+					interval.
+					Set to 0 to disable detailed polling.
+					Also controls push-service mode polling when the unofficial API is enabled.</description>
 			</parameter>
 			<parameter name="ajaxUiScraping" type="boolean" required="false">
 				<label>Ajax UI Scraping</label>

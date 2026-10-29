@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BooleanSupplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -142,13 +143,19 @@ import com.google.gson.JsonSyntaxException;
  * @author Nico Brüttner - Write-only push password channel
  * @author Nico Brüttner - Weather location and condition channels
  * @author Nico Brüttner - Indexed channel labels and quantity metadata
+ * @author Nico Brüttner - Independent serialized detailed polling
+ * @author Nico Brüttner - Weather interval web interface fallback
  */
 public class RobonectHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RobonectHandler.class);
 
     private ScheduledFuture<?> pollingJob;
-    private final ScheduledExecutorService commandScheduler;
+    private ScheduledFuture<?> detailedPollingJob;
+    private final ScheduledExecutorService requestScheduler;
+    private final ReentrantLock pollingLock = new ReentrantLock(true);
+    private volatile @Nullable PollingSession pollingSession;
+    private final ThreadLocal<BooleanSupplier> pollingActive = new ThreadLocal<>();
     private final Map<String, CommandRefresh> commandRefreshJobs = new ConcurrentHashMap<>();
     private final ThreadLocal<BooleanSupplier> commandRefreshActive = new ThreadLocal<>();
     private volatile boolean disposed;
@@ -162,7 +169,6 @@ public class RobonectHandler extends BaseThingHandler {
     private final @Nullable RobonectPushServlet pushServlet;
     private boolean ajaxUiScraping;
     private volatile boolean useUnofficialApi;
-    private volatile Object unofficialApiToken = new Object();
 
     private static final Set<String> JOB_TIMER_LABELS = Set.of("Auftrag", "Job", "Travail", "Ordine", "Jobb");
     private static final Set<String> END_OF_DAY_LABELS = Set.of("Feierabend", "End of day", "Fin de journée de travail",
@@ -190,7 +196,7 @@ public class RobonectHandler extends BaseThingHandler {
     RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider,
             @Nullable RobonectPushServlet pushServlet, @Nullable ScheduledExecutorService commandScheduler) {
         super(thing);
-        this.commandScheduler = commandScheduler == null ? scheduler : commandScheduler;
+        requestScheduler = commandScheduler == null ? scheduler : commandScheduler;
         httpClient = httpClientFactory
                 .createHttpClient(ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null));
         this.timeZoneProvider = timeZoneProvider;
@@ -596,13 +602,16 @@ public class RobonectHandler extends BaseThingHandler {
         if (disposed) {
             return;
         }
+        // Coalesce commands per endpoint by restarting the five-second delay after each command.
         CommandRefresh pending = new CommandRefresh();
         CommandRefresh previous = commandRefreshJobs.put(endpoint, pending);
         if (previous != null) {
             previous.cancel();
         }
+        // Cancellation may not stop an in-flight HTTP request. canPublishState() uses this predicate via
+        // commandRefreshActive to discard responses after replacement or disposal.
         BooleanSupplier active = () -> !disposed && pending.equals(commandRefreshJobs.get(endpoint));
-        ScheduledFuture<?> job = commandScheduler.schedule(() -> {
+        ScheduledFuture<?> job = requestScheduler.schedule(() -> {
             commandRefreshActive.set(active);
             try {
                 if (active.getAsBoolean()) {
@@ -613,10 +622,13 @@ public class RobonectHandler extends BaseThingHandler {
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } finally {
                 commandRefreshActive.remove();
+                // A newer command may already have replaced this task; leave its map entry intact.
                 commandRefreshJobs.remove(endpoint, pending);
             }
         }, 5, TimeUnit.SECONDS);
         pending.job = job;
+        // Replacement or disposal may have cancelled pending before its future was assigned, when cancel()
+        // could not yet cancel the scheduled task. Close that race now that the future is available.
         if (!active.getAsBoolean()) {
             job.cancel(true);
             commandRefreshJobs.remove(endpoint, pending);
@@ -636,9 +648,10 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private boolean canPublishState() {
-        // A delayed read can finish after disposal or after a newer command supersedes it.
+        // Responses may finish after disposal, reinitialization, or a newer command superseding a delayed read.
         BooleanSupplier active = commandRefreshActive.get();
-        return !disposed && (active == null || active.getAsBoolean());
+        BooleanSupplier poll = pollingActive.get();
+        return !disposed && (active == null || active.getAsBoolean()) && (poll == null || poll.getAsBoolean());
     }
 
     @Override
@@ -653,6 +666,11 @@ public class RobonectHandler extends BaseThingHandler {
         if (canPublishState()) {
             super.updateThing(thing);
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        updateStatus(status, ThingStatusDetail.NONE, null);
     }
 
     @Override
@@ -722,9 +740,6 @@ public class RobonectHandler extends BaseThingHandler {
                 }
             }
             updateSwitch(CHANNEL_WEATHER_ENABLED, service.getEnable());
-            Integer interval = service.getInterval();
-            if (interval != null)
-                updateState(CHANNEL_WEATHER_INTERVAL, new QuantityType<>(interval, Units.MINUTE));
             WeatherConfig config = service.getConfig();
             if (config != null) {
                 updateWeatherPercentage(CHANNEL_WEATHER_MAX_RAIN, config.getMaxrain());
@@ -734,6 +749,17 @@ public class RobonectHandler extends BaseThingHandler {
                 updateWeatherPercentage(CHANNEL_WEATHER_MAX_HUMIDITY, config.getMaxhumidity());
                 updateSwitch(CHANNEL_WEATHER_SKIP_DAY, config.getDontmowduringday());
                 updateSwitch(CHANNEL_WEATHER_SKIP_NIGHT, config.getDontmowduringnight());
+            }
+            Integer interval = service.getInterval();
+            if (interval == null && useUnofficialApi && canPublishState()) {
+                try {
+                    interval = robonectClient.getWeatherIntervalViaWebInterface();
+                } catch (RobonectCommunicationException e) {
+                    logger.debug("Could not read weather interval from web interface: {}", e.getMessage());
+                }
+            }
+            if (interval != null) {
+                updateState(CHANNEL_WEATHER_INTERVAL, new QuantityType<>(interval, Units.MINUTE));
             }
         }
     }
@@ -918,7 +944,6 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     void configureUnofficialChannels(boolean enabled) {
-        unofficialApiToken = new Object();
         useUnofficialApi = enabled;
         updateDynamicChannels(Pattern.compile(CHANNEL_PUSH_MODE),
                 enabled ? List.of(createChannel(CHANNEL_PUSH_MODE, "Number", "pushModeType", "Push Service Mode"))
@@ -926,15 +951,11 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void refreshPushMode() {
-        Object token = unofficialApiToken;
         if (!useUnofficialApi || !canPublishState()) {
             return;
         }
         try {
-            Integer mode = robonectClient.getPushModeViaWebInterface();
-            if (token.equals(unofficialApiToken)) {
-                applyPushMode(mode);
-            }
+            applyPushMode(robonectClient.getPushModeViaWebInterface());
         } catch (RobonectCommunicationException e) {
             logger.debug("Could not retrieve push mode from the web interface: {}", e.getMessage());
         }
@@ -947,7 +968,6 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void updatePushMode(Command command) {
-        Object token = unofficialApiToken;
         if (!useUnofficialApi || !(command instanceof DecimalType decimal)) {
             return;
         }
@@ -962,10 +982,7 @@ public class RobonectHandler extends BaseThingHandler {
             logger.debug("Ignoring invalid push mode {}", mode);
             return;
         }
-        Integer selected = robonectClient.updatePushModeViaWebInterface(mode);
-        if (token.equals(unofficialApiToken) && useUnofficialApi) {
-            applyPushMode(selected);
-        }
+        applyPushMode(robonectClient.updatePushModeViaWebInterface(mode));
     }
 
     private void applyPushInfo(PushInfo info, boolean fullResponse) {
@@ -1839,6 +1856,9 @@ public class RobonectHandler extends BaseThingHandler {
 
     private void refreshVersionInfo() {
         VersionInfo info = robonectClient.getVersionInfo();
+        if (!canPublishState()) {
+            return;
+        }
         if (info.isSuccessful()) {
             Map<String, String> properties = editProperties();
             if (info.getApplication() != null) {
@@ -1898,6 +1918,7 @@ public class RobonectHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        cancelPolling();
         disposed = false;
         updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
@@ -1931,30 +1952,44 @@ public class RobonectHandler extends BaseThingHandler {
         if (pushServlet != null) {
             pushServlet.registerHandler(getThing().getUID(), this);
         }
-        Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()),
-                robonectConfig.isDetailedInfo(), robonectConfig.getDetailedInfoInterval());
-        int pollInterval = robonectConfig.getPollInterval();
-        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
+        PollingSession session = new PollingSession(robonectConfig);
+        pollingSession = session;
+        pollingJob = requestScheduler.scheduleWithFixedDelay(new MowerChannelPoller(session), 0,
+                Math.max(1, robonectConfig.getPollInterval()), TimeUnit.SECONDS);
+        int detailedPollInterval = robonectConfig.getDetailedPollInterval();
+        if (detailedPollInterval > 0) {
+            detailedPollingJob = requestScheduler.scheduleWithFixedDelay(new DetailedMowerChannelPoller(session), 0,
+                    detailedPollInterval, TimeUnit.SECONDS);
+        }
     }
 
     @Override
     public void dispose() {
         disposed = true;
+        cancelPolling();
         commandRefreshJobs.values().forEach(CommandRefresh::cancel);
         commandRefreshJobs.clear();
         if (pushServlet != null) {
             pushServlet.unregisterHandler(getThing().getUID());
         }
-        ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            this.pollingJob = null;
-        }
-
         try {
             httpClient.stop();
         } catch (Exception e) {
             logger.warn("Exception while trying to stop HTTP client", e);
+        }
+    }
+
+    private void cancelPolling() {
+        pollingSession = null;
+        ScheduledFuture<?> normalJob = pollingJob;
+        pollingJob = null;
+        if (normalJob != null) {
+            normalJob.cancel(true);
+        }
+        ScheduledFuture<?> detailedJob = detailedPollingJob;
+        detailedPollingJob = null;
+        if (detailedJob != null) {
+            detailedJob.cancel(true);
         }
     }
 
@@ -1987,70 +2022,106 @@ public class RobonectHandler extends BaseThingHandler {
         this.ajaxUiScraping = ajaxUiScraping;
     }
 
-    private class MowerChannelPoller implements Runnable {
-
-        private long offlineSince;
-        private long offlineTriggerDelay;
+    @NonNullByDefault
+    private static class PollingSession {
+        private final long offlineTriggerDelay;
+        private long offlineSince = -1;
         private boolean offlineTimeoutTriggered;
         private boolean loadVersionInfo = true;
-        private final boolean detailedInfo;
-        private final int detailedInfoInterval;
-        private int detailedInfoPollCount;
 
-        public MowerChannelPoller(long offlineTriggerDelay, boolean detailedInfo, int detailedInfoInterval) {
-            offlineSince = -1;
-            this.offlineTriggerDelay = offlineTriggerDelay;
-            offlineTimeoutTriggered = false;
-            this.detailedInfo = detailedInfo;
-            this.detailedInfoInterval = Math.max(1, detailedInfoInterval);
+        private PollingSession(RobonectConfig config) {
+            offlineTriggerDelay = TimeUnit.SECONDS.toMillis(config.getOfflineTimeout());
+        }
+    }
+
+    @NonNullByDefault
+    private class MowerChannelPoller implements Runnable {
+        private final PollingSession session;
+        private final List<Runnable> refreshes;
+
+        private MowerChannelPoller(PollingSession session) {
+            this(session, List.of(() -> {
+                if (session.loadVersionInfo) {
+                    refreshVersionInfo();
+                    session.loadVersionInfo = false;
+                }
+            }, RobonectHandler.this::refreshMowerInfo, RobonectHandler.this::refreshWlanInfo));
+        }
+
+        private MowerChannelPoller(PollingSession session, List<Runnable> refreshes) {
+            this.session = session;
+            this.refreshes = List.copyOf(refreshes);
         }
 
         @Override
-        public void run() {
+        public final void run() {
             try {
-                if (loadVersionInfo) {
-                    refreshVersionInfo();
-                    loadVersionInfo = false;
-                }
-                refreshMowerInfo();
-                refreshWlanInfo();
-                boolean refreshDetailed = detailedInfoPollCount++ % detailedInfoInterval == 0;
-                if (useUnofficialApi && refreshDetailed) {
-                    refreshPushMode();
-                }
-                if (detailedInfo && refreshDetailed) {
-                    refreshBatteryInfo();
-                    refreshMotorInfo();
-                    refreshHourInfo();
-                    refreshRemoteInfo();
-                    refreshWireInfo();
-                    refreshPortalInfo();
-                    refreshTimersInfo();
-                    refreshWeatherInfo();
-                    refreshExtensionInfo();
-                    refreshPushInfo();
-                    refreshDoorInfo();
+                pollingLock.lockInterruptibly();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+            pollingActive.set(() -> session.equals(pollingSession) && !Thread.currentThread().isInterrupted());
+            try {
+                if (!pollChannels()) {
+                    return;
                 }
                 updateStatus(ThingStatus.ONLINE);
-                offlineSince = -1;
-                offlineTimeoutTriggered = false;
+                session.offlineSince = -1;
+                session.offlineTimeoutTriggered = false;
             } catch (RobonectCommunicationException rce) {
-                if (offlineSince < 0) {
-                    offlineSince = System.currentTimeMillis();
+                if (!canPublishState()) {
+                    return;
                 }
-                if (!offlineTimeoutTriggered && System.currentTimeMillis() - offlineSince > offlineTriggerDelay) {
-                    // trigger offline
+                if (session.offlineSince < 0) {
+                    session.offlineSince = System.currentTimeMillis();
+                }
+                if (!session.offlineTimeoutTriggered
+                        && System.currentTimeMillis() - session.offlineSince > session.offlineTriggerDelay) {
                     updateState(CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER, new StringType("OFFLINE_TIMEOUT"));
-                    offlineTimeoutTriggered = true;
+                    session.offlineTimeoutTriggered = true;
                 }
                 logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
-                loadVersionInfo = true;
+                session.loadVersionInfo = true;
             } catch (JsonSyntaxException jse) {
                 // the module sporadically sends invalid json responses. As this is usually recovered with the
                 // next poll interval, we just log it to debug here.
                 logger.debug("Failed to parse response.", jse);
+            } finally {
+                pollingActive.remove();
+                pollingLock.unlock();
             }
+        }
+
+        private boolean pollChannels() {
+            for (Runnable refresh : refreshes) {
+                if (!canPublishState()) {
+                    return false;
+                }
+                refresh.run();
+            }
+            return canPublishState();
+        }
+    }
+
+    @NonNullByDefault
+    private List<Runnable> createDetailedRefreshes() {
+        List<Runnable> updates = new ArrayList<>();
+        if (useUnofficialApi) {
+            updates.add(this::refreshPushMode);
+        }
+
+        updates.addAll(List.<Runnable> of(this::refreshBatteryInfo, this::refreshMotorInfo, this::refreshHourInfo,
+                this::refreshRemoteInfo, this::refreshWireInfo, this::refreshPortalInfo, this::refreshTimersInfo,
+                this::refreshWeatherInfo, this::refreshExtensionInfo, this::refreshPushInfo, this::refreshDoorInfo));
+        return updates;
+    }
+
+    @NonNullByDefault
+    private class DetailedMowerChannelPoller extends MowerChannelPoller {
+        private DetailedMowerChannelPoller(PollingSession session) {
+            super(session, RobonectHandler.this.createDetailedRefreshes());
         }
     }
 }

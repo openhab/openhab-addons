@@ -92,6 +92,7 @@ import com.google.gson.JsonParseException;
  * @author Nico Brüttner - Ajax UI compatibility
  * @author Nico Brüttner - Push mode web interface support
  * @author Nico Brüttner - Write-only push password commands
+ * @author Nico Brüttner - Weather interval web interface fallback
  */
 public class RobonectClient {
 
@@ -544,6 +545,22 @@ public class RobonectClient {
      */
     public WeatherInfo getWeatherInfo() {
         return parser.parse(sendCommand(new WeatherCommand()), WeatherInfo.class);
+    }
+
+    /** Returns the weather interval in minutes from the unofficial web interface, or null if absent or invalid. */
+    public @Nullable Integer getWeatherIntervalViaWebInterface() {
+        // The weather settings page contains an API key, so its response body must not be logged.
+        String html = sendCommand(base -> base + "/weather", webBaseUrl, false);
+        Element input = Jsoup.parse(html).selectFirst("input#interval");
+        if (input == null) {
+            return null;
+        }
+        try {
+            int interval = Integer.parseInt(input.attr("value"));
+            return interval > 0 ? interval : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     /** Updates one weather-service property. */

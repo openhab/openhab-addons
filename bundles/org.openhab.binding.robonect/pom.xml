@@ -14,4 +14,17 @@
 
   <name>openHAB Add-ons :: Bundles :: Robonect Binding</name>
 
+  <properties>
+    <bnd.importpackage>com.google.re2j;resolution:=optional,org.jspecify.annotations;resolution:=optional</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>${jsoup.version}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
 </project>

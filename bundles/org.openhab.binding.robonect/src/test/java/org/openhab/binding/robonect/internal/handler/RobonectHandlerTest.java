@@ -16,20 +16,31 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -39,18 +50,22 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.robonect.internal.RobonectBindingConstants;
 import org.openhab.binding.robonect.internal.RobonectClient;
+import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
+import org.openhab.binding.robonect.internal.model.ExtInfo;
 import org.openhab.binding.robonect.internal.model.HourInfo;
 import org.openhab.binding.robonect.internal.model.ModelParser;
+import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.MowerStatus;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.NextTimer;
+import org.openhab.binding.robonect.internal.model.PortalInfo;
 import org.openhab.binding.robonect.internal.model.PushInfo;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
@@ -58,11 +73,14 @@ import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.Timer;
 import org.openhab.binding.robonect.internal.model.TimerInfo;
 import org.openhab.binding.robonect.internal.model.TimersInfo;
+import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.Wlan;
+import org.openhab.binding.robonect.internal.model.WlanInfo;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -74,6 +92,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -81,6 +100,8 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The goal of this class is to test RobonectHandler in isolation.
@@ -90,6 +111,8 @@ import org.openhab.core.types.UnDefType;
  * @author Nico Brüttner - Command response and delayed refresh tests
  * @author Nico Brüttner - Weather location, condition and timestamp tests
  * @author Nico Brüttner - Indexed channel labels and quantity tests
+ * @author Nico Brüttner - Independent polling and lifecycle tests
+ * @author Nico Brüttner - Weather interval fallback tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -106,6 +129,8 @@ public class RobonectHandlerTest {
     private @Mock TimeZoneProvider timeZoneProvider;
     private @Mock ScheduledExecutorService commandScheduler;
     private @Mock ScheduledFuture<?> commandRefreshJob;
+    private @Mock ScheduledFuture<?> normalPollingJob;
+    private @Mock ScheduledFuture<?> detailedPollingJob;
     private @Mock org.eclipse.jetty.client.HttpClient httpClient;
 
     @BeforeEach
@@ -124,6 +149,270 @@ public class RobonectHandlerTest {
     @AfterEach
     public void tearDown() {
         subject.dispose();
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "1, false", "61, false", "61, true" })
+    public void shouldPollNormalAndDetailedChannelsAtIndependentIntervals(int interval, boolean unofficialApi) {
+        List<Runnable> pollers = initializePolling(
+                Map.of("detailedPollInterval", interval, "useUnofficialApi", unofficialApi));
+        verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(7L), eq(TimeUnit.SECONDS));
+        verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq((long) interval),
+                eq(TimeUnit.SECONDS));
+
+        pollers.getFirst().run();
+        verify(robonectClientMock).getVersionInfo();
+        verify(robonectClientMock).getMowerInfo();
+        verify(robonectClientMock).getWlanInfo();
+        verify(robonectClientMock, never()).getBatteryInfo();
+        clearInvocations(robonectClientMock);
+
+        pollers.getLast().run();
+        verify(robonectClientMock, times(unofficialApi ? 1 : 0)).getPushModeViaWebInterface();
+        verify(robonectClientMock).getBatteryInfo();
+        verify(robonectClientMock).getMotorInfo();
+        verify(robonectClientMock).getHourInfo();
+        verify(robonectClientMock).getRemoteInfo();
+        verify(robonectClientMock).getWireInfo();
+        verify(robonectClientMock).getPortalInfo();
+        verify(robonectClientMock).getTimersInfo();
+        verify(robonectClientMock).getWeatherInfo();
+        verify(robonectClientMock, times(unofficialApi ? 1 : 0)).getWeatherIntervalViaWebInterface();
+        verify(robonectClientMock).getExtInfo();
+        verify(robonectClientMock).getPushInfo();
+        verify(robonectClientMock).getDoorInfo();
+        verifyNoMoreInteractions(robonectClientMock);
+    }
+
+    @Test
+    public void shouldNotScheduleDetailedPollingByDefault() {
+        assertEquals(1, initializePolling(Map.of()).size());
+        verify(commandScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(),
+                eq(TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void shouldReadVersionOnlyOnFirstNormalPollUntilCommunicationFailure() {
+        Runnable poller = initializePolling(Map.of()).getFirst();
+        poller.run();
+        poller.run();
+        verify(robonectClientMock).getVersionInfo();
+        verify(robonectClientMock, times(2)).getMowerInfo();
+        verify(robonectClientMock, times(2)).getWlanInfo();
+
+        when(robonectClientMock.getMowerInfo()).thenThrow(new RobonectCommunicationException("Unavailable"))
+                .thenReturn(createSuccessfulMowerInfoResponse());
+        poller.run();
+        poller.run();
+        verify(robonectClientMock, times(2)).getVersionInfo();
+        verify(robonectClientMock, times(4)).getMowerInfo();
+        verify(robonectClientMock, times(3)).getWlanInfo();
+    }
+
+    @Test
+    public void shouldNotScheduleDetailedPollingWhenIntervalIsZeroEvenWithUnofficialApiEnabled() {
+        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 0, "useUnofficialApi", true));
+        assertEquals(1, pollers.size());
+        verify(commandScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(),
+                eq(TimeUnit.SECONDS));
+        verifyNoInteractions(robonectClientMock);
+    }
+
+    @Test
+    public void shouldCancelBothPollersOnDisposeAndIgnoreCancelledRuns() {
+        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        subject.dispose();
+        verify(normalPollingJob).cancel(true);
+        verify(detailedPollingJob).cancel(true);
+        clearInvocations(callbackMock);
+        pollers.forEach(Runnable::run);
+        verifyNoInteractions(robonectClientMock, callbackMock);
+    }
+
+    @Test
+    public void shouldReplaceBothPollingSchedulesOnReinitialization() {
+        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        Configuration config = new Configuration(subject.getThing().getConfiguration().getProperties());
+        config.put("detailedPollInterval", 91);
+        subject.thingUpdated(ThingBuilder.create(subject.getThing()).withConfiguration(config).build());
+        subject.setRobonectClient(robonectClientMock);
+        verify(normalPollingJob).cancel(true);
+        verify(detailedPollingJob).cancel(true);
+        verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(91L), eq(TimeUnit.SECONDS));
+        clearInvocations(callbackMock);
+        pollers.forEach(Runnable::run);
+        verifyNoInteractions(robonectClientMock, callbackMock);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void shouldEnableOrDisableDetailedPollingWhenIntervalChanges(boolean initiallyEnabled) {
+        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", initiallyEnabled ? 61 : 0));
+        Configuration config = new Configuration(subject.getThing().getConfiguration().getProperties());
+        config.put("detailedPollInterval", initiallyEnabled ? 0 : 61);
+        clearInvocations(commandScheduler);
+
+        subject.thingUpdated(ThingBuilder.create(subject.getThing()).withConfiguration(config).build());
+        subject.setRobonectClient(robonectClientMock);
+
+        verify(normalPollingJob).cancel(true);
+        verify(detailedPollingJob, times(initiallyEnabled ? 1 : 0)).cancel(true);
+        verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(7L), eq(TimeUnit.SECONDS));
+        verify(commandScheduler, times(initiallyEnabled ? 0 : 1)).scheduleWithFixedDelay(any(Runnable.class), eq(0L),
+                eq(61L), eq(TimeUnit.SECONDS));
+        clearInvocations(callbackMock);
+        pollers.forEach(Runnable::run);
+        verifyNoInteractions(robonectClientMock, callbackMock);
+
+        if (!initiallyEnabled) {
+            var tasks = ArgumentCaptor.forClass(Runnable.class);
+            verify(commandScheduler).scheduleWithFixedDelay(tasks.capture(), eq(0L), eq(61L), eq(TimeUnit.SECONDS));
+            tasks.getValue().run();
+            verify(robonectClientMock).getBatteryInfo();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void shouldRecoverNormalPollingAfterCommunicationOrJsonFailure(boolean malformedJson) {
+        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        RuntimeException failure = malformedJson ? new JsonSyntaxException("Malformed response")
+                : new RobonectCommunicationException("Unavailable");
+        when(robonectClientMock.getMowerInfo()).thenThrow(failure).thenReturn(createSuccessfulMowerInfoResponse());
+        pollers.getFirst().run();
+        pollers.getLast().run();
+        pollers.getFirst().run();
+        verify(robonectClientMock, times(2)).getMowerInfo();
+        verify(robonectClientMock).getBatteryInfo();
+        verify(callbackMock, atLeastOnce()).statusUpdated(eq(subject.getThing()),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        if (!malformedJson) {
+            verify(callbackMock).statusUpdated(eq(subject.getThing()),
+                    argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
+            verify(robonectClientMock, times(2)).getVersionInfo();
+        }
+    }
+
+    @Test
+    public void shouldStopDetailedPollingAndDiscardResponseAfterReinitialization() {
+        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        BatteryInfo result = new ModelParser().parse("""
+                {"successful":true,"batteries":[{"charge":65}]}
+                """, BatteryInfo.class);
+        when(robonectClientMock.getBatteryInfo()).thenAnswer(invocation -> {
+            subject.initialize();
+            subject.setRobonectClient(robonectClientMock);
+            clearInvocations(callbackMock);
+            return result;
+        });
+        pollers.getLast().run();
+        verify(robonectClientMock).getBatteryInfo();
+        verifyNoMoreInteractions(robonectClientMock);
+        verifyNoInteractions(callbackMock);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "serialize", "dispose", "interrupt" })
+    @Timeout(30)
+    public void shouldSerializePollersAndCancelWaitingPoller(String action) throws Exception {
+        boolean dispose = "dispose".equals(action);
+        boolean interrupt = "interrupt".equals(action);
+        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        CountDownLatch statusEntered = new CountDownLatch(1);
+        CountDownLatch releaseStatus = new CountDownLatch(1);
+        AtomicReference<Thread> detailedThread = new AtomicReference<>();
+        when(robonectClientMock.getMowerInfo()).thenAnswer(invocation -> {
+            statusEntered.countDown();
+            assertTrue(releaseStatus.await(10, TimeUnit.SECONDS));
+            return createSuccessfulMowerInfoResponse();
+        });
+        var executor = Executors.newFixedThreadPool(2);
+        try {
+            Future<?> normal = executor.submit(pollers.getFirst());
+            assertTrue(statusEntered.await(10, TimeUnit.SECONDS));
+            Future<?> detailed = executor.submit(() -> {
+                detailedThread.set(Thread.currentThread());
+                pollers.getLast().run();
+            });
+            assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+                while (true) {
+                    Thread thread = detailedThread.get();
+                    if (detailed.isDone()) {
+                        detailed.get();
+                        fail("Detailed polling completed while normal polling was blocked");
+                    }
+                    if (thread != null && thread.getState() == Thread.State.WAITING) {
+                        break;
+                    }
+                    LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1));
+                }
+            });
+            verify(robonectClientMock, never()).getBatteryInfo();
+            if (dispose) {
+                subject.dispose();
+                clearInvocations(callbackMock);
+            } else if (interrupt) {
+                Objects.requireNonNull(detailedThread.get()).interrupt();
+                detailed.get(10, TimeUnit.SECONDS);
+            }
+            releaseStatus.countDown();
+            normal.get(10, TimeUnit.SECONDS);
+            detailed.get(10, TimeUnit.SECONDS);
+            if (dispose) {
+                verifyNoInteractions(callbackMock);
+                verify(robonectClientMock, never()).getWlanInfo();
+                verify(robonectClientMock, never()).getBatteryInfo();
+            } else if (interrupt) {
+                verify(robonectClientMock).getWlanInfo();
+                verify(robonectClientMock, never()).getBatteryInfo();
+            } else {
+                var order = inOrder(robonectClientMock);
+                order.verify(robonectClientMock).getMowerInfo();
+                order.verify(robonectClientMock).getWlanInfo();
+                order.verify(robonectClientMock).getBatteryInfo();
+            }
+        } finally {
+            releaseStatus.countDown();
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+        }
+    }
+
+    private List<Runnable> initializePolling(Map<String, Object> parameters) {
+        Map<String, Object> config = new HashMap<>(parameters);
+        config.put("host", "localhost");
+        config.put("pollInterval", 7);
+        config.put("offlineTimeout", 30);
+        config.put("timezone", TIME_ZONE.getId());
+        Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, new ThingUID("1:2:3"))
+                .withConfiguration(new Configuration(config)).build();
+        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject.setCallback(callbackMock);
+        doReturn(normalPollingJob, detailedPollingJob).when(commandScheduler)
+                .scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(), eq(TimeUnit.SECONDS));
+        subject.initialize();
+        subject.setRobonectClient(robonectClientMock);
+        when(robonectClientMock.getVersionInfo()).thenReturn(new VersionInfo());
+        when(robonectClientMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        ModelParser parser = new ModelParser();
+        when(robonectClientMock.getWlanInfo()).thenReturn(parser.parse("{\"successful\":true}", WlanInfo.class));
+        when(robonectClientMock.getBatteryInfo()).thenReturn(parser.parse("{\"successful\":true}", BatteryInfo.class));
+        when(robonectClientMock.getMotorInfo()).thenReturn(parser.parse("{\"successful\":true}", MotorInfo.class));
+        when(robonectClientMock.getHourInfo()).thenReturn(parser.parse("{\"successful\":true}", HourInfo.class));
+        when(robonectClientMock.getRemoteInfo()).thenReturn(parser.parse("{\"successful\":true}", RemoteInfo.class));
+        when(robonectClientMock.getWireInfo()).thenReturn(parser.parse("{\"successful\":true}", WireInfo.class));
+        when(robonectClientMock.getPortalInfo()).thenReturn(parser.parse("{\"successful\":true}", PortalInfo.class));
+        when(robonectClientMock.getTimersInfo()).thenReturn(parser.parse("{\"successful\":true}", TimersInfo.class));
+        when(robonectClientMock.getWeatherInfo())
+                .thenReturn(parser.parse("{\"successful\":true,\"service\":{}}", WeatherInfo.class));
+        when(robonectClientMock.getExtInfo()).thenReturn(parser.parse("{\"successful\":true}", ExtInfo.class));
+        when(robonectClientMock.getPushInfo()).thenReturn(parser.parse("{\"successful\":true}", PushInfo.class));
+        when(robonectClientMock.getDoorInfo()).thenReturn(parser.parse("{\"successful\":true}", DoorInfo.class));
+        var tasks = ArgumentCaptor.forClass(Runnable.class);
+        verify(commandScheduler, atLeastOnce()).scheduleWithFixedDelay(tasks.capture(), eq(0L), anyLong(),
+                eq(TimeUnit.SECONDS));
+        clearInvocations(robonectClientMock, callbackMock);
+        return tasks.getAllValues();
     }
 
     @Test
@@ -695,6 +984,59 @@ public class RobonectHandlerTest {
     }
 
     @Test
+    public void shouldUseApiWeatherIntervalWithoutWebRequest() {
+        subject.configureUnofficialChannels(true);
+        when(robonectClientMock.getWeatherInfo()).thenReturn(
+                new ModelParser().parse("{\"successful\":true,\"service\":{\"interval\":30}}", WeatherInfo.class));
+        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-interval");
+        subject.handleCommand(channel, RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(channel, new QuantityType<>(30, Units.MINUTE));
+        verify(robonectClientMock, never()).getWeatherIntervalViaWebInterface();
+    }
+
+    @Test
+    public void shouldReadMissingWeatherIntervalOnlyWhenUnofficialApiEnabled() {
+        when(robonectClientMock.getWeatherInfo())
+                .thenReturn(new ModelParser().parse("{\"successful\":true,\"service\":{}}", WeatherInfo.class));
+        when(robonectClientMock.getWeatherIntervalViaWebInterface()).thenReturn(10);
+        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-interval");
+        subject.handleCommand(channel, RefreshType.REFRESH);
+        verify(robonectClientMock, never()).getWeatherIntervalViaWebInterface();
+        subject.configureUnofficialChannels(true);
+        subject.handleCommand(channel, RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(channel, new QuantityType<>(10, Units.MINUTE));
+        subject.configureUnofficialChannels(false);
+        subject.handleCommand(channel, RefreshType.REFRESH);
+        verify(robonectClientMock, times(1)).getWeatherIntervalViaWebInterface();
+    }
+
+    @Test
+    public void shouldPreserveWeatherDataAndRetryAfterIntervalFallbackFailure() {
+        subject.configureUnofficialChannels(true);
+        when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser()
+                .parse("{\"successful\":true,\"service\":{},\"weather\":{\"rain\":20}}", WeatherInfo.class));
+        when(robonectClientMock.getWeatherIntervalViaWebInterface())
+                .thenThrow(new RobonectCommunicationException("Unavailable")).thenReturn(null).thenReturn(10);
+        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-interval");
+        subject.handleCommand(channel, RefreshType.REFRESH);
+        subject.handleCommand(channel, RefreshType.REFRESH);
+        verify(callbackMock, never()).stateUpdated(eq(channel), any());
+        subject.handleCommand(channel, RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(channel, new QuantityType<>(10, Units.MINUTE));
+        verify(callbackMock, times(3)).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-rain"),
+                new QuantityType<>(20, Units.PERCENT));
+    }
+
+    @Test
+    public void shouldNotReadWeatherIntervalForFailedApiResponse() {
+        subject.configureUnofficialChannels(true);
+        when(robonectClientMock.getWeatherInfo())
+                .thenReturn(new ModelParser().parse("{\"successful\":false}", WeatherInfo.class));
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-interval"), RefreshType.REFRESH);
+        verify(robonectClientMock, never()).getWeatherIntervalViaWebInterface();
+    }
+
+    @Test
     public void shouldRefreshWeatherLocationConditionsAndUnixTimes() {
         when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser().parse("""
                 {"successful":true,"service":{"location":{"cityid":3208628},
@@ -1061,17 +1403,27 @@ public class RobonectHandlerTest {
         subject.setRobonectClient(robonectClientMock);
     }
 
-    @Test
-    public void shouldDiscardPushModeResponseWhenApiConfigurationChangesDuringRequest() {
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void shouldDiscardPushModeResponseWhenApiDisabledDuringRequest(boolean write) {
         useRealThingForPushMode();
         subject.configureUnofficialChannels(true);
-        when(robonectClientMock.getPushModeViaWebInterface()).thenAnswer(invocation -> {
-            subject.configureUnofficialChannels(false);
-            subject.configureUnofficialChannels(true);
-            return 2;
-        });
-        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "push-mode"), RefreshType.REFRESH);
+        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
+        if (write) {
+            when(robonectClientMock.updatePushModeViaWebInterface(2)).thenAnswer(invocation -> {
+                subject.configureUnofficialChannels(false);
+                return 2;
+            });
+            subject.handleCommand(channel, new DecimalType(2));
+        } else {
+            when(robonectClientMock.getPushModeViaWebInterface()).thenAnswer(invocation -> {
+                subject.configureUnofficialChannels(false);
+                return 2;
+            });
+            subject.handleCommand(channel, RefreshType.REFRESH);
+        }
         verify(callbackMock, never()).stateUpdated(any(), any());
+        assertNull(subject.getThing().getChannel(channel));
     }
 
     @ParameterizedTest

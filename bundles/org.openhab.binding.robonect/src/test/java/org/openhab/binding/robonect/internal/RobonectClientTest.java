@@ -53,6 +53,7 @@ import ch.qos.logback.core.read.ListAppender;
  *
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Push mode web interface tests
+ * @author Nico Brüttner - Weather interval web interface tests
  */
 @ExtendWith(MockitoExtension.class)
 public class RobonectClientTest {
@@ -364,6 +365,27 @@ public class RobonectClientTest {
         assertThrows(IllegalArgumentException.class, () -> subject.updatePushModeViaWebInterface(-1));
         assertThrows(IllegalArgumentException.class, () -> subject.updatePushModeViaWebInterface(3));
         verifyNoInteractions(httpClientMock);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 10, 240 })
+    public void shouldReadWeatherIntervalFromWebInterface(int interval)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        mockWebResponse("http://123.456.789.123/weather",
+                "<input value='" + interval + "' type='range' name='interval' id='interval'>");
+        assertEquals(interval, subject.getWeatherIntervalViaWebInterface());
+        verify(httpClientMock).newRequest("http://123.456.789.123/weather");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "", "<input id='other' value='10'>", "<output id='interval' value='10'>",
+            "<input id='interval'>", "<input id='interval' value='bad'>", "<input id='interval' value='1.5'>",
+            "<input id='interval' value='0'>", "<input id='interval' value='-1'>",
+            "<input id='interval' value='2147483648'>" })
+    public void shouldIgnoreMissingOrInvalidWeatherInterval(String html)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        mockWebResponse("http://123.456.789.123/weather", html);
+        assertNull(subject.getWeatherIntervalViaWebInterface());
     }
 
     private void mockWebResponse(String url, String html)
