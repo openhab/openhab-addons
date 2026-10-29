@@ -118,8 +118,7 @@ public class Tr064SubHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(Tr064SubConfiguration.class);
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "One or more mandatory configuration fields are empty");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "One or more mandatory configuration fields are empty");
             return;
         }
 
@@ -128,7 +127,7 @@ public class Tr064SubHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
             connectFuture = scheduler.scheduleWithFixedDelay(this::internalInitialize, 0, 30, TimeUnit.SECONDS);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -144,13 +143,12 @@ public class Tr064SubHandler extends BaseThingHandler {
         }
         final SCPDUtil scpdUtil = bridgeHandler.getSCPDUtil();
         if (scpdUtil == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not get device definitions");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Could not get device definitions");
             return;
         }
         final ThingHandlerCallback callback = getCallback();
         if (callback == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Could not get callback");
+            updateStatus(ThingStatus.OFFLINE, "Could not get callback");
             return;
         }
         if (checkProperties(scpdUtil)) {
@@ -166,7 +164,7 @@ public class Tr064SubHandler extends BaseThingHandler {
 
             isInitialized = true;
             installPolling();
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -224,7 +222,7 @@ public class Tr064SubHandler extends BaseThingHandler {
             if (THING_TYPE_SUBDEVICE_LAN.equals(thing.getThingTypeUID()) && !DEVICE_TYPE_LAN.equals(deviceType)) {
                 // the LAN channels are only available on a LAN device, so a wrong uuid would silently yield a Thing
                 // without them
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "uuid " + config.uuid
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "uuid " + config.uuid
                         + " belongs to a device of type " + deviceType + ", expected " + DEVICE_TYPE_LAN);
                 return false;
             }
@@ -235,7 +233,7 @@ public class Tr064SubHandler extends BaseThingHandler {
 
             return true;
         } catch (SCPDException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Failed to update device properties: " + e.getMessage());
 
             return false;
@@ -245,7 +243,7 @@ public class Tr064SubHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (!bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             removeConnectScheduler();
         } else {
             if (isInitialized) {

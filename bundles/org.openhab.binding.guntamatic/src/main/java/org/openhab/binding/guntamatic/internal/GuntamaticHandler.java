@@ -463,7 +463,7 @@ public class GuntamaticHandler extends BaseThingHandler {
             Thread.currentThread().interrupt();
             errorReason = String.format("InterruptedException: %s", ((e.getMessage() != null) ? e.getMessage() : ""));
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
         return null;
     }
 
@@ -485,7 +485,7 @@ public class GuntamaticHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(GuntamaticConfiguration.class);
         if (config.hostname.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid hostname configuration");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid hostname configuration");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,

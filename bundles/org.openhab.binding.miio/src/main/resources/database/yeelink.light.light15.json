@@ -15,13 +15,15 @@
 				"actions": [
 					{
 						"command": "set_power",
-						"parameterType": "ONOFF"
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -33,6 +35,11 @@
 					{
 						"command": "set_bright",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessExisting"
 						}
@@ -40,6 +47,11 @@
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessOnOff"
 						}
@@ -47,8 +59,8 @@
 				],
 				"category": "light",
 				"tags": [
-					"Setpoint",
-					"Light"
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -84,10 +96,10 @@
 				"type": "Number:Temperature",
 				"unit": "kelvin",
 				"stateDescription": {
-					"minimum": 1700,
+					"minimum": 2700,
 					"maximum": 6500,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"refresh": true,
 				"actions": [
@@ -101,11 +113,7 @@
 						]
 					}
 				],
-				"category": "colorlight",
-				"tags": [
-					"Setpoint",
-					"Temperature"
-				]
+				"category": "colorlight"
 			},
 			{
 				"property": "color_mode",
@@ -146,57 +154,98 @@
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_rgb",
-						"parameterType": "NONE",
+						"command": "set_power",
+						"parameterType": "NUMBER",
 						"parameters": [
-							"$rgb$",
+							"on",
 							"smooth",
-							500
+							500,
+							"$value$"
 						],
 						"condition": {
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "1"
-								}
-							]
-						}
-					},
-					{
-						"command": "set_ct_abx",
-						"parameterType": "NONE",
-						"parameters": [
-							"$ct$",
-							"smooth",
-							500
-						],
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "2"
+									"matchValue": "2",
+									"returnValue": 1
 								}
 							]
 						}
 					}
 				],
-				"category": "settings",
+				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Mode"
 				],
-				"readmeComment": "Note, currently only supporting switching to RGB or CT mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
+				"readmeComment": "Only CT mode can be set. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
 			},
 			{
-				"property": "rgb",
-				"friendlyName": "RGB Color",
-				"channel": "rgbColor",
-				"type": "Color",
+				"property": "bg_bright",
+				"friendlyName": "Ambient Brightness",
+				"channel": "ambientBrightness",
+				"type": "Dimmer",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_rgb",
+						"command": "bg_set_bright",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "bg_set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "bg_power",
+				"friendlyName": "Ambient Power",
+				"channel": "ambientPower",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "bg_set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "bg_rgb",
+				"friendlyName": "Ambient Color",
+				"channel": "ambientColor",
+				"type": "Color",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "bg_set_rgb",
 						"parameterType": "COLOR",
 						"parameters": [
 							"$value$",
@@ -208,75 +257,49 @@
 						}
 					},
 					{
-						"command": "set_bright",
+						"command": "bg_set_bright",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessExisting"
 						}
 					},
 					{
-						"command": "set_power",
+						"command": "bg_set_power",
 						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessOnOff"
 						}
 					}
 				],
-				"category": "colorpicker",
+				"category": "colorlight",
 				"tags": [
 					"Control",
-					"Light"
-				]
-			},
-			{
-				"property": "bg_bright",
-				"friendlyName": "Ambient Brightness",
-				"channel": "ambientBrightness",
-				"type": "Dimmer",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "bg_set_bright",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "bg_power",
-				"friendlyName": "Ambient Power",
-				"channel": "ambientPower",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "bg_set_power",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
-				"property": "bg_rgb",
-				"friendlyName": "Ambient Color",
-				"channel": "ambientColor",
-				"type": "Color",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "bg_set_rgb",
-						"parameterType": "COLOR"
-					}
+					"Color"
 				]
 			},
 			{
 				"property": "bg_ct",
 				"friendlyName": "Ambient Color Temperature",
 				"channel": "ambientColorTemperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"stateDescription": {
+					"minimum": 1700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_set_ct_abx",
@@ -287,7 +310,8 @@
 							500
 						]
 					}
-				]
+				],
+				"category": "colorlight"
 			},
 			{
 				"property": "bg_flowing",
@@ -295,7 +319,6 @@
 				"channel": "ambientColorflow",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_start_cf",
@@ -327,6 +350,10 @@
 							]
 						}
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -419,7 +446,6 @@
 					]
 				},
 				"refresh": false,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_start_cf",
@@ -782,9 +808,10 @@
 						}
 					}
 				],
+				"category": "colorlight",
 				"tags": [
 					"Control",
-					"Light"
+					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"sunrise\"\u003d\"Sunrise\",\"sunset\"\u003d\"Sunset\",\"home\"\u003d\"Home\",\"tea_time\"\u003d\"Tea Time\",\"date_night\"\u003d\"Date Night\",\"movie\"\u003d\"Movie\",\"romance\"\u003d\"Romance\",\"night_mode\"\u003d\"Night Mode\",\"candle_flicker\"\u003d\"Candle Flicker\",\"happy_birthday\"\u003d\"Happy Birthday\",\"christmas\"\u003d\"Christmas\",\"disco\"\u003d\"Disco\",\"rgb\"\u003d\"RGB\",\"lsd\"\u003d\"Psychedelic\",\"temp\"\u003d\"Color Temperature Cycle\",\"strobe\"\u003d\"Strobe\",\"strobe_color\"\u003d\"Color Strobe\",\"alarm\"\u003d\"Alarm\",\"police\"\u003d\"Police\",\"police2\"\u003d\"Police 2\"]`"
 			},
@@ -793,9 +820,60 @@
 				"friendlyName": "Ambient Color Mode",
 				"channel": "ambientColorMode",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "RGB mode"
+						},
+						{
+							"value": "2",
+							"label": "CT mode"
+						},
+						{
+							"value": "3",
+							"label": "HSV mode"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "bg_set_power",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"on",
+							"smooth",
+							500,
+							"$value$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "1",
+									"returnValue": 2
+								},
+								{
+									"matchValue": "2",
+									"returnValue": 1
+								},
+								{
+									"matchValue": "3",
+									"returnValue": 3
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"RGB mode\",\"2\"\u003d\"CT mode\",\"3\"\u003d\"HSV mode\"]`"
 			}
-		]
+		],
+		"experimental": false
 	}
 }

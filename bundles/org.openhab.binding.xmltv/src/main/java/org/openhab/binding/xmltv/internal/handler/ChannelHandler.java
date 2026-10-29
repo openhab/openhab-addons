@@ -81,7 +81,7 @@ public class ChannelHandler extends BaseThingHandler {
                     refreshProgramList();
                 }
                 if (programmes.isEmpty()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-more-programs");
+                    updateStatus(ThingStatus.OFFLINE, "@text/no-more-programs");
                 } else if (Instant.now().isAfter(programmes.get(0).getProgrammeStop())) {
                     programmes.remove(0);
                 }
@@ -115,12 +115,12 @@ public class ChannelHandler extends BaseThingHandler {
                             .forEach(p -> programmes.add(p));
 
                     updateStatus(ThingStatus.ONLINE);
-                }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-file-available"));
+                }, () -> updateStatus(ThingStatus.OFFLINE, "@text/no-file-available"));
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

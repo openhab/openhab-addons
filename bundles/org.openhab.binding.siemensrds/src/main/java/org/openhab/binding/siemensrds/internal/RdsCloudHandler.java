@@ -61,12 +61,12 @@ public class RdsCloudHandler extends BaseBridgeHandler {
         RdsCloudConfiguration config = this.config = getConfigAs(RdsCloudConfiguration.class);
 
         if (config.userEmail.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing email address");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "missing email address");
             return;
         }
 
         if (config.userPassword.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing password");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "missing password");
             return;
         }
 
@@ -75,7 +75,7 @@ public class RdsCloudHandler extends BaseBridgeHandler {
         }
 
         if (config.pollingInterval < FAST_POLL_INTERVAL || config.pollingInterval > LAZY_POLL_INTERVAL) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("polling interval out of range [%d..%d]", FAST_POLL_INTERVAL, LAZY_POLL_INTERVAL));
             return;
         }
@@ -142,12 +142,11 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
         if (accessToken != null) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE);
             }
         } else {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "cloud server authentication error");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "cloud server authentication error");
             }
         }
     }

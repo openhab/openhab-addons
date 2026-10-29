@@ -259,6 +259,7 @@ class Clip2ThingHandlerConnectivityTest {
         fixture.handler.updateChannels(zigbeeResource(ZigbeeStatus.CONNECTIVITY_ISSUE));
         fixture.handler.updateChannels(zigbeeResource(ZigbeeStatus.CONNECTED));
         assertEquals(ThingStatusDetail.FIRMWARE_UPDATING, fixture.statusInfo.get().getStatusDetail());
+        assertEquals(UpdateStatusV2.INSTALLING.i18nKey(), fixture.statusInfo.get().getDescription());
 
         clearInvocations(fixture.callback);
         fixture.handler.updateChannels(zigbeeResource(ZigbeeStatus.CONNECTIVITY_ISSUE));
@@ -266,6 +267,17 @@ class Clip2ThingHandlerConnectivityTest {
         ThingStatusInfo statusInfo = captureSingleStatus(fixture.callback);
         assertEquals(ThingStatus.OFFLINE, statusInfo.getStatus());
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, statusInfo.getStatusDetail());
+    }
+
+    @Test
+    void testReadyToInstallDescriptionIsPublishedWhenOnline() {
+        Fixture fixture = new Fixture(
+                Map.of(PROPERTY_FIRMWARE_UPDATE_STATE, UpdateStatusV2.READY_TO_INSTALL.toString()));
+
+        fixture.handler.updateStatus(ThingStatus.ONLINE);
+
+        assertEquals(ThingStatus.ONLINE, fixture.statusInfo.get().getStatus());
+        assertEquals(UpdateStatusV2.READY_TO_INSTALL.i18nKey(), fixture.statusInfo.get().getDescription());
     }
 
     @Test

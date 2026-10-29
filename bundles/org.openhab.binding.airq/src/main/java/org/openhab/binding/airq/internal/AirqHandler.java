@@ -990,7 +990,9 @@ public class AirqHandler extends BaseThingHandler {
                     updateChannels();
                 }
             } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Syntax error while parsing response from device");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Syntax error while parsing response from device: " + e.getMessage());
+                logger.trace("Parse error in response (non-measurement values omitted): {}", sanitizeData(decObj));
             }
         } catch (AirqPasswordIncorrectException e) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Device password incorrect");

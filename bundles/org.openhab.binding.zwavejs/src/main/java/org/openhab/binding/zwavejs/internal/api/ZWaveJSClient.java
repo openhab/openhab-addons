@@ -314,7 +314,6 @@ public class ZWaveJSClient implements WebSocketListener {
         // Notify listeners
         for (ZwaveEventListener listener : listeners) {
             try {
-
                 listener.onEvent(baseEvent);
             } catch (Exception e) {
                 if (logger.isDebugEnabled()) {

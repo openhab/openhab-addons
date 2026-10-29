@@ -28,7 +28,6 @@ import org.openhab.binding.freeboxos.internal.api.rest.WebSocketManager;
 import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +125,7 @@ public class HostHandler extends ApiConsumerHandler {
             if (host.reachable()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-host-not-reachable");
+                updateStatus(ThingStatus.OFFLINE, "@text/info-host-not-reachable");
             }
         }
         // We will check and configure audio sink only when the host reachability changed

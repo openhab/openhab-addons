@@ -21,7 +21,6 @@ Import-Package: \
 -runbundles: \
 	biz.aQute.tester.junit-platform;version='[7.4.0,7.4.1)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.22.0,2.22.1)',\
-	com.google.gson;version='[2.14.0,2.14.1)',\
 	com.sun.jna;version='[5.19.1,5.19.2)',\
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.9,2.3.10)',\
 	de.focus_shift.jollyday-core;version='[1.9.3,1.9.4)',\
@@ -107,4 +106,5 @@ Import-Package: \
 	com.fasterxml.jackson.core.jackson-databind;version='[2.22.4,2.22.5)',\
 	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.22.4,2.22.5)',\
 	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.22.4,2.22.5)',\
-	tech.units.indriya;version='[2.2.4,2.2.5)'
+	tech.units.indriya;version='[2.2.4,2.2.5)',\
+	com.google.gson;version='[2.15.0,2.15.1)'

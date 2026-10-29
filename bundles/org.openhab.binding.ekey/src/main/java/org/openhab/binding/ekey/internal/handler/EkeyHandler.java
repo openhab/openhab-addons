@@ -90,12 +90,12 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
                 try {
                     localReceiver.openConnection();
                 } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot open connection)");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Cannot open connection)");
                 }
                 updateStatus(ThingStatus.ONLINE);
             });
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address specified)");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No IP address specified)");
         }
     }
 
@@ -132,7 +132,7 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
     @Override
     public void connectionStatusChanged(ThingStatus status, byte @Nullable [] message) {
         if (message != null) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, null);
+            this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
         this.updateStatus(status);
     }

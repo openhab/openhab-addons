@@ -133,8 +133,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         storage = storageService.getStorage(thing.getUID().toString(), MelCloudHomeAuthState.class.getClassLoader());
 
         if (config.username.isBlank() || config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "username and password are required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "username and password are required");
             return;
         }
 
@@ -295,7 +294,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
                 }
                 // A transient failure says nothing about the refresh token; do not spend a full login on it.
                 logger.debug("MELCloud Home token refresh failed, will retry: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduleRetry();
                 return;
             }
@@ -311,13 +310,13 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
             logger.debug("MELCloud Home login rejected: {}", e.getMessage());
             accessToken = null;
             cancelContextPoll();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (MelCloudCommException e) {
             if (!isCurrentInit(generation)) {
                 return;
             }
             logger.debug("MELCloud Home login failed: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduleRetry();
         }
     }
@@ -408,8 +407,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         logger.debug("MELCloud Home /context poll failed ({} in a row), will retry next cycle: {}", failures,
                 e.getMessage());
         if (failures == POLL_FAILURES_BEFORE_OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "MELCloud Home could not be reached");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "MELCloud Home could not be reached");
             scheduler.execute(this::authenticate);
         }
     }

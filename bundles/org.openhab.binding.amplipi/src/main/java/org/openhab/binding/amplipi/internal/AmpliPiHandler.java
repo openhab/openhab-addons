@@ -109,8 +109,7 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                         logger.debug("Content: {}", response.getContentAsString());
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "AmpliPi request failed: " + e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "AmpliPi request failed: " + e.getMessage());
                 }
             }
         } else if (channelUID.getId().startsWith(CHANNEL_INPUT)) {
@@ -128,8 +127,7 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                         logger.debug("Content: {}", response.getContentAsString());
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "AmpliPi request failed: " + e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "AmpliPi request failed: " + e.getMessage());
                 }
             }
         }
@@ -156,17 +154,15 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                         streams = currentStatus.getStreams();
                         changeListeners.forEach(l -> l.receive(currentStatus));
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "No valid response from AmpliPi API.");
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No valid response from AmpliPi API.");
                         logger.debug("Received response: {}", response.getContentAsString());
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "AmpliPi API returned HTTP status " + response.getStatus() + ".");
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "AmpliPi request failed: " + e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "AmpliPi request failed: " + e.getMessage());
             } catch (Exception e) {
                 logger.error("Unexpected error occurred: {}", e.getMessage());
             }
@@ -242,8 +238,7 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                 logger.debug("PA request sent successfully.");
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "AmpliPi request failed: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "AmpliPi request failed: " + e.getMessage());
         }
     }
 

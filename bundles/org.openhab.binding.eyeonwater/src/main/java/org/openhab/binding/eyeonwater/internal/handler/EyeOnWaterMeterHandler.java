@@ -66,14 +66,13 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
         meterId = config.meterId.trim();
 
         if (meterUuid.isEmpty() || meterId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.meter-config-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.meter-config-missing");
             return;
         }
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "@text/offline.bridge-undefined");
+            logger.debug("The bridge was unexpected null, for thing: {}", getThing().getUID());
             return;
         }
 
@@ -82,8 +81,7 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
             eoHandler.registerMeterHandler(this);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-not-initialized");
+            logger.debug("The bridge handler was unexpected null, for thing: {}", getThing().getUID());
         }
     }
 
@@ -125,7 +123,7 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
     }
 
     public void updateStatusOffline(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
     }
 
     /**
@@ -209,7 +207,7 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
         } catch (IllegalArgumentException e) {
             logger.warn("Unsupported unit '{}' received for meter {}: {}", rawUnit, getThing().getUID(),
                     e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.unsupported-unit");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.unsupported-unit");
         }
     }
 }

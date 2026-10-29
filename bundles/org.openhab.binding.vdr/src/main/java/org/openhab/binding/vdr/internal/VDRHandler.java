@@ -293,9 +293,9 @@ public class VDRHandler extends BaseThingHandler {
                     }
                 });
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ce.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ce.getMessage());
         } catch (SVDRPParseResponseException se) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, se.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, se.getMessage());
         } finally {
             try {
                 con.closeConnection();

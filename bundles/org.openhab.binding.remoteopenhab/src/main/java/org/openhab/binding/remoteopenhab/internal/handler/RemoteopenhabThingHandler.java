@@ -73,7 +73,11 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
     public void initialize() {
         logger.debug("initializing remote openHAB handler for thing {}", getThing().getUID());
         Bridge bridge = getBridge();
-        initializeThing(bridge != null ? bridge.getStatus() : null);
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        initializeThing(bridge.getStatus());
     }
 
     @Override
@@ -84,19 +88,23 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
 
     private void initializeThing(@Nullable ThingStatus bridgeStatus) {
         Bridge bridge = getBridge();
-        BridgeHandler bridgeHandler = bridge != null ? bridge.getHandler() : null;
         RemoteopenhabRestClient oldClient = this.restClient;
         if (oldClient != null) {
             oldClient.removeThingsDataListener(this);
             this.restClient = null;
         }
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        BridgeHandler bridgeHandler = bridge.getHandler();
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 config = getConfigAs(RemoteopenhabThingConfiguration.class);
 
                 String uid = getConfigThingUID();
                 if (uid.length() == 0) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.config-error-undefined-thing-uid");
                 } else {
                     RemoteopenhabRestClient client = ((RemoteopenhabBridgeHandler) bridgeHandler).gestRestClient();
@@ -114,15 +122,15 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                                 updateThingStatus(uid, statusInfo);
                             }
                         } catch (RemoteopenhabException e) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
                         }
                     });
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -226,7 +234,17 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
             status = ThingStatus.OFFLINE;
         }
         ThingStatusDetail detail = ThingStatusDetail.valueOf(statusInfo.statusDetail);
-        updateStatus(status, detail, statusInfo.description);
+        if (detail == ThingStatusDetail.NONE) {
+            updateStatus(status, statusInfo.description);
+        } else if (detail == ThingStatusDetail.BRIDGE_UNINITIALIZED || detail == ThingStatusDetail.NOT_YET_READY
+                || detail == ThingStatusDetail.HANDLER_MISSING_ERROR
+                || detail == ThingStatusDetail.HANDLER_REGISTERING_ERROR
+                || detail == ThingStatusDetail.HANDLER_INITIALIZING_ERROR
+                || detail == ThingStatusDetail.HANDLER_CONFIGURATION_PENDING || detail == ThingStatusDetail.DISABLED) {
+            updateStatus(status, detail, statusInfo.description);
+        } else {
+            updateStatus(detail, statusInfo.description);
+        }
         logger.debug("updateStatus {} with status {} detail {} description {}", thingUID, status, detail,
                 statusInfo.description);
     }

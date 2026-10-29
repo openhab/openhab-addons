@@ -52,6 +52,7 @@ import com.google.gson.JsonSyntaxException;
 public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectionObserver {
 
     private static final String WEBSOCKET_PATH = "/mqtt";
+    private static final String WEBSOCKET_SUBPROTOCOLS = "mqtt, mqttv3.1, mqttv3.11";
     private static final int CONNECT_TIMEOUT_SECONDS = 15;
 
     private final Logger logger = LoggerFactory.getLogger(LGHorizonMqttClient.class);
@@ -79,6 +80,7 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
         MqttBrokerConnection conn = new MqttBrokerConnection(MqttBrokerConnection.Protocol.WEBSOCKETS,
                 MqttBrokerConnection.MqttVersion.V3, host, 443, true, clientId);
         conn.setWebSocketPath(WEBSOCKET_PATH);
+        conn.setWebSocketSubprotocol(WEBSOCKET_SUBPROTOCOLS);
         conn.setCleanSessionStart(true);
         conn.setKeepAliveInterval(30);
         conn.setTimeoutExecutor(scheduler, CONNECT_TIMEOUT_SECONDS * 1000);

@@ -78,7 +78,7 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         if (config.email.isBlank() || config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.user-credentials-missing");
             return;
         }
@@ -135,13 +135,13 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
         if (e instanceof SenseEnergyApiException apiException) {
             switch (apiException.severity) {
                 case TRANSIENT:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                     break;
                 case CONFIG:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                    updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
                     break;
                 case FATAL:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, e.getMessage());
                     break;
                 case DATA:
                     logger.warn("Data exception: {}", e.toString());

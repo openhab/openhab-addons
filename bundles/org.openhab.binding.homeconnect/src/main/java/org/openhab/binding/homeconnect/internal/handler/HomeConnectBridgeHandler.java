@@ -137,7 +137,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                 AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
 
                 if (accessTokenResponse == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
                             "Please authenticate your account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. http://192.168.178.100:8080/homeconnect).");
                 } else {
                     apiClient.getHomeAppliances();
@@ -152,7 +152,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                         "Home Connect service is not reachable or a problem occurred! Retrying at %s (%s). bridge=%s",
                         nextReinitializeDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME), e.getMessage(),
                         getThing().getLabel());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, offlineMessage);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, offlineMessage);
 
                 scheduleReinitialize();
             }

@@ -367,8 +367,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             this.config = config;
         }
         if (config.getHost().isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error.missing-host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error.missing-host");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -493,7 +492,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             logger.debug("Exception while updating thing {}: {}", thing.getUID(), e.getMessage());
             if (isCurrent(generation)) {
                 String message = e.getMessage();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         message != null ? message : "@text/offline.communication-error.no-response");
             }
         }
@@ -599,7 +598,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 logger.debug("No data received for {}: {}", thing.getUID(), error != null ? error : "no status");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         error != null ? error : "@text/offline.communication-error.no-response");
             }
         }

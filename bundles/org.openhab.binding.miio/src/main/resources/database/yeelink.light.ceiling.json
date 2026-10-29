@@ -2,6 +2,7 @@
 	"deviceMapping": {
 		"id": [
 			"yeelink.light.ceiling1",
+			"yeelink.light.ceiling2",
 			"yeelink.light.ceiling3",
 			"yeelink.light.ceiling5",
 			"yeelink.light.ceiling6",
@@ -16,15 +17,13 @@
 			"yeelink.light.ceiling16",
 			"yeelink.light.ceiling17",
 			"yeelink.light.ceiling18",
-			"yeelink.light.ceiling19",
-			"yeelink.light.ceiling20",
 			"yeelink.light.ceiling21",
 			"yeelink.light.ceiling22",
 			"yeelink.light.ceiling23",
-			"yeelink.light.ceiling10.ambi",
-			"yeelink.light.ceiling19.ambi",
-			"yeelink.light.ceiling20.ambi",
 			"yeelink.light.ceil26",
+			"yeelink.light.ceil39",
+			"yeelink.light.lamp9",
+			"yeelink.light.panel1",
 			"yilai.light.ceiling1",
 			"yilai.light.ceiling2",
 			"yilai.light.ceiling3"
@@ -39,13 +38,15 @@
 				"actions": [
 					{
 						"command": "set_power",
-						"parameterType": "ONOFF"
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -57,6 +58,11 @@
 					{
 						"command": "set_bright",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessExisting"
 						}
@@ -64,6 +70,11 @@
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessOnOff"
 						}
@@ -71,8 +82,8 @@
 				],
 				"category": "light",
 				"tags": [
-					"Setpoint",
-					"Light"
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -82,7 +93,7 @@
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
-					"pattern": "%.1f %unit%"
+					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
 				"actions": [
@@ -105,7 +116,8 @@
 				"property": "ct",
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
 				"stateDescription": {
 					"minimum": 2700,
 					"maximum": 6500,
@@ -124,11 +136,7 @@
 						]
 					}
 				],
-				"category": "colorlight",
-				"tags": [
-					"Setpoint",
-					"Temperature"
-				]
+				"category": "colorlight"
 			},
 			{
 				"property": "color_mode",
@@ -169,46 +177,31 @@
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_rgb",
-						"parameterType": "NONE",
+						"command": "set_power",
+						"parameterType": "NUMBER",
 						"parameters": [
-							"$rgb$",
+							"on",
 							"smooth",
-							500
+							500,
+							"$value$"
 						],
 						"condition": {
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "1"
-								}
-							]
-						}
-					},
-					{
-						"command": "set_ct_abx",
-						"parameterType": "NONE",
-						"parameters": [
-							"$ct$",
-							"smooth",
-							500
-						],
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "2"
+									"matchValue": "2",
+									"returnValue": 1
 								}
 							]
 						}
 					}
 				],
-				"category": "settings",
+				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Mode"
 				],
-				"readmeComment": "Note, currently only supporting switching to RGB or CT mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
+				"readmeComment": "Only CT mode can be set here, use the nightlightMode channel for the night light. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
 			},
 			{
 				"property": "name",
@@ -216,7 +209,6 @@
 				"channel": "name",
 				"type": "String",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_name",
@@ -226,32 +218,108 @@
 				"category": "text"
 			},
 			{
-				"property": "",
-				"friendlyName": "Set Scene",
-				"channel": "customScene",
-				"type": "String",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_scene",
-						"parameterType": "CUSTOMSTRING"
-					}
-				]
-			},
-			{
 				"property": "nl_br",
 				"friendlyName": "Nightlight Brightness",
 				"channel": "nightlightBrightness",
 				"type": "Dimmer",
 				"refresh": true,
-				"actions": [],
+				"actions": [
+					{
+						"command": "set_scene",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"nightlight",
+							"$value$"
+						],
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|0(\\.0*)?",
+									"returnValue": "off"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500,
+							5
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": "on"
+								}
+							]
+						}
+					}
+				],
 				"category": "light",
 				"tags": [
-					"Setpoint",
-					"Light"
-				]
+					"Control",
+					"Brightness"
+				],
+				"readmeComment": "Setting a value switches the light to night light mode"
+			},
+			{
+				"property": "active_mode",
+				"friendlyName": "Night Light Mode",
+				"channel": "nightlightMode",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"on",
+							"smooth",
+							500,
+							"$value$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 5
+								},
+								{
+									"matchValue": "OFF",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Switching off returns the light to CT mode"
 			}
-		]
+		],
+		"experimental": false,
+		"readmeComment": "The color temperature range differs per model: 2700-5700 K (ceiling5), 3000-5700 K (ceiling16, ceiling17), 2700-6300 K (ceiling21), 2700-6000 K (ceiling22, ceiling23), 2700-6500 K (others). Other scenes can be sent with the `commands` channel, for example `set_scene[\"ct\",3000,50]` or `set_scene[\"auto_delay_off\",50,10]` (brightness 50%, off after 10 minutes)"
 	}
 }

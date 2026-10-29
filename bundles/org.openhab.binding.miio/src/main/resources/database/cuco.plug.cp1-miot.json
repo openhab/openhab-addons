@@ -5,53 +5,15 @@
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 2,
+		"readmeComment": "Indicator light, child lock, power-on state and power metering follow the Mi Home plugin; they are not in the MIoT spec and may not be available on every plug.",
+		"experimental": false,
 		"channels": [
-			{
-				"property": "firmware-revision",
-				"siid": 1,
-				"piid": 4,
-				"friendlyName": "Device Information-CurrentFirmware Version",
-				"channel": "FirmwareRevision",
-				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "manufacturer",
-				"siid": 1,
-				"piid": 1,
-				"friendlyName": "Device Information-Device Manufacturer",
-				"channel": "Manufacturer",
-				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "model",
-				"siid": 1,
-				"piid": 2,
-				"friendlyName": "Device Information-Device Model",
-				"channel": "Model",
-				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "serial-number",
-				"siid": 1,
-				"piid": 3,
-				"friendlyName": "Device Information-Device Serial Number",
-				"channel": "SerialNumber",
-				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Switch-Switch Status",
-				"channel": "On",
+				"friendlyName": "Power",
+				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -60,9 +22,149 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "poweroutlet",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "light",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Indicator Light",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "child-lock",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "power-off-memory",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "Power-On State",
+				"channel": "default_power_on_state",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "On"
+						},
+						{
+							"value": "1",
+							"label": "Off"
+						},
+						{
+							"value": "2",
+							"label": "Memory"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Power"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"On\",\"1\"\u003d\"Off\",\"2\"\u003d\"Memory\"]`"
+			},
+			{
+				"property": "power",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Active Power",
+				"channel": "electric_power",
+				"type": "Number:Power",
+				"unit": "watt",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"transformation": "/10",
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Power"
+				]
+			},
+			{
+				"property": "voltage",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Voltage",
+				"channel": "voltage",
+				"type": "Number:ElectricPotential",
+				"unit": "volt",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"transformation": "/10",
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Voltage"
+				]
+			},
+			{
+				"property": "electric-current",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Current",
+				"channel": "electric_current",
+				"type": "Number:ElectricCurrent",
+				"unit": "mA",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Current"
 				]
 			}
 		]

@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -67,6 +70,7 @@ public class WledApiV084 implements WledApi {
     protected final WLedBridgeHandler handler;
     protected final String address;
     protected WledState state = new WledState();
+    private static final Pattern VERSION_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)(?:\\.(\\d+))?");
     private int version = 0;
 
     public WledApiV084(WLedBridgeHandler handler, HttpClient httpClient) {
@@ -119,7 +123,9 @@ public class WledApiV084 implements WledApi {
     }
 
     protected String sendPostRequest(String url, String json) throws ApiException {
-        logger.debug("Sending WLED POST:{} Message:{}", url, json);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Sending WLED POST:{} Message:{}", url, WLedHelper.describeForLog(url, json));
+        }
         Request request = httpClient.POST(address + url);
         request.timeout(3, TimeUnit.SECONDS);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
@@ -254,11 +260,18 @@ public class WledApiV084 implements WledApi {
         state.infoResponse = getInfo();
         String temp = state.infoResponse.ver;
         logger.debug("Firmware for WLED is ver:{}", temp);
-        temp = temp.replace(".", "");
-        if (temp.length() > 4) {
-            temp = temp.substring(0, 4);
+        // Only use the leading numbers, so versions like 0.14.0-b1 or 0.15.0-beta do not break the parsing
+        Matcher matcher = VERSION_PATTERN.matcher(temp);
+        if (!matcher.find()) {
+            throw new ApiException("Could not understand the WLED firmware version:" + temp);
         }
-        version = Integer.parseInt(temp);
+        String patch = matcher.group(3);
+        String digits = matcher.group(1) + matcher.group(2) + (patch == null ? "0" : patch);
+        if (digits.length() > 4) {
+            digits = digits.substring(0, 4);
+        }
+        version = Integer.parseInt(digits);
+        handler.firmwareVersion = version;
         return version;
     }
 
@@ -286,6 +299,9 @@ public class WledApiV084 implements WledApi {
         } else {
             handler.update(CHANNEL_SYNC_SEND, OnOffType.OFF);
         }
+        handler.update(CHANNEL_SYNC_SEND_GROUPS, new DecimalType(state.udpnState.sgrp));
+        handler.update(CHANNEL_SYNC_RECEIVE_GROUPS, new DecimalType(state.udpnState.rgrp));
+        handler.update(CHANNEL_MAIN_SEGMENT, new DecimalType(state.stateResponse.mainseg));
         if (state.stateResponse.pl == 0) {
             handler.update(CHANNEL_PRESET_CYCLE, OnOffType.ON);
         } else {
@@ -298,6 +314,9 @@ public class WledApiV084 implements WledApi {
         handler.update(CHANNEL_SLEEP_BRIGHTNESS, new PercentType(
                 new BigDecimal(state.nightLightState.tbri).divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
         handler.update(CHANNEL_SLEEP_MODE, new StringType(Integer.toString(state.nightLightState.mode)));
+        // rem is -1 when the sleep timer is not running
+        handler.update(CHANNEL_SLEEP_REMAINING,
+                new QuantityType<>(Math.max(0, state.nightLightState.rem), Units.SECOND));
     }
 
     protected void processState(int segmentIndex) throws ApiException {
@@ -355,6 +374,18 @@ public class WledApiV084 implements WledApi {
                         RoundingMode.HALF_UP)));
         handler.update(segmentIndex, CHANNEL_GROUPING, new DecimalType(state.stateResponse.seg[segmentIndex].grp));
         handler.update(segmentIndex, CHANNEL_SPACING, new DecimalType(state.stateResponse.seg[segmentIndex].spc));
+        handler.update(segmentIndex, CHANNEL_SELECTED, OnOffType.from(state.stateResponse.seg[segmentIndex].sel));
+        handler.update(segmentIndex, CHANNEL_MAPPING,
+                new StringType(Integer.toString(state.stateResponse.seg[segmentIndex].m12)));
+        handler.update(segmentIndex, CHANNEL_SOUND_SIMULATION,
+                new StringType(Integer.toString(state.stateResponse.seg[segmentIndex].si)));
+        handler.update(segmentIndex, CHANNEL_SEGMENT_START,
+                new DecimalType(state.stateResponse.seg[segmentIndex].start));
+        handler.update(segmentIndex, CHANNEL_SEGMENT_STOP, new DecimalType(state.stateResponse.seg[segmentIndex].stop));
+        String segmentName = state.stateResponse.seg[segmentIndex].n;
+        if (segmentName != null) {
+            handler.update(segmentIndex, CHANNEL_SEGMENT_NAME, new StringType(segmentName));
+        }
     }
 
     @Override
@@ -504,6 +535,202 @@ public class WledApiV084 implements WledApi {
             sendGetRequest("/win&PS=" + position);
         } catch (ApiException e) {
             logger.warn("Preset failed to save:{}", e.getMessage());
+        }
+    }
+
+    @Override
+    public void setWhiteTemperature(PercentType percent, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"cct\":" + WLedHelper.fromPercent(percent, 255) + "}]}");
+    }
+
+    @Override
+    public void setCustomSlider(int sliderNumber, PercentType percent, int segmentIndex) throws ApiException {
+        if (sliderNumber < 1 || sliderNumber > 3) {
+            throw new ApiException("Custom slider " + sliderNumber + " does not exist");
+        }
+        // the third slider only has 32 steps
+        int value = WLedHelper.fromPercent(percent, sliderNumber == 3 ? 31 : 255);
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"c" + sliderNumber + "\":" + value + "}]}");
+    }
+
+    @Override
+    public void setOption(int optionNumber, boolean bool, int segmentIndex) throws ApiException {
+        if (optionNumber < 1 || optionNumber > 3) {
+            throw new ApiException("Option " + optionNumber + " does not exist");
+        }
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"o" + optionNumber + "\":" + bool + "}]}");
+    }
+
+    @Override
+    public void setFreeze(boolean bool, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"frz\":" + bool + "}]}");
+    }
+
+    @Override
+    public void setSelected(boolean bool, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"sel\":" + bool + "}]}");
+    }
+
+    @Override
+    public void setSegmentStart(int value, int segmentIndex) throws ApiException {
+        updateStateFromReply(postState("{\"v\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"start\":" + value + "}]}"));
+    }
+
+    @Override
+    public void setSegmentStop(int value, int segmentIndex) throws ApiException {
+        updateStateFromReply(postState("{\"v\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"stop\":" + value + "}]}"));
+    }
+
+    @Override
+    public void setSegmentName(String name, int segmentIndex) throws ApiException {
+        updateStateFromReply(
+                postState("{\"v\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"n\":" + gson.toJson(name) + "}]}"));
+    }
+
+    @Override
+    public String getStateJson() throws ApiException {
+        return sendGetRequest("/json/state");
+    }
+
+    @Override
+    public String getInfoJson() throws ApiException {
+        return sendGetRequest("/json/info");
+    }
+
+    @Override
+    public String getConfigJson() throws ApiException {
+        return sendGetRequest("/json/cfg");
+    }
+
+    @Override
+    public String getNodesJson() throws ApiException {
+        return sendGetRequest("/json/nodes");
+    }
+
+    @Override
+    public String getLiveJson() throws ApiException {
+        return sendGetRequest("/json/live");
+    }
+
+    @Override
+    public String getEffectDataJson() throws ApiException {
+        return sendGetRequest("/json/fxdata");
+    }
+
+    @Override
+    public void setConfig(String json) throws ApiException {
+        try {
+            JsonObject obj = gson.fromJson(json, JsonObject.class);
+            if (obj == null) {
+                throw new ApiException("The JSON to send to WLED is empty");
+            }
+            sendPostRequest("/json/cfg", obj.toString());
+        } catch (JsonSyntaxException e) {
+            throw new ApiException("The JSON to send to WLED is not valid:" + e.getMessage());
+        }
+    }
+
+    @Override
+    public void setTime(long epochSeconds) throws ApiException {
+        postState("{\"time\":" + epochSeconds + "}");
+    }
+
+    @Override
+    public void setSyncSendGroups(int groups) throws ApiException {
+        postState("{\"udpn\":{\"sgrp\":" + Math.max(0, Math.min(255, groups)) + "}}");
+    }
+
+    @Override
+    public void setSyncReceiveGroups(int groups) throws ApiException {
+        postState("{\"udpn\":{\"rgrp\":" + Math.max(0, Math.min(255, groups)) + "}}");
+    }
+
+    @Override
+    public void setMainSegment(int segmentIndex) throws ApiException {
+        postState("{\"mainseg\":" + segmentIndex + "}");
+    }
+
+    @Override
+    public void setLedMap(int ledMap) throws ApiException {
+        postState("{\"ledmap\":" + ledMap + "}");
+    }
+
+    @Override
+    public void setAudioReactive(boolean bool) throws ApiException {
+        setConfig("{\"um\":{\"AudioReactive\":{\"enabled\":" + bool + "}}}");
+    }
+
+    @Override
+    public void setAudioSyncMode(String mode) throws ApiException {
+        try {
+            int value = Integer.parseInt(mode.trim());
+            setConfig("{\"um\":{\"AudioReactive\":{\"sync\":{\"mode\":" + value + "}}}}");
+        } catch (NumberFormatException e) {
+            throw new ApiException("The audio sync mode must be a number:" + mode);
+        }
+    }
+
+    @Override
+    public void setMapping(String mapping, int segmentIndex) throws ApiException {
+        try {
+            postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"m12\":" + Integer.parseInt(mapping.trim()) + "}]}");
+        } catch (NumberFormatException e) {
+            throw new ApiException("The mapping must be a number:" + mapping);
+        }
+    }
+
+    @Override
+    public void setSoundSimulation(String type, int segmentIndex) throws ApiException {
+        try {
+            postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"si\":" + Integer.parseInt(type.trim()) + "}]}");
+        } catch (NumberFormatException e) {
+            throw new ApiException("The sound simulation must be a number:" + type);
+        }
+    }
+
+    @Override
+    public String getPresetsJson() throws ApiException {
+        throw new ApiException("Reading presets is not supported in this firmware version");
+    }
+
+    @Override
+    public String getPresetsText() throws ApiException {
+        throw new ApiException("Reading presets is not supported in this firmware version");
+    }
+
+    @Override
+    public void savePresetState(int position, String presetName, String stateJson) throws ApiException {
+        throw new ApiException("Saving a preset from JSON is not supported in this firmware version");
+    }
+
+    @Override
+    public void savePlaylist(int position, String playlistName, List<Integer> presets, List<Double> durationsSeconds,
+            List<Double> transitionsSeconds, int repeat, int endPreset) throws ApiException {
+        throw new ApiException("Saving a playlist is not supported in this firmware version");
+    }
+
+    @Override
+    public void deletePreset(int position) throws ApiException {
+        logger.warn("Deleting presets is not supported in this firmware version");
+    }
+
+    @Override
+    public void reboot() throws ApiException {
+        logger.warn("Rebooting is not supported in this firmware version");
+    }
+
+    @Override
+    public void sendState(String json) throws ApiException {
+        try {
+            JsonObject obj = gson.fromJson(json, JsonObject.class);
+            if (obj == null) {
+                throw new ApiException("The JSON to send to WLED is empty");
+            }
+            // without v the reply is only {"success":true}, which can not be used as the new state
+            obj.addProperty("v", true);
+            updateStateFromReply(postState(obj.toString()));
+        } catch (JsonSyntaxException e) {
+            throw new ApiException("The JSON to send to WLED is not valid:" + e.getMessage());
         }
     }
 

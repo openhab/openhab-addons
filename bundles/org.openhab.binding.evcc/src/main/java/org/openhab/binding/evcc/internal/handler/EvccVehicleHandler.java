@@ -110,7 +110,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
         if (getPropertyOrConfigValue(PROPERTY_VEHICLE_ID).isEmpty()) {
             logger.warn("No vehicle ID given");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
@@ -118,7 +118,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
             if (getPropertyOrConfigValue(PROPERTY_VEHICLE_ID).isEmpty()) {
                 logger.warn("No vehicle ID given");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
             }
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
@@ -127,7 +127,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             router.registerRoute(new HandlerRoute(JSON_KEY_VEHICLES,
                     new JsonPathExtraction("$." + getPropertyOrConfigValue(PROPERTY_VEHICLE_ID)), this,
                     JSON_KEY_VEHICLES));
-        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED));
+        }, () -> logger.debug("The bridge handler was unexpected null, for thing: {}", getThing().getUID()));
     }
 
     @Override

@@ -55,16 +55,19 @@ public class TuyaSubDeviceHandler extends BaseTuyaDeviceHandler {
     @Override
     protected void initializeTransport() {
         if (configuration.subDeviceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.missing-sub-device-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.missing-sub-device-id");
             return;
         }
 
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
 
-        TuyaGatewayHandler gatewayHandler = getGatewayHandler();
-        if (gatewayHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (!(bridge.getHandler() instanceof TuyaGatewayHandler gatewayHandler)) {
+            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
 
@@ -106,16 +109,16 @@ public class TuyaSubDeviceHandler extends BaseTuyaDeviceHandler {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.OFFLINE) {
             // The gateway cannot connect at all, e.g. because its IP address is not known yet
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
+            updateStatus(ThingStatus.ONLINE, "@text/online.wait-for-device");
         }
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
 
             onCommunicationLost();
         }

@@ -158,7 +158,7 @@ class WebSocketV2 extends WebSocketBase {
 
             switch (jsonMsg.getEvent()) {
                 case "ms.channel.connect":
-                    logger.debug("{}: V2 channel connected. Token = {}", host, jsonMsg.data.token);
+                    logger.debug("{}: V2 channel connected", host);
 
                     // update is requested from ed.installedApp.get event: small risk that this websocket is not
                     // yet connected

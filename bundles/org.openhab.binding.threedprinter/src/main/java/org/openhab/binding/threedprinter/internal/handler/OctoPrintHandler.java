@@ -93,13 +93,11 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
     public void initialize() {
         OctoPrintConfiguration cfg = getConfigAs(OctoPrintConfiguration.class);
         if (cfg.hostname.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-hostname");
             return;
         }
         if (cfg.apiKey.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-apikey");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-apikey");
             return;
         }
         config = cfg;
