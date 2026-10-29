@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -62,9 +61,8 @@ public class ShellyComponentMedia {
     private static final String[] CHANNELS = { CHANNEL_MEDIA_CONTROL, CHANNEL_MEDIA_VOLUME, CHANNEL_MEDIA_TITLE,
             CHANNEL_MEDIA_ARTIST, CHANNEL_MEDIA_ALBUM, CHANNEL_MEDIA_TYPE, CHANNEL_MEDIA_PLAY_MEDIA_ID,
             CHANNEL_MEDIA_PLAY_RADIO_FAV_ID };
-    private static final Set<String> CHANNEL_IDS = Arrays.stream(CHANNELS)
-            .map(channel -> CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR + channel)
-            .collect(Collectors.toUnmodifiableSet());
+    private static final Set<String> CHANNEL_IDS = Set.copyOf(Arrays.stream(CHANNELS)
+            .map(channel -> CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR + channel).toList());
 
     /**
      * Only a full GetStatus is taken over: a NotifyStatus carries just the changed fields, which would clear the
