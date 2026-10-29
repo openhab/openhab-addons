@@ -492,11 +492,7 @@ public class AtagOneHandler extends BaseThingHandler {
         return ScheduleJson.parse(json, celsius.doubleValue(), lastEntries);
     }
 
-    /**
-     * Inserts {@code candidate} keyed by its start time: a period starting at the same minute is replaced, and a
-     * period that began earlier and runs past the candidate's start gets its end trimmed to that start. Anything
-     * else that overlaps (including a period that would need splitting) is rejected.
-     */
+    // An earlier period running past the new start is trimmed, not rejected, like the ATAG web UI does.
     private static double @Nullable [][] insertPeriod(double[][] day, double[] candidate) {
         if (!ScheduleJson.isValidPeriod(candidate[0], candidate[1])) {
             return null;
