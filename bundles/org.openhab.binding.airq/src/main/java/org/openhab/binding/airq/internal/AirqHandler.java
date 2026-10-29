@@ -990,11 +990,10 @@ public class AirqHandler extends BaseThingHandler {
                     updateChannels();
                 }
             } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Syntax error while parsing response from device");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Syntax error while parsing response from device");
             }
         } catch (AirqPasswordIncorrectException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device password incorrect");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Device password incorrect");
         } catch (AirqException e) {
             String causeMessage = "";
             Throwable cause = e.getCause();
@@ -1002,13 +1001,13 @@ public class AirqHandler extends BaseThingHandler {
                 causeMessage = cause.getClass().getSimpleName() + ": " + cause.getMessage() + ": ";
             }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, causeMessage + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, causeMessage + e.getMessage());
         } catch (InterruptedException e) {
             // nothing
         } catch (RuntimeException e) {
             // an uncaught exception would cancel the scheduled polling job for good
             logger.debug("Failed to process measurement data", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Failed to process measurement data: " + e.getMessage());
         }
     }
