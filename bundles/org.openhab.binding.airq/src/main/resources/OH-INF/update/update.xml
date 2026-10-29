@@ -623,6 +623,16 @@
 			<update-channel id="performance" groupIds="measurements">
 				<type>airq:performance-raw</type>
 			</update-channel>
+			<update-channel id="temperature" groupIds="measurements">
+				<type>system:indoor-temperature</type>
+			</update-channel>
+			<update-channel id="humidity-relative" groupIds="measurements">
+				<type>system:atmospheric-humidity</type>
+			</update-channel>
+			<update-channel id="pressure" groupIds="measurements">
+				<type>system:barometric-pressure</type>
+				<description>Absolute air pressure at the location of the device.</description>
+			</update-channel>
 			<update-channel id="so2">
 				<type>airq:so2-number</type>
 			</update-channel>

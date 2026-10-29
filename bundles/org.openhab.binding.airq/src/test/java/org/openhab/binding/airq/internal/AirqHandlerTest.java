@@ -1477,7 +1477,7 @@ class AirqHandlerTest {
             assertThat(channelIds.stream().distinct().count(), is((long) channelIds.size()));
             for (Element channel : groupChannels) {
                 assertThat(channel.getAttribute("id"), matchesPattern("[a-z0-9]+(?:-[a-z0-9]+)*"));
-                assertThat(channel.getAttribute("typeId"), matchesPattern("[a-z0-9]+(?:-[a-z0-9]+)*"));
+                assertThat(channel.getAttribute("typeId"), matchesPattern("(?:system\\.)?[a-z0-9]+(?:-[a-z0-9]+)*"));
             }
             channels.addAll(groupChannels);
             assertThat(findElement(metadata,
@@ -1488,6 +1488,9 @@ class AirqHandlerTest {
         List<String> typeIds = channelTypes.stream().map(type -> type.getAttribute("id")).toList();
         assertThat(typeIds.stream().distinct().count(), is((long) typeIds.size()));
         for (Element instructionType : elements(upgrades, "//instruction-set/*/type")) {
+            if (instructionType.getTextContent().startsWith("system:")) {
+                continue;
+            }
             String typeId = instructionType.getTextContent().substring("airq:".length());
             assertThat("Missing historical channel type " + typeId,
                     findElement(metadata, "//channel-type[@id='" + typeId + "']"), notNullValue());
@@ -1503,10 +1506,11 @@ class AirqHandlerTest {
         }
         // version 6 changes the item types of channels that keep their group, moves the channels of version 5 to the
         // groups status, measurements, events, maxerr and settings, and adds the new channels
-        assertThat(changes, hasSize(255));
+        assertThat(changes, hasSize(258));
         assertThat(changes, hasItems("update-channel measurements#so2 airq:so2", "update-channel #so2 airq:so2-number",
                 "update-channel measurements#health airq:health-raw",
                 "update-channel measurements#performance airq:performance-raw",
+                "update-channel measurements#temperature system:indoor-temperature",
                 "update-channel maxerr#co-maxerr airq:co-maxerr", "remove-channel general#sound-pressure",
                 "remove-channel general#password", "remove-channel #password", "remove-channel general#delete-key",
                 "remove-channel #deleteKey", "remove-channel general#error-bars", "remove-channel #errorBars",
@@ -1551,7 +1555,10 @@ class AirqHandlerTest {
             String[] id = channel.getKey().split("#");
             Element definition = element(metadata,
                     "//channel-group-type[@id='" + id[0] + "']/channels/channel[@id='" + id[1] + "']");
-            assertThat(channel.getValue(), is("airq:" + definition.getAttribute("typeId")));
+            assertThat(channel.getValue(),
+                    is(definition.getAttribute("typeId").startsWith("system.")
+                            ? definition.getAttribute("typeId").replace("system.", "system:")
+                            : "airq:" + definition.getAttribute("typeId")));
         }
         assertThat(channels, hasSize(191));
     }
@@ -1734,14 +1741,20 @@ class AirqHandlerTest {
                     + "']/channels/channel[@id='" + measurementId + "']");
             Element errorType = element(thingTypes,
                     "//channel-type[@id='" + errorChannel.getAttribute("typeId") + "']/item-type");
-            Element valueType = element(thingTypes,
-                    "//channel-type[@id='" + measurement.getAttribute("typeId") + "']/item-type");
+            String valueTypeId = measurement.getAttribute("typeId");
+            if (valueTypeId.startsWith("system.")) {
+                // the unit of a system channel type is the default unit of its dimension
+                assertThat(measurementId, errorType.getTextContent(),
+                        is(requireNonNull(SYSTEM_CHANNEL_TYPES.get(valueTypeId)).getFirst()));
+            } else {
+                Element valueType = element(thingTypes, "//channel-type[@id='" + valueTypeId + "']/item-type");
 
-            assertThat(measurementId, errorType.getTextContent(), is(valueType.getTextContent()));
-            // temperature errors are differences in kelvin
-            assertThat(measurementId, errorType.getAttribute("unitHint"),
-                    is("Number:Temperature".equals(valueType.getTextContent()) ? "K"
-                            : valueType.getAttribute("unitHint")));
+                assertThat(measurementId, errorType.getTextContent(), is(valueType.getTextContent()));
+                // temperature errors are differences in kelvin
+                assertThat(measurementId, errorType.getAttribute("unitHint"),
+                        is("Number:Temperature".equals(valueType.getTextContent()) ? "K"
+                                : valueType.getAttribute("unitHint")));
+            }
             assertThat(measurementId,
                     element(thingTypes, "//channel-type[@id='" + errorChannel.getAttribute("typeId") + "']/state")
                             .getAttribute("pattern"),
@@ -1816,15 +1829,30 @@ class AirqHandlerTest {
         for (String group : List.of("status", "measurements", "events", "settings")) {
             for (Element channel : elements(thingTypes, "//channel-group-type[@id='" + group + "']/channels/channel")) {
                 String id = channel.getAttribute("id");
-                Element type = element(thingTypes, "//channel-type[@id='" + channel.getAttribute("typeId") + "']");
-                Element description = findElement(type, "description");
-                String text = (description != null ? description : element(type, "label")).getTextContent()
-                        .replaceAll("\\s+", " ").replaceAll("\\.$", "");
+                String typeId = channel.getAttribute("typeId");
+                Element override = findElement(channel, "description");
+                List<String> expected;
+                if (typeId.startsWith("system.")) {
+                    List<String> system = requireNonNull(SYSTEM_CHANNEL_TYPES.get(typeId), typeId);
+                    expected = List.of(system.getFirst(), override != null ? override.getTextContent() : system.get(1));
+                } else {
+                    Element type = element(thingTypes, "//channel-type[@id='" + typeId + "']");
+                    Element description = override != null ? override : findElement(type, "description");
+                    expected = List.of(element(type, "item-type").getTextContent(),
+                            (description != null ? description : element(type, "label")).getTextContent());
+                }
 
-                assertThat(id, rows.get(id), is(List.of(element(type, "item-type").getTextContent(), text)));
+                assertThat(id, rows.get(id), is(
+                        List.of(expected.getFirst(), expected.get(1).replaceAll("\\s+", " ").replaceAll("\\.$", ""))));
             }
         }
     }
+
+    // DefaultSystemChannelTypeProvider of openHAB core: the item type and the description
+    private static final Map<String, List<String>> SYSTEM_CHANNEL_TYPES = Map.of("system.indoor-temperature",
+            List.of("Number:Temperature", "Current indoor temperature"), "system.atmospheric-humidity",
+            List.of("Number:Dimensionless", "Current atmospheric relative humidity"), "system.barometric-pressure",
+            List.of("Number:Pressure", "Current barometric pressure"));
 
     @Test
     void newUpdateInstructionsUseTheMicroSign() throws Exception {
@@ -2409,11 +2437,17 @@ class AirqHandlerTest {
             String groupId = ((ChannelGroupTypeUID) invocation.getArgument(1)).getId();
             List<ChannelBuilder> builders = new ArrayList<>();
             for (Element channel : groups.getOrDefault(groupId, List.of())) {
-                Element type = element(metadata, "//channel-type[@id='" + channel.getAttribute("typeId") + "']");
-                builders.add(ChannelBuilder
-                        .create(new ChannelUID(thingUID, groupId + "#" + channel.getAttribute("id")),
-                                element(type, "item-type").getTextContent())
-                        .withType(new ChannelTypeUID("airq", channel.getAttribute("typeId"))));
+                String typeId = channel.getAttribute("typeId");
+                ChannelUID channelUID = new ChannelUID(thingUID, groupId + "#" + channel.getAttribute("id"));
+                if (typeId.startsWith("system.")) {
+                    builders.add(ChannelBuilder
+                            .create(channelUID, requireNonNull(SYSTEM_CHANNEL_TYPES.get(typeId)).getFirst())
+                            .withType(new ChannelTypeUID("system", typeId.substring("system.".length()))));
+                } else {
+                    Element type = element(metadata, "//channel-type[@id='" + typeId + "']");
+                    builders.add(ChannelBuilder.create(channelUID, element(type, "item-type").getTextContent())
+                            .withType(new ChannelTypeUID("airq", typeId)));
+                }
             }
             return builders;
         }).when(callback).createChannelBuilders(any(), any());

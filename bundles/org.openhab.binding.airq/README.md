@@ -89,8 +89,8 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 
 | channel                    | type                               | rw    | description                                                                              |
 |----------------------------|------------------------------------|-------|------------------------------------------------------------------------------------------|
-| temperature                | Number:Temperature                 |       | Temperature                                                                              |
-| humidity-relative          | Number:Dimensionless               |       | Humidity                                                                                 |
+| temperature                | Number:Temperature                 |       | Current indoor temperature                                                               |
+| humidity-relative          | Number:Dimensionless               |       | Current atmospheric relative humidity                                                    |
 | humidity-absolute          | Number:Density                     |       | Mass of water vapour per volume of air                                                   |
 | dewpt                      | Number:Temperature                 |       | Dew Point                                                                                |
 | d-hdt                      | Number                             |       | Change of the absolute humidity in mg/m³/s                                               |
@@ -320,8 +320,8 @@ String                airQ_WLAN_config_MAC          "MAC Address"               
 String                airQ_WLAN_config_BSSID        "Network BSSID"                                        {channel="airq:airq:1:status#wlan-config-bssid"}
 String                airQ_cloudConnection          "Cloud Connection"                                     {channel="airq:airq:1:status#cloud-connection"}
 
-Number:Temperature    airQ_temperature              "Temperature"                                          {channel="airq:airq:1:measurements#temperature"}
-Number:Dimensionless  airQ_humidityRelative         "Humidity"                                             {channel="airq:airq:1:measurements#humidity-relative"}
+Number:Temperature    airQ_temperature              "Indoor Temperature"                                   {channel="airq:airq:1:measurements#temperature"}
+Number:Dimensionless  airQ_humidityRelative         "Atmospheric Humidity"                                 {channel="airq:airq:1:measurements#humidity-relative"}
 Number:Density        airQ_humidityAbsolute         "Absolute Humidity"                                    {channel="airq:airq:1:measurements#humidity-absolute"}
 Number:Temperature    airQ_dewpt                    "Dew Point"                                            {channel="airq:airq:1:measurements#dewpt"}
 Number                airQ_dHdt                     "Change of Humidity"                                   {channel="airq:airq:1:measurements#d-hdt"}

@@ -68,12 +68,14 @@
 	<channel-group-type id="measurements">
 		<label>Measurements</label>
 		<channels>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="humidity-relative" typeId="humidity"/>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="humidity-relative" typeId="system.atmospheric-humidity"/>
 			<channel id="humidity-absolute" typeId="humidity-abs"/>
 			<channel id="dewpt" typeId="dewpt"/>
 			<channel id="d-hdt" typeId="dhdt"/>
-			<channel id="pressure" typeId="pressure"/>
+			<channel id="pressure" typeId="system.barometric-pressure">
+				<description>Absolute air pressure at the location of the device.</description>
+			</channel>
 			<channel id="pressure-rel" typeId="pressure-rel"/>
 			<channel id="health-index" typeId="health-index"/>
 			<channel id="health" typeId="health-raw"/>
@@ -326,69 +328,117 @@
 	<channel-type id="typps" advanced="false">
 		<item-type unitHint="µm">Number:Length</item-type>
 		<label>Average Size of Fine Dust</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="cnt0-3" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fine Dust Count 0.3 µm</label>
 		<description>Number of particles larger than 0.3 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt0-5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fine Dust Count 0.5 µm</label>
 		<description>Number of particles larger than 0.5 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt1" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fine Dust Count 1 µm</label>
 		<description>Number of particles larger than 1 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt2-5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fine Dust Count 2.5 µm</label>
 		<description>Number of particles larger than 2.5 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fine Dust Count 5 µm</label>
 		<description>Number of particles larger than 5 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt10" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fine Dust Count 10 µm</label>
 		<description>Number of particles larger than 10 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="co" advanced="false">
 		<item-type unitHint="mg/m³">Number:Density</item-type>
 		<label>Carbon Monoxide (CO)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="co2" advanced="false">
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Carbon Dioxide (CO₂)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="dco2dt" advanced="false">
 		<item-type>Number</item-type>
 		<label>Change of CO₂ Concentration</label>
 		<description>Change of the CO₂ concentration in ppb/s; 0 during the first 200 seconds.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f ppb/s"></state>
 	</channel-type>
 	<channel-type id="dhdt" advanced="false">
 		<item-type>Number</item-type>
 		<label>Change of Humidity</label>
 		<description>Change of the absolute humidity in mg/m³/s.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f mg/m³/s"></state>
 	</channel-type>
 	<channel-type id="dewpt" advanced="false">
 		<item-type>Number:Temperature</item-type>
 		<label>Dew Point</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="door" advanced="false">
@@ -400,12 +450,20 @@
 	<channel-type id="h2s" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Sulfide (H₂S)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="health-index" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Health Index</label>
 		<description>0 to 100 % for a normal rating, -20 % during a gas alarm and -80 % during a fire alarm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="health" advanced="true">
@@ -435,6 +493,10 @@
 		<item-type unitHint="g/m³">Number:Density</item-type>
 		<label>Absolute Humidity</label>
 		<description>Mass of water vapour per volume of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="mtime" advanced="true">
@@ -446,22 +508,38 @@
 	<channel-type id="no2" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Nitrogen Dioxide (NO₂)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="o3" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ozone (O₃)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ozone</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="oxygen" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Oxygen (O₂)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="performance-index" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Performance Index</label>
 		<description>0 to 100 % for a normal rating.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="performance" advanced="true">
@@ -474,30 +552,50 @@
 		<item-type>Number</item-type>
 		<label>Health Index Raw</label>
 		<description>0 to 1000 for a normal rating, -200 during a gas alarm and -800 during a fire alarm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="performance-raw" advanced="true">
 		<item-type>Number</item-type>
 		<label>Performance Index Raw</label>
 		<description>0 to 1000 for a normal rating.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="pm1" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fine Dust 1 µm</label>
 		<description>Mass concentration of particles up to 1 µm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pm10" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fine Dust 10 µm</label>
 		<description>Mass concentration of particles up to 10 µm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pm2-5" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fine Dust 2.5 µm</label>
 		<description>Mass concentration of particles up to 2.5 µm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pressure" advanced="false">
@@ -518,12 +616,20 @@
 	<channel-type id="so2" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Sulfur Dioxide (SO₂)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="sound" advanced="false">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<description>A-weighted sound level, averaged.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="temperature" advanced="false">
@@ -540,6 +646,10 @@
 	<channel-type id="tvoc" advanced="false">
 		<item-type unitHint="ppb">Number:Dimensionless</item-type>
 		<label>Volatile Organic Compounds (VOC)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
@@ -551,128 +661,228 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Virus-Free Index</label>
 		<description>Aerosol load with CO₂ as indicator; 100 % is fine, 0 % means insufficient ventilation.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="mold-free" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Mold-Free Index</label>
 		<description>Mold risk from the long-term humidity; 100 % is fine, 0 % means insufficient ventilation.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="c2h4o" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Acetaldehyde (C2H4O)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="nh3-mr100" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ammonia (NH3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ash3" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Arsine (AsH3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="br2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Bromine (Br2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ch4s" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Methanethiol (CH4S)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="cl2-m20" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Chlorine (Cl2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="clo2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Chlorine Dioxide (ClO2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="cs2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Carbon Disulfide (CS2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ethanol" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ethanol</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="c2h4" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ethylene (C2H4)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ch2o-m10" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Formaldehyde (CH2O)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="f2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fluorine (F2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hcl" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrochloric Acid (HCl)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hcn" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Cyanide (HCN)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hf" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Fluoride (HF)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="h2-m1000" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen (H2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="h2o2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Peroxide (H2O2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="n2o" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Nitrous Oxide (N2O)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="no-m250" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Nitrogen Monoxide (NO)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="acid-m100" advanced="true">
 		<item-type unitHint="ppb">Number:Dimensionless</item-type>
 		<label>Organic Acid</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ph3" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Phosphide (PH3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="sih4" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Silane (SiH4)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="tvoc-ionsc" advanced="true">
 		<item-type unitHint="ppb">Number:Dimensionless</item-type>
 		<label>Industrial VOC</label>
 		<description>VOC measured with the ION Science PID sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure-rel" advanced="true">
@@ -691,33 +901,53 @@
 		<description>Maximum noise in the data rate interval; shows short loud events that averaging hides.</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>SoundVolume</tag>
+			<tag>Noise</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ch4-mipex" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Methane (CH4)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="c3h8-mipex" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Propane (C3H8)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="r32" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Refrigerant R32</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="r454b" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Refrigerant R454B</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="r454c" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Refrigerant R454C</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="person" advanced="false">
@@ -742,90 +972,150 @@
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Wi-Fi Signal Strength</label>
 		<description>Signal strength of the Wi-Fi connection, UNDEF while not connected.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="flow1" advanced="true">
 		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>Air Flow 1</label>
 		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="flow2" advanced="true">
 		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>Air Flow 2</label>
 		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="flow3" advanced="true">
 		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>Air Flow 3</label>
 		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="flow4" advanced="true">
 		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>Air Flow 4</label>
 		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="pm1-sps30" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fine Dust 1 µm (SPS30)</label>
 		<description>Mass concentration of particles up to 1 µm, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm2-5-sps30" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fine Dust 2.5 µm (SPS30)</label>
 		<description>Mass concentration of particles up to 2.5 µm, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm4-sps30" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fine Dust 4 µm (SPS30)</label>
 		<description>Mass concentration of particles up to 4 µm, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm10-sps30" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fine Dust 10 µm (SPS30)</label>
 		<description>Mass concentration of particles up to 10 µm, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="cnt0-5-sps30" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fine Dust Count 0.5 µm (SPS30)</label>
 		<description>Number of particles larger than 0.5 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="cnt1-sps30" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fine Dust Count 1 µm (SPS30)</label>
 		<description>Number of particles larger than 1 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="cnt2-5-sps30" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fine Dust Count 2.5 µm (SPS30)</label>
 		<description>Number of particles larger than 2.5 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="cnt4-sps30" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fine Dust Count 4 µm (SPS30)</label>
 		<description>Number of particles larger than 4 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="cnt10-sps30" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fine Dust Count 10 µm (SPS30)</label>
 		<description>Number of particles larger than 10 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f /cm³"/>
 	</channel-type>
 	<channel-type id="typps-sps30" advanced="true">
 		<item-type unitHint="µm">Number:Length</item-type>
 		<label>Average Size of Fine Dust (SPS30)</label>
 		<description>Mean particle size, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="density-maxerr" advanced="true">
