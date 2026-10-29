@@ -264,12 +264,10 @@ Every call resends the entire week's schedule with only the targeted
 period changed; **writing a schedule has been observed to make the thermostat briefly unresponsive
 (around 100 seconds)**, so avoid calling these from a tight loop or in response to frequent events.
 
-Periods are half-open: `[aStart, aEnd)` and `[bStart, bEnd)` overlap if `aStart < bEnd && aEnd > bStart`, so one period ending exactly when the next starts is not an overlap.
-`setChSchedulePeriod`/`setDhwSchedulePeriod` are keyed by `start`: a period that starts at the same time is replaced, and an earlier period that runs past the new `start` has its end trimmed to it.
-They reject the call if the new period would overlap a later period, or would sit inside a longer earlier period, which would need splitting.
+Periods are half-open, so one period ending exactly when the next starts is not an overlap.
+`setChSchedulePeriod`/`setDhwSchedulePeriod` reject a period that overlaps a later one, or sits inside a longer earlier one, which would need splitting.
 `setChSchedule`/`setDhwSchedule` never trim: any overlap within a weekday rejects the whole call.
 Rejection returns `false` with no write sent.
-It is the same generic failure signal used for every other invalid input on these actions (unknown weekday, no period starting at that time, malformed JSON, invalid bounds), so there is no separate error code for a schedule conflict.
 
 `setChSchedule`/`setDhwSchedule` take the same JSON shape `heating#schedule`/`hotwater#schedule`
 publish:
