@@ -441,6 +441,7 @@
 				<label>Voltmeter 3</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
