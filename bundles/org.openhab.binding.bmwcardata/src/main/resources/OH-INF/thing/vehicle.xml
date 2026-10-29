@@ -319,40 +319,40 @@
 		<label>Tyres</label>
 		<channels>
 			<channel id="pressure-front-left" typeId="tyre-pressure">
-				<label>Front Left Pressure</label>
+				<label>Front Left Tyre Pressure</label>
 			</channel>
 			<channel id="pressure-front-right" typeId="tyre-pressure">
-				<label>Front Right Pressure</label>
+				<label>Front Right Tyre Pressure</label>
 			</channel>
 			<channel id="pressure-rear-left" typeId="tyre-pressure">
-				<label>Rear Left Pressure</label>
+				<label>Rear Left Tyre Pressure</label>
 			</channel>
 			<channel id="pressure-rear-right" typeId="tyre-pressure">
-				<label>Rear Right Pressure</label>
+				<label>Rear Right Tyre Pressure</label>
 			</channel>
 			<channel id="target-front-left" typeId="tyre-target-pressure">
-				<label>Front Left Target Pressure</label>
+				<label>Front Left Tyre Target Pressure</label>
 			</channel>
 			<channel id="target-front-right" typeId="tyre-target-pressure">
-				<label>Front Right Target Pressure</label>
+				<label>Front Right Tyre Target Pressure</label>
 			</channel>
 			<channel id="target-rear-left" typeId="tyre-target-pressure">
-				<label>Rear Left Target Pressure</label>
+				<label>Rear Left Tyre Target Pressure</label>
 			</channel>
 			<channel id="target-rear-right" typeId="tyre-target-pressure">
-				<label>Rear Right Target Pressure</label>
+				<label>Rear Right Tyre Target Pressure</label>
 			</channel>
 			<channel id="temperature-front-left" typeId="tyre-temperature">
-				<label>Front Left Temperature</label>
+				<label>Front Left Tyre Temperature</label>
 			</channel>
 			<channel id="temperature-front-right" typeId="tyre-temperature">
-				<label>Front Right Temperature</label>
+				<label>Front Right Tyre Temperature</label>
 			</channel>
 			<channel id="temperature-rear-left" typeId="tyre-temperature">
-				<label>Rear Left Temperature</label>
+				<label>Rear Left Tyre Temperature</label>
 			</channel>
 			<channel id="temperature-rear-right" typeId="tyre-temperature">
-				<label>Rear Right Temperature</label>
+				<label>Rear Right Tyre Temperature</label>
 			</channel>
 		</channels>
 	</channel-group-type>

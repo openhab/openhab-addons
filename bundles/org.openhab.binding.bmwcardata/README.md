@@ -105,7 +105,9 @@ If other tools need the stream independent of openHAB, run the bmw-mqtt-bridge a
 BMW allows 50 requests to the CarData API per account and day, reset at midnight UTC, shared by all vehicles and all tools using the account (see BMW's [additional information on the CarData API](https://bmw-cardata.bmwgroup.com/customer/public/api-documentation/Id-CarData-API_Additional-information)).
 The stream is not affected by this limit, so the binding uses the API only to complete the stream data:
 
-- Two minutes after the authorization, and then every `refreshInterval` hours, the current values of all vehicles are read, one request per vehicle.
+- When a vehicle goes `ONLINE` after its start, after the start of the account or after a new authorization, its current values are read once, one request.
+  Later status changes, e.g. when the account was offline for a moment, do not read it again; if the request budget is used up at that time, the vehicle is read at the next periodic refresh.
+- Every `refreshInterval` hours, the current values of all vehicles are read, one request per vehicle.
 - When the stream was interrupted for five minutes or more, the values are read again after the reconnect, as the stream does not replay missed values.
   This catch-up runs at most every 30 minutes.
 - When a read fails on BMW's side (e.g. HTTP 502) or times out, it is repeated once after 15 minutes for the affected vehicles.
@@ -113,9 +115,11 @@ The stream is not affected by this limit, so the binding uses the API only to co
 - The static vehicle data shown as Thing properties is read once per vehicle, and the binding sets up its own telematic data container named `openHAB` on first use, which costs a few requests.
   A vehicle goes `ONLINE` once its static data is known; if it cannot be read, e.g. while the request budget is used up, the vehicle stays `OFFLINE` and the binding tries again after 15 minutes.
   If BMW no longer accepts the container, e.g. because it was deleted, the binding sets up a new one at the next read.
+  The same happens once after an update of the binding that reads other data points.
   BMW allows 10 containers per customer; if all are used by other tools, the vehicles report this, and one has to be deleted.
 - The vehicle image is read once per vehicle, and only when an item is linked to the `status#image` channel.
   Like the static data, it is kept, so it costs no further requests after a restart; if it cannot be read, e.g. while the request budget is used up, the binding tries again after 15 minutes.
+  It does not retry failures that do not pass by themselves, e.g. when BMW has no image for the vehicle.
 - If BMW does not provide the data of a vehicle to the client, e.g. because it is not mapped to the account as primary user, the vehicle goes `OFFLINE (CONFIGURATION_ERROR)` and is no longer read; disable and enable the Thing once this is fixed.
 
 The binding counts its requests over a rolling 24 hours per client ID, also across restarts and when the account thing is recreated, and sends at most `requestBudget` requests.
@@ -288,7 +292,12 @@ Values the vehicle reports as unavailable (e.g. `INVALID`, `-NA-` or `UNKNOWN`),
 ### Dynamic Channels
 
 BMW CarData provides several hundred data points, of which only the most common ones have a predefined channel.
-If `dynamicChannels` is enabled, the binding adds a channel for every other data point it receives, typically data selected for the stream in the customer portal.
+If `dynamicChannels` is enabled, the binding adds a channel for every other data point it receives through the stream.
+These data points need to be enabled in the customer portal.
+Note that data points that cannot be streamed and are not included in the binding will never become available as dynamic channels, even when your car could provide data.
+
+Dynamic channels will also not get a state update at startup.
+They will only update from streamed data.
 
 - The channels are created in the channel group `other`.
 - The channel ID is the CarData identifier without the `vehicle.` prefix in lower-case-hyphen notation, e.g. `vehicle.cabin.sunroof.tiltStatus` becomes `other#cabin-sunroof-tilt-status`.

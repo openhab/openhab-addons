@@ -63,13 +63,6 @@ public record BrokerSettings(String host, int port, boolean secure, String usern
     }
 
     /**
-     * @return the topic of the stream messages of a vehicle, {@code <prefix>raw/<vin>}
-     */
-    public String rawTopic(String vin) {
-        return topicPrefix + "raw/" + vin;
-    }
-
-    /**
      * @return the topic of the bridge state, {@code <prefix>status}
      */
     public String statusTopic() {
