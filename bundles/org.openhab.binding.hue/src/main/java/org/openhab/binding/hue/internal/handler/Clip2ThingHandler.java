@@ -818,8 +818,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         String resourceId = config.resourceId;
         if (resourceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error.resource-id-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.resource-id-missing");
             return;
         }
         thisResource.setId(resourceId);
@@ -989,8 +988,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     .ifPresentOrElse(r -> onResource(r), () -> {
                         if (resourceType == thisResource.getType()) {
                             logger.debug("{} -> onResourcesList() configuration error: unknown resourceId", resourceId);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                                    "@text/offline.api2.gone.resource-id-unknown");
+                            updateStatus(ThingStatusDetail.GONE, "@text/offline.api2.gone.resource-id-unknown");
                         }
                     });
         }
@@ -1357,7 +1355,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (statusInfo.getStatus() != ThingStatus.OFFLINE
                         || statusInfo.getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR
                         || !description.equals(statusInfo.getDescription())) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, description);
                     supportedChannelIdSet.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
                 }
                 return;
@@ -1365,7 +1363,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             String fwState = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
             if (UpdateStatusV2.INSTALLING.toString().equals(fwState)) {
                 // firmware update still in progress; remain OFFLINE(FIRMWARE_UPDATING)
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
+                updateStatus(ThingStatusDetail.FIRMWARE_UPDATING);
                 return;
             }
             if (thing.getStatus() != ThingStatus.ONLINE) {
@@ -1403,11 +1401,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateDependenciesDone = true;
             } catch (ApiException e) {
                 logger.debug("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (AssetNotLoadedException e) {
                 logger.debug("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.api2.conf-error.assets-not-loaded");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.assets-not-loaded");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -1818,7 +1815,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 return;
             }
             if (status == UpdateStatusV2.INSTALLING) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
+                updateStatus(ThingStatusDetail.FIRMWARE_UPDATING);
             } else {
                 // the updateStatus() override below takes care of setting the status detail and description
                 updateStatus(ThingStatus.ONLINE);
@@ -1827,31 +1824,55 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Override method: Updates the thing status based on the given status, status detail, and description. If the
-     * status is ONLINE and the firmware property indicates that an update is available, then the description is
-     * overridden with the respective update state's translatable text. If the status detail is FIRMWARE_UPDATING,
-     * then the description is overridden with the translatable 'installing update' text. In all other cases,
-     * the given status, status detail, and description are used unchanged.
+     * Preserve the firmware update state when the resource is otherwise reported ONLINE. Other statuses pass through
+     * unchanged.
      */
     @Override
-    protected void updateStatus(ThingStatus thingStatus, ThingStatusDetail detail, @Nullable String description) {
-        if (thingStatus == ThingStatus.ONLINE || detail == ThingStatusDetail.FIRMWARE_UPDATING) {
-            String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
-            UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
-            if (status != null) {
-                switch (status) {
-                    case INSTALLING:
-                        super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
-                        return;
-                    case READY_TO_INSTALL:
-                        super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
-                        return;
-                    default:
-                }
-            }
-            // if there is no software update status preserve the caller-provided status information
+    protected void updateStatus(ThingStatus thingStatus) {
+        if (thingStatus != ThingStatus.ONLINE || !updateFirmwareStatus()) {
+            super.updateStatus(thingStatus);
         }
-        super.updateStatus(thingStatus, detail, description);
+    }
+
+    /**
+     * Use the firmware update state's translatable description for ONLINE updates instead of the caller's description.
+     * Other statuses and descriptions pass through unchanged.
+     */
+    @Override
+    protected void updateStatus(ThingStatus thingStatus, @Nullable String description) {
+        if (thingStatus != ThingStatus.ONLINE || !updateFirmwareStatus()) {
+            super.updateStatus(thingStatus, description);
+        }
+    }
+
+    /**
+     * Use the firmware update state's translatable description for FIRMWARE_UPDATING requests. Other details and
+     * descriptions pass through unchanged.
+     */
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        if (detail != ThingStatusDetail.FIRMWARE_UPDATING || !updateFirmwareStatus()) {
+            super.updateStatus(detail, description);
+        }
+    }
+
+    /**
+     * Apply the firmware state stored in the Thing property. INSTALLING sets OFFLINE with FIRMWARE_UPDATING;
+     * READY_TO_INSTALL keeps the Thing ONLINE. Both use the update state's translatable description.
+     *
+     * @return true if the firmware state replaced the requested status
+     */
+    private boolean updateFirmwareStatus() {
+        String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
+        UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
+        if (status == UpdateStatusV2.INSTALLING) {
+            super.updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+            return true;
+        } else if (status == UpdateStatusV2.READY_TO_INSTALL) {
+            super.updateStatus(ThingStatus.ONLINE, status.i18nKey());
+            return true;
+        }
+        return false;
     }
 
     /**

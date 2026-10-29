@@ -227,16 +227,17 @@ public class BluelinkApiEUTest {
         assertTrue(api.login());
 
         verify(1, postRequestedFor(urlEqualTo("/auth/account/signin")));
-        verify(1, postRequestedFor(urlEqualTo("/domain/api/v2/auth/token-refresh")));
+        verify(1, postRequestedFor(urlEqualTo(CciLoginStubs.SIGNED_TOKEN_REFRESH_PATH)));
         assertEquals("ccs-2", api.accessToken);
     }
 
     @ParameterizedTest
-    @CsvSource({ "HYUNDAI, 4f4953b5-02e1-4dbc-8599-87e983ee1be5, com.hyundai.oneapp.eu, hyundai, 18.7, APNS",
-            "KIA, 01b36c86-79e8-486c-8009-15f2ad88d670, com.kia.oneapp.eu, kia, 27, IOS_APPSTORE",
-            "GENESIS, 50e3b8b0-ced5-43b7-8a42-f86ac92fe50e, com.genesis.oneapp.eu, genesis, 18.7, APNS" })
-    void testPasswordLoginUsesBrandClient(final Brand brand, final String oneAppClientId, final String packageId,
-            final String clientName, final String osVersion, final String notificationProvider) throws Exception {
+    @CsvSource({ "HYUNDAI, 4f4953b5-02e1-4dbc-8599-87e983ee1be5, true, com.hyundai.oneapp.eu, HyundaiEU, 14, FCM",
+            "KIA, 01b36c86-79e8-486c-8009-15f2ad88d670, true, com.kia.oneapp.eu, KiaEU, 14, FCM",
+            "GENESIS, 50e3b8b0-ced5-43b7-8a42-f86ac92fe50e, false, com.genesis.oneapp.eu, genesis, 18.7, APNS" })
+    void testPasswordLoginUsesBrandClient(final Brand brand, final String oneAppClientId, final boolean signed,
+            final String packageId, final String clientName, final String osVersion, final String notificationProvider)
+            throws Exception {
         resetAllRequests();
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, SCHEDULER, brand, Map.of(), baseUrl, timeZoneProvider,
@@ -245,8 +246,9 @@ public class BluelinkApiEUTest {
 
         verify(getRequestedFor(urlPathEqualTo("/auth/api/v2/user/oauth2/authorize")).withQueryParam("client_id",
                 equalTo(oneAppClientId)));
-        verify(postRequestedFor(urlPathEqualTo("/domain/api/v1/auth/token")).withHeader("client-id", equalTo(packageId))
-                .withHeader("client-name", equalTo(clientName)).withHeader("client-os-version", equalTo(osVersion))
+        verify(postRequestedFor(urlPathEqualTo(signed ? CciLoginStubs.SIGNED_TOKEN_PATH : CciLoginStubs.TOKEN_PATH))
+                .withHeader("client-id", equalTo(packageId)).withHeader("client-name", equalTo(clientName))
+                .withHeader("client-os-version", equalTo(osVersion))
                 .withHeader("client-notification-provider-type", equalTo(notificationProvider)));
     }
 

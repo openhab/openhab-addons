@@ -80,8 +80,7 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/config-status.error.missing-udn");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/config-status.error.missing-udn");
         }
     }
 
@@ -101,7 +100,7 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
             // Check if the Wemo device is set in the UPnP service registry
             if (!isUpnpDeviceRegistered()) {
                 logger.debug("UPnP device {} not yet registered", getUDN());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                updateStatus(ThingStatus.OFFLINE,
                         "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                 return;
             }
@@ -122,11 +121,10 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                     probeAndExecuteCall(BASICACTION, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (MissingHostException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/config-status.error.missing-ip");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
                 } catch (WemoException e) {
                     logger.warn("Failed to send command '{}' for thing '{}' ", command, getThing().getUID(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         }
@@ -203,11 +201,10 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                 logger.warn("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(), e);
             }
         } catch (MissingHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
         } catch (WemoException e) {
             logger.debug("Failed to get attributes for thing '{}'", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

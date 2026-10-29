@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandler;
 
@@ -44,7 +43,7 @@ public interface ApiConsumerIntf extends ThingHandler {
 
     void updateProperties(@Nullable Map<String, String> properties);
 
-    void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
+    void updateStatus(ThingStatusDetail statusDetail, @Nullable String description);
 
     boolean anyChannelLinked(String groupId, Set<String> channelSet);
 

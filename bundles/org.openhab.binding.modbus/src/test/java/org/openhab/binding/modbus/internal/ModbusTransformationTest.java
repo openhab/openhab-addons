@@ -15,15 +15,31 @@ package org.openhab.binding.modbus.internal;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 
 /**
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
 public class ModbusTransformationTest {
+    @Test
+    public void testCommandConversionDoesNotAcceptContactStates() {
+        assertEquals(Optional.empty(), ModbusTransformation.tryConvertToCommand("OPEN"));
+        assertEquals(Optional.of(OnOffType.ON), ModbusTransformation.tryConvertToCommand("ON"));
+    }
+
+    @Test
+    public void testContactStateTransformation() {
+        ModbusTransformation transformation = new ModbusTransformation(List.of("default"));
+        assertEquals(OpenClosedType.OPEN,
+                transformation.transformState(List.of(OpenClosedType.class), OpenClosedType.OPEN));
+    }
+
     @Test
     public void testTransformationEmpty() {
         ModbusTransformation transformation = new ModbusTransformation(List.of(""));

@@ -1,14 +1,15 @@
 {
 	"deviceMapping": {
 		"id": [
-			"xiaomi.vacuum.b106bk"
+			"xiaomi.vacuum.b106bk",
+			"xiaomi.vacuum.b106eu"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
 		"channels": [
 			{
 				"property": "",
-				"friendlyName": "Robot Cleaner - Actions",
+				"friendlyName": "Actions",
 				"channel": "actions",
 				"type": "String",
 				"stateDescription": {
@@ -126,6 +127,7 @@
 						}
 					}
 				],
+				"category": "cleaningrobot",
 				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Cleaning\",\"vacuum-stop-sweeping\"\u003d\"Stop Cleaning\",\"vacuum-start-only-sweep\"\u003d\"Start Vacuuming Only\",\"vacuum-start-sweep-mop\"\u003d\"Start Vacuuming And Mopping\",\"vacuum-start-mop\"\u003d\"Start Mopping Only\",\"battery-start-charge\"\u003d\"Go Charging\"]`"
 			},
 			{
@@ -326,7 +328,7 @@
 				"property": "alarm",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Alarm - Locate",
+				"friendlyName": "Alarm - Find Robot",
 				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
@@ -336,9 +338,9 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "alarm",
 				"tags": [
-					"Switch",
-					"Enabled"
+					"Switch"
 				]
 			},
 			{
@@ -347,13 +349,12 @@
 				"piid": 2,
 				"friendlyName": "Alarm - Volume",
 				"channel": "volume",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
+				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 10,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -364,9 +365,10 @@
 				],
 				"category": "soundvolume",
 				"tags": [
-					"Setpoint",
+					"Control",
 					"SoundVolume"
-				]
+				],
+				"readmeComment": "Volume level 0-10; the Mi Home app shows it as 0-100%"
 			},
 			{
 				"property": "repeat-state",
@@ -382,6 +384,7 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -417,6 +420,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Status"
 				],
@@ -434,6 +438,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "water",
 				"tags": [
 					"Status"
 				]
@@ -475,7 +480,7 @@
 				"category": "fan",
 				"tags": [
 					"Control",
-					"Level"
+					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Turbo\"]`"
 			},
@@ -542,6 +547,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "settings",
 				"tags": [
 					"Control",
 					"Mode"
@@ -565,6 +571,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Measurement",
 					"Level"
@@ -610,6 +617,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Measurement",
 					"Level"
@@ -655,6 +663,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Measurement",
 					"Level"
@@ -700,6 +709,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Measurement",
 					"Level"
@@ -770,6 +780,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "movecontrol",
 				"tags": [
 					"Control"
 				],
@@ -834,6 +845,7 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -853,6 +865,7 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -872,6 +885,7 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -891,6 +905,7 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -910,6 +925,7 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -929,6 +945,7 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -964,6 +981,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "settings",
 				"tags": [
 					"Control",
 					"Level"
@@ -996,6 +1014,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Status"
 				],
@@ -1013,6 +1032,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "switch",
 				"tags": [
 					"Status",
 					"Enabled"
@@ -1034,6 +1054,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "time",
 				"tags": [
 					"Status"
 				]
@@ -1054,6 +1075,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "time",
 				"tags": [
 					"Status"
 				]
@@ -1074,6 +1096,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "time",
 				"tags": [
 					"Status"
 				]
@@ -1094,6 +1117,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "time",
 				"tags": [
 					"Status"
 				]

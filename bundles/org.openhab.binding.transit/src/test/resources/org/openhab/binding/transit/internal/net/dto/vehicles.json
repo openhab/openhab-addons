@@ -1,0 +1,102 @@
+{
+  "vehicles": [
+    {
+      "vehicle_id": "VVSDE:247174:316|7284_I",
+      "latitude": 48.809547,
+      "longitude": 9.182034,
+      "direction_id": 0,
+      "updated_at": 1792918590,
+      "external_vehicle_id": "7284_I",
+      "vehicle_label": null,
+      "occupancy_status": null,
+      "wheelchair_accessible": null,
+      "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.14.j26",
+      "bike_spaces_available": null,
+      "bike_spaces_capacity": null
+    },
+    {
+      "vehicle_id": "VVSDE:247174:316|7599_I",
+      "latitude": 48.774342,
+      "longitude": 9.163889,
+      "direction_id": 0,
+      "updated_at": 1792918650,
+      "external_vehicle_id": "7599_I",
+      "vehicle_label": null,
+      "occupancy_status": null,
+      "wheelchair_accessible": null,
+      "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.10.j26",
+      "bike_spaces_available": null,
+      "bike_spaces_capacity": null
+    },
+    {
+      "vehicle_id": "VVSDE:247174:316|7317_I",
+      "latitude": 48.772533,
+      "longitude": 9.183669,
+      "direction_id": 1,
+      "updated_at": 1792918680,
+      "external_vehicle_id": "7317_I",
+      "vehicle_label": null,
+      "occupancy_status": null,
+      "wheelchair_accessible": null,
+      "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.79.j26",
+      "bike_spaces_available": null,
+      "bike_spaces_capacity": null
+    },
+    {
+      "vehicle_id": "VVSDE:247174:316|7336_I",
+      "latitude": 48.764515,
+      "longitude": 9.174623,
+      "direction_id": 0,
+      "updated_at": 1792918680,
+      "external_vehicle_id": "7336_I",
+      "vehicle_label": null,
+      "occupancy_status": null,
+      "wheelchair_accessible": null,
+      "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.11.j26",
+      "bike_spaces_available": null,
+      "bike_spaces_capacity": null
+    },
+    {
+      "vehicle_id": "VVSDE:247174:316|7577_I",
+      "latitude": 48.78677,
+      "longitude": 9.161896,
+      "direction_id": 1,
+      "updated_at": 1792918680,
+      "external_vehicle_id": "7577_I",
+      "vehicle_label": null,
+      "occupancy_status": null,
+      "wheelchair_accessible": null,
+      "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.78.j26",
+      "bike_spaces_available": null,
+      "bike_spaces_capacity": null
+    },
+    {
+      "vehicle_id": "VVSDE:247174:316|7592_I",
+      "latitude": 48.799408,
+      "longitude": 9.17222,
+      "direction_id": 0,
+      "updated_at": 1792918680,
+      "external_vehicle_id": "7592_I",
+      "vehicle_label": null,
+      "occupancy_status": null,
+      "wheelchair_accessible": null,
+      "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.13.j26",
+      "bike_spaces_available": null,
+      "bike_spaces_capacity": null
+    },
+    {
+      "vehicle_id": "VVSDE:247174:316|7601_I",
+      "latitude": 48.774757,
+      "longitude": 9.17222,
+      "direction_id": 0,
+      "updated_at": 1792918680,
+      "external_vehicle_id": "7601_I",
+      "vehicle_label": null,
+      "occupancy_status": null,
+      "wheelchair_accessible": null,
+      "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.12.j26",
+      "bike_spaces_available": null,
+      "bike_spaces_capacity": null
+    }
+  ]
+}

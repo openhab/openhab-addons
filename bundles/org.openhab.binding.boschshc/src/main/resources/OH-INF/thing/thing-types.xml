@@ -64,6 +64,26 @@
 
 	</thing-type>
 
+	<thing-type id="smart-plug-compact-matter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Compact Smart Plug [+M]</label>
+		<description>A compact smart plug with energy monitoring capabilities. This version of the plug supports the Matter
+			standard.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+
+		<channels>
+			<channel id="power-switch" typeId="system.power"/>
+			<channel id="power-consumption" typeId="power-consumption"/>
+			<channel id="energy-consumption" typeId="energy-consumption"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
 	<thing-type id="twinguard">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>

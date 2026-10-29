@@ -25,7 +25,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * Gson TypeAdapter that converts arrays of devices to Map<String, Device>
+ * Gson TypeAdapter that converts arrays of devices to {@code Map<String, Device>}
  * The API returns devices as arrays, but we want to access them as maps keyed by ID
  *
  * @author Dan Cunningham - Initial contribution

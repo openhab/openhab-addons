@@ -1580,6 +1580,33 @@ public class ThermostatCluster extends BaseCluster {
         }
     }
 
+    public static class HVACSystemTypeBitmap {
+        public short coolingStage;
+        public short heatingStage;
+        public boolean heatingIsHeatPump;
+        public boolean heatingUsesFuel;
+
+        public HVACSystemTypeBitmap(short coolingStage, short heatingStage, boolean heatingIsHeatPump,
+                boolean heatingUsesFuel) {
+            this.coolingStage = coolingStage;
+            this.heatingStage = heatingStage;
+            this.heatingIsHeatPump = heatingIsHeatPump;
+            this.heatingUsesFuel = heatingUsesFuel;
+        }
+    }
+
+    public static class ProgrammingOperationModeBitmap {
+        public boolean scheduleActive;
+        public boolean autoRecovery;
+        public boolean economy;
+
+        public ProgrammingOperationModeBitmap(boolean scheduleActive, boolean autoRecovery, boolean economy) {
+            this.scheduleActive = scheduleActive;
+            this.autoRecovery = autoRecovery;
+            this.economy = economy;
+        }
+    }
+
     public static class FeatureMap {
         /**
          * 

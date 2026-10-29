@@ -155,8 +155,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         String host = config.host;
 
         if (host == null || host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-host-address");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-host-address");
             return;
         }
 
@@ -308,7 +307,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             userDataUpdated = Instant.MIN;
         } catch (HubException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             userDataUpdated = Instant.MIN;
         }
     }

@@ -174,7 +174,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             try {
                 this.host = InetAddress.getByName(bindingConfig.host);
             } catch (UnknownHostException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
                 return;
             }
             reconnectDelay.set(bindingConfig.firstConDelay);
@@ -733,7 +733,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         if (status == ThingStatus.OFFLINE) {
             logger.debug("[{}] received offline request with code {}, but thing already offline.", debugId, code);
         } else {
-            updateStatus(ThingStatus.OFFLINE, code, reason);
+            updateStatus(code, reason);
         }
     }
 

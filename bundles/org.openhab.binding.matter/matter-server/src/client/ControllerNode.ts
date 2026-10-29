@@ -1,38 +1,79 @@
-// Include this first to auto-register Crypto, Network and Time Node.js implementations
-import { Environment, Logger, ObserverGroup, SharedEnvironmentServices, StorageContext, StorageService } from "@matter/general";
-import { NodeId } from "@matter/types";
-import { CommissioningController } from "@project-chip/matter.js";
-import { Endpoint, NodeStates, PairedNode } from "@project-chip/matter.js/device";
+import {
+    Diagnostic,
+    Environment,
+    Instant,
+    Logger,
+    Millis,
+    ObserverGroup,
+    SharedEnvironmentServices,
+    StorageContext,
+    StorageManager,
+    StorageService,
+} from "@matter/general";
+import { DclCertificateService, DclOtaUpdateService, Fabric, FabricAuthority, Read } from "@matter/main/protocol";
+import { AcceptedCommandList, AttributeList, ClusterRevision, FeatureMap, Matter } from "@matter/model";
+import {
+    ChangeNotificationService,
+    ClientNode,
+    ClientNodePhysicalProperties,
+    ClusterBehavior,
+    ControllerBehavior,
+    Endpoint,
+    EndpointLifecycle,
+    FabricOperationInProgressError,
+    IcdClient,
+    NetworkClient,
+    NodeConnectionState,
+    ServerNode,
+    SoftwareUpdateManager,
+} from "@matter/node";
+import { BasicInformationClient } from "@matter/node/behaviors/basic-information";
+import { OtaProviderEndpoint } from "@matter/node/endpoints/ota-provider";
+import { AttributeId, ClusterId, EndpointNumber, EventId, NodeId } from "@matter/types";
 import { WebSocketSession } from "../app";
-import { EventType, NodeState } from "../MessageTypes";
+import { EventType, IcdEvent, NodeState, OtaUpdateStatus } from "../MessageTypes";
 import { printError } from "../util/error";
-import { ControllerBehavior, SoftwareUpdateManager } from "@matter/node";
-import { DclOtaUpdateService, PhysicalDeviceProperties } from "@matter/main/protocol";
+import { dclSeed } from "./dclSeed";
+import { migrateLegacyCommissionedNodes, migrateLegacyControllerCredentials } from "./legacyStorageMigration";
 
 const logger = Logger.get("ControllerNode");
 
-// Attributes that are always read fresh from the device, even when the rest of the node is served from the
-// local subscription cache (requestFromRemote=false). softwareVersion/softwareVersionString only change on a
-// firmware update, so after a device reboots onto new firmware the cached value can be stale - and it is
-// surfaced as the Thing's firmware-version property, so it must be accurate. The cost is one tiny read of a
-// rarely-changing attribute per serialization, with a fallback to the cached value if the read fails.
-const ALWAYS_FRESH_ATTRIBUTES: Record<string, ReadonlySet<string>> = {
+// Firmware version attributes, read from the device every time a node is sent to openHAB, even when the rest of the
+// node comes from the local subscription cache. After a device reboots onto new firmware the cached value can be
+// stale, and it is shown as the Thing's firmware-version property.
+const FIRMWARE_VERSION_ATTRIBUTES: Record<string, ReadonlySet<string>> = {
     BasicInformation: new Set(["softwareVersion", "softwareVersionString"]),
     BridgedDeviceBasicInformation: new Set(["softwareVersion", "softwareVersionString"]),
 };
 
-function extractPhysicalProperties(node: PairedNode | undefined): PhysicalDeviceProperties | undefined {
-    if (!node) return undefined;
-    try {
-        const deviceInformation = node.deviceInformation;
-        if (!deviceInformation) return undefined;
-        // these are lazy properties, so we need to access them to actually hydrate our return object
-        return { ...deviceInformation };
-    } catch (e) {
-        logger.debug(`Could not read deviceInformation for node ${node.nodeId}: ${e}`);
-        return undefined;
-    }
-}
+// matter.js does not list these as cluster attributes, but openHAB needs them (featureMap in particular)
+const GLOBAL_ATTRIBUTES = [
+    "clusterRevision",
+    "featureMap",
+    "attributeList",
+    "acceptedCommandList",
+    "generatedCommandList",
+];
+
+// Changes of these attributes mean a cluster's capabilities changed
+const STRUCTURE_ATTRIBUTES = new Set<number>([
+    FeatureMap.id,
+    AttributeList.id,
+    AcceptedCommandList.id,
+    ClusterRevision.id,
+]);
+
+// Endpoint events that mean the device added or removed endpoints or clusters. These are watched instead of the
+// Descriptor attributes, because matter.js updates the node only after those attributes arrive.
+const STRUCTURE_LIFECYCLE_CHANGES = new Set<EndpointLifecycle.Change>([
+    EndpointLifecycle.Change.Ready,
+    EndpointLifecycle.Change.Destroyed,
+    EndpointLifecycle.Change.ServersChanged,
+    EndpointLifecycle.Change.ClientsChanged,
+]);
+
+// A structure change arrives as several updates. Wait this long so openHAB is told once.
+const STRUCTURE_CHANGE_DELAY_MS = 1000;
 
 /**
  * This class represents the Matter Controller / Admin client
@@ -40,14 +81,15 @@ function extractPhysicalProperties(node: PairedNode | undefined): PhysicalDevice
 export class ControllerNode {
     private environment: Environment = Environment.default;
     private storageContext?: StorageContext;
-    private nodes: Map<NodeId, PairedNode> = new Map();
-    // Per-node observer groups so listeners can be removed in bulk before re-registering,
-    // avoiding duplicate handlers (and duplicate WebSocket events) when the same node instance
-    // is reused across reconnections.
-    private nodeObservers: Map<NodeId, ObserverGroup> = new Map();
-    commissioningController?: CommissioningController;
-    private observers?: ObserverGroup;
+    #storageManager?: StorageManager;
+    #node?: ServerNode;
+    #fabric?: Fabric;
+    // Nodes openHAB has initialized, keyed by matter.js peer id. Only these send changes to openHAB.
+    #activePeers = new Map<string, { nodeId: NodeId; observers: ObserverGroup }>();
+    #structureChangeTimers = new Map<NodeId, NodeJS.Timeout>();
+    private observers = new ObserverGroup();
     #services?: SharedEnvironmentServices;
+
     constructor(
         private readonly storageLocation: string,
         private readonly controllerName: string,
@@ -63,11 +105,45 @@ export class ControllerNode {
         return this.storageContext;
     }
 
+    get node() {
+        if (this.#node === undefined) {
+            throw new Error("Controller not initialized");
+        }
+        return this.#node;
+    }
+
+    get fabric() {
+        if (this.#fabric === undefined) {
+            throw new Error("Controller not initialized");
+        }
+        return this.#fabric;
+    }
+
+    get otaProvider() {
+        return this.node.endpoints.for("ota-provider") as Endpoint<OtaProviderEndpoint>;
+    }
+
     get otaService() {
         if (!this.environment.has(DclOtaUpdateService)) {
             new DclOtaUpdateService(this.environment); // Adds itself to the environment
         }
         return this.services.get(DclOtaUpdateService);
+    }
+
+    /**
+     * Checks device certificates against the Matter certificate list while pairing. It starts from the list built
+     * into matter.js and updates it from the DCL at startup and once a day.
+     */
+    get certificateService() {
+        if (!this.environment.has(DclCertificateService)) {
+            new DclCertificateService(this.environment, {
+                fetchTestCertificates: true,
+                // Report test certificates as an attestation finding, so pairing can accept them with a warning
+                acceptTestCertificates: false,
+                seed: dclSeed(),
+            });
+        }
+        return this.services.get(DclCertificateService);
     }
 
     protected get services() {
@@ -82,41 +158,24 @@ export class ControllerNode {
      */
     async close() {
         try {
-            for (const observers of this.nodeObservers.values()) {
+            for (const timer of this.#structureChangeTimers.values()) {
+                clearTimeout(timer);
+            }
+            this.#structureChangeTimers.clear();
+            for (const { observers } of this.#activePeers.values()) {
                 observers.close();
             }
-            this.nodeObservers.clear();
-            this.observers?.close();
-            await this.commissioningController?.close();
+            this.#activePeers.clear();
+            this.observers.close();
+            await this.#node?.close();
+            await this.#storageManager?.close();
         } finally {
             // In a finally so the OTA blob storage lock is released (avoiding a leak that blocks the next
             // startup) even if the cleanup above throws.
             await this.#services?.close();
             this.#services = undefined;
-            this.nodes.clear();
-        }
-    }
-
-    /**
-     * Disposes any existing observer group for the given node and returns a fresh one.
-     * This guarantees that re-registering listeners for the same node instance (e.g. across
-     * reconnections) does not accumulate duplicate handlers.
-     */
-    private resetNodeObservers(nodeId: NodeId): ObserverGroup {
-        this.disposeNodeObservers(nodeId);
-        const observers = new ObserverGroup();
-        this.nodeObservers.set(nodeId, observers);
-        return observers;
-    }
-
-    /**
-     * Removes all listeners registered through the observer group for the given node, if any.
-     */
-    private disposeNodeObservers(nodeId: NodeId): void {
-        const observers = this.nodeObservers.get(nodeId);
-        if (observers !== undefined) {
-            observers.close();
-            this.nodeObservers.delete(nodeId);
+            this.#node = undefined;
+            this.#storageManager = undefined;
         }
     }
 
@@ -136,45 +195,65 @@ export class ControllerNode {
         if (this.netInterface !== undefined) {
             this.environment.vars.set("mdns.networkinterface", this.netInterface);
         }
-        this.commissioningController = new CommissioningController({
-            environment: {
-                environment: this.environment,
-                id,
+
+        // openHAB 5.0 shipped matter.js 0.15, which stored controller data in an older layout that must be converted
+        await migrateLegacyControllerCredentials(this.environment, id);
+
+        // Groupcast is left out of the root so matter.js 0.17 can still load the stored controller after a downgrade
+        const node = await ServerNode.create(ServerNode.RootEndpointWithoutGroupcast.with(ControllerBehavior), {
+            environment: this.environment,
+            id,
+            network: {
+                ble: false,
+                // Nodes connect only once openHAB initializes their Thing
+                autoStartCommissionedPeers: false,
+                // Save node data right away. matter.js otherwise keeps it in memory for up to 20 minutes.
+                clientCacheFlushInterval: Instant,
             },
-            autoConnect: false,
-            adminFabricLabel: fabricLabel,
-            enableOtaProvider: true
+            controller: { adminFabricLabel: fabricLabel },
+            commissioning: { enabled: false },
+            subscriptions: { persistenceEnabled: false },
         });
-        
-        const storageService = this.commissioningController.env.get(StorageService);
-        // TODO: Implement resetStorage
-        // if (resetStorage) {
-        //     await this.commissioningController.node.erase();
-        // }
-        this.storageContext = (await storageService.open(id)).createContext("Node");
+        this.#node = node;
+        await node.add(new Endpoint(OtaProviderEndpoint, { id: "ota-provider" }));
 
-
+        this.#storageManager = await node.env.get(StorageService).open(id);
+        this.storageContext = this.#storageManager.createContext("Node");
         if (await this.Store.has("ControllerFabricLabel")) {
-            await this.commissioningController.updateFabricLabel(
-                await this.Store.get<string>("ControllerFabricLabel", fabricLabel),
+            const label = await this.Store.get<string>("ControllerFabricLabel", fabricLabel);
+            await node.setStateOf(ControllerBehavior, { adminFabricLabel: label });
+        }
+
+        const fabricAuthority = await node.env.load(FabricAuthority);
+        // ControllerBehavior initializes asynchronously, so it has to be loaded before its state can be read
+        const fabricConfig = await node.act(
+            async agent => (await agent.load(ControllerBehavior)).fabricAuthorityConfig,
+        );
+        this.#fabric = await fabricAuthority.defaultFabric(fabricConfig);
+
+        const migrated = await migrateLegacyCommissionedNodes(node);
+        if (migrated.nodes > 0 || migrated.failed > 0) {
+            logger.info(
+                `Converted ${migrated.nodes} nodes from the openHAB 5.0 storage layout, ${migrated.failed} failed`,
             );
         }
 
-        await this.commissioningController.start();
-
-        // matter.js 0.17 defaults to sequential operational node IDs starting at NodeId(1). The counter is not
+        // matter.js defaults to sequential operational node IDs starting at NodeId(1). The counter is not
         // restored consistently with the fabric across restarts, so it re-attempts low IDs that are already
-        // commissioned ("Node ID X is already commissioned and can not be reused"). Switch to the documented
-        // random allocation strategy (CHANGELOG: set ControllerBehavior state nodeIdAssignment to "random").
-        await this.commissioningController.node.setStateOf(ControllerBehavior, { nodeIdAssignment: "random" });
+        // commissioned ("Node ID X is already commissioned and can not be reused").
+        await node.setStateOf(ControllerBehavior, { nodeIdAssignment: "random" });
+
+        this.observers.on(node.env.get(ChangeNotificationService).change, change => this.#handleChange(change));
+        this.observers.on(node.peers.deleted, peer => this.#handlePeerDeleted(peer));
+
+        await node.start();
 
         //Set up observers for OTA updates, matter.js checks every 24 hours by default.
-        this.observers = this.observers ?? new ObserverGroup(this.environment.runtime);
-        const updateManagerEvents = this.commissioningController.otaProvider.eventsOf(SoftwareUpdateManager);
+        const updateManagerEvents = this.otaProvider.eventsOf(SoftwareUpdateManager);
         this.observers.on(updateManagerEvents.updateAvailable, (peer, details) => {
             logger.info(`Update available for peer `, peer, `:`, details);
             const nodeId = peer?.nodeId;
-            if(!nodeId) {
+            if (!nodeId) {
                 logger.error(`Node ID not found for peer `, peer);
                 return;
             }
@@ -191,14 +270,9 @@ export class ControllerNode {
                 return;
             }
             // matter.js only emits updateDone once the device has already rebooted onto the new firmware and
-            // re-established its session, so it is reachable now and we refresh immediately. The serialized node
-            // (and thus the Thing's firmware-version property) is normally built from the local subscription cache
-            // (requestFromRemote=false), which may still hold the pre-update version until the subscription has
-            // re-primed; forcing a fresh remote read makes the reported version reflect the firmware just installed,
-            // rebuilds the structure/channels and brings the Thing (set OFFLINE while applying) back ONLINE in one
-            // step. If the device should be briefly unreachable again, sendSerializedNode triggers a reconnect on
-            // failure and ALWAYS_FRESH_ATTRIBUTES corrects the version on the next serialization. OTA is rare, so a
-            // one-off full read is cheap.
+            // re-established its session. Force a fresh remote read so the reported version reflects the firmware
+            // just installed, rebuild the structure/channels and bring the Thing (set OFFLINE while applying) back
+            // ONLINE in one step.
             try {
                 this.sendSerializedNode(this.getNode(nodeId), undefined, true);
             } catch (e) {
@@ -206,242 +280,111 @@ export class ControllerNode {
             }
         });
 
-        // Query for updates now once
-        const updates = await this.commissioningController.otaProvider.act(agent =>
-            agent.get(SoftwareUpdateManager).queryUpdates()
+        this.observers.on(updateManagerEvents.updateApplying, peer =>
+            this.#sendOtaUpdateStatus(peer.nodeId, OtaUpdateStatus.Applying),
         );
-        if (updates && updates.length > 0) {
-            for (const update of updates) {
-                logger.info(`Update available for peer `, update.peerAddress, `:`, update.info);
-                this.ws.sendEvent(EventType.UpdateAvailable, {
-                    nodeId: update.peerAddress.nodeId.valueOf(),
-                    ...update.info,
-                });
-            }
+        // Also emitted when the update is cancelled
+        this.observers.on(updateManagerEvents.updateFailed, peer =>
+            this.#sendOtaUpdateStatus(peer.nodeId, OtaUpdateStatus.Failed),
+        );
+
+        // Load the certificate list in the background, so the first pairing does not wait for it
+        this.certificateService.construction.catch(error =>
+            logger.warn(`Could not load the Matter certificate list: ${error}`),
+        );
+
+        // Query for updates now once
+        const updates = await this.otaProvider.act(agent => agent.get(SoftwareUpdateManager).queryUpdates());
+        for (const update of updates ?? []) {
+            logger.info(`Update available for peer `, update.peerAddress, `:`, update.info);
+            this.ws.sendEvent(EventType.UpdateAvailable, {
+                nodeId: update.peerAddress.nodeId.valueOf(),
+                ...update.info,
+            });
         }
     }
 
     /**
-     * Connects to a node, setting up event listeners. If called multiple times for the same node, it will trigger a node reconnect.
-     * If a connection timeout is provided, the function will return a promise that will resolve when the node is initialized or reject if the node
-     * becomes disconnected or the timeout is reached. Note that the node will continue to connect in the background and the client will be notified
-     * when the node is initialized through the NodeStateInformation event. To stop the reconnection, call the disconnectNode method.
+     * Connects to a node and starts reporting its state, attribute and event changes. Resolves once the node is
+     * connected and its structure is known. If called again for a connected node it only reports the connected state.
      *
      * @param nodeId  The nodeId of the node to connect to
      * @param connectionTimeout Optional timeout in milliseconds. If omitted or non-positive, no timeout will be applied
-     * @returns Promise that resolves when the node is initialized
-     * @throws Error if connection times out or node becomes disconnected
+     * @throws Error if connection times out
      */
     async initializeNode(nodeId: string | number, connectionTimeout?: number): Promise<void> {
-        if (this.commissioningController === undefined) {
-            throw new Error("CommissioningController not initialized");
+        const peer = this.getNode(nodeId);
+        const id = this.#nodeIdOf(peer);
+        // A node that is not ready yet sends Connected from its listeners once it is ready
+        const wasReady = this.#isReady(peer);
+        this.#activatePeer(peer, id);
+
+        // Earlier binding versions disconnected a node by disabling it, which is saved and blocks any new connection
+        if (peer.state.network.isDisabled) {
+            await peer.enable();
+        }
+        if (!peer.stateOf(NetworkClient).autoSubscribe) {
+            await peer.setStateOf(NetworkClient, { autoSubscribe: true });
+        }
+        if (!peer.lifecycle.isOnline) {
+            await peer.start();
         }
 
-        let node = this.nodes.get(NodeId(BigInt(nodeId)));
-        if (node !== undefined) {
-            // We are already connected so there is nothing to reconnect. Send the connected state so the
-            // client refreshes, otherwise we would wait for an init event that never fires again and time out.
-            if (node.connectionState === NodeStates.Connected) {
-                this.ws.sendEvent(EventType.NodeStateInformation, {
-                    nodeId: node.nodeId,
-                    state: NodeStates[NodeStates.Connected],
-                    physicalProperties: extractPhysicalProperties(node),
-                });
-                return;
-            }
-
-            if (node.node.state.network.isDisabled) {
-                node.connect();
-            } else {
-                node.triggerReconnect();
-            }
-
-            return new Promise((resolve, reject) => {
-                let timeoutId: NodeJS.Timeout | undefined;
-
-                // initializedFromRemote only fires on the very first connect of a PairedNode instance; a later
-                // reconnect re-asserts the Connected state but never emits it again. So we also resolve on a live
-                // stateChanged -> Connected transition, otherwise an already-initialized node that has to reconnect
-                // here would wait for an event that never comes and run into the timeout (Thing flips OFFLINE).
-                const onStateChanged = (state: NodeStates): void => {
-                    if (state === NodeStates.Connected) {
-                        finish("reconnected");
-                    }
-                };
-                const finish = (reason: string): void => {
-                    if (timeoutId) clearTimeout(timeoutId);
-                    node?.events.initializedFromRemote.off(onInitialized);
-                    node?.events.stateChanged.off(onStateChanged);
-                    logger.info(`Node ${node?.nodeId} ${reason}`);
-                    // Send a connected event so the client knows the resume completed
-                    this.ws.sendEvent(EventType.NodeStateInformation, {
-                        nodeId: node!.nodeId,
-                        state: NodeStates[NodeStates.Connected],
-                        physicalProperties: extractPhysicalProperties(node),
-                    });
-                    resolve();
-                };
-                const onInitialized = (): void => finish("initialized from remote");
-
-                if (connectionTimeout && connectionTimeout > 0) {
-                    timeoutId = setTimeout(() => {
-                        node?.events.initializedFromRemote.off(onInitialized);
-                        node?.events.stateChanged.off(onStateChanged);
-                        logger.info(`Node ${node?.nodeId} state: ${node?.state}`);
-                        if (
-                            node?.connectionState === NodeStates.Disconnected ||
-                            node?.connectionState === NodeStates.WaitingForDeviceDiscovery ||
-                            node?.connectionState === NodeStates.Reconnecting
-                        ) {
-                            reject(new Error(`Node ${node?.nodeId} reconnection failed: ${NodeStates[node?.connectionState]}`));
-                        } else {
-                            reject(new Error(`Node ${node?.nodeId} reconnection timed out`));
-                        }
-                    }, connectionTimeout);
-                }
-
-                // The node may already be Connected again by the time we get here (between the guard above and
-                // triggerReconnect), so check once before waiting for an event.
-                if (node?.connectionState === NodeStates.Connected) {
-                    finish("already connected");
-                    return;
-                }
-
-                node?.events.initializedFromRemote.once(onInitialized);
-                node?.events.stateChanged.on(onStateChanged);
-            });
+        await this.#awaitReady(peer, connectionTimeout);
+        if (wasReady) {
+            this.#sendNodeState(peer, id, NodeConnectionState.Connected);
         }
-
-        node = await this.commissioningController.getNode(NodeId(BigInt(nodeId)));
-        if (node === undefined) {
-            throw new Error(`Node ${nodeId} not connected`);
-        }
-        this.nodes.set(node.nodeId, node);
-
-        // Remove any listeners left over from a previous registration of this same node instance
-        // (e.g. after a decommission/re-commission cycle) so handlers do not accumulate.
-        const observers = this.resetNodeObservers(node.nodeId);
-
-        observers.on(node.events.stateChanged, info => {
-            this.ws.sendEvent(EventType.NodeStateInformation, {
-                nodeId: node!.nodeId,
-                state: NodeStates[info],
-            });
-        });
-
-        observers.on(node.events.structureChanged, () => {
-            this.ws.sendEvent(EventType.NodeStateInformation, {
-                nodeId: node!.nodeId,
-                state: NodeState.STRUCTURE_CHANGED,
-            });
-        });
-
-        observers.on(node.events.decommissioned, () => {
-            this.disposeNodeObservers(node!.nodeId);
-            this.nodes.delete(node!.nodeId);
-            this.ws.sendEvent(EventType.NodeStateInformation, {
-                nodeId: node!.nodeId,
-                state: NodeState.DECOMMISSIONED,
-            });
-        });
-
-        // attributeChanged and eventTriggered only need to be wired up once initialization completes,
-        // to avoid forwarding the init state updates as user visible updates. Use once() so they are
-        // wired exactly once per registration; the inner handlers are tracked by the observer group
-        // (reset above) so they are still removed in bulk on re-registration or decommission.
-        // Wire up the user-visible event forwarding and emit the connected event once the node has completed
-        // its remote initialization.
-        const handleInitialized = () => {
-            observers.on(node!.events.attributeChanged, data => {
-                data.path.nodeId = node!.nodeId;
-                this.ws.sendEvent(EventType.AttributeChanged, data);
-            });
-
-            observers.on(node!.events.eventTriggered, data => {
-                data.path.nodeId = node!.nodeId;
-                this.ws.sendEvent(EventType.EventTriggered, data);
-            });
-
-            // send a connected event in case the stateChanged transition
-            // to connected was missed despite the early listener attachment above.
-            this.ws.sendEvent(EventType.NodeStateInformation, {
-                nodeId: node!.nodeId,
-                state: NodeStates[NodeStates.Connected],
-                physicalProperties: extractPhysicalProperties(node),
-            });
-        };
-
-        // matter.js auto-connects a node immediately after commissioning, so by the time we get here the
-        // initializedFromRemote event may have already fired and will not fire again. In that case finish
-        // synchronously instead of waiting for an event that never comes - otherwise initializeNode runs into
-        // its timeout after a successful commissioning and the new node never surfaces to the client.
-        if (node.remoteInitializationDone) {
-            handleInitialized();
-            return;
-        }
-
-        node.events.initializedFromRemote.once(handleInitialized);
-
-        node.connect();
-
-        return new Promise((resolve, reject) => {
-            let timeoutId: NodeJS.Timeout | undefined;
-
-            if (connectionTimeout && connectionTimeout > 0) {
-                timeoutId = setTimeout(() => {
-                    logger.info(`Node ${node?.nodeId} initialization timed out`);
-
-                    if (
-                        node?.connectionState === NodeStates.Disconnected ||
-                        node?.connectionState === NodeStates.WaitingForDeviceDiscovery
-                    ) {
-                        reject(new Error(`Node ${node.nodeId} connection failed: ${NodeStates[node.connectionState]}`));
-                    } else {
-                        reject(new Error(`Node ${node!.nodeId} connection timed out`));
-                    }
-                }, connectionTimeout);
-            }
-
-            node!.events.initializedFromRemote.once(() => {
-                if (timeoutId) clearTimeout(timeoutId);
-                resolve();
-            });
-        });
     }
 
     /**
-     * Returns a node by nodeId.  If the node has not been initialized, it will throw an error.
+     * Whether the node's endpoints and clusters are known. matter.js has an isSeeded flag for this, but for a node
+     * loaded from storage it checks before the stored data is readable, and checks again only when endpoints change.
+     * So the flag stays unset, and a node that is readable and has its endpoints counts as known too.
+     */
+    isStructureKnown(peer: ClientNode) {
+        return (
+            peer.lifecycle.isSeeded ||
+            (peer.lifecycle.isReadable &&
+                peer.maybeStateOf(BasicInformationClient) !== undefined &&
+                peer.endpoints.size > 1)
+        );
+    }
+
+    #isReady(peer: ClientNode) {
+        return this.isStructureKnown(peer) && peer.lifecycle.connectionState === NodeConnectionState.Connected;
+    }
+
+    /**
+     * Returns a commissioned node by nodeId
      * @param nodeId
      * @returns
      */
     getNode(nodeId: number | string | NodeId) {
-        if (this.commissioningController === undefined) {
-            throw new Error("CommissioningController not initialized");
+        const peer = this.node.peers.get(this.fabric.addressOf(NodeId(BigInt(nodeId))));
+        if (peer === undefined) {
+            throw new Error(`Node ${nodeId} not found`);
         }
-        const node = this.nodes.get(NodeId(BigInt(nodeId)));
-        if (node === undefined) {
-            throw new Error(`Node ${nodeId} not connected`);
-        }
-        return node;
+        return peer;
     }
 
     /**
-     * Removes a node from the controller
+     * Removes a node from the controller, decommissioning it from the device first when it is reachable
      * @param nodeId
      */
     async removeNode(nodeId: number | string | NodeId) {
-        const node = this.nodes.get(NodeId(BigInt(nodeId)));
-        if (node !== undefined) {
-            try {
-                await node.decommission();
-            } catch (error) {
-                logger.error(`Error decommissioning node ${nodeId}: ${error} force removing node`);
-                await this.commissioningController?.removeNode(NodeId(BigInt(nodeId)), false);
-                this.disposeNodeObservers(node.nodeId);
-                this.nodes.delete(NodeId(BigInt(nodeId)));
+        const peer = this.node.peers.get(this.fabric.addressOf(NodeId(BigInt(nodeId))));
+        if (peer === undefined) {
+            return;
+        }
+        try {
+            await peer.decommission();
+        } catch (error) {
+            // Another pairing or removal of this node is still running, so leave the node to it
+            if (error instanceof FabricOperationInProgressError) {
+                throw error;
             }
-        } else {
-            await this.commissioningController?.removeNode(NodeId(BigInt(nodeId)), false);
+            logger.error(`Error decommissioning node ${nodeId}: ${error} force removing node`);
+            await peer.delete();
         }
     }
 
@@ -449,64 +392,25 @@ export class ControllerNode {
      * Returns all commissioned nodes Ids
      * @returns
      */
-    async getCommissionedNodes() {
-        return this.commissioningController?.getCommissionedNodes();
-    }
-
-    /**
-     * Finds the given endpoint, included nested endpoints
-     * @param node
-     * @param endpointId
-     * @returns
-     */
-    getEndpoint(node: PairedNode, endpointId: number) {
-        const endpoints = node.getDevices();
-        for (const e of endpoints) {
-            const endpoint = this.findEndpoint(e, endpointId);
-            if (endpoint != undefined) {
-                return endpoint;
-            }
-        }
-        return undefined;
-    }
-
-    /**
-     *
-     * @param root Endpoints can have child endpoints. This function recursively searches for the endpoint with the given id.
-     * @param endpointId
-     * @returns
-     */
-    private findEndpoint(root: Endpoint, endpointId: number): Endpoint | undefined {
-        if (root.number === endpointId) {
-            return root;
-        }
-        for (const endpoint of root.getChildEndpoints()) {
-            const found = this.findEndpoint(endpoint, endpointId);
-            if (found !== undefined) {
-                return found;
-            }
-        }
-        return undefined;
+    getCommissionedNodes() {
+        return this.node.peers.commissioned.map(peer => this.#nodeIdOf(peer));
     }
 
     /**
      * Serializes a node and sends it to the web socket
      * @param node
      * @param endpointId Optional endpointId to serialize. If omitted, all endpoints will be serialized.
-     * @param requestFromRemote When false (the default) values are taken from the local subscription cache instead of
-     *  reading every attribute individually from the device. Since the node is subscribed (autoSubscribe) the cache is
-     *  continuously kept up to date by the device, so a remote read per attribute is redundant and very expensive on
-     *  slow Thread meshes. Pass true only to force a fresh remote read of every attribute.
+     * @param requestFromRemote When false (the default) values are taken from the local subscription cache, which
+     *  the device keeps up to date. Pass true only to force a fresh remote read of every attribute.
      */
-    sendSerializedNode(node: PairedNode, endpointId?: number, requestFromRemote: boolean = false) {
-        this.serializePairedNode(node, endpointId, requestFromRemote)
+    sendSerializedNode(node: ClientNode, endpointId?: number, requestFromRemote: boolean = false) {
+        this.serializeNode(node, endpointId, requestFromRemote)
             .then(data => {
                 this.ws.sendEvent(EventType.NodeData, data);
             })
             .catch(error => {
                 logger.error(`Error serializing node: ${error}`);
-                printError(logger, error, "serializePairedNode");
-                node.triggerReconnect();
+                printError(logger, error, "serializeNode");
             });
     }
 
@@ -514,89 +418,387 @@ export class ControllerNode {
      * Serializes a node and returns the json object
      * @param node
      * @param endpointId Optional endpointId to serialize. If omitted, the root endpoint will be serialized.
-     * @param requestFromRemote When false (the default) attribute values are served from the local subscription cache.
-     *  Reading every attribute remotely (true) issues one network request per attribute and is extremely slow for
-     *  Thread / sleepy devices; the autoSubscribe cache already holds the current values. Fabric-scoped attributes are
-     *  always read from the device regardless of this flag (enforced by matter.js).
+     * @param requestFromRemote When false (the default) attribute values are served from the local subscription
+     *  cache. When true all attributes are read from the device in one interaction.
      * @returns
      */
-    async serializePairedNode(node: PairedNode, endpointId?: number, requestFromRemote: boolean = false) {
-        if (!this.commissioningController) {
-            throw new Error("CommissioningController not initialized");
+    async serializeNode(node: ClientNode, endpointId?: number, requestFromRemote: boolean = false) {
+        const root = endpointId !== undefined ? this.endpointFor(node, endpointId) : node;
+
+        let remoteValues = new Map<string, unknown>();
+        try {
+            remoteValues = await this.readAttributes(node, requestFromRemote ? [{}] : this.#firmwareVersionPaths(root));
+        } catch (e) {
+            logger.debug(`Remote read for node ${this.#nodeIdOf(node)} failed, using cache: ${e}`);
         }
 
-        // Recursive function to build the hierarchy
-        async function serializeEndpoint(endpoint: Endpoint): Promise<any> {
+        const serializeEndpoint = (endpoint: Endpoint): any => {
             const endpointData: any = {
                 number: endpoint.number,
                 clusters: {},
                 children: [],
             };
 
-            // Serialize clusters
-            for (const cluster of endpoint.getAllClusterClients()) {
-                if (!cluster.id) continue;
-
-                const clusterData: any = {
-                    id: cluster.id,
-                    name: cluster.name,
-                };
-
-                // Serialize attributes
-                for (const attributeName in cluster.attributes) {
-                    // Skip numeric referenced attributes
-                    if (/^\d+$/.test(attributeName)) continue;
-                    const attribute = cluster.attributes[attributeName];
-                    if (!attribute) continue;
-                    // Force a fresh remote read for attributes that must never be served stale from the cache
-                    // (see ALWAYS_FRESH_ATTRIBUTES), but fall back to the cached value if that read fails so one
-                    // flaky read of a single attribute never fails the whole node serialization.
-                    const forceFresh =
-                        !requestFromRemote && (ALWAYS_FRESH_ATTRIBUTES[cluster.name]?.has(attributeName) ?? false);
-                    let attributeValue: any;
-                    if (forceFresh) {
-                        try {
-                            attributeValue = await attribute.get(true);
-                        } catch (e) {
-                            logger.debug(`Fresh read of ${cluster.name}.${attributeName} failed, using cache: ${e}`);
-                            try {
-                                attributeValue = await attribute.get(false);
-                            } catch (e2) {
-                                logger.debug(
-                                    `Cache read of ${cluster.name}.${attributeName} also failed, skipping: ${e2}`,
-                                );
-                                attributeValue = undefined;
-                            }
-                        }
-                    } else {
-                        attributeValue = await attribute.get(requestFromRemote);
-                    }
-                    logger.debug(`Attribute ${attributeName} value: ${attributeValue}`);
-                    if (attributeValue !== undefined) {
-                        clusterData[attributeName] = attributeValue;
-                    }
+            for (const type of Object.values(endpoint.behaviors.supported)) {
+                if (ClusterBehavior.is(type) && endpoint.behaviors.has(type)) {
+                    endpointData.clusters[type.cluster.name] = this.serializeCluster(endpoint, type, remoteValues);
                 }
-
-                endpointData.clusters[cluster.name] = clusterData;
             }
 
-            for (const child of endpoint.getChildEndpoints()) {
-                endpointData.children.push(await serializeEndpoint(child));
+            for (const child of endpoint.parts) {
+                endpointData.children.push(serializeEndpoint(child));
             }
 
             return endpointData;
-        }
-
-        // Start serialization from the root endpoint
-        const rootEndpoint = endpointId !== undefined ? this.getEndpoint(node, endpointId) : node.getRootEndpoint();
-        if (rootEndpoint === undefined) {
-            throw new Error(`Endpoint not found for node ${node.nodeId} and endpointId ${endpointId}`);
-        }
-        const data: any = {
-            id: node.nodeId,
-            rootEndpoint: await serializeEndpoint(rootEndpoint),
         };
 
-        return data;
+        return {
+            id: this.#nodeIdOf(node),
+            rootEndpoint: serializeEndpoint(root),
+        };
+    }
+
+    /**
+     * Serializes the attributes of a cluster the device reports
+     * @param remoteValues values read from the device, keyed by "endpointId/clusterId/attributeId", that take
+     *  precedence over the cached values
+     */
+    serializeCluster(endpoint: Endpoint, type: ClusterBehavior.Type, remoteValues = new Map<string, unknown>()) {
+        const cluster = type.cluster;
+        const clusterData: any = {
+            id: cluster.id,
+            name: cluster.name,
+        };
+        const state = endpoint.stateOf(type) as Record<string, unknown>;
+        // Only attributes the device reports. matter.js fills in spec defaults for the others.
+        const names = [...endpoint.behaviors.elementsOf(type).attributes, ...GLOBAL_ATTRIBUTES];
+        for (const name of names) {
+            const attributeId = cluster.attributes?.[name]?.id;
+            const key = `${endpoint.number}/${cluster.id}/${attributeId}`;
+            const value = remoteValues.has(key) ? remoteValues.get(key) : state[name];
+            if (value !== undefined) {
+                clusterData[name] = value;
+            }
+        }
+        return clusterData;
+    }
+
+    endpointFor(node: ClientNode, endpointId: number): Endpoint {
+        if (node.number === endpointId) {
+            return node;
+        }
+        if (!node.endpoints.has(endpointId)) {
+            throw new Error(`Endpoint ${endpointId} not found on node ${this.#nodeIdOf(node)}`);
+        }
+        return node.endpoints.for(endpointId);
+    }
+
+    /**
+     * Addresses of the firmware version attributes on this endpoint and its children, for reading them from the device
+     */
+    #firmwareVersionPaths(root: Endpoint) {
+        const paths = new Array<{ endpointId: EndpointNumber; clusterId: ClusterId; attributeId: AttributeId }>();
+        const visit = (endpoint: Endpoint) => {
+            for (const type of Object.values(endpoint.behaviors.supported)) {
+                if (!ClusterBehavior.is(type) || !endpoint.behaviors.has(type)) {
+                    continue;
+                }
+                const names = FIRMWARE_VERSION_ATTRIBUTES[type.cluster.name];
+                if (names === undefined) {
+                    continue;
+                }
+                const supported = endpoint.behaviors.elementsOf(type).attributes;
+                for (const name of names) {
+                    const attributeId = type.cluster.attributes?.[name]?.id;
+                    if (attributeId !== undefined && supported.has(name)) {
+                        paths.push({
+                            endpointId: EndpointNumber(endpoint.number),
+                            clusterId: type.cluster.id,
+                            attributeId,
+                        });
+                    }
+                }
+            }
+            for (const child of endpoint.parts) {
+                visit(child);
+            }
+        };
+        visit(root);
+        return paths;
+    }
+
+    /**
+     * Reads attributes from the device in one interaction
+     *
+     * @returns values keyed by "endpointId/clusterId/attributeId"
+     */
+    async readAttributes(
+        node: ClientNode,
+        attributes: { endpointId?: EndpointNumber; clusterId?: ClusterId; attributeId?: AttributeId }[],
+    ) {
+        const values = new Map<string, unknown>();
+        if (attributes.length === 0) {
+            return values;
+        }
+        for await (const chunk of node.interaction.read(Read({ attributes }))) {
+            for await (const report of chunk) {
+                if (report.kind === "attr-value") {
+                    const { endpointId, clusterId, attributeId } = report.path;
+                    values.set(`${endpointId}/${clusterId}/${attributeId}`, report.value);
+                }
+            }
+        }
+        return values;
+    }
+
+    #nodeIdOf(peer: ClientNode) {
+        const address = peer.peerAddress;
+        if (address === undefined) {
+            throw new Error(`Node ${peer.id} is not commissioned`);
+        }
+        return address.nodeId;
+    }
+
+    /**
+     * Starts sending a node's connection and structure changes to openHAB. Safe to call again for the same node.
+     */
+    #activatePeer(peer: ClientNode, nodeId: NodeId) {
+        if (this.#activePeers.has(peer.id)) {
+            return;
+        }
+        const observers = new ObserverGroup();
+        this.#activePeers.set(peer.id, { nodeId, observers });
+        observers.on(peer.lifecycle.connectionStateChanged, state => {
+            // openHAB requests the node data on Connected, which needs the structure to be known
+            if (state === NodeConnectionState.Connected && !this.isStructureKnown(peer)) {
+                return;
+            }
+            this.#sendNodeState(peer, nodeId, state);
+        });
+        let watchingIcd = this.#watchIcd(peer, nodeId, observers);
+        observers.on(peer.lifecycle.seeded, () => {
+            watchingIcd ||= this.#watchIcd(peer, nodeId, observers);
+            if (peer.lifecycle.connectionState === NodeConnectionState.Connected) {
+                this.#sendNodeState(peer, nodeId, NodeConnectionState.Connected);
+            }
+        });
+        // Changes on any endpoint of the node are also emitted on the node itself
+        observers.on(peer.lifecycle.changed, (type, endpoint) => {
+            if (!STRUCTURE_LIFECYCLE_CHANGES.has(type) || !this.isStructureKnown(peer)) {
+                return;
+            }
+            if (endpoint === peer && type !== EndpointLifecycle.Change.ServersChanged) {
+                return;
+            }
+            this.#scheduleStructureChanged(nodeId);
+        });
+    }
+
+    /**
+     * Sends check-in changes of a sleepy device (ICD) to openHAB. matter.js adds the IcdClient behavior to nodes that
+     * have the ICD Management cluster, so it can be missing until the node's structure is known.
+     *
+     * @returns whether the node has the behavior
+     */
+    #watchIcd(peer: ClientNode, nodeId: NodeId, observers: ObserverGroup) {
+        if (!peer.behaviors.has(IcdClient)) {
+            return false;
+        }
+        const events = peer.eventsOf(IcdClient);
+        const send = (event: IcdEvent) =>
+            this.ws.sendEvent(EventType.IcdState, { nodeId, event, ...this.icdState(peer) });
+        observers.on(events.registered, () => send(IcdEvent.Registered));
+        observers.on(events.unregistered, () => send(IcdEvent.Unregistered));
+        observers.on(events.checkedIn, () => send(IcdEvent.CheckedIn));
+        observers.on(events.checkInMissed, () => send(IcdEvent.CheckInMissed));
+        return true;
+    }
+
+    /**
+     * Check-in state of a sleepy device (ICD). Only devices that support long idle times (LIT) send check-ins, and
+     * matter.js registers for them on its own.
+     */
+    icdState(peer: ClientNode) {
+        this.#requireIcd(peer);
+        const { registered, lastCheckInReceivedAt } = peer.stateOf(IcdClient);
+        return {
+            litSupported: IcdClient.litSupported(peer),
+            registered,
+            lastCheckIn: lastCheckInReceivedAt,
+        };
+    }
+
+    /**
+     * Asks a sleepy device (ICD) to stay awake, for example before sending it several commands. Only devices that
+     * support long idle times accept this.
+     *
+     * @param duration requested time in milliseconds
+     * @returns the time in milliseconds the device promised to stay awake
+     */
+    async icdStayActive(peer: ClientNode, duration: number) {
+        this.#requireIcd(peer);
+        return peer.act(agent => agent.get(IcdClient).stayActive(Millis(duration)));
+    }
+
+    #requireIcd(peer: ClientNode) {
+        if (!peer.behaviors.has(IcdClient)) {
+            throw new Error(`Node ${this.#nodeIdOf(peer)} is not an intermittently connected device`);
+        }
+    }
+
+    #sendOtaUpdateStatus(nodeId: NodeId, status: OtaUpdateStatus) {
+        logger.info(`Update ${status} for node ${nodeId}`);
+        this.ws.sendEvent(EventType.OtaUpdateStatus, { nodeId, status });
+    }
+
+    #handlePeerDeleted(peer: ClientNode) {
+        const active = this.#activePeers.get(peer.id);
+        if (active === undefined) {
+            return;
+        }
+        const { nodeId, observers } = active;
+        observers.close();
+        this.#activePeers.delete(peer.id);
+        clearTimeout(this.#structureChangeTimers.get(nodeId));
+        this.#structureChangeTimers.delete(nodeId);
+        logger.info(`Node ${nodeId} removed`);
+        this.ws.sendEvent(EventType.NodeStateInformation, { nodeId, state: NodeState.DECOMMISSIONED });
+    }
+
+    #sendNodeState(peer: ClientNode, nodeId: NodeId, state: NodeConnectionState) {
+        this.ws.sendEvent(EventType.NodeStateInformation, {
+            nodeId,
+            state: NodeConnectionState[state],
+            physicalProperties: state === NodeConnectionState.Connected ? this.#physicalProperties(peer) : undefined,
+        });
+    }
+
+    #physicalProperties(peer: ClientNode) {
+        try {
+            return ClientNodePhysicalProperties(peer);
+        } catch (e) {
+            logger.debug(`Could not read physical properties for node ${peer.id}: ${e}`);
+            return undefined;
+        }
+    }
+
+    async #awaitReady(peer: ClientNode, timeout?: number) {
+        const isReady = () => this.#isReady(peer);
+        if (isReady()) {
+            return;
+        }
+        const observers = new ObserverGroup();
+        let timer: NodeJS.Timeout | undefined;
+        try {
+            await new Promise<void>((resolve, reject) => {
+                const check = () => {
+                    if (isReady()) {
+                        resolve();
+                    }
+                };
+                observers.on(peer.lifecycle.seeded, check);
+                observers.on(peer.lifecycle.connectionStateChanged, check);
+                if (timeout !== undefined && timeout > 0) {
+                    timer = setTimeout(() => {
+                        const state = NodeConnectionState[peer.lifecycle.connectionState];
+                        reject(new Error(`Node ${this.#nodeIdOf(peer)} connection failed: ${state}`));
+                    }, timeout);
+                }
+                check();
+            });
+        } finally {
+            clearTimeout(timer);
+            observers.close();
+        }
+    }
+
+    /**
+     * Forwards attribute and event changes of initialized nodes to openHAB
+     */
+    #handleChange(change: ChangeNotificationService.Change) {
+        if (change.kind === "readable") {
+            return;
+        }
+        const peer = this.#owningPeer(change.endpoint);
+        const active = peer === undefined ? undefined : this.#activePeers.get(peer.id);
+        if (peer === undefined || active === undefined) {
+            return;
+        }
+        const { nodeId } = active;
+
+        switch (change.kind) {
+            case "update": {
+                const { behavior, endpoint, properties, version } = change;
+                if (!this.isStructureKnown(peer) || !ClusterBehavior.is(behavior)) {
+                    return;
+                }
+                if (!endpoint.behaviors.supported[behavior.id]) {
+                    return;
+                }
+                const endpointId = endpoint.number;
+                const clusterId = behavior.cluster.id;
+                const state = endpoint.stateOf(behavior) as Record<string, unknown>;
+                const attributes = behavior.cluster.attributes ?? {};
+                for (const property of properties ?? Object.keys(attributes)) {
+                    let attributeId = parseInt(property, 10);
+                    if (isNaN(attributeId)) {
+                        attributeId = attributes[property]?.id;
+                        if (attributeId === undefined) {
+                            continue;
+                        }
+                    }
+                    const attributeName =
+                        Matter.clusters(clusterId)?.attributes(attributeId)?.propertyName ??
+                        `Unknown (${Diagnostic.hex(attributeId)})`;
+                    this.ws.sendEvent(EventType.AttributeChanged, {
+                        path: { nodeId, endpointId, clusterId, attributeId: AttributeId(attributeId), attributeName },
+                        value: state[property],
+                        version,
+                    });
+                    if (STRUCTURE_ATTRIBUTES.has(attributeId)) {
+                        this.#scheduleStructureChanged(nodeId);
+                    }
+                }
+                break;
+            }
+
+            case "event": {
+                const { behavior, endpoint, event, number, timestamp, priority, payload } = change;
+                if (!this.isStructureKnown(peer) || !ClusterBehavior.is(behavior)) {
+                    return;
+                }
+                this.ws.sendEvent(EventType.EventTriggered, {
+                    path: {
+                        nodeId,
+                        endpointId: endpoint.number,
+                        clusterId: behavior.cluster.id,
+                        eventId: event.id as EventId,
+                        eventName: event.propertyName,
+                    },
+                    events: [{ eventNumber: number, epochTimestamp: timestamp, priority, data: payload }],
+                });
+                break;
+            }
+        }
+    }
+
+    #owningPeer(endpoint: Endpoint): ClientNode | undefined {
+        for (let current: Endpoint | undefined = endpoint; current !== undefined; current = current.owner) {
+            if (current instanceof ClientNode) {
+                return current;
+            }
+        }
+        return undefined;
+    }
+
+    #scheduleStructureChanged(nodeId: NodeId) {
+        clearTimeout(this.#structureChangeTimers.get(nodeId));
+        this.#structureChangeTimers.set(
+            nodeId,
+            setTimeout(() => {
+                this.#structureChangeTimers.delete(nodeId);
+                this.ws.sendEvent(EventType.NodeStateInformation, { nodeId, state: NodeState.STRUCTURE_CHANGED });
+            }, STRUCTURE_CHANGE_DELAY_MS),
+        );
     }
 }

@@ -115,7 +115,7 @@ public class SensorThingHandler extends BaseThingHandler {
             }
             refreshChannelValue();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline.");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline.");
         }
     }
 
@@ -125,7 +125,7 @@ public class SensorThingHandler extends BaseThingHandler {
         if (localConfig != null) {
             serialNumber = localConfig.getSerialNumber();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot access config data.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Cannot access config data.");
         }
         McdBridgeHandler localMcdBridgeHandler = mcdBridgeHandler;
         if (localMcdBridgeHandler != null) {
@@ -141,7 +141,7 @@ public class SensorThingHandler extends BaseThingHandler {
                                 if (result.has("SerialNumber")) {
                                     // check for serial number in MCD cloud
                                     if (result.get("SerialNumber").isJsonNull()) {
-                                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                                 "Serial number does not exist in MCD!");
                                     } else {
                                         // refresh channel values and set thing status to ONLINE
@@ -158,13 +158,13 @@ public class SensorThingHandler extends BaseThingHandler {
                             }
                         });
                     } catch (Exception e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
                 });
                 initIsDone = true;
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "unable to access bridge");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "unable to access bridge");
         }
     }
 
@@ -196,11 +196,11 @@ public class SensorThingHandler extends BaseThingHandler {
                                 "Unable to synchronize! Please assign sensor to patient or organization unit in MCD!");
                     }
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             });
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -433,7 +433,7 @@ public class SensorThingHandler extends BaseThingHandler {
                 });
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

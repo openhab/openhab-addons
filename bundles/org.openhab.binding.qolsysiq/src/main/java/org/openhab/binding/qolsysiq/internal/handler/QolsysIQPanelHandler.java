@@ -284,7 +284,7 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
     private void setOfflineAndReconnect(Exception reason, int seconds) {
         logger.debug("setOfflineAndReconnect");
         disconnect();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason.getMessage());
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason.getMessage());
         startRetryFuture(seconds);
     }
 

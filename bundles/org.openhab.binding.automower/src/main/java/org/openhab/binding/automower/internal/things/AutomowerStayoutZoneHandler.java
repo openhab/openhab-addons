@@ -88,7 +88,7 @@ public class AutomowerStayoutZoneHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             logger.trace("AutomowerStayoutZoneHandler initialized for thingId {}", this.thingId);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
         }
     }
 

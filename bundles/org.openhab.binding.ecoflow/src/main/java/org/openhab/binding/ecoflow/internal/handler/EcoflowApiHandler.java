@@ -243,7 +243,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE);
         } catch (EcoflowApiException e) {
             logger.debug("Ecoflow API initialization failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduleApiInit(RETRY_INTERVAL_SECONDS, TimeUnit.SECONDS);
         }
     }

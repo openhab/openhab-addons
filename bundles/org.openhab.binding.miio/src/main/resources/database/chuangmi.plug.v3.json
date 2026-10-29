@@ -1,10 +1,9 @@
 {
 	"deviceMapping": {
 		"id": [
-			"chuangmi.plug.v3",
-			"chuangmi.plug.hmi206",
-			"chuangmi.plug.hmi208"
+			"chuangmi.plug.v3"
 		],
+		"experimental": false,
 		"channels": [
 			{
 				"property": "power",
@@ -18,9 +17,10 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
+				"category": "poweroutlet",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				],
 				"readmeComment": "If this channel does not respond to on/off upgrade firmware"
 			},
@@ -30,12 +30,16 @@
 				"channel": "usb",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_usb_*",
 						"parameterType": "ONOFFPARA"
 					}
+				],
+				"category": "poweroutlet",
+				"tags": [
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -58,16 +62,40 @@
 			},
 			{
 				"property": "wifi_led",
-				"friendlyName": "Wifi LED",
+				"friendlyName": "Indicator Light",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_wifi_led",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "get_power",
+				"friendlyName": "Active Power",
+				"channel": "electric_power",
+				"type": "Number:Power",
+				"unit": "watt",
+				"stateDescription": {
+					"pattern": "%.2f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"customRefreshCommand": "get_power",
+				"transformation": "/100",
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Power"
 				]
 			}
 		]

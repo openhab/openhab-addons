@@ -65,6 +65,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -141,7 +142,23 @@ public class AutomowerHandler extends BaseThingHandler {
             String param = channelIDSplit[1];
             sendAutomowerCalendarTask(command, index, null, param);
         } else if (GROUP_SETTING.startsWith(groupId)) {
-            if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)) {
+            if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT_CM)) {
+                @Nullable
+                Double requestedCuttingHeightCm = null;
+                if (command instanceof QuantityType<?> cmd) {
+                    QuantityType<?> cuttingHeightCm = cmd.toUnit(MetricPrefix.CENTI(SIUnits.METRE));
+                    if (cuttingHeightCm != null) {
+                        requestedCuttingHeightCm = cuttingHeightCm.doubleValue();
+                    }
+                } else if (command instanceof DecimalType cmd) {
+                    requestedCuttingHeightCm = cmd.doubleValue();
+                }
+
+                Byte rawCuttingHeight = calculateRawCuttingHeightForConfiguredRange(requestedCuttingHeightCm);
+                if (rawCuttingHeight != null) {
+                    sendAutomowerSettingsCuttingHeight(rawCuttingHeight);
+                }
+            } else if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)) {
                 if (command instanceof DecimalType cmd) {
                     sendAutomowerSettingsCuttingHeight(cmd.byteValue());
                 }
@@ -211,41 +228,139 @@ public class AutomowerHandler extends BaseThingHandler {
         return this.mowerZoneId;
     }
 
+    @Nullable
+    public Double getMinCuttingHeightCm() {
+        AutomowerConfiguration config = getAutomowerConfiguration();
+        return config != null ? config.getMinCuttingHeightCm() : null;
+    }
+
+    @Nullable
+    public Double getMaxCuttingHeightCm() {
+        AutomowerConfiguration config = getAutomowerConfiguration();
+        return config != null ? config.getMaxCuttingHeightCm() : null;
+    }
+
+    @Nullable
+    private AutomowerConfiguration getAutomowerConfiguration() {
+        return getThing().getConfiguration() != null ? getConfigAs(AutomowerConfiguration.class) : null;
+    }
+
+    @Nullable
+    public Double calculateCuttingHeightCmForConfiguredRange(@Nullable Byte rawCuttingHeight) {
+        return calculateCuttingHeightCm(getMinCuttingHeightCm(), getMaxCuttingHeightCm(), rawCuttingHeight, 1.0, 9.0);
+    }
+
+    @Nullable
+    public Double calculateCuttingHeightCmForWorkArea(@Nullable Byte rawCuttingHeight) {
+        return calculateCuttingHeightCm(getMinCuttingHeightCm(), getMaxCuttingHeightCm(), rawCuttingHeight, 0.0, 100.0);
+    }
+
+    @Nullable
+    static Byte calculateRawCuttingHeightForConfiguredRange(@Nullable Number cuttingHeightCm, @Nullable Double minCm,
+            @Nullable Double maxCm) {
+        return calculateRawCuttingHeight(cuttingHeightCm, minCm, maxCm, 1, 9);
+    }
+
+    @Nullable
+    private static Byte calculateRawCuttingHeight(@Nullable Number cuttingHeightCm, @Nullable Double minCm,
+            @Nullable Double maxCm, int minRawValue, int maxRawValue) {
+        if (cuttingHeightCm == null || minCm == null || maxCm == null || !Double.isFinite(minCm)
+                || !Double.isFinite(maxCm) || minCm >= maxCm) {
+            return null;
+        }
+
+        double requestedHeight = cuttingHeightCm.doubleValue();
+        if (!Double.isFinite(requestedHeight) || requestedHeight < minCm || requestedHeight > maxCm) {
+            return null;
+        }
+
+        return (byte) Math
+                .round(minRawValue + (maxRawValue - minRawValue) * ((requestedHeight - minCm) / (maxCm - minCm)));
+    }
+
+    @Nullable
+    Byte calculateRawCuttingHeightForWorkArea(@Nullable Number cuttingHeightCm) {
+        return calculateRawCuttingHeight(cuttingHeightCm, getMinCuttingHeightCm(), getMaxCuttingHeightCm(), 0, 100);
+    }
+
+    @Nullable
+    public Byte calculateRawCuttingHeightForConfiguredRange(@Nullable Number cuttingHeightCm) {
+        return calculateRawCuttingHeightForConfiguredRange(cuttingHeightCm, getMinCuttingHeightCm(),
+                getMaxCuttingHeightCm());
+    }
+
+    boolean hasValidCuttingHeightCmRange() {
+        Double minCuttingHeightCm = getMinCuttingHeightCm();
+        Double maxCuttingHeightCm = getMaxCuttingHeightCm();
+        return minCuttingHeightCm != null && maxCuttingHeightCm != null && Double.isFinite(minCuttingHeightCm)
+                && Double.isFinite(maxCuttingHeightCm) && minCuttingHeightCm < maxCuttingHeightCm;
+    }
+
+    @Nullable
+    public static Double calculateCuttingHeightCm(@Nullable Double minCuttingHeightCm,
+            @Nullable Double maxCuttingHeightCm, @Nullable Byte rawCuttingHeight) {
+        return calculateCuttingHeightCm(minCuttingHeightCm, maxCuttingHeightCm, rawCuttingHeight, 1.0, 9.0);
+    }
+
+    @Nullable
+    public static Double calculateCuttingHeightCm(@Nullable Double minCuttingHeightCm,
+            @Nullable Double maxCuttingHeightCm, @Nullable Number rawCuttingHeight, double minRawValue,
+            double maxRawValue) {
+        if (minCuttingHeightCm == null || maxCuttingHeightCm == null || rawCuttingHeight == null) {
+            return null;
+        }
+
+        if (!Double.isFinite(minCuttingHeightCm) || !Double.isFinite(maxCuttingHeightCm)) {
+            return null;
+        }
+
+        if (minCuttingHeightCm >= maxCuttingHeightCm || maxRawValue <= minRawValue) {
+            return null;
+        }
+
+        double rawValue = rawCuttingHeight.doubleValue();
+        if (rawValue < minRawValue || rawValue > maxRawValue) {
+            return null;
+        }
+
+        double interpolated = minCuttingHeightCm + ((maxCuttingHeightCm - minCuttingHeightCm)
+                * ((rawValue - minRawValue) / (maxRawValue - minRawValue)));
+        return Math.round(interpolated * 2.0) / 2.0;
+    }
+
     @Override
     public void initialize() {
         synchronized (this) {
             disposed = false;
         }
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
-            final String configMowerZoneId = currentConfig.getMowerZoneId();
-            if (configMowerZoneId != null && !configMowerZoneId.isBlank()) {
-                try {
-                    mowerZoneId = ZoneId.of(configMowerZoneId);
-                } catch (DateTimeException e) {
-                    logger.warn("Invalid configuration mowerZoneId: {}, Error: {}", mowerZoneId, e.getMessage());
-                    mowerZoneId = timeZoneProvider.getTimeZone(); // wrong config, use System TimeZone
-                }
-            } else {
-                mowerZoneId = timeZoneProvider.getTimeZone(); // not configured, use System TimeZone
-            }
-
-            final String mowerId = this.getThing().getUID().getId();
-            automowerId.set(mowerId);
-            // Adding handler to map of handlers
-            AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
-            if (automowerBridgeHandler != null) {
-                automowerBridgeHandler.registerAutomowerHandler(mowerId, this);
-            }
-
-            updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
-
-            scheduler.execute(() -> completeInitAsync());
-
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         }
+        AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
+        final String configMowerZoneId = currentConfig.getMowerZoneId();
+        if (configMowerZoneId != null && !configMowerZoneId.isBlank()) {
+            try {
+                mowerZoneId = ZoneId.of(configMowerZoneId);
+            } catch (DateTimeException e) {
+                logger.warn("Invalid configuration mowerZoneId: {}, Error: {}", mowerZoneId, e.getMessage());
+                mowerZoneId = timeZoneProvider.getTimeZone(); // wrong config, use System TimeZone
+            }
+        } else {
+            mowerZoneId = timeZoneProvider.getTimeZone(); // not configured, use System TimeZone
+        }
+
+        final String mowerId = this.getThing().getUID().getId();
+        automowerId.set(mowerId);
+        // Adding handler to map of handlers
+        AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+        if (automowerBridgeHandler != null) {
+            automowerBridgeHandler.registerAutomowerHandler(mowerId, this);
+        }
+
+        updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
+
+        scheduler.execute(() -> completeInitAsync());
     }
 
     private void completeInitAsync() {
@@ -266,11 +381,10 @@ public class AutomowerHandler extends BaseThingHandler {
                 mowerMessages = automowerBridge.getAutomowerMessages(mowerId);
                 updateMessagesChannelState(mowerMessages);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             }
         } catch (AutomowerCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error-query-mower-failed");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-query-mower-failed");
             logger.warn("Unable to query automower messages for: {}. Error: {}", mowerId, e.getMessage());
         }
     }
@@ -355,12 +469,10 @@ public class AutomowerHandler extends BaseThingHandler {
             if (isConnected(mower)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error-mower-not-connected-to-cloud");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-mower-not-connected-to-cloud");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error-query-mower-failed");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-query-mower-failed");
         }
     }
 
@@ -371,10 +483,15 @@ public class AutomowerHandler extends BaseThingHandler {
             if (disposed) {
                 return;
             }
-            automowerBridge = getAutomowerBridge();
-            automowerBridgeHandler = getAutomowerBridgeHandler();
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+                return;
+            }
+            automowerBridgeHandler = bridge.getHandler() instanceof AutomowerBridgeHandler handler ? handler : null;
+            automowerBridge = automowerBridgeHandler != null ? automowerBridgeHandler.getAutomowerBridge() : null;
             if (automowerBridgeHandler == null || automowerBridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 return;
             }
         }
@@ -447,7 +564,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 automowerBridge.sendAutomowerCommand(id, command, commandWorkAreaId, commandDurationMinutes,
                         commandExternalReason);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             }
         } catch (AutomowerCommunicationException e) {
             logger.warn("Unable to send Command to automower: {}, Error: {}", id, e.getMessage());
@@ -505,8 +622,7 @@ public class AutomowerHandler extends BaseThingHandler {
                             mower.getAttributes().getCapabilities().hasWorkAreas(), workAreaId, calendarTaskArray);
                     replaceCachedCalendarTasks(mower, workAreaId, calendarTaskArray);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send CalendarTask to automower: {}, Error: {}", id, e.getMessage());
@@ -596,8 +712,7 @@ public class AutomowerHandler extends BaseThingHandler {
                             calendarTasksFiltered);
                     copyCalendarTaskValues(calendarTask, updatedCalendarTask);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send CalendarTask to automower: {}, Error: {}", id, e.getMessage());
@@ -669,8 +784,7 @@ public class AutomowerHandler extends BaseThingHandler {
                             .filter(zone -> zone.getId().equals(zoneId)).findFirst()
                             .ifPresent(zone -> zone.setEnabled(enable));
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send StayOutZone to automower: {}, Error: {}", id, e.getMessage());
@@ -853,8 +967,7 @@ public class AutomowerHandler extends BaseThingHandler {
                                 }
                             });
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send WorkArea to automower: {}, Error: {}", id, e.getMessage());
@@ -931,8 +1044,7 @@ public class AutomowerHandler extends BaseThingHandler {
                         settings.getHeadlight().setHeadlightMode(headlightMode);
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send SettingCuttingHeight to automower: {}, Error: {}", id, e.getMessage());
@@ -958,8 +1070,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 if (automowerBridge != null) {
                     automowerBridge.sendAutomowerConfirmError(id);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send ConfirmError to automower: {}, Error: {}", id, e.getMessage());
@@ -986,8 +1097,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     requestSucceeded = true;
                     mower.getAttributes().getStatistics().setCuttingBladeUsageTime(0);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send ResetCuttingBladeUsageTime to automower: {}, Error: {}", id,
@@ -1108,6 +1218,10 @@ public class AutomowerHandler extends BaseThingHandler {
             createChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE, CoreItemFactory.STRING,
                     channelAdd, thing);
         }
+        if (hasValidCuttingHeightCmRange() || thing.getChannel(CHANNEL_SETTING_CUTTING_HEIGHT_CM) != null) {
+            createChannel(null, CHANNEL_SETTING_CUTTING_HEIGHT_CM, CHANNEL_TYPE_SETTING_CUTTING_HEIGHT_CM,
+                    "Number:Length", channelAdd, thing);
+        }
 
         int i;
         if (!capabilities.hasWorkAreas()) {
@@ -1140,7 +1254,9 @@ public class AutomowerHandler extends BaseThingHandler {
         }
 
         // remove channels that are now longer required and add new once
-        updateThing(editThing().withChannels(channelAdd).build());
+        if (!channelAdd.equals(thing.getChannels())) {
+            updateThing(editThing().withChannels(channelAdd).build());
+        }
     }
 
     private void updateStatusChannels(Mower mower, Capabilities capabilities) {
@@ -1246,6 +1362,15 @@ public class AutomowerHandler extends BaseThingHandler {
             } else {
                 updateState(CHANNEL_SETTING_HEADLIGHT_MODE, UnDefType.NULL);
             }
+        }
+
+        Double calculatedCuttingHeightCm = calculateCuttingHeightCmForConfiguredRange(
+                mower.getAttributes().getSettings().getCuttingHeight());
+        if (calculatedCuttingHeightCm != null) {
+            updateState(CHANNEL_SETTING_CUTTING_HEIGHT_CM,
+                    new QuantityType<>(calculatedCuttingHeightCm, MetricPrefix.CENTI(SIUnits.METRE)));
+        } else if (thing.getChannel(CHANNEL_SETTING_CUTTING_HEIGHT_CM) != null) {
+            updateState(CHANNEL_SETTING_CUTTING_HEIGHT_CM, UnDefType.NULL);
         }
     }
 
@@ -1412,8 +1537,16 @@ public class AutomowerHandler extends BaseThingHandler {
                     (capabilities.hasStayOutZones() ? "yes" : "no"));
             properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_WORK_AREAS,
                     (capabilities.hasWorkAreas() ? "yes" : "no"));
+            Double minCuttingHeightCm = getMinCuttingHeightCm();
+            Double maxCuttingHeightCm = getMaxCuttingHeightCm();
+            properties.put(AutomowerBindingConstants.AUTOMOWER_MIN_CUTTING_HEIGHT_CM,
+                    minCuttingHeightCm != null ? String.valueOf(minCuttingHeightCm) : "N/A");
+            properties.put(AutomowerBindingConstants.AUTOMOWER_MAX_CUTTING_HEIGHT_CM,
+                    maxCuttingHeightCm != null ? String.valueOf(maxCuttingHeightCm) : "N/A");
 
-            updateProperties(properties);
+            if (!properties.equals(getThing().getProperties())) {
+                updateProperties(properties);
+            }
         }
     }
 

@@ -804,23 +804,23 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * Server supports the counts for the number of received and transmitted packets on the Thread interface.
+         * Server supports the counts for the number of received and transmitted packets on the Thread interface
          */
         public boolean packetCounts;
         /**
          * 
          * Server supports the counts for the number of errors that have occurred during the reception and transmission
-         * of packets on the Thread interface.
+         * of packets on the Thread interface
          */
         public boolean errorCounts;
         /**
          * 
-         * Server supports the counts for various MLE layer happenings.
+         * Server supports the counts for various MLE layer happenings
          */
         public boolean mleCounts;
         /**
          * 
-         * Server supports the counts for various MAC layer happenings.
+         * Server supports the counts for various MAC layer happenings
          */
         public boolean macCounts;
 

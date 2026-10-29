@@ -25,6 +25,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * Supplies raw entities and entity-level change notifications for a dynamic data source (e.g., "things").
  *
  * @param <T> entity type exposed by this source
+ *
+ * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
 public interface DynamicSourceProvider<T> {

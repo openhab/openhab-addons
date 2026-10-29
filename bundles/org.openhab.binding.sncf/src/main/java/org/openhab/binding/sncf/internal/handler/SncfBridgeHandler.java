@@ -86,7 +86,7 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
         if (apiId != null && !apiId.isBlank()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-api-key");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-api-key");
         }
     }
 

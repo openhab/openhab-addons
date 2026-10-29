@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -98,12 +99,14 @@ import com.google.gson.JsonObject;
  * Bridge handler for the UniFi Protect NVR.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Leo Siepel - Wait for controller initialization before accessing shared resources
  */
 @NonNullByDefault
 public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(UnifiProtectNVRHandler.class);
     private final ThingTypeRegistry thingTypeRegistry;
     private volatile @Nullable UniFiProtectHybridClient apiClient;
+    private @Nullable CompletableFuture<UniFiSession> initializationTask;
     private @Nullable ScheduledFuture<?> pollTask;
     private @Nullable ScheduledFuture<?> reconnectTask;
     private @Nullable UnifiProtectDiscoveryService discoveryService;
@@ -220,31 +223,30 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         if (parentHandler == null) {
             Bridge parentBridge = getBridge();
             if (parentBridge != null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
                 Object storedHost = getThing().getConfiguration().get("hostname");
                 String hint = storedHost != null ? " (previously configured host: " + storedHost + ")" : "";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.requires-unifi-controller-bridge" + hint);
             }
             return;
         }
 
         final UnifiProtectNVRConfiguration config = getConfigAs(UnifiProtectNVRConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.initializing");
+        updateStatus(ThingStatus.UNKNOWN);
 
-        final HttpClient httpClient = parentHandler.getHttpClient();
-        final String host = parentHandler.getHost();
-        final int port = parentHandler.getPort();
-
-        parentHandler.getSessionAsync().whenComplete((session, sessionError) -> {
-            if (sessionError != null) {
-                logger.debug("Parent bridge session not available", sessionError);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, sessionError.getMessage());
+        initializationTask = parentHandler.getSessionAsync().whenCompleteAsync((session, sessionError) -> {
+            if (shuttingDown) {
                 return;
             }
-            scheduler.execute(() -> initializeWithSession(config, httpClient, host, port, session));
-        });
+            if (sessionError != null) {
+                logger.debug("Parent bridge session not available", sessionError);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, sessionError.getMessage());
+                return;
+            }
+            initializeWithSession(config, parentHandler, session);
+        }, scheduler);
     }
 
     /**
@@ -261,26 +263,27 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         }
     }
 
-    private void initializeWithSession(UnifiProtectNVRConfiguration config, HttpClient httpClient, String host,
-            int port, UniFiSession session) {
+    private void initializeWithSession(UnifiProtectNVRConfiguration config, UniFiControllerBridgeHandler parentHandler,
+            UniFiSession session) {
         try {
+            HttpClient httpClient = parentHandler.getHttpClient();
+            String host = parentHandler.getHost();
+            int port = parentHandler.getPort();
             String apiToken = config.token;
             autoManageToken = config.autoManageToken;
             tokenAutoManaged = config.tokenAutoManaged;
 
             if (apiToken == null || apiToken.isBlank()) {
                 if (!autoManageToken) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "API token required when auto-manage is disabled");
                     return;
                 }
                 logger.debug("No API token provided, auto-creating via parent API key manager...");
                 try {
-                    UniFiControllerBridgeHandler parentHandler = getParentHandler();
-                    UniFiApiKeyManager keyManager = parentHandler != null ? parentHandler.getApiKeyManager() : null;
+                    UniFiApiKeyManager keyManager = parentHandler.getApiKeyManager();
                     if (keyManager == null) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                "Parent bridge API key manager not available");
+                        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Parent bridge API key manager not available");
                         return;
                     }
 
@@ -296,8 +299,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     tokenAutoManaged = true;
                 } catch (Exception e) {
                     logger.debug("Failed to auto-create API key", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.conf-error-api-key-creation");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-api-key-creation");
                     return;
                 }
             }
@@ -394,6 +396,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         shuttingDown = true;
+        CompletableFuture<UniFiSession> initializationTask = this.initializationTask;
+        if (initializationTask != null) {
+            // The dependent stage belongs to this NVR; the controller future is shared with other children.
+            initializationTask.cancel(false);
+            this.initializationTask = null;
+        }
         stopTasks();
         stopApiClient();
         ExecutorService eventExecutor = privateEventExecutor;
@@ -483,8 +491,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             cancelChildRefreshRetry(deviceId);
         } catch (InterruptedException | ExecutionException e) {
             logger.debug("Failed to refresh child {} from API", deviceId, e);
-            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-refresh-failed");
+            handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-refresh-failed");
             scheduleChildRefreshRetry(deviceId);
         }
     }
@@ -652,13 +659,13 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             throttledReconnectAttempt++;
             logger.debug("Scheduling reconnect in {} seconds (throttled, attempt {})", delay,
                     throttledReconnectAttempt);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.login-throttled");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.login-throttled");
         } else {
             delay = Math.min((int) Math.pow(2, reconnectAttempt) * 5, MAX_RECONNECT_DELAY_SECONDS);
             reconnectAttempt++;
             logger.debug("Scheduling reconnect in {} seconds (attempt {})", delay, reconnectAttempt);
             if (message != null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }

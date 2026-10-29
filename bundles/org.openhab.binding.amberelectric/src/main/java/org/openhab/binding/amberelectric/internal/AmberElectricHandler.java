@@ -85,8 +85,7 @@ public class AmberElectricHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(AmberElectricConfiguration.class);
         if (config.apiKey.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-api-key");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-api-key");
             return;
         }
 
@@ -122,7 +121,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                 pollStatus();
             } catch (RuntimeException e) {
                 logger.warn("Unexpected error connecting to AmberAPI", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
@@ -175,8 +174,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                     if (jsonArraySites.isEmpty()) {
                         logger.warn(
                                 "Amber API returned an empty sites list. Check API key permissions or active accounts.");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/offline.comm-error.no-sites");
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-sites");
                         return;
                     }
                     sites = gson.fromJson(jsonArraySites.get(0), Sites.class);
@@ -257,7 +255,7 @@ public class AmberElectricHandler extends BaseThingHandler {
             }
         } catch (AmberElectricCommunicationException e) {
             logger.debug("Unexpected error connecting to Amber Electric API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

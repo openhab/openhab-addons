@@ -700,14 +700,16 @@ public class Authorization {
      * @throws MercedesMeApiException if an error occurs during the request
      */
     protected ContentResponse send(Request request) throws MercedesMeApiException {
+        // request path and query contain the VIN for vehicle requests - masked for log output and exception messages
+        String requestPath = Utils.maskVinsIn(request.getPath() + request.getQuery());
         try {
             return request.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new MercedesMeApiException(request.getPath() + request.getQuery() + " - " + e.getMessage());
+            throw new MercedesMeApiException(requestPath + " - " + e.getMessage());
         } catch (TimeoutException | ExecutionException e) {
-            logger.warn("Failed request {}{} - {}", request.getPath(), request.getQuery(), e.getMessage());
-            throw new MercedesMeApiException(request.getPath() + request.getQuery() + " - " + e.getMessage());
+            logger.warn("Failed request {} - {}", requestPath, e.getMessage());
+            throw new MercedesMeApiException(requestPath + " - " + e.getMessage());
         }
     }
 }

@@ -72,7 +72,10 @@ import com.google.protobuf.Timestamp;
  */
 @NonNullByDefault
 public class Mapper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Mapper.class);
+    // a static logger is rejected by the static code analysis - this single instance provides the non-static logger
+    // for the static methods of this utility class
+    private static final Mapper INSTANCE = new Mapper();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final ChannelStateMap INVALID_MAP = new ChannelStateMap(EMPTY, EMPTY, UnDefType.UNDEF);
     public static final Map<String, String[]> CHANNELS = new HashMap<>();
@@ -125,7 +128,7 @@ public class Mapper {
                         if (queryUnit != null) {
                             lengthUnit = queryUnit;
                         } else {
-                            LOGGER.trace("No Unit found for {} - take default ", key);
+                            INSTANCE.logger.trace("No Unit found for {} - take default ", key);
                         }
                     }
                     if (Utils.isNil(value)) {
@@ -167,7 +170,7 @@ public class Mapper {
                         if (queryUnit != null) {
                             lengthUnit = observer.getUnit();
                         } else {
-                            LOGGER.trace("No Unit found for {} - take default ", key);
+                            INSTANCE.logger.trace("No Unit found for {} - take default ", key);
                         }
                     }
                     if (Utils.isNil(value)) {
@@ -185,7 +188,7 @@ public class Mapper {
                     if (value.hasElectricityConsumptionUnit()) {
                         observer = new UOMObserver(value.getElectricityConsumptionUnit().toString());
                     } else {
-                        LOGGER.trace("Don't have electric consumption unit for {}", key);
+                        INSTANCE.logger.trace("Don't have electric consumption unit for {}", key);
                     }
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
@@ -388,7 +391,7 @@ public class Mapper {
                         if (queryUnit != null) {
                             pressureUnit = queryUnit;
                         } else {
-                            LOGGER.trace("No Unit found for {} - take default ", key);
+                            INSTANCE.logger.trace("No Unit found for {} - take default ", key);
                         }
                     }
                     if (Utils.isNil(value)) {
@@ -902,7 +905,7 @@ public class Mapper {
             case REAR_2_RIGHT:
                 return "rear2Right";
             default:
-                LOGGER.trace("Unmapped temperature point zone {}", zone);
+                INSTANCE.logger.trace("Unmapped temperature point zone {}", zone);
                 return zone.toString();
         }
     }

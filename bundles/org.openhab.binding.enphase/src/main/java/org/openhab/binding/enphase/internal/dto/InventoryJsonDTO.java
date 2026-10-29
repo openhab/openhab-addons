@@ -16,6 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Cedric Boon - Added IQ battery fields
  */
 public class InventoryJsonDTO {
 
@@ -43,6 +44,13 @@ public class InventoryJsonDTO {
         public boolean line2Connected;
         @SerializedName("line3-connected")
         public boolean line3Connected;
+        public Integer percentFull;
+        public Integer temperature;
+        public Integer maxCellTemp;
+        @SerializedName("encharge_capacity")
+        public Integer enchargeCapacity;
+        @SerializedName("sleep_enabled")
+        public Boolean sleepEnabled;
 
         public String getSerialNumber() {
             return serialNumber;

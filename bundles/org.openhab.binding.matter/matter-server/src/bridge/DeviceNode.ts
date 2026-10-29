@@ -1,13 +1,22 @@
 // Include this first to auto-register Crypto, Network and Time Node.js implementations
 import "@matter/node";
 
-import { Environment, Logger, MatterAggregateError, StorageService } from "@matter/general";
+import {
+    Environment,
+    Logger,
+    MatterAggregateError,
+    MaybePromise,
+    StorageContext,
+    StorageService,
+} from "@matter/general";
+import { AdministratorCommissioning } from "@matter/main/clusters";
 import { Endpoint, ServerNode } from "@matter/node";
-import { BasicInformationServer } from "@matter/node/behaviors";
+import { BasicInformationServer, BridgedDeviceBasicInformationServer } from "@matter/node/behaviors";
 import { AggregatorEndpoint } from "@matter/node/endpoints";
 import { DeviceCommissioner, FabricManager } from "@matter/protocol";
 import { FabricIndex, VendorId } from "@matter/types";
 import { BridgeEvent, BridgeEventType, EventType } from "../MessageTypes";
+import { BridgeCommissioningServer } from "./behaviors";
 import { BridgeController } from "./BridgeController";
 import { DeviceFunctions } from "./DeviceFunctions";
 
@@ -17,6 +26,7 @@ import {
     ContactSensorDeviceType,
     DimmableDeviceType,
     DoorLockDeviceType,
+    EndpointIdentity,
     FanDeviceType,
     HumiditySensorType,
     OccupancySensorDeviceType,
@@ -28,20 +38,33 @@ import {
 } from "./devices";
 import { ModeSelectDeviceType } from "./devices/ModeSelectDeviceType";
 
-type DeviceType =
-    | OnOffLightDeviceType
-    | OnOffPlugInDeviceType
-    | DimmableDeviceType
-    | ThermostatDeviceType
-    | WindowCoveringDeviceType
-    | DoorLockDeviceType
-    | TemperatureSensorType
-    | HumiditySensorType
-    | OccupancySensorDeviceType
-    | ContactSensorDeviceType
-    | FanDeviceType
-    | ColorDeviceType
-    | ModeSelectDeviceType;
+type DeviceClass = new (
+    bridgeController: BridgeController,
+    attributeMap: { [key: string]: any },
+    id: string,
+    nodeLabel: string,
+    productName: string,
+    productLabel: string,
+    serialNumber: string,
+    reachable: boolean,
+    identity: EndpointIdentity,
+) => BaseDeviceType;
+
+const DEVICE_TYPES: { [key: string]: DeviceClass } = {
+    OnOffLight: OnOffLightDeviceType,
+    OnOffPlugInUnit: OnOffPlugInDeviceType,
+    DimmableLight: DimmableDeviceType,
+    Thermostat: ThermostatDeviceType,
+    WindowCovering: WindowCoveringDeviceType,
+    DoorLock: DoorLockDeviceType,
+    TemperatureSensor: TemperatureSensorType,
+    HumiditySensor: HumiditySensorType,
+    OccupancySensor: OccupancySensorDeviceType,
+    ContactSensor: ContactSensorDeviceType,
+    Fan: FanDeviceType,
+    ColorLight: ColorDeviceType,
+    ModeSelect: ModeSelectDeviceType,
+};
 
 const logger = Logger.get("DeviceNode");
 
@@ -57,7 +80,6 @@ export class DeviceNode {
     private aggregator: Endpoint<AggregatorEndpoint> | null = null;
     private devices: Map<string, BaseDeviceType> = new Map();
     private storageService: StorageService;
-    private inCommissioning: boolean = false;
     private deviceFunctions: DeviceFunctions;
 
     constructor(
@@ -77,6 +99,7 @@ export class DeviceNode {
         this.storageService = this.#environment.get(StorageService);
         this.deviceFunctions = new DeviceFunctions(this.bridgeController);
         this.#environment.set(DeviceFunctions, this.deviceFunctions);
+        this.deviceFunctions.commissionable.on(() => this.#sendCommissioningStatus());
     }
 
     //public methods
@@ -91,8 +114,7 @@ export class DeviceNode {
             logger.info(`!!! Erasing ServerNode Storage !!!`);
             await this.server?.erase();
             await this.close();
-            const ohStorage = await this.#ohBridgeStorage();
-            await ohStorage.clearAll();
+            await this.#withBridgeStorage(storage => storage.clearAll());
             logger.info(`Initializing bridge again`);
             await this.#init();
         }
@@ -109,21 +131,17 @@ export class DeviceNode {
         if (this.server.lifecycle.isOnline) {
             throw new Error("Server is already started, not starting");
         }
-        this.server.lifecycle.online.once(() => {
-            logger.info(`Bridge online`);
-            this.server?.events.commissioning.enabled$Changed.on(async () => {
-                logger.info(`Commissioning state changed to ${this.server?.state.commissioning.enabled}`);
-                this.inCommissioning = this.server?.state.commissioning.enabled ?? false;
-                this.#sendCommissioningStatus();
-            });
-            this.#sendCommissioningStatus();
-        });
+        const events = this.server.events;
+        // Also covers windows opened by a paired app, and the window that closes when pairing completes
+        events.administratorCommissioning.windowStatus$Changed.on(() => this.#sendCommissioningStatus());
+        events.commissioning.commissioned.on(() => this.#sendCommissioningStatus());
+        events.commissioning.decommissioned.on(() => this.#sendCommissioningStatus());
         logger.info(this.server);
         logger.info(`Starting bridge`);
         await this.server.start();
         logger.info(`Bridge started`);
-        const ohStorage = await this.#ohBridgeStorage();
-        await ohStorage.set("lastStart", Date.now());
+        this.#sendCommissioningStatus();
+        await this.#withBridgeStorage(storage => storage.set("lastStart", Date.now()));
     }
 
     public async close() {
@@ -140,72 +158,80 @@ export class DeviceNode {
         productLabel: string,
         serialNumber: string,
         attributeMap: { [key: string]: any },
+        reachable = true,
     ) {
         if (this.devices.has(id)) {
             throw new Error(`Device ${id} already exists!`);
         }
-
-        if (!this.aggregator) {
-            throw new Error(`Aggregator not initialized, aborting.`);
-        }
-
-        // little hack to get the correct device class and initialize it with the correct parameters once
-        const deviceTypeMap: {
-            [key: string]: new (
-                bridgeController: BridgeController,
-                attributeMap: { [key: string]: any },
-                id: string,
-                nodeLabel: string,
-                productName: string,
-                productLabel: string,
-                serialNumber: string,
-            ) => DeviceType;
-        } = {
-            OnOffLight: OnOffLightDeviceType,
-            OnOffPlugInUnit: OnOffPlugInDeviceType,
-            DimmableLight: DimmableDeviceType,
-            Thermostat: ThermostatDeviceType,
-            WindowCovering: WindowCoveringDeviceType,
-            DoorLock: DoorLockDeviceType,
-            TemperatureSensor: TemperatureSensorType,
-            HumiditySensor: HumiditySensorType,
-            OccupancySensor: OccupancySensorDeviceType,
-            ContactSensor: ContactSensorDeviceType,
-            Fan: FanDeviceType,
-            ColorLight: ColorDeviceType,
-            ModeSelect: ModeSelectDeviceType,
-        };
-
-        const DeviceClass = deviceTypeMap[deviceType];
-        if (!DeviceClass) {
-            throw new Error(`Unsupported device type ${deviceType}`);
-        }
-        const device = new DeviceClass(
-            this.bridgeController,
-            attributeMap,
+        const device = this.#createDevice(
+            deviceType,
             id,
             nodeLabel,
             productName,
             productLabel,
             serialNumber,
+            attributeMap,
+            reachable,
         );
-        this.devices.set(id, device);
-        try {
-            await this.aggregator.add(device.endpoint);
-        } catch (e) {
-            logger.error(`Error adding device ${id} to aggregator: ${e}`);
-            if (e instanceof MatterAggregateError) {
-                const errors = e.errors;
-                logger.error(`Name: ${e.name} Message: ${e.message} Cause: ${e.cause}`);
-                let errorMessage = "";
-                for (const error of errors) {
-                    errorMessage += `Error: ${error.message} Cause: ${error.cause}\n`;
-                }
-                logger.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw e;
+        await this.#addDevice(id, device);
+    }
+
+    /**
+     * Replaces an endpoint whose clusters changed. A device of the same type keeps its endpoint number and unique id,
+     * so paired ecosystems keep it as the same device.
+     */
+    public async updateEndpoint(
+        deviceType: string,
+        id: string,
+        nodeLabel: string,
+        productName: string,
+        productLabel: string,
+        serialNumber: string,
+        attributeMap: { [key: string]: any },
+        reachable = true,
+    ) {
+        const existing = this.devices.get(id);
+        let identity: EndpointIdentity = {};
+        if (existing !== undefined && existing.constructor === this.#deviceClass(deviceType)) {
+            identity = {
+                number: existing.endpoint.number,
+                uniqueId: existing.endpoint.stateOf(BridgedDeviceBasicInformationServer).uniqueId,
+            };
         }
+        // Build the new device first so bad options leave the current endpoint in place
+        const device = this.#createDevice(
+            deviceType,
+            id,
+            nodeLabel,
+            productName,
+            productLabel,
+            serialNumber,
+            attributeMap,
+            reachable,
+            identity,
+        );
+        await this.removeEndpoint(id);
+        await this.#addDevice(id, device);
+        if (identity.uniqueId !== undefined) {
+            // Set after adding, as matter.js does not store values passed when the endpoint is created
+            await device.endpoint.setStateOf(BridgedDeviceBasicInformationServer, { uniqueId: identity.uniqueId });
+        }
+    }
+
+    /**
+     * Tells paired ecosystems that the bridge's devices changed, so they read its structure again
+     */
+    public async increaseConfigurationVersion() {
+        await this.#getStartedServer().act(agent => agent.get(BasicInformationServer).increaseConfigurationVersion());
+    }
+
+    public async removeEndpoint(id: string) {
+        const device = this.devices.get(id);
+        if (device === undefined) {
+            return;
+        }
+        this.devices.delete(id);
+        await device.endpoint.delete();
     }
 
     public async setEndpointStates(
@@ -223,10 +249,14 @@ export class DeviceNode {
     public async openCommissioningWindow() {
         const dc = this.#getStartedServer().env.get(DeviceCommissioner);
         logger.debug("opening basic commissioning window");
-        await dc.allowBasicCommissioning(() => {
-            logger.debug("commissioning window closed");
+        await dc.allowBasicCommissioning({
+            onClose: () => {
+                logger.debug("commissioning window closed");
+                this.#sendCommissioningStatus();
+            },
         });
         logger.debug("basic commissioning window open");
+        this.#sendCommissioningStatus();
     }
 
     public async closeCommissioningWindow() {
@@ -246,7 +276,9 @@ export class DeviceNode {
                 manualPairingCode: server.state.commissioning.pairingCodes.manualPairingCode,
                 qrPairingCode: server.state.commissioning.pairingCodes.qrPairingCode,
             },
-            commissioningWindowOpen: !server.state.commissioning.commissioned || this.inCommissioning,
+            commissioningWindowOpen:
+                server.env.get(DeviceCommissioner).windowStatus !==
+                AdministratorCommissioning.CommissioningWindowStatus.WindowNotOpen,
         };
     }
 
@@ -258,7 +290,7 @@ export class DeviceNode {
     public async removeFabric(fabricIndex: number) {
         const fabricManager = this.#getStartedServer().env.get(FabricManager);
         const fabric = fabricManager.maybeFor(FabricIndex(fabricIndex));
-        if(!fabric) {
+        if (!fabric) {
             throw new Error(`Fabric ${fabricIndex} not found`);
         }
         await fabric.leave();
@@ -266,50 +298,111 @@ export class DeviceNode {
 
     //private methods
 
+    #deviceClass(deviceType: string) {
+        const deviceClass = DEVICE_TYPES[deviceType];
+        if (!deviceClass) {
+            throw new Error(`Unsupported device type ${deviceType}`);
+        }
+        return deviceClass;
+    }
+
+    #createDevice(
+        deviceType: string,
+        id: string,
+        nodeLabel: string,
+        productName: string,
+        productLabel: string,
+        serialNumber: string,
+        attributeMap: { [key: string]: any },
+        reachable: boolean,
+        identity: EndpointIdentity = {},
+    ) {
+        const DeviceClass = this.#deviceClass(deviceType);
+        return new DeviceClass(
+            this.bridgeController,
+            attributeMap,
+            id,
+            nodeLabel,
+            productName,
+            productLabel,
+            serialNumber,
+            reachable,
+            identity,
+        );
+    }
+
+    async #addDevice(id: string, device: BaseDeviceType) {
+        if (!this.aggregator) {
+            throw new Error(`Aggregator not initialized, aborting.`);
+        }
+        this.devices.set(id, device);
+        try {
+            await this.aggregator.add(device.endpoint);
+        } catch (e) {
+            this.devices.delete(id);
+            logger.error(`Error adding device ${id} to aggregator: ${e}`);
+            if (e instanceof MatterAggregateError) {
+                const errors = e.errors;
+                logger.error(`Name: ${e.name} Message: ${e.message} Cause: ${e.cause}`);
+                let errorMessage = "";
+                for (const error of errors) {
+                    errorMessage += `Error: ${error.message} Cause: ${error.cause}\n`;
+                }
+                logger.error(errorMessage);
+                throw new Error(errorMessage);
+            }
+            throw e;
+        }
+    }
+
     async #init() {
-        const ohStorage = await this.#ohBridgeStorage();
         const uniqueId = await this.#uniqueIdForBridge();
         logger.info(`Unique ID: ${uniqueId}`);
         /**
          * Create a Matter ServerNode, which contains the Root Endpoint and all relevant data and configuration
          */
         try {
-            this.server = await ServerNode.create({
-                // Required: Give the Node a unique ID which is used to store the state of this node
-                id: DeviceNode.DEFAULT_NODE_ID,
+            // Groupcast is left out because it adds AccessControl features that matter.js 0.17 cannot load. After a
+            // downgrade the bridge would lose the access settings of every paired app.
+            this.server = await ServerNode.create(
+                ServerNode.RootEndpointWithoutGroupcast.with(BridgeCommissioningServer),
+                {
+                    // Required: Give the Node a unique ID which is used to store the state of this node
+                    id: DeviceNode.DEFAULT_NODE_ID,
 
-                // Provide Network relevant configuration like the port
-                // Optional when operating only one device on a host, Default port is 5540
-                network: {
-                    port: this.port,
-                },
+                    // Provide Network relevant configuration like the port
+                    // Optional when operating only one device on a host, Default port is 5540
+                    network: {
+                        port: this.port,
+                    },
 
-                // Provide Commissioning relevant settings
-                // Optional for development/testing purposes
-                commissioning: {
-                    passcode: this.passcode,
-                    discriminator: this.discriminator,
-                },
+                    // Provide Commissioning relevant settings
+                    // Optional for development/testing purposes
+                    commissioning: {
+                        passcode: this.passcode,
+                        discriminator: this.discriminator,
+                    },
 
-                // Provide Node announcement settings
-                // Optional: If Ommitted some development defaults are used
-                productDescription: {
-                    name: this.deviceName,
-                    deviceType: AggregatorEndpoint.deviceType,
-                },
+                    // Provide Node announcement settings
+                    // Optional: If Ommitted some development defaults are used
+                    productDescription: {
+                        name: this.deviceName,
+                        deviceType: AggregatorEndpoint.deviceType,
+                    },
 
-                // Provide defaults for the BasicInformation cluster on the Root endpoint
-                // Optional: If Omitted some development defaults are used
-                basicInformation: {
-                    vendorName: this.vendorName,
-                    vendorId: VendorId(this.vendorId),
-                    nodeLabel: this.productName,
-                    productName: this.productName,
-                    productLabel: this.productName,
-                    productId: this.productId,
-                    uniqueId: uniqueId,
+                    // Provide defaults for the BasicInformation cluster on the Root endpoint
+                    // Optional: If Omitted some development defaults are used
+                    basicInformation: {
+                        vendorName: this.vendorName,
+                        vendorId: VendorId(this.vendorId),
+                        nodeLabel: this.productName,
+                        productName: this.productName,
+                        productLabel: this.productName,
+                        productId: this.productId,
+                        uniqueId: uniqueId,
+                    },
                 },
-            });
+            );
             this.aggregator = new Endpoint(AggregatorEndpoint, { id: "aggregator" });
             await this.server.add(this.aggregator);
             logger.info(`ServerNode created with uniqueId: ${uniqueId}`);
@@ -326,21 +419,35 @@ export class DeviceNode {
         return this.server;
     }
 
-    async #ohBridgeStorage() {
-        return (await this.storageService.open(DeviceNode.DEFAULT_NODE_ID)).createContext("openhab");
+    /**
+     * Runs fn with the bridge's own storage and closes it afterwards. Storage that stays open keeps its lock file
+     * until the process exits.
+     */
+    async #withBridgeStorage<T>(fn: (storage: StorageContext) => MaybePromise<T>) {
+        const manager = await this.storageService.open(DeviceNode.DEFAULT_NODE_ID);
+        try {
+            return await fn(manager.createContext("openhab"));
+        } finally {
+            await manager.close();
+        }
     }
 
     async #uniqueIdForBridge() {
-        const basicContext = (await this.#ohBridgeStorage()).createContext("basicInformation");
-        if(await basicContext.has("uniqueId")) {
-            return await basicContext.get("uniqueId") as string;
-        }
-        const uniqueId = BasicInformationServer.createUniqueId();
-        await basicContext.set("uniqueId", uniqueId);
-        return uniqueId;
+        return this.#withBridgeStorage<string>(async storage => {
+            const basicContext = storage.createContext("basicInformation");
+            if (await basicContext.has("uniqueId")) {
+                return basicContext.get<string>("uniqueId");
+            }
+            const uniqueId = BasicInformationServer.createUniqueId();
+            await basicContext.set("uniqueId", uniqueId);
+            return uniqueId;
+        });
     }
 
     #sendCommissioningStatus() {
+        if (!this.server?.lifecycle.isOnline) {
+            return;
+        }
         const state = this.getCommissioningState();
         const be: BridgeEvent = {
             type: BridgeEventType.EventTriggered,

@@ -21,7 +21,6 @@ import org.openhab.binding.alarmdecoder.internal.protocol.EXPMessage;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
@@ -55,7 +54,7 @@ public class ZoneHandler extends ADThingHandler {
         config = getConfigAs(ZoneConfig.class);
 
         if (config.address < 0 || config.channel < 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid address/channel setting");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid address/channel setting");
             return;
         }
         logger.debug("Zone handler initializing for address {} channel {}", config.address, config.channel);

@@ -157,6 +157,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollCameraJob = null;
     private @Nullable ScheduledFuture<?> snapshotJob = null;
     private @Nullable ScheduledFuture<?> authenticationJob = null;
+    private volatile boolean disposing;
     private @Nullable Bootstrap mainBootstrap;
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup(1);
     private FullHttpRequest putRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.PUT, "");
@@ -802,7 +803,10 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    public void setupFfmpegFormat(FFmpegFormat format) {
+    public synchronized void setupFfmpegFormat(FFmpegFormat format) {
+        if (disposing) {
+            return;
+        }
         String inputOptions = cameraConfig.getFfmpegInputOptions();
         if (cameraConfig.getFfmpegOutput().isEmpty()) {
             logger.warn("The camera tried to use a FFmpeg feature when the output folder is not set.");
@@ -1573,20 +1577,20 @@ public class IpCameraHandler extends BaseThingHandler {
         } else if (!rtspUri.isEmpty()) {
             snapshotIsFfmpeg();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Camera failed to report a valid Snaphot and/or RTSP URL. Check user/pass is correct, or use the advanced configs to manually provide a URL.");
         }
     }
 
     public void cameraConfigError(String reason) {
         // won't try to reconnect again due to a config error being the cause.
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, reason);
         dispose();
     }
 
     public void cameraCommunicationError(String reason) {
         // will try to reconnect again as camera may be rebooting.
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
         if (isOnline.get()) { // if already offline dont try reconnecting in 6 seconds, we want 30sec wait.
             resetAndRetryConnecting();
         }
@@ -1772,6 +1776,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        disposing = false;
         cameraConfig = getConfigAs(CameraConfig.class);
         threadPool = Executors.newScheduledThreadPool(2);
         mainEventLoopGroup = new NioEventLoopGroup(3);
@@ -1929,7 +1934,7 @@ public class IpCameraHandler extends BaseThingHandler {
         tryConnecting();
     }
 
-    private void offline() {
+    private synchronized void offline() {
         isOnline.set(false);
         snapshotPolling = false;
         Future<?> localFuture = pollCameraJob;
@@ -1954,32 +1959,32 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         Ffmpeg localFfmpeg = ffmpegHLS;
         if (localFfmpeg != null) {
-            localFfmpeg.stopConverting();
+            localFfmpeg.dispose();
             ffmpegHLS = null;
         }
         localFfmpeg = ffmpegRecord;
         if (localFfmpeg != null) {
-            localFfmpeg.stopConverting();
+            localFfmpeg.dispose();
             ffmpegRecord = null;
         }
         localFfmpeg = ffmpegGIF;
         if (localFfmpeg != null) {
-            localFfmpeg.stopConverting();
+            localFfmpeg.dispose();
             ffmpegGIF = null;
         }
         localFfmpeg = ffmpegRtspHelper;
         if (localFfmpeg != null) {
-            localFfmpeg.stopConverting();
+            localFfmpeg.dispose();
             ffmpegRtspHelper = null;
         }
         localFfmpeg = ffmpegMjpeg;
         if (localFfmpeg != null) {
-            localFfmpeg.stopConverting();
+            localFfmpeg.dispose();
             ffmpegMjpeg = null;
         }
         localFfmpeg = ffmpegSnapshot;
         if (localFfmpeg != null) {
-            localFfmpeg.stopConverting();
+            localFfmpeg.dispose();
             ffmpegSnapshot = null;
         }
         if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)) { // generic cameras do not have ONVIF support
@@ -1990,6 +1995,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        disposing = true;
         // first, a movement is stopped with the token that is released below
         reolinkPtz.dispose();
         if (REOLINK_THING.equals(thing.getThingTypeUID().getId()) && cameraConfig.useToken) {

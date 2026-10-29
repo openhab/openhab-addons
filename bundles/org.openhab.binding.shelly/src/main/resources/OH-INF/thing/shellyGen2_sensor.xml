@@ -60,6 +60,9 @@
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="control" typeId="control">
+				<label>Thermostat Control</label>
+			</channel-group>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -129,6 +132,17 @@
 		<item-type>Switch</item-type>
 		<label>Sensor Enable</label>
 		<description>Enable or disable the mmWave radar sensor</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="thermostatEnable">
+		<item-type>Switch</item-type>
+		<label>Thermostat Enabled</label>
+		<description>Enable or disable the Wall Display thermostat</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Enabled</tag>

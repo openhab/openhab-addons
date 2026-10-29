@@ -157,7 +157,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     @Override
     public void initialize() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.UNKNOWN,
                     translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
         }
     }
@@ -195,16 +195,33 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
+        updatePolling(status);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+        updatePolling(status);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        super.updateStatus(status, description);
+        updatePolling(status);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        super.updateStatus(detail, description);
+        updatePolling(getThing().getStatus());
+    }
+
+    private void updatePolling(ThingStatus status) {
         if (status != ThingStatus.ONLINE) {
             stopPolling();
         } else {
             startPolling();
         }
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        updateStatus(status, ThingStatusDetail.NONE, null);
     }
 
     @Override

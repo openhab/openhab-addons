@@ -175,8 +175,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             automowers = bridge.getAutomowers();
             List<Mower> mowers = automowers.getData();
             if (mowers == null || mowers.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error-no-mowers-found");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-no-mowers-found");
                 logger.debug("No automowers found in the response from REST API");
             } else {
                 updateStatus(ThingStatus.ONLINE);
@@ -203,8 +202,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (AutomowerCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error-query-mowers-failed");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-query-mowers-failed");
             logger.warn("Unable to fetch automowers: {}", e.getMessage());
         }
     }
@@ -242,15 +240,13 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         final Integer requestTimeoutS = bridgeConfiguration.getRequestTimeout();
 
         if (appKey == null || appKey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-key");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-key");
         } else if (appSecret == null || appSecret.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-secret");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-secret");
         } else if (pollingIntervalS != null && (pollingIntervalS < 1 || pollingIntervalS > 86400)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/conf-error-invalid-polling-interval");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-invalid-polling-interval");
         } else if (requestTimeoutS != null && (requestTimeoutS < 1 || requestTimeoutS > 300)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/conf-error-invalid-request-timeout");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-invalid-request-timeout");
         } else {
             OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
                     HUSQVARNA_API_TOKEN_URL, null, appKey, appSecret, null, null);

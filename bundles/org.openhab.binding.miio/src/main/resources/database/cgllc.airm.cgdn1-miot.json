@@ -5,151 +5,13 @@
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
+		"experimental": false,
 		"channels": [
-			{
-				"property": "",
-				"friendlyName": "Actions",
-				"channel": "actions",
-				"type": "String",
-				"stateDescription": {
-					"options": [
-						{
-							"value": "settings-set-start-time",
-							"label": "Set Start Time"
-						},
-						{
-							"value": "settings-set-end-time",
-							"label": "Set End Time"
-						},
-						{
-							"value": "settings-set-frequency",
-							"label": "Set Frequency"
-						},
-						{
-							"value": "settings-set-screen-off",
-							"label": "Set Screen Off"
-						},
-						{
-							"value": "settings-set-device-off",
-							"label": "Set Device Off"
-						},
-						{
-							"value": "settings-set-temp-unit",
-							"label": "Set Temp Unit"
-						}
-					]
-				},
-				"actions": [
-					{
-						"command": "action",
-						"parameterType": "NUMBER",
-						"parameters": [
-							2.0
-						],
-						"siid": 9,
-						"aiid": 2,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "settings-set-start-time"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "NUMBER",
-						"parameters": [
-							3.0
-						],
-						"siid": 9,
-						"aiid": 3,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "settings-set-end-time"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "NUMBER",
-						"parameters": [
-							4.0
-						],
-						"siid": 9,
-						"aiid": 4,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "settings-set-frequency"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "NUMBER",
-						"parameters": [
-							5.0
-						],
-						"siid": 9,
-						"aiid": 5,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "settings-set-screen-off"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "NUMBER",
-						"parameters": [
-							6.0
-						],
-						"siid": 9,
-						"aiid": 6,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "settings-set-device-off"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "NUMBER",
-						"parameters": [
-							7.0
-						],
-						"siid": 9,
-						"aiid": 7,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "settings-set-temp-unit"
-								}
-							]
-						}
-					}
-				],
-				"readmeComment": "Value mapping `[\"settings-set-start-time\"\u003d\"Set Start Time\",\"settings-set-end-time\"\u003d\"Set End Time\",\"settings-set-frequency\"\u003d\"Set Frequency\",\"settings-set-screen-off\"\u003d\"Set Screen Off\",\"settings-set-device-off\"\u003d\"Set Device Off\",\"settings-set-temp-unit\"\u003d\"Set Temp Unit\"]`"
-			},
 			{
 				"property": "relative-humidity",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Environment - Relative Humidity",
+				"friendlyName": "Relative Humidity",
 				"channel": "relative_humidity",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
@@ -161,13 +23,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "pm2.5-density",
 				"siid": 3,
 				"piid": 4,
-				"friendlyName": "Environment - PM2 5 Density",
+				"friendlyName": "PM2.5 Density",
 				"channel": "pm2_5_density",
 				"type": "Number:Density",
 				"unit": "μg/m3",
@@ -175,17 +42,22 @@
 					"minimum": 0,
 					"maximum": 1000,
 					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
 			},
 			{
 				"property": "pm10-density",
 				"siid": 3,
 				"piid": 5,
-				"friendlyName": "Environment - PM10 Density",
+				"friendlyName": "PM10 Density",
 				"channel": "pm10_density",
 				"type": "Number:Density",
 				"unit": "μg/m3",
@@ -193,17 +65,22 @@
 					"minimum": 0,
 					"maximum": 1000,
 					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
 			},
 			{
 				"property": "temperature",
 				"siid": 3,
 				"piid": 7,
-				"friendlyName": "Environment - Temperature",
+				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
 				"unit": "celsius",
@@ -214,15 +91,20 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "co2-density",
 				"siid": 3,
 				"piid": 8,
-				"friendlyName": "Environment - CO2 Density",
+				"friendlyName": "CO2 Density",
 				"channel": "co2_density",
-				"type": "Number:Density",
+				"type": "Number:Dimensionless",
 				"unit": "ppm",
 				"stateDescription": {
 					"minimum": 0,
@@ -232,13 +114,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "carbondioxide",
+				"tags": [
+					"Measurement",
+					"CO2"
+				]
 			},
 			{
 				"property": "battery-level",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Battery - Battery Level",
+				"friendlyName": "Battery Level",
 				"channel": "battery_level",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
@@ -250,13 +137,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
 			},
 			{
 				"property": "charging-state",
 				"siid": 4,
 				"piid": 2,
-				"friendlyName": "Battery - Charging State",
+				"friendlyName": "Charging State",
 				"channel": "charging_state",
 				"type": "Number",
 				"stateDescription": {
@@ -278,13 +170,17 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Status"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not charging\",\"3\"\u003d\"Not chargeable\"]`"
 			},
 			{
 				"property": "voltage",
 				"siid": 4,
 				"piid": 3,
-				"friendlyName": "Battery - Voltage",
+				"friendlyName": "Battery Voltage",
 				"channel": "voltage",
 				"type": "Number:ElectricPotential",
 				"unit": "mV",
@@ -292,158 +188,478 @@
 					"minimum": 0,
 					"maximum": 65535,
 					"step": 1,
-					"pattern": "%.2f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Voltage"
+				],
+				"readmeComment": "Not shown in the Mi Home app; the spec gives no unit, millivolt is assumed."
 			},
 			{
 				"property": "mac",
 				"siid": 8,
 				"piid": 1,
-				"friendlyName": "Mac - Mac",
+				"friendlyName": "MAC Address",
 				"channel": "mac",
 				"type": "String",
 				"stateDescription": {
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "network",
+				"tags": [
+					"Status",
+					"Info"
+				]
+			},
+			{
+				"property": "start-time",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Screen Off Start Time",
+				"channel": "start_time",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1439,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 2,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 2
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Minutes after midnight (480 is 08:00). The screen is switched off between the start and end time; a start time of 0 disables it."
+			},
+			{
+				"property": "end-time",
+				"siid": 9,
+				"piid": 3,
+				"friendlyName": "Screen Off End Time",
+				"channel": "end_time",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1439,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 3,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 3
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Minutes after midnight (480 is 08:00). The screen is switched off between the start and end time; a start time of 0 disables it."
 			},
 			{
 				"property": "monitoring-frequency",
 				"siid": 9,
 				"piid": 4,
-				"friendlyName": "Settings - Monitoring Frequency",
+				"friendlyName": "PM2.5 and PM10 Detection Frequency",
 				"channel": "monitoring_frequency",
-				"type": "Number:Time",
-				"unit": "seconds",
+				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "1",
-							"label": "Second"
+							"label": "Every second"
 						},
 						{
 							"value": "60",
-							"label": "Second"
+							"label": "Every minute"
 						},
 						{
 							"value": "300",
-							"label": "Second"
+							"label": "Every 5 minutes"
 						},
 						{
 							"value": "600",
-							"label": "Second"
-						},
-						{
-							"value": "0",
-							"label": "Null"
+							"label": "Every 10 minutes"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_properties",
-						"parameterType": "STRING"
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 4,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 4
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Second\",\"60\"\u003d\"Second\",\"300\"\u003d\"Second\",\"600\"\u003d\"Second\",\"0\"\u003d\"Null\"]`"
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Every second\",\"60\"\u003d\"Every minute\",\"300\"\u003d\"Every 5 minutes\",\"600\"\u003d\"Every 10 minutes\"]`"
 			},
 			{
 				"property": "screen-off",
 				"siid": 9,
 				"piid": 5,
-				"friendlyName": "Settings - Screen Off",
+				"friendlyName": "Screen Off After",
 				"channel": "screen_off",
-				"type": "Number:Time",
-				"unit": "seconds",
+				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "15",
-							"label": "Second"
+							"label": "15 seconds"
 						},
 						{
 							"value": "30",
-							"label": "Second"
+							"label": "30 seconds"
 						},
 						{
 							"value": "60",
-							"label": "Second"
+							"label": "1 minute"
 						},
 						{
 							"value": "300",
-							"label": "Second"
-						},
-						{
-							"value": "0",
-							"label": "Null"
+							"label": "5 minutes"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_properties",
-						"parameterType": "STRING"
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 5,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 5
 					}
 				],
-				"readmeComment": "Value mapping `[\"15\"\u003d\"Second\",\"30\"\u003d\"Second\",\"60\"\u003d\"Second\",\"300\"\u003d\"Second\",\"0\"\u003d\"Null\"]`"
+				"category": "screen",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Value mapping `[\"15\"\u003d\"15 seconds\",\"30\"\u003d\"30 seconds\",\"60\"\u003d\"1 minute\",\"300\"\u003d\"5 minutes\"]`"
 			},
 			{
 				"property": "device-off",
 				"siid": 9,
 				"piid": 6,
-				"friendlyName": "Settings - Device Off",
+				"friendlyName": "Power Off After (on Battery, Old Setting)",
 				"channel": "device_off",
-				"type": "Number:Time",
-				"unit": "minutes",
+				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "15",
-							"label": "Minute"
+							"label": "15 minutes"
 						},
 						{
 							"value": "30",
-							"label": "Minute"
+							"label": "30 minutes"
 						},
 						{
 							"value": "60",
-							"label": "Minute"
+							"label": "60 minutes"
 						},
 						{
 							"value": "0",
-							"label": "Null"
+							"label": "Never"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_properties",
-						"parameterType": "STRING"
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 6,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 6
 					}
 				],
-				"readmeComment": "Value mapping `[\"15\"\u003d\"Minute\",\"30\"\u003d\"Minute\",\"60\"\u003d\"Minute\",\"0\"\u003d\"Null\"]`"
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Used by older versions of the app; the current app sets Auto Power Off (auto_power_off). Value mapping `[\"15\"\u003d\"15 minutes\",\"30\"\u003d\"30 minutes\",\"60\"\u003d\"60 minutes\",\"0\"\u003d\"Never\"]`"
 			},
 			{
 				"property": "tempature-unit",
 				"siid": 9,
 				"piid": 7,
-				"friendlyName": "Settings - Tempature Unit",
+				"friendlyName": "Temperature Unit",
 				"channel": "tempature_unit",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "c",
+							"label": "Celsius"
+						},
+						{
+							"value": "f",
+							"label": "Fahrenheit"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_properties",
-						"parameterType": "STRING"
+						"command": "action",
+						"parameterType": "STRING",
+						"parameters": [
+							{
+								"piid": 7,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 7,
+						"condition": {
+							"name": "LowerCase"
+						}
 					}
-				]
+				],
+				"category": "temperature",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"c\"\u003d\"Celsius\",\"f\"\u003d\"Fahrenheit\"]`"
+			},
+			{
+				"property": "auto-slideing-time",
+				"siid": 9,
+				"piid": 10,
+				"friendlyName": "Screen Saver Start",
+				"channel": "screensaver_start",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "60",
+							"label": "After 1 minute"
+						},
+						{
+							"value": "120",
+							"label": "After 2 minutes"
+						},
+						{
+							"value": "300",
+							"label": "After 5 minutes"
+						},
+						{
+							"value": "600",
+							"label": "After 10 minutes"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 10,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 11
+					}
+				],
+				"category": "screen",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Screen saver; needs a firmware with screen saver support (the app hides it for older firmware). Value mapping `[\"60\"\u003d\"After 1 minute\",\"120\"\u003d\"After 2 minutes\",\"300\"\u003d\"After 5 minutes\",\"600\"\u003d\"After 10 minutes\"]`"
+			},
+			{
+				"property": "screensaver-type",
+				"siid": 9,
+				"piid": 11,
+				"friendlyName": "Screen Saver Style",
+				"channel": "screensaver_style",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Current reading"
+						},
+						{
+							"value": "0",
+							"label": "All readings, rotating"
+						},
+						{
+							"value": "3",
+							"label": "Clock with current reading"
+						},
+						{
+							"value": "2",
+							"label": "Clock with rotating readings"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 11,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 12
+					}
+				],
+				"category": "screen",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Screen saver; needs a firmware with screen saver support (the app hides it for older firmware). Value mapping `[\"1\"\u003d\"Current reading\",\"0\"\u003d\"All readings, rotating\",\"3\"\u003d\"Clock with current reading\",\"2\"\u003d\"Clock with rotating readings\"]`"
+			},
+			{
+				"property": "device-off-new",
+				"siid": 9,
+				"piid": 18,
+				"friendlyName": "Auto Power Off (on Battery)",
+				"channel": "auto_power_off",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Never"
+						},
+						{
+							"value": "300",
+							"label": "After 5 minutes"
+						},
+						{
+							"value": "600",
+							"label": "After 10 minutes"
+						},
+						{
+							"value": "1800",
+							"label": "After 30 minutes"
+						},
+						{
+							"value": "3600",
+							"label": "After 1 hour"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"piid": 18,
+								"value": "$value$"
+							}
+						],
+						"siid": 9,
+						"aiid": 19
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Never\",\"300\"\u003d\"After 5 minutes\",\"600\"\u003d\"After 10 minutes\",\"1800\"\u003d\"After 30 minutes\",\"3600\"\u003d\"After 1 hour\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "calibrate-co2",
+							"label": "Calibrate CO2 Sensor"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 9,
+						"aiid": 8,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "calibrate-co2"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "CO2 calibration takes 90 seconds; place the device next to an open window. Value mapping `[\"calibrate-co2\"\u003d\"Calibrate CO2 Sensor\"]`"
 			}
 		]
 	}

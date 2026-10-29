@@ -34,15 +34,19 @@ import org.openhab.binding.matter.internal.actions.MatterNodeActions;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
 import org.openhab.binding.matter.internal.client.dto.Node;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BridgedDeviceBasicInformationCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.IcdManagementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OtaSoftwareUpdateRequestorCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OtaSoftwareUpdateRequestorCluster.UpdateStateEnum;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdState;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateStatusMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.PhysicalDeviceProperties;
 import org.openhab.binding.matter.internal.config.NodeConfiguration;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
+import org.openhab.binding.matter.internal.controller.devices.converter.IcdManagementConverter;
 import org.openhab.binding.matter.internal.controller.devices.converter.OtaSoftwareUpdateRequestorConverter;
 import org.openhab.binding.matter.internal.controller.devices.types.DeviceType;
 import org.openhab.binding.matter.internal.discovery.MatterDiscoveryService;
@@ -52,6 +56,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -92,8 +97,11 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     private Integer pollInterval = 0;
     private Map<Integer, EndpointHandler> bridgedEndpoints = new ConcurrentHashMap<>();
     private volatile @Nullable ProgressCallback progressCallback;
+    private final Object otaQueryLock = new Object();
+    private @Nullable CompletableFuture<@Nullable OtaUpdateInfo> otaQuery;
     private volatile UpdateStateEnum lastHandledOtaState = UpdateStateEnum.UNKNOWN;
     private volatile boolean sleepy = false;
+    private volatile boolean receivesCheckIns = false;
 
     public NodeHandler(Bridge bridge, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
@@ -171,6 +179,57 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
             return true;
         }
         return "true".equalsIgnoreCase(getThing().getProperties().get(PROPERTY_SLEEPY));
+    }
+
+    /**
+     * Whether openHAB is registered to receive check-ins from this sleepy device. matter.js then reports a missed
+     * check-in, so a dropped connection while the device sleeps does not mean it is gone.
+     */
+    public boolean receivesCheckIns() {
+        return receivesCheckIns;
+    }
+
+    public void updateIcdState(IcdState state) {
+        receivesCheckIns = state.litSupported && state.registered;
+        IcdManagementConverter converter = icdConverter();
+        if (converter != null) {
+            converter.updateIcdState(state);
+        }
+    }
+
+    /**
+     * Asks a sleepy device that supports long idle times to stay awake
+     *
+     * @return a future that completes with the time in milliseconds the device promised to stay awake
+     */
+    public CompletableFuture<Long> icdStayActive(long durationMilliseconds) {
+        MatterControllerClient client = getClient();
+        if (client == null) {
+            return CompletableFuture.failedFuture(new IllegalStateException("Controller not connected"));
+        }
+        return client.icdStayActive(getNodeId(), durationMilliseconds);
+    }
+
+    private @Nullable IcdManagementConverter icdConverter() {
+        DeviceType deviceType = devices.get(0);
+        if (deviceType != null && deviceType.getClusterConverters()
+                .get(IcdManagementCluster.CLUSTER_ID) instanceof IcdManagementConverter converter) {
+            return converter;
+        }
+        return null;
+    }
+
+    private void refreshIcdState() {
+        MatterControllerClient client = getClient();
+        if (client != null && icdConverter() != null) {
+            client.icdState(getNodeId()).whenComplete((state, e) -> {
+                if (e != null) {
+                    logger.debug("Could not get the check-in state of node {}", getNodeId(), e);
+                } else {
+                    updateIcdState(state);
+                }
+            });
+        }
     }
 
     public int getOfflineGraceSeconds() {
@@ -313,19 +372,47 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
      */
     @Override
     public void cancel() {
+        // Taken before cancelling, as matter.js reports a cancelled update as failed
+        ProgressCallback progressCallback = this.progressCallback;
+        this.progressCallback = null;
         try {
             cancelOTAUpdate().get(30, TimeUnit.SECONDS);
-            ProgressCallback progressCallback = this.progressCallback;
             if (progressCallback != null) {
                 progressCallback.canceled();
             }
-            this.progressCallback = null;
             lastHandledOtaState = UpdateStateEnum.UNKNOWN;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            this.progressCallback = progressCallback;
             logger.debug("Failed to cancel firmware update for device {}", getNodeId(), e);
         } catch (ExecutionException | TimeoutException e) {
+            this.progressCallback = progressCallback;
             logger.debug("Failed to cancel firmware update for device {}", getNodeId(), e);
+        }
+    }
+
+    /**
+     * Handles the progress matter.js reports for a firmware update it provides. The device reports its own progress
+     * through its OTA attributes as well, but not when the transfer fails.
+     */
+    public void handleOtaUpdateStatus(OtaUpdateStatusMessage.Status status) {
+        switch (status) {
+            case APPLYING:
+                handleOtaStateTransition(UpdateStateEnum.APPLYING);
+                break;
+            case FAILED:
+                ProgressCallback progressCallback = this.progressCallback;
+                this.progressCallback = null;
+                lastHandledOtaState = UpdateStateEnum.UNKNOWN;
+                if (progressCallback != null) {
+                    progressCallback.failed(MatterBindingConstants.OTA_FIRMWARE_UPDATE_FAILED);
+                }
+                ThingStatusInfo statusInfo = getThing().getStatusInfo();
+                if (statusInfo.getStatus() == ThingStatus.ONLINE
+                        && statusInfo.getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+                break;
         }
     }
 
@@ -347,6 +434,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
         updateRootProperties(node.rootEndpoint);
         updateBaseEndpoint(node.rootEndpoint);
         checkForOTAUpdate();
+        refreshIcdState();
     }
 
     public boolean hasBridgedEndpoints() {
@@ -390,16 +478,26 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
      */
     public CompletableFuture<@Nullable OtaUpdateInfo> checkForOTAUpdate() {
         MatterControllerClient client = getClient();
-        if (client != null) {
-            return client.otaQueryForUpdates(getNodeId(), true).whenComplete((updateInfo, e) -> {
-                if (e != null) {
-                    logger.debug("Failed to check for firmware update for device {}", getNodeId(), e);
-                } else {
-                    handleOtaUpdateAvailable(updateInfo != null);
-                }
-            });
+        if (client == null) {
+            return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.completedFuture(null);
+        // A node refresh and the firmware registry often ask at the same moment, so share a query already running
+        synchronized (otaQueryLock) {
+            CompletableFuture<@Nullable OtaUpdateInfo> running = otaQuery;
+            if (running != null && !running.isDone()) {
+                return running;
+            }
+            CompletableFuture<@Nullable OtaUpdateInfo> query = client.otaQueryForUpdates(getNodeId(), true)
+                    .whenComplete((updateInfo, e) -> {
+                        if (e != null) {
+                            logger.debug("Failed to check for firmware update for device {}", getNodeId(), e);
+                        } else {
+                            handleOtaUpdateAvailable(updateInfo != null);
+                        }
+                    });
+            otaQuery = query;
+            return query;
+        }
     }
 
     /**
@@ -453,7 +551,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
         }
 
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.ONLINE,
                     updateAvailable
                             ? translationService.getTranslation(
                                     MatterBindingConstants.THING_STATUS_DETAIL_FIRMWARE_UPDATE_AVAILABLE)
@@ -490,7 +588,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
             case APPLYING:
                 // we are applying, go offline as the device will reboot if it succeeds or rolls back, and come back
                 // online when it is done
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, translationService
+                updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, translationService
                         .getTranslation(MatterBindingConstants.THING_STATUS_DETAIL_FIRMWARE_APPLYING));
                 if (progressCallback != null && lastHandledOtaState != UpdateStateEnum.APPLYING) {
                     lastHandledOtaState = UpdateStateEnum.APPLYING;

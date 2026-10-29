@@ -57,6 +57,20 @@ public class Utils {
     }
 
     /**
+     * Get the model year from the model reported by the REST interface
+     *
+     * @param model model, eg "22_PONTUSM_FTV"
+     * @return model year, eg 22, or 0 if unknown
+     */
+    public static int getModelYear(String model) {
+        try {
+            return Integer.parseInt(model.split("_")[0]);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    /**
      * Build {@link Document} from {@link String} which contains XML content.
      *
      * @param xml
@@ -70,6 +84,17 @@ public class Utils {
             LOGGER.debug("{}: Error loading XML: {}", host, e.getMessage());
         }
         return Optional.empty();
+    }
+
+    /**
+     * Configuration values that are credentials (tokens and API keys) are replaced, so they can be logged
+     *
+     * @param key the configuration parameter name
+     * @param value the configuration value
+     * @return the value, or a placeholder for a credential
+     */
+    public static Object loggableConfigValue(String key, Object value) {
+        return key.endsWith("Token") || key.endsWith("ApiKey") ? "***" : value;
     }
 
     public static boolean isSoundChannel(String name) {

@@ -43,7 +43,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -123,18 +122,21 @@ public class PentairControllerHandler extends PentairBaseThingHandler {
     public void goOnline() {
         // Only a single controller is supported on the Pentair bus so prevent multiple controller
         // things being created.
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while bringing Thing online: {}", thing.getUID());
+            return;
+        }
         PentairBaseBridgeHandler bridgeHandler = getBridgeHandler();
 
-        if (bridgeHandler == null) { // will not be null here since this is validated in initialize of the super
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.bridge-missing");
+        if (bridgeHandler == null) {
+            logger.debug("Bridge handler unavailable while bringing Thing online: {}", thing.getUID());
             return;
         }
 
         PentairControllerHandler handler = bridgeHandler.findController();
 
         if (handler != null && !handler.equals(this)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.duplicate-controller");
         } else {
             super.goOnline();

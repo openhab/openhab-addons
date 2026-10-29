@@ -66,6 +66,7 @@ public class AutomowerBindingConstants {
     public static final String GROUP_SETTING = "setting#";
 
     public static final String CHANNEL_SETTING_CUTTING_HEIGHT = GROUP_SETTING + "cutting-height";
+    public static final String CHANNEL_SETTING_CUTTING_HEIGHT_CM = GROUP_SETTING + "cutting-height-cm";
     public static final String CHANNEL_SETTING_HEADLIGHT_MODE = GROUP_SETTING + "headlight-mode";
 
     // List of all setting Channel ids
@@ -168,6 +169,8 @@ public class AutomowerBindingConstants {
     public static final String AUTOMOWER_HAS_POSITION = "mowerHasPosition";
     public static final String AUTOMOWER_HAS_STAY_OUT_ZONES = "mowerHasStayOutZones";
     public static final String AUTOMOWER_HAS_WORK_AREAS = "mowerHasWorkAreas";
+    public static final String AUTOMOWER_MIN_CUTTING_HEIGHT_CM = "mowerCuttingHeightMinCm";
+    public static final String AUTOMOWER_MAX_CUTTING_HEIGHT_CM = "mowerCuttingHeightMaxCm";
 
     // Channel Types of dynamic channels
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA_ID = new ChannelTypeUID(BINDING_ID,
@@ -178,6 +181,10 @@ public class AutomowerBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_POSITION = new ChannelTypeUID(BINDING_ID, "position-type");
     public static final ChannelTypeUID CHANNEL_TYPE_SETTING_HEADLIGHT_MODE = new ChannelTypeUID(BINDING_ID,
             "setting-headlight-mode-type");
+    public static final ChannelTypeUID CHANNEL_TYPE_SETTING_CUTTING_HEIGHT_CM = new ChannelTypeUID(BINDING_ID,
+            "setting-cutting-height-cm-type");
+    public static final ChannelTypeUID CHANNEL_TYPE_WORKAREA_CUTTING_HEIGHT_CM = new ChannelTypeUID(BINDING_ID,
+            "workarea-cutting-height-cm-type");
 
     public static final ChannelTypeUID CHANNEL_TYPE_STAYOUTZONES_DIRTY = new ChannelTypeUID(BINDING_ID,
             "zone-dirty-type");
@@ -190,8 +197,10 @@ public class AutomowerBindingConstants {
     public static final String GROUP_WORKAREA = "work-area#";
 
     public static final String CHANNEL_WORKAREA_NAME = GROUP_WORKAREA + "name";
+    public static final String CHANNEL_WORKAREA_ID = GROUP_WORKAREA + "id";
     public static final String CHANNEL_WORKAREA_TYPE = GROUP_WORKAREA + "type";
     public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = GROUP_WORKAREA + "cutting-height";
+    public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT_CM = GROUP_WORKAREA + "cutting-height-cm";
     public static final String CHANNEL_WORKAREA_USE_GLOBAL_CUTTING_HEIGHT = GROUP_WORKAREA
             + "use-global-cutting-height";
     public static final String CHANNEL_WORKAREA_ENABLED = GROUP_WORKAREA + "enabled";
@@ -202,10 +211,11 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_WORKAREA_ORIENTATION = GROUP_WORKAREA + "orientation";
     public static final String CHANNEL_WORKAREA_ORIENTATION_SHIFT = GROUP_WORKAREA + "orientation-shift";
 
-    public static final List<String> WORKAREA_STATIC_CHANNEL_IDS = List.of(CHANNEL_WORKAREA_NAME, CHANNEL_WORKAREA_TYPE,
-            CHANNEL_WORKAREA_CUTTING_HEIGHT, CHANNEL_WORKAREA_USE_GLOBAL_CUTTING_HEIGHT, CHANNEL_WORKAREA_ENABLED,
-            CHANNEL_WORKAREA_SCHEDULABLE, CHANNEL_WORKAREA_PROGRESS, CHANNEL_WORKAREA_LAST_TIME_COMPLETED,
-            CHANNEL_WORKAREA_LAST_TIME_ABANDONED, CHANNEL_WORKAREA_ORIENTATION, CHANNEL_WORKAREA_ORIENTATION_SHIFT);
+    public static final List<String> WORKAREA_STATIC_CHANNEL_IDS = List.of(CHANNEL_WORKAREA_NAME, CHANNEL_WORKAREA_ID,
+            CHANNEL_WORKAREA_TYPE, CHANNEL_WORKAREA_CUTTING_HEIGHT, CHANNEL_WORKAREA_USE_GLOBAL_CUTTING_HEIGHT,
+            CHANNEL_WORKAREA_ENABLED, CHANNEL_WORKAREA_SCHEDULABLE, CHANNEL_WORKAREA_PROGRESS,
+            CHANNEL_WORKAREA_LAST_TIME_COMPLETED, CHANNEL_WORKAREA_LAST_TIME_ABANDONED, CHANNEL_WORKAREA_ORIENTATION,
+            CHANNEL_WORKAREA_ORIENTATION_SHIFT);
 
     // Error codes and messages
     public static final Map<Integer, String> ERROR = new HashMap<>() {

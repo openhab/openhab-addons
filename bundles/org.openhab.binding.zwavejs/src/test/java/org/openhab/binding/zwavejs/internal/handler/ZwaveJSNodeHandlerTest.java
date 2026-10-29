@@ -18,22 +18,39 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.zwavejs.internal.DataUtil;
+import org.openhab.binding.zwavejs.internal.api.dto.Event;
+import org.openhab.binding.zwavejs.internal.api.dto.Metadata;
+import org.openhab.binding.zwavejs.internal.api.dto.Node;
+import org.openhab.binding.zwavejs.internal.api.dto.Statistics;
+import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.BaseCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeGetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
+import org.openhab.binding.zwavejs.internal.conversion.ChannelMetadata;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSNodeHandlerMock;
 import org.openhab.binding.zwavejs.internal.type.capabilities.RollerShutterCapability;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -42,13 +59,18 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 
@@ -57,6 +79,10 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ZwaveJSNodeHandlerTest {
+    private static final List<String> STATISTICS_CHANNEL_IDS = List.of(CHANNEL_STATISTICS_LAST_SEEN,
+            CHANNEL_STATISTICS_LAST_AWAKE, CHANNEL_STATISTICS_COMMANDS_TX, CHANNEL_STATISTICS_COMMANDS_RX,
+            CHANNEL_STATISTICS_COMMANDS_DROPPED_TX, CHANNEL_STATISTICS_COMMANDS_DROPPED_RX,
+            CHANNEL_STATISTICS_TIMEOUT_RESPONSE, CHANNEL_STATISTICS_RTT, CHANNEL_STATISTICS_RSSI);
 
     @Test
     public void testInvalidConfiguration() {
@@ -74,6 +100,409 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
+    public void testNodeSetupIsDeferredUntilReady() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(4);
+        final ChannelUID existingChannelUID = new ChannelUID(thing.getUID(), "existing-channel");
+        final Channel existingChannel = mock(Channel.class);
+        when(existingChannel.getUID()).thenReturn(existingChannelUID);
+        when(thing.getChannels()).thenReturn(List.of(existingChannel));
+
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            assertEquals(List.of(existingChannel), handler.getThing().getChannels());
+            verify(callback, never()).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+
+            Node readyNode = DataUtil.getNodeFromStore("store_4.json", 7);
+            readyNode.nodeId = 4;
+            handler.onNodeReady(readyNode);
+
+            assertNull(handler.getThing().getChannel(existingChannelUID));
+            assertFalse(handler.getThing().getChannels().isEmpty());
+            verify(callback).statusUpdated(argThat(updatedThing -> updatedThing.getUID().equals(thing.getUID())),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testDefinitionChangeUpdatesOnlyChangedChannelAndPreservesUserConfiguration() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value targetValue = node.values.stream().filter(value -> value.metadata != null).filter(value -> {
+                String channelId = new ChannelMetadata(node.nodeId, value).id;
+                return handler.getThing().getChannel(channelId) != null && node.values.stream()
+                        .filter(other -> channelId.equals(new ChannelMetadata(node.nodeId, other).id)).count() == 1;
+            }).findFirst().orElseThrow();
+            String channelId = new ChannelMetadata(node.nodeId, targetValue).id;
+            Channel channel = handler.getThing().getChannel(channelId);
+            assertNotNull(channel);
+            channel.getConfiguration().put(CONFIG_CHANNEL_FACTOR, 2.5);
+            channel.getConfiguration().put(CONFIG_CHANNEL_INVERTED, true);
+
+            clearInvocations(handler);
+            handler.onNodeDefinitionChanged(node);
+            verify(handler, never()).updateThing(any());
+
+            Metadata changedMetadata = new Gson().fromJson(new Gson().toJson(targetValue.metadata), Metadata.class);
+            changedMetadata.label = "updated metadata label";
+            targetValue.metadata = changedMetadata;
+            handler.onNodeDefinitionChanged(node);
+
+            Channel updatedChannel = handler.getThing().getChannel(channelId);
+            assertNotNull(updatedChannel);
+            assertEquals("Updated Metadata Label", updatedChannel.getLabel());
+            assertEquals(new BigDecimal("2.5"), updatedChannel.getConfiguration().get(CONFIG_CHANNEL_FACTOR));
+            assertEquals(true, updatedChannel.getConfiguration().get(CONFIG_CHANNEL_INVERTED));
+            verify(handler).updateThing(any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testDefinitionChangeKeepsChannelWithAnotherContributingValue() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value removedValue = node.values.stream().filter(value -> {
+                String channelId = new ChannelMetadata(node.nodeId, value).id;
+                return handler.getThing().getChannel(channelId) != null && node.values.stream()
+                        .filter(other -> channelId.equals(new ChannelMetadata(node.nodeId, other).id)).count() > 1;
+            }).findFirst().orElseThrow();
+            String channelId = new ChannelMetadata(node.nodeId, removedValue).id;
+            node.values = node.values.stream().filter(value -> !value.equals(removedValue)).toList();
+
+            handler.onNodeDefinitionChanged(node);
+
+            assertNotNull(handler.getThing().getChannel(channelId));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testDefinitionChangesAreCoalescedAndCancelledOnDispose() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        final ScheduledFuture<?> firstFuture = mock(ScheduledFuture.class);
+        final ScheduledFuture<?> secondFuture = mock(ScheduledFuture.class);
+        final ScheduledFuture<?> thirdFuture = mock(ScheduledFuture.class);
+        doReturn(firstFuture, secondFuture, thirdFuture).when(executor).schedule(any(Runnable.class), eq(250L),
+                eq(TimeUnit.MILLISECONDS));
+        handler.setExecutorService(executor);
+        boolean disposed = false;
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value targetValue = node.values.stream()
+                    .filter(value -> handler.getThing().getChannel(new ChannelMetadata(node.nodeId, value).id) != null)
+                    .findFirst().orElseThrow();
+            targetValue.metadata.label = "first updated label";
+            clearInvocations(handler);
+
+            handler.onNodeDefinitionChanged(node);
+            targetValue.metadata.label = "second updated label";
+            handler.onNodeDefinitionChanged(node);
+
+            ArgumentCaptor<Runnable> taskCaptor = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor, times(2)).schedule(taskCaptor.capture(), eq(250L), eq(TimeUnit.MILLISECONDS));
+            verify(firstFuture).cancel(false);
+            taskCaptor.getAllValues().get(0).run();
+            verify(handler, never()).updateThing(any());
+            taskCaptor.getAllValues().get(1).run();
+            verify(handler).updateThing(any());
+
+            clearInvocations(executor);
+            targetValue.metadata.label = "third updated label";
+            handler.onNodeDefinitionChanged(node);
+            ArgumentCaptor<Runnable> disposedTaskCaptor = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(disposedTaskCaptor.capture(), eq(250L), eq(TimeUnit.MILLISECONDS));
+
+            handler.dispose();
+            disposed = true;
+            verify(thirdFuture).cancel(false);
+            disposedTaskCaptor.getValue().run();
+            verify(handler, times(1)).updateThing(any());
+        } finally {
+            if (!disposed) {
+                handler.dispose();
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void testNodeRemovalInvalidatesPendingReconciliation(boolean readyEvent) throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        final ScheduledFuture<?> pendingFuture = mock(ScheduledFuture.class);
+        doReturn(pendingFuture).when(executor).schedule(any(Runnable.class), anyLong(), eq(TimeUnit.MILLISECONDS));
+        handler.setExecutorService(executor);
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value targetValue = node.values.stream()
+                    .filter(value -> handler.getThing().getChannel(new ChannelMetadata(node.nodeId, value).id) != null)
+                    .findFirst().orElseThrow();
+            targetValue.metadata.label = "updated after removal";
+            clearInvocations(handler, callback);
+
+            if (readyEvent) {
+                handler.onNodeReady(node);
+            } else {
+                handler.onNodeDefinitionChanged(node);
+            }
+            ArgumentCaptor<Runnable> task = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(task.capture(), anyLong(), eq(TimeUnit.MILLISECONDS));
+
+            Event removedEvent = new Event();
+            removedEvent.nodeId = node.nodeId;
+            removedEvent.event = "node removed";
+            handler.onNodeRemoved(removedEvent);
+
+            verify(pendingFuture).cancel(false);
+            task.getValue().run();
+            verify(handler, never()).updateThing(any());
+            verify(callback, never()).stateUpdated(any(), any());
+            verify(callback).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)));
+            verify(callback, never()).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+
+            handler.onNodeReady(node);
+            ArgumentCaptor<Runnable> recoveryTasks = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor, times(2)).schedule(recoveryTasks.capture(), anyLong(), eq(TimeUnit.MILLISECONDS));
+            recoveryTasks.getAllValues().get(1).run();
+            verify(handler).updateThing(any());
+            verify(callback).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNodeRemovalInvalidatesRunningReconciliation() throws Exception {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        final ScheduledFuture<?> pendingFuture = mock(ScheduledFuture.class);
+        doReturn(pendingFuture).when(executor).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.MILLISECONDS));
+        handler.setExecutorService(executor);
+        CountDownLatch setupStarted = new CountDownLatch(1);
+        CountDownLatch releaseSetup = new CountDownLatch(1);
+        Thread reconciliationThread = null;
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            node.values = List.of();
+            doAnswer(invocation -> {
+                setupStarted.countDown();
+                assertTrue(releaseSetup.await(5, TimeUnit.SECONDS));
+                return invocation.callRealMethod();
+            }).when(handler).getBridge();
+            clearInvocations(handler, callback);
+            handler.onNodeReady(node);
+            ArgumentCaptor<Runnable> task = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(task.capture(), eq(0L), eq(TimeUnit.MILLISECONDS));
+            FutureTask<Boolean> reconciliation = new FutureTask<>(task.getValue(), Boolean.TRUE);
+            reconciliationThread = Thread.ofPlatform().daemon().start(reconciliation);
+            assertTrue(setupStarted.await(5, TimeUnit.SECONDS));
+
+            Event removedEvent = new Event();
+            removedEvent.nodeId = node.nodeId;
+            removedEvent.event = "node removed";
+            handler.onNodeRemoved(removedEvent);
+            verify(pendingFuture).cancel(false);
+            releaseSetup.countDown();
+            reconciliation.get(5, TimeUnit.SECONDS);
+
+            verify(handler, never()).updateThing(any());
+            verify(callback, never()).stateUpdated(any(), any());
+            verify(callback).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)));
+            verify(callback, never()).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+        } finally {
+            releaseSetup.countDown();
+            if (reconciliationThread != null) {
+                reconciliationThread.join(Duration.ofSeconds(5));
+            }
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testDefinitionPublicationCompletesBeforeNewGenerationIsAccepted() throws Exception {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        doReturn(mock(ScheduledFuture.class), mock(ScheduledFuture.class)).when(executor).schedule(any(Runnable.class),
+                eq(250L), eq(TimeUnit.MILLISECONDS));
+        handler.setExecutorService(executor);
+        CountDownLatch publicationStarted = new CountDownLatch(1);
+        CountDownLatch releasePublication = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            publicationStarted.countDown();
+            assertTrue(releasePublication.await(5, TimeUnit.SECONDS));
+            return invocation.callRealMethod();
+        }).when(handler).updateThing(any());
+        Thread reconciliationThread = null;
+        Thread eventThread = null;
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value targetValue = node.values.stream()
+                    .filter(value -> handler.getThing().getChannel(new ChannelMetadata(node.nodeId, value).id) != null)
+                    .findFirst().orElseThrow();
+            targetValue.metadata.label = "first serialized label";
+            handler.onNodeDefinitionChanged(node);
+
+            ArgumentCaptor<Runnable> firstTask = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(firstTask.capture(), eq(250L), eq(TimeUnit.MILLISECONDS));
+            FutureTask<Boolean> reconciliation = new FutureTask<>(firstTask.getValue(), Boolean.TRUE);
+            reconciliationThread = Thread.ofPlatform().daemon().start(reconciliation);
+            assertTrue(publicationStarted.await(5, TimeUnit.SECONDS));
+
+            targetValue.metadata.label = "second serialized label";
+            FutureTask<Boolean> definitionEvent = new FutureTask<>(() -> handler.onNodeDefinitionChanged(node),
+                    Boolean.TRUE);
+            eventThread = Thread.ofPlatform().daemon().start(definitionEvent);
+            assertTrue(waitForThreadState(eventThread, Thread.State.BLOCKED));
+
+            releasePublication.countDown();
+            reconciliation.get(5, TimeUnit.SECONDS);
+            definitionEvent.get(5, TimeUnit.SECONDS);
+
+            ArgumentCaptor<Runnable> tasks = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor, times(2)).schedule(tasks.capture(), eq(250L), eq(TimeUnit.MILLISECONDS));
+            tasks.getAllValues().get(1).run();
+
+            String channelId = new ChannelMetadata(node.nodeId, targetValue).id;
+            Channel updatedChannel = handler.getThing().getChannel(channelId);
+            assertNotNull(updatedChannel);
+            assertEquals("Second Serialized Label", updatedChannel.getLabel());
+        } finally {
+            releasePublication.countDown();
+            if (reconciliationThread != null) {
+                reconciliationThread.join(Duration.ofSeconds(5));
+            }
+            if (eventThread != null) {
+                eventThread.join(Duration.ofSeconds(5));
+            }
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testReadyEventSupersedesPendingDefinitionChange() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        final ScheduledFuture<?> definitionFuture = mock(ScheduledFuture.class);
+        final ScheduledFuture<?> readyFuture = mock(ScheduledFuture.class);
+        doReturn(definitionFuture).when(executor).schedule(any(Runnable.class), eq(250L), eq(TimeUnit.MILLISECONDS));
+        doReturn(readyFuture).when(executor).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.MILLISECONDS));
+        handler.setExecutorService(executor);
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value targetValue = node.values.stream()
+                    .filter(value -> handler.getThing().getChannel(new ChannelMetadata(node.nodeId, value).id) != null)
+                    .findFirst().orElseThrow();
+            targetValue.metadata.label = "ready event label";
+            clearInvocations(handler);
+            clearInvocations(callback);
+
+            handler.onNodeDefinitionChanged(node);
+            handler.onNodeReady(node);
+
+            verify(definitionFuture).cancel(false);
+            ArgumentCaptor<Runnable> definitionTask = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(definitionTask.capture(), eq(250L), eq(TimeUnit.MILLISECONDS));
+            ArgumentCaptor<Runnable> readyTask = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(readyTask.capture(), eq(0L), eq(TimeUnit.MILLISECONDS));
+
+            definitionTask.getValue().run();
+            verify(handler, never()).updateThing(any());
+            readyTask.getValue().run();
+            verify(handler).updateThing(any());
+            verify(callback).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testDefinitionChangeSupersedesReadyEventAndRetainsOnlineUpdate() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        final ScheduledFuture<?> readyFuture = mock(ScheduledFuture.class);
+        final ScheduledFuture<?> definitionFuture = mock(ScheduledFuture.class);
+        doReturn(readyFuture).when(executor).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.MILLISECONDS));
+        doReturn(definitionFuture).when(executor).schedule(any(Runnable.class), eq(250L), eq(TimeUnit.MILLISECONDS));
+        handler.setExecutorService(executor);
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value targetValue = node.values.stream()
+                    .filter(value -> handler.getThing().getChannel(new ChannelMetadata(node.nodeId, value).id) != null)
+                    .findFirst().orElseThrow();
+            clearInvocations(handler);
+            clearInvocations(callback);
+
+            handler.onNodeReady(node);
+            targetValue.metadata.label = "definition after ready label";
+            handler.onNodeDefinitionChanged(node);
+
+            verify(readyFuture).cancel(false);
+            ArgumentCaptor<Runnable> readyTask = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(readyTask.capture(), eq(0L), eq(TimeUnit.MILLISECONDS));
+            ArgumentCaptor<Runnable> definitionTask = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(definitionTask.capture(), eq(250L), eq(TimeUnit.MILLISECONDS));
+
+            readyTask.getValue().run();
+            verify(handler, never()).updateThing(any());
+            definitionTask.getValue().run();
+            verify(handler).updateThing(any());
+            verify(callback).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
     public void testNode7ChannelsCreation() {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
@@ -84,7 +513,67 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(12)).stateUpdated(any(), any());
+            verify(callback, times(20)).stateUpdated(any(), any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testExistingThingGetsStatisticsChannels() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_STATISTICS);
+        ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, CHANNEL_GROUP_STATISTICS);
+        List<ChannelBuilder> channelBuilders = STATISTICS_CHANNEL_IDS.stream()
+                .map(channelId -> ChannelBuilder.create(statisticsChannelUID(thing, channelId))).toList();
+        when(callback.createChannelBuilders(groupUID, groupTypeUID)).thenReturn(channelBuilders);
+
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            List<Channel> statisticsChannels = handler.getThing().getChannelsOfGroup(CHANNEL_GROUP_STATISTICS);
+            assertEquals(STATISTICS_CHANNEL_IDS.size(), statisticsChannels.size());
+            assertTrue(statisticsChannels.stream().map(channel -> channel.getUID().getIdWithoutGroup())
+                    .allMatch(STATISTICS_CHANNEL_IDS::contains));
+
+            handler.initialize();
+
+            assertEquals(STATISTICS_CHANNEL_IDS.size(),
+                    handler.getThing().getChannelsOfGroup(CHANNEL_GROUP_STATISTICS).size());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testStatisticsOnlyChannelChangeIsPublished() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_STATISTICS);
+            ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, CHANNEL_GROUP_STATISTICS);
+            List<ChannelBuilder> channelBuilders = STATISTICS_CHANNEL_IDS.stream()
+                    .map(channelId -> ChannelBuilder.create(statisticsChannelUID(thing, channelId))).toList();
+            when(callback.createChannelBuilders(groupUID, groupTypeUID)).thenReturn(channelBuilders);
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            clearInvocations(handler);
+
+            handler.onNodeDefinitionChanged(node);
+
+            assertEquals(STATISTICS_CHANNEL_IDS.size(),
+                    handler.getThing().getChannelsOfGroup(CHANNEL_GROUP_STATISTICS).size());
+            verify(handler).updateThing(any());
+
+            handler.onNodeDefinitionChanged(node);
+
+            verify(handler, times(1)).updateThing(any());
+            assertEquals(STATISTICS_CHANNEL_IDS.size(),
+                    handler.getThing().getChannelsOfGroup(CHANNEL_GROUP_STATISTICS).size());
         } finally {
             handler.dispose();
         }
@@ -101,7 +590,7 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(74)).stateUpdated(any(), any());
+            verify(callback, times(82)).stateUpdated(any(), any());
         } finally {
             handler.dispose();
         }
@@ -226,6 +715,91 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
+    public void testStatisticsUpdatePublishesChannelStatesWithoutUpdatingThing() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        Statistics statistics = new Statistics();
+        statistics.commandsTX = 11;
+        statistics.commandsRX = 12;
+        statistics.commandsDroppedTX = 13;
+        statistics.commandsDroppedRX = 14;
+        statistics.timeoutResponse = 15;
+        Instant lastSeen = Instant.parse("2026-09-14T12:34:56Z");
+        statistics.lastSeen = lastSeen;
+        statistics.rtt = 16.5;
+        statistics.rssi = -87;
+
+        clearInvocations(callback);
+        handler.onStatisticsUpdated(statistics);
+
+        try {
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_COMMANDS_TX)),
+                    eq(new DecimalType(11)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_COMMANDS_RX)),
+                    eq(new DecimalType(12)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_COMMANDS_DROPPED_TX)),
+                    eq(new DecimalType(13)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_COMMANDS_DROPPED_RX)),
+                    eq(new DecimalType(14)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_TIMEOUT_RESPONSE)),
+                    eq(new DecimalType(15)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_LAST_SEEN)),
+                    eq(new DateTimeType(lastSeen)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_RTT)),
+                    eq(new QuantityType<>(16.5, MetricPrefix.MILLI(Units.SECOND))));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_RSSI)),
+                    eq(new QuantityType<>(-87, Units.DECIBEL_MILLIWATTS)));
+            verify(callback, never()).thingUpdated(any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 125, 126, 127 })
+    public void testStatisticsRssiErrorUpdatesChannelToUndefined(int rssi) {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        Statistics statistics = new Statistics();
+        statistics.rssi = rssi;
+
+        clearInvocations(callback);
+        handler.onStatisticsUpdated(statistics);
+
+        try {
+            verify(callback).stateUpdated(statisticsChannelUID(thing, CHANNEL_STATISTICS_RSSI), UnDefType.UNDEF);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNodeAwakeUpdatesLastAwakeChannel() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        clearInvocations(callback);
+        handler.onNodeAwake(new Event());
+
+        try {
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_LAST_AWAKE)),
+                    argThat(DateTimeType.class::isInstance));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    private static ChannelUID statisticsChannelUID(Thing thing, String channelId) {
+        return new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATISTICS, channelId);
+    }
+
+    @Test
     public void testNode25SwitchEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(25);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
@@ -279,7 +853,7 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(4)).stateUpdated(any(), any());
+            verify(callback, times(12)).stateUpdated(any(), any());
             verify(callback).stateUpdated(eq(channelid), eq(new PercentType(98)));
         } finally {
             handler.dispose();
@@ -298,8 +872,8 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            // 18 = 15 direct updates + 2 handled color updates + 1 handled color temperature update
-            verify(callback, times(18)).stateUpdated(any(), any());
+            // 26 = 15 direct updates + 2 handled color updates + 1 handled color temperature update + 8 statistics
+            verify(callback, times(26)).stateUpdated(any(), any());
             verify(callback).stateUpdated(eq(channelid), eq(new HSBType("0,0,100")));
         } finally {
             handler.dispose();
@@ -405,7 +979,7 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(10)).stateUpdated(any(), any());
+            verify(callback, times(16)).stateUpdated(any(), any());
         } finally {
             handler.dispose();
         }
@@ -443,7 +1017,7 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(15)).stateUpdated(any(), any());
+            verify(callback, times(23)).stateUpdated(any(), any());
         } finally {
             handler.dispose();
         }
@@ -610,7 +1184,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_NonExistingChannel() {
+    public void testHandleCommandNonExistingChannel() {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
@@ -627,7 +1201,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_RefreshType() {
+    public void testHandleCommandRefreshType() {
         ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
 
         try {
@@ -641,7 +1215,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_OnOffType() {
+    public void testHandleCommandOnOffType() {
         ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
 
         try {
@@ -657,7 +1231,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_QuantityType() {
+    public void testHandleCommandQuantityType() {
         ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
 
         try {
@@ -696,5 +1270,16 @@ public class ZwaveJSNodeHandlerTest {
         } finally {
             nodeHandler.dispose();
         }
+    }
+
+    private static boolean waitForThreadState(Thread thread, Thread.State expectedState) {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (thread.isAlive() && System.nanoTime() < deadline) {
+            if (thread.getState() == expectedState) {
+                return true;
+            }
+            Thread.onSpinWait();
+        }
+        return thread.getState() == expectedState;
     }
 }

@@ -15,10 +15,11 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"category": "switch"
 			},
 			{
-				"property": "bright",
+				"property": "bri",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
@@ -43,7 +44,7 @@
 				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Brightness"
 				]
 			},
 			{
@@ -58,6 +59,11 @@
 						"command": "set_cct",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"ColorTemperature"
 				]
 			},
 			{
@@ -69,27 +75,101 @@
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "apply_scene",
+						"command": "apply_fixed_scene",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Forest Bathing"
+						},
+						{
+							"value": "2",
+							"label": "Pink Romance"
+						},
+						{
+							"value": "3",
+							"label": "Sunset Glow"
+						},
+						{
+							"value": "4",
+							"label": "Ocean and Sky"
+						},
+						{
+							"value": "5",
+							"label": "Screen Reading"
+						}
+					]
+				},
+				"category": "light",
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Forest Bathing\",\"2\"\u003d\"Pink Romance\",\"3\"\u003d\"Sunset Glow\",\"4\"\u003d\"Ocean and Sky\",\"5\"\u003d\"Screen Reading\"]`"
 			},
 			{
-				"property": "dv",
-				"friendlyName": "DV",
-				"channel": "dv",
-				"type": "Number",
+				"property": "bl",
+				"friendlyName": "Smart Midnight Light",
+				"channel": "bl",
+				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"parameterType": "EMPTY"
+						"command": "enable_bl",
+						"parameterType": "ONOFFNUMBER"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "ms",
+				"friendlyName": "Auto Power Off when Asleep (Mi Band)",
+				"channel": "ms",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "enable_mibs",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "mb",
+				"friendlyName": "Auto On/Off when Mi Band is Nearby",
+				"channel": "mb",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "enable_mb",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "",
-				"friendlyName": "Go Night",
+				"friendlyName": "Midnight Mode",
 				"channel": "gonight",
 				"type": "Switch",
 				"refresh": false,
@@ -99,36 +179,13 @@
 						"command": "go_night",
 						"parameterType": "EMPTY"
 					}
-				]
-			},
-			{
-				"property": "",
-				"friendlyName": "Delay Off",
-				"channel": "delayoff",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "delay_off",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "",
-				"friendlyName": "Toggle",
-				"channel": "toggle",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "toggle",
-						"parameterType": "EMPTY"
-					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch"
 				]
 			}
-		]
+		],
+		"experimental": false
 	}
 }

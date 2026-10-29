@@ -13,7 +13,7 @@
 package org.openhab.binding.modbus.kermi.internal.dto;
 
 import org.openhab.binding.modbus.kermi.internal.modbus.Data;
-import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.core.io.transport.modbus.ValueBuffer;
 import org.openhab.core.library.types.DecimalType;
 
 /**
@@ -26,7 +26,7 @@ public class StateDTO implements Data {
     public DecimalType globalStateId;
 
     public StateDTO(byte[] bArray) {
-        int status = ModbusBitUtilities.extractBit(bArray, 0);
+        int status = ValueBuffer.wrap(bArray).getUInt16();
         globalStateId = new DecimalType(status);
     }
 }

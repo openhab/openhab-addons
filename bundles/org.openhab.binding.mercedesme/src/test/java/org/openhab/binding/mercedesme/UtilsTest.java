@@ -69,6 +69,25 @@ class UtilsTest {
     }
 
     @Test
+    public void testMaskVin() {
+        assertEquals("*************0713", Utils.maskVin("W1N9N0CB6SJ140713"), "17 character VIN");
+        assertEquals("1234", Utils.maskVin("1234"), "exactly the visible characters");
+        assertEquals("123", Utils.maskVin("123"), "shorter than the visible characters");
+        assertEquals("", Utils.maskVin(""), "empty VIN");
+    }
+
+    @Test
+    public void testMaskVinsIn() {
+        assertEquals("/v1/vehicle/*************0713/capabilities",
+                Utils.maskVinsIn("/v1/vehicle/W1N9N0CB6SJ140713/capabilities"), "VIN inside a request path");
+        assertEquals("prefix *************0713 suffix", Utils.maskVinsIn("prefix W1N9N0CB6SJ140713 suffix"),
+                "VIN inside a text");
+        assertEquals("*************0713", Utils.maskVinsIn("w1n9n0cb6sj140713"), "lower case VIN");
+        assertEquals("no vin inside", Utils.maskVinsIn("no vin inside"), "text without VIN");
+        assertEquals("W1N9N0CB6SJ14071", Utils.maskVinsIn("W1N9N0CB6SJ14071"), "16 characters only");
+    }
+
+    @Test
     public void testHVACZoneValues() {
         assertEquals(1, Utils.getZoneNumber("frontLeft"), "Front Left");
         assertEquals(2, Utils.getZoneNumber("frontRight"), "Front Right");
