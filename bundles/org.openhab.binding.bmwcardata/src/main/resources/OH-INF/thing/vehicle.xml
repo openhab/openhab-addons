@@ -53,6 +53,7 @@
 		<label>Vehicle Status</label>
 		<channels>
 			<channel id="door-lock" typeId="door-lock"/>
+			<channel id="door-lock-state" typeId="door-lock-state"/>
 			<channel id="trunk" typeId="door">
 				<label>Trunk</label>
 				<description>Whether the trunk is open</description>
@@ -139,6 +140,10 @@
 				<label>Electric Range Forecast</label>
 				<description>Predicted electric range during charging</description>
 			</channel>
+			<channel id="electric-target" typeId="range">
+				<label>Electric Range at Target</label>
+				<description>Electric range at the target state of charge</description>
+			</channel>
 			<channel id="fuel-level" typeId="fuel-level"/>
 			<channel id="remaining-fuel" typeId="remaining-fuel"/>
 		</channels>
@@ -162,6 +167,14 @@
 				<label>AC Charging Limit</label>
 				<description>Selected limit of the AC charging current</description>
 			</channel>
+			<channel id="ac-limit-min" typeId="current-limit">
+				<label>Minimum AC Charging Limit</label>
+				<description>Lowest limit of the AC charging current that can be selected</description>
+			</channel>
+			<channel id="ac-limit-max" typeId="current-limit">
+				<label>Maximum AC Charging Limit</label>
+				<description>Highest limit of the AC charging current that can be selected</description>
+			</channel>
 			<channel id="phases" typeId="charging-phases"/>
 			<channel id="method" typeId="charging-method"/>
 			<channel id="port" typeId="port"/>
@@ -173,6 +186,7 @@
 			<channel id="last-result" typeId="last-charging-result"/>
 			<channel id="cable-lock" typeId="cable-lock"/>
 			<channel id="flap" typeId="charging-flap"/>
+			<channel id="flap-locked" typeId="charging-flap-locked"/>
 		</channels>
 	</channel-group-type>
 
@@ -344,8 +358,20 @@
 	</channel-group-type>
 
 	<channel-type id="door-lock">
+		<item-type>Switch</item-type>
+		<label>Doors Locked</label>
+		<description>Whether all doors are locked</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="door-lock-state" advanced="true">
 		<item-type>String</item-type>
-		<label>Door Lock</label>
+		<label>Door Lock State</label>
 		<description>Lock state of the doors as reported by the vehicle</description>
 		<category>Lock</category>
 		<tags>
@@ -1311,6 +1337,18 @@
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charging-flap-locked" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Charging Flap Locked</label>
+		<description>Whether the charging flap is locked</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

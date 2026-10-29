@@ -63,7 +63,10 @@ import com.google.gson.JsonPrimitive;
  */
 @NonNullByDefault
 public enum VehicleChannel {
+    // only provided by the REST API
     DOOR_LOCK(GROUP_STATUS, "door-lock", "vehicle.cabin.door.lock.status", Kind.LOCK_STATE, null),
+    // documented as sporadic, but seen in every stream message of a vehicle with the same values as the lock status
+    DOOR_STATUS(GROUP_STATUS, "door-lock", "vehicle.cabin.door.status", Kind.LOCK_STATE, null),
     TRUNK(GROUP_STATUS, "trunk", "vehicle.body.trunk.isOpen", Kind.CONTACT, null),
     HOOD(GROUP_STATUS, "hood", "vehicle.body.hood.isOpen", Kind.CONTACT, null),
     TRUNK_LOCKED(GROUP_STATUS, "trunk-locked", "vehicle.body.trunk.isLocked", Kind.SWITCH, null),
@@ -83,6 +86,8 @@ public enum VehicleChannel {
             Kind.OPENING, null),
     REAR_WINDOW(GROUP_STATUS, "rear-window", "vehicle.body.trunk.window.isOpen", Kind.CONTACT, null),
     SUNROOF(GROUP_STATUS, "sunroof", "vehicle.cabin.sunroof.overallStatus", Kind.OPENING, null),
+    // the sunroof state of vehicles that do not report the overall state, with the same values
+    SUNROOF_STATUS(GROUP_STATUS, "sunroof", "vehicle.cabin.sunroof.status", Kind.OPENING, null),
     MOVING(GROUP_STATUS, "moving", "vehicle.isMoving", Kind.SWITCH, null),
     DEEP_SLEEP(GROUP_STATUS, "deep-sleep", "vehicle.vehicle.deepSleepModeActive", Kind.SWITCH, null),
     BATTERY_VOLTAGE(GROUP_STATUS, "battery-voltage", "vehicle.electricalSystem.battery.voltage", Kind.QUANTITY,
@@ -134,10 +139,15 @@ public enum VehicleChannel {
     ELECTRIC_RANGE_FORECAST(GROUP_RANGE, "electric-charging-forecast",
             "vehicle.drivetrain.electricEngine.remainingElectricRange", Kind.QUANTITY,
             MetricPrefix.KILO(SIUnits.METRE)),
+    ELECTRIC_RANGE_TARGET(GROUP_RANGE, "electric-target", "vehicle.powertrain.electric.range.target", Kind.QUANTITY,
+            MetricPrefix.KILO(SIUnits.METRE)),
     FUEL_LEVEL(GROUP_RANGE, "fuel-level", "vehicle.drivetrain.fuelSystem.level", Kind.QUANTITY, Units.PERCENT),
     REMAINING_FUEL(GROUP_RANGE, "remaining-fuel", "vehicle.drivetrain.fuelSystem.remainingFuel", Kind.QUANTITY,
             Units.LITRE),
     SOC(GROUP_CHARGE, "soc", "vehicle.drivetrain.batteryManagement.header", Kind.QUANTITY, Units.PERCENT),
+    // the state of charge of vehicles that do not report the header, e.g. those of the Neue Klasse
+    SOC_DISPLAYED(GROUP_CHARGE, "soc", "vehicle.powertrain.electric.battery.stateOfCharge.displayed", Kind.QUANTITY,
+            Units.PERCENT),
     TARGET_SOC(GROUP_CHARGE, "target-soc", "vehicle.powertrain.electric.battery.stateOfCharge.target", Kind.QUANTITY,
             Units.PERCENT),
     CHARGING_STATUS(GROUP_CHARGE, "status", "vehicle.drivetrain.electricEngine.charging.status", Kind.STRING, null),
@@ -153,6 +163,10 @@ public enum VehicleChannel {
             Units.VOLT),
     AC_LIMIT(GROUP_CHARGE, "ac-limit", "vehicle.powertrain.electric.battery.charging.acLimit.selected", Kind.QUANTITY,
             Units.AMPERE),
+    AC_LIMIT_MIN(GROUP_CHARGE, "ac-limit-min", "vehicle.powertrain.electric.battery.charging.acLimit.min",
+            Kind.QUANTITY, Units.AMPERE),
+    AC_LIMIT_MAX(GROUP_CHARGE, "ac-limit-max", "vehicle.powertrain.electric.battery.charging.acLimit.max",
+            Kind.QUANTITY, Units.AMPERE),
     PHASES(GROUP_CHARGE, "phases", "vehicle.drivetrain.electricEngine.charging.phaseNumber", Kind.STRING, null),
     CHARGING_METHOD(GROUP_CHARGE, "method", "vehicle.drivetrain.electricEngine.charging.method", Kind.STRING, null),
     PORT(GROUP_CHARGE, "port", "vehicle.body.chargingPort.status", Kind.STRING, null),
@@ -170,6 +184,7 @@ public enum VehicleChannel {
     CABLE_LOCK(GROUP_CHARGE, "cable-lock", "vehicle.body.chargingPort.lockedStatus", Kind.STRING, null),
     CHARGING_FLAP(GROUP_CHARGE, "flap", "vehicle.powertrain.tractionBattery.charging.port.anyPosition.flap.isOpen",
             Kind.CONTACT, null),
+    CHARGING_FLAP_LOCKED(GROUP_CHARGE, "flap-locked", "vehicle.body.flap.isLocked", Kind.SWITCH, null),
     PRESSURE_FRONT_LEFT(GROUP_TYRES, "pressure-front-left", "vehicle.chassis.axle.row1.wheel.left.tire.pressure",
             Kind.QUANTITY, MetricPrefix.KILO(SIUnits.PASCAL)),
     PRESSURE_FRONT_RIGHT(GROUP_TYRES, "pressure-front-right", "vehicle.chassis.axle.row1.wheel.right.tire.pressure",
@@ -261,19 +276,40 @@ public enum VehicleChannel {
         // an electric motor with a high-voltage battery that can be charged: electric and plug-in hybrid vehicles
         ELECTRIC,
         // a combustion engine: combustion, mild hybrid and plug-in hybrid vehicles
-        COMBUSTION
+        COMBUSTION,
+        // both an electric motor with a chargeable high-voltage battery and a combustion engine
+        PLUG_IN_HYBRID;
+
+        /**
+         * @param drives the drives of a vehicle
+         * @return whether a channel that needs this drive applies to the vehicle
+         */
+        boolean appliesTo(Set<Drive> drives) {
+            return switch (this) {
+                case ANY -> true;
+                case ELECTRIC, COMBUSTION -> drives.contains(this);
+                case PLUG_IN_HYBRID -> drives.contains(ELECTRIC) && drives.contains(COMBUSTION);
+            };
+        }
     }
 
     private static final Set<VehicleChannel> ELECTRIC_ONLY = EnumSet.of(BATTERY_CAPACITY, BATTERY_ENERGY,
-            BATTERY_HEALTH, ENERGY_TO_FULL, GRID_ENERGY, AVG_CONSUMPTION, ELECTRIC_RANGE, ELECTRIC_RANGE_FORECAST, SOC,
-            TARGET_SOC, CHARGING_STATUS, PLUGGED, CHARGING_POWER, TIME_REMAINING, AC_CURRENT, AC_VOLTAGE, AC_LIMIT,
-            PHASES, CHARGING_METHOD, PORT, PREDICTED_SOC, MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE,
-            CHARGING_END_REASON, LAST_CHARGING_RESULT, CABLE_LOCK, CHARGING_FLAP, TRIP_END_SOC, TRIP_RECUPERATION,
-            TRIP_COMFORT_ENERGY, TRIP_ELECTRIC_SHARE);
+            BATTERY_HEALTH, ENERGY_TO_FULL, GRID_ENERGY, AVG_CONSUMPTION, ELECTRIC_RANGE, ELECTRIC_RANGE_FORECAST,
+            ELECTRIC_RANGE_TARGET, SOC, SOC_DISPLAYED, TARGET_SOC, CHARGING_STATUS, PLUGGED, CHARGING_POWER,
+            TIME_REMAINING, AC_CURRENT, AC_VOLTAGE, AC_LIMIT, AC_LIMIT_MIN, AC_LIMIT_MAX, PHASES, CHARGING_METHOD, PORT,
+            PREDICTED_SOC, MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE, CHARGING_END_REASON, LAST_CHARGING_RESULT,
+            CABLE_LOCK, CHARGING_FLAP, CHARGING_FLAP_LOCKED, TRIP_END_SOC, TRIP_RECUPERATION, TRIP_COMFORT_ENERGY);
 
-    // lastRemainingRange is meant for vehicles with a combustion engine, according to BMW's catalogue
+    // lastRemainingRange is meant for vehicles with a combustion engine, according to BMW's catalogue; an electric
+    // vehicle was seen not to report the engine state while driving
     private static final Set<VehicleChannel> COMBUSTION_ONLY = EnumSet.of(FUEL_CONSUMED, FUEL_LEVEL, REMAINING_FUEL,
-            TOTAL_RANGE);
+            TOTAL_RANGE, ENGINE);
+
+    // the electric share of a trip only varies with both drives, an electric vehicle was seen reporting 0
+    private static final Set<VehicleChannel> PLUG_IN_HYBRID_ONLY = EnumSet.of(TRIP_ELECTRIC_SHARE);
+
+    // an electric vehicle was seen reporting a battery size of 0 kWh, which cannot be a real value
+    private static final Set<VehicleChannel> ZERO_UNDEFINED = EnumSet.of(BATTERY_CAPACITY);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VehicleChannel.class);
     // the default unit is assumed for every value of a data point, so each assumption is logged once, not per value
@@ -288,7 +324,8 @@ public enum VehicleChannel {
         // an opening that can be partly open: a contact that is open when partly open, plus a detail channel with
         // the reported state
         OPENING,
-        // a lock state word, normalized so that e.g. SELECTIVE-LOCKED and SELECTIVELOCKED compare equal
+        // a lock state word: a switch that is on when all doors are locked, plus a detail channel with the reported
+        // word, normalized so that e.g. SELECTIVE-LOCKED and SELECTIVELOCKED compare equal
         LOCK_STATE,
         DATETIME
     }
@@ -322,12 +359,15 @@ public enum VehicleChannel {
 
     // normalized words used by CarData to mark a value as unavailable
     private static final Set<String> UNDEFINED_WORDS = Set.of("", "INVALID", "NA", "UNKNOWN", "ISUNKNOWN");
-    private static final Set<String> TRUE_WORDS = Set.of("TRUE", "ISTRUE", "ON", "YES", "ACTIVE");
-    private static final Set<String> FALSE_WORDS = Set.of("FALSE", "ISFALSE", "OFF", "NO", "INACTIVE");
+    private static final Set<String> TRUE_WORDS = Set.of("TRUE", "ISTRUE", "ON", "YES", "ACTIVE", "FLAPLOCKED");
+    private static final Set<String> FALSE_WORDS = Set.of("FALSE", "ISFALSE", "OFF", "NO", "INACTIVE", "FLAPUNLOCKED");
     // doors are documented as boolean but reported as OPEN or CLOSED; windows and the sunroof can be partly open
     private static final Set<String> OPEN_WORDS = Set.of("OPEN", "INTERMEDIATE", "OPENTILT", "INTERMEDIATETILT", "TRUE",
             "ISTRUE");
     private static final Set<String> CLOSED_WORDS = Set.of("CLOSED", "FALSE", "ISFALSE");
+    // SECURED is locked with the alarm system armed; SELECTIVELOCKED is locked except the driver door
+    private static final Set<String> LOCKED_WORDS = Set.of("LOCKED", "SECURED");
+    private static final Set<String> UNLOCKED_WORDS = Set.of("UNLOCKED", "SELECTIVELOCKED");
 
     private final String groupId;
     private final @Nullable String channelId;
@@ -358,12 +398,26 @@ public enum VehicleChannel {
     }
 
     /**
-     * @return the id of the channel with the reported state of an opening, {@code <channel>-state}, or {@code null}
-     *         for all other kinds
+     * @return the id of the channel with the reported state of an opening or a lock, {@code <channel>-state}, or
+     *         {@code null} for all other kinds
      */
     public @Nullable String getDetailChannelUid() {
         String channelUid = getChannelUid();
-        return kind == Kind.OPENING && channelUid != null ? channelUid + "-state" : null;
+        return (kind == Kind.OPENING || kind == Kind.LOCK_STATE) && channelUid != null ? channelUid + "-state" : null;
+    }
+
+    /**
+     * @return the data point whose channel this data point only updates as long as that one has not been reported, or
+     *         {@code null} if this data point updates its channel in any case
+     */
+    public @Nullable VehicleChannel getPrimary() {
+        if (this == SOC_DISPLAYED) {
+            return SOC;
+        }
+        if (this == SUNROOF_STATUS) {
+            return SUNROOF;
+        }
+        return null;
     }
 
     /**
@@ -372,6 +426,9 @@ public enum VehicleChannel {
     Drive getDrive() {
         if (ELECTRIC_ONLY.contains(this)) {
             return Drive.ELECTRIC;
+        }
+        if (PLUG_IN_HYBRID_ONLY.contains(this)) {
+            return Drive.PLUG_IN_HYBRID;
         }
         return COMBUSTION_ONLY.contains(this) ? Drive.COMBUSTION : Drive.ANY;
     }
@@ -401,10 +458,7 @@ public enum VehicleChannel {
         }
         State state = switch (kind) {
             case STRING -> new StringType(primitive.getAsString().strip());
-            case LOCK_STATE -> {
-                String word = word(primitive);
-                yield word == null ? null : new StringType(word);
-            }
+            case LOCK_STATE -> toLockState(primitive);
             case SWITCH -> {
                 Boolean bool = toBoolean(primitive);
                 yield bool == null ? null : OnOffType.from(bool);
@@ -418,22 +472,48 @@ public enum VehicleChannel {
                 BigDecimal number = toNumber(primitive);
                 yield number == null ? null : new DecimalType(number);
             }
-            case QUANTITY -> toQuantity(primitive, telematicValue.unit);
+            case QUANTITY -> {
+                State quantity = toQuantity(primitive, telematicValue.unit);
+                yield isZeroUndefined(quantity) ? UnDefType.UNDEF : quantity;
+            }
         };
         return state != null ? state : UnDefType.UNDEF;
     }
 
     /**
-     * Converts a value for the detail channel of an opening, see {@link #getDetailChannelUid()}.
+     * Converts a value for the detail channel of an opening or a lock, see {@link #getDetailChannelUid()}.
      *
-     * @return the reported state, e.g. {@code INTERMEDIATE}, or {@code null} if the value is missing
+     * @return the reported state, e.g. {@code INTERMEDIATE}, the normalized word for a lock, e.g.
+     *         {@code SELECTIVELOCKED}, or {@code null} if the value is missing
      */
     public @Nullable State toDetailState(TelematicValue telematicValue) {
         JsonPrimitive primitive = toPrimitive(telematicValue);
         if (primitive == null) {
             return null;
         }
-        return isUndefined(primitive) ? UnDefType.UNDEF : new StringType(primitive.getAsString().strip());
+        if (isUndefined(primitive)) {
+            return UnDefType.UNDEF;
+        }
+        if (kind == Kind.LOCK_STATE) {
+            String word = word(primitive);
+            return word == null ? UnDefType.UNDEF : new StringType(word);
+        }
+        return new StringType(primitive.getAsString().strip());
+    }
+
+    /**
+     * @return {@code ON} if all doors are locked, {@code OFF} if at least one is unlocked, or {@code null} for other
+     *         values
+     */
+    private static @Nullable State toLockState(JsonPrimitive primitive) {
+        String word = word(primitive);
+        if (word != null && LOCKED_WORDS.contains(word)) {
+            return OnOffType.ON;
+        }
+        if (word != null && UNLOCKED_WORDS.contains(word)) {
+            return OnOffType.OFF;
+        }
+        return null;
     }
 
     /**
@@ -451,6 +531,11 @@ public enum VehicleChannel {
             return OnOffType.OFF;
         }
         return null;
+    }
+
+    private boolean isZeroUndefined(@Nullable State quantity) {
+        return ZERO_UNDEFINED.contains(this) && quantity instanceof QuantityType<?> number
+                && number.toBigDecimal().signum() == 0;
     }
 
     private @Nullable State toQuantity(JsonPrimitive primitive, @Nullable String unitSymbol) {

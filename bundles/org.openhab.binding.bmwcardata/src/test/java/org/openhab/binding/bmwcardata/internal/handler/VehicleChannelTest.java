@@ -110,8 +110,8 @@ class VehicleChannelTest {
         assertEquals(UnDefType.UNDEF, VehicleChannel.MOVING.toState(value(new JsonPrimitive("maybe"), null)));
         assertEquals(OpenClosedType.OPEN, VehicleChannel.TRUNK.toState(value(new JsonPrimitive(true), null)));
         assertEquals(OpenClosedType.CLOSED, VehicleChannel.HOOD.toState(value(new JsonPrimitive("false"), null)));
-        assertEquals(new StringType("SECURED"),
-                VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("SECURED"), null)));
+        assertEquals(new StringType("NOCHARGING"),
+                VehicleChannel.CHARGING_STATUS.toState(value(new JsonPrimitive(" NOCHARGING "), null)));
     }
 
     @Test
@@ -148,6 +148,34 @@ class VehicleChannelTest {
     }
 
     @Test
+    void chargingFlapLockWordsAreSwitchStates() {
+        TelematicValue locked = value(new JsonPrimitive("FLAP_LOCKED"), null);
+        assertEquals(OnOffType.ON, VehicleChannel.CHARGING_FLAP_LOCKED.toState(locked));
+        TelematicValue unlocked = value(new JsonPrimitive("FLAP_UNLOCKED"), null);
+        assertEquals(OnOffType.OFF, VehicleChannel.CHARGING_FLAP_LOCKED.toState(unlocked));
+        // the stream sends a boolean
+        assertEquals(OnOffType.ON, VehicleChannel.CHARGING_FLAP_LOCKED.toState(value(new JsonPrimitive(true), null)));
+    }
+
+    @Test
+    void zeroBatteryCapacityIsUndefined() {
+        assertEquals(UnDefType.UNDEF, VehicleChannel.BATTERY_CAPACITY.toState(value(new JsonPrimitive("0"), "kWh")));
+        assertEquals(UnDefType.UNDEF, VehicleChannel.BATTERY_CAPACITY.toState(value(new JsonPrimitive(0.0), "kWh")));
+        assertEquals(QuantityType.valueOf("80.7 kWh"),
+                VehicleChannel.BATTERY_CAPACITY.toState(value(new JsonPrimitive(80.7), "kWh")));
+        // other channels keep 0 as a value
+        assertEquals(QuantityType.valueOf("0 kWh"),
+                VehicleChannel.BATTERY_ENERGY.toState(value(new JsonPrimitive(0), "kWh")));
+    }
+
+    @Test
+    void doorStatusUpdatesTheDoorLock() {
+        assertEquals(VehicleChannel.DOOR_LOCK.getChannelUid(), VehicleChannel.DOOR_STATUS.getChannelUid());
+        assertEquals(VehicleChannel.DOOR_LOCK.getDetailChannelUid(), VehicleChannel.DOOR_STATUS.getDetailChannelUid());
+        assertEquals(OnOffType.ON, VehicleChannel.DOOR_STATUS.toState(value(new JsonPrimitive("SECURED"), null)));
+    }
+
+    @Test
     void engineStatesAndInspectionDate() {
         assertEquals(OnOffType.ON, VehicleChannel.ENGINE.toState(value(new JsonPrimitive("ASN_isTrue"), null)));
         assertEquals(OnOffType.OFF, VehicleChannel.IGNITION.toState(value(new JsonPrimitive("ASN_isFalse"), null)));
@@ -181,11 +209,28 @@ class VehicleChannelTest {
     }
 
     @Test
+    void doorsAreLockedWhenAllDoorsAreLockedAndReportTheirState() {
+        assertEquals("status#door-lock-state", VehicleChannel.DOOR_LOCK.getDetailChannelUid());
+        assertEquals(OnOffType.ON, VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("LOCKED"), null)));
+        assertEquals(OnOffType.ON, VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("SECURED"), null)));
+        assertEquals(OnOffType.OFF, VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("UNLOCKED"), null)));
+        // all doors except the driver door are locked
+        TelematicValue selective = value(new JsonPrimitive("SELECTIVE-LOCKED"), null);
+        assertEquals(OnOffType.OFF, VehicleChannel.DOOR_LOCK.toState(selective));
+        assertEquals(new StringType("SELECTIVELOCKED"), VehicleChannel.DOOR_LOCK.toDetailState(selective));
+        // an unknown word is shown in the state channel only
+        TelematicValue unknown = value(new JsonPrimitive("JAMMED"), null);
+        assertEquals(UnDefType.UNDEF, VehicleChannel.DOOR_LOCK.toState(unknown));
+        assertEquals(new StringType("JAMMED"), VehicleChannel.DOOR_LOCK.toDetailState(unknown));
+        assertEquals(UnDefType.UNDEF, VehicleChannel.DOOR_LOCK.toDetailState(value(new JsonPrimitive("N/A"), null)));
+    }
+
+    @Test
     void wordsAreNormalized() {
         assertEquals(new StringType("SELECTIVELOCKED"),
-                VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("SELECTIVE-LOCKED"), null)));
+                VehicleChannel.DOOR_LOCK.toDetailState(value(new JsonPrimitive("SELECTIVE-LOCKED"), null)));
         assertEquals(new StringType("SECURED"),
-                VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("ASN_secured"), null)));
+                VehicleChannel.DOOR_LOCK.toDetailState(value(new JsonPrimitive("ASN_secured"), null)));
         assertEquals(OnOffType.ON, VehicleChannel.DEEP_SLEEP.toState(value(new JsonPrimitive("ACTIVE"), null)));
         assertEquals(OnOffType.OFF, VehicleChannel.DEEP_SLEEP.toState(value(new JsonPrimitive("Off"), null)));
         assertEquals(UnDefType.UNDEF, VehicleChannel.DOOR_LOCK.toState(value(new JsonPrimitive("N/A"), null)));

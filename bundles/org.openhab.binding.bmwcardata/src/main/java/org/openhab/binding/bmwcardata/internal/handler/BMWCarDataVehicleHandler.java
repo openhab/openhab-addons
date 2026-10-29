@@ -60,6 +60,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,6 +107,10 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private @Nullable BigDecimal longitude;
     private @Nullable BigDecimal altitude;
     private @Nullable Instant lastUpdate;
+    private @Nullable Instant doorLockTimestamp;
+    // the data points with a reported value, whose fallback data points no longer update their channel; guarded by
+    // dataLock
+    private final Set<VehicleChannel> reportedChannels = EnumSet.noneOf(VehicleChannel.class);
 
     public BMWCarDataVehicleHandler(Thing thing) {
         this(thing, null);
@@ -226,6 +231,24 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             if (state == null) {
                 logger.trace("Ignoring unsupported value {} of {}", value.value, descriptor);
                 continue;
+            }
+            VehicleChannel primary = channel.getPrimary();
+            if (primary != null && reportedChannels.contains(primary)) {
+                continue;
+            }
+            // an undefined value, e.g. INVALID, does not make a data point reported, so its fallback still applies
+            if (state != UnDefType.UNDEF) {
+                reportedChannels.add(channel);
+            }
+            if (channel == VehicleChannel.DOOR_LOCK || channel == VehicleChannel.DOOR_STATUS) {
+                // both descriptors update the door lock: an older value of one must not replace a newer of the other
+                Instant previousDoorLock = doorLockTimestamp;
+                if (timestamp != null && previousDoorLock != null && timestamp.isBefore(previousDoorLock)) {
+                    continue;
+                }
+                if (timestamp != null) {
+                    doorLockTimestamp = timestamp;
+                }
             }
             switch (channel) {
                 case LATITUDE -> {
@@ -627,10 +650,11 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         Set<Drive> drives = drives(basicData);
         List<String> ids = new ArrayList<>();
         for (VehicleChannel channel : VehicleChannel.values()) {
-            boolean irrelevant = (channel.getDrive() != Drive.ANY && !drives.contains(channel.getDrive()))
+            boolean irrelevant = !channel.getDrive().appliesTo(drives)
                     || (noSunroof && channel == VehicleChannel.SUNROOF);
             String channelUid = channel.getChannelUid();
-            if (irrelevant && channelUid != null) {
+            // several data points can update the same channel
+            if (irrelevant && channelUid != null && !ids.contains(channelUid)) {
                 ids.add(channelUid);
                 String detailChannelUid = channel.getDetailChannelUid();
                 if (detailChannelUid != null) {

@@ -157,19 +157,20 @@ A channel is only updated if the vehicle reports the corresponding data and, for
 
 When the static vehicle data is read, the channels that do not apply to the vehicle are removed:
 
-- For an electric vehicle (drive train `BEV`), the fuel channels and the total range.
-- For a combustion vehicle (drive train `CONV`), the charging, high-voltage battery and electric range channels.
+- For an electric vehicle (drive train `BEV`), the fuel channels, the total range, the engine state and the electric share of a trip.
+- For a combustion vehicle (drive train `CONV`), the charging, high-voltage battery and electric range channels and the electric share of a trip.
 - The sunroof channels, if BMW reports the vehicle has no sunroof.
 
 The navigation channels are always kept: the location comes from the telematics unit, and BMW's `hasNavi` flag, shown as the `hasNavigation` property, is also reported as `false` for vehicles with a navigation system.
 
-Plug-in hybrids (`PHEV`) and vehicles with another or no drive train keep all channels.
+Plug-in hybrids (`PHEV`) and vehicles with another or no drive train keep all drive related channels.
 BMW does not document the values, so the binding only acts on those seen on real vehicles; the reported values are shown as Thing properties.
 To get removed channels back, delete and recreate the Thing.
 
 | Channel                              | Type                     | Description                                                                   | Advanced |
 |--------------------------------------|--------------------------|-------------------------------------------------------------------------------|----------|
-| status#door-lock                     | String                   | Lock state of the doors                                                       | no       |
+| status#door-lock                     | Switch                   | Whether all doors are locked (`ON`)                                           | no       |
+| status#door-lock-state               | String                   | Reported lock state of the doors (LOCKED, SECURED, SELECTIVELOCKED, UNLOCKED) | yes      |
 | status#trunk                         | Contact                  | Whether the trunk is open                                                     | no       |
 | status#hood                          | Contact                  | Whether the hood is open                                                      | no       |
 | status#trunk-locked                  | Switch                   | Whether the trunk is locked                                                   | no       |
@@ -200,6 +201,7 @@ To get removed channels back, delete and recreate the Thing.
 | range#total                          | Number:Length            | Total remaining range                                                         | no       |
 | range#electric                       | Number:Length            | Remaining electric range                                                      | no       |
 | range#electric-charging-forecast     | Number:Length            | Predicted electric range during charging                                      | yes      |
+| range#electric-target                | Number:Length            | Electric range at the target state of charge                                  | no       |
 | range#fuel-level                     | Number:Dimensionless     | Fill level of the fuel tank                                                   | no       |
 | range#remaining-fuel                 | Number:Volume            | Amount of fuel in the tank                                                    | no       |
 | charge#soc                           | Number:Dimensionless     | State of charge of the high-voltage battery                                   | no       |
@@ -211,6 +213,8 @@ To get removed channels back, delete and recreate the Thing.
 | charge#ac-current                    | Number:ElectricCurrent   | Current AC charging current                                                   | yes      |
 | charge#ac-voltage                    | Number:ElectricPotential | Current AC charging voltage                                                   | yes      |
 | charge#ac-limit                      | Number:ElectricCurrent   | Selected limit of the AC charging current                                     | yes      |
+| charge#ac-limit-min                  | Number:ElectricCurrent   | Lowest limit of the AC charging current that can be selected                  | yes      |
+| charge#ac-limit-max                  | Number:ElectricCurrent   | Highest limit of the AC charging current that can be selected                 | yes      |
 | charge#phases                        | String                   | Number of phases used for charging                                            | yes      |
 | charge#method                        | String                   | Charging method and plug type                                                 | yes      |
 | charge#port                          | String                   | Whether a charging plug is connected to the charging port                     | yes      |
@@ -222,6 +226,7 @@ To get removed channels back, delete and recreate the Thing.
 | charge#last-result                   | String                   | Result of the last charging                                                   | yes      |
 | charge#cable-lock                    | String                   | Lock state of the charging cable                                              | yes      |
 | charge#flap                          | Contact                  | Whether the charging flap is open                                             | yes      |
+| charge#flap-locked                   | Switch                   | Whether the charging flap is locked                                           | yes      |
 | battery#capacity                     | Number:Energy            | Size of the high-voltage battery                                              | yes      |
 | battery#energy-content               | Number:Energy            | Maximum energy content of the high-voltage battery                            | yes      |
 | battery#health                       | Number                   | Battery health as state of certified energy (SoCE)                            | no       |
@@ -277,7 +282,10 @@ To get removed channels back, delete and recreate the Thing.
 | statistics#weekly-distance-long-term | Number:Length            | Average distance per week over two months                                     | yes      |
 
 The String channels show the values as reported by the vehicle; the door lock state is normalized, e.g. `SELECTIVE-LOCKED` becomes `SELECTIVELOCKED`.
+`status#door-lock` is `ON` for `LOCKED` and `SECURED` (locked with the alarm system armed), and `OFF` for `UNLOCKED` and `SELECTIVELOCKED` (all doors locked except the driver door).
+`status#door-lock`, `status#trunk-locked` and `charge#flap-locked` are `ON` when locked, so they can be combined in a group, e.g. `Group:Switch:AND(ON,OFF)`.
 Windows and the sunroof are `OPEN` also when they are only partly open or tilted; the advanced `-state` channels show the reported state.
+Vehicles that do not report the state of charge header or the overall sunroof state, e.g. those of the Neue Klasse, update `charge#soc` and `status#sunroof` from the displayed state of charge and the sunroof state.
 Not every vehicle reports whether a charging cable is plugged in; until it does, `charge#plugged` follows the charging port status (`CONNECTED` or `DISCONNECTED`).
 Values the vehicle reports as unavailable (e.g. `INVALID`, `-NA-` or `UNKNOWN`), and values that cannot be interpreted, set the channel to `UNDEF`.
 
@@ -326,7 +334,7 @@ Number:Length        i4_Mileage   "Mileage [%d %unit%]"           { channel="bmw
 Number:Length        i4_Range     "Range [%d %unit%]"             { channel="bmwcardata:vehicle:myaccount:i4:range#electric" }
 Number:Dimensionless i4_Soc       "State of Charge [%d %%]"       { channel="bmwcardata:vehicle:myaccount:i4:charge#soc" }
 String               i4_Charging  "Charging [%s]"                 { channel="bmwcardata:vehicle:myaccount:i4:charge#status" }
-String               i4_DoorLock  "Doors [%s]"                    { channel="bmwcardata:vehicle:myaccount:i4:status#door-lock" }
+Switch               i4_DoorLock  "Doors Locked [%s]"             { channel="bmwcardata:vehicle:myaccount:i4:status#door-lock" }
 Location             i4_Location  "Location"                      { channel="bmwcardata:vehicle:myaccount:i4:navigation#gps" }
 DateTime             i4_Updated   "Last Update [%1$tF %1$tR]"     { channel="bmwcardata:vehicle:myaccount:i4:status#last-update" }
 ```

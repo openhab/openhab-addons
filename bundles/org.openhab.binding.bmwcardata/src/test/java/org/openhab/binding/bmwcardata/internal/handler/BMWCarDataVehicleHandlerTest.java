@@ -123,7 +123,8 @@ class BMWCarDataVehicleHandlerTest {
         // the empty value must not block a later value with an older timestamp
         handler.updateTelematicData(Map.of("vehicle.cabin.door.lock.status",
                 stringValue("SELECTIVE-LOCKED", null, "2026-10-01T11:00:00Z")));
-        verifyState("status#door-lock", new StringType("SELECTIVELOCKED"));
+        verifyState("status#door-lock", OnOffType.OFF);
+        verifyState("status#door-lock-state", new StringType("SELECTIVELOCKED"));
     }
 
     @Test
@@ -195,6 +196,58 @@ class BMWCarDataVehicleHandlerTest {
         // another unit is another value
         handler.updateTelematicData(Map.of(MILEAGE, stringValue("200", "mi", "2026-10-01T10:00:00Z")));
         verifyState("range#mileage", QuantityType.valueOf("200 mi"));
+    }
+
+    @Test
+    void doorLockTakesTheNewestOfBothDescriptors() {
+        String doorStatus = "vehicle.cabin.door.status";
+        String lockStatus = "vehicle.cabin.door.lock.status";
+        handler.updateTelematicData(Map.of(doorStatus, stringValue("UNLOCKED", null, "2026-10-01T10:05:00Z")));
+        verifyState("status#door-lock", OnOffType.OFF);
+        verifyState("status#door-lock-state", new StringType("UNLOCKED"));
+
+        // a refresh with an older value of the REST only descriptor does not replace the newer stream value
+        handler.updateTelematicData(Map.of(lockStatus, stringValue("SECURED", null, "2026-10-01T10:00:00Z")));
+        verify(callback, never()).stateUpdated(channel("status#door-lock"), OnOffType.ON);
+        verify(callback, never()).stateUpdated(channel("status#door-lock-state"), new StringType("SECURED"));
+
+        handler.updateTelematicData(Map.of(lockStatus, stringValue("LOCKED", null, "2026-10-01T10:10:00Z")));
+        verifyState("status#door-lock", OnOffType.ON);
+        verifyState("status#door-lock-state", new StringType("LOCKED"));
+    }
+
+    @Test
+    void displayedStateOfChargeIsUsedUntilTheHeaderIsReported() {
+        String header = "vehicle.drivetrain.batteryManagement.header";
+        String displayed = "vehicle.powertrain.electric.battery.stateOfCharge.displayed";
+        handler.updateTelematicData(Map.of(displayed, value(70, "%", "2026-10-01T10:00:00Z")));
+        verifyState("charge#soc", QuantityType.valueOf("70 %"));
+
+        handler.updateTelematicData(Map.of(header, value(71, "%", "2026-10-01T10:05:00Z")));
+        verifyState("charge#soc", QuantityType.valueOf("71 %"));
+
+        // once the vehicle reports the header, the displayed value no longer updates the channel
+        handler.updateTelematicData(Map.of(displayed, value(72, "%", "2026-10-01T10:10:00Z")));
+        verify(callback, never()).stateUpdated(channel("charge#soc"), QuantityType.valueOf("72 %"));
+    }
+
+    @Test
+    void undefinedHeaderDoesNotStopTheDisplayedStateOfCharge() {
+        String header = "vehicle.drivetrain.batteryManagement.header";
+        String displayed = "vehicle.powertrain.electric.battery.stateOfCharge.displayed";
+        handler.updateTelematicData(Map.of(header, stringValue("INVALID", "%", "2026-10-01T10:00:00Z")));
+        verifyState("charge#soc", UnDefType.UNDEF);
+
+        handler.updateTelematicData(Map.of(displayed, value(70, "%", "2026-10-01T10:05:00Z")));
+        verifyState("charge#soc", QuantityType.valueOf("70 %"));
+    }
+
+    @Test
+    void sunroofStatusUpdatesTheSunroofChannels() {
+        handler.updateTelematicData(
+                Map.of("vehicle.cabin.sunroof.status", stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
+        verifyState("status#sunroof", OpenClosedType.OPEN);
+        verifyState("status#sunroof-state", new StringType("INTERMEDIATE"));
     }
 
     @Test
@@ -339,6 +392,11 @@ class BMWCarDataVehicleHandlerTest {
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
         assertTrue(ids.contains(GROUP_RANGE + "#fuel-level"));
         assertTrue(ids.contains(GROUP_RANGE + "#total"));
+        assertTrue(ids.contains(GROUP_STATUS + "#engine"));
+        assertTrue(ids.contains(GROUP_TRIP + "#electric-share"));
+        assertFalse(ids.contains(GROUP_STATUS + "#ignition"));
+        assertFalse(ids.contains(GROUP_TRIP + "#eco-pro-share"));
+        assertFalse(ids.contains(GROUP_RANGE + "#electric-target"));
         assertFalse(ids.contains(GROUP_CHARGE + "#soc"));
         assertFalse(ids.contains(GROUP_STATUS + "#sunroof"));
         assertFalse(ids.contains(CHANNEL_GPS));
@@ -350,7 +408,13 @@ class BMWCarDataVehicleHandlerTest {
         assertEquals(EnumSet.of(Drive.COMBUSTION), BMWCarDataVehicleHandler.drives(basicData));
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
         assertTrue(ids.contains(GROUP_CHARGE + "#soc"));
+        // the channel of several data points is removed once
+        assertEquals(1, ids.stream().filter((GROUP_CHARGE + "#soc")::equals).count());
         assertTrue(ids.contains(GROUP_RANGE + "#electric"));
+        assertTrue(ids.contains(GROUP_RANGE + "#electric-target"));
+        assertTrue(ids.contains(GROUP_CHARGE + "#flap-locked"));
+        assertTrue(ids.contains(GROUP_TRIP + "#electric-share"));
+        assertFalse(ids.contains(GROUP_STATUS + "#engine"));
         assertFalse(ids.contains(GROUP_RANGE + "#fuel-level"));
         assertFalse(ids.contains(GROUP_RANGE + "#mileage"));
     }
@@ -376,6 +440,7 @@ class BMWCarDataVehicleHandlerTest {
         List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("PHEV", null, false, false));
         assertTrue(ids.contains(GROUP_STATUS + "#sunroof"));
         assertTrue(ids.contains(GROUP_STATUS + "#sunroof-state"));
+        assertEquals(1, ids.stream().filter((GROUP_STATUS + "#sunroof")::equals).count());
         // hasNavi is not trusted, as vehicles with a navigation system report false
         assertFalse(ids.contains(GROUP_NAVIGATION + "#destination-distance"));
         assertFalse(ids.contains(GROUP_NAVIGATION + "#arrival-time"));
