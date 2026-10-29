@@ -54,8 +54,11 @@ public final class E3DCBindingConstants {
     public static final String GROUP_INVERTER = "inverter";
     public static final String GROUP_GRID = "grid";
     public static final String GROUP_SYSTEM = "system";
-    /** The battery controls and states: locks, power mode, manual charge, idle periods and the block switches. */
+    /** The battery controls and states: locks, power mode, idle periods and the block switches. */
     public static final String GROUP_BATTERY_CONTROL = "battery-control";
+
+    /** The manual battery charge: the command that starts it and the values the device reports about it. */
+    public static final String GROUP_MANUAL_BATTERY_CHARGE = "manual-battery-charge";
 
     /** The energy counters and shares of the completed day, week, month and year. */
     public static final String GROUP_STATISTICS = "statistics";

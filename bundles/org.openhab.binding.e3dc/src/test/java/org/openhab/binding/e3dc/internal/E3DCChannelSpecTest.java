@@ -205,7 +205,8 @@ class E3DCChannelSpecTest {
         assertEquals(Set.of(E3DCBindingConstants.GROUP_POWER, E3DCBindingConstants.GROUP_BATTERY,
                 E3DCBindingConstants.GROUP_GRID, E3DCBindingConstants.GROUP_INVERTER,
                 E3DCBindingConstants.GROUP_HISTORY, E3DCBindingConstants.GROUP_EMERGENCY,
-                E3DCBindingConstants.GROUP_SYSTEM, E3DCBindingConstants.GROUP_BATTERY_CONTROL), groups);
+                E3DCBindingConstants.GROUP_SYSTEM, E3DCBindingConstants.GROUP_BATTERY_CONTROL,
+                E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE), groups);
     }
 
     /**
@@ -349,13 +350,31 @@ class E3DCChannelSpecTest {
 
     @Test
     void theManualChargeChannelReadsTheEnergyCounterInsideItsContainer() {
-        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL,
+        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE,
                 "manual-charge-energy");
 
         assertNotNull(spec);
         assertEquals(RscpTag.EMS_GET_MANUAL_CHARGE, spec.container());
         assertEquals(RscpTag.EMS_MANUAL_CHARGE_ENERGY_COUNTER, spec.tag());
-        assertEquals(1000, spec.divisor(), "the device reports this counter in Wh");
+        assertEquals(1, spec.divisor(), "the device reports this counter in Wh and the channel shows Wh");
+    }
+
+    @Test
+    void theManualChargeGroupReadsEveryValueOfTheManualChargeContainer() {
+        E3DCChannelRegistry registry = E3DCChannelSpec.powerPlant();
+        Map<String, Integer> tags = Map.of("manual-charge-active", RscpTag.EMS_MANUAL_CHARGE_ACTIVE,
+                "manual-charge-energy", RscpTag.EMS_MANUAL_CHARGE_ENERGY_COUNTER, "manual-charge-target",
+                RscpTag.EMS_UNDEFINED_POWER_VALUE, "manual-charge-last-start", RscpTag.EMS_MANUAL_CHARGE_LASTSTART);
+
+        assertEquals(tags.keySet(), registry.channels(E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE).keySet());
+        for (Map.Entry<String, Integer> channel : tags.entrySet()) {
+            E3DCChannelSpec spec = registry.spec(E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE, channel.getKey());
+            assertNotNull(spec, channel.getKey());
+            assertEquals(RscpTag.EMS_GET_MANUAL_CHARGE, spec.container(), channel.getKey());
+            assertEquals(channel.getValue(), spec.tag(), channel.getKey());
+        }
+        assertNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "manual-charge-energy"),
+                "the manual charge channels moved to their own group");
     }
 
     @Test

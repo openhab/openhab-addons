@@ -20,6 +20,7 @@
 			<channel-group id="history" typeId="history"/>
 			<channel-group id="emergency" typeId="emergency"/>
 			<channel-group id="battery-control" typeId="battery-control"/>
+			<channel-group id="manual-battery-charge" typeId="manual-battery-charge"/>
 			<channel-group id="system" typeId="system"/>
 		</channel-groups>
 	</thing-type>

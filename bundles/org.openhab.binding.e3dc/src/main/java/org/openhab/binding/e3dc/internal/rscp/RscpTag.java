@@ -120,6 +120,12 @@ public final class RscpTag {
     public static final int EMS_MANUAL_CHARGE_ACTIVE = 0x01000151;
     public static final int EMS_MANUAL_CHARGE_ENERGY_COUNTER = 0x01000152;
     public static final int EMS_MANUAL_CHARGE_LASTSTART = 0x01000153;
+
+    /**
+     * The vendor names this tag as an undefined power value. Inside {@link #EMS_GET_MANUAL_CHARGE} the device
+     * reports the energy the manual charge was started with in Wh.
+     */
+    public static final int EMS_UNDEFINED_POWER_VALUE = 0x0100003E;
     public static final int EMS_STATUS = 0x01800040;
     public static final int EMS_USED_CHARGE_LIMIT = 0x01800041;
     public static final int EMS_BAT_CHARGE_LIMIT = 0x01800042;
@@ -548,6 +554,7 @@ public final class RscpTag {
         NAMES.put(EMS_MANUAL_CHARGE_ACTIVE, "EMS_MANUAL_CHARGE_ACTIVE");
         NAMES.put(EMS_MANUAL_CHARGE_ENERGY_COUNTER, "EMS_MANUAL_CHARGE_ENERGY_COUNTER");
         NAMES.put(EMS_MANUAL_CHARGE_LASTSTART, "EMS_MANUAL_CHARGE_LASTSTART");
+        NAMES.put(EMS_UNDEFINED_POWER_VALUE, "EMS_UNDEFINED_POWER_VALUE");
         NAMES.put(EMS_STATUS, "EMS_STATUS");
         NAMES.put(EMS_USED_CHARGE_LIMIT, "EMS_USED_CHARGE_LIMIT");
         NAMES.put(EMS_BAT_CHARGE_LIMIT, "EMS_BAT_CHARGE_LIMIT");

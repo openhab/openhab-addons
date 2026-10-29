@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.e3dc.internal.handler;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -30,6 +33,7 @@ import org.openhab.binding.e3dc.internal.E3DCIdlePeriod;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -46,6 +50,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,6 +244,13 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
             return;
         }
         Channel channel = getThing().getChannel(channelUID);
+        if (channel != null && "DateTime".equals(channel.getAcceptedItemType())) {
+            State moment = timestampState(value);
+            if (moment != null) {
+                updateState(channelUID, moment);
+            }
+            return;
+        }
         boolean textChannel = channel != null && "String".equals(channel.getAcceptedItemType());
         State state = spec.tag() == RscpTag.BAT_AVAILABLE_BATTERIES && value.getType() == RscpType.CONTAINER
                 ? new DecimalType(value.findAll(RscpTag.BAT_INDEX).size())
@@ -273,6 +285,37 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         series.add(yearStart.atStartOfDay(ZoneId.systemDefault()).toInstant(), state);
         sendTimeSeries(channelUID, series);
     }
+
+    /**
+     * The state of a value that names a moment, for a channel that carries a DateTime item.
+     *
+     * <p>
+     * The interface has a timestamp type of its own, which holds the seconds since 1970 in its first eight bytes.
+     * A device may also report a moment as a plain number, which is taken as seconds, or as milliseconds when it is
+     * too large for seconds. A moment of zero means that nothing happened yet, so it is published as undefined.
+     *
+     * @return the moment, {@code UNDEF} for a moment of zero, or {@code null} when the value is no moment
+     */
+    static @Nullable State timestampState(RscpValue value) {
+        Object raw = value.getValue();
+        long seconds;
+        if (raw instanceof byte[] bytes && value.getType() == RscpType.TIMESTAMP && bytes.length >= 8) {
+            seconds = ByteBuffer.wrap(bytes, 0, 8).order(ByteOrder.LITTLE_ENDIAN).getLong();
+        } else if (raw instanceof Number number) {
+            seconds = number.longValue();
+        } else {
+            return null;
+        }
+        if (seconds <= 0) {
+            return UnDefType.UNDEF;
+        }
+        Instant instant = seconds > MILLISECONDS_THRESHOLD ? Instant.ofEpochMilli(seconds)
+                : Instant.ofEpochSecond(seconds);
+        return new DateTimeType(instant.atZone(ZoneId.systemDefault()));
+    }
+
+    /** Seconds since 1970 stay below this until the year 5138, so a larger number counts milliseconds. */
+    private static final long MILLISECONDS_THRESHOLD = 100_000_000_000L;
 
     /**
      * The state a value of this interface publishes on its channel, or {@code null} when it carries none.

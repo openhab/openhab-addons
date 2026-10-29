@@ -19,12 +19,10 @@
 			<channel id="discharging-time-lock" typeId="battery-control-discharging-time-lock"/>
 			<channel id="weather-regulated-charge" typeId="battery-control-weather-regulated-charge"/>
 			<channel id="power-limits-used" typeId="battery-control-power-limits-used"/>
-			<channel id="set-manual-charge" typeId="battery-control-set-manual-charge"/>
 			<channel id="idle-periods-enabled" typeId="battery-control-idle-periods-enabled"/>
 			<channel id="idle-periods" typeId="battery-control-idle-periods"/>
 			<channel id="block-charging" typeId="battery-control-block-charging"/>
 			<channel id="block-discharging" typeId="battery-control-block-discharging"/>
-			<channel id="manual-charge-energy" typeId="battery-control-manual-charge-energy"/>
 		</channels>
 	</channel-group-type>
 

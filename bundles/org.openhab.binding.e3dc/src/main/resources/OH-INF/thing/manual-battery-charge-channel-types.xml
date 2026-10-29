@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="manual-battery-charge-set-manual-charge">
+		<item-type>Number:Energy</item-type>
+		<label>Set Manual Charge Energy</label>
+		<description>Start a manual battery charge with this energy, sent to the device in Wh</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f Wh"/>
+		<command>
+			<options>
+				<option value="500 Wh">500 Wh</option>
+				<option value="1000 Wh">1000 Wh</option>
+				<option value="1500 Wh">1500 Wh</option>
+				<option value="2000 Wh">2000 Wh</option>
+				<option value="2500 Wh">2500 Wh</option>
+				<option value="3000 Wh">3000 Wh</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="manual-battery-charge-active">
+		<item-type>Switch</item-type>
+		<label>Manual Charge Active</label>
+		<description>A manual battery charge is currently running</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="manual-battery-charge-target">
+		<item-type>Number:Energy</item-type>
+		<label>Manual Charge Target Energy</label>
+		<description>Energy the manual battery charge started last was started with</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f Wh" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="manual-battery-charge-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Manual Charge Energy</label>
+		<description>Energy charged so far by the manual battery charge started last</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f Wh" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="manual-battery-charge-remaining">
+		<item-type>Number:Energy</item-type>
+		<label>Manual Charge Remaining Energy</label>
+		<description>Energy the running manual battery charge still has to charge</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f Wh" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="manual-battery-charge-last-start">
+		<item-type>DateTime</item-type>
+		<label>Manual Charge Last Start</label>
+		<description>Time the last manual battery charge was started</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

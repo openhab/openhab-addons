@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ScheduledFuture;
@@ -46,6 +47,7 @@ import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -72,6 +74,13 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
 
     /** The command only channel that starts a manual charge, it carries no state. */
     static final String CHANNEL_SET_MANUAL_CHARGE = "set-manual-charge";
+
+    /** The energy channels of the manual charge, which the device reports in Wh and which are published in Wh. */
+    private static final Set<String> MANUAL_CHARGE_ENERGY_CHANNELS = Set.of("manual-charge-energy",
+            "manual-charge-target");
+
+    /** The channel that shows the energy the running manual charge still has to charge. */
+    static final String CHANNEL_MANUAL_CHARGE_REMAINING = "manual-charge-remaining";
 
     /** The switch that blocks charging of the battery around the clock. */
     static final String CHANNEL_BLOCK_CHARGING = "block-charging";
@@ -105,6 +114,9 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
 
     /** What the last log of the trackers said, so that the log repeats only when it changes. */
     private E3DCInverterChannels.@Nullable Found loggedTrackers;
+
+    /** What the last log of the manual charge said, so that the log repeats only when the values change. */
+    private @Nullable String loggedManualCharge;
     private int trackerPolls;
 
     public E3DCPowerPlantHandler(Thing thing) {
@@ -158,6 +170,11 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
                 logger.debug("Command {} is not valid for channel {}, use ON or OFF", command, channelUID);
             }
             return;
+        }
+        if (E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE.equals(channelUID.getGroupId())
+                && CHANNEL_SET_MANUAL_CHARGE.equals(channelUID.getIdWithoutGroup())
+                && !(command instanceof RefreshType)) {
+            logger.debug("Starting a manual battery charge with {}", command);
         }
         super.handleCommand(channelUID, command);
     }
@@ -714,7 +731,102 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         super.onData(response);
         updateTrackers(response);
         updateBlockSwitches(response);
+        updateManualChargeRemaining(response);
+        logManualCharge(response);
         repeatHeldMode();
+    }
+
+    @Override
+    void updateChannel(String groupId, String channelId, E3DCChannelSpec spec, RscpValue value) {
+        if (E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE.equals(groupId)
+                && MANUAL_CHARGE_ENERGY_CHANNELS.contains(channelId) && value.getValue() instanceof Number number) {
+            // a plain number on an energy item would be read in the unit of the item, so the unit is stated
+            updateState(new ChannelUID(getThing().getUID(), groupId + "#" + channelId),
+                    new QuantityType<>(spec.scale(number.doubleValue()), Units.WATT_HOUR));
+            return;
+        }
+        super.updateChannel(groupId, channelId, spec, value);
+    }
+
+    /**
+     * Publishes the energy the running manual charge still has to charge: the energy it was started with less
+     * the energy charged so far. The device reports neither value, so the channel is calculated.
+     */
+    private void updateManualChargeRemaining(RscpValue response) {
+        RscpValue container = response.find(RscpTag.EMS_GET_MANUAL_CHARGE);
+        if (container == null) {
+            return;
+        }
+        RscpValue active = container.find(RscpTag.EMS_MANUAL_CHARGE_ACTIVE);
+        Number target = container.findNumber(RscpTag.EMS_UNDEFINED_POWER_VALUE);
+        Number charged = container.findNumber(RscpTag.EMS_MANUAL_CHARGE_ENERGY_COUNTER);
+        if (active == null || target == null || charged == null) {
+            return;
+        }
+        updateState(
+                new ChannelUID(getThing().getUID(),
+                        E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE + "#" + CHANNEL_MANUAL_CHARGE_REMAINING),
+                new QuantityType<>(remainingWh(Boolean.TRUE.equals(active.getValue()), target.doubleValue(),
+                        charged.doubleValue()), Units.WATT_HOUR));
+    }
+
+    /**
+     * The energy a manual charge still has to charge.
+     *
+     * <p>
+     * Nothing is left when no charge is running. The charged energy can start slightly below zero, as the counter
+     * follows the battery power, so the result never exceeds the energy the charge was started with.
+     *
+     * @param active whether a manual charge is running
+     * @param targetWh the energy the charge was started with in Wh
+     * @param chargedWh the energy charged so far in Wh
+     */
+    static double remainingWh(boolean active, double targetWh, double chargedWh) {
+        if (!active) {
+            return 0;
+        }
+        return Math.min(targetWh, Math.max(0, targetWh - chargedWh));
+    }
+
+    /**
+     * Logs what the device answers about the manual battery charge.
+     *
+     * <p>
+     * Debug logging shows a summary of the values whenever it differs from the one logged before, trace logging
+     * shows the whole answer with the RSCP type of every value with each poll. A poll that brings no answer is
+     * logged as well, because the device may not answer the request at all.
+     */
+    private void logManualCharge(RscpValue response) {
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+        RscpValue container = response.find(RscpTag.EMS_GET_MANUAL_CHARGE);
+        if (container == null) {
+            String missing = RscpTag.nameOf(RscpTag.EMS_GET_MANUAL_CHARGE) + " was not part of the answer";
+            if (!missing.equals(loggedManualCharge)) {
+                loggedManualCharge = missing;
+                logger.debug("Manual battery charge: {}", missing);
+            }
+            return;
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("Manual battery charge: {}", container.describeTree());
+        }
+        // the nanoseconds of the start time vary with every answer, so the summary shows whole seconds only
+        RscpValue lastStart = container.find(RscpTag.EMS_MANUAL_CHARGE_LASTSTART);
+        String summary = "active=" + describe(container.find(RscpTag.EMS_MANUAL_CHARGE_ACTIVE)) + ", started with="
+                + describe(container.find(RscpTag.EMS_UNDEFINED_POWER_VALUE)) + " Wh, charged="
+                + describe(container.find(RscpTag.EMS_MANUAL_CHARGE_ENERGY_COUNTER)) + " Wh, last start="
+                + (lastStart != null ? timestampState(lastStart) : "-") + ", start counter="
+                + describe(container.find(RscpTag.EMS_MANUAL_CHARGE_START_COUNTER));
+        if (!summary.equals(loggedManualCharge)) {
+            loggedManualCharge = summary;
+            logger.debug("Manual battery charge: {}", summary);
+        }
+    }
+
+    private static String describe(@Nullable RscpValue value) {
+        return value != null ? value.describeValue() : "-";
     }
 
     /**
