@@ -175,6 +175,60 @@ public class MotionBlindsHandlerTest {
     }
 
     @Test
+    public void heartbeatDeliveredAfterDisposeIsIgnored() throws IOException {
+        respond(GET_DEVICE_LIST_ACK, READ_DEVICE_ACK);
+        createHandler(KEY).initialize();
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
+
+        // the communication manager captured the listener before it was unregistered
+        handler.dispose();
+        clearInvocations(callback);
+        handler.onMessage(parse(HEARTBEAT), IP);
+
+        verifyNoInteractions(callback);
+    }
+
+    @Test
+    public void disposeWaitsForRunningHeartbeat() throws IOException, InterruptedException {
+        respond(GET_DEVICE_LIST_ACK, READ_DEVICE_ACK);
+        createHandler(KEY).initialize();
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(Thing.class), argThat(isStatus(ThingStatus.ONLINE)));
+
+        CountDownLatch publishing = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            publishing.countDown();
+            assertTrue(release.await(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+            return null;
+        }).when(callback).stateUpdated(channel(CHANNEL_POSITION), any());
+        Thread listener = new Thread(() -> handler.onMessage(parse(HEARTBEAT), IP), "listener");
+        listener.setDaemon(true);
+        listener.start();
+        assertTrue(publishing.await(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+
+        // the heartbeat is half published when the Thing is disabled
+        Thread disposer = new Thread(() -> {
+            handler.dispose();
+            clearInvocations(callback);
+        }, "disposer");
+        disposer.setDaemon(true);
+        disposer.start();
+        long deadline = System.currentTimeMillis() + TIMEOUT_MS;
+        while (disposer.isAlive() && disposer.getState() != Thread.State.BLOCKED
+                && System.currentTimeMillis() < deadline) {
+            Thread.onSpinWait();
+        }
+        release.countDown();
+        disposer.join(TIMEOUT_MS);
+        listener.join(TIMEOUT_MS);
+        assertFalse(disposer.isAlive());
+        assertFalse(listener.isAlive());
+
+        // the heartbeat was completed before dispose returned, nothing followed it
+        verifyNoInteractions(callback);
+    }
+
+    @Test
     public void noResponseGoesOfflineWithCommunicationError() throws IOException {
         when(communicationManager.sendRequest(anyString(), any(), eq(MAC))).thenThrow(new IOException("No response"));
         createHandler(KEY).initialize();

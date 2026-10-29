@@ -87,7 +87,10 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     private final Gson gson = new Gson();
     private final MotionBlindsCommunicationManager communicationManager;
     private final Object requestLock = new Object();
-    /** Keeps the decision for a status and its update together, so a rejected key is not overwritten by ONLINE */
+    /**
+     * Guards {@link #session} and every update of the Thing, see {@link #publish}. It also keeps the decision for a
+     * status and its update together, so a rejected key is not overwritten by ONLINE.
+     */
     private final Object statusLock = new Object();
     /** Incremented by every movement command, so an older one that is still queued or running is not sent */
     private final AtomicLong movementGeneration = new AtomicLong();
@@ -145,8 +148,8 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         slatTracker = new SlatTracker(config.tiltTravel, config.tiltSlack);
 
         Object currentSession = new Object();
-        session = currentSession;
         synchronized (statusLock) {
+            session = currentSession;
             accessDenied = false;
             updateStatus(ThingStatus.UNKNOWN);
         }
@@ -157,7 +160,11 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
 
     @Override
     public void dispose() {
-        session = null;
+        // waits for an update of the Thing that is running, for example from a message the communication manager
+        // dispatched before the listener is unregistered below; later updates see that the session ended
+        synchronized (statusLock) {
+            session = null;
+        }
         ScheduledFuture<?> job = pollJob;
         if (job != null) {
             job.cancel(true);
@@ -354,38 +361,53 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     }
 
     private void requestFailed(Object session, IOException e) {
-        if (!session.equals(this.session)) {
-            logger.debug("Request to motor {} abandoned after dispose: {}", mac, e.getMessage());
-        } else if (e instanceof AccessDeniedException) {
-            synchronized (statusLock) {
+        boolean published = publish(session, () -> {
+            if (e instanceof AccessDeniedException) {
                 accessDenied = true;
                 updateAccessDeniedStatus();
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        });
+        if (!published) {
+            logger.debug("Request to motor {} abandoned after dispose: {}", mac, e.getMessage());
         }
     }
 
     /**
-     * The motor accepted an authenticated request, so the key is valid.
+     * Update the Thing, unless the handler was disposed after the work of the given session was started. The update
+     * runs under {@link #statusLock}, under which {@link #dispose()} ends the session, so nothing is published after
+     * {@link #dispose()} returned.
+     *
+     * @return {@code false} if the session has ended and nothing was updated
+     */
+    private boolean publish(Object session, Runnable update) {
+        synchronized (statusLock) {
+            if (!session.equals(this.session)) {
+                return false;
+            }
+            update.run();
+            return true;
+        }
+    }
+
+    /**
+     * The motor accepted an authenticated request, so the key is valid. Called by {@link #publish}.
      */
     private void authenticated() {
-        synchronized (statusLock) {
-            accessDenied = false;
-            updateStatus(ThingStatus.ONLINE);
-        }
+        accessDenied = false;
+        updateStatus(ThingStatus.ONLINE);
     }
 
     /**
-     * The motor was heard from. That does not prove the key is accepted, so a rejected key stays reported.
+     * The motor was heard from. That does not prove the key is accepted, so a rejected key stays reported. Called by
+     * {@link #publish}.
      */
     private void reachable() {
-        synchronized (statusLock) {
-            if (accessDenied) {
-                updateAccessDeniedStatus();
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-            }
+        if (accessDenied) {
+            updateAccessDeniedStatus();
+        } else {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -420,10 +442,13 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
                 if (actionResult == null) {
                     // the acknowledge of a WriteDevice carries the state before the command, it may arrive after
                     // the first Report of the movement and must not roll the state back
-                    if (!MSG_WRITE_DEVICE.equals(msgType)) {
-                        handleStatus(response);
-                    }
-                    authenticated();
+                    boolean carriesStatus = !MSG_WRITE_DEVICE.equals(msgType);
+                    publish(session, () -> {
+                        if (carriesStatus) {
+                            handleStatus(response);
+                        }
+                        authenticated();
+                    });
                     return response;
                 }
                 logger.debug("Motor {} rejected {}: {}", mac, msgType, actionResult);
@@ -537,15 +562,18 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
 
         deviceType = type;
         token = newToken;
-        updateProperty(PROPERTY_DEVICE_TYPE, type);
-        String protocolVersion = response.protocolVersion;
-        if (protocolVersion != null) {
-            updateProperty(PROPERTY_PROTOCOL_VERSION, protocolVersion);
-        }
-        String firmwareVersion = response.fwVersion;
-        if (firmwareVersion != null) {
-            updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
-        }
+        String deviceTypeProperty = type;
+        publish(session, () -> {
+            updateProperty(PROPERTY_DEVICE_TYPE, deviceTypeProperty);
+            String protocolVersion = response.protocolVersion;
+            if (protocolVersion != null) {
+                updateProperty(PROPERTY_PROTOCOL_VERSION, protocolVersion);
+            }
+            String firmwareVersion = response.fwVersion;
+            if (firmwareVersion != null) {
+                updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+            }
+        });
         return newToken;
     }
 
@@ -568,7 +596,9 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
      */
     @Override
     public void onMessage(MotionBlindsMessage message, String sourceIp) {
-        if (message.actionResult != null) {
+        // the communication manager may deliver a message it dispatched before the listener was unregistered
+        Object currentSession = session;
+        if (currentSession == null || message.actionResult != null) {
             return;
         }
         String previousIp = ipAddress;
@@ -590,8 +620,10 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             accessToken = null;
         }
         if (MSG_REPORT.equals(message.msgType) || MSG_HEARTBEAT.equals(message.msgType)) {
-            handleStatus(message);
-            reachable();
+            publish(currentSession, () -> {
+                handleStatus(message);
+                reachable();
+            });
         }
     }
 
