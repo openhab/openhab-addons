@@ -317,7 +317,9 @@ class E3DCCommandHandlerTest {
         assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "weather-regulated-charge"));
         assertNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "mode"),
                 "the mode is read only, see set-power-mode");
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "set-manual-charge"));
+        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE, "set-manual-charge"));
+        assertNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "set-manual-charge"),
+                "the manual charge has its own group");
     }
 
     @Test

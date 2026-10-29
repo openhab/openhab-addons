@@ -210,8 +210,9 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
                         "idle-periods-enabled", E3DCCommandSpec.bool(RscpTag.EMS_REQ_SET_IDLE_PERIODS_ENABLE, 0), //
                         "weather-regulated-charge",
                         E3DCCommandSpec.bool(RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED,
-                                RscpTag.EMS_REQ_SET_POWER_SETTINGS), //
-                        "set-manual-charge", E3DCCommandSpec.number(RscpTag.EMS_REQ_START_MANUAL_CHARGE)))//
+                                RscpTag.EMS_REQ_SET_POWER_SETTINGS)))//
+                .group(E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE,
+                        Map.of("set-manual-charge", E3DCCommandSpec.number(RscpTag.EMS_REQ_START_MANUAL_CHARGE)))//
                 .group(E3DCBindingConstants.GROUP_EMERGENCY, Map.of(//
                         "percent",
                         E3DCCommandSpec.floatNumber(RscpTag.SE_PARAM_EP_RESERVE, RscpTag.SE_REQ_SET_EP_RESERVE), //

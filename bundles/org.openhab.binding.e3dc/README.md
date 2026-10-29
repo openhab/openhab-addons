@@ -239,7 +239,7 @@ For every index that answers with a value the binding creates channels at runtim
 
 ### Channel Group `battery-control`
 
-Locks, power mode, manual charge and idle periods of the battery.
+Locks, power mode and idle periods of the battery.
 
 > **Warning:** Battery controlling can be handled from different clients and the "mixed use" can cause trouble.
 > The ways are the **AI 360** (battery handling in control of the internal E3DC power plant control), the **block charge / discharge switch** (easy handling to enable / disable charging and discharging via rules) and **manual schedules** via the MyE3DC app or rules (your own handling!).
@@ -259,7 +259,6 @@ Locks, power mode, manual charge and idle periods of the battery.
 | idle-periods              | String       | The idle periods, one per line; writing replaces the whole list |
 | block-charging            | Switch       | Blocks battery charging around the clock, see [The block switches](#the-block-switches) |
 | block-discharging         | Switch       | Blocks battery discharging around the clock, see [The block switches](#the-block-switches) |
-| manual-charge-energy      | Number:Energy | Energy of the manual charge started last        |
 
 The `idle-periods` channel shows the periods during which the battery is locked against charging or discharging.
 Each line reads `name:days:mode:active:hh:mm-hh:mm`, for example:
@@ -323,6 +322,31 @@ The switches `block-charging` and `block-discharging` provide it with an idle pe
 - The device counts in minutes and has no 24:00, which is why the period ends at 23:59.
 
 The same list can be read and replaced as a whole with the [thing actions](#thing-actions), for example to add periods for single weekdays next to the block switches.
+
+### Channel Group `manual-battery-charge`
+
+Starts a manual battery charge and reports its state.
+
+| Channel                      | Type          | Description                                                  |
+|------------------------------|---------------|--------------------------------------------------------------|
+| set-manual-charge            | Number:Energy | Command only: starts a manual battery charge with this energy, offered as 500 Wh to 3000 Wh in steps of 500 Wh |
+| manual-charge-active         | Switch        | A manual battery charge is currently running                 |
+| manual-charge-target         | Number:Energy | Energy the manual battery charge started last was started with |
+| manual-charge-energy         | Number:Energy | Energy charged so far by the manual battery charge started last |
+| manual-charge-remaining      | Number:Energy | Energy the running manual battery charge still has to charge, 0 when none is running |
+| manual-charge-last-start     | DateTime      | Time the last manual battery charge was started              |
+
+The device reports the energies in Wh, and the channels publish them in Wh.
+`manual-charge-remaining` is calculated by the binding as `manual-charge-target` less `manual-charge-energy`.
+While a charge runs, the charged energy can start slightly below zero, as it follows the battery power.
+To see what the device reports, enable debug logging for the binding:
+
+```text
+log:set DEBUG org.openhab.binding.e3dc
+```
+
+The binding then logs the values of the manual charge whenever they change, and the command that starts a charge.
+Trace logging shows the whole answer with the RSCP type of every value with every poll.
 
 ### Channel Group `history`
 
@@ -400,7 +424,7 @@ The charge and discharge limits are written as one container because switching t
 | `battery-control` | power-limits-used            | Switch       | Whether the configured power limits are active                               |
 | `battery-control` | weather-regulated-charge     | Switch       | Whether charging follows the weather forecast                                |
 | `battery-control` | set-power-mode               | String       | Command only: forces a power mode, `auto`, `idle:<cycles>` or `charge`/`discharge`/`grid_charge:<watts>:<cycles>` |
-| `battery-control` | set-manual-charge            | Number:Energy | Command only: starts a manual battery charge with this energy, offered as 500 Wh to 3000 Wh in steps of 500 Wh |
+| `manual-battery-charge` | set-manual-charge      | Number:Energy | Command only: starts a manual battery charge with this energy, offered as 500 Wh to 3000 Wh in steps of 500 Wh |
 | `battery-control` | block-charging               | Switch       | Blocks battery charging on all days, see [The block switches](#the-block-switches) |
 | `battery-control` | block-discharging            | Switch       | Blocks battery discharging on all days, see [The block switches](#the-block-switches) |
 | `emergency`   | percent                      | Number:Dimensionless | Share of the battery to keep for emergency power                    |
@@ -738,7 +762,7 @@ Number:Dimensionless E3DC_EmergencyPercent   "Emergency Reserve [%.0f %%]"      
 Number:Energy        E3DC_EmergencyEnergy    "Emergency Reserve [%.1f %unit%]"      { channel="e3dc:power-plant:device:plant:emergency#energy" }
 Switch               E3DC_EmergencyAvailable "Emergency Power Available [%s]"       { channel="e3dc:power-plant:device:plant:emergency#power-available" }
 
-// battery-control - locks, power mode, manual charge and idle periods
+// battery-control - locks, power mode and idle periods
 Switch               E3DC_ChargingLock       "Charging Lock [%s]"                   { channel="e3dc:power-plant:device:plant:battery-control#charging-lock" }
 Switch               E3DC_DischargingLock    "Discharging Lock [%s]"                { channel="e3dc:power-plant:device:plant:battery-control#discharging-lock" }
 Switch               E3DC_WeatherRegulated   "Weather Regulated Charge [%s]"        { channel="e3dc:power-plant:device:plant:battery-control#weather-regulated-charge" }
@@ -748,8 +772,14 @@ Switch               E3DC_BlockDischarging   "Block Discharging [%s]"           
 Switch               E3DC_IdlePeriodsOn      "Idle Periods Enabled [%s]"            { channel="e3dc:power-plant:device:plant:battery-control#idle-periods-enabled" }
 String               E3DC_IdlePeriods        "Idle Periods [%s]"                    { channel="e3dc:power-plant:device:plant:battery-control#idle-periods" }
 String               E3DC_SetPowerMode       "Power Mode"                           { channel="e3dc:power-plant:device:plant:battery-control#set-power-mode" }
-Number:Energy        E3DC_SetManualCharge    "Manual Charge"                        { channel="e3dc:power-plant:device:plant:battery-control#set-manual-charge" }
-Number:Energy        E3DC_ManualChargeEnergy "Manual Charge Energy [%.0f %unit%]"   { channel="e3dc:power-plant:device:plant:battery-control#manual-charge-energy" }
+
+// manual-battery-charge - start a manual charge and follow it
+Number:Energy        E3DC_SetManualCharge    "Manual Charge"                        { channel="e3dc:power-plant:device:plant:manual-battery-charge#set-manual-charge" }
+Switch               E3DC_ManualChargeActive "Manual Charge Active [%s]"            { channel="e3dc:power-plant:device:plant:manual-battery-charge#manual-charge-active" }
+Number:Energy        E3DC_ManualChargeEnergy "Manual Charge Energy [%.1f %unit%]"   { channel="e3dc:power-plant:device:plant:manual-battery-charge#manual-charge-energy" }
+Number:Energy        E3DC_ManualChargeTarget "Manual Charge Target [%.0f %unit%]"   { channel="e3dc:power-plant:device:plant:manual-battery-charge#manual-charge-target" }
+Number:Energy        E3DC_ManualChargeRemaining "Manual Charge Remaining [%.1f %unit%]" { channel="e3dc:power-plant:device:plant:manual-battery-charge#manual-charge-remaining" }
+DateTime             E3DC_ManualChargeStart  "Manual Charge Last Start [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" { channel="e3dc:power-plant:device:plant:manual-battery-charge#manual-charge-last-start" }
 
 // wallbox
 Switch               E3DC_WallboxPlugged     "Wallbox Plugged [%s]"                 { channel="e3dc:wallbox:device:wallbox0:status-control#plugged" }
@@ -807,8 +837,14 @@ sitemap e3dc label="E3/DC" {
         Switch item=E3DC_BlockCharging    label="Block Charging"
         Switch item=E3DC_BlockDischarging label="Block Discharging"
         Switch item=E3DC_SetPowerMode     label="Power Mode" mappings=[ "auto"="Auto", "idle:60"="Idle", "charge:2000:60"="Charge 2 kW", "discharge:2000:60"="Discharge 2 kW" ]
-        Switch item=E3DC_SetManualCharge  label="Manual Charge" mappings=[ "500 Wh"="0.5 kWh", "1000 Wh"="1 kWh", "2000 Wh"="2 kWh", "3000 Wh"="3 kWh" ]
         Text item=E3DC_IdlePeriods        label="Idle Periods"
+    }
+    Frame label="Manual Battery Charge" {
+        Switch item=E3DC_SetManualCharge  label="Manual Charge" mappings=[ "500 Wh"="0.5 kWh", "1000 Wh"="1 kWh", "2000 Wh"="2 kWh", "3000 Wh"="3 kWh" ]
+        Text item=E3DC_ManualChargeActive label="Active [%s]"
+        Text item=E3DC_ManualChargeEnergy label="Charged [%.1f %unit%]"
+        Text item=E3DC_ManualChargeRemaining label="Remaining [%.1f %unit%]"
+        Text item=E3DC_ManualChargeStart  label="Last Start [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"
     }
     Frame label="Emergency Power" {
         Setpoint item=E3DC_EmergencyPercent label="Reserve [%.0f %%]" minValue=0 maxValue=100 step=5

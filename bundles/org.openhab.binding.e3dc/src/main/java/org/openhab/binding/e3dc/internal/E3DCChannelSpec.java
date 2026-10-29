@@ -248,9 +248,19 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                 entry("power-limits-used",
                         E3DCChannelSpec.bitIn(RscpTag.EMS_GET_POWER_SETTINGS, RscpTag.EMS_POWER_LIMITS_USED, 1)), //
                 entry("idle-periods-enabled", E3DCChannelSpec.of(RscpTag.EMS_GET_IDLE_PERIODS_ENABLE)), //
-                entry("idle-periods", E3DCChannelSpec.idlePeriods()), //
-                entry("manual-charge-energy", E3DCChannelSpec.scaledIn(RscpTag.EMS_GET_MANUAL_CHARGE,
-                        RscpTag.EMS_MANUAL_CHARGE_ENERGY_COUNTER, 1000))));
+                entry("idle-periods", E3DCChannelSpec.idlePeriods())));
+
+        // the values of the manual charge sit in one container, which the device answers as a whole
+        registry.group(E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE, Map.ofEntries(//
+                entry("manual-charge-active",
+                        E3DCChannelSpec.in(RscpTag.EMS_GET_MANUAL_CHARGE, RscpTag.EMS_MANUAL_CHARGE_ACTIVE)), //
+                // both energies are reported in Wh and published in Wh, see E3DCPowerPlantHandler
+                entry("manual-charge-energy",
+                        E3DCChannelSpec.in(RscpTag.EMS_GET_MANUAL_CHARGE, RscpTag.EMS_MANUAL_CHARGE_ENERGY_COUNTER)), //
+                entry("manual-charge-target",
+                        E3DCChannelSpec.in(RscpTag.EMS_GET_MANUAL_CHARGE, RscpTag.EMS_UNDEFINED_POWER_VALUE)), //
+                entry("manual-charge-last-start",
+                        E3DCChannelSpec.in(RscpTag.EMS_GET_MANUAL_CHARGE, RscpTag.EMS_MANUAL_CHARGE_LASTSTART))));
 
         registry.group(E3DCBindingConstants.GROUP_HISTORY, historyChannels());
 
