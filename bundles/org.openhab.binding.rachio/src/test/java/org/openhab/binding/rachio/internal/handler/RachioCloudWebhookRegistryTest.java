@@ -29,6 +29,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.CloudWebhookLease;
 import org.openhab.core.io.rest.Webhook;
 import org.openhab.core.io.rest.WebhookService;
@@ -82,6 +84,138 @@ public class RachioCloudWebhookRegistryTest {
         } finally {
             service.completeFirstRequest();
             executor.shutdownNow();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "bridge-1", "bridge-2" })
+    public void interruptedAcquirePreservesOtherWaiter(String secondConsumerId) throws Exception {
+        TestWebhookService service = new TestWebhookService(true);
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        AtomicReference<@Nullable Thread> firstWorker = new AtomicReference<>();
+        AtomicReference<@Nullable Thread> secondWorker = new AtomicReference<>();
+
+        try {
+            Future<CloudWebhookLease> firstAcquire = executor.submit(() -> {
+                firstWorker.set(Thread.currentThread());
+                return registry.acquire("bridge-1");
+            });
+            assertTrue(service.firstRequest.await(5, TimeUnit.SECONDS));
+            Future<CloudWebhookLease> secondAcquire = executor.submit(() -> {
+                secondWorker.set(Thread.currentThread());
+                return registry.acquire(secondConsumerId);
+            });
+            assertTrue(awaitTimedWaiting(firstWorker, secondWorker));
+
+            Thread interruptedWorker = firstWorker.get();
+            assertNotNull(interruptedWorker);
+            interruptedWorker.interrupt();
+            ExecutionException exception = assertThrows(ExecutionException.class,
+                    () -> firstAcquire.get(5, TimeUnit.SECONDS));
+            assertInstanceOf(InterruptedException.class, exception.getCause());
+
+            service.completeFirstRequest();
+
+            assertNotNull(secondAcquire.get(5, TimeUnit.SECONDS));
+            assertEquals(1, service.requestCount.get());
+            assertEquals(0, service.removalCount.get());
+            assertEquals(1, registry.activeConsumerCount());
+        } finally {
+            service.completeFirstRequest();
+            service.removalGate.complete(Boolean.TRUE);
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+        }
+    }
+
+    @Test
+    public void interruptedLastWaiterDoesNotSendQueuedRegistration() throws Exception {
+        TestWebhookService service = new TestWebhookService();
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service);
+        CloudWebhookLease initialLease = registry.acquire("bridge-1");
+        registry.release("bridge-1", initialLease.consumerLease());
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        AtomicReference<@Nullable Thread> worker = new AtomicReference<>();
+
+        try {
+            Future<CloudWebhookLease> acquire = executor.submit(() -> {
+                worker.set(Thread.currentThread());
+                return registry.acquire("bridge-2");
+            });
+            assertTrue(awaitTimedWaiting(worker));
+            Thread interruptedWorker = worker.get();
+            assertNotNull(interruptedWorker);
+            interruptedWorker.interrupt();
+            ExecutionException exception = assertThrows(ExecutionException.class,
+                    () -> acquire.get(5, TimeUnit.SECONDS));
+            assertInstanceOf(InterruptedException.class, exception.getCause());
+
+            service.removalGate.complete(Boolean.TRUE);
+
+            assertEquals(1, service.requestCount.get());
+            assertEquals(1, service.removalCount.get());
+            assertEquals(0, registry.activeConsumerCount());
+            assertNotNull(registry.acquire("bridge-3"));
+            assertEquals(2, service.requestCount.get());
+        } finally {
+            service.removalGate.complete(Boolean.TRUE);
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void abandonedLastWaiterCleansLateResultBeforeReplacement(boolean timeOut) throws Exception {
+        TestWebhookService service = new TestWebhookService(true);
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service, timeOut ? 0 : 5000, 5000);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        AtomicReference<@Nullable Thread> firstWorker = new AtomicReference<>();
+        AtomicReference<@Nullable Thread> replacementWorker = new AtomicReference<>();
+
+        try {
+            Future<CloudWebhookLease> firstAcquire = executor.submit(() -> {
+                firstWorker.set(Thread.currentThread());
+                return registry.acquire("bridge-1");
+            });
+            assertTrue(service.firstRequest.await(5, TimeUnit.SECONDS));
+            if (!timeOut) {
+                assertTrue(awaitTimedWaiting(firstWorker));
+                Thread interruptedWorker = firstWorker.get();
+                assertNotNull(interruptedWorker);
+                interruptedWorker.interrupt();
+            }
+            ExecutionException exception = assertThrows(ExecutionException.class,
+                    () -> firstAcquire.get(5, TimeUnit.SECONDS));
+            if (timeOut) {
+                assertInstanceOf(RachioCloudWebhookRegistry.CloudWebhookException.class, exception.getCause());
+            } else {
+                assertInstanceOf(InterruptedException.class, exception.getCause());
+            }
+            Future<CloudWebhookLease> replacementAcquire = executor.submit(() -> {
+                replacementWorker.set(Thread.currentThread());
+                return registry.acquire("bridge-2");
+            });
+            assertTrue(awaitTimedWaiting(replacementWorker));
+            assertEquals(1, service.requestCount.get());
+            assertEquals(0, service.removalCount.get());
+
+            service.completeFirstRequest();
+
+            assertTrue(service.removeCalled.await(5, TimeUnit.SECONDS));
+            assertEquals(1, service.requestCount.get());
+            service.removalGate.complete(Boolean.TRUE);
+
+            assertNotNull(replacementAcquire.get(5, TimeUnit.SECONDS));
+            assertEquals(2, service.requestCount.get());
+            assertEquals(1, service.removalCount.get());
+            assertEquals(1, registry.activeConsumerCount());
+        } finally {
+            service.completeFirstRequest();
+            service.removalGate.complete(Boolean.TRUE);
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
         }
     }
 
@@ -532,7 +666,7 @@ public class RachioCloudWebhookRegistryTest {
 
     private static boolean awaitTimedWaiting(AtomicReference<@Nullable Thread> firstWorker,
             AtomicReference<@Nullable Thread> secondWorker) throws InterruptedException {
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(1);
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
         while (System.nanoTime() < deadline) {
             @Nullable
             Thread first = firstWorker.get();

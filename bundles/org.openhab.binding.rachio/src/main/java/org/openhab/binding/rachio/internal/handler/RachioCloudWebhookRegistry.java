@@ -104,13 +104,15 @@ public final class RachioCloudWebhookRegistry {
                 pendingRequest = operation;
                 startRequest = true;
             }
-        }
-        if (startRequest) {
-            startWebhookRequest(operation, removalBeforeRequest);
+            operation.waiters++;
         }
 
         boolean requestStarted = false;
+        Throwable failure = null;
         try {
+            if (startRequest) {
+                startWebhookRequest(operation, removalBeforeRequest);
+            }
             operation.started.get(removalWaitTimeoutMillis, TimeUnit.MILLISECONDS);
             requestStarted = true;
             Webhook webhook = operation.result.get(requestTimeoutMillis, TimeUnit.MILLISECONDS);
@@ -131,19 +133,21 @@ public final class RachioCloudWebhookRegistry {
                 return activateLease(consumerId, currentWebhook, cachedWebhookGeneration);
             }
         } catch (InterruptedException e) {
-            abandonPendingRequest(operation, e);
+            failure = e;
             throw e;
         } catch (TimeoutException e) {
-            abandonPendingRequest(operation, e);
+            failure = e;
             throw new CloudWebhookException(requestStarted ? "Timed out while requesting openHAB Cloud webhook URL"
                     : "Timed out while waiting for previous openHAB Cloud webhook removal", e);
         } catch (CloudWebhookException e) {
-            abandonPendingRequest(operation, e);
+            failure = e;
             throw e;
         } catch (ExecutionException | RuntimeException e) {
-            abandonPendingRequest(operation, e);
+            failure = e;
             throw new CloudWebhookException("Failed to request openHAB Cloud webhook URL",
                     unwrapCompletionException(e));
+        } finally {
+            releaseRequestWaiter(operation, failure);
         }
     }
 
@@ -315,14 +319,17 @@ public final class RachioCloudWebhookRegistry {
 
     private boolean isProviderInUse(WebhookService webhookService) {
         RequestOperation request = pendingRequest;
+        // A replacement queued behind cleanup must not prevent that cleanup from running.
         return webhookService.equals(cachedWebhookProvider) && (cachedWebhook != null || !activeConsumers.isEmpty())
-                || request != null && webhookService.equals(request.webhookService);
+                || request != null && request.requestSent && webhookService.equals(request.webhookService);
     }
 
-    private void abandonPendingRequest(RequestOperation request, Throwable failure) {
+    private void releaseRequestWaiter(RequestOperation request, @Nullable Throwable failure) {
         RemovalOperation removal = null;
         synchronized (this) {
-            if (!isSameInstance(pendingRequest, request)) {
+            request.waiters--;
+            // A cancelled acquire must not abandon the result still awaited by another caller.
+            if (request.waiters > 0 || failure == null || !isSameInstance(pendingRequest, request)) {
                 return;
             }
             pendingRequest = null;
@@ -417,6 +424,7 @@ public final class RachioCloudWebhookRegistry {
         private final CompletableFuture<Boolean> started = new CompletableFuture<>();
         private final CompletableFuture<Webhook> result = new CompletableFuture<>();
         private final CompletableFuture<Boolean> finished = new CompletableFuture<>();
+        private int waiters;
         private boolean requestSent;
         private boolean cleanupScheduled;
 
