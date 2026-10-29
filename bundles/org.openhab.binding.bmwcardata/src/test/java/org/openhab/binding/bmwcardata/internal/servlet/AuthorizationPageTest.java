@@ -79,7 +79,7 @@ class AuthorizationPageTest {
     @Test
     void showsLinkQrCodeAndCodeOfAPendingAccount() {
         String page = render(List.of(
-                new AuthorizationPage.Account("My BMW", UID, false, AUTHORIZATION, "OFFLINE (CONFIGURATION_PENDING)")),
+                new AuthorizationPage.Account("My BMW", UID, false, AUTHORIZATION, "OFFLINE (AUTHORIZATION_PENDING)")),
                 Locale.ENGLISH);
         assertTrue(page.contains("href=\"https://customer.bmwgroup.com/oneid/link?user_code=mJimW4Gm\""));
         // opens in the same window, which the user closes after confirming
@@ -139,7 +139,7 @@ class AuthorizationPageTest {
     @Test
     void usesTheLanguageAndTimeFormatOfTheLocale() {
         String page = render(List.of(
-                new AuthorizationPage.Account("My BMW", UID, false, AUTHORIZATION, "OFFLINE (CONFIGURATION_PENDING)")),
+                new AuthorizationPage.Account("My BMW", UID, false, AUTHORIZATION, "OFFLINE (AUTHORIZATION_PENDING)")),
                 Locale.forLanguageTag("nl-BE"));
         assertTrue(page.contains("<html lang=\"nl-BE\">"));
         // the time in the 24 hour format of the locale; the text falls back to English without a Dutch translation

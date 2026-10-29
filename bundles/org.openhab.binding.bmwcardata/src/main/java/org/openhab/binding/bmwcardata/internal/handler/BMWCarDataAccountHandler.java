@@ -191,13 +191,11 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         config = getConfigAs(AccountConfiguration.class);
         String clientId = config.clientId.trim();
         if (clientId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-client-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-client-id");
             return;
         }
         if (config.usesBroker() && config.brokerHost.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-broker-host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-broker-host");
             return;
         }
         if (config.streaming && config.mirrorToBroker && config.isBridgeMode()) {
@@ -613,7 +611,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                     : budgetExhausted;
         }
         synchronized (statusLock) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
+            updateStatus(ThingStatus.ONLINE, description);
         }
     }
 
@@ -817,7 +815,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             DeviceAuthorization authorization = authClient.requestDeviceCode();
             pendingAuthorization = authorization;
             // the Main UI links to the authorization page, which shows the link to BMW, a QR code of it and the code
-            updateOfflineIfActive(ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.authorization-pending");
+            updateOfflineIfActive(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/offline.authorization-pending");
             scheduleAuthJob(() -> pollDeviceAuthorization(authorization, authorization.interval()),
                     authorization.interval());
         } catch (BMWCarDataException e) {
@@ -1131,7 +1129,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private void updateOfflineIfActive(ThingStatusDetail detail, @Nullable String description) {
         if (!disposed) {
             synchronized (statusLock) {
-                updateStatus(ThingStatus.OFFLINE, detail, description);
+                updateStatus(detail, description);
             }
         }
     }

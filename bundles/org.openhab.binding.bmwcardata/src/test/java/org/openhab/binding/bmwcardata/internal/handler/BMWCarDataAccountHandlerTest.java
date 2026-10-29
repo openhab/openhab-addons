@@ -528,7 +528,7 @@ class BMWCarDataAccountHandlerTest {
         // WWW-Authenticate header, so the HTTP client fails the request and the error code is lost
         respond(status(200, deviceCode("USER-1", 600)), failure(new ExecutionException(unauthorizedResponse())));
         startHandler(false, null);
-        verify(accountCallback).statusUpdated(any(), argThat(offline(ThingStatusDetail.CONFIGURATION_PENDING)));
+        verify(accountCallback).statusUpdated(any(), argThat(offline(ThingStatusDetail.AUTHORIZATION_PENDING)));
         assertEquals("USER-1", pendingUserCode());
 
         runJobs(POLL_INTERVAL);

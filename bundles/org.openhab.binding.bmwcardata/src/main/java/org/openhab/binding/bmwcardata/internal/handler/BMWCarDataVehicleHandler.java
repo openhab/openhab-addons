@@ -140,7 +140,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         vin = config.vin.trim().toUpperCase(Locale.ROOT);
         dynamicChannels = config.dynamicChannels;
         if (!BMWCarDataApi.isValidVin(vin)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.vin");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.vin");
             return;
         }
         Bridge bridge = getBridge();
@@ -431,7 +431,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         } else {
             cancelProperties();
             cancelImage();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -454,13 +454,11 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         }
         refreshFailing = true;
         if (e.isVinNotPermitted()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.vin-not-permitted");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.vin-not-permitted");
         } else if (BMWCarDataException.ERROR_CONTAINER_LIMIT.equals(e.getErrorId())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.container-limit");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.container-limit");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.refresh-failed [\"" + e.getShortDescription() + "\"]");
         }
     }
@@ -569,11 +567,10 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                 return;
             }
             if (e.isVinNotPermitted()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error.vin-not-permitted");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.vin-not-permitted");
                 return;
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     e.isRateLimited() ? "@text/offline.comm-error.basic-data-budget"
                             : "@text/offline.comm-error.basic-data-failed [\"" + e.getShortDescription() + "\"]");
             schedulePropertiesRetry();
