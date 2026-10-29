@@ -359,8 +359,8 @@ public enum VehicleChannel {
 
     // normalized words used by CarData to mark a value as unavailable
     private static final Set<String> UNDEFINED_WORDS = Set.of("", "INVALID", "NA", "UNKNOWN", "ISUNKNOWN");
-    private static final Set<String> TRUE_WORDS = Set.of("TRUE", "ISTRUE", "ON", "YES", "ACTIVE");
-    private static final Set<String> FALSE_WORDS = Set.of("FALSE", "ISFALSE", "OFF", "NO", "INACTIVE");
+    private static final Set<String> TRUE_WORDS = Set.of("TRUE", "ISTRUE", "ON", "YES", "ACTIVE", "FLAPLOCKED");
+    private static final Set<String> FALSE_WORDS = Set.of("FALSE", "ISFALSE", "OFF", "NO", "INACTIVE", "FLAPUNLOCKED");
     // doors are documented as boolean but reported as OPEN or CLOSED; windows and the sunroof can be partly open
     private static final Set<String> OPEN_WORDS = Set.of("OPEN", "INTERMEDIATE", "OPENTILT", "INTERMEDIATETILT", "TRUE",
             "ISTRUE");

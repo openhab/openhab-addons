@@ -231,6 +231,17 @@ class BMWCarDataVehicleHandlerTest {
     }
 
     @Test
+    void undefinedHeaderDoesNotStopTheDisplayedStateOfCharge() {
+        String header = "vehicle.drivetrain.batteryManagement.header";
+        String displayed = "vehicle.powertrain.electric.battery.stateOfCharge.displayed";
+        handler.updateTelematicData(Map.of(header, stringValue("INVALID", "%", "2026-10-01T10:00:00Z")));
+        verifyState("charge#soc", UnDefType.UNDEF);
+
+        handler.updateTelematicData(Map.of(displayed, value(70, "%", "2026-10-01T10:05:00Z")));
+        verifyState("charge#soc", QuantityType.valueOf("70 %"));
+    }
+
+    @Test
     void sunroofStatusUpdatesTheSunroofChannels() {
         handler.updateTelematicData(
                 Map.of("vehicle.cabin.sunroof.status", stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));

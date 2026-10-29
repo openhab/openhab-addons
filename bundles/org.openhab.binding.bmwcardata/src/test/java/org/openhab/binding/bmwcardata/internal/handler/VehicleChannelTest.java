@@ -148,6 +148,16 @@ class VehicleChannelTest {
     }
 
     @Test
+    void chargingFlapLockWordsAreSwitchStates() {
+        TelematicValue locked = value(new JsonPrimitive("FLAP_LOCKED"), null);
+        assertEquals(OnOffType.ON, VehicleChannel.CHARGING_FLAP_LOCKED.toState(locked));
+        TelematicValue unlocked = value(new JsonPrimitive("FLAP_UNLOCKED"), null);
+        assertEquals(OnOffType.OFF, VehicleChannel.CHARGING_FLAP_LOCKED.toState(unlocked));
+        // the stream sends a boolean
+        assertEquals(OnOffType.ON, VehicleChannel.CHARGING_FLAP_LOCKED.toState(value(new JsonPrimitive(true), null)));
+    }
+
+    @Test
     void zeroBatteryCapacityIsUndefined() {
         assertEquals(UnDefType.UNDEF, VehicleChannel.BATTERY_CAPACITY.toState(value(new JsonPrimitive("0"), "kWh")));
         assertEquals(UnDefType.UNDEF, VehicleChannel.BATTERY_CAPACITY.toState(value(new JsonPrimitive(0.0), "kWh")));

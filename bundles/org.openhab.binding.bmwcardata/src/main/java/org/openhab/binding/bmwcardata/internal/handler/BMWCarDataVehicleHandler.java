@@ -59,6 +59,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,7 +231,10 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             if (primary != null && reportedChannels.contains(primary)) {
                 continue;
             }
-            reportedChannels.add(channel);
+            // an undefined value, e.g. INVALID, does not make a data point reported, so its fallback still applies
+            if (state != UnDefType.UNDEF) {
+                reportedChannels.add(channel);
+            }
             if (channel == VehicleChannel.DOOR_LOCK || channel == VehicleChannel.DOOR_STATUS) {
                 // both descriptors update the door lock: an older value of one must not replace a newer of the other
                 Instant previousDoorLock = doorLockTimestamp;
